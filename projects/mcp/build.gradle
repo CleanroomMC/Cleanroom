@@ -5,8 +5,8 @@ apply plugin: 'top.outlands.gradle.mcp'
 
 repositories {
     maven {
-        name "outlandsReleases"
-        url "https://maven.outlands.top/releases"
+        name = "outlandsReleases"
+        url = "https://maven.outlands.top/releases"
     }
 }
 

@@ -8,8 +8,8 @@ apply plugin: 'top.outlands.gradle.patcher'
 repositories {
     mavenLocal()
     maven {
-        name "outlandsReleases"
-        url "https://maven.outlands.top/releases"
+        name = "outlandsReleases"
+        url = "https://maven.outlands.top/releases"
     }
     mavenCentral()
 }

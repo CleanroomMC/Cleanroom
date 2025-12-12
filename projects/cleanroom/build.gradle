@@ -73,14 +73,14 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven {
-        name 'Cleanroom Maven'
-        url 'https://maven.cleanroommc.com/'
+        name = 'Cleanroom Maven'
+        url = 'https://maven.cleanroommc.com/'
     }
     maven {
-        url "https://repo.cleanroommc.com/snapshots"
+        url = "https://repo.cleanroommc.com/snapshots"
     }
     maven {
-        url "https://maven.outlands.top/releases/"
+        url = "https://maven.outlands.top/releases/"
     }
 }
 
@@ -430,7 +430,7 @@ afterEvaluate { p ->
             originalPrefix = genPatches.originalPrefix
             modifiedPrefix = genPatches.modifiedPrefix
             output = patches
-            autoHeader true
+            autoHeader = true
             lineEnding = '\n'
         }
         bakePatches {
@@ -887,6 +887,10 @@ if (project.hasProperty('UPDATE_MAPPINGS')) {
     sourceSets.test.java.srcDirs.each { extractMappedNew.addTarget it }
 }
 
+tasks.named("assemble") {
+    dependsOn(universalJar, installerJar)
+}
+
 
 publishing {
     repositories {
@@ -912,9 +916,4 @@ publishing {
             artifact new File(rootProject.rootDir, "./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${version}.zip")
         }
     }
-}
-
-artifacts {
-    archives universalJar
-    archives installerJar
 }

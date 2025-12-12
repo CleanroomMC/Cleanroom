@@ -29,14 +29,14 @@ def props = project.properties
 def sysProps = System.getProperties()
 def details = versionDetails()
 
-group 'com.cleanroommc'
+group = 'com.cleanroommc'
 
 if (project.hasProperty("release")) {
-    version(details.lastTag)
+    version = details.lastTag
 } else if (!project.hasProperty("run_number")) {
-    version(details.lastTag + "+build." + details.commitDistance)
+    version = details.lastTag + "+build." + details.commitDistance
 } else {
-    version(details.lastTag + "+build." + details.commitDistance + ".run." + props.run_number)
+    version = details.lastTag + "+build." + details.commitDistance + ".run." + props.run_number
 }
 
 def version_txt = new File(project.projectDir, "version.txt")
@@ -57,7 +57,7 @@ tasks.withType(JavaCompile).configureEach {
 idea.project.settings.compiler.javac.javacAdditionalOptions = ProjectConstants.COMPILER_JVM_ARGUMENTS.join(' ')
 
 tasks.register('setup') {
-    group 'setup'
+    group = 'setup'
     // These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
     dependsOn ':minecraft:extractMapped'
     dependsOn ':cleanroom:extractMapped'
