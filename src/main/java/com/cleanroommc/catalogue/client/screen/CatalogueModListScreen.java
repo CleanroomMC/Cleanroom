@@ -655,10 +655,15 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 return;
             }
             try {
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.enableDepth();
+                GlStateManager.enableRescaleNormal();
                 RenderHelper.enableGUIStandardItemLighting();
-                CatalogueModListScreen.this.mc.getRenderItem().renderItemIntoGUI(this.icon, left + 4, top + 2);
+                CatalogueModListScreen.this.itemRender.renderItemAndEffectIntoGUI(this.icon, left + 4, top + 2);
+                CatalogueModListScreen.this.itemRender.renderItemOverlays(CatalogueModListScreen.this.fontRenderer, this.icon, left + 4, top + 2);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.disableDepth();
+                GlStateManager.disableRescaleNormal();
                 RenderHelper.disableStandardItemLighting();
             } catch (Exception e) {
                 // Attempt to catch exceptions when rendering item. Sometime level instance isn't checked for null
@@ -808,8 +813,11 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 this.hovered = ModListEntry.this.isMouseOver() && ClientHelper.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
                 this.mouseDragged(mc, mouseX, mouseY);
                 int textureU = FAVOURITES.has(this.modId) ? 10 : 0;
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.enableBlend();
                 mc.getTextureManager().bindTexture(TEXTURE);
                 drawModalRectWithCustomSizedTexture(this.x, this.y, textureU, 10, 10, 10, 64, 64);
+                GlStateManager.disableBlend();
             }
 
             @Override
