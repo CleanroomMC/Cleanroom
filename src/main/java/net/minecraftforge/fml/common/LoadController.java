@@ -387,7 +387,7 @@ public class LoadController
                 mc.getSource().getName()
             );
 
-            if (mc instanceof FMLModContainer fmc && fmc.isFingerprintNotPresent())
+            if (mc instanceof FMLModContainer fmc && fmc.hasExpectedFingerprint() && fmc.isFingerprintNotPresent())
                 potentiallyTamperedMod.add(fmc.getSource().getName());
         }
 
