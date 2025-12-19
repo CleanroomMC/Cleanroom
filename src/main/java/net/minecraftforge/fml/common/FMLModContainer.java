@@ -95,6 +95,7 @@ public class FMLModContainer implements ModContainer
 
     private String annotationDependencies;
     private VersionRange minecraftAccepted;
+    private boolean hasExpectedFingerprint;
     private boolean fingerprintNotPresent;
     private Set<String> sourceFingerprints;
     private Certificate certificate;
@@ -177,6 +178,10 @@ public class FMLModContainer implements ModContainer
             }
         }
         return languageAdapter;
+    }
+
+    public boolean hasExpectedFingerprint() {
+        return hasExpectedFingerprint;
     }
 
     public boolean isFingerprintNotPresent() {
@@ -574,6 +579,7 @@ public class FMLModContainer implements ModContainer
 
         if (expectedFingerprint != null && !expectedFingerprint.isEmpty())
         {
+            hasExpectedFingerprint = true;
             if (!sourceFingerprints.contains(expectedFingerprint))
             {
                 Level warnLevel = source.isDirectory() ? Level.TRACE : Level.ERROR;
