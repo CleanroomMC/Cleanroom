@@ -1,6 +1,21 @@
 --- before/net/minecraft/client/shader/ShaderGroup.java
 +++ after/net/minecraft/client/shader/ShaderGroup.java
-@@ -178,7 +178,8 @@
+@@ -55,13 +55,12 @@
+ 
+     public void parseGroup(TextureManager p_152765_1_, ResourceLocation p_152765_2_) throws JsonException, IOException, JsonSyntaxException
+     {
+-        JsonParser jsonparser = new JsonParser();
+         IResource iresource = null;
+ 
+         try
+         {
+             iresource = this.resourceManager.getResource(p_152765_2_);
+-            JsonObject jsonobject = jsonparser.parse(IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8)).getAsJsonObject();
++            JsonObject jsonobject = JsonParser.parseString(IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8)).getAsJsonObject();
+ 
+             if (JsonUtils.isJsonArray(jsonobject, "targets"))
+             {
+@@ -178,7 +177,8 @@
  
                          if (framebuffer2 == null)
                          {

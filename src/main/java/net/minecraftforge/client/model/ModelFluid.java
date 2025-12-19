@@ -501,7 +501,7 @@ public final class ModelFluid implements IModel
         if(!customData.containsKey("fluid")) return this;
 
         String fluidStr = customData.get("fluid");
-        JsonElement e = new JsonParser().parse(fluidStr);
+        JsonElement e = JsonParser.parseString(fluidStr);
         String fluid = e.getAsString();
         if(!FluidRegistry.isFluidRegistered(fluid))
         {

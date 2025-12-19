@@ -1,11 +1,21 @@
 --- before/net/minecraft/client/resources/AbstractResourcePack.java
 +++ after/net/minecraft/client/resources/AbstractResourcePack.java
-@@ -102,4 +102,8 @@
+@@ -77,7 +77,7 @@
+         try
+         {
+             bufferedreader = new BufferedReader(new InputStreamReader(p_110596_1_, StandardCharsets.UTF_8));
+-            jsonobject = new JsonParser().parse(bufferedreader).getAsJsonObject();
++            jsonobject = JsonParser.parseReader(bufferedreader).getAsJsonObject();
+         }
+         catch (RuntimeException runtimeexception)
+         {
+@@ -101,5 +101,9 @@
+     public String getPackName()
      {
          return this.resourcePackFile.getName();
-     }
++    }
 +    
 +    public File getResourcePackFile() {
 +        return resourcePackFile;
-+    }
+     }
  }

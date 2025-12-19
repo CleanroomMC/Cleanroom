@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/resources/SimpleResource.java
++++ after/net/minecraft/client/resources/SimpleResource.java
+@@ -75,7 +75,7 @@
+                 try
+                 {
+                     bufferedreader = new BufferedReader(new InputStreamReader(this.mcmetaInputStream, StandardCharsets.UTF_8));
+-                    this.mcmetaJson = new JsonParser().parse(bufferedreader).getAsJsonObject();
++                    this.mcmetaJson = JsonParser.parseReader(bufferedreader).getAsJsonObject();
+                 }
+                 finally
+                 {

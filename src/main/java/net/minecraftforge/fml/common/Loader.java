@@ -974,13 +974,12 @@ public class Loader
             FMLLog.log.debug("File {} not found. No dependencies injected", injectedDepFile.getAbsolutePath());
             return;
         }
-        JsonParser parser = new JsonParser();
         JsonElement injectedDeps;
         try
         {
             try (Reader reader = new InputStreamReader(new FileInputStream(injectedDepFile), StandardCharsets.UTF_8))
             {
-                injectedDeps = parser.parse(reader);
+                injectedDeps = JsonParser.parseReader(reader);
             }
             for (JsonElement el : injectedDeps.getAsJsonArray())
             {
