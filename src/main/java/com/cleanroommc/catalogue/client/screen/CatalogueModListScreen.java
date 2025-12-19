@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -660,7 +661,6 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 GlStateManager.enableRescaleNormal();
                 RenderHelper.enableGUIStandardItemLighting();
                 CatalogueModListScreen.this.itemRender.renderItemAndEffectIntoGUI(this.icon, left + 4, top + 2);
-                CatalogueModListScreen.this.itemRender.renderItemOverlays(CatalogueModListScreen.this.fontRenderer, this.icon, left + 4, top + 2);
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.disableDepth();
                 GlStateManager.disableRescaleNormal();
@@ -709,22 +709,39 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 }
             }
 
+            // If the mod has a creative tab, Catalogue will attempt to use the tab's icon
+            Optional<ItemStack> optional = Arrays.stream(CreativeTabs.CREATIVE_TAB_ARRAY)
+                    .filter(Objects::nonNull)
+                    .map(tab -> {
+                        try {
+                            return tab.getIcon();
+                        } catch (Exception e) {
+                            CatalogueConstants.LOG.debug("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
+                            return ItemStack.EMPTY;
+                        }
+                    })
+                    .filter(tabItem -> !tabItem.isEmpty())
+                    .filter(tabItem -> {
+                        ResourceLocation resource = tabItem.getItem().getRegistryName();
+                        return resource != null && resource.getNamespace().equals(this.data.getModId());
+                    })
+                    .findFirst();
+
             // If the mod doesn't specify an item to use, Catalogue will attempt to get an item from the mod
-            Optional<ItemStack> optional = ForgeRegistries.ITEMS.getValuesCollection().stream().filter(item -> Objects.requireNonNull(item.getRegistryName()).getNamespace().equals(this.data.getModId())).map(ItemStack::new).findFirst();
+            if (!optional.isPresent()) {
+                optional = ForgeRegistries.ITEMS.getValuesCollection().stream()
+                        .filter(Objects::nonNull)
+                        .filter(item -> {
+                            ResourceLocation resource = item.getRegistryName();
+                            return resource != null && resource.getNamespace().equals(this.data.getModId());
+                        })
+                        .map(ItemStack::new)
+                        .findFirst();
+            }
+
             if (optional.isPresent()) {
                 ItemStack item = optional.get();
                 if (!item.isEmpty()) {
-                    // If the item is in a creative tab, Catalogue will attempt to use the tab's icon
-                    if (item.getItem().getCreativeTab() != null) {
-                        try {
-                            ItemStack tabItem = item.getItem().getCreativeTab().getIcon();
-                            if (tabItem != null && !tabItem.isEmpty() && Objects.requireNonNull(tabItem.getItem().getRegistryName()).getNamespace().equals(this.data.getModId())) {
-                                item = tabItem;
-                            }
-                        } catch (Exception e) {
-                            CatalogueConstants.LOG.debug("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
-                        }
-                    }
                     ITEM_ICON_CACHE.put(this.data.getModId(), item);
                     return item;
                 }
