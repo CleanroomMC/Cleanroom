@@ -3,8 +3,8 @@
 @@ -25,16 +25,8 @@
  public class LootTableManager
  {
-     private static final Logger field_186525_a = LogManager.getLogger();
--    private static final Gson field_186526_b = new GsonBuilder()
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private static final Gson GSON_INSTANCE = new GsonBuilder()
 -        .registerTypeAdapter(RandomValueRange.class, new RandomValueRange.Serializer())
 -        .registerTypeAdapter(LootPool.class, new LootPool.Serializer())
 -        .registerTypeAdapter(LootTable.class, new LootTable.Serializer())
@@ -13,27 +13,27 @@
 -        .registerTypeHierarchyAdapter(LootCondition.class, new LootConditionManager.Serializer())
 -        .registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer())
 -        .create();
--    private final LoadingCache<ResourceLocation, LootTable> field_186527_c = CacheBuilder.newBuilder().build(new LootTableManager.Loader());
-+    private static final Gson field_186526_b = (new GsonBuilder()).registerTypeAdapter(RandomValueRange.class, new RandomValueRange.Serializer()).registerTypeAdapter(LootPool.class, new LootPool.Serializer()).registerTypeAdapter(LootTable.class, new LootTable.Serializer()).registerTypeHierarchyAdapter(LootEntry.class, new LootEntry.Serializer()).registerTypeHierarchyAdapter(LootFunction.class, new LootFunctionManager.Serializer()).registerTypeHierarchyAdapter(LootCondition.class, new LootConditionManager.Serializer()).registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer()).create();
-+    private final LoadingCache<ResourceLocation, LootTable> field_186527_c = CacheBuilder.newBuilder().<ResourceLocation, LootTable>build(new LootTableManager.Loader());
-     private final File field_186528_d;
+-    private final LoadingCache<ResourceLocation, LootTable> registeredLootTables = CacheBuilder.newBuilder().build(new LootTableManager.Loader());
++    private static final Gson GSON_INSTANCE = (new GsonBuilder()).registerTypeAdapter(RandomValueRange.class, new RandomValueRange.Serializer()).registerTypeAdapter(LootPool.class, new LootPool.Serializer()).registerTypeAdapter(LootTable.class, new LootTable.Serializer()).registerTypeHierarchyAdapter(LootEntry.class, new LootEntry.Serializer()).registerTypeHierarchyAdapter(LootFunction.class, new LootFunctionManager.Serializer()).registerTypeHierarchyAdapter(LootCondition.class, new LootConditionManager.Serializer()).registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer()).create();
++    private final LoadingCache<ResourceLocation, LootTable> registeredLootTables = CacheBuilder.newBuilder().<ResourceLocation, LootTable>build(new LootTableManager.Loader());
+     private final File baseFolder;
  
-     public LootTableManager(@Nullable File p_i46632_1_)
+     public LootTableManager(@Nullable File folder)
 @@ -68,7 +60,7 @@
          {
-             if (p_load_1_.func_110623_a().contains("."))
+             if (p_load_1_.getPath().contains("."))
              {
--                LootTableManager.field_186525_a.debug("Invalid loot table name '{}' (can't contain periods)", p_load_1_);
-+                LootTableManager.field_186525_a.debug("Invalid loot table name '{}' (can't contain periods)", (Object)p_load_1_);
-                 return LootTable.field_186464_a;
+-                LootTableManager.LOGGER.debug("Invalid loot table name '{}' (can't contain periods)", p_load_1_);
++                LootTableManager.LOGGER.debug("Invalid loot table name '{}' (can't contain periods)", (Object)p_load_1_);
+                 return LootTable.EMPTY_LOOT_TABLE;
              }
              else
 @@ -83,7 +75,7 @@
                  if (loottable == null)
                  {
-                     loottable = LootTable.field_186464_a;
--                    LootTableManager.field_186525_a.warn("Couldn't find resource table {}", p_load_1_);
-+                    LootTableManager.field_186525_a.warn("Couldn't find resource table {}", (Object)p_load_1_);
+                     loottable = LootTable.EMPTY_LOOT_TABLE;
+-                    LootTableManager.LOGGER.warn("Couldn't find resource table {}", p_load_1_);
++                    LootTableManager.LOGGER.warn("Couldn't find resource table {}", (Object)p_load_1_);
                  }
  
                  return loottable;
@@ -41,8 +41,8 @@
  
                          try
                          {
--                            return JsonUtils.func_188178_a(LootTableManager.field_186526_b, s, LootTable.class);
-+                            return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.field_186526_b, p_186517_1_, s, true, LootTableManager.this);
+-                            return JsonUtils.gsonDeserialize(LootTableManager.GSON_INSTANCE, s, LootTable.class);
++                            return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.GSON_INSTANCE, resource, s, true, LootTableManager.this);
                          }
                          catch (IllegalArgumentException | JsonParseException jsonparseexception)
                          {
@@ -50,8 +50,8 @@
  
                  try
                  {
--                    return JsonUtils.func_188178_a(LootTableManager.field_186526_b, s, LootTable.class);
-+                    return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.field_186526_b, p_186518_1_, s, false, LootTableManager.this);
+-                    return JsonUtils.gsonDeserialize(LootTableManager.GSON_INSTANCE, s, LootTable.class);
++                    return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.GSON_INSTANCE, resource, s, false, LootTableManager.this);
                  }
                  catch (JsonParseException jsonparseexception)
                  {

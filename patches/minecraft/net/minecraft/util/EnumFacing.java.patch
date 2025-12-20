@@ -10,39 +10,39 @@
  public enum EnumFacing implements IStringSerializable
  {
 @@ -33,17 +31,9 @@
-     private final Vec3i field_176756_m;
-     public static final EnumFacing[] field_82609_l = new EnumFacing[6];
-     public static final EnumFacing[] field_176754_o = new EnumFacing[4];
--    private static final Map<String, EnumFacing> field_176761_p = Maps.newHashMap();
-+    private static final Map<String, EnumFacing> field_176761_p = Maps.<String, EnumFacing>newHashMap();
+     private final Vec3i directionVec;
+     public static final EnumFacing[] VALUES = new EnumFacing[6];
+     public static final EnumFacing[] HORIZONTALS = new EnumFacing[4];
+-    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.newHashMap();
++    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.<String, EnumFacing>newHashMap();
  
 -    private EnumFacing(
--        int p_i46016_3_,
--        int p_i46016_4_,
--        int p_i46016_5_,
--        String p_i46016_6_,
--        EnumFacing.AxisDirection p_i46016_7_,
--        EnumFacing.Axis p_i46016_8_,
--        Vec3i p_i46016_9_
+-        int indexIn,
+-        int oppositeIn,
+-        int horizontalIndexIn,
+-        String nameIn,
+-        EnumFacing.AxisDirection axisDirectionIn,
+-        EnumFacing.Axis axisIn,
+-        Vec3i directionVecIn
 -    )
-+    private EnumFacing(int p_i46016_3_, int p_i46016_4_, int p_i46016_5_, String p_i46016_6_, EnumFacing.AxisDirection p_i46016_7_, EnumFacing.Axis p_i46016_8_, Vec3i p_i46016_9_)
++    private EnumFacing(int indexIn, int oppositeIn, int horizontalIndexIn, String nameIn, EnumFacing.AxisDirection axisDirectionIn, EnumFacing.Axis axisIn, Vec3i directionVecIn)
      {
-         this.field_176748_g = p_i46016_3_;
-         this.field_176760_i = p_i46016_5_;
+         this.index = indexIn;
+         this.horizontalIndex = horizontalIndexIn;
 @@ -74,7 +64,6 @@
-         return func_82600_a(this.field_176759_h);
+         return byIndex(this.opposite);
      }
  
 -    @SideOnly(Side.CLIENT)
-     public EnumFacing func_176732_a(EnumFacing.Axis p_176732_1_)
+     public EnumFacing rotateAround(EnumFacing.Axis axis)
      {
-         switch (p_176732_1_)
+         switch (axis)
 @@ -125,7 +114,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
-     private EnumFacing func_176744_n()
+     private EnumFacing rotateX()
      {
          switch (this)
 @@ -145,7 +133,6 @@
@@ -50,7 +50,7 @@
      }
  
 -    @SideOnly(Side.CLIENT)
-     private EnumFacing func_176738_p()
+     private EnumFacing rotateZ()
      {
          switch (this)
 @@ -207,10 +194,9 @@
@@ -58,38 +58,38 @@
  
      @Nullable
 -    @SideOnly(Side.CLIENT)
-     public static EnumFacing func_176739_a(String p_176739_0_)
+     public static EnumFacing byName(String name)
      {
--        return p_176739_0_ == null ? null : field_176761_p.get(p_176739_0_.toLowerCase(Locale.ROOT));
-+        return p_176739_0_ == null ? null : (EnumFacing)field_176761_p.get(p_176739_0_.toLowerCase(Locale.ROOT));
+-        return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
++        return name == null ? null : (EnumFacing)NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
      }
  
-     public static EnumFacing func_82600_a(int p_82600_0_)
+     public static EnumFacing byIndex(int index)
 @@ -225,7 +211,7 @@
  
-     public static EnumFacing func_176733_a(double p_176733_0_)
+     public static EnumFacing fromAngle(double angle)
      {
--        return func_176731_b(MathHelper.func_76128_c(p_176733_0_ / 90.0 + 0.5) & 3);
-+        return func_176731_b(MathHelper.func_76128_c(p_176733_0_ / 90.0D + 0.5D) & 3);
+-        return byHorizontalIndex(MathHelper.floor(angle / 90.0 + 0.5) & 3);
++        return byHorizontalIndex(MathHelper.floor(angle / 90.0D + 0.5D) & 3);
      }
  
-     public float func_185119_l()
+     public float getHorizontalAngle()
 @@ -238,7 +224,6 @@
-         return values()[p_176741_0_.nextInt(values().length)];
+         return values()[rand.nextInt(values().length)];
      }
  
 -    @SideOnly(Side.CLIENT)
-     public static EnumFacing func_176737_a(float p_176737_0_, float p_176737_1_, float p_176737_2_)
+     public static EnumFacing getFacingFromVector(float x, float y, float z)
      {
          EnumFacing enumfacing = NORTH;
 @@ -246,9 +231,7 @@
  
          for (EnumFacing enumfacing1 : values())
          {
--            float f1 = p_176737_0_ * (float)enumfacing1.field_176756_m.func_177958_n()
--                       + p_176737_1_ * (float)enumfacing1.field_176756_m.func_177956_o()
--                       + p_176737_2_ * (float)enumfacing1.field_176756_m.func_177952_p();
-+            float f1 = p_176737_0_ * (float)enumfacing1.field_176756_m.func_177958_n() + p_176737_1_ * (float)enumfacing1.field_176756_m.func_177956_o() + p_176737_2_ * (float)enumfacing1.field_176756_m.func_177952_p();
+-            float f1 = x * (float)enumfacing1.directionVec.getX()
+-                       + y * (float)enumfacing1.directionVec.getY()
+-                       + z * (float)enumfacing1.directionVec.getZ();
++            float f1 = x * (float)enumfacing1.directionVec.getX() + y * (float)enumfacing1.directionVec.getY() + z * (float)enumfacing1.directionVec.getZ();
  
              if (f1 > f)
              {
@@ -100,96 +100,96 @@
 -    @Override
      public String toString()
      {
-         return this.field_176757_j;
+         return this.name;
      }
  
 -    @Override
-     public String func_176610_l()
+     public String getName()
      {
-         return this.field_176757_j;
+         return this.name;
 @@ -287,17 +268,16 @@
  
-     public static EnumFacing func_190914_a(BlockPos p_190914_0_, EntityLivingBase p_190914_1_)
+     public static EnumFacing getDirectionFromEntityLiving(BlockPos pos, EntityLivingBase placer)
      {
--        if (Math.abs(p_190914_1_.field_70165_t - (double)((float)p_190914_0_.func_177958_n() + 0.5F)) < 2.0
--                && Math.abs(p_190914_1_.field_70161_v - (double)((float)p_190914_0_.func_177952_p() + 0.5F)) < 2.0)
-+        if (Math.abs(p_190914_1_.field_70165_t - (double)((float)p_190914_0_.func_177958_n() + 0.5F)) < 2.0D && Math.abs(p_190914_1_.field_70161_v - (double)((float)p_190914_0_.func_177952_p() + 0.5F)) < 2.0D)
+-        if (Math.abs(placer.posX - (double)((float)pos.getX() + 0.5F)) < 2.0
+-                && Math.abs(placer.posZ - (double)((float)pos.getZ() + 0.5F)) < 2.0)
++        if (Math.abs(placer.posX - (double)((float)pos.getX() + 0.5F)) < 2.0D && Math.abs(placer.posZ - (double)((float)pos.getZ() + 0.5F)) < 2.0D)
          {
-             double d0 = p_190914_1_.field_70163_u + (double)p_190914_1_.func_70047_e();
+             double d0 = placer.posY + (double)placer.getEyeHeight();
  
--            if (d0 - (double)p_190914_0_.func_177956_o() > 2.0)
-+            if (d0 - (double)p_190914_0_.func_177956_o() > 2.0D)
+-            if (d0 - (double)pos.getY() > 2.0)
++            if (d0 - (double)pos.getY() > 2.0D)
              {
                  return UP;
              }
  
--            if ((double)p_190914_0_.func_177956_o() - d0 > 0.0)
-+            if ((double)p_190914_0_.func_177956_o() - d0 > 0.0D)
+-            if ((double)pos.getY() - d0 > 0.0)
++            if ((double)pos.getY() - d0 > 0.0D)
              {
                  return DOWN;
              }
 @@ -306,7 +286,6 @@
-         return p_190914_1_.func_174811_aO().func_176734_d();
+         return placer.getHorizontalFacing().getOpposite();
      }
  
 -    @SideOnly(Side.CLIENT)
-     public Vec3i func_176730_m()
+     public Vec3i getDirectionVec()
      {
-         return this.field_176756_m;
+         return this.directionVec;
 @@ -332,7 +311,7 @@
          Y("y", EnumFacing.Plane.VERTICAL),
          Z("z", EnumFacing.Plane.HORIZONTAL);
  
--        private static final Map<String, EnumFacing.Axis> field_176725_d = Maps.newHashMap();
-+        private static final Map<String, EnumFacing.Axis> field_176725_d = Maps.<String, EnumFacing.Axis>newHashMap();
-         private final String field_176726_e;
-         private final EnumFacing.Plane field_176723_f;
+-        private static final Map<String, EnumFacing.Axis> NAME_LOOKUP = Maps.newHashMap();
++        private static final Map<String, EnumFacing.Axis> NAME_LOOKUP = Maps.<String, EnumFacing.Axis>newHashMap();
+         private final String name;
+         private final EnumFacing.Plane plane;
  
 @@ -343,10 +322,9 @@
          }
  
          @Nullable
 -        @SideOnly(Side.CLIENT)
-         public static EnumFacing.Axis func_176717_a(String p_176717_0_)
+         public static EnumFacing.Axis byName(String name)
          {
--            return p_176717_0_ == null ? null : field_176725_d.get(p_176717_0_.toLowerCase(Locale.ROOT));
-+            return p_176717_0_ == null ? null : (EnumFacing.Axis)field_176725_d.get(p_176717_0_.toLowerCase(Locale.ROOT));
+-            return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
++            return name == null ? null : (EnumFacing.Axis)NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
          }
  
-         public String func_176719_a()
+         public String getName2()
 @@ -364,7 +342,6 @@
-             return this.field_176723_f == EnumFacing.Plane.HORIZONTAL;
+             return this.plane == EnumFacing.Plane.HORIZONTAL;
          }
  
 -        @Override
          public String toString()
          {
-             return this.field_176726_e;
+             return this.name;
 @@ -380,7 +357,6 @@
-             return this.field_176723_f;
+             return this.plane;
          }
  
 -        @Override
-         public String func_176610_l()
+         public String getName()
          {
-             return this.field_176726_e;
+             return this.name;
 @@ -413,7 +389,6 @@
-             return this.field_179528_c;
+             return this.offset;
          }
  
 -        @Override
          public String toString()
          {
-             return this.field_179525_d;
+             return this.description;
 @@ -448,10 +423,9 @@
-             return p_apply_1_ != null && p_apply_1_.func_176740_k().func_176716_d() == this;
+             return p_apply_1_ != null && p_apply_1_.getAxis().getPlane() == this;
          }
  
 -        @Override
          public Iterator<EnumFacing> iterator()
          {
--            return Iterators.forArray(this.func_179516_a());
-+            return Iterators.<EnumFacing>forArray(this.func_179516_a());
+-            return Iterators.forArray(this.facings());
++            return Iterators.<EnumFacing>forArray(this.facings());
          }
      }
  }

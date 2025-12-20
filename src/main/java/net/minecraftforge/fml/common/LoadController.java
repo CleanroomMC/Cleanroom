@@ -367,16 +367,16 @@ public class LoadController
 
     public void printModStates(StringBuilder ret)
     {
-        ret.append("\n\tStates:");
+        ret.append("\nStates:");
         for (ModState state : ModState.values())
             ret.append(" '").append(state.getMarker()).append("' = ").append(state.toString());
 
+        Set<String> potentiallyTamperedMod = Sets.newHashSet();
         TextTable table = new TextTable(Lists.newArrayList(
             TextTable.column("State"),
             TextTable.column("ID"),
             TextTable.column("Version"),
-            TextTable.column("Source"),
-            TextTable.column("Signature"))
+            TextTable.column("Source"))
         );
         for (ModContainer mc : loader.getModList())
         {
@@ -384,14 +384,26 @@ public class LoadController
                 modStates.get(mc.getModId()).stream().map(ModState::getMarker).reduce("", (a, b) -> a + b),
                 mc.getModId(),
                 mc.getVersion(),
-                mc.getSource().getName(),
-                mc.getSigningCertificate() != null ? CertificateHelper.getFingerprint(mc.getSigningCertificate()) : "None"
+                mc.getSource().getName()
             );
+
+            if (mc instanceof FMLModContainer fmc && fmc.hasExpectedFingerprint() && fmc.isFingerprintNotPresent())
+                potentiallyTamperedMod.add(fmc.getSource().getName());
         }
 
-        ret.append("\n");
         ret.append("\n\t");
         table.append(ret, "\n\t");
+        ret.append("\n");
+
+        if (potentiallyTamperedMod.isEmpty())
+            return;
+
+        ret.append("\nPotentially tampered mods:");
+        for (String s : potentiallyTamperedMod)
+        {
+            ret.append("\n\t");
+            ret.append(s);
+        }
         ret.append("\n");
     }
 

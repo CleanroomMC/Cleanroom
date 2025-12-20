@@ -4,28 +4,28 @@
  
  public abstract class NBTBase
  {
--    public static final String[] field_82578_b = new String[]
+-    public static final String[] NBT_TYPES = new String[]
 -        {
 -            "END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"
 -        };
-+    public static final String[] field_82578_b = new String[] {"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"};
++    public static final String[] NBT_TYPES = new String[] {"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"};
  
-     abstract void func_74734_a(DataOutput p_74734_1_) throws IOException;
+     abstract void write(DataOutput output) throws IOException;
  
-     abstract void func_152446_a(DataInput p_152446_1_, int p_152446_2_, NBTSizeTracker p_152446_3_) throws IOException;
+     abstract void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException;
  
 -    @Override
      public abstract String toString();
  
-     public abstract byte func_74732_a();
+     public abstract byte getId();
  
 -    protected NBTBase()
 -    {
 -    }
 -
-     protected static NBTBase func_150284_a(byte p_150284_0_)
+     protected static NBTBase create(byte id)
      {
-         switch (p_150284_0_)
+         switch (id)
 @@ -103,13 +95,11 @@
          return false;
      }
@@ -33,10 +33,10 @@
 -    @Override
      public boolean equals(Object p_equals_1_)
      {
-         return p_equals_1_ instanceof NBTBase && this.func_74732_a() == ((NBTBase)p_equals_1_).func_74732_a();
+         return p_equals_1_ instanceof NBTBase && this.getId() == ((NBTBase)p_equals_1_).getId();
      }
  
 -    @Override
      public int hashCode()
      {
-         return this.func_74732_a();
+         return this.getId();

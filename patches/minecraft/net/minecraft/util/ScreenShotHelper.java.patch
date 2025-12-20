@@ -10,15 +10,15 @@
  import java.text.SimpleDateFormat;
 @@ -33,7 +32,7 @@
  
-     public static ITextComponent func_148260_a(File p_148260_0_, int p_148260_1_, int p_148260_2_, Framebuffer p_148260_3_)
+     public static ITextComponent saveScreenshot(File gameDirectory, int width, int height, Framebuffer buffer)
      {
--        return func_148259_a(p_148260_0_, null, p_148260_1_, p_148260_2_, p_148260_3_);
-+        return func_148259_a(p_148260_0_, (String)null, p_148260_1_, p_148260_2_, p_148260_3_);
+-        return saveScreenshot(gameDirectory, null, width, height, buffer);
++        return saveScreenshot(gameDirectory, (String)null, width, height, buffer);
      }
  
-     public static ITextComponent func_148259_a(File p_148259_0_, @Nullable String p_148259_1_, int p_148259_2_, int p_148259_3_, Framebuffer p_148259_4_)
+     public static ITextComponent saveScreenshot(File gameDirectory, @Nullable String screenshotName, int width, int height, Framebuffer buffer)
 @@ -54,16 +53,20 @@
-                 file2 = new File(file1, p_148259_1_);
+                 file2 = new File(file1, screenshotName);
              }
  
 +            file2 = file2.getCanonicalFile(); // FORGE: Fix errors on Windows with paths that include \.\
@@ -26,16 +26,16 @@
 +            if (event.isCanceled()) return event.getCancelMessage(); else file2 = event.getScreenshotFile();
              ImageIO.write(bufferedimage, "png", file2);
              ITextComponent itextcomponent = new TextComponentString(file2.getName());
-             itextcomponent.func_150256_b().func_150241_a(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
--            itextcomponent.func_150256_b().func_150228_d(true);
+             itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
+-            itextcomponent.getStyle().setUnderlined(true);
 -            return new TextComponentTranslation("screenshot.success", itextcomponent);
-+            itextcomponent.func_150256_b().func_150228_d(Boolean.valueOf(true));
++            itextcomponent.getStyle().setUnderlined(Boolean.valueOf(true));
 +            if (event.getResultMessage() != null) return event.getResultMessage();
 +            return new TextComponentTranslation("screenshot.success", new Object[] {itextcomponent});
          }
          catch (Exception exception)
          {
-             field_148261_a.warn("Couldn't save screenshot", (Throwable)exception);
+             LOGGER.warn("Couldn't save screenshot", (Throwable)exception);
 -            return new TextComponentTranslation("screenshot.failure", exception.getMessage());
 +            return new TextComponentTranslation("screenshot.failure", new Object[] {exception.getMessage()});
          }
@@ -43,12 +43,12 @@
  
 @@ -85,7 +88,7 @@
  
-         GlStateManager.func_187425_g(3333, 1);
-         GlStateManager.func_187425_g(3317, 1);
--        ((Buffer)field_74293_b).clear();
-+        field_74293_b.clear();
+         GlStateManager.glPixelStorei(3333, 1);
+         GlStateManager.glPixelStorei(3317, 1);
+-        ((Buffer)pixelBuffer).clear();
++        pixelBuffer.clear();
  
-         if (OpenGlHelper.func_148822_b())
+         if (OpenGlHelper.isFramebufferEnabled())
          {
 @@ -118,7 +121,7 @@
                  return file1;

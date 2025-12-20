@@ -3,32 +3,32 @@
 @@ -24,9 +24,9 @@
  public class EntityDataManager
  {
-     private static final Logger field_190303_a = LogManager.getLogger();
--    private static final Map < Class <? extends Entity > , Integer > field_187232_a = Maps.newHashMap();
-+    private static final Map < Class <? extends Entity > , Integer > field_187232_a = Maps. < Class <? extends Entity > , Integer > newHashMap();
-     private final Entity field_187233_b;
--    private final Map < Integer, EntityDataManager.DataEntry<? >> field_187234_c = Maps.newHashMap();
-+    private final Map < Integer, EntityDataManager.DataEntry<? >> field_187234_c = Maps. < Integer, EntityDataManager.DataEntry<? >> newHashMap();
-     private final ReadWriteLock field_187235_d = new ReentrantReadWriteLock();
-     private boolean field_187236_e = true;
-     private boolean field_187237_f;
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private static final Map < Class <? extends Entity > , Integer > NEXT_ID_MAP = Maps.newHashMap();
++    private static final Map < Class <? extends Entity > , Integer > NEXT_ID_MAP = Maps. < Class <? extends Entity > , Integer > newHashMap();
+     private final Entity entity;
+-    private final Map < Integer, EntityDataManager.DataEntry<? >> entries = Maps.newHashMap();
++    private final Map < Integer, EntityDataManager.DataEntry<? >> entries = Maps. < Integer, EntityDataManager.DataEntry<? >> newHashMap();
+     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+     private boolean empty = true;
+     private boolean dirty;
 @@ -38,7 +38,7 @@
  
-     public static <T> DataParameter<T> func_187226_a(Class <? extends Entity > p_187226_0_, DataSerializer<T> p_187226_1_)
+     public static <T> DataParameter<T> createKey(Class <? extends Entity > clazz, DataSerializer<T> serializer)
      {
--        if (field_190303_a.isDebugEnabled())
-+        if (true || field_190303_a.isDebugEnabled()) //Forge: This is very useful for mods that register keys on classes that are not their own
+-        if (LOGGER.isDebugEnabled())
++        if (true || LOGGER.isDebugEnabled()) //Forge: This is very useful for mods that register keys on classes that are not their own
          {
              try
              {
 @@ -46,11 +46,14 @@
  
-                 if (!oclass.equals(p_187226_0_))
+                 if (!oclass.equals(clazz))
                  {
--                    field_190303_a.debug("defineId called for: {} from {}", p_187226_0_, oclass, new RuntimeException());
+-                    LOGGER.debug("defineId called for: {} from {}", clazz, oclass, new RuntimeException());
 +                    //Forge: log at warn, mods should not add to classes that they don't own, and only add stacktrace when in debug is enabled as it is mostly not needed and consumes time
-+                    if (field_190303_a.isDebugEnabled()) field_190303_a.warn("defineId called for: {} from {}", p_187226_0_, oclass, new RuntimeException());
-+                    else field_190303_a.warn("defineId called for: {} from {}", p_187226_0_, oclass);
++                    if (LOGGER.isDebugEnabled()) LOGGER.warn("defineId called for: {} from {}", clazz, oclass, new RuntimeException());
++                    else LOGGER.warn("defineId called for: {} from {}", clazz, oclass);
                  }
              }
 -            catch (ClassNotFoundException classnotfoundexception)
@@ -40,19 +40,19 @@
  
 @@ -58,7 +61,7 @@
  
-         if (field_187232_a.containsKey(p_187226_0_))
+         if (NEXT_ID_MAP.containsKey(clazz))
          {
--            j = field_187232_a.get(p_187226_0_) + 1;
-+            j = ((Integer)field_187232_a.get(p_187226_0_)).intValue() + 1;
+-            j = NEXT_ID_MAP.get(clazz) + 1;
++            j = ((Integer)NEXT_ID_MAP.get(clazz)).intValue() + 1;
          }
          else
          {
 @@ -71,7 +74,7 @@
  
-                 if (field_187232_a.containsKey(oclass1))
+                 if (NEXT_ID_MAP.containsKey(oclass1))
                  {
--                    i = field_187232_a.get(oclass1) + 1;
-+                    i = ((Integer)field_187232_a.get(oclass1)).intValue() + 1;
+-                    i = NEXT_ID_MAP.get(oclass1) + 1;
++                    i = ((Integer)NEXT_ID_MAP.get(oclass1)).intValue() + 1;
                      break;
                  }
              }
@@ -60,71 +60,71 @@
          }
          else
          {
--            field_187232_a.put(p_187226_0_, j);
-+            field_187232_a.put(p_187226_0_, Integer.valueOf(j));
-             return p_187226_1_.func_187161_a(j);
+-            NEXT_ID_MAP.put(clazz, j);
++            NEXT_ID_MAP.put(clazz, Integer.valueOf(j));
+             return serializer.createKey(j);
          }
      }
 @@ -98,7 +101,7 @@
          {
              throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
          }
--        else if (this.field_187234_c.containsKey(i))
-+        else if (this.field_187234_c.containsKey(Integer.valueOf(i)))
+-        else if (this.entries.containsKey(i))
++        else if (this.entries.containsKey(Integer.valueOf(i)))
          {
              throw new IllegalArgumentException("Duplicate id value for " + i + "!");
          }
 @@ -114,9 +117,9 @@
  
-     private <T> void func_187222_c(DataParameter<T> p_187222_1_, T p_187222_2_)
+     private <T> void setEntry(DataParameter<T> key, T value)
      {
--        EntityDataManager.DataEntry<T> dataentry = new EntityDataManager.DataEntry<>(p_187222_1_, p_187222_2_);
-+        EntityDataManager.DataEntry<T> dataentry = new EntityDataManager.DataEntry<T>(p_187222_1_, p_187222_2_);
-         this.field_187235_d.writeLock().lock();
--        this.field_187234_c.put(p_187222_1_.func_187155_a(), dataentry);
-+        this.field_187234_c.put(Integer.valueOf(p_187222_1_.func_187155_a()), dataentry);
-         this.field_187236_e = false;
-         this.field_187235_d.writeLock().unlock();
+-        EntityDataManager.DataEntry<T> dataentry = new EntityDataManager.DataEntry<>(key, value);
++        EntityDataManager.DataEntry<T> dataentry = new EntityDataManager.DataEntry<T>(key, value);
+         this.lock.writeLock().lock();
+-        this.entries.put(key.getId(), dataentry);
++        this.entries.put(Integer.valueOf(key.getId()), dataentry);
+         this.empty = false;
+         this.lock.writeLock().unlock();
      }
 @@ -124,11 +127,11 @@
-     private <T> EntityDataManager.DataEntry<T> func_187219_c(DataParameter<T> p_187219_1_)
+     private <T> EntityDataManager.DataEntry<T> getEntry(DataParameter<T> key)
      {
-         this.field_187235_d.readLock().lock();
+         this.lock.readLock().lock();
 -        EntityDataManager.DataEntry dataentry;
 +        EntityDataManager.DataEntry<T> dataentry;
  
          try
          {
--            dataentry = (EntityDataManager.DataEntry)this.field_187234_c.get(p_187219_1_.func_187155_a());
-+            dataentry = (EntityDataManager.DataEntry)this.field_187234_c.get(Integer.valueOf(p_187219_1_.func_187155_a()));
+-            dataentry = (EntityDataManager.DataEntry)this.entries.get(key.getId());
++            dataentry = (EntityDataManager.DataEntry)this.entries.get(Integer.valueOf(key.getId()));
          }
          catch (Throwable throwable)
          {
 @@ -144,12 +147,12 @@
  
-     public <T> T func_187225_a(DataParameter<T> p_187225_1_)
+     public <T> T get(DataParameter<T> key)
      {
--        return this.func_187219_c(p_187225_1_).func_187206_b();
-+        return (T)this.func_187219_c(p_187225_1_).func_187206_b();
+-        return this.getEntry(key).getValue();
++        return (T)this.getEntry(key).getValue();
      }
  
-     public <T> void func_187227_b(DataParameter<T> p_187227_1_, T p_187227_2_)
+     public <T> void set(DataParameter<T> key, T value)
      {
--        EntityDataManager.DataEntry<T> dataentry = this.func_187219_c(p_187227_1_);
-+        EntityDataManager.DataEntry<T> dataentry = this.<T>func_187219_c(p_187227_1_);
+-        EntityDataManager.DataEntry<T> dataentry = this.getEntry(key);
++        EntityDataManager.DataEntry<T> dataentry = this.<T>getEntry(key);
  
-         if (ObjectUtils.notEqual(p_187227_2_, dataentry.func_187206_b()))
+         if (ObjectUtils.notEqual(value, dataentry.getValue()))
          {
 @@ -177,9 +180,9 @@
          {
              int i = 0;
  
--            for (int j = p_187229_0_.size(); i < j; i++)
-+            for (int j = p_187229_0_.size(); i < j; ++i)
+-            for (int j = entriesIn.size(); i < j; i++)
++            for (int j = entriesIn.size(); i < j; ++i)
              {
--                EntityDataManager.DataEntry<?> dataentry = p_187229_0_.get(i);
-+                EntityDataManager.DataEntry<?> dataentry = (EntityDataManager.DataEntry)p_187229_0_.get(i);
-                 func_187220_a(p_187229_1_, dataentry);
+-                EntityDataManager.DataEntry<?> dataentry = entriesIn.get(i);
++                EntityDataManager.DataEntry<?> dataentry = (EntityDataManager.DataEntry)entriesIn.get(i);
+                 writeEntry(buf, dataentry);
              }
          }
 @@ -204,7 +207,7 @@
@@ -135,7 +135,7 @@
 +                        list = Lists. < EntityDataManager.DataEntry<? >> newArrayList();
                      }
  
-                     list.add(dataentry.func_192735_d());
+                     list.add(dataentry.copy());
 @@ -241,7 +244,7 @@
          {
              if (list == null)
@@ -144,7 +144,7 @@
 +                list = Lists. < EntityDataManager.DataEntry<? >> newArrayList();
              }
  
-             list.add(dataentry.func_192735_d());
+             list.add(dataentry.copy());
 @@ -278,7 +281,7 @@
          {
              if (list == null)
@@ -153,22 +153,22 @@
 +                list = Lists. < EntityDataManager.DataEntry<? >> newArrayList();
              }
  
-             int j = p_187215_0_.func_150792_a();
+             int j = buf.readVarInt();
 @@ -302,7 +305,7 @@
  
-         for (EntityDataManager.DataEntry<?> dataentry : p_187218_1_)
+         for (EntityDataManager.DataEntry<?> dataentry : entriesIn)
          {
--            EntityDataManager.DataEntry<?> dataentry1 = this.field_187234_c.get(dataentry.func_187205_a().func_187155_a());
-+            EntityDataManager.DataEntry<?> dataentry1 = (EntityDataManager.DataEntry)this.field_187234_c.get(Integer.valueOf(dataentry.func_187205_a().func_187155_a()));
+-            EntityDataManager.DataEntry<?> dataentry1 = this.entries.get(dataentry.getKey().getId());
++            EntityDataManager.DataEntry<?> dataentry1 = (EntityDataManager.DataEntry)this.entries.get(Integer.valueOf(dataentry.getKey().getId()));
  
              if (dataentry1 != null)
              {
 @@ -379,7 +382,7 @@
  
-             public EntityDataManager.DataEntry<T> func_192735_d()
+             public EntityDataManager.DataEntry<T> copy()
              {
--                return new EntityDataManager.DataEntry<>(this.field_187211_a, this.field_187211_a.func_187156_b().func_192717_a(this.field_187212_b));
-+                return new EntityDataManager.DataEntry<T>(this.field_187211_a, this.field_187211_a.func_187156_b().func_192717_a(this.field_187212_b));
+-                return new EntityDataManager.DataEntry<>(this.key, this.key.getSerializer().copyValue(this.value));
++                return new EntityDataManager.DataEntry<T>(this.key, this.key.getSerializer().copyValue(this.value));
              }
          }
  }

@@ -2,66 +2,66 @@
 +++ after/net/minecraft/world/storage/loot/LootTable.java
 @@ -24,16 +24,16 @@
  {
-     private static final Logger field_186465_b = LogManager.getLogger();
-     public static final LootTable field_186464_a = new LootTable(new LootPool[0]);
--    private final LootPool[] field_186466_c;
-+    private final List<LootPool> field_186466_c;
+     private static final Logger LOGGER = LogManager.getLogger();
+     public static final LootTable EMPTY_LOOT_TABLE = new LootTable(new LootPool[0]);
+-    private final LootPool[] pools;
++    private final List<LootPool> pools;
  
-     public LootTable(LootPool[] p_i46641_1_)
+     public LootTable(LootPool[] poolsIn)
      {
--        this.field_186466_c = p_i46641_1_;
-+        this.field_186466_c = Lists.newArrayList(p_i46641_1_);
+-        this.pools = poolsIn;
++        this.pools = Lists.newArrayList(poolsIn);
      }
  
-     public List<ItemStack> func_186462_a(Random p_186462_1_, LootContext p_186462_2_)
+     public List<ItemStack> generateLootForPools(Random rand, LootContext context)
      {
 -        List<ItemStack> list = Lists.newArrayList();
 +        List<ItemStack> list = Lists.<ItemStack>newArrayList();
  
-         if (p_186462_2_.func_186496_a(this))
+         if (context.addLootTable(this))
          {
 @@ -68,18 +68,18 @@
  
-             if (itemstack.func_190926_b())
+             if (itemstack.isEmpty())
              {
--                p_186460_1_.func_70299_a(list1.remove(list1.size() - 1), ItemStack.field_190927_a);
-+                p_186460_1_.func_70299_a(((Integer)list1.remove(list1.size() - 1)).intValue(), ItemStack.field_190927_a);
+-                inventory.setInventorySlotContents(list1.remove(list1.size() - 1), ItemStack.EMPTY);
++                inventory.setInventorySlotContents(((Integer)list1.remove(list1.size() - 1)).intValue(), ItemStack.EMPTY);
              }
              else
              {
--                p_186460_1_.func_70299_a(list1.remove(list1.size() - 1), itemstack);
-+                p_186460_1_.func_70299_a(((Integer)list1.remove(list1.size() - 1)).intValue(), itemstack);
+-                inventory.setInventorySlotContents(list1.remove(list1.size() - 1), itemstack);
++                inventory.setInventorySlotContents(((Integer)list1.remove(list1.size() - 1)).intValue(), itemstack);
              }
          }
      }
  
-     private void func_186463_a(List<ItemStack> p_186463_1_, int p_186463_2_, Random p_186463_3_)
+     private void shuffleItems(List<ItemStack> stacks, int p_186463_2_, Random rand)
      {
 -        List<ItemStack> list = Lists.newArrayList();
 +        List<ItemStack> list = Lists.<ItemStack>newArrayList();
-         Iterator<ItemStack> iterator = p_186463_1_.iterator();
+         Iterator<ItemStack> iterator = stacks.iterator();
  
          while (iterator.hasNext())
 @@ -97,7 +97,7 @@
              }
          }
  
--        p_186463_2_ -= p_186463_1_.size();
-+        p_186463_2_ = p_186463_2_ - p_186463_1_.size();
+-        p_186463_2_ -= stacks.size();
++        p_186463_2_ = p_186463_2_ - stacks.size();
  
          while (p_186463_2_ > 0 && !list.isEmpty())
          {
 @@ -130,13 +130,13 @@
  
-     private List<Integer> func_186459_a(IInventory p_186459_1_, Random p_186459_2_)
+     private List<Integer> getEmptySlotsRandomized(IInventory inventory, Random rand)
      {
 -        List<Integer> list = Lists.newArrayList();
 +        List<Integer> list = Lists.<Integer>newArrayList();
  
--        for (int i = 0; i < p_186459_1_.func_70302_i_(); i++)
-+        for (int i = 0; i < p_186459_1_.func_70302_i_(); ++i)
+-        for (int i = 0; i < inventory.getSizeInventory(); i++)
++        for (int i = 0; i < inventory.getSizeInventory(); ++i)
          {
-             if (p_186459_1_.func_70301_a(i).func_190926_b())
+             if (inventory.getStackInSlot(i).isEmpty())
              {
 -                list.add(i);
 +                list.add(Integer.valueOf(i));
@@ -77,7 +77,7 @@
 +    public void freeze()
 +    {
 +        this.isFrozen = true;
-+        for (LootPool pool : this.field_186466_c)
++        for (LootPool pool : this.pools)
 +            pool.freeze();
 +    }
 +    public boolean isFrozen(){ return this.isFrozen; }
@@ -89,7 +89,7 @@
 +
 +    public LootPool getPool(String name)
 +    {
-+        for (LootPool pool : this.field_186466_c)
++        for (LootPool pool : this.pools)
 +        {
 +            if (name.equals(pool.getName()))
 +                return pool;
@@ -100,11 +100,11 @@
 +    public LootPool removePool(String name)
 +    {
 +        checkFrozen();
-+        for (LootPool pool : this.field_186466_c)
++        for (LootPool pool : this.pools)
 +        {
 +            if (name.equals(pool.getName()))
 +            {
-+                this.field_186466_c.remove(pool);
++                this.pools.remove(pool);
 +                return pool;
 +            }
 +        }
@@ -115,12 +115,12 @@
 +    public void addPool(LootPool pool)
 +    {
 +        checkFrozen();
-+        for (LootPool p : this.field_186466_c)
++        for (LootPool p : this.pools)
 +        {
 +            if (p == pool || p.getName().equals(pool.getName()))
 +                throw new RuntimeException("Attempted to add a duplicate pool to loot table: " + pool.getName());
 +        }
-+        this.field_186466_c.add(pool);
++        this.pools.add(pool);
 +    }
 +    //======================== FORGE END ===============================================
 +
@@ -128,9 +128,9 @@
          {
              public LootTable deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
              {
-                 JsonObject jsonobject = JsonUtils.func_151210_l(p_deserialize_1_, "loot table");
--                LootPool[] alootpool = JsonUtils.func_188177_a(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
-+                LootPool[] alootpool = (LootPool[])JsonUtils.func_188177_a(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
+                 JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "loot table");
+-                LootPool[] alootpool = JsonUtils.deserializeClass(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
++                LootPool[] alootpool = (LootPool[])JsonUtils.deserializeClass(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
                  return new LootTable(alootpool);
              }
  

@@ -12,16 +12,19 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.0
         with:
           fetch-tags: true
           fetch-depth: 0
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4.7.1
+        uses: actions/setup-java@v5.0.0
         with:
           java-version: '21'
           distribution: 'temurin'
+          
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
@@ -36,16 +39,13 @@ jobs:
         run: ./gradlew --stop
 
       - name: Build Jars
-        run: ./gradlew installerJar -Prun_number=${{ github.run_number }} -Prelease=true
+        run: ./gradlew build -Prun_number=${{ github.run_number }} -Prelease=true
 
       - name: Stop Gradle daemon again
         run: ./gradlew --stop
-
-      - name: Publish to maven for mod development
-        run: ./gradlew publish -PoutlandUsername=${{ secrets.MAVEN_USERNAME }} -PoutlandPassword="${{ secrets.MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
-
+        
       - name: setup python
-        uses: actions/setup-python@v5.6.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: '3.13'
 
@@ -60,12 +60,21 @@ jobs:
       - name: Copy MMC Pack
         run: cp script/MMC-Builder/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
 
+      - name: Publish to maven for mod development
+        run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
+
       - name: Remove userdev jars
         run: |
           rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev.jar
           rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev-temp.jar
 
-      - uses: ncipollo/release-action@v1.14.0
+      - uses: ncipollo/release-action@v1.20.0
         with:
           artifacts: "projects/cleanroom/build/libs/*"
           generateReleaseNotes: true
+
+      - name: Trigger download server update
+        run: |
+          curl -X POST "http://download.cleanroommc.com/api/webhook" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${{ secrets.DOWNLOAD_UPDATE_TOKEN }}\",\"count\":10}"

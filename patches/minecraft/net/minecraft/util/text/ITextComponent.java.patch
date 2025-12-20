@@ -2,12 +2,12 @@
 +++ after/net/minecraft/util/text/ITextComponent.java
 @@ -34,7 +34,6 @@
  
-     String func_150260_c();
+     String getUnformattedText();
  
 -    @SideOnly(Side.CLIENT)
-     String func_150254_d();
+     String getFormattedText();
  
-     List<ITextComponent> func_150253_a();
+     List<ITextComponent> getSiblings();
 @@ -97,7 +96,7 @@
                              JsonArray jsonarray = jsonobject.getAsJsonArray("with");
                              Object[] aobject = new Object[jsonarray.size()];
@@ -33,28 +33,28 @@
 -                        for (int j = 0; j < jsonarray2.size(); j++)
 +                        for (int j = 0; j < jsonarray2.size(); ++j)
                          {
-                             itextcomponent.func_150257_a(this.deserialize(jsonarray2.get(j), p_deserialize_2_, p_deserialize_3_));
+                             itextcomponent.appendSibling(this.deserialize(jsonarray2.get(j), p_deserialize_2_, p_deserialize_3_));
                          }
                      }
  
--                    itextcomponent.func_150255_a(p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
-+                    itextcomponent.func_150255_a((Style)p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
+-                    itextcomponent.setStyle(p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
++                    itextcomponent.setStyle((Style)p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
                      return itextcomponent;
                  }
              }
 @@ -269,13 +268,13 @@
              @Nullable
-             public static ITextComponent func_150699_a(String p_150699_0_)
+             public static ITextComponent jsonToComponent(String json)
              {
--                return JsonUtils.func_188176_a(field_150700_a, p_150699_0_, ITextComponent.class, false);
-+                return (ITextComponent)JsonUtils.func_188176_a(field_150700_a, p_150699_0_, ITextComponent.class, false);
+-                return JsonUtils.gsonDeserialize(GSON, json, ITextComponent.class, false);
++                return (ITextComponent)JsonUtils.gsonDeserialize(GSON, json, ITextComponent.class, false);
              }
  
              @Nullable
-             public static ITextComponent func_186877_b(String p_186877_0_)
+             public static ITextComponent fromJsonLenient(String json)
              {
--                return JsonUtils.func_188176_a(field_150700_a, p_186877_0_, ITextComponent.class, true);
-+                return (ITextComponent)JsonUtils.func_188176_a(field_150700_a, p_186877_0_, ITextComponent.class, true);
+-                return JsonUtils.gsonDeserialize(GSON, json, ITextComponent.class, true);
++                return (ITextComponent)JsonUtils.gsonDeserialize(GSON, json, ITextComponent.class, true);
              }
  
              static

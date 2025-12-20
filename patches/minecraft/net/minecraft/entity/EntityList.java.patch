@@ -1,63 +1,58 @@
 --- before/net/minecraft/entity/EntityList.java
 +++ after/net/minecraft/entity/EntityList.java
-@@ -107,49 +107,63 @@
-     public static final ResourceLocation field_191307_a = new ResourceLocation("lightning_bolt");
-     private static final ResourceLocation field_191310_e = new ResourceLocation("player");
-     private static final Logger field_151516_b = LogManager.getLogger();
--    public static final RegistryNamespaced < ResourceLocation, Class <? extends Entity >> field_191308_b = new RegistryNamespaced<>();
--    public static final Map<ResourceLocation, EntityList.EntityEggInfo> field_75627_a = Maps.newLinkedHashMap();
--    public static final Set<ResourceLocation> field_191309_d = Sets.newHashSet();
--    private static final List<String> field_191311_g = Lists.newArrayList();
-+    public static final Map<ResourceLocation, EntityList.EntityEggInfo> field_75627_a = Maps.<ResourceLocation, EntityList.EntityEggInfo>newLinkedHashMap();
+@@ -107,10 +107,8 @@
+     public static final ResourceLocation LIGHTNING_BOLT = new ResourceLocation("lightning_bolt");
+     private static final ResourceLocation PLAYER = new ResourceLocation("player");
+     private static final Logger LOGGER = LogManager.getLogger();
+-    public static final RegistryNamespaced < ResourceLocation, Class <? extends Entity >> REGISTRY = new RegistryNamespaced<>();
+     public static final Map<ResourceLocation, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.newLinkedHashMap();
+-    public static final Set<ResourceLocation> KNOWN_TYPES = Sets.newHashSet();
+-    private static final List<String> OLD_NAMES = Lists.newArrayList();
 +    private static final Set<ResourceLocation> EXTRA_NAMES = Sets.newHashSet();
  
      @Nullable
-     public static ResourceLocation func_191301_a(Entity p_191301_0_)
-     {
--        return func_191306_a((Class <? extends Entity >)p_191301_0_.getClass());
-+        return func_191306_a(p_191301_0_.getClass());
-     }
- 
+     public static ResourceLocation getKey(Entity entityIn)
+@@ -121,35 +119,51 @@
      @Nullable
-     public static ResourceLocation func_191306_a(Class <? extends Entity > p_191306_0_)
+     public static ResourceLocation getKey(Class <? extends Entity > entityIn)
      {
--        return field_191308_b.func_177774_c(p_191306_0_);
-+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(p_191306_0_);
+-        return REGISTRY.getNameForObject(entityIn);
++        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(entityIn);
 +        return entry == null ? null : entry.getRegistryName();
      }
  
      @Nullable
-     public static String func_75621_b(Entity p_75621_0_)
+     public static String getEntityString(Entity entityIn)
      {
--        int i = field_191308_b.func_148757_b((Class <? extends Entity >)p_75621_0_.getClass());
--        return i == -1 ? null : field_191311_g.get(i);
-+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(p_75621_0_.getClass());
+-        int i = REGISTRY.getIDForObject((Class <? extends Entity >)entityIn.getClass());
+-        return i == -1 ? null : OLD_NAMES.get(i);
++        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(entityIn.getClass());
 +        return entry == null ? null : entry.getName();
      }
  
      @Nullable
-     public static String func_191302_a(@Nullable ResourceLocation p_191302_0_)
+     public static String getTranslationName(@Nullable ResourceLocation entityType)
      {
--        int i = field_191308_b.func_148757_b(field_191308_b.func_82594_a(p_191302_0_));
--        return i == -1 ? null : field_191311_g.get(i);
-+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(p_191302_0_);
+-        int i = REGISTRY.getIDForObject(REGISTRY.getObject(entityType));
+-        return i == -1 ? null : OLD_NAMES.get(i);
++        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(entityType);
 +        return entry == null ? null : entry.getName();
      }
  
      @Nullable
      @SideOnly(Side.CLIENT)
-     public static Class <? extends Entity > func_90035_a(int p_90035_0_)
+     public static Class <? extends Entity > getClassFromID(int entityID)
      {
--        return field_191308_b.func_148754_a(p_90035_0_);
-+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.registries.GameData.getEntityRegistry().getValue(p_90035_0_);
+-        return REGISTRY.getObjectById(entityID);
++        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.registries.GameData.getEntityRegistry().getValue(entityID);
 +        return entry == null ? null : entry.getEntityClass();
      }
  
      @Nullable
      @SideOnly(Side.CLIENT)
-     public static Class <? extends Entity > func_192839_a(String p_192839_0_)
+     public static Class <? extends Entity > getClassFromName(String p_192839_0_)
      {
--        return field_191308_b.func_82594_a(new ResourceLocation(p_192839_0_));
+-        return REGISTRY.getObject(new ResourceLocation(p_192839_0_));
 +        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(new ResourceLocation(p_192839_0_));
 +        return entry == null ? null : entry.getEntityClass();
 +    }
@@ -80,138 +75,105 @@
          {
              try
              {
-+                net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(p_191304_0_);
-+                if (entry != null) return entry.newInstance(p_191304_1_);
-                 return p_191304_0_.getConstructor(World.class).newInstance(p_191304_1_);
++                net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(clazz);
++                if (entry != null) return entry.newInstance(worldIn);
+                 return clazz.getConstructor(World.class).newInstance(worldIn);
              }
              catch (Exception exception)
 @@ -177,13 +193,15 @@
      @SideOnly(Side.CLIENT)
-     public static Entity func_75616_a(int p_75616_0_, World p_75616_1_)
+     public static Entity createEntityByID(int entityID, World worldIn)
      {
--        return func_191304_a(func_90035_a(p_75616_0_), p_75616_1_);
-+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.registries.GameData.getEntityRegistry().getValue(p_75616_0_);
-+        return entry == null ? null : entry.newInstance(p_75616_1_);
+-        return newEntity(getClassFromID(entityID), worldIn);
++        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.registries.GameData.getEntityRegistry().getValue(entityID);
++        return entry == null ? null : entry.newInstance(worldIn);
      }
  
      @Nullable
-     public static Entity func_188429_b(ResourceLocation p_188429_0_, World p_188429_1_)
+     public static Entity createEntityByIDFromName(ResourceLocation name, World worldIn)
      {
--        return func_191304_a(field_191308_b.func_82594_a(p_188429_0_), p_188429_1_);
-+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(p_188429_0_);
-+        return entry == null ? null : entry.newInstance(p_188429_1_);
+-        return newEntity(REGISTRY.getObject(name), worldIn);
++        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(name);
++        return entry == null ? null : entry.newInstance(worldIn);
      }
  
      @Nullable
-@@ -194,11 +212,20 @@
- 
-         if (entity == null)
-         {
--            field_151516_b.warn("Skipping Entity with id {}", resourcelocation);
-+            field_151516_b.warn("Skipping Entity with id {}", (Object)resourcelocation);
+@@ -198,7 +216,16 @@
          }
          else
          {
 +            try
 +            {
-             entity.func_70020_e(p_75615_0_);
+             entity.readFromNBT(nbt);
 +            }
 +            catch (Exception e)
 +            {
 +                net.minecraftforge.fml.common.FMLLog.log.error("An Entity {}({}) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
-+                        p_75615_0_.func_74779_i("id"), entity.func_70005_c_(), e);
++                        nbt.getString("id"), entity.getName(), e);
 +                entity = null;
 +            }
          }
  
          return entity;
-@@ -206,12 +233,12 @@
+@@ -206,7 +233,7 @@
  
-     public static Set<ResourceLocation> func_180124_b()
+     public static Set<ResourceLocation> getEntityNameList()
      {
--        return field_191309_d;
+-        return KNOWN_TYPES;
 +        return Sets.union(net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getKeys(), EXTRA_NAMES);
      }
  
-     public static boolean func_180123_a(Entity p_180123_0_, ResourceLocation p_180123_1_)
-     {
--        ResourceLocation resourcelocation = func_191306_a((Class <? extends Entity >)p_180123_0_.getClass());
-+        ResourceLocation resourcelocation = func_191306_a(p_180123_0_.getClass());
- 
-         if (resourcelocation != null)
-         {
-@@ -238,10 +265,10 @@
- 
-         for (ResourceLocation resourcelocation : func_180124_b())
-         {
--            stringbuilder.append(resourcelocation).append(", ");
-+            stringbuilder.append((Object)resourcelocation).append(", ");
-         }
- 
--        stringbuilder.append(field_191310_e);
-+        stringbuilder.append((Object)field_191310_e);
-         return stringbuilder.toString();
-     }
- 
+     public static boolean isMatchingName(Entity entityIn, ResourceLocation entityName)
 @@ -373,7 +400,7 @@
-         func_191305_a("zombie_horse", 3232308, 9945732);
-         func_191305_a("zombie_pigman", 15373203, 5009705);
-         func_191305_a("zombie_villager", 5651507, 7969893);
--        field_191309_d.add(field_191307_a);
-+        EXTRA_NAMES.add(field_191307_a);
+         addSpawnInfo("zombie_horse", 3232308, 9945732);
+         addSpawnInfo("zombie_pigman", 15373203, 5009705);
+         addSpawnInfo("zombie_villager", 5651507, 7969893);
+-        KNOWN_TYPES.add(LIGHTNING_BOLT);
++        EXTRA_NAMES.add(LIGHTNING_BOLT);
      }
  
-     private static void func_191303_a(int p_191303_0_, String p_191303_1_, Class <? extends Entity > p_191303_2_, String p_191303_3_)
-@@ -382,7 +409,7 @@
-         {
-             p_191303_2_.getConstructor(World.class);
-         }
--        catch (NoSuchMethodException nosuchmethodexception)
-+        catch (NoSuchMethodException var5)
-         {
-             throw new RuntimeException("Invalid class " + p_191303_2_ + " no constructor taking " + World.class.getName());
-         }
+     private static void register(int id, String name, Class <? extends Entity > clazz, String oldName)
 @@ -394,22 +421,17 @@
          else
          {
-             ResourceLocation resourcelocation = new ResourceLocation(p_191303_1_);
--            field_191308_b.func_177775_a(p_191303_0_, resourcelocation, p_191303_2_);
--            field_191309_d.add(resourcelocation);
+             ResourceLocation resourcelocation = new ResourceLocation(name);
+-            REGISTRY.register(id, resourcelocation, clazz);
+-            KNOWN_TYPES.add(resourcelocation);
 -
--            while (field_191311_g.size() <= p_191303_0_)
+-            while (OLD_NAMES.size() <= id)
 -            {
--                field_191311_g.add(null);
+-                OLD_NAMES.add(null);
 -            }
 -
--            field_191311_g.set(p_191303_0_, p_191303_3_);
-+            net.minecraftforge.registries.GameData.registerEntity(p_191303_0_, resourcelocation, p_191303_2_, p_191303_3_);
+-            OLD_NAMES.set(id, oldName);
++            net.minecraftforge.registries.GameData.registerEntity(id, resourcelocation, clazz, oldName);
          }
      }
  
-     protected static EntityList.EntityEggInfo func_191305_a(String p_191305_0_, int p_191305_1_, int p_191305_2_)
+     protected static EntityList.EntityEggInfo addSpawnInfo(String id, int primaryColor, int secondaryColor)
      {
-         ResourceLocation resourcelocation = new ResourceLocation(p_191305_0_);
--        return field_75627_a.put(resourcelocation, new EntityList.EntityEggInfo(resourcelocation, p_191305_1_, p_191305_2_));
-+        EntityList.EntityEggInfo egg = new EntityList.EntityEggInfo(resourcelocation, p_191305_1_, p_191305_2_);
+         ResourceLocation resourcelocation = new ResourceLocation(id);
+-        return ENTITY_EGGS.put(resourcelocation, new EntityList.EntityEggInfo(resourcelocation, primaryColor, secondaryColor));
++        EntityList.EntityEggInfo egg = new EntityList.EntityEggInfo(resourcelocation, primaryColor, secondaryColor);
 +        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(resourcelocation);
 +        if (entry != null) entry.setEgg(egg);
-+        return (EntityList.EntityEggInfo)field_75627_a.put(resourcelocation, egg);
++        return (EntityList.EntityEggInfo)ENTITY_EGGS.put(resourcelocation, egg);
      }
  
      public static class EntityEggInfo
 @@ -428,5 +450,16 @@
-                 this.field_151512_d = StatList.func_151182_a(this);
-                 this.field_151513_e = StatList.func_151176_b(this);
+                 this.killEntityStat = StatList.getStatKillEntity(this);
+                 this.entityKilledByStat = StatList.getStatEntityKilledBy(this);
              }
 +
 +            // Forge start
 +            public EntityEggInfo(ResourceLocation id, int primaryColor, int secondaryColor, StatBase killEntityStatistic, StatBase entityKilledByStatistic)
 +            {
-+                this.field_75613_a = id;
-+                this.field_75611_b = primaryColor;
-+                this.field_75612_c = secondaryColor;
-+                this.field_151512_d = killEntityStatistic;
-+                this.field_151513_e = entityKilledByStatistic;
++                this.spawnedID = id;
++                this.primaryColor = primaryColor;
++                this.secondaryColor = secondaryColor;
++                this.killEntityStat = killEntityStatistic;
++                this.entityKilledByStat = entityKilledByStatistic;
 +            }
 +            // Forge end
          }

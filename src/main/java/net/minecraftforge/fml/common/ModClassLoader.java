@@ -103,7 +103,7 @@ public class ModClassLoader extends URLClassLoader
         String[] prefixes =
         {
             "asm-",
-            "bouncepad-",
+            "foundation-",
             "maven-artifact-",
             "patchy-",
             "text2speech-",

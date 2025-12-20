@@ -1,79 +1,79 @@
 --- before/net/minecraft/world/ChunkCache.java
 +++ after/net/minecraft/world/ChunkCache.java
 @@ -30,17 +30,17 @@
-         this.field_72817_c = new Chunk[i - this.field_72818_a + 1][j - this.field_72816_b + 1];
-         this.field_72814_d = true;
+         this.chunkArray = new Chunk[i - this.chunkX + 1][j - this.chunkZ + 1];
+         this.empty = true;
  
--        for (int k = this.field_72818_a; k <= i; k++)
-+        for (int k = this.field_72818_a; k <= i; ++k)
+-        for (int k = this.chunkX; k <= i; k++)
++        for (int k = this.chunkX; k <= i; ++k)
          {
--            for (int l = this.field_72816_b; l <= j; l++)
-+            for (int l = this.field_72816_b; l <= j; ++l)
+-            for (int l = this.chunkZ; l <= j; l++)
++            for (int l = this.chunkZ; l <= j; ++l)
              {
-                 this.field_72817_c[k - this.field_72818_a][l - this.field_72816_b] = p_i45746_1_.func_72964_e(k, l);
+                 this.chunkArray[k - this.chunkX][l - this.chunkZ] = worldIn.getChunk(k, l);
              }
          }
  
--        for (int i1 = p_i45746_2_.func_177958_n() >> 4; i1 <= p_i45746_3_.func_177958_n() >> 4; i1++)
-+        for (int i1 = p_i45746_2_.func_177958_n() >> 4; i1 <= p_i45746_3_.func_177958_n() >> 4; ++i1)
+-        for (int i1 = posFromIn.getX() >> 4; i1 <= posToIn.getX() >> 4; i1++)
++        for (int i1 = posFromIn.getX() >> 4; i1 <= posToIn.getX() >> 4; ++i1)
          {
--            for (int j1 = p_i45746_2_.func_177952_p() >> 4; j1 <= p_i45746_3_.func_177952_p() >> 4; j1++)
-+            for (int j1 = p_i45746_2_.func_177952_p() >> 4; j1 <= p_i45746_3_.func_177952_p() >> 4; ++j1)
+-            for (int j1 = posFromIn.getZ() >> 4; j1 <= posToIn.getZ() >> 4; j1++)
++            for (int j1 = posFromIn.getZ() >> 4; j1 <= posToIn.getZ() >> 4; ++j1)
              {
-                 Chunk chunk = this.field_72817_c[i1 - this.field_72818_a][j1 - this.field_72816_b];
+                 Chunk chunk = this.chunkArray[i1 - this.chunkX][j1 - this.chunkZ];
  
 @@ -59,10 +59,9 @@
      }
  
      @Nullable
 -    @Override
-     public TileEntity func_175625_s(BlockPos p_175625_1_)
+     public TileEntity getTileEntity(BlockPos pos)
      {
--        return this.func_190300_a(p_175625_1_, Chunk.EnumCreateEntityType.IMMEDIATE);
-+        return this.func_190300_a(p_175625_1_, Chunk.EnumCreateEntityType.CHECK); // Forge: don't modify world from other threads
+-        return this.getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
++        return this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK); // Forge: don't modify world from other threads
      }
  
      @Nullable
 @@ -70,11 +69,11 @@
      {
-         int i = (p_190300_1_.func_177958_n() >> 4) - this.field_72818_a;
-         int j = (p_190300_1_.func_177952_p() >> 4) - this.field_72816_b;
+         int i = (pos.getX() >> 4) - this.chunkX;
+         int j = (pos.getZ() >> 4) - this.chunkZ;
 +        if (!withinBounds(i, j)) return null;
-         return this.field_72817_c[i][j].func_177424_a(p_190300_1_, p_190300_2_);
+         return this.chunkArray[i][j].getTileEntity(pos, createType);
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public int func_175626_b(BlockPos p_175626_1_, int p_175626_2_)
+     public int getCombinedLight(BlockPos pos, int lightValue)
      {
-         int i = this.func_175629_a(EnumSkyBlock.SKY, p_175626_1_);
+         int i = this.getLightForExt(EnumSkyBlock.SKY, pos);
 @@ -88,7 +87,6 @@
          return i << 20 | j << 4;
      }
  
 -    @Override
-     public IBlockState func_180495_p(BlockPos p_180495_1_)
+     public IBlockState getBlockState(BlockPos pos)
      {
-         if (p_180495_1_.func_177956_o() >= 0 && p_180495_1_.func_177956_o() < 256)
+         if (pos.getY() >= 0 && pos.getY() < 256)
 @@ -111,11 +109,11 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public Biome func_180494_b(BlockPos p_180494_1_)
+     public Biome getBiome(BlockPos pos)
      {
-         int i = (p_180494_1_.func_177958_n() >> 4) - this.field_72818_a;
-         int j = (p_180494_1_.func_177952_p() >> 4) - this.field_72816_b;
-+        if (!withinBounds(i, j)) return net.minecraft.init.Biomes.field_76772_c;
-         return this.field_72817_c[i][j].func_177411_a(p_180494_1_, this.field_72815_e.func_72959_q());
+         int i = (pos.getX() >> 4) - this.chunkX;
+         int j = (pos.getZ() >> 4) - this.chunkZ;
++        if (!withinBounds(i, j)) return net.minecraft.init.Biomes.PLAINS;
+         return this.chunkArray[i][j].getBiome(pos, this.world.getBiomeProvider());
      }
  
 @@ -153,6 +151,7 @@
              {
-                 int i = (p_175629_2_.func_177958_n() >> 4) - this.field_72818_a;
-                 int j = (p_175629_2_.func_177952_p() >> 4) - this.field_72816_b;
-+                if (!withinBounds(i, j)) return p_175629_1_.field_77198_c;
-                 return this.field_72817_c[i][j].func_177413_a(p_175629_1_, p_175629_2_);
+                 int i = (pos.getX() >> 4) - this.chunkX;
+                 int j = (pos.getZ() >> 4) - this.chunkZ;
++                if (!withinBounds(i, j)) return type.defaultLightValue;
+                 return this.chunkArray[i][j].getLightFor(type, pos);
              }
          }
 @@ -162,10 +161,10 @@
@@ -81,20 +81,20 @@
      }
  
 -    @Override
-     public boolean func_175623_d(BlockPos p_175623_1_)
+     public boolean isAirBlock(BlockPos pos)
      {
--        return this.func_180495_p(p_175623_1_).func_185904_a() == Material.field_151579_a;
-+        IBlockState state = this.func_180495_p(p_175623_1_);
-+        return state.func_177230_c().isAir(state, this, p_175623_1_);
+-        return this.getBlockState(pos).getMaterial() == Material.AIR;
++        IBlockState state = this.getBlockState(pos);
++        return state.getBlock().isAir(state, this, pos);
      }
  
      @SideOnly(Side.CLIENT)
 @@ -175,6 +174,7 @@
          {
-             int i = (p_175628_2_.func_177958_n() >> 4) - this.field_72818_a;
-             int j = (p_175628_2_.func_177952_p() >> 4) - this.field_72816_b;
-+            if (!withinBounds(i, j)) return p_175628_1_.field_77198_c;
-             return this.field_72817_c[i][j].func_177413_a(p_175628_1_, p_175628_2_);
+             int i = (pos.getX() >> 4) - this.chunkX;
+             int j = (pos.getZ() >> 4) - this.chunkZ;
++            if (!withinBounds(i, j)) return type.defaultLightValue;
+             return this.chunkArray[i][j].getLightFor(type, pos);
          }
          else
 @@ -183,16 +183,31 @@
@@ -102,32 +102,32 @@
      }
  
 -    @Override
-     public int func_175627_a(BlockPos p_175627_1_, EnumFacing p_175627_2_)
+     public int getStrongPower(BlockPos pos, EnumFacing direction)
      {
-         return this.func_180495_p(p_175627_1_).func_185893_b(this, p_175627_1_, p_175627_2_);
+         return this.getBlockState(pos).getStrongPower(this, pos, direction);
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public WorldType func_175624_G()
+     public WorldType getWorldType()
      {
-         return this.field_72815_e.func_175624_G();
+         return this.world.getWorldType();
 +    }
 +
 +    @Override
 +    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default)
 +    {
-+        int x = (pos.func_177958_n() >> 4) - this.field_72818_a;
-+        int z = (pos.func_177952_p() >> 4) - this.field_72816_b;
-+        if (pos.func_177956_o() < 0 || pos.func_177956_o() >= 256) return _default;
++        int x = (pos.getX() >> 4) - this.chunkX;
++        int z = (pos.getZ() >> 4) - this.chunkZ;
++        if (pos.getY() < 0 || pos.getY() >= 256) return _default;
 +        if (!withinBounds(x, z)) return _default;
 +
-+        IBlockState state = func_180495_p(pos);
-+        return state.func_177230_c().isSideSolid(state, this, pos, side);
++        IBlockState state = getBlockState(pos);
++        return state.getBlock().isSideSolid(state, this, pos, side);
 +    }
 +
 +    private boolean withinBounds(int x, int z)
 +    {
-+        return x >= 0 && x < field_72817_c.length && z >= 0 && z < field_72817_c[x].length && field_72817_c[x][z] != null;
++        return x >= 0 && x < chunkArray.length && z >= 0 && z < chunkArray[x].length && chunkArray[x][z] != null;
      }
  }

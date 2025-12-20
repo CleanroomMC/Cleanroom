@@ -9,166 +9,166 @@
  import net.minecraft.block.Block;
  import net.minecraft.block.BlockSkull;
 @@ -34,17 +35,7 @@
-         this.func_77627_a(true);
+         this.setHasSubtypes(true);
      }
  
 -    @Override
--    public EnumActionResult func_180614_a(
--        EntityPlayer p_180614_1_,
--        World p_180614_2_,
--        BlockPos p_180614_3_,
--        EnumHand p_180614_4_,
--        EnumFacing p_180614_5_,
--        float p_180614_6_,
--        float p_180614_7_,
--        float p_180614_8_
+-    public EnumActionResult onItemUse(
+-        EntityPlayer player,
+-        World worldIn,
+-        BlockPos pos,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
++    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         if (p_180614_5_ == EnumFacing.DOWN)
+         if (facing == EnumFacing.DOWN)
          {
 @@ -52,13 +43,18 @@
          }
          else
          {
-+            if (p_180614_2_.func_180495_p(p_180614_3_).func_177230_c().func_176200_f(p_180614_2_, p_180614_3_))
++            if (worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos))
 +            {
-+                p_180614_5_ = EnumFacing.UP;
-+                p_180614_3_ = p_180614_3_.func_177977_b();
++                facing = EnumFacing.UP;
++                pos = pos.down();
 +            }
-             IBlockState iblockstate = p_180614_2_.func_180495_p(p_180614_3_);
-             Block block = iblockstate.func_177230_c();
-             boolean flag = block.func_176200_f(p_180614_2_, p_180614_3_);
+             IBlockState iblockstate = worldIn.getBlockState(pos);
+             Block block = iblockstate.getBlock();
+             boolean flag = block.isReplaceable(worldIn, pos);
  
              if (!flag)
              {
--                if (!p_180614_2_.func_180495_p(p_180614_3_).func_185904_a().func_76220_a())
-+                if (!p_180614_2_.func_180495_p(p_180614_3_).func_185904_a().func_76220_a() && !p_180614_2_.isSideSolid(p_180614_3_, p_180614_5_, true))
+-                if (!worldIn.getBlockState(pos).getMaterial().isSolid())
++                if (!worldIn.getBlockState(pos).getMaterial().isSolid() && !worldIn.isSideSolid(pos, facing, true))
                  {
                      return EnumActionResult.FAIL;
                  }
 @@ -68,89 +64,89 @@
  
-             ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+             ItemStack itemstack = player.getHeldItem(hand);
  
--            if (!p_180614_1_.func_175151_a(p_180614_3_, p_180614_5_, itemstack) || !Blocks.field_150465_bP.func_176196_c(p_180614_2_, p_180614_3_))
+-            if (!player.canPlayerEdit(pos, facing, itemstack) || !Blocks.SKULL.canPlaceBlockAt(worldIn, pos))
 -            {
 -                return EnumActionResult.FAIL;
 -            }
--            else if (p_180614_2_.field_72995_K)
+-            else if (worldIn.isRemote)
 -            {
 -                return EnumActionResult.SUCCESS;
-+            if (p_180614_1_.func_175151_a(p_180614_3_, p_180614_5_, itemstack) && Blocks.field_150465_bP.func_176196_c(p_180614_2_, p_180614_3_))
++            if (player.canPlayerEdit(pos, facing, itemstack) && Blocks.SKULL.canPlaceBlockAt(worldIn, pos))
 +            {
-+                if (p_180614_2_.field_72995_K)
++                if (worldIn.isRemote)
 +                {
 +                    return EnumActionResult.SUCCESS;
 +                }
 +                else
 +                {
-+                    p_180614_2_.func_180501_a(p_180614_3_, Blocks.field_150465_bP.func_176223_P().func_177226_a(BlockSkull.field_176418_a, p_180614_5_), 11);
++                    worldIn.setBlockState(pos, Blocks.SKULL.getDefaultState().withProperty(BlockSkull.FACING, facing), 11);
 +                    int i = 0;
 +
-+                    if (p_180614_5_ == EnumFacing.UP)
++                    if (facing == EnumFacing.UP)
 +                    {
-+                        i = MathHelper.func_76128_c((double)(p_180614_1_.field_70177_z * 16.0F / 360.0F) + 0.5D) & 15;
++                        i = MathHelper.floor((double)(player.rotationYaw * 16.0F / 360.0F) + 0.5D) & 15;
 +                    }
 +
-+                    TileEntity tileentity = p_180614_2_.func_175625_s(p_180614_3_);
++                    TileEntity tileentity = worldIn.getTileEntity(pos);
 +
 +                    if (tileentity instanceof TileEntitySkull)
 +                    {
 +                        TileEntitySkull tileentityskull = (TileEntitySkull)tileentity;
 +
-+                        if (itemstack.func_77960_j() == 3)
++                        if (itemstack.getMetadata() == 3)
 +                        {
 +                            GameProfile gameprofile = null;
 +
-+                            if (itemstack.func_77942_o())
++                            if (itemstack.hasTagCompound())
 +                            {
-+                                NBTTagCompound nbttagcompound = itemstack.func_77978_p();
++                                NBTTagCompound nbttagcompound = itemstack.getTagCompound();
 +
-+                                if (nbttagcompound.func_150297_b("SkullOwner", 10))
++                                if (nbttagcompound.hasKey("SkullOwner", 10))
 +                                {
-+                                    gameprofile = NBTUtil.func_152459_a(nbttagcompound.func_74775_l("SkullOwner"));
++                                    gameprofile = NBTUtil.readGameProfileFromNBT(nbttagcompound.getCompoundTag("SkullOwner"));
 +                                }
-+                                else if (nbttagcompound.func_150297_b("SkullOwner", 8) && !StringUtils.isBlank(nbttagcompound.func_74779_i("SkullOwner")))
++                                else if (nbttagcompound.hasKey("SkullOwner", 8) && !StringUtils.isBlank(nbttagcompound.getString("SkullOwner")))
 +                                {
-+                                    gameprofile = new GameProfile((UUID)null, nbttagcompound.func_74779_i("SkullOwner"));
++                                    gameprofile = new GameProfile((UUID)null, nbttagcompound.getString("SkullOwner"));
 +                                }
 +                            }
 +
-+                            tileentityskull.func_152106_a(gameprofile);
++                            tileentityskull.setPlayerProfile(gameprofile);
 +                        }
 +                        else
 +                        {
-+                            tileentityskull.func_152107_a(itemstack.func_77960_j());
++                            tileentityskull.setType(itemstack.getMetadata());
 +                        }
 +
-+                        tileentityskull.func_145903_a(i);
-+                        Blocks.field_150465_bP.func_180679_a(p_180614_2_, p_180614_3_, tileentityskull);
++                        tileentityskull.setSkullRotation(i);
++                        Blocks.SKULL.checkWitherSpawn(worldIn, pos, tileentityskull);
 +                    }
 +
-+                    if (p_180614_1_ instanceof EntityPlayerMP)
++                    if (player instanceof EntityPlayerMP)
 +                    {
-+                        CriteriaTriggers.field_193137_x.func_193173_a((EntityPlayerMP)p_180614_1_, p_180614_3_, itemstack);
++                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, itemstack);
 +                    }
 +
-+                    itemstack.func_190918_g(1);
++                    itemstack.shrink(1);
 +                    return EnumActionResult.SUCCESS;
 +                }
              }
              else
              {
--                p_180614_2_.func_180501_a(p_180614_3_, Blocks.field_150465_bP.func_176223_P().func_177226_a(BlockSkull.field_176418_a, p_180614_5_), 11);
+-                worldIn.setBlockState(pos, Blocks.SKULL.getDefaultState().withProperty(BlockSkull.FACING, facing), 11);
 -                int i = 0;
 -
--                if (p_180614_5_ == EnumFacing.UP)
+-                if (facing == EnumFacing.UP)
 -                {
--                    i = MathHelper.func_76128_c((double)(p_180614_1_.field_70177_z * 16.0F / 360.0F) + 0.5) & 15;
+-                    i = MathHelper.floor((double)(player.rotationYaw * 16.0F / 360.0F) + 0.5) & 15;
 -                }
 -
--                TileEntity tileentity = p_180614_2_.func_175625_s(p_180614_3_);
+-                TileEntity tileentity = worldIn.getTileEntity(pos);
 -
 -                if (tileentity instanceof TileEntitySkull)
 -                {
 -                    TileEntitySkull tileentityskull = (TileEntitySkull)tileentity;
 -
--                    if (itemstack.func_77960_j() == 3)
+-                    if (itemstack.getMetadata() == 3)
 -                    {
 -                        GameProfile gameprofile = null;
 -
--                        if (itemstack.func_77942_o())
+-                        if (itemstack.hasTagCompound())
 -                        {
--                            NBTTagCompound nbttagcompound = itemstack.func_77978_p();
+-                            NBTTagCompound nbttagcompound = itemstack.getTagCompound();
 -
--                            if (nbttagcompound.func_150297_b("SkullOwner", 10))
+-                            if (nbttagcompound.hasKey("SkullOwner", 10))
 -                            {
--                                gameprofile = NBTUtil.func_152459_a(nbttagcompound.func_74775_l("SkullOwner"));
+-                                gameprofile = NBTUtil.readGameProfileFromNBT(nbttagcompound.getCompoundTag("SkullOwner"));
 -                            }
--                            else if (nbttagcompound.func_150297_b("SkullOwner", 8) && !StringUtils.isBlank(nbttagcompound.func_74779_i("SkullOwner")))
+-                            else if (nbttagcompound.hasKey("SkullOwner", 8) && !StringUtils.isBlank(nbttagcompound.getString("SkullOwner")))
 -                            {
--                                gameprofile = new GameProfile(null, nbttagcompound.func_74779_i("SkullOwner"));
+-                                gameprofile = new GameProfile(null, nbttagcompound.getString("SkullOwner"));
 -                            }
 -                        }
 -
--                        tileentityskull.func_152106_a(gameprofile);
+-                        tileentityskull.setPlayerProfile(gameprofile);
 -                    }
 -                    else
 -                    {
--                        tileentityskull.func_152107_a(itemstack.func_77960_j());
+-                        tileentityskull.setType(itemstack.getMetadata());
 -                    }
 -
--                    tileentityskull.func_145903_a(i);
--                    Blocks.field_150465_bP.func_180679_a(p_180614_2_, p_180614_3_, tileentityskull);
+-                    tileentityskull.setSkullRotation(i);
+-                    Blocks.SKULL.checkWitherSpawn(worldIn, pos, tileentityskull);
 -                }
 -
--                if (p_180614_1_ instanceof EntityPlayerMP)
+-                if (player instanceof EntityPlayerMP)
 -                {
--                    CriteriaTriggers.field_193137_x.func_193173_a((EntityPlayerMP)p_180614_1_, p_180614_3_, itemstack);
+-                    CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, itemstack);
 -                }
 -
--                itemstack.func_190918_g(1);
+-                itemstack.shrink(1);
 -                return EnumActionResult.SUCCESS;
 +                return EnumActionResult.FAIL;
              }
@@ -176,49 +176,49 @@
      }
  
 -    @Override
-     public void func_150895_a(CreativeTabs p_150895_1_, NonNullList<ItemStack> p_150895_2_)
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
      {
-         if (this.func_194125_a(p_150895_1_))
+         if (this.isInCreativeTab(tab))
          {
--            for (int i = 0; i < field_82807_a.length; i++)
-+            for (int i = 0; i < field_82807_a.length; ++i)
+-            for (int i = 0; i < SKULL_TYPES.length; i++)
++            for (int i = 0; i < SKULL_TYPES.length; ++i)
              {
-                 p_150895_2_.add(new ItemStack(this, 1, i));
+                 items.add(new ItemStack(this, 1, i));
              }
          }
      }
  
 -    @Override
-     public int func_77647_b(int p_77647_1_)
+     public int getMetadata(int damage)
      {
-         return p_77647_1_;
+         return damage;
      }
  
 -    @Override
-     public String func_77667_c(ItemStack p_77667_1_)
+     public String getTranslationKey(ItemStack stack)
      {
-         int i = p_77667_1_.func_77960_j();
+         int i = stack.getMetadata();
 @@ -163,7 +159,6 @@
-         return super.func_77658_a() + "." + field_82807_a[i];
+         return super.getTranslationKey() + "." + SKULL_TYPES[i];
      }
  
 -    @Override
-     public String func_77653_i(ItemStack p_77653_1_)
+     public String getItemStackDisplayName(ItemStack stack)
      {
-         if (p_77653_1_.func_77960_j() == 3 && p_77653_1_.func_77942_o())
+         if (stack.getMetadata() == 3 && stack.hasTagCompound())
 @@ -187,14 +182,13 @@
-         return super.func_77653_i(p_77653_1_);
+         return super.getItemStackDisplayName(stack);
      }
  
 -    @Override
-     public boolean func_179215_a(NBTTagCompound p_179215_1_)
+     public boolean updateItemStackNBT(NBTTagCompound nbt)
      {
-         super.func_179215_a(p_179215_1_);
+         super.updateItemStackNBT(nbt);
  
-         if (p_179215_1_.func_150297_b("SkullOwner", 8) && !StringUtils.isBlank(p_179215_1_.func_74779_i("SkullOwner")))
+         if (nbt.hasKey("SkullOwner", 8) && !StringUtils.isBlank(nbt.getString("SkullOwner")))
          {
--            GameProfile gameprofile = new GameProfile(null, p_179215_1_.func_74779_i("SkullOwner"));
-+            GameProfile gameprofile = new GameProfile((UUID)null, p_179215_1_.func_74779_i("SkullOwner"));
-             gameprofile = TileEntitySkull.func_174884_b(gameprofile);
-             p_179215_1_.func_74782_a("SkullOwner", NBTUtil.func_180708_a(new NBTTagCompound(), gameprofile));
+-            GameProfile gameprofile = new GameProfile(null, nbt.getString("SkullOwner"));
++            GameProfile gameprofile = new GameProfile((UUID)null, nbt.getString("SkullOwner"));
+             gameprofile = TileEntitySkull.updateGameProfile(gameprofile);
+             nbt.setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), gameprofile));
              return true;

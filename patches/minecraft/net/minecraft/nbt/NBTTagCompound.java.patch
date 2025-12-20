@@ -2,56 +2,56 @@
 +++ after/net/minecraft/nbt/NBTTagCompound.java
 @@ -25,9 +25,8 @@
  {
-     private static final Logger field_191551_b = LogManager.getLogger();
-     private static final Pattern field_193583_c = Pattern.compile("[A-Za-z0-9._+-]+");
--    private final Map<String, NBTBase> field_74784_a = Maps.newHashMap();
-+    private final Map<String, NBTBase> field_74784_a = Maps.<String, NBTBase>newHashMap();
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static final Pattern SIMPLE_VALUE = Pattern.compile("[A-Za-z0-9._+-]+");
+-    private final Map<String, NBTBase> tagMap = Maps.newHashMap();
++    private final Map<String, NBTBase> tagMap = Maps.<String, NBTBase>newHashMap();
  
 -    @Override
-     void func_74734_a(DataOutput p_74734_1_) throws IOException
+     void write(DataOutput output) throws IOException
      {
-         for (String s : this.field_74784_a.keySet())
+         for (String s : this.tagMap.keySet())
 @@ -39,7 +38,6 @@
-         p_74734_1_.writeByte(0);
+         output.writeByte(0);
      }
  
 -    @Override
-     void func_152446_a(DataInput p_152446_1_, int p_152446_2_, NBTSizeTracker p_152446_3_) throws IOException
+     void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
      {
-         p_152446_3_.func_152450_a(384L);
+         sizeTracker.read(384L);
 @@ -72,7 +70,6 @@
-         return this.field_74784_a.keySet();
+         return this.tagMap.keySet();
      }
  
 -    @Override
-     public byte func_74732_a()
+     public byte getId()
      {
          return 10;
 @@ -85,6 +82,7 @@
  
-     public void func_74782_a(String p_74782_1_, NBTBase p_74782_2_)
+     public void setTag(String key, NBTBase value)
      {
-+        if (p_74782_2_ == null) throw new IllegalArgumentException("Invalid null NBT value with key " + p_74782_1_);
-         this.field_74784_a.put(p_74782_1_, p_74782_2_);
++        if (value == null) throw new IllegalArgumentException("Invalid null NBT value with key " + key);
+         this.tagMap.put(key, value);
      }
  
 @@ -179,9 +177,13 @@
          {
              return true;
          }
-+        else if (p_150297_2_ != 99)
++        else if (type != 99)
 +        {
 +            return false;
 +        }
          else
          {
--            return p_150297_2_ != 99 ? false : i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6;
+-            return type != 99 ? false : i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6;
 +            return i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6;
          }
      }
  
 @@ -194,8 +196,9 @@
-                 return ((NBTPrimitive)this.field_74784_a.get(p_74771_1_)).func_150290_f();
+                 return ((NBTPrimitive)this.tagMap.get(key)).getByte();
              }
          }
 -        catch (ClassCastException classcastexception)
@@ -62,7 +62,7 @@
  
          return 0;
 @@ -210,8 +213,9 @@
-                 return ((NBTPrimitive)this.field_74784_a.get(p_74765_1_)).func_150289_e();
+                 return ((NBTPrimitive)this.tagMap.get(key)).getShort();
              }
          }
 -        catch (ClassCastException classcastexception)
@@ -73,7 +73,7 @@
  
          return 0;
 @@ -226,8 +230,9 @@
-                 return ((NBTPrimitive)this.field_74784_a.get(p_74762_1_)).func_150287_d();
+                 return ((NBTPrimitive)this.tagMap.get(key)).getInt();
              }
          }
 -        catch (ClassCastException classcastexception)
@@ -84,7 +84,7 @@
  
          return 0;
 @@ -242,8 +247,9 @@
-                 return ((NBTPrimitive)this.field_74784_a.get(p_74763_1_)).func_150291_c();
+                 return ((NBTPrimitive)this.tagMap.get(key)).getLong();
              }
          }
 -        catch (ClassCastException classcastexception)
@@ -95,7 +95,7 @@
  
          return 0L;
 @@ -258,8 +264,9 @@
-                 return ((NBTPrimitive)this.field_74784_a.get(p_74760_1_)).func_150288_h();
+                 return ((NBTPrimitive)this.tagMap.get(key)).getFloat();
              }
          }
 -        catch (ClassCastException classcastexception)
@@ -106,7 +106,7 @@
  
          return 0.0F;
 @@ -274,11 +281,12 @@
-                 return ((NBTPrimitive)this.field_74784_a.get(p_74769_1_)).func_150286_g();
+                 return ((NBTPrimitive)this.tagMap.get(key)).getDouble();
              }
          }
 -        catch (ClassCastException classcastexception)
@@ -119,13 +119,13 @@
 +        return 0.0D;
      }
  
-     public String func_74779_i(String p_74779_1_)
+     public String getString(String key)
 @@ -287,11 +295,12 @@
          {
-             if (this.func_150297_b(p_74779_1_, 8))
+             if (this.hasKey(key, 8))
              {
--                return this.field_74784_a.get(p_74779_1_).func_150285_a_();
-+                return ((NBTBase)this.field_74784_a.get(p_74779_1_)).func_150285_a_();
+-                return this.tagMap.get(key).getString();
++                return ((NBTBase)this.tagMap.get(key)).getString();
              }
          }
 -        catch (ClassCastException classcastexception)
@@ -136,7 +136,7 @@
  
          return "";
 @@ -382,7 +391,6 @@
-         this.field_74784_a.remove(p_82580_1_);
+         this.tagMap.remove(key);
      }
  
 -    @Override
@@ -148,24 +148,24 @@
      }
  
 -    @Override
-     public boolean func_82582_d()
+     public boolean isEmpty()
      {
-         return this.field_74784_a.isEmpty();
+         return this.tagMap.isEmpty();
 @@ -422,7 +429,7 @@
          {
              public String call() throws Exception
              {
--                return NBTBase.field_82578_b[NBTTagCompound.this.field_74784_a.get(p_82581_1_).func_74732_a()];
-+                return NBTBase.field_82578_b[((NBTBase)NBTTagCompound.this.field_74784_a.get(p_82581_1_)).func_74732_a()];
+-                return NBTBase.NBT_TYPES[NBTTagCompound.this.tagMap.get(key).getId()];
++                return NBTBase.NBT_TYPES[((NBTBase)NBTTagCompound.this.tagMap.get(key)).getId()];
              }
          });
-         crashreportcategory.func_189529_a("Tag type expected", new ICrashReportDetail<String>()
+         crashreportcategory.addDetail("Tag type expected", new ICrashReportDetail<String>()
 @@ -442,19 +449,17 @@
  
-         for (String s : this.field_74784_a.keySet())
+         for (String s : this.tagMap.keySet())
          {
--            nbttagcompound.func_74782_a(s, this.field_74784_a.get(s).func_74737_b());
-+            nbttagcompound.func_74782_a(s, ((NBTBase)this.field_74784_a.get(s)).func_74737_b());
+-            nbttagcompound.setTag(s, this.tagMap.get(s).copy());
++            nbttagcompound.setTag(s, ((NBTBase)this.tagMap.get(s)).copy());
          }
  
          return nbttagcompound;
@@ -174,35 +174,35 @@
 -    @Override
      public boolean equals(Object p_equals_1_)
      {
-         return super.equals(p_equals_1_) && Objects.equals(this.field_74784_a.entrySet(), ((NBTTagCompound)p_equals_1_).field_74784_a.entrySet());
+         return super.equals(p_equals_1_) && Objects.equals(this.tagMap.entrySet(), ((NBTTagCompound)p_equals_1_).tagMap.entrySet());
      }
  
 -    @Override
      public int hashCode()
      {
-         return super.hashCode() ^ this.field_74784_a.hashCode();
+         return super.hashCode() ^ this.tagMap.hashCode();
 @@ -473,6 +478,7 @@
  
-     private static byte func_152447_a(DataInput p_152447_0_, NBTSizeTracker p_152447_1_) throws IOException
+     private static byte readType(DataInput input, NBTSizeTracker sizeTracker) throws IOException
      {
-+        p_152447_1_.func_152450_a(8);
-         return p_152447_0_.readByte();
++        sizeTracker.read(8);
+         return input.readByte();
      }
  
 @@ -483,6 +489,7 @@
  
-     static NBTBase func_152449_a(byte p_152449_0_, String p_152449_1_, DataInput p_152449_2_, int p_152449_3_, NBTSizeTracker p_152449_4_) throws IOException
+     static NBTBase readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
      {
-+        p_152449_4_.func_152450_a(32); //Forge: 4 extra bytes for the object allocation.
-         NBTBase nbtbase = NBTBase.func_150284_a(p_152449_0_);
++        sizeTracker.read(32); //Forge: 4 extra bytes for the object allocation.
+         NBTBase nbtbase = NBTBase.create(id);
  
          try
 @@ -495,7 +502,7 @@
-             CrashReport crashreport = CrashReport.func_85055_a(ioexception, "Loading NBT data");
-             CrashReportCategory crashreportcategory = crashreport.func_85058_a("NBT Tag");
-             crashreportcategory.func_71507_a("Tag name", p_152449_1_);
--            crashreportcategory.func_71507_a("Tag type", p_152449_0_);
-+            crashreportcategory.func_71507_a("Tag type", Byte.valueOf(p_152449_0_));
+             CrashReport crashreport = CrashReport.makeCrashReport(ioexception, "Loading NBT data");
+             CrashReportCategory crashreportcategory = crashreport.makeCategory("NBT Tag");
+             crashreportcategory.addCrashSection("Tag name", key);
+-            crashreportcategory.addCrashSection("Tag type", id);
++            crashreportcategory.addCrashSection("Tag type", Byte.valueOf(id));
              throw new ReportedException(crashreport);
          }
      }

@@ -1,70 +1,12 @@
 --- before/net/minecraft/client/shader/ShaderLoader.java
 +++ after/net/minecraft/client/shader/ShaderLoader.java
-@@ -2,8 +2,8 @@
- 
- import com.google.common.collect.Maps;
- import java.io.BufferedInputStream;
-+import java.io.Closeable;
- import java.io.IOException;
--import java.nio.Buffer;
- import java.nio.ByteBuffer;
- import java.util.Map;
- import net.minecraft.client.renderer.OpenGlHelper;
-@@ -34,13 +34,13 @@
- 
-     public void func_148056_a(ShaderManager p_148056_1_)
-     {
--        this.field_148058_d++;
-+        ++this.field_148058_d;
-         OpenGlHelper.func_153178_b(p_148056_1_.func_147986_h(), this.field_148060_c);
-     }
- 
-     public void func_148054_b(ShaderManager p_148054_1_)
-     {
--        this.field_148058_d--;
-+        --this.field_148058_d;
- 
-         if (this.field_148058_d <= 0)
-         {
-@@ -56,11 +56,12 @@
- 
-     public static ShaderLoader func_148057_a(IResourceManager p_148057_0_, ShaderLoader.ShaderType p_148057_1_, String p_148057_2_) throws IOException
-     {
--        ShaderLoader shaderloader = p_148057_1_.func_148064_d().get(p_148057_2_);
-+        ShaderLoader shaderloader = (ShaderLoader)p_148057_1_.func_148064_d().get(p_148057_2_);
+@@ -60,7 +60,8 @@
  
          if (shaderloader == null)
          {
--            ResourceLocation resourcelocation = new ResourceLocation("shaders/program/" + p_148057_2_ + p_148057_1_.func_148063_b());
-+            String[] rl = ResourceLocation.func_177516_a(p_148057_2_);
-+            ResourceLocation resourcelocation = new ResourceLocation(rl[0], "shaders/program/" + rl[1] + p_148057_1_.func_148063_b());
-             IResource iresource = p_148057_0_.func_110536_a(resourcelocation);
+-            ResourceLocation resourcelocation = new ResourceLocation("shaders/program/" + filename + type.getShaderExtension());
++            String[] rl = ResourceLocation.splitObjectName(filename);
++            ResourceLocation resourcelocation = new ResourceLocation(rl[0], "shaders/program/" + rl[1] + type.getShaderExtension());
+             IResource iresource = resourceManager.getResource(resourcelocation);
  
              try
-@@ -68,7 +69,7 @@
-                 byte[] abyte = IOUtils.toByteArray(new BufferedInputStream(iresource.func_110527_b()));
-                 ByteBuffer bytebuffer = BufferUtils.createByteBuffer(abyte.length);
-                 bytebuffer.put(abyte);
--                ((Buffer)bytebuffer).position(0);
-+                bytebuffer.position(0);
-                 int i = OpenGlHelper.func_153195_b(p_148057_1_.func_148065_c());
-                 OpenGlHelper.func_153169_a(i, bytebuffer);
-                 OpenGlHelper.func_153170_c(i);
-@@ -86,7 +87,7 @@
-             }
-             finally
-             {
--                IOUtils.closeQuietly(iresource);
-+                IOUtils.closeQuietly((Closeable)iresource);
-             }
-         }
- 
-@@ -102,7 +103,7 @@
-         private final String field_148072_c;
-         private final String field_148069_d;
-         private final int field_148070_e;
--        private final Map<String, ShaderLoader> field_148067_f = Maps.newHashMap();
-+        private final Map<String, ShaderLoader> field_148067_f = Maps.<String, ShaderLoader>newHashMap();
- 
-         private ShaderType(String p_i45090_3_, String p_i45090_4_, int p_i45090_5_)
-         {

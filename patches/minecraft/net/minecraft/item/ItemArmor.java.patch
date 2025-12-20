@@ -11,59 +11,59 @@
 @@ -32,23 +33,10 @@
  public class ItemArmor extends Item
  {
-     private static final int[] field_77882_bY = new int[] {13, 15, 16, 11};
--    private static final UUID[] field_185084_n = new UUID[]
+     private static final int[] MAX_DAMAGE_ARRAY = new int[] {13, 15, 16, 11};
+-    private static final UUID[] ARMOR_MODIFIERS = new UUID[]
 -        {
 -            UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"),
 -            UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"),
 -            UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"),
 -            UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")
 -        };
--    public static final String[] field_94603_a = new String[]
+-    public static final String[] EMPTY_SLOT_NAMES = new String[]
 -        {
 -            "minecraft:items/empty_armor_slot_boots",
 -            "minecraft:items/empty_armor_slot_leggings",
 -            "minecraft:items/empty_armor_slot_chestplate",
 -            "minecraft:items/empty_armor_slot_helmet"
 -        };
-+    private static final UUID[] field_185084_n = new UUID[] {UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"), UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"), UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"), UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")};
-+    public static final String[] field_94603_a = new String[] {"minecraft:items/empty_armor_slot_boots", "minecraft:items/empty_armor_slot_leggings", "minecraft:items/empty_armor_slot_chestplate", "minecraft:items/empty_armor_slot_helmet"};
-     public static final IBehaviorDispenseItem field_96605_cw = new BehaviorDefaultDispenseItem()
++    private static final UUID[] ARMOR_MODIFIERS = new UUID[] {UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"), UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"), UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"), UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")};
++    public static final String[] EMPTY_SLOT_NAMES = new String[] {"minecraft:items/empty_armor_slot_boots", "minecraft:items/empty_armor_slot_leggings", "minecraft:items/empty_armor_slot_chestplate", "minecraft:items/empty_armor_slot_helmet"};
+     public static final IBehaviorDispenseItem DISPENSER_BEHAVIOR = new BehaviorDefaultDispenseItem()
      {
 -        @Override
-         protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+         protected ItemStack dispenseStack(IBlockSource source, ItemStack stack)
          {
-             ItemStack itemstack = ItemArmor.func_185082_a(p_82487_1_, p_82487_2_);
+             ItemStack itemstack = ItemArmor.dispenseArmor(source, stack);
 @@ -63,11 +51,8 @@
  
-     public static ItemStack func_185082_a(IBlockSource p_185082_0_, ItemStack p_185082_1_)
+     public static ItemStack dispenseArmor(IBlockSource blockSource, ItemStack stack)
      {
--        BlockPos blockpos = p_185082_0_.func_180699_d().func_177972_a(p_185082_0_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
--        List<EntityLivingBase> list = p_185082_0_.func_82618_k()
--                                      .func_175647_a(
--                                          EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.and(EntitySelectors.field_180132_d, new EntitySelectors.ArmoredMob(p_185082_1_))
+-        BlockPos blockpos = blockSource.getBlockPos().offset(blockSource.getBlockState().getValue(BlockDispenser.FACING));
+-        List<EntityLivingBase> list = blockSource.getWorld()
+-                                      .getEntitiesWithinAABB(
+-                                          EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.and(EntitySelectors.NOT_SPECTATING, new EntitySelectors.ArmoredMob(stack))
 -                                      );
-+        BlockPos blockpos = p_185082_0_.func_180699_d().func_177972_a((EnumFacing)p_185082_0_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
-+        List<EntityLivingBase> list = p_185082_0_.func_82618_k().<EntityLivingBase>func_175647_a(EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.and(EntitySelectors.field_180132_d, new EntitySelectors.ArmoredMob(p_185082_1_)));
++        BlockPos blockpos = blockSource.getBlockPos().offset((EnumFacing)blockSource.getBlockState().getValue(BlockDispenser.FACING));
++        List<EntityLivingBase> list = blockSource.getWorld().<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.and(EntitySelectors.NOT_SPECTATING, new EntitySelectors.ArmoredMob(stack)));
  
          if (list.isEmpty())
          {
 @@ -108,7 +93,6 @@
-         return this.field_77881_a;
+         return this.armorType;
      }
  
 -    @Override
-     public int func_77619_b()
+     public int getItemEnchantability()
      {
-         return this.field_77878_bZ.func_78045_a();
+         return this.material.getEnchantability();
 @@ -128,9 +112,7 @@
          else
          {
-             NBTTagCompound nbttagcompound = p_82816_1_.func_77978_p();
--            return nbttagcompound != null && nbttagcompound.func_150297_b("display", 10)
--                   ? nbttagcompound.func_74775_l("display").func_150297_b("color", 3)
+             NBTTagCompound nbttagcompound = stack.getTagCompound();
+-            return nbttagcompound != null && nbttagcompound.hasKey("display", 10)
+-                   ? nbttagcompound.getCompoundTag("display").hasKey("color", 3)
 -                   : false;
-+            return nbttagcompound != null && nbttagcompound.func_150297_b("display", 10) ? nbttagcompound.func_74775_l("display").func_150297_b("color", 3) : false;
++            return nbttagcompound != null && nbttagcompound.hasKey("display", 10) ? nbttagcompound.getCompoundTag("display").hasKey("color", 3) : false;
          }
      }
  
@@ -72,22 +72,22 @@
      }
  
 -    @Override
-     public boolean func_82789_a(ItemStack p_82789_1_, ItemStack p_82789_2_)
+     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
      {
--        return this.field_77878_bZ.func_151685_b() == p_82789_2_.func_77973_b() ? true : super.func_82789_a(p_82789_1_, p_82789_2_);
-+        ItemStack mat = this.field_77878_bZ.getRepairItemStack();
-+        if (!mat.func_190926_b() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat,p_82789_2_,false)) return true;
-+        return super.func_82789_a(p_82789_1_, p_82789_2_);
+-        return this.material.getRepairItem() == repair.getItem() ? true : super.getIsRepairable(toRepair, repair);
++        ItemStack mat = this.material.getRepairItemStack();
++        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat,repair,false)) return true;
++        return super.getIsRepairable(toRepair, repair);
      }
  
 -    @Override
-     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
      {
-         ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
+         ItemStack itemstack = playerIn.getHeldItem(handIn);
 @@ -220,34 +202,40 @@
          {
-             p_77659_2_.func_184201_a(entityequipmentslot, itemstack.func_77946_l());
-             itemstack.func_190920_e(0);
+             playerIn.setItemStackToSlot(entityequipmentslot, itemstack.copy());
+             itemstack.setCount(0);
 -            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 +            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
          }
@@ -99,22 +99,22 @@
      }
  
 -    @Override
-     public Multimap<String, AttributeModifier> func_111205_h(EntityEquipmentSlot p_111205_1_)
+     public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot)
      {
-         Multimap<String, AttributeModifier> multimap = super.func_111205_h(p_111205_1_);
+         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
  
-         if (p_111205_1_ == this.field_77881_a)
+         if (equipmentSlot == this.armorType)
          {
 -            multimap.put(
--                SharedMonsterAttributes.field_188791_g.func_111108_a(),
--                new AttributeModifier(field_185084_n[p_111205_1_.func_188454_b()], "Armor modifier", (double)this.field_77879_b, 0)
+-                SharedMonsterAttributes.ARMOR.getName(),
+-                new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor modifier", (double)this.damageReduceAmount, 0)
 -            );
 -            multimap.put(
--                SharedMonsterAttributes.field_189429_h.func_111108_a(),
--                new AttributeModifier(field_185084_n[p_111205_1_.func_188454_b()], "Armor toughness", (double)this.field_189415_e, 0)
+-                SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(),
+-                new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor toughness", (double)this.toughness, 0)
 -            );
-+            multimap.put(SharedMonsterAttributes.field_188791_g.func_111108_a(), new AttributeModifier(field_185084_n[p_111205_1_.func_188454_b()], "Armor modifier", (double)this.field_77879_b, 0));
-+            multimap.put(SharedMonsterAttributes.field_189429_h.func_111108_a(), new AttributeModifier(field_185084_n[p_111205_1_.func_188454_b()], "Armor toughness", (double)this.field_189415_e, 0));
++            multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor modifier", (double)this.damageReduceAmount, 0));
++            multimap.put(SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor toughness", (double)this.toughness, 0));
          }
  
          return multimap;
@@ -130,38 +130,38 @@
 +     */
 +    public boolean hasOverlay(ItemStack stack)
 +    {
-+        return this.field_77878_bZ == ItemArmor.ArmorMaterial.LEATHER || func_82814_b(stack) != 0x00FFFFFF;
++        return this.material == ItemArmor.ArmorMaterial.LEATHER || getColor(stack) != 0x00FFFFFF;
 +    }
 +
      public static enum ArmorMaterial
      {
-         LEATHER("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.field_187728_s, 0.0F),
+         LEATHER("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F),
 @@ -262,6 +250,8 @@
-         private final int field_78055_h;
-         private final SoundEvent field_185020_j;
-         private final float field_189417_k;
+         private final int enchantability;
+         private final SoundEvent soundEvent;
+         private final float toughness;
 +        //Added by forge for custom Armor materials.
-+        public ItemStack repairMaterial = ItemStack.field_190927_a;
++        public ItemStack repairMaterial = ItemStack.EMPTY;
  
-         private ArmorMaterial(String p_i47117_3_, int p_i47117_4_, int[] p_i47117_5_, int p_i47117_6_, SoundEvent p_i47117_7_, float p_i47117_8_)
+         private ArmorMaterial(String nameIn, int maxDamageFactorIn, int[] damageReductionAmountArrayIn, int enchantabilityIn, SoundEvent soundEventIn, float toughnessIn)
          {
 @@ -293,6 +283,7 @@
-             return this.field_185020_j;
+             return this.soundEvent;
          }
  
 +        @Deprecated // Use getRepairItemStack below
-         public Item func_151685_b()
+         public Item getRepairItem()
          {
              if (this == LEATHER)
 @@ -326,6 +317,22 @@
-         public float func_189416_e()
+         public float getToughness()
          {
-             return this.field_189417_k;
+             return this.toughness;
 +        }
 +
 +        public ArmorMaterial setRepairItem(ItemStack stack)
 +        {
-+            if (!this.repairMaterial.func_190926_b()) throw new RuntimeException("Repair material has already been set");
++            if (!this.repairMaterial.isEmpty()) throw new RuntimeException("Repair material has already been set");
 +            if (this == LEATHER || this == CHAIN || this == GOLD || this == IRON || this == DIAMOND) throw new RuntimeException("Can not change vanilla armor repair materials");
 +            this.repairMaterial = stack;
 +            return this;
@@ -169,8 +169,8 @@
 +
 +        public ItemStack getRepairItemStack()
 +        {
-+            if (!repairMaterial.func_190926_b()) return repairMaterial;
-+            Item ret = this.func_151685_b();
++            if (!repairMaterial.isEmpty()) return repairMaterial;
++            Item ret = this.getRepairItem();
 +            if (ret != null) repairMaterial = new ItemStack(ret,1,net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE);
 +            return repairMaterial;
          }

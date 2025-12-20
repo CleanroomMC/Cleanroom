@@ -2,110 +2,110 @@
 +++ after/net/minecraft/stats/RecipeBookServer.java
 @@ -21,7 +21,7 @@
  
-     public void func_193835_a(List<IRecipe> p_193835_1_, EntityPlayerMP p_193835_2_)
+     public void add(List<IRecipe> recipesIn, EntityPlayerMP player)
      {
 -        List<IRecipe> list = Lists.newArrayList();
 +        List<IRecipe> list = Lists.<IRecipe>newArrayList();
  
-         for (IRecipe irecipe : p_193835_1_)
+         for (IRecipe irecipe : recipesIn)
          {
 @@ -39,7 +39,7 @@
  
-     public void func_193834_b(List<IRecipe> p_193834_1_, EntityPlayerMP p_193834_2_)
+     public void remove(List<IRecipe> recipesIn, EntityPlayerMP player)
      {
 -        List<IRecipe> list = Lists.newArrayList();
 +        List<IRecipe> list = Lists.<IRecipe>newArrayList();
  
-         for (IRecipe irecipe : p_193834_1_)
+         for (IRecipe irecipe : recipesIn)
          {
 @@ -55,8 +55,7 @@
  
-     private void func_194081_a(SPacketRecipeBook.State p_194081_1_, EntityPlayerMP p_194081_2_, List<IRecipe> p_194081_3_)
+     private void sendPacket(SPacketRecipeBook.State state, EntityPlayerMP player, List<IRecipe> recipesIn)
      {
--        p_194081_2_.field_71135_a
--        .func_147359_a(new SPacketRecipeBook(p_194081_1_, p_194081_3_, Collections.emptyList(), this.field_192818_b, this.field_192819_c));
-+        net.minecraftforge.common.ForgeHooks.sendRecipeBook(p_194081_2_.field_71135_a, p_194081_1_, p_194081_3_, Collections.emptyList(), this.field_192818_b, this.field_192819_c);
+-        player.connection
+-        .sendPacket(new SPacketRecipeBook(state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable));
++        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable);
      }
  
-     public NBTTagCompound func_192824_e()
+     public NBTTagCompound write()
 @@ -68,7 +67,7 @@
  
-         for (IRecipe irecipe : this.func_194079_d())
+         for (IRecipe irecipe : this.getRecipes())
          {
--            nbttaglist.func_74742_a(new NBTTagString(CraftingManager.field_193380_a.func_177774_c(irecipe).toString()));
-+            nbttaglist.func_74742_a(new NBTTagString(((ResourceLocation)CraftingManager.field_193380_a.func_177774_c(irecipe)).toString()));
+-            nbttaglist.appendTag(new NBTTagString(CraftingManager.REGISTRY.getNameForObject(irecipe).toString()));
++            nbttaglist.appendTag(new NBTTagString(((ResourceLocation)CraftingManager.REGISTRY.getNameForObject(irecipe)).toString()));
          }
  
-         nbttagcompound.func_74782_a("recipes", nbttaglist);
+         nbttagcompound.setTag("recipes", nbttaglist);
 @@ -76,7 +75,7 @@
  
-         for (IRecipe irecipe1 : this.func_194080_e())
+         for (IRecipe irecipe1 : this.getDisplayedRecipes())
          {
--            nbttaglist1.func_74742_a(new NBTTagString(CraftingManager.field_193380_a.func_177774_c(irecipe1).toString()));
-+            nbttaglist1.func_74742_a(new NBTTagString(((ResourceLocation)CraftingManager.field_193380_a.func_177774_c(irecipe1)).toString()));
+-            nbttaglist1.appendTag(new NBTTagString(CraftingManager.REGISTRY.getNameForObject(irecipe1).toString()));
++            nbttaglist1.appendTag(new NBTTagString(((ResourceLocation)CraftingManager.REGISTRY.getNameForObject(irecipe1)).toString()));
          }
  
-         nbttagcompound.func_74782_a("toBeDisplayed", nbttaglist1);
+         nbttagcompound.setTag("toBeDisplayed", nbttaglist1);
 @@ -89,14 +88,14 @@
-         this.field_192819_c = p_192825_1_.func_74767_n("isFilteringCraftable");
-         NBTTagList nbttaglist = p_192825_1_.func_150295_c("recipes", 8);
+         this.isFilteringCraftable = tag.getBoolean("isFilteringCraftable");
+         NBTTagList nbttaglist = tag.getTagList("recipes", 8);
  
--        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
-+        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+-        for (int i = 0; i < nbttaglist.tagCount(); i++)
++        for (int i = 0; i < nbttaglist.tagCount(); ++i)
          {
-             ResourceLocation resourcelocation = new ResourceLocation(nbttaglist.func_150307_f(i));
-             IRecipe irecipe = CraftingManager.func_193373_a(resourcelocation);
+             ResourceLocation resourcelocation = new ResourceLocation(nbttaglist.getStringTagAt(i));
+             IRecipe irecipe = CraftingManager.getRecipe(resourcelocation);
  
              if (irecipe == null)
              {
--                field_192828_d.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation);
-+                field_192828_d.info("Tried to load unrecognized recipe: {} removed now.", (Object)resourcelocation);
+-                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation);
++                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", (Object)resourcelocation);
              }
              else
              {
 @@ -106,14 +105,14 @@
  
-         NBTTagList nbttaglist1 = p_192825_1_.func_150295_c("toBeDisplayed", 8);
+         NBTTagList nbttaglist1 = tag.getTagList("toBeDisplayed", 8);
  
--        for (int j = 0; j < nbttaglist1.func_74745_c(); j++)
-+        for (int j = 0; j < nbttaglist1.func_74745_c(); ++j)
+-        for (int j = 0; j < nbttaglist1.tagCount(); j++)
++        for (int j = 0; j < nbttaglist1.tagCount(); ++j)
          {
-             ResourceLocation resourcelocation1 = new ResourceLocation(nbttaglist1.func_150307_f(j));
-             IRecipe irecipe1 = CraftingManager.func_193373_a(resourcelocation1);
+             ResourceLocation resourcelocation1 = new ResourceLocation(nbttaglist1.getStringTagAt(j));
+             IRecipe irecipe1 = CraftingManager.getRecipe(resourcelocation1);
  
              if (irecipe1 == null)
              {
--                field_192828_d.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation1);
-+                field_192828_d.info("Tried to load unrecognized recipe: {} removed now.", (Object)resourcelocation1);
+-                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation1);
++                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", (Object)resourcelocation1);
              }
              else
              {
 @@ -124,7 +123,7 @@
  
-     private List<IRecipe> func_194079_d()
+     private List<IRecipe> getRecipes()
      {
 -        List<IRecipe> list = Lists.newArrayList();
 +        List<IRecipe> list = Lists.<IRecipe>newArrayList();
  
-         for (int i = this.field_194077_a.nextSetBit(0); i >= 0; i = this.field_194077_a.nextSetBit(i + 1))
+         for (int i = this.recipes.nextSetBit(0); i >= 0; i = this.recipes.nextSetBit(i + 1))
          {
 @@ -136,7 +135,7 @@
  
-     private List<IRecipe> func_194080_e()
+     private List<IRecipe> getDisplayedRecipes()
      {
 -        List<IRecipe> list = Lists.newArrayList();
 +        List<IRecipe> list = Lists.<IRecipe>newArrayList();
  
-         for (int i = this.field_194078_b.nextSetBit(0); i >= 0; i = this.field_194078_b.nextSetBit(i + 1))
+         for (int i = this.newRecipes.nextSetBit(0); i >= 0; i = this.newRecipes.nextSetBit(i + 1))
          {
 @@ -148,9 +147,6 @@
  
-     public void func_192826_c(EntityPlayerMP p_192826_1_)
+     public void init(EntityPlayerMP player)
      {
--        p_192826_1_.field_71135_a
--        .func_147359_a(
--            new SPacketRecipeBook(SPacketRecipeBook.State.INIT, this.func_194079_d(), this.func_194080_e(), this.field_192818_b, this.field_192819_c)
+-        player.connection
+-        .sendPacket(
+-            new SPacketRecipeBook(SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable)
 -        );
-+        net.minecraftforge.common.ForgeHooks.sendRecipeBook(p_192826_1_.field_71135_a, SPacketRecipeBook.State.INIT, this.func_194079_d(), this.func_194080_e(), this.field_192818_b, this.field_192819_c);
++        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable);
      }
  }

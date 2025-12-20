@@ -1,26 +1,26 @@
 --- before/net/minecraft/nbt/NBTTagString.java
 +++ after/net/minecraft/nbt/NBTTagString.java
 @@ -20,27 +20,23 @@
-         this.field_74751_a = p_i1389_1_;
+         this.data = data;
      }
  
 -    @Override
-     void func_74734_a(DataOutput p_74734_1_) throws IOException
+     void write(DataOutput output) throws IOException
      {
-         p_74734_1_.writeUTF(this.field_74751_a);
+         output.writeUTF(this.data);
      }
  
 -    @Override
-     void func_152446_a(DataInput p_152446_1_, int p_152446_2_, NBTSizeTracker p_152446_3_) throws IOException
+     void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
      {
-         p_152446_3_.func_152450_a(288L);
-         this.field_74751_a = p_152446_1_.readUTF();
--        p_152446_3_.func_152450_a((long)(16 * this.field_74751_a.length()));
-+        NBTSizeTracker.readUTF(p_152446_3_, field_74751_a); // Forge: Correctly read String length including header.
+         sizeTracker.read(288L);
+         this.data = input.readUTF();
+-        sizeTracker.read((long)(16 * this.data.length()));
++        NBTSizeTracker.readUTF(sizeTracker, data); // Forge: Correctly read String length including header.
      }
  
 -    @Override
-     public byte func_74732_a()
+     public byte getId()
      {
          return 8;
      }
@@ -28,15 +28,15 @@
 -    @Override
      public String toString()
      {
-         return func_193588_a(this.field_74751_a);
+         return quoteAndEscape(this.data);
 @@ -51,13 +47,11 @@
-         return new NBTTagString(this.field_74751_a);
+         return new NBTTagString(this.data);
      }
  
 -    @Override
-     public boolean func_82582_d()
+     public boolean isEmpty()
      {
-         return this.field_74751_a.isEmpty();
+         return this.data.isEmpty();
      }
  
 -    @Override
@@ -50,13 +50,13 @@
 -    @Override
      public int hashCode()
      {
-         return super.hashCode() ^ this.field_74751_a.hashCode();
+         return super.hashCode() ^ this.data.hashCode();
      }
  
 -    @Override
-     public String func_150285_a_()
+     public String getString()
      {
-         return this.field_74751_a;
+         return this.data;
 @@ -87,7 +79,7 @@
      {
          StringBuilder stringbuilder = new StringBuilder("\"");

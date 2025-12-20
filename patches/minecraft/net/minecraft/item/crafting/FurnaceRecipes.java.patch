@@ -3,71 +3,71 @@
 @@ -15,8 +15,8 @@
  public class FurnaceRecipes
  {
-     private static final FurnaceRecipes field_77606_a = new FurnaceRecipes();
--    private final Map<ItemStack, ItemStack> field_77604_b = Maps.newHashMap();
--    private final Map<ItemStack, Float> field_77605_c = Maps.newHashMap();
-+    private final Map<ItemStack, ItemStack> field_77604_b = Maps.<ItemStack, ItemStack>newHashMap();
-+    private final Map<ItemStack, Float> field_77605_c = Maps.<ItemStack, Float>newHashMap();
+     private static final FurnaceRecipes SMELTING_BASE = new FurnaceRecipes();
+-    private final Map<ItemStack, ItemStack> smeltingList = Maps.newHashMap();
+-    private final Map<ItemStack, Float> experienceList = Maps.newHashMap();
++    private final Map<ItemStack, ItemStack> smeltingList = Maps.<ItemStack, ItemStack>newHashMap();
++    private final Map<ItemStack, Float> experienceList = Maps.<ItemStack, Float>newHashMap();
  
-     public static FurnaceRecipes func_77602_a()
+     public static FurnaceRecipes instance()
      {
 @@ -35,11 +35,7 @@
-         this.func_151396_a(Items.field_179558_bo, new ItemStack(Items.field_179559_bp), 0.35F);
-         this.func_151396_a(Items.field_179561_bm, new ItemStack(Items.field_179557_bn), 0.35F);
-         this.func_151393_a(Blocks.field_150347_e, new ItemStack(Blocks.field_150348_b), 0.1F);
--        this.func_151394_a(
--            new ItemStack(Blocks.field_150417_aV, 1, BlockStoneBrick.field_176248_b),
--            new ItemStack(Blocks.field_150417_aV, 1, BlockStoneBrick.field_176251_N),
+         this.addSmelting(Items.RABBIT, new ItemStack(Items.COOKED_RABBIT), 0.35F);
+         this.addSmelting(Items.MUTTON, new ItemStack(Items.COOKED_MUTTON), 0.35F);
+         this.addSmeltingRecipeForBlock(Blocks.COBBLESTONE, new ItemStack(Blocks.STONE), 0.1F);
+-        this.addSmeltingRecipe(
+-            new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.DEFAULT_META),
+-            new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.CRACKED_META),
 -            0.1F
 -        );
-+        this.func_151394_a(new ItemStack(Blocks.field_150417_aV, 1, BlockStoneBrick.field_176248_b), new ItemStack(Blocks.field_150417_aV, 1, BlockStoneBrick.field_176251_N), 0.1F);
-         this.func_151396_a(Items.field_151119_aD, new ItemStack(Items.field_151118_aC), 0.3F);
-         this.func_151393_a(Blocks.field_150435_aG, new ItemStack(Blocks.field_150405_ch), 0.35F);
-         this.func_151393_a(Blocks.field_150434_aF, new ItemStack(Items.field_151100_aR, 1, EnumDyeColor.GREEN.func_176767_b()), 0.2F);
++        this.addSmeltingRecipe(new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.DEFAULT_META), new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.CRACKED_META), 0.1F);
+         this.addSmelting(Items.CLAY_BALL, new ItemStack(Items.BRICK), 0.3F);
+         this.addSmeltingRecipeForBlock(Blocks.CLAY, new ItemStack(Blocks.HARDENED_CLAY), 0.35F);
+         this.addSmeltingRecipeForBlock(Blocks.CACTUS, new ItemStack(Items.DYE, 1, EnumDyeColor.GREEN.getDyeDamage()), 0.2F);
 @@ -55,11 +51,7 @@
          {
-             if (itemfishfood$fishtype.func_150973_i())
+             if (itemfishfood$fishtype.canCook())
              {
--                this.func_151394_a(
--                    new ItemStack(Items.field_151115_aP, 1, itemfishfood$fishtype.func_150976_a()),
--                    new ItemStack(Items.field_179566_aV, 1, itemfishfood$fishtype.func_150976_a()),
+-                this.addSmeltingRecipe(
+-                    new ItemStack(Items.FISH, 1, itemfishfood$fishtype.getMetadata()),
+-                    new ItemStack(Items.COOKED_FISH, 1, itemfishfood$fishtype.getMetadata()),
 -                    0.35F
 -                );
-+                this.func_151394_a(new ItemStack(Items.field_151115_aP, 1, itemfishfood$fishtype.func_150976_a()), new ItemStack(Items.field_179566_aV, 1, itemfishfood$fishtype.func_150976_a()), 0.35F);
++                this.addSmeltingRecipe(new ItemStack(Items.FISH, 1, itemfishfood$fishtype.getMetadata()), new ItemStack(Items.COOKED_FISH, 1, itemfishfood$fishtype.getMetadata()), 0.35F);
              }
          }
  
 @@ -121,8 +113,9 @@
  
-     public void func_151394_a(ItemStack p_151394_1_, ItemStack p_151394_2_, float p_151394_3_)
+     public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience)
      {
-+        if (func_151395_a(p_151394_1_) != ItemStack.field_190927_a) { net.minecraftforge.fml.common.FMLLog.log.info("Ignored smelting recipe with conflicting input: {} = {}", p_151394_1_, p_151394_2_); return; }
-         this.field_77604_b.put(p_151394_1_, p_151394_2_);
--        this.field_77605_c.put(p_151394_2_, p_151394_3_);
-+        this.field_77605_c.put(p_151394_2_, Float.valueOf(p_151394_3_));
++        if (getSmeltingResult(input) != ItemStack.EMPTY) { net.minecraftforge.fml.common.FMLLog.log.info("Ignored smelting recipe with conflicting input: {} = {}", input, stack); return; }
+         this.smeltingList.put(input, stack);
+-        this.experienceList.put(stack, experience);
++        this.experienceList.put(stack, Float.valueOf(experience));
      }
  
-     public ItemStack func_151395_a(ItemStack p_151395_1_)
+     public ItemStack getSmeltingResult(ItemStack stack)
 @@ -140,8 +133,7 @@
  
-     private boolean func_151397_a(ItemStack p_151397_1_, ItemStack p_151397_2_)
+     private boolean compareItemStacks(ItemStack stack1, ItemStack stack2)
      {
--        return p_151397_2_.func_77973_b() == p_151397_1_.func_77973_b()
--               && (p_151397_2_.func_77960_j() == 32767 || p_151397_2_.func_77960_j() == p_151397_1_.func_77960_j());
-+        return p_151397_2_.func_77973_b() == p_151397_1_.func_77973_b() && (p_151397_2_.func_77960_j() == 32767 || p_151397_2_.func_77960_j() == p_151397_1_.func_77960_j());
+-        return stack2.getItem() == stack1.getItem()
+-               && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
++        return stack2.getItem() == stack1.getItem() && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
      }
  
-     public Map<ItemStack, ItemStack> func_77599_b()
+     public Map<ItemStack, ItemStack> getSmeltingList()
 @@ -151,11 +143,14 @@
  
-     public float func_151398_b(ItemStack p_151398_1_)
+     public float getSmeltingExperience(ItemStack stack)
      {
-+        float ret = p_151398_1_.func_77973_b().getSmeltingExperience(p_151398_1_);
++        float ret = stack.getItem().getSmeltingExperience(stack);
 +        if (ret != -1) return ret;
 +
-         for (Entry<ItemStack, Float> entry : this.field_77605_c.entrySet())
+         for (Entry<ItemStack, Float> entry : this.experienceList.entrySet())
          {
-             if (this.func_151397_a(p_151398_1_, entry.getKey()))
+             if (this.compareItemStacks(stack, entry.getKey()))
              {
 -                return entry.getValue();
 +                return ((Float)entry.getValue()).floatValue();

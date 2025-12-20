@@ -81,10 +81,11 @@ import javax.annotation.Nullable;
 public class FMLModContainer implements ModContainer
 {
     private Object modInstance;
-    private File source;
+    private final File source;
+    private final File resource;
     private ModMetadata modMetadata;
-    private String className;
-    private Map<String, Object> descriptor;
+    private final String className;
+    private final Map<String, Object> descriptor;
     private boolean enabled = true;
     private String internalVersion;
     private boolean overridesMetadata;
@@ -94,15 +95,16 @@ public class FMLModContainer implements ModContainer
 
     private String annotationDependencies;
     private VersionRange minecraftAccepted;
+    private boolean hasExpectedFingerprint;
     private boolean fingerprintNotPresent;
     private Set<String> sourceFingerprints;
     private Certificate certificate;
-    private String modLanguage;
+    private final String modLanguage;
     private ILanguageAdapter languageAdapter;
     private Disableable disableability;
-    private ListMultimap<Class<? extends FMLEvent>, Method> eventMethods;
+    private final ListMultimap<Class<? extends FMLEvent>, Method> eventMethods;
     private Map<String, String> customModProperties;
-    private ModCandidate candidate;
+    private final ModCandidate candidate;
     private URL updateJSONUrl;
     private int classVersion;
 
@@ -110,6 +112,7 @@ public class FMLModContainer implements ModContainer
     {
         this.className = className;
         this.source = container.getModContainer();
+        this.resource = container.getResourcePathRoot();
         this.candidate = container;
         this.descriptor = modDescriptor;
         this.eventMethods = ArrayListMultimap.create();
@@ -177,6 +180,14 @@ public class FMLModContainer implements ModContainer
         return languageAdapter;
     }
 
+    public boolean hasExpectedFingerprint() {
+        return hasExpectedFingerprint;
+    }
+
+    public boolean isFingerprintNotPresent() {
+        return fingerprintNotPresent;
+    }
+
     @Override
     public String getModId()
     {
@@ -194,11 +205,23 @@ public class FMLModContainer implements ModContainer
     {
         return internalVersion;
     }
+    
+    @Override
+    public String getModLanguage()
+    {
+        return modLanguage;
+    }
 
     @Override
     public File getSource()
     {
         return source;
+    }
+    
+    @Override
+    public File getResource()
+    {
+        return resource;
     }
 
     @Override
@@ -556,6 +579,7 @@ public class FMLModContainer implements ModContainer
 
         if (expectedFingerprint != null && !expectedFingerprint.isEmpty())
         {
+            hasExpectedFingerprint = true;
             if (!sourceFingerprints.contains(expectedFingerprint))
             {
                 Level warnLevel = source.isDirectory() ? Level.TRACE : Level.ERROR;
@@ -696,7 +720,7 @@ public class FMLModContainer implements ModContainer
     {
         try
         {
-            return getSource().isDirectory() ? Class.forName("net.minecraftforge.fml.client.FMLFolderResourcePack", true, getClass().getClassLoader()) : Class.forName("net.minecraftforge.fml.client.FMLFileResourcePack", true, getClass().getClassLoader());
+            return getResource().isDirectory() ? Class.forName("net.minecraftforge.fml.client.FMLFolderResourcePack", true, getClass().getClassLoader()) : Class.forName("net.minecraftforge.fml.client.FMLFileResourcePack", true, getClass().getClassLoader());
         }
         catch (ClassNotFoundException e)
         {

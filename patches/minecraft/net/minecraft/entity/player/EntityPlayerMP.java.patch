@@ -1,788 +1,146 @@
 --- before/net/minecraft/entity/player/EntityPlayerMP.java
 +++ after/net/minecraft/entity/player/EntityPlayerMP.java
-@@ -123,7 +123,7 @@
-     public final PlayerInteractionManager field_71134_c;
-     public double field_71131_d;
-     public double field_71132_e;
--    private final List<Integer> field_71130_g = Lists.newLinkedList();
-+    private final List<Integer> field_71130_g = Lists.<Integer>newLinkedList();
-     private final PlayerAdvancements field_192042_bX;
-     private final StatisticsManagerServer field_147103_bO;
-     private float field_130068_bO = Float.MIN_VALUE;
 @@ -158,9 +158,9 @@
-         super(p_i45285_2_, p_i45285_3_);
-         p_i45285_4_.field_73090_b = this;
-         this.field_71134_c = p_i45285_4_;
--        BlockPos blockpos = p_i45285_2_.func_175694_M();
-+        BlockPos blockpos = p_i45285_2_.field_73011_w.getRandomizedSpawnPoint();
+         super(worldIn, profile);
+         interactionManagerIn.player = this;
+         this.interactionManager = interactionManagerIn;
+-        BlockPos blockpos = worldIn.getSpawnPoint();
++        BlockPos blockpos = worldIn.provider.getRandomizedSpawnPoint();
  
--        if (p_i45285_2_.field_73011_w.func_191066_m() && p_i45285_2_.func_72912_H().func_76077_q() != GameType.ADVENTURE)
-+        if (false && p_i45285_2_.field_73011_w.func_191066_m() && p_i45285_2_.func_72912_H().func_76077_q() != GameType.ADVENTURE)
+-        if (worldIn.provider.hasSkyLight() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE)
++        if (false && worldIn.provider.hasSkyLight() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE)
          {
-             int i = Math.max(0, p_i45285_1_.func_184108_a(p_i45285_2_));
-             int j = MathHelper.func_76128_c(p_i45285_2_.func_175723_af().func_177729_b((double)blockpos.func_177958_n(), (double)blockpos.func_177952_p()));
-@@ -184,13 +184,12 @@
-         this.field_70138_W = 1.0F;
-         this.func_174828_a(blockpos, 0.0F, 0.0F);
+             int i = Math.max(0, server.getSpawnRadius(worldIn));
+             int j = MathHelper.floor(worldIn.getWorldBorder().getClosestDistance((double)blockpos.getX(), (double)blockpos.getZ()));
+@@ -333,7 +333,7 @@
  
--        while (!p_i45285_2_.func_184144_a(this, this.func_174813_aQ()).isEmpty() && this.field_70163_u < 255.0)
-+        while (!p_i45285_2_.func_184144_a(this, this.func_174813_aQ()).isEmpty() && this.field_70163_u < 255.0D)
+         this.openContainer.detectAndSendChanges();
+ 
+-        if (!this.world.isRemote && !this.openContainer.canInteractWith(this))
++        if (!this.world.isRemote && this.openContainer != null && !this.openContainer.canInteractWith(this))
          {
--            this.func_70107_b(this.field_70165_t, this.field_70163_u + 1.0, this.field_70161_v);
-+            this.func_70107_b(this.field_70165_t, this.field_70163_u + 1.0D, this.field_70161_v);
-         }
-     }
- 
--    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+             this.closeScreen();
+             this.openContainer = this.inventoryContainer;
+@@ -485,6 +485,7 @@
+     @Override
+     public void onDeath(DamageSource cause)
      {
-         super.func_70037_a(p_70037_1_);
-@@ -225,7 +224,6 @@
-     {
-         p_191522_0_.func_188258_a(FixTypes.PLAYER, new IDataWalker()
-         {
--            @Override
-             public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
-             {
-                 if (p_188266_2_.func_150297_b("RootVehicle", 10))
-@@ -243,7 +241,6 @@
-         });
-     }
++        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, cause)) return;
+         boolean flag = this.world.getGameRules().getBoolean("showDeathMessages");
+         this.connection.sendPacket(new SPacketCombatEvent(this.getCombatTracker(), SPacketCombatEvent.Event.ENTITY_DIED, flag));
  
--    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
-     {
-         super.func_70014_b(p_70014_1_);
-@@ -275,14 +272,12 @@
-         p_70014_1_.func_74782_a("recipeBook", this.field_192041_cq.func_192824_e());
-     }
+@@ -510,8 +511,20 @@
  
--    @Override
-     public void func_82242_a(int p_82242_1_)
-     {
-         super.func_82242_a(p_82242_1_);
-         this.field_71144_ck = -1;
-     }
- 
--    @Override
-     public void func_192024_a(ItemStack p_192024_1_, int p_192024_2_)
-     {
-         super.func_192024_a(p_192024_1_, p_192024_2_);
-@@ -294,46 +289,41 @@
-         this.field_71070_bA.func_75132_a(this);
-     }
- 
--    @Override
-     public void func_152111_bt()
-     {
-         super.func_152111_bt();
-         this.field_71135_a.func_147359_a(new SPacketCombatEvent(this.func_110142_aN(), SPacketCombatEvent.Event.ENTER_COMBAT));
-     }
- 
--    @Override
-     public void func_152112_bu()
-     {
-         super.func_152112_bu();
-         this.field_71135_a.func_147359_a(new SPacketCombatEvent(this.func_110142_aN(), SPacketCombatEvent.Event.END_COMBAT));
-     }
- 
--    @Override
-     protected void func_191955_a(IBlockState p_191955_1_)
-     {
-         CriteriaTriggers.field_192124_d.func_192193_a(this, p_191955_1_);
-     }
- 
--    @Override
-     protected CooldownTracker func_184815_l()
-     {
-         return new CooldownTrackerServer(this);
-     }
- 
--    @Override
-     public void func_70071_h_()
-     {
-         this.field_71134_c.func_73075_a();
--        this.field_147101_bU--;
-+        --this.field_147101_bU;
- 
-         if (this.field_70172_ad > 0)
-         {
--            this.field_70172_ad--;
-+            --this.field_70172_ad;
-         }
- 
-         this.field_71070_bA.func_75142_b();
- 
--        if (!this.field_70170_p.field_72995_K && !this.field_71070_bA.func_75145_c(this))
-+        if (!this.field_70170_p.field_72995_K && this.field_71070_bA != null && !this.field_71070_bA.func_75145_c(this))
-         {
-             this.func_71053_j();
-             this.field_71070_bA = this.field_71069_bz;
-@@ -348,7 +338,7 @@
- 
-             while (iterator.hasNext() && j < i)
-             {
--                aint[j++] = iterator.next();
-+                aint[j++] = ((Integer)iterator.next()).intValue();
-                 iterator.remove();
-             }
- 
-@@ -391,7 +381,7 @@
-         {
-             super.func_70071_h_();
- 
--            for (int i = 0; i < this.field_71071_by.func_70302_i_(); i++)
-+            for (int i = 0; i < this.field_71071_by.func_70302_i_(); ++i)
-             {
-                 ItemStack itemstack = this.field_71071_by.func_70301_a(i);
- 
-@@ -406,12 +396,9 @@
-                 }
-             }
- 
--            if (this.func_110143_aJ() != this.field_71149_ch
--                    || this.field_71146_ci != this.field_71100_bB.func_75116_a()
--                    || this.field_71100_bB.func_75115_e() == 0.0F != this.field_71147_cj)
-+            if (this.func_110143_aJ() != this.field_71149_ch || this.field_71146_ci != this.field_71100_bB.func_75116_a() || this.field_71100_bB.func_75115_e() == 0.0F != this.field_71147_cj)
-             {
--                this.field_71135_a
--                .func_147359_a(new SPacketUpdateHealth(this.func_110143_aJ(), this.field_71100_bB.func_75116_a(), this.field_71100_bB.func_75115_e()));
-+                this.field_71135_a.func_147359_a(new SPacketUpdateHealth(this.func_110143_aJ(), this.field_71100_bB.func_75116_a(), this.field_71100_bB.func_75115_e()));
-                 this.field_71149_ch = this.func_110143_aJ();
-                 this.field_71146_ci = this.field_71100_bB.func_75116_a();
-                 this.field_71147_cj = this.field_71100_bB.func_75115_e() == 0.0F;
-@@ -482,9 +469,9 @@
-         }
-     }
- 
--    @Override
-     public void func_70645_a(DamageSource p_70645_1_)
-     {
-+        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_70645_1_)) return;
-         boolean flag = this.field_70170_p.func_82736_K().func_82766_b("showDeathMessages");
-         this.field_71135_a.func_147359_a(new SPacketCombatEvent(this.func_110142_aN(), SPacketCombatEvent.Event.ENTITY_DIED, flag));
- 
-@@ -492,26 +479,41 @@
-         {
-             Team team = this.func_96124_cp();
- 
--            if (team == null || team.func_178771_j() == Team.EnumVisible.ALWAYS)
-+            if (team != null && team.func_178771_j() != Team.EnumVisible.ALWAYS)
-+            {
-+                if (team.func_178771_j() == Team.EnumVisible.HIDE_FOR_OTHER_TEAMS)
-+                {
-+                    this.field_71133_b.func_184103_al().func_177453_a(this, this.func_110142_aN().func_151521_b());
-+                }
-+                else if (team.func_178771_j() == Team.EnumVisible.HIDE_FOR_OWN_TEAM)
-+                {
-+                    this.field_71133_b.func_184103_al().func_177452_b(this, this.func_110142_aN().func_151521_b());
-+                }
-+            }
-+            else
-             {
-                 this.field_71133_b.func_184103_al().func_148539_a(this.func_110142_aN().func_151521_b());
-             }
--            else if (team.func_178771_j() == Team.EnumVisible.HIDE_FOR_OTHER_TEAMS)
--            {
--                this.field_71133_b.func_184103_al().func_177453_a(this, this.func_110142_aN().func_151521_b());
--            }
--            else if (team.func_178771_j() == Team.EnumVisible.HIDE_FOR_OWN_TEAM)
--            {
--                this.field_71133_b.func_184103_al().func_177452_b(this, this.func_110142_aN().func_151521_b());
--            }
-         }
- 
-         this.func_192030_dh();
- 
-         if (!this.field_70170_p.func_82736_K().func_82766_b("keepInventory") && !this.func_175149_v())
+         if (!this.world.getGameRules().getBoolean("keepInventory") && !this.isSpectator())
          {
 +            captureDrops = true;
 +            capturedDrops.clear();
-             this.func_190776_cN();
-             this.field_71071_by.func_70436_m();
+             this.destroyVanishingCursedItems();
+             this.inventory.dropAllItems();
 +
 +            captureDrops = false;
-+            net.minecraftforge.event.entity.player.PlayerDropsEvent event = new net.minecraftforge.event.entity.player.PlayerDropsEvent(this, p_70645_1_, capturedDrops, field_70718_bc > 0);
++            net.minecraftforge.event.entity.player.PlayerDropsEvent event = new net.minecraftforge.event.entity.player.PlayerDropsEvent(this, cause, capturedDrops, recentlyHit > 0);
 +            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
 +            {
 +                for (net.minecraft.entity.item.EntityItem item : capturedDrops)
 +                {
-+                    this.field_70170_p.func_72838_d(item);
++                    this.world.spawnEntity(item);
 +                }
 +            }
          }
  
-         for (ScoreObjective scoreobjective : this.field_70170_p.func_96441_U().func_96520_a(IScoreCriteria.field_96642_c))
-@@ -541,7 +543,6 @@
-         this.func_110142_aN().func_94549_h();
-     }
- 
--    @Override
-     public void func_191956_a(Entity p_191956_1_, int p_191956_2_, DamageSource p_191956_3_)
-     {
-         if (p_191956_1_ != this)
-@@ -602,10 +603,9 @@
-             }
-         }
- 
--        return Lists.newArrayList();
-+        return Lists.<ScoreObjective>newArrayList();
-     }
- 
--    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
-     {
-         if (this.func_180431_b(p_70097_1_))
-@@ -647,7 +647,6 @@
-         }
-     }
- 
--    @Override
-     public boolean func_96122_a(EntityPlayer p_96122_1_)
-     {
-         return !this.func_175400_cq() ? false : super.func_96122_a(p_96122_1_);
-@@ -659,9 +658,9 @@
-     }
+         for (ScoreObjective scoreobjective : this.world.getScoreboard().getObjectivesFromCriteria(IScoreCriteria.DEATH_COUNT))
+@@ -660,8 +673,9 @@
  
      @Nullable
--    @Override
--    public Entity func_184204_a(int p_184204_1_)
-+    public Entity changeDimension(int p_184204_1_, net.minecraftforge.common.util.ITeleporter teleporter)
+     @Override
+-    public Entity changeDimension(int dimensionIn)
++    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
      {
-+        if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_184204_1_)) return this;
-         this.field_184851_cj = true;
++        if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, dimensionIn)) return this;
+         this.invulnerableDimensionChange = true;
  
-         if (this.field_71093_bK == 0 && p_184204_1_ == -1)
-@@ -673,7 +672,7 @@
-             this.field_193110_cw = null;
+         if (this.dimension == 0 && dimensionIn == -1)
+@@ -673,7 +687,7 @@
+             this.enteredNetherPosition = null;
          }
  
--        if (this.field_71093_bK == 1 && p_184204_1_ == 1)
-+        if (this.field_71093_bK == 1 && p_184204_1_ == 1 && teleporter.isVanilla())
+-        if (this.dimension == 1 && dimensionIn == 1)
++        if (this.dimension == 1 && dimensionIn == 1 && teleporter.isVanilla())
          {
-             this.field_70170_p.func_72900_e(this);
+             this.world.removeEntity(this);
  
-@@ -693,7 +692,7 @@
-                 p_184204_1_ = 1;
+@@ -693,7 +707,7 @@
+                 dimensionIn = 1;
              }
  
--            this.field_71133_b.func_184103_al().func_187242_a(this, p_184204_1_);
-+            this.field_71133_b.func_184103_al().transferPlayerToDimension(this, p_184204_1_, teleporter);
-             this.field_71135_a.func_147359_a(new SPacketEffect(1032, BlockPos.field_177992_a, 0, false));
-             this.field_71144_ck = -1;
-             this.field_71149_ch = -1.0F;
-@@ -702,7 +701,6 @@
-         }
-     }
- 
--    @Override
-     public boolean func_174827_a(EntityPlayerMP p_174827_1_)
-     {
-         if (p_174827_1_.func_175149_v())
-@@ -728,14 +726,12 @@
-         }
-     }
- 
--    @Override
-     public void func_71001_a(Entity p_71001_1_, int p_71001_2_)
-     {
-         super.func_71001_a(p_71001_1_, p_71001_2_);
-         this.field_71070_bA.func_75142_b();
-     }
- 
--    @Override
-     public EntityPlayer.SleepResult func_180469_a(BlockPos p_180469_1_)
-     {
-         EntityPlayer.SleepResult entityplayer$sleepresult = super.func_180469_a(p_180469_1_);
-@@ -753,7 +749,6 @@
-         return entityplayer$sleepresult;
-     }
- 
--    @Override
-     public void func_70999_a(boolean p_70999_1_, boolean p_70999_2_, boolean p_70999_3_)
-     {
-         if (this.func_70608_bn())
-@@ -769,7 +764,6 @@
-         }
-     }
- 
--    @Override
-     public boolean func_184205_a(Entity p_184205_1_, boolean p_184205_2_)
-     {
-         Entity entity = this.func_184187_bx();
-@@ -791,7 +785,6 @@
-         }
-     }
- 
--    @Override
-     public void func_184210_p()
-     {
-         Entity entity = this.func_184187_bx();
-@@ -804,18 +797,15 @@
-         }
-     }
- 
--    @Override
-     public boolean func_180431_b(DamageSource p_180431_1_)
-     {
-         return super.func_180431_b(p_180431_1_) || this.func_184850_K();
-     }
- 
--    @Override
-     protected void func_184231_a(double p_184231_1_, boolean p_184231_3_, IBlockState p_184231_4_, BlockPos p_184231_5_)
-     {
-     }
- 
--    @Override
-     protected void func_184594_b(BlockPos p_184594_1_)
-     {
-         if (!this.func_175149_v())
-@@ -827,12 +817,12 @@
-     public void func_71122_b(double p_71122_1_, boolean p_71122_3_)
-     {
-         int i = MathHelper.func_76128_c(this.field_70165_t);
--        int j = MathHelper.func_76128_c(this.field_70163_u - 0.2F);
-+        int j = MathHelper.func_76128_c(this.field_70163_u - 0.20000000298023224D);
-         int k = MathHelper.func_76128_c(this.field_70161_v);
+-            this.server.getPlayerList().changePlayerDimension(this, dimensionIn);
++            this.server.getPlayerList().transferPlayerToDimension(this, dimensionIn, teleporter);
+             this.connection.sendPacket(new SPacketEffect(1032, BlockPos.ORIGIN, 0, false));
+             this.lastExperience = -1;
+             this.lastHealth = -1.0F;
+@@ -832,7 +846,7 @@
          BlockPos blockpos = new BlockPos(i, j, k);
-         IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
+         IBlockState iblockstate = this.world.getBlockState(blockpos);
  
--        if (iblockstate.func_185904_a() == Material.field_151579_a)
-+        if (iblockstate.func_177230_c().isAir(iblockstate, this.field_70170_p, blockpos))
+-        if (iblockstate.getMaterial() == Material.AIR)
++        if (iblockstate.getBlock().isAir(iblockstate, this.world, blockpos))
          {
-             BlockPos blockpos1 = blockpos.func_177977_b();
-             IBlockState iblockstate1 = this.field_70170_p.func_180495_p(blockpos1);
-@@ -848,7 +838,6 @@
-         super.func_184231_a(p_71122_1_, p_71122_3_, iblockstate, blockpos);
-     }
- 
--    @Override
-     public void func_175141_a(TileEntitySign p_175141_1_)
-     {
-         p_175141_1_.func_145912_a(this);
-@@ -860,12 +849,11 @@
-         this.field_71139_cq = this.field_71139_cq % 100 + 1;
-     }
- 
--    @Override
-     public void func_180468_a(IInteractionObject p_180468_1_)
-     {
-         if (p_180468_1_ instanceof ILootContainer && ((ILootContainer)p_180468_1_).func_184276_b() != null && this.func_175149_v())
-         {
--            this.func_146105_b(new TextComponentTranslation("container.spectatorCantOpen").func_150255_a(new Style().func_150238_a(TextFormatting.RED)), true);
-+            this.func_146105_b((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).func_150255_a((new Style()).func_150238_a(TextFormatting.RED)), true);
-         }
-         else
-         {
-@@ -874,15 +862,15 @@
-             this.field_71070_bA = p_180468_1_.func_174876_a(this.field_71071_by, this);
-             this.field_71070_bA.field_75152_c = this.field_71139_cq;
-             this.field_71070_bA.func_75132_a(this);
-+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.field_71070_bA));
+             BlockPos blockpos1 = blockpos.down();
+             IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
+@@ -874,6 +888,7 @@
+             this.openContainer = guiOwner.createContainer(this.inventory, this);
+             this.openContainer.windowId = this.currentWindowId;
+             this.openContainer.addListener(this);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
          }
      }
  
--    @Override
-     public void func_71007_a(IInventory p_71007_1_)
-     {
-         if (p_71007_1_ instanceof ILootContainer && ((ILootContainer)p_71007_1_).func_184276_b() != null && this.func_175149_v())
-         {
--            this.func_146105_b(new TextComponentTranslation("container.spectatorCantOpen").func_150255_a(new Style().func_150238_a(TextFormatting.RED)), true);
-+            this.func_146105_b((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).func_150255_a((new Style()).func_150238_a(TextFormatting.RED)), true);
-         }
-         else
-         {
-@@ -897,14 +885,8 @@
+@@ -930,6 +945,7 @@
  
-                 if (ilockablecontainer.func_174893_q_() && !this.func_175146_a(ilockablecontainer.func_174891_i()) && !this.func_175149_v())
-                 {
--                    this.field_71135_a
--                    .func_147359_a(new SPacketChat(new TextComponentTranslation("container.isLocked", p_71007_1_.func_145748_c_()), ChatType.GAME_INFO));
--                    this.field_71135_a
--                    .func_147359_a(
--                        new SPacketSoundEffect(
--                            SoundEvents.field_187654_U, SoundCategory.BLOCKS, this.field_70165_t, this.field_70163_u, this.field_70161_v, 1.0F, 1.0F
--                        )
--                    );
-+                    this.field_71135_a.func_147359_a(new SPacketChat(new TextComponentTranslation("container.isLocked", new Object[] {p_71007_1_.func_145748_c_()}), ChatType.GAME_INFO));
-+                    this.field_71135_a.func_147359_a(new SPacketSoundEffect(SoundEvents.field_187654_U, SoundCategory.BLOCKS, this.field_70165_t, this.field_70163_u, this.field_70161_v, 1.0F, 1.0F));
-                     return;
-                 }
-             }
-@@ -913,33 +895,28 @@
- 
-             if (p_71007_1_ instanceof IInteractionObject)
-             {
--                this.field_71135_a
--                .func_147359_a(
--                    new SPacketOpenWindow(
--                        this.field_71139_cq, ((IInteractionObject)p_71007_1_).func_174875_k(), p_71007_1_.func_145748_c_(), p_71007_1_.func_70302_i_()
--                    )
--                );
-+                this.field_71135_a.func_147359_a(new SPacketOpenWindow(this.field_71139_cq, ((IInteractionObject)p_71007_1_).func_174875_k(), p_71007_1_.func_145748_c_(), p_71007_1_.func_70302_i_()));
-                 this.field_71070_bA = ((IInteractionObject)p_71007_1_).func_174876_a(this.field_71071_by, this);
-             }
-             else
-             {
--                this.field_71135_a
--                .func_147359_a(new SPacketOpenWindow(this.field_71139_cq, "minecraft:container", p_71007_1_.func_145748_c_(), p_71007_1_.func_70302_i_()));
-+                this.field_71135_a.func_147359_a(new SPacketOpenWindow(this.field_71139_cq, "minecraft:container", p_71007_1_.func_145748_c_(), p_71007_1_.func_70302_i_()));
-                 this.field_71070_bA = new ContainerChest(this.field_71071_by, p_71007_1_, this);
-             }
- 
-             this.field_71070_bA.field_75152_c = this.field_71139_cq;
-             this.field_71070_bA.func_75132_a(this);
-+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.field_71070_bA));
+             this.openContainer.windowId = this.currentWindowId;
+             this.openContainer.addListener(this);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
          }
      }
  
--    @Override
-     public void func_180472_a(IMerchant p_180472_1_)
+@@ -940,6 +956,7 @@
+         this.openContainer = new ContainerMerchant(this.inventory, villager, this.world);
+         this.openContainer.windowId = this.currentWindowId;
+         this.openContainer.addListener(this);
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
+         IInventory iinventory = ((ContainerMerchant)this.openContainer).getMerchantInventory();
+         ITextComponent itextcomponent = villager.getDisplayName();
+         this.connection.sendPacket(new SPacketOpenWindow(this.currentWindowId, "minecraft:villager", itextcomponent, iinventory.getSizeInventory()));
+@@ -1054,6 +1071,7 @@
+     public void closeContainer()
      {
-         this.func_71117_bO();
-         this.field_71070_bA = new ContainerMerchant(this.field_71071_by, p_180472_1_, this.field_70170_p);
-         this.field_71070_bA.field_75152_c = this.field_71139_cq;
-         this.field_71070_bA.func_75132_a(this);
-+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.field_71070_bA));
-         IInventory iinventory = ((ContainerMerchant)this.field_71070_bA).func_75174_d();
-         ITextComponent itextcomponent = p_180472_1_.func_145748_c_();
-         this.field_71135_a.func_147359_a(new SPacketOpenWindow(this.field_71139_cq, "minecraft:villager", itextcomponent, iinventory.func_70302_i_()));
-@@ -954,7 +931,6 @@
-         }
+         this.openContainer.onContainerClosed(this);
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Close(this, this.openContainer));
+         this.openContainer = this.inventoryContainer;
      }
  
--    @Override
-     public void func_184826_a(AbstractHorse p_184826_1_, IInventory p_184826_2_)
-     {
-         if (this.field_71070_bA != this.field_71069_bz)
-@@ -963,16 +939,12 @@
-         }
- 
-         this.func_71117_bO();
--        this.field_71135_a
--        .func_147359_a(
--            new SPacketOpenWindow(this.field_71139_cq, "EntityHorse", p_184826_2_.func_145748_c_(), p_184826_2_.func_70302_i_(), p_184826_1_.func_145782_y())
--        );
-+        this.field_71135_a.func_147359_a(new SPacketOpenWindow(this.field_71139_cq, "EntityHorse", p_184826_2_.func_145748_c_(), p_184826_2_.func_70302_i_(), p_184826_1_.func_145782_y()));
-         this.field_71070_bA = new ContainerHorseInventory(this.field_71071_by, p_184826_2_, p_184826_1_, this);
-         this.field_71070_bA.field_75152_c = this.field_71139_cq;
-         this.field_71070_bA.func_75132_a(this);
-     }
- 
--    @Override
-     public void func_184814_a(ItemStack p_184814_1_, EnumHand p_184814_2_)
-     {
-         Item item = p_184814_1_.func_77973_b();
-@@ -985,14 +957,12 @@
-         }
-     }
- 
--    @Override
-     public void func_184824_a(TileEntityCommandBlock p_184824_1_)
-     {
-         p_184824_1_.func_184252_d(true);
-         this.func_147097_b(p_184824_1_);
-     }
- 
--    @Override
-     public void func_71111_a(Container p_71111_1_, int p_71111_2_, ItemStack p_71111_3_)
-     {
-         if (!(p_71111_1_.func_75139_a(p_71111_2_) instanceof SlotCrafting))
-@@ -1014,29 +984,25 @@
-         this.func_71110_a(p_71120_1_, p_71120_1_.func_75138_a());
-     }
- 
--    @Override
-     public void func_71110_a(Container p_71110_1_, NonNullList<ItemStack> p_71110_2_)
-     {
-         this.field_71135_a.func_147359_a(new SPacketWindowItems(p_71110_1_.field_75152_c, p_71110_2_));
-         this.field_71135_a.func_147359_a(new SPacketSetSlot(-1, -1, this.field_71071_by.func_70445_o()));
-     }
- 
--    @Override
-     public void func_71112_a(Container p_71112_1_, int p_71112_2_, int p_71112_3_)
-     {
-         this.field_71135_a.func_147359_a(new SPacketWindowProperty(p_71112_1_.field_75152_c, p_71112_2_, p_71112_3_));
-     }
- 
--    @Override
-     public void func_175173_a(Container p_175173_1_, IInventory p_175173_2_)
-     {
--        for (int i = 0; i < p_175173_2_.func_174890_g(); i++)
-+        for (int i = 0; i < p_175173_2_.func_174890_g(); ++i)
-         {
-             this.field_71135_a.func_147359_a(new SPacketWindowProperty(p_175173_1_.field_75152_c, i, p_175173_2_.func_174887_a_(i)));
-         }
-     }
- 
--    @Override
-     public void func_71053_j()
-     {
-         this.field_71135_a.func_147359_a(new SPacketCloseWindow(this.field_71070_bA.field_75152_c));
-@@ -1054,6 +1020,7 @@
-     public void func_71128_l()
-     {
-         this.field_71070_bA.func_75134_a(this);
-+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Close(this, this.field_71070_bA));
-         this.field_71070_bA = this.field_71069_bz;
-     }
- 
-@@ -1076,7 +1043,6 @@
-         }
-     }
- 
--    @Override
-     public void func_71064_a(StatBase p_71064_1_, int p_71064_2_)
-     {
-         if (p_71064_1_ != null)
-@@ -1090,7 +1056,6 @@
-         }
-     }
- 
--    @Override
-     public void func_175145_a(StatBase p_175145_1_)
-     {
-         if (p_175145_1_ != null)
-@@ -1104,16 +1069,14 @@
-         }
-     }
- 
--    @Override
-     public void func_192021_a(List<IRecipe> p_192021_1_)
-     {
-         this.field_192041_cq.func_193835_a(p_192021_1_, this);
-     }
- 
--    @Override
-     public void func_193102_a(ResourceLocation[] p_193102_1_)
-     {
--        List<IRecipe> list = Lists.newArrayList();
-+        List<IRecipe> list = Lists.<IRecipe>newArrayList();
- 
-         for (ResourceLocation resourcelocation : p_193102_1_)
-         {
-@@ -1123,7 +1086,6 @@
-         this.func_192021_a(list);
-     }
- 
--    @Override
-     public void func_192022_b(List<IRecipe> p_192022_1_)
-     {
-         this.field_192041_cq.func_193834_b(p_192022_1_, this);
-@@ -1150,13 +1112,11 @@
-         this.field_71149_ch = -1.0E8F;
-     }
- 
--    @Override
-     public void func_146105_b(ITextComponent p_146105_1_, boolean p_146105_2_)
-     {
-         this.field_71135_a.func_147359_a(new SPacketChat(p_146105_1_, p_146105_2_ ? ChatType.GAME_INFO : ChatType.CHAT));
-     }
- 
--    @Override
-     protected void func_71036_o()
-     {
-         if (!this.field_184627_bm.func_190926_b() && this.func_184587_cr())
-@@ -1202,9 +1162,25 @@
-         this.field_193110_cw = p_193104_1_.field_193110_cw;
-         this.func_192029_h(p_193104_1_.func_192023_dk());
-         this.func_192031_i(p_193104_1_.func_192025_dl());
+@@ -1202,6 +1220,23 @@
+         this.enteredNetherPosition = that.enteredNetherPosition;
+         this.setLeftShoulderEntity(that.getLeftShoulderEntity());
+         this.setRightShoulderEntity(that.getRightShoulderEntity());
 +
-+        this.spawnChunkMap = p_193104_1_.spawnChunkMap;
-+        this.spawnForcedMap = p_193104_1_.spawnForcedMap;
-+        if(p_193104_1_.field_71093_bK != 0)
++        this.spawnChunkMap = that.spawnChunkMap;
++        this.spawnForcedMap = that.spawnForcedMap;
++        if(that.dimension != 0)
 +        {
-+            this.field_71077_c = p_193104_1_.field_71077_c;
-+            this.field_82248_d = p_193104_1_.field_82248_d;
++            this.spawnPos = that.spawnPos;
++            this.spawnForced = that.spawnForced;
 +        }
 +
 +        //Copy over a section of the Entity Data from the old player.
 +        //Allows mods to specify data that persists after players respawn.
-+        NBTTagCompound old = p_193104_1_.getEntityData();
-+        if (old.func_74764_b(PERSISTED_NBT_TAG))
++        NBTTagCompound old = that.getEntityData();
++        if (old.hasKey(PERSISTED_NBT_TAG))
 +        {
-+            getEntityData().func_74782_a(PERSISTED_NBT_TAG, old.func_74775_l(PERSISTED_NBT_TAG));
++            getEntityData().setTag(PERSISTED_NBT_TAG, old.getCompoundTag(PERSISTED_NBT_TAG));
 +        }
-+        net.minecraftforge.event.ForgeEventFactory.onPlayerClone(this, p_193104_1_, !p_193104_2_);
++        net.minecraftforge.event.ForgeEventFactory.onPlayerClone(this, that, !keepEverything);
      }
  
--    @Override
-     protected void func_70670_a(PotionEffect p_70670_1_)
-     {
-         super.func_70670_a(p_70670_1_);
-@@ -1219,7 +1195,6 @@
-         CriteriaTriggers.field_193139_z.func_193153_a(this);
-     }
- 
--    @Override
-     protected void func_70695_b(PotionEffect p_70695_1_, boolean p_70695_2_)
-     {
-         super.func_70695_b(p_70695_1_, p_70695_2_);
-@@ -1227,7 +1202,6 @@
-         CriteriaTriggers.field_193139_z.func_193153_a(this);
-     }
- 
--    @Override
-     protected void func_70688_c(PotionEffect p_70688_1_)
-     {
-         super.func_70688_c(p_70688_1_);
-@@ -1241,25 +1215,21 @@
-         CriteriaTriggers.field_193139_z.func_193153_a(this);
-     }
- 
--    @Override
-     public void func_70634_a(double p_70634_1_, double p_70634_3_, double p_70634_5_)
-     {
-         this.field_71135_a.func_147364_a(p_70634_1_, p_70634_3_, p_70634_5_, this.field_70177_z, this.field_70125_A);
-     }
- 
--    @Override
-     public void func_71009_b(Entity p_71009_1_)
-     {
-         this.func_71121_q().func_73039_n().func_151248_b(this, new SPacketAnimation(p_71009_1_, 4));
-     }
- 
--    @Override
-     public void func_71047_c(Entity p_71047_1_)
-     {
-         this.func_71121_q().func_73039_n().func_151248_b(this, new SPacketAnimation(p_71047_1_, 5));
-     }
- 
--    @Override
-     public void func_71016_p()
-     {
-         if (this.field_71135_a != null)
-@@ -1274,7 +1244,6 @@
-         return (WorldServer)this.field_70170_p;
-     }
- 
--    @Override
-     public void func_71033_a(GameType p_71033_1_)
-     {
-         this.field_71134_c.func_73076_a(p_71033_1_);
-@@ -1294,25 +1263,21 @@
-         this.func_175136_bO();
-     }
- 
--    @Override
-     public boolean func_175149_v()
-     {
-         return this.field_71134_c.func_73081_b() == GameType.SPECTATOR;
-     }
- 
--    @Override
-     public boolean func_184812_l_()
-     {
-         return this.field_71134_c.func_73081_b() == GameType.CREATIVE;
-     }
- 
--    @Override
-     public void func_145747_a(ITextComponent p_145747_1_)
-     {
-         this.field_71135_a.func_147359_a(new SPacketChat(p_145747_1_));
-     }
- 
--    @Override
-     public boolean func_70003_b(int p_70003_1_, String p_70003_2_)
-     {
-         if ("seed".equals(p_70003_2_) && !this.field_71133_b.func_71262_S())
-@@ -1323,8 +1288,16 @@
-         {
-             if (this.field_71133_b.func_184103_al().func_152596_g(this.func_146103_bH()))
-             {
--                UserListOpsEntry userlistopsentry = this.field_71133_b.func_184103_al().func_152603_m().func_152683_b(this.func_146103_bH());
--                return userlistopsentry != null ? userlistopsentry.func_152644_a() >= p_70003_1_ : this.field_71133_b.func_110455_j() >= p_70003_1_;
-+                UserListOpsEntry userlistopsentry = (UserListOpsEntry)this.field_71133_b.func_184103_al().func_152603_m().func_152683_b(this.func_146103_bH());
-+
-+                if (userlistopsentry != null)
-+                {
-+                    return userlistopsentry.func_152644_a() >= p_70003_1_;
-+                }
-+                else
-+                {
-+                    return this.field_71133_b.func_110455_j() >= p_70003_1_;
-+                }
-             }
-             else
-             {
-@@ -1341,7 +1314,8 @@
-     {
-         String s = this.field_71135_a.field_147371_a.func_74430_c().toString();
-         s = s.substring(s.indexOf("/") + 1);
--        return s.substring(0, s.indexOf(":"));
-+        s = s.substring(0, s.indexOf(":"));
-+        return s;
-     }
- 
-     public void func_147100_a(CPacketClientSettings p_147100_1_)
-@@ -1349,8 +1323,8 @@
-         this.field_71148_cg = p_147100_1_.func_149524_c();
-         this.field_71143_cn = p_147100_1_.func_149523_e();
-         this.field_71140_co = p_147100_1_.func_149520_f();
--        this.func_184212_Q().func_187227_b(field_184827_bp, (byte)p_147100_1_.func_149521_d());
--        this.func_184212_Q().func_187227_b(field_184828_bq, (byte)(p_147100_1_.func_186991_f() == EnumHandSide.LEFT ? 0 : 1));
-+        this.func_184212_Q().func_187227_b(field_184827_bp, Byte.valueOf((byte)p_147100_1_.func_149521_d()));
-+        this.func_184212_Q().func_187227_b(field_184828_bq, Byte.valueOf((byte)(p_147100_1_.func_186991_f() == EnumHandSide.LEFT ? 0 : 1)));
-     }
- 
-     public EntityPlayer.EnumChatVisibility func_147096_v()
-@@ -1363,10 +1337,9 @@
-         this.field_71135_a.func_147359_a(new SPacketResourcePackSend(p_175397_1_, p_175397_2_));
-     }
- 
--    @Override
-     public BlockPos func_180425_c()
-     {
--        return new BlockPos(this.field_70165_t, this.field_70163_u + 0.5, this.field_70161_v);
-+        return new BlockPos(this.field_70165_t, this.field_70163_u + 0.5D, this.field_70161_v);
-     }
- 
-     public void func_143004_u()
-@@ -1388,11 +1361,11 @@
-     {
-         if (p_152339_1_ instanceof EntityPlayer)
-         {
--            this.field_71135_a.func_147359_a(new SPacketDestroyEntities(p_152339_1_.func_145782_y()));
-+            this.field_71135_a.func_147359_a(new SPacketDestroyEntities(new int[] {p_152339_1_.func_145782_y()}));
-         }
-         else
-         {
--            this.field_71130_g.add(p_152339_1_.func_145782_y());
-+            this.field_71130_g.add(Integer.valueOf(p_152339_1_.func_145782_y()));
-         }
-     }
- 
-@@ -1401,7 +1374,6 @@
-         this.field_71130_g.remove(Integer.valueOf(p_184848_1_.func_145782_y()));
-     }
- 
--    @Override
-     protected void func_175135_B()
-     {
-         if (this.func_175149_v())
-@@ -1434,16 +1406,14 @@
-         }
-     }
- 
--    @Override
-     protected void func_184173_H()
-     {
-         if (this.field_71088_bW > 0 && !this.field_184851_cj)
-         {
--            this.field_71088_bW--;
-+            --this.field_71088_bW;
-         }
-     }
- 
--    @Override
-     public void func_71059_n(Entity p_71059_1_)
-     {
-         if (this.field_71134_c.func_73081_b() == GameType.SPECTATOR)
-@@ -1467,7 +1437,6 @@
-         return null;
-     }
- 
--    @Override
-     public void func_184609_a(EnumHand p_184609_1_)
-     {
-         super.func_184609_a(p_184609_1_);
+     @Override

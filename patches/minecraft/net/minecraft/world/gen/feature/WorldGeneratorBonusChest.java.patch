@@ -5,59 +5,59 @@
  public class WorldGeneratorBonusChest extends WorldGenerator
  {
 -    @Override
-     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     public boolean generate(World worldIn, Random rand, BlockPos position)
      {
--        for (IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_);
--                (iblockstate.func_185904_a() == Material.field_151579_a || iblockstate.func_185904_a() == Material.field_151584_j) && p_180709_3_.func_177956_o() > 1;
--                iblockstate = p_180709_1_.func_180495_p(p_180709_3_)
+-        for (IBlockState iblockstate = worldIn.getBlockState(position);
+-                (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES) && position.getY() > 1;
+-                iblockstate = worldIn.getBlockState(position)
 -            )
-+        for (IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_); (iblockstate.func_177230_c().isAir(iblockstate, p_180709_1_, p_180709_3_) || iblockstate.func_177230_c().isLeaves(iblockstate, p_180709_1_, p_180709_3_)) && p_180709_3_.func_177956_o() > 1; iblockstate = p_180709_1_.func_180495_p(p_180709_3_))
++        for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 1; iblockstate = worldIn.getBlockState(position))
          {
-             p_180709_3_ = p_180709_3_.func_177977_b();
+             position = position.down();
          }
 @@ -31,15 +27,11 @@
          {
-             p_180709_3_ = p_180709_3_.func_177984_a();
+             position = position.up();
  
 -            for (int i = 0; i < 4; i++)
 +            for (int i = 0; i < 4; ++i)
              {
--                BlockPos blockpos = p_180709_3_.func_177982_a(
--                                        p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4),
--                                        p_180709_2_.nextInt(3) - p_180709_2_.nextInt(3),
--                                        p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4)
+-                BlockPos blockpos = position.add(
+-                                        rand.nextInt(4) - rand.nextInt(4),
+-                                        rand.nextInt(3) - rand.nextInt(3),
+-                                        rand.nextInt(4) - rand.nextInt(4)
 -                                    );
-+                BlockPos blockpos = p_180709_3_.func_177982_a(p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4), p_180709_2_.nextInt(3) - p_180709_2_.nextInt(3), p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4));
++                BlockPos blockpos = position.add(rand.nextInt(4) - rand.nextInt(4), rand.nextInt(3) - rand.nextInt(3), rand.nextInt(4) - rand.nextInt(4));
  
--                if (p_180709_1_.func_175623_d(blockpos) && p_180709_1_.func_180495_p(blockpos.func_177977_b()).func_185896_q())
-+                if (p_180709_1_.func_175623_d(blockpos) && p_180709_1_.func_180495_p(blockpos.func_177977_b()).isSideSolid(p_180709_1_, blockpos.func_177977_b(), net.minecraft.util.EnumFacing.UP))
+-                if (worldIn.isAirBlock(blockpos) && worldIn.getBlockState(blockpos.down()).isTopSolid())
++                if (worldIn.isAirBlock(blockpos) && worldIn.getBlockState(blockpos.down()).isSideSolid(worldIn, blockpos.down(), net.minecraft.util.EnumFacing.UP))
                  {
-                     p_180709_1_.func_180501_a(blockpos, Blocks.field_150486_ae.func_176223_P(), 2);
-                     TileEntity tileentity = p_180709_1_.func_175625_s(blockpos);
+                     worldIn.setBlockState(blockpos, Blocks.CHEST.getDefaultState(), 2);
+                     TileEntity tileentity = worldIn.getTileEntity(blockpos);
 @@ -54,22 +46,22 @@
-                     BlockPos blockpos3 = blockpos.func_177978_c();
-                     BlockPos blockpos4 = blockpos.func_177968_d();
+                     BlockPos blockpos3 = blockpos.north();
+                     BlockPos blockpos4 = blockpos.south();
  
--                    if (p_180709_1_.func_175623_d(blockpos2) && p_180709_1_.func_180495_p(blockpos2.func_177977_b()).func_185896_q())
-+                    if (p_180709_1_.func_175623_d(blockpos2) && p_180709_1_.func_180495_p(blockpos2.func_177977_b()).isSideSolid(p_180709_1_, blockpos2.func_177977_b(), net.minecraft.util.EnumFacing.UP))
+-                    if (worldIn.isAirBlock(blockpos2) && worldIn.getBlockState(blockpos2.down()).isTopSolid())
++                    if (worldIn.isAirBlock(blockpos2) && worldIn.getBlockState(blockpos2.down()).isSideSolid(worldIn, blockpos2.down(), net.minecraft.util.EnumFacing.UP))
                      {
-                         p_180709_1_.func_180501_a(blockpos2, Blocks.field_150478_aa.func_176223_P(), 2);
+                         worldIn.setBlockState(blockpos2, Blocks.TORCH.getDefaultState(), 2);
                      }
  
--                    if (p_180709_1_.func_175623_d(blockpos1) && p_180709_1_.func_180495_p(blockpos1.func_177977_b()).func_185896_q())
-+                    if (p_180709_1_.func_175623_d(blockpos1) && p_180709_1_.func_180495_p(blockpos1.func_177977_b()).isSideSolid(p_180709_1_, blockpos1.func_177977_b(), net.minecraft.util.EnumFacing.UP))
+-                    if (worldIn.isAirBlock(blockpos1) && worldIn.getBlockState(blockpos1.down()).isTopSolid())
++                    if (worldIn.isAirBlock(blockpos1) && worldIn.getBlockState(blockpos1.down()).isSideSolid(worldIn, blockpos1.down(), net.minecraft.util.EnumFacing.UP))
                      {
-                         p_180709_1_.func_180501_a(blockpos1, Blocks.field_150478_aa.func_176223_P(), 2);
+                         worldIn.setBlockState(blockpos1, Blocks.TORCH.getDefaultState(), 2);
                      }
  
--                    if (p_180709_1_.func_175623_d(blockpos3) && p_180709_1_.func_180495_p(blockpos3.func_177977_b()).func_185896_q())
-+                    if (p_180709_1_.func_175623_d(blockpos3) && p_180709_1_.func_180495_p(blockpos3.func_177977_b()).isSideSolid(p_180709_1_, blockpos3.func_177977_b(), net.minecraft.util.EnumFacing.UP))
+-                    if (worldIn.isAirBlock(blockpos3) && worldIn.getBlockState(blockpos3.down()).isTopSolid())
++                    if (worldIn.isAirBlock(blockpos3) && worldIn.getBlockState(blockpos3.down()).isSideSolid(worldIn, blockpos3.down(), net.minecraft.util.EnumFacing.UP))
                      {
-                         p_180709_1_.func_180501_a(blockpos3, Blocks.field_150478_aa.func_176223_P(), 2);
+                         worldIn.setBlockState(blockpos3, Blocks.TORCH.getDefaultState(), 2);
                      }
  
--                    if (p_180709_1_.func_175623_d(blockpos4) && p_180709_1_.func_180495_p(blockpos4.func_177977_b()).func_185896_q())
-+                    if (p_180709_1_.func_175623_d(blockpos4) && p_180709_1_.func_180495_p(blockpos4.func_177977_b()).isSideSolid(p_180709_1_, blockpos4.func_177977_b(), net.minecraft.util.EnumFacing.UP))
+-                    if (worldIn.isAirBlock(blockpos4) && worldIn.getBlockState(blockpos4.down()).isTopSolid())
++                    if (worldIn.isAirBlock(blockpos4) && worldIn.getBlockState(blockpos4.down()).isSideSolid(worldIn, blockpos4.down(), net.minecraft.util.EnumFacing.UP))
                      {
-                         p_180709_1_.func_180501_a(blockpos4, Blocks.field_150478_aa.func_176223_P(), 2);
+                         worldIn.setBlockState(blockpos4, Blocks.TORCH.getDefaultState(), 2);
                      }

@@ -647,8 +647,11 @@ public class FMLCommonHandler
         if (!shouldAllowPlayerLogins())
         {
             TextComponentString text = new TextComponentString("Server is still starting! Please wait before reconnecting.");
-            FMLLog.log.info("Disconnecting Player: {}", text.getUnformattedText());
-            manager.sendPacket(new SPacketDisconnect(text));
+            if (packet.getRequestedState() != EnumConnectionState.STATUS)
+            {
+                FMLLog.log.info("Disconnecting Player: {}", text.getUnformattedText());
+                manager.sendPacket(new SPacketDisconnect(text));
+            }
             manager.closeChannel(text);
             return false;
         }

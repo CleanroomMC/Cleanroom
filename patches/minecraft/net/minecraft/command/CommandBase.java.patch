@@ -1,95 +1,11 @@
 --- before/net/minecraft/command/CommandBase.java
 +++ after/net/minecraft/command/CommandBase.java
-@@ -220,18 +220,21 @@
- 
-     public static boolean func_180527_d(String p_180527_0_) throws CommandException
-     {
--        if ("true".equals(p_180527_0_) || "1".equals(p_180527_0_))
-+        if (!"true".equals(p_180527_0_) && !"1".equals(p_180527_0_))
-+        {
-+            if (!"false".equals(p_180527_0_) && !"0".equals(p_180527_0_))
-+            {
-+                throw new CommandException("commands.generic.boolean.invalid", new Object[] {p_180527_0_});
-+            }
-+            else
-+            {
-+                return false;
-+            }
-+        }
-+        else
-         {
-             return true;
-         }
--        else if (!"false".equals(p_180527_0_) && !"0".equals(p_180527_0_))
--        {
--            throw new CommandException("commands.generic.boolean.invalid", p_180527_0_);
--        }
--        else
--        {
--            return false;
--        }
-     }
- 
-     public static EntityPlayerMP func_71521_c(ICommandSender p_71521_0_) throws PlayerNotFoundException
-@@ -391,14 +394,14 @@
-     {
-         ITextComponent itextcomponent = new TextComponentString("");
- 
--        for (int i = p_147176_2_; i < p_147176_1_.length; i++)
-+        for (int i = p_147176_2_; i < p_147176_1_.length; ++i)
-         {
-             if (i > p_147176_2_)
-             {
-                 itextcomponent.func_150258_a(" ");
+@@ -398,7 +398,7 @@
+                 itextcomponent.appendText(" ");
              }
  
--            ITextComponent itextcomponent1 = new TextComponentString(p_147176_1_[i]);
-+            ITextComponent itextcomponent1 = net.minecraftforge.common.ForgeHooks.newChatWithLinks(p_147176_1_[i]); // Forge: links for messages
+-            ITextComponent itextcomponent1 = new TextComponentString(args[i]);
++            ITextComponent itextcomponent1 = net.minecraftforge.common.ForgeHooks.newChatWithLinks(args[i]); // Forge: links for messages
  
              if (p_147176_3_)
              {
-@@ -427,7 +430,7 @@
-     {
-         StringBuilder stringbuilder = new StringBuilder();
- 
--        for (int i = p_180529_1_; i < p_180529_0_.length; i++)
-+        for (int i = p_180529_1_; i < p_180529_0_.length; ++i)
-         {
-             if (i > p_180529_1_)
-             {
-@@ -702,7 +705,7 @@
-                     break;
-                 }
- 
--                Comparable<?> comparable = func_190792_a((IProperty<?>)iproperty, iterator1.next());
-+                Comparable<?> comparable = func_190792_a(iproperty, iterator1.next());
- 
-                 if (comparable == null)
-                 {
-@@ -726,7 +729,7 @@
-     {
-         StringBuilder stringbuilder = new StringBuilder();
- 
--        for (int i = 0; i < p_71527_0_.length; i++)
-+        for (int i = 0; i < p_71527_0_.length; ++i)
-         {
-             String s = p_71527_0_[i].toString();
- 
-@@ -752,7 +755,7 @@
-     {
-         ITextComponent itextcomponent = new TextComponentString("");
- 
--        for (int i = 0; i < p_180530_0_.size(); i++)
-+        for (int i = 0; i < p_180530_0_.size(); ++i)
-         {
-             if (i > 0)
-             {
-@@ -856,7 +859,7 @@
- 
-         if (!p_175762_1_.isEmpty())
-         {
--            for (String s1 : Iterables.transform((Iterable<Object>)p_175762_1_, Functions.toStringFunction()))
-+            for (String s1 : Iterables.transform(p_175762_1_, Functions.toStringFunction()))
-             {
-                 if (func_71523_a(s, s1))
-                 {

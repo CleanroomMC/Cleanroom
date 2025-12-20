@@ -1,49 +1,49 @@
 --- before/net/minecraft/world/storage/loot/LootContext.java
 +++ after/net/minecraft/world/storage/loot/LootContext.java
 @@ -23,16 +23,9 @@
-     private final EntityPlayer field_186502_e;
+     private final EntityPlayer player;
      @Nullable
-     private final DamageSource field_186503_f;
--    private final Set<LootTable> field_186504_g = Sets.newLinkedHashSet();
-+    private final Set<LootTable> field_186504_g = Sets.<LootTable>newLinkedHashSet();
+     private final DamageSource damageSource;
+-    private final Set<LootTable> lootTables = Sets.newLinkedHashSet();
++    private final Set<LootTable> lootTables = Sets.<LootTable>newLinkedHashSet();
  
 -    public LootContext(
--        float p_i46640_1_,
--        WorldServer p_i46640_2_,
--        LootTableManager p_i46640_3_,
--        @Nullable Entity p_i46640_4_,
--        @Nullable EntityPlayer p_i46640_5_,
--        @Nullable DamageSource p_i46640_6_
+-        float luckIn,
+-        WorldServer worldIn,
+-        LootTableManager lootTableManagerIn,
+-        @Nullable Entity lootedEntityIn,
+-        @Nullable EntityPlayer playerIn,
+-        @Nullable DamageSource damageSourceIn
 -    )
-+    public LootContext(float p_i46640_1_, WorldServer p_i46640_2_, LootTableManager p_i46640_3_, @Nullable Entity p_i46640_4_, @Nullable EntityPlayer p_i46640_5_, @Nullable DamageSource p_i46640_6_)
++    public LootContext(float luckIn, WorldServer worldIn, LootTableManager lootTableManagerIn, @Nullable Entity lootedEntityIn, @Nullable EntityPlayer playerIn, @Nullable DamageSource damageSourceIn)
      {
-         this.field_186498_a = p_i46640_1_;
-         this.field_186499_b = p_i46640_2_;
+         this.luck = luckIn;
+         this.world = worldIn;
 @@ -96,6 +89,16 @@
          }
      }
  
 +    public WorldServer getWorld()
 +    {
-+        return field_186499_b;
++        return world;
 +    }
 +
 +    public int getLootingModifier()
 +    {
-+        return net.minecraftforge.common.ForgeHooks.getLootingLevel(func_186493_a(), func_186492_c(), field_186503_f);
++        return net.minecraftforge.common.ForgeHooks.getLootingLevel(getLootedEntity(), getKiller(), damageSource);
 +    }
 +
      public static class Builder
          {
-             private final WorldServer field_186474_a;
+             private final WorldServer world;
 @@ -135,9 +138,7 @@
  
-             public LootContext func_186471_a()
+             public LootContext build()
              {
 -                return new LootContext(
--                           this.field_186475_b, this.field_186474_a, this.field_186474_a.func_184146_ak(), this.field_186476_c, this.field_186477_d, this.field_186478_e
+-                           this.luck, this.world, this.world.getLootTableManager(), this.lootedEntity, this.player, this.damageSource
 -                       );
-+                return new LootContext(this.field_186475_b, this.field_186474_a, this.field_186474_a.func_184146_ak(), this.field_186476_c, this.field_186477_d, this.field_186478_e);
++                return new LootContext(this.luck, this.world, this.world.getLootTableManager(), this.lootedEntity, this.player, this.damageSource);
              }
          }
  

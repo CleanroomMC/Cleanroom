@@ -8,110 +8,20 @@
  import net.minecraft.block.properties.PropertyEnum;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -19,7 +20,7 @@
- 
- public class BlockHugeMushroom extends Block
- {
--    public static final PropertyEnum<BlockHugeMushroom.EnumType> field_176380_a = PropertyEnum.func_177709_a("variant", BlockHugeMushroom.EnumType.class);
-+    public static final PropertyEnum<BlockHugeMushroom.EnumType> field_176380_a = PropertyEnum.<BlockHugeMushroom.EnumType>func_177709_a("variant", BlockHugeMushroom.EnumType.class);
-     private final Block field_176379_b;
- 
-     public BlockHugeMushroom(Material p_i46392_1_, MapColor p_i46392_2_, Block p_i46392_3_)
-@@ -29,13 +30,11 @@
-         this.field_176379_b = p_i46392_3_;
-     }
- 
--    @Override
-     public int func_149745_a(Random p_149745_1_)
+@@ -237,6 +238,20 @@
+     protected BlockStateContainer createBlockState()
      {
-         return Math.max(0, p_149745_1_.nextInt(10) - 7);
-     }
- 
--    @Override
-     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
-     {
-         switch ((BlockHugeMushroom.EnumType)p_180659_1_.func_177229_b(field_176380_a))
-@@ -51,46 +50,31 @@
-         }
-     }
- 
--    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
-     {
-         return Item.func_150898_a(this.field_176379_b);
-     }
- 
--    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
-     {
-         return new ItemStack(this.field_176379_b);
-     }
- 
--    @Override
--    public IBlockState func_180642_a(
--        World p_180642_1_,
--        BlockPos p_180642_2_,
--        EnumFacing p_180642_3_,
--        float p_180642_4_,
--        float p_180642_5_,
--        float p_180642_6_,
--        int p_180642_7_,
--        EntityLivingBase p_180642_8_
--    )
-+    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
-     {
-         return this.func_176223_P();
-     }
- 
--    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
-         return this.func_176223_P().func_177226_a(field_176380_a, BlockHugeMushroom.EnumType.func_176895_a(p_176203_1_));
-     }
- 
--    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
-     {
--        return p_176201_1_.func_177229_b(field_176380_a).func_176896_a();
-+        return ((BlockHugeMushroom.EnumType)p_176201_1_.func_177229_b(field_176380_a)).func_176896_a();
-     }
- 
--    @Override
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
-     {
-         switch (p_185499_2_)
-@@ -178,10 +162,10 @@
-         }
-     }
- 
--    @Override
-+    @SuppressWarnings("incomplete-switch")
-     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
-     {
--        BlockHugeMushroom.EnumType blockhugemushroom$enumtype = p_185471_1_.func_177229_b(field_176380_a);
-+        BlockHugeMushroom.EnumType blockhugemushroom$enumtype = (BlockHugeMushroom.EnumType)p_185471_1_.func_177229_b(field_176380_a);
- 
-         switch (p_185471_2_)
-         {
-@@ -233,10 +217,23 @@
-         return super.func_185471_a(p_185471_1_, p_185471_2_);
-     }
- 
--    @Override
-     protected BlockStateContainer func_180661_e()
-     {
--        return new BlockStateContainer(this, field_176380_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176380_a});
+         return new BlockStateContainer(this, VARIANT);
 +    }
 +
 +    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
 +    {
-+        IBlockState state = world.func_180495_p(pos);
-+        for (IProperty prop : (java.util.Set<IProperty<?>>)state.func_177228_b().keySet())
++        IBlockState state = world.getBlockState(pos);
++        for (IProperty prop : (java.util.Set<IProperty<?>>)state.getProperties().keySet())
 +        {
-+            if (prop.func_177701_a().equals("variant"))
++            if (prop.getName().equals("variant"))
 +            {
-+                world.func_175656_a(pos, state.func_177231_a(prop));
++                world.setBlockState(pos, state.cycleProperty(prop));
 +                return true;
 +            }
 +        }
@@ -119,19 +29,3 @@
      }
  
      public static enum EnumType implements IStringSerializable
-@@ -270,7 +267,6 @@
-             return this.field_176906_o;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.field_176914_p;
-@@ -287,7 +283,6 @@
-             return blockhugemushroom$enumtype == null ? field_176905_n[0] : blockhugemushroom$enumtype;
-         }
- 
--        @Override
-         public String func_176610_l()
-         {
-             return this.field_176914_p;

@@ -7,94 +7,52 @@
 -public class EntityMooshroom extends EntityCow
 +public class EntityMooshroom extends EntityCow implements net.minecraftforge.common.IShearable
  {
-     public EntityMooshroom(World p_i1687_1_)
+     public EntityMooshroom(World worldIn)
      {
-@@ -30,7 +30,6 @@
-         EntityLiving.func_189752_a(p_189791_0_, EntityMooshroom.class);
-     }
- 
--    @Override
-     public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
-     {
-         ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
-@@ -50,19 +49,10 @@
+@@ -50,7 +50,7 @@
  
              return true;
          }
--        else if (itemstack.func_77973_b() == Items.field_151097_aZ && this.func_70874_b() >= 0)
-+        else if (false && itemstack.func_77973_b() == Items.field_151097_aZ && this.func_70874_b() >= 0) //Forge Disable, Moved to onSheared
+-        else if (itemstack.getItem() == Items.SHEARS && this.getGrowingAge() >= 0)
++        else if (false && itemstack.getItem() == Items.SHEARS && this.getGrowingAge() >= 0) //Forge Disable, Moved to onSheared
          {
-             this.func_70106_y();
--            this.field_70170_p
--            .func_175688_a(
--                EnumParticleTypes.EXPLOSION_LARGE,
--                this.field_70165_t,
--                this.field_70163_u + (double)(this.field_70131_O / 2.0F),
--                this.field_70161_v,
--                0.0,
--                0.0,
--                0.0
--            );
-+            this.field_70170_p.func_175688_a(EnumParticleTypes.EXPLOSION_LARGE, this.field_70165_t, this.field_70163_u + (double)(this.field_70131_O / 2.0F), this.field_70161_v, 0.0D, 0.0D, 0.0D);
- 
-             if (!this.field_70170_p.field_72995_K)
-             {
-@@ -78,18 +68,9 @@
- 
-                 this.field_70170_p.func_72838_d(entitycow);
- 
--                for (int i = 0; i < 5; i++)
-+                for (int i = 0; i < 5; ++i)
-                 {
--                    this.field_70170_p
--                    .func_72838_d(
--                        new EntityItem(
--                            this.field_70170_p,
--                            this.field_70165_t,
--                            this.field_70163_u + (double)this.field_70131_O,
--                            this.field_70161_v,
--                            new ItemStack(Blocks.field_150337_Q)
--                        )
--                    );
-+                    this.field_70170_p.func_72838_d(new EntityItem(this.field_70170_p, this.field_70165_t, this.field_70163_u + (double)this.field_70131_O, this.field_70161_v, new ItemStack(Blocks.field_150337_Q)));
-                 }
- 
-                 itemstack.func_77972_a(1, p_184645_1_);
-@@ -109,8 +90,36 @@
-         return new EntityMooshroom(this.field_70170_p);
+             this.setDead();
+             this.world
+@@ -109,8 +109,36 @@
+         return new EntityMooshroom(this.world);
      }
  
-+    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, net.minecraft.util.math.BlockPos pos){ return func_70874_b() >= 0; }
++    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, net.minecraft.util.math.BlockPos pos){ return getGrowingAge() >= 0; }
 +    @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, net.minecraft.util.math.BlockPos pos, int fortune)
 +    {
-+        this.func_70106_y();
-+        ((net.minecraft.world.WorldServer)this.field_70170_p).func_180505_a(EnumParticleTypes.EXPLOSION_LARGE, false, this.field_70165_t, this.field_70163_u + (double)(this.field_70131_O / 2.0F), this.field_70161_v, 1, 0.0D, 0.0D, 0.0D, 0.0D);
++        this.setDead();
++        ((net.minecraft.world.WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, false, this.posX, this.posY + (double)(this.height / 2.0F), this.posZ, 1, 0.0D, 0.0D, 0.0D, 0.0D);
 +
-+        EntityCow entitycow = new EntityCow(this.field_70170_p);
-+        entitycow.func_70012_b(this.field_70165_t, this.field_70163_u, this.field_70161_v, this.field_70177_z, this.field_70125_A);
-+        entitycow.func_70606_j(this.func_110143_aJ());
-+        entitycow.field_70761_aq = this.field_70761_aq;
++        EntityCow entitycow = new EntityCow(this.world);
++        entitycow.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
++        entitycow.setHealth(this.getHealth());
++        entitycow.renderYawOffset = this.renderYawOffset;
 +
-+        if (this.func_145818_k_())
++        if (this.hasCustomName())
 +        {
-+            entitycow.func_96094_a(this.func_95999_t());
++            entitycow.setCustomNameTag(this.getCustomNameTag());
 +        }
 +
-+        this.field_70170_p.func_72838_d(entitycow);
++        this.world.spawnEntity(entitycow);
 +
 +        java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
 +        for (int i = 0; i < 5; ++i)
 +        {
-+            ret.add(new ItemStack(Blocks.field_150337_Q));
++            ret.add(new ItemStack(Blocks.RED_MUSHROOM));
 +        }
 +
-+        this.func_184185_a(SoundEvents.field_187784_dt, 1.0F, 1.0F);
++        this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0F, 1.0F);
 +        return ret;
 +    }
 +
      @Nullable
 -    @Override
-     protected ResourceLocation func_184647_J()
+     protected ResourceLocation getLootTable()
      {
-         return LootTableList.field_186400_H;
+         return LootTableList.ENTITIES_MUSHROOM_COW;

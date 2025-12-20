@@ -9,81 +9,81 @@
  
  public class BossInfoServer extends BossInfo
  {
--    private final Set<EntityPlayerMP> field_186762_h = Sets.newHashSet();
--    private final Set<EntityPlayerMP> field_186763_i = Collections.unmodifiableSet(this.field_186762_h);
--    private boolean field_186764_j = true;
-+    private final Set<EntityPlayerMP> field_186762_h = Sets.<EntityPlayerMP>newHashSet();
-+    private final Set<EntityPlayerMP> field_186763_i;
-+    private boolean field_186764_j;
+-    private final Set<EntityPlayerMP> players = Sets.newHashSet();
+-    private final Set<EntityPlayerMP> readOnlyPlayers = Collections.unmodifiableSet(this.players);
+-    private boolean visible = true;
++    private final Set<EntityPlayerMP> players = Sets.<EntityPlayerMP>newHashSet();
++    private final Set<EntityPlayerMP> readOnlyPlayers;
++    private boolean visible;
  
-     public BossInfoServer(ITextComponent p_i46839_1_, BossInfo.Color p_i46839_2_, BossInfo.Overlay p_i46839_3_)
+     public BossInfoServer(ITextComponent nameIn, BossInfo.Color colorIn, BossInfo.Overlay overlayIn)
      {
-         super(MathHelper.func_188210_a(), p_i46839_1_, p_i46839_2_, p_i46839_3_);
-+        this.field_186763_i = Collections.<EntityPlayerMP>unmodifiableSet(this.field_186762_h);
-+        this.field_186764_j = true;
+         super(MathHelper.getRandomUUID(), nameIn, colorIn, overlayIn);
++        this.readOnlyPlayers = Collections.<EntityPlayerMP>unmodifiableSet(this.players);
++        this.visible = true;
      }
  
 -    @Override
-     public void func_186735_a(float p_186735_1_)
+     public void setPercent(float percentIn)
      {
-         if (p_186735_1_ != this.field_186750_b)
+         if (percentIn != this.percent)
 @@ -33,8 +32,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_186745_a(BossInfo.Color p_186745_1_)
+     public void setColor(BossInfo.Color colorIn)
      {
-         if (p_186745_1_ != this.field_186751_c)
+         if (colorIn != this.color)
 @@ -44,8 +41,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_186746_a(BossInfo.Overlay p_186746_1_)
+     public void setOverlay(BossInfo.Overlay overlayIn)
      {
-         if (p_186746_1_ != this.field_186752_d)
+         if (overlayIn != this.overlay)
 @@ -55,7 +50,6 @@
          }
      }
  
 -    @Override
-     public BossInfo func_186741_a(boolean p_186741_1_)
+     public BossInfo setDarkenSky(boolean darkenSkyIn)
      {
-         if (p_186741_1_ != this.field_186753_e)
+         if (darkenSkyIn != this.darkenSky)
 @@ -67,7 +61,6 @@
          return this;
      }
  
 -    @Override
-     public BossInfo func_186742_b(boolean p_186742_1_)
+     public BossInfo setPlayEndBossMusic(boolean playEndBossMusicIn)
      {
-         if (p_186742_1_ != this.field_186754_f)
+         if (playEndBossMusicIn != this.playEndBossMusic)
 @@ -79,7 +72,6 @@
          return this;
      }
  
 -    @Override
-     public BossInfo func_186743_c(boolean p_186743_1_)
+     public BossInfo setCreateFog(boolean createFogIn)
      {
-         if (p_186743_1_ != this.field_186755_g)
+         if (createFogIn != this.createFog)
 @@ -91,7 +83,6 @@
          return this;
      }
  
 -    @Override
-     public void func_186739_a(ITextComponent p_186739_1_)
+     public void setName(ITextComponent nameIn)
      {
-         if (!Objects.equal(p_186739_1_, this.field_186749_a))
+         if (!Objects.equal(nameIn, this.name))
 @@ -138,8 +129,7 @@
  
-             for (EntityPlayerMP entityplayermp : this.field_186762_h)
+             for (EntityPlayerMP entityplayermp : this.players)
              {
--                entityplayermp.field_71135_a
--                .func_147359_a(new SPacketUpdateBossInfo(p_186758_1_ ? SPacketUpdateBossInfo.Operation.ADD : SPacketUpdateBossInfo.Operation.REMOVE, this));
-+                entityplayermp.field_71135_a.func_147359_a(new SPacketUpdateBossInfo(p_186758_1_ ? SPacketUpdateBossInfo.Operation.ADD : SPacketUpdateBossInfo.Operation.REMOVE, this));
+-                entityplayermp.connection
+-                .sendPacket(new SPacketUpdateBossInfo(visibleIn ? SPacketUpdateBossInfo.Operation.ADD : SPacketUpdateBossInfo.Operation.REMOVE, this));
++                entityplayermp.connection.sendPacket(new SPacketUpdateBossInfo(visibleIn ? SPacketUpdateBossInfo.Operation.ADD : SPacketUpdateBossInfo.Operation.REMOVE, this));
              }
          }
      }

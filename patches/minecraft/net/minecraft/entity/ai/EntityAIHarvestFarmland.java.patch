@@ -1,85 +1,24 @@
 --- before/net/minecraft/entity/ai/EntityAIHarvestFarmland.java
 +++ after/net/minecraft/entity/ai/EntityAIHarvestFarmland.java
-@@ -25,12 +25,11 @@
-         this.field_179504_c = p_i45889_1_;
-     }
- 
--    @Override
-     public boolean func_75250_a()
+@@ -30,7 +30,7 @@
      {
-         if (this.field_179496_a <= 0)
+         if (this.runDelay <= 0)
          {
--            if (!this.field_179504_c.field_70170_p.func_82736_K().func_82766_b("mobGriefing"))
-+            if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_179504_c.field_70170_p, this.field_179504_c))
+-            if (!this.villager.world.getGameRules().getBoolean("mobGriefing"))
++            if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.villager.world, this.villager))
              {
                  return false;
              }
-@@ -43,25 +42,15 @@
-         return super.func_75250_a();
-     }
- 
--    @Override
-     public boolean func_75253_b()
-     {
-         return this.field_179501_f >= 0 && super.func_75253_b();
-     }
- 
--    @Override
-     public void func_75246_d()
-     {
-         super.func_75246_d();
--        this.field_179504_c
--        .func_70671_ap()
--        .func_75650_a(
--            (double)this.field_179494_b.func_177958_n() + 0.5,
--            (double)(this.field_179494_b.func_177956_o() + 1),
--            (double)this.field_179494_b.func_177952_p() + 0.5,
--            10.0F,
--            (float)this.field_179504_c.func_70646_bf()
--        );
-+        this.field_179504_c.func_70671_ap().func_75650_a((double)this.field_179494_b.func_177958_n() + 0.5D, (double)(this.field_179494_b.func_177956_o() + 1), (double)this.field_179494_b.func_177952_p() + 0.5D, 10.0F, (float)this.field_179504_c.func_70646_bf());
- 
-         if (this.func_179487_f())
-         {
-@@ -78,7 +67,7 @@
-             {
-                 InventoryBasic inventorybasic = this.field_179504_c.func_175551_co();
- 
--                for (int i = 0; i < inventorybasic.func_70302_i_(); i++)
-+                for (int i = 0; i < inventorybasic.func_70302_i_(); ++i)
-                 {
-                     ItemStack itemstack = inventorybasic.func_70301_a(i);
-                     boolean flag = false;
-@@ -105,6 +94,12 @@
-                             world.func_180501_a(blockpos, Blocks.field_185773_cZ.func_176223_P(), 3);
+@@ -104,6 +104,12 @@
+                         {
+                             world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
                              flag = true;
-                         }
-+                        else if (itemstack.func_77973_b() instanceof net.minecraftforge.common.IPlantable) {
-+                            if(((net.minecraftforge.common.IPlantable)itemstack.func_77973_b()).getPlantType(world,blockpos) == net.minecraftforge.common.EnumPlantType.Crop) {
-+                                world.func_180501_a(blockpos, ((net.minecraftforge.common.IPlantable)itemstack.func_77973_b()).getPlant(world,blockpos),3);
++                        }
++                        else if (itemstack.getItem() instanceof net.minecraftforge.common.IPlantable) {
++                            if(((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlantType(world,blockpos) == net.minecraftforge.common.EnumPlantType.Crop) {
++                                world.setBlockState(blockpos, ((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlant(world,blockpos),3);
 +                                flag = true;
 +                            }
-+                        }
+                         }
                      }
  
-                     if (flag)
-@@ -126,7 +121,6 @@
-         }
-     }
- 
--    @Override
-     protected boolean func_179488_a(World p_179488_1_, BlockPos p_179488_2_)
-     {
-         Block block = p_179488_1_.func_180495_p(p_179488_2_).func_177230_c();
-@@ -137,10 +131,7 @@
-             IBlockState iblockstate = p_179488_1_.func_180495_p(p_179488_2_);
-             block = iblockstate.func_177230_c();
- 
--            if (block instanceof BlockCrops
--                    && ((BlockCrops)block).func_185525_y(iblockstate)
--                    && this.field_179503_e
--                    && (this.field_179501_f == 0 || this.field_179501_f < 0))
-+            if (block instanceof BlockCrops && ((BlockCrops)block).func_185525_y(iblockstate) && this.field_179503_e && (this.field_179501_f == 0 || this.field_179501_f < 0))
-             {
-                 this.field_179501_f = 0;
-                 return true;

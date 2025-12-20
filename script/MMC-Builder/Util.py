@@ -2,7 +2,7 @@ import json
 import os
 import zipfile
 import urllib.parse
-
+import urllib.request
 
 def get_working_branch(default):
     env = os.getenv('cleanroomDownloadBranch')
@@ -72,3 +72,27 @@ class MyZipFile(zipfile.ZipFile):
 
         for zipinfo in members:
             self.extract(zipinfo, path, pwd)
+
+def download_file(url: str, path: str) -> None:
+
+    dir_path = os.path.dirname(path)
+    if dir_path and not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    
+    try:
+
+        with urllib.request.urlopen(url) as response:
+            if response.status != 200:
+                raise ValueError(f"HTTP Error: {response.status}")
+            
+            with open(path, 'wb') as out_file:
+                while True:
+                    chunk = response.read(16384)  # 16KB
+                    if not chunk:
+                        break
+                    out_file.write(chunk)
+    
+    except urllib.error.URLError as e:
+        raise ValueError(f"URL Error: {e.reason}") from e
+    except urllib.error.HTTPError as e:
+        raise ValueError(f"HTTP Error: {e.code} {e.reason}") from e

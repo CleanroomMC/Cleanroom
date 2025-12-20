@@ -1,99 +1,99 @@
 --- before/net/minecraft/util/text/Style.java
 +++ after/net/minecraft/util/text/Style.java
 @@ -30,116 +30,94 @@
-     private static final Style field_150250_j = new Style()
+     private static final Style ROOT = new Style()
      {
          @Nullable
 -        @Override
-         public TextFormatting func_150215_a()
+         public TextFormatting getColor()
          {
              return null;
          }
 -        @Override
-         public boolean func_150223_b()
+         public boolean getBold()
          {
              return false;
          }
 -        @Override
-         public boolean func_150242_c()
+         public boolean getItalic()
          {
              return false;
          }
 -        @Override
-         public boolean func_150236_d()
+         public boolean getStrikethrough()
          {
              return false;
          }
 -        @Override
-         public boolean func_150234_e()
+         public boolean getUnderlined()
          {
              return false;
          }
 -        @Override
-         public boolean func_150233_f()
+         public boolean getObfuscated()
          {
              return false;
          }
          @Nullable
 -        @Override
-         public ClickEvent func_150235_h()
+         public ClickEvent getClickEvent()
          {
              return null;
          }
          @Nullable
 -        @Override
-         public HoverEvent func_150210_i()
+         public HoverEvent getHoverEvent()
          {
              return null;
          }
          @Nullable
 -        @Override
-         public String func_179986_j()
+         public String getInsertion()
          {
              return null;
          }
 -        @Override
-         public Style func_150238_a(TextFormatting p_150238_1_)
+         public Style setColor(TextFormatting color)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150227_a(Boolean p_150227_1_)
+         public Style setBold(Boolean boldIn)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150217_b(Boolean p_150217_1_)
+         public Style setItalic(Boolean italic)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150225_c(Boolean p_150225_1_)
+         public Style setStrikethrough(Boolean strikethrough)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150228_d(Boolean p_150228_1_)
+         public Style setUnderlined(Boolean underlined)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150237_e(Boolean p_150237_1_)
+         public Style setObfuscated(Boolean obfuscated)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150241_a(ClickEvent p_150241_1_)
+         public Style setClickEvent(ClickEvent event)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150209_a(HoverEvent p_150209_1_)
+         public Style setHoverEvent(HoverEvent event)
          {
              throw new UnsupportedOperationException();
          }
 -        @Override
-         public Style func_150221_a(Style p_150221_1_)
+         public Style setParentStyle(Style parent)
          {
              throw new UnsupportedOperationException();
          }
@@ -103,64 +103,64 @@
              return "Style.ROOT";
          }
 -        @Override
-         public Style func_150232_l()
+         public Style createShallowCopy()
          {
              return this;
          }
 -        @Override
-         public Style func_150206_m()
+         public Style createDeepCopy()
          {
              return this;
          }
          @SideOnly(Side.CLIENT)
 -        @Override
-         public String func_150218_j()
+         public String getFormattingCode()
          {
              return "";
 @@ -154,40 +132,32 @@
  
-     public boolean func_150223_b()
+     public boolean getBold()
      {
--        return this.field_150248_c == null ? this.func_150224_n().func_150223_b() : this.field_150248_c;
-+        return this.field_150248_c == null ? this.func_150224_n().func_150223_b() : this.field_150248_c.booleanValue();
+-        return this.bold == null ? this.getParent().getBold() : this.bold;
++        return this.bold == null ? this.getParent().getBold() : this.bold.booleanValue();
      }
  
-     public boolean func_150242_c()
+     public boolean getItalic()
      {
--        return this.field_150245_d == null ? this.func_150224_n().func_150242_c() : this.field_150245_d;
-+        return this.field_150245_d == null ? this.func_150224_n().func_150242_c() : this.field_150245_d.booleanValue();
+-        return this.italic == null ? this.getParent().getItalic() : this.italic;
++        return this.italic == null ? this.getParent().getItalic() : this.italic.booleanValue();
      }
  
-     public boolean func_150236_d()
+     public boolean getStrikethrough()
      {
--        return this.field_150243_f == null ? this.func_150224_n().func_150236_d() : this.field_150243_f;
-+        return this.field_150243_f == null ? this.func_150224_n().func_150236_d() : this.field_150243_f.booleanValue();
+-        return this.strikethrough == null ? this.getParent().getStrikethrough() : this.strikethrough;
++        return this.strikethrough == null ? this.getParent().getStrikethrough() : this.strikethrough.booleanValue();
      }
  
-     public boolean func_150234_e()
+     public boolean getUnderlined()
      {
--        return this.field_150246_e == null ? this.func_150224_n().func_150234_e() : this.field_150246_e;
-+        return this.field_150246_e == null ? this.func_150224_n().func_150234_e() : this.field_150246_e.booleanValue();
+-        return this.underlined == null ? this.getParent().getUnderlined() : this.underlined;
++        return this.underlined == null ? this.getParent().getUnderlined() : this.underlined.booleanValue();
      }
  
-     public boolean func_150233_f()
+     public boolean getObfuscated()
      {
--        return this.field_150244_g == null ? this.func_150224_n().func_150233_f() : this.field_150244_g;
-+        return this.field_150244_g == null ? this.func_150224_n().func_150233_f() : this.field_150244_g.booleanValue();
+-        return this.obfuscated == null ? this.getParent().getObfuscated() : this.obfuscated;
++        return this.obfuscated == null ? this.getParent().getObfuscated() : this.obfuscated.booleanValue();
      }
  
-     public boolean func_150229_g()
+     public boolean isEmpty()
      {
--        return this.field_150248_c == null
--               && this.field_150245_d == null
--               && this.field_150243_f == null
--               && this.field_150246_e == null
--               && this.field_150244_g == null
--               && this.field_150247_b == null
--               && this.field_150251_h == null
--               && this.field_150252_i == null
--               && this.field_179990_j == null;
-+        return this.field_150248_c == null && this.field_150245_d == null && this.field_150243_f == null && this.field_150246_e == null && this.field_150244_g == null && this.field_150247_b == null && this.field_150251_h == null && this.field_150252_i == null && this.field_179990_j == null;
+-        return this.bold == null
+-               && this.italic == null
+-               && this.strikethrough == null
+-               && this.underlined == null
+-               && this.obfuscated == null
+-               && this.color == null
+-               && this.clickEvent == null
+-               && this.hoverEvent == null
+-               && this.insertion == null;
++        return this.bold == null && this.italic == null && this.strikethrough == null && this.underlined == null && this.obfuscated == null && this.color == null && this.clickEvent == null && this.hoverEvent == null && this.insertion == null;
      }
  
      @Nullable
@@ -169,42 +169,42 @@
      }
  
 -    @SideOnly(Side.CLIENT)
-     public String func_150218_j()
+     public String getFormattingCode()
      {
-         if (this.func_150229_g())
+         if (this.isEmpty())
 @@ -281,32 +250,32 @@
  
-             if (this.func_150215_a() != null)
+             if (this.getColor() != null)
              {
--                stringbuilder.append(this.func_150215_a());
-+                stringbuilder.append((Object)this.func_150215_a());
+-                stringbuilder.append(this.getColor());
++                stringbuilder.append((Object)this.getColor());
              }
  
-             if (this.func_150223_b())
+             if (this.getBold())
              {
 -                stringbuilder.append(TextFormatting.BOLD);
 +                stringbuilder.append((Object)TextFormatting.BOLD);
              }
  
-             if (this.func_150242_c())
+             if (this.getItalic())
              {
 -                stringbuilder.append(TextFormatting.ITALIC);
 +                stringbuilder.append((Object)TextFormatting.ITALIC);
              }
  
-             if (this.func_150234_e())
+             if (this.getUnderlined())
              {
 -                stringbuilder.append(TextFormatting.UNDERLINE);
 +                stringbuilder.append((Object)TextFormatting.UNDERLINE);
              }
  
-             if (this.func_150233_f())
+             if (this.getObfuscated())
              {
 -                stringbuilder.append(TextFormatting.OBFUSCATED);
 +                stringbuilder.append((Object)TextFormatting.OBFUSCATED);
              }
  
-             if (this.func_150236_d())
+             if (this.getStrikethrough())
              {
 -                stringbuilder.append(TextFormatting.STRIKETHROUGH);
 +                stringbuilder.append((Object)TextFormatting.STRIKETHROUGH);
@@ -212,32 +212,32 @@
  
              return stringbuilder.toString();
 @@ -318,31 +287,11 @@
-         return this.field_150249_a == null ? field_150250_j : this.field_150249_a;
+         return this.parentStyle == null ? ROOT : this.parentStyle;
      }
  
 -    @Override
      public String toString()
      {
 -        return "Style{hasParent="
--               + (this.field_150249_a != null)
+-               + (this.parentStyle != null)
 -               + ", color="
--               + this.field_150247_b
+-               + this.color
 -               + ", bold="
--               + this.field_150248_c
+-               + this.bold
 -               + ", italic="
--               + this.field_150245_d
+-               + this.italic
 -               + ", underlined="
--               + this.field_150246_e
+-               + this.underlined
 -               + ", obfuscated="
--               + this.field_150244_g
+-               + this.obfuscated
 -               + ", clickEvent="
--               + this.func_150235_h()
+-               + this.getClickEvent()
 -               + ", hoverEvent="
--               + this.func_150210_i()
+-               + this.getHoverEvent()
 -               + ", insertion="
--               + this.func_179986_j()
+-               + this.getInsertion()
 -               + '}';
-+        return "Style{hasParent=" + (this.field_150249_a != null) + ", color=" + this.field_150247_b + ", bold=" + this.field_150248_c + ", italic=" + this.field_150245_d + ", underlined=" + this.field_150246_e + ", obfuscated=" + this.field_150244_g + ", clickEvent=" + this.func_150235_h() + ", hoverEvent=" + this.func_150210_i() + ", insertion=" + this.func_179986_j() + '}';
++        return "Style{hasParent=" + (this.parentStyle != null) + ", color=" + this.color + ", bold=" + this.bold + ", italic=" + this.italic + ", underlined=" + this.underlined + ", obfuscated=" + this.obfuscated + ", clickEvent=" + this.getClickEvent() + ", hoverEvent=" + this.getHoverEvent() + ", insertion=" + this.getInsertion() + '}';
      }
  
 -    @Override
@@ -249,56 +249,56 @@
          else
          {
 -            Style style = (Style)p_equals_1_;
--            return this.func_150223_b() == style.func_150223_b()
--                   && this.func_150215_a() == style.func_150215_a()
--                   && this.func_150242_c() == style.func_150242_c()
--                   && this.func_150233_f() == style.func_150233_f()
--                   && this.func_150236_d() == style.func_150236_d()
--                   && this.func_150234_e() == style.func_150234_e()
--                   && (this.func_150235_h() != null ? this.func_150235_h().equals(style.func_150235_h()) : style.func_150235_h() == null)
--                   && (this.func_150210_i() != null ? this.func_150210_i().equals(style.func_150210_i()) : style.func_150210_i() == null)
--                   && (this.func_179986_j() != null ? this.func_179986_j().equals(style.func_179986_j()) : style.func_179986_j() == null);
+-            return this.getBold() == style.getBold()
+-                   && this.getColor() == style.getColor()
+-                   && this.getItalic() == style.getItalic()
+-                   && this.getObfuscated() == style.getObfuscated()
+-                   && this.getStrikethrough() == style.getStrikethrough()
+-                   && this.getUnderlined() == style.getUnderlined()
+-                   && (this.getClickEvent() != null ? this.getClickEvent().equals(style.getClickEvent()) : style.getClickEvent() == null)
+-                   && (this.getHoverEvent() != null ? this.getHoverEvent().equals(style.getHoverEvent()) : style.getHoverEvent() == null)
+-                   && (this.getInsertion() != null ? this.getInsertion().equals(style.getInsertion()) : style.getInsertion() == null);
 +            boolean flag;
 +            label77:
 +            {
 +                Style style = (Style)p_equals_1_;
 +
-+                if (this.func_150223_b() == style.func_150223_b() && this.func_150215_a() == style.func_150215_a() && this.func_150242_c() == style.func_150242_c() && this.func_150233_f() == style.func_150233_f() && this.func_150236_d() == style.func_150236_d() && this.func_150234_e() == style.func_150234_e())
++                if (this.getBold() == style.getBold() && this.getColor() == style.getColor() && this.getItalic() == style.getItalic() && this.getObfuscated() == style.getObfuscated() && this.getStrikethrough() == style.getStrikethrough() && this.getUnderlined() == style.getUnderlined())
 +                {
 +                    label71:
 +                    {
-+                        if (this.func_150235_h() != null)
++                        if (this.getClickEvent() != null)
 +                        {
-+                            if (!this.func_150235_h().equals(style.func_150235_h()))
++                            if (!this.getClickEvent().equals(style.getClickEvent()))
 +                            {
 +                                break label71;
 +                            }
 +                        }
-+                        else if (style.func_150235_h() != null)
++                        else if (style.getClickEvent() != null)
 +                        {
 +                            break label71;
 +                        }
 +
-+                        if (this.func_150210_i() != null)
++                        if (this.getHoverEvent() != null)
 +                        {
-+                            if (!this.func_150210_i().equals(style.func_150210_i()))
++                            if (!this.getHoverEvent().equals(style.getHoverEvent()))
 +                            {
 +                                break label71;
 +                            }
 +                        }
-+                        else if (style.func_150210_i() != null)
++                        else if (style.getHoverEvent() != null)
 +                        {
 +                            break label71;
 +                        }
 +
-+                        if (this.func_179986_j() != null)
++                        if (this.getInsertion() != null)
 +                        {
-+                            if (this.func_179986_j().equals(style.func_179986_j()))
++                            if (this.getInsertion().equals(style.getInsertion()))
 +                            {
 +                                break label77;
 +                            }
 +                        }
-+                        else if (style.func_179986_j() == null)
++                        else if (style.getInsertion() == null)
 +                        {
 +                            break label77;
 +                        }
@@ -316,49 +316,49 @@
 -    @Override
      public int hashCode()
      {
-         int i = this.field_150247_b.hashCode();
+         int i = this.color.hashCode();
 @@ -379,7 +369,8 @@
-         i = 31 * i + this.field_150244_g.hashCode();
-         i = 31 * i + this.field_150251_h.hashCode();
-         i = 31 * i + this.field_150252_i.hashCode();
--        return 31 * i + this.field_179990_j.hashCode();
-+        i = 31 * i + this.field_179990_j.hashCode();
+         i = 31 * i + this.obfuscated.hashCode();
+         i = 31 * i + this.clickEvent.hashCode();
+         i = 31 * i + this.hoverEvent.hashCode();
+-        return 31 * i + this.insertion.hashCode();
++        i = 31 * i + this.insertion.hashCode();
 +        return i;
      }
  
-     public Style func_150232_l()
+     public Style createShallowCopy()
 @@ -401,11 +392,11 @@
-     public Style func_150206_m()
+     public Style createDeepCopy()
      {
          Style style = new Style();
--        style.func_150227_a(this.func_150223_b());
--        style.func_150217_b(this.func_150242_c());
--        style.func_150225_c(this.func_150236_d());
--        style.func_150228_d(this.func_150234_e());
--        style.func_150237_e(this.func_150233_f());
-+        style.func_150227_a(Boolean.valueOf(this.func_150223_b()));
-+        style.func_150217_b(Boolean.valueOf(this.func_150242_c()));
-+        style.func_150225_c(Boolean.valueOf(this.func_150236_d()));
-+        style.func_150228_d(Boolean.valueOf(this.func_150234_e()));
-+        style.func_150237_e(Boolean.valueOf(this.func_150233_f()));
-         style.func_150238_a(this.func_150215_a());
-         style.func_150241_a(this.func_150235_h());
-         style.func_150209_a(this.func_150210_i());
+-        style.setBold(this.getBold());
+-        style.setItalic(this.getItalic());
+-        style.setStrikethrough(this.getStrikethrough());
+-        style.setUnderlined(this.getUnderlined());
+-        style.setObfuscated(this.getObfuscated());
++        style.setBold(Boolean.valueOf(this.getBold()));
++        style.setItalic(Boolean.valueOf(this.getItalic()));
++        style.setStrikethrough(Boolean.valueOf(this.getStrikethrough()));
++        style.setUnderlined(Boolean.valueOf(this.getUnderlined()));
++        style.setObfuscated(Boolean.valueOf(this.getObfuscated()));
+         style.setColor(this.getColor());
+         style.setClickEvent(this.getClickEvent());
+         style.setHoverEvent(this.getHoverEvent());
 @@ -456,7 +447,7 @@
  
                          if (jsonobject.has("color"))
                          {
--                            style.field_150247_b = p_deserialize_3_.deserialize(jsonobject.get("color"), TextFormatting.class);
-+                            style.field_150247_b = (TextFormatting)p_deserialize_3_.deserialize(jsonobject.get("color"), TextFormatting.class);
+-                            style.color = p_deserialize_3_.deserialize(jsonobject.get("color"), TextFormatting.class);
++                            style.color = (TextFormatting)p_deserialize_3_.deserialize(jsonobject.get("color"), TextFormatting.class);
                          }
  
                          if (jsonobject.has("insertion"))
 @@ -490,7 +481,7 @@
                              {
                                  JsonPrimitive jsonprimitive2 = jsonobject2.getAsJsonPrimitive("action");
-                                 HoverEvent.Action hoverevent$action = jsonprimitive2 == null ? null : HoverEvent.Action.func_150684_a(jsonprimitive2.getAsString());
+                                 HoverEvent.Action hoverevent$action = jsonprimitive2 == null ? null : HoverEvent.Action.getValueByCanonicalName(jsonprimitive2.getAsString());
 -                                ITextComponent itextcomponent = p_deserialize_3_.deserialize(jsonobject2.get("value"), ITextComponent.class);
 +                                ITextComponent itextcomponent = (ITextComponent)p_deserialize_3_.deserialize(jsonobject2.get("value"), ITextComponent.class);
  
-                                 if (hoverevent$action != null && itextcomponent != null && hoverevent$action.func_150686_a())
+                                 if (hoverevent$action != null && itextcomponent != null && hoverevent$action.shouldAllowInChat())
                                  {

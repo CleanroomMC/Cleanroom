@@ -447,6 +447,22 @@ public class FMLClientHandler implements IFMLSidedHandler
     }
 
     /**
+     * Get the resource pack list, unmodifiable
+     * @return resource pack list
+     */
+    public List<IResourcePack> getResourcePackList() {
+        return Collections.unmodifiableList(resourcePackList);
+    }
+
+    /**
+     * Get the whole resource pack map, unmodifiable
+     * @return resource pack map
+     */
+    public Map<String, IResourcePack> getResourcePackMap() {
+        return Collections.unmodifiableMap(resourcePackMap);
+    }
+
+    /**
      * @return the instance
      */
     public static FMLClientHandler instance()
@@ -637,7 +653,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             {
                 IResourcePack pack = (IResourcePack) resourcePackType.getConstructor(ModContainer.class).newInstance(container);
 
-                PackMetadataSection meta = (PackMetadataSection)pack.getPackMetadata(this.metaSerializer, "pack");
+                PackMetadataSection meta = pack.getPackMetadata(this.metaSerializer, "pack");
 
                 if (meta != null && meta.getPackFormat() == 2)
                 {
@@ -986,7 +1002,7 @@ public class FMLClientHandler implements IFMLSidedHandler
                     if (resPack instanceof FMLContainerHolder) {
                         FMLContainerHolder containerHolder = (FMLContainerHolder) resPack;
                         ModContainer fmlContainer = containerHolder.getFMLContainer();
-                        logger.error("      mod {} resources at {}", fmlContainer.getModId(), fmlContainer.getSource().getPath());
+                        logger.error("      mod {} resources at {}", fmlContainer.getModId(), fmlContainer.getResource().getPath());
                     }
                     else if (resPack instanceof AbstractResourcePack)
                     {

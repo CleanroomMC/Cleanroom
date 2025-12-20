@@ -1,18 +1,18 @@
 --- before/net/minecraft/util/Session.java
 +++ after/net/minecraft/util/Session.java
 @@ -17,9 +17,25 @@
-     private final String field_148257_b;
-     private final String field_148258_c;
-     private final Session.Type field_152429_d;
+     private final String playerID;
+     private final String token;
+     private final Session.Type sessionType;
 +    /** Forge: Cache of the local session's GameProfile properties. */
 +    private com.mojang.authlib.properties.PropertyMap properties;
  
-     public Session(String p_i1098_1_, String p_i1098_2_, String p_i1098_3_, String p_i1098_4_)
+     public Session(String usernameIn, String playerIDIn, String tokenIn, String sessionTypeIn)
      {
-+        if (p_i1098_1_ == null || p_i1098_1_.isEmpty())
++        if (usernameIn == null || usernameIn.isEmpty())
 +        {
-+            p_i1098_1_ = "MissingName";
-+            p_i1098_2_ = p_i1098_3_ = "NotValid";
++            usernameIn = "MissingName";
++            playerIDIn = tokenIn = "NotValid";
 +            org.apache.logging.log4j.Logger logger = net.minecraftforge.fml.common.FMLLog.log;
 +            logger.log(org.apache.logging.log4j.Level.WARN, "=========================================================");
 +            logger.log(org.apache.logging.log4j.Level.WARN, "WARNING!! the username was not set for this session, typically");
@@ -23,23 +23,23 @@
 +            logger.log(org.apache.logging.log4j.Level.WARN, "=========================================================");
 +        }
 +
-         this.field_74286_b = p_i1098_1_;
-         this.field_148257_b = p_i1098_2_;
-         this.field_148258_c = p_i1098_3_;
+         this.username = usernameIn;
+         this.playerID = playerIDIn;
+         this.token = tokenIn;
 @@ -51,13 +67,28 @@
          try
          {
-             UUID uuid = UUIDTypeAdapter.fromString(this.func_148255_b());
--            return new GameProfile(uuid, this.func_111285_a());
-+            GameProfile ret = new GameProfile(uuid, this.func_111285_a());    //Forge: Adds cached GameProfile properties to returned GameProfile.
+             UUID uuid = UUIDTypeAdapter.fromString(this.getPlayerID());
+-            return new GameProfile(uuid, this.getUsername());
++            GameProfile ret = new GameProfile(uuid, this.getUsername());    //Forge: Adds cached GameProfile properties to returned GameProfile.
 +            if (properties != null) ret.getProperties().putAll(properties); // Helps to cut down on calls to the session service,
 +            return ret;                                                     // which helps to fix MC-52974.
          }
 -        catch (IllegalArgumentException illegalargumentexception)
 +        catch (IllegalArgumentException var2)
          {
--            return new GameProfile(null, this.func_111285_a());
-+            return new GameProfile(net.minecraft.entity.player.EntityPlayer.func_146094_a(new GameProfile((UUID)null, this.func_111285_a())), this.func_111285_a());
+-            return new GameProfile(null, this.getUsername());
++            return new GameProfile(net.minecraft.entity.player.EntityPlayer.getUUID(new GameProfile((UUID)null, this.getUsername())), this.getUsername());
          }
      }
 +
@@ -62,8 +62,8 @@
          LEGACY("legacy"),
          MOJANG("mojang");
  
--        private static final Map<String, Session.Type> field_152425_c = Maps.newHashMap();
-+        private static final Map<String, Session.Type> field_152425_c = Maps.<String, Session.Type>newHashMap();
-         private final String field_152426_d;
+-        private static final Map<String, Session.Type> SESSION_TYPES = Maps.newHashMap();
++        private static final Map<String, Session.Type> SESSION_TYPES = Maps.<String, Session.Type>newHashMap();
+         private final String sessionType;
  
-         private Type(String p_i1096_3_)
+         private Type(String sessionTypeIn)

@@ -1,74 +1,30 @@
 --- before/net/minecraft/client/gui/GuiIngameMenu.java
 +++ after/net/minecraft/client/gui/GuiIngameMenu.java
-@@ -3,6 +3,7 @@
- import java.io.IOException;
- import net.minecraft.client.gui.achievement.GuiStats;
- import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
-+import net.minecraft.client.multiplayer.WorldClient;
- import net.minecraft.client.resources.I18n;
- import net.minecraft.realms.RealmsBridge;
- import net.minecraftforge.fml.relauncher.Side;
-@@ -14,7 +15,6 @@
-     private int field_146445_a;
-     private int field_146444_f;
+@@ -30,9 +30,8 @@
  
--    @Override
-     public void func_73866_w_()
-     {
-         this.field_146445_a = 0;
-@@ -25,21 +25,18 @@
- 
-         if (!this.field_146297_k.func_71387_A())
-         {
--            this.field_146292_n.get(0).field_146126_j = I18n.func_135052_a("menu.disconnect");
-+            (this.field_146292_n.get(0)).field_146126_j = I18n.func_135052_a("menu.disconnect");
-         }
- 
-         this.field_146292_n.add(new GuiButton(4, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 24 + -16, I18n.func_135052_a("menu.returnToGame")));
-         this.field_146292_n.add(new GuiButton(0, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 96 + -16, 98, 20, I18n.func_135052_a("menu.options")));
--        GuiButton guibutton = this.func_189646_b(
--                                  new GuiButton(7, this.field_146294_l / 2 + 2, this.field_146295_m / 4 + 96 + -16, 98, 20, I18n.func_135052_a("menu.shareToLan"))
+         this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + -16, I18n.format("menu.returnToGame")));
+         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.options")));
+-        GuiButton guibutton = this.addButton(
+-                                  new GuiButton(7, this.width / 2 + 2, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.shareToLan"))
 -                              );
-+        this.field_146292_n.add(new GuiButton(12, this.field_146294_l / 2 + 2, this.field_146295_m / 4 + 96 + i, 98, 20, I18n.func_135052_a("fml.menu.mods")));
-+        GuiButton guibutton = this.func_189646_b(new GuiButton(7, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 72 + -16, 200, 20, I18n.func_135052_a("menu.shareToLan", new Object[0])));
-         guibutton.field_146124_l = this.field_146297_k.func_71356_B() && !this.field_146297_k.func_71401_C().func_71344_c();
--        this.field_146292_n
--        .add(new GuiButton(5, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 48 + -16, 98, 20, I18n.func_135052_a("gui.advancements")));
-+        this.field_146292_n.add(new GuiButton(5, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 48 + -16, 98, 20, I18n.func_135052_a("gui.advancements")));
-         this.field_146292_n.add(new GuiButton(6, this.field_146294_l / 2 + 2, this.field_146295_m / 4 + 48 + -16, 98, 20, I18n.func_135052_a("gui.stats")));
-     }
- 
--    @Override
-     protected void func_146284_a(GuiButton p_146284_1_) throws IOException
-     {
-         switch (p_146284_1_.field_146127_k)
-@@ -52,7 +49,7 @@
-                 boolean flag1 = this.field_146297_k.func_181540_al();
-                 p_146284_1_.field_146124_l = false;
-                 this.field_146297_k.field_71441_e.func_72882_A();
--                this.field_146297_k.func_71403_a(null);
-+                this.field_146297_k.func_71403_a((WorldClient)null);
- 
-                 if (flag)
-                 {
-@@ -73,28 +70,32 @@
-             default:
-                 break;
-             case 4:
--                this.field_146297_k.func_147108_a(null);
-+                this.field_146297_k.func_147108_a((GuiScreen)null);
-                 this.field_146297_k.func_71381_h();
++        this.buttonList.add(new GuiButton(12, this.width / 2 + 2, this.height / 4 + 96 + i, 98, 20, I18n.format("fml.menu.modoptions")));
++        GuiButton guibutton = this.addButton(new GuiButton(7, this.width / 2 - 100, this.height / 4 + 72 + -16, 200, 20, I18n.format("menu.shareToLan", new Object[0])));
+         guibutton.enabled = this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic();
+         this.buttonList
+         .add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.advancements")));
+@@ -77,13 +76,19 @@
+                 this.mc.setIngameFocus();
                  break;
              case 5:
-+                if (this.field_146297_k.field_71439_g != null)
-                 this.field_146297_k.func_147108_a(new GuiScreenAdvancements(this.field_146297_k.field_71439_g.field_71174_a.func_191982_f()));
++                if (this.mc.player != null)
+                 this.mc.displayGuiScreen(new GuiScreenAdvancements(this.mc.player.connection.getAdvancementManager()));
                  break;
              case 6:
-+                if (this.field_146297_k.field_71439_g != null)
-                 this.field_146297_k.func_147108_a(new GuiStats(this, this.field_146297_k.field_71439_g.func_146107_m()));
++                if (this.mc.player != null)
+                 this.mc.displayGuiScreen(new GuiStats(this, this.mc.player.getStatFileWriter()));
                  break;
              case 7:
-                 this.field_146297_k.func_147108_a(new GuiShareToLan(this));
+                 this.mc.displayGuiScreen(new GuiShareToLan(this));
 +                break;
 +            case 12:
 +                net.minecraftforge.fml.client.FMLClientHandler.instance().showInGameModOptions(this);
@@ -76,15 +32,3 @@
          }
      }
  
--    @Override
-     public void func_73876_c()
-     {
-         super.func_73876_c();
--        this.field_146444_f++;
-+        ++this.field_146444_f;
-     }
- 
--    @Override
-     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
-     {
-         this.func_146276_q_();

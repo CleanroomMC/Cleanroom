@@ -1,49 +1,49 @@
 --- before/net/minecraft/world/gen/feature/WorldGenHellLava.java
 +++ after/net/minecraft/world/gen/feature/WorldGenHellLava.java
 @@ -19,15 +19,13 @@
-         this.field_94524_b = p_i45453_2_;
+         this.insideRock = insideRockIn;
      }
  
 -    @Override
-     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     public boolean generate(World worldIn, Random rand, BlockPos position)
      {
-         if (p_180709_1_.func_180495_p(p_180709_3_.func_177984_a()).func_177230_c() != Blocks.field_150424_aL)
+         if (worldIn.getBlockState(position.up()).getBlock() != Blocks.NETHERRACK)
          {
              return false;
          }
--        else if (p_180709_1_.func_180495_p(p_180709_3_).func_185904_a() != Material.field_151579_a
--                 && p_180709_1_.func_180495_p(p_180709_3_).func_177230_c() != Blocks.field_150424_aL)
-+        else if (!p_180709_1_.func_175623_d(p_180709_3_) && p_180709_1_.func_180495_p(p_180709_3_).func_177230_c() != Blocks.field_150424_aL)
+-        else if (worldIn.getBlockState(position).getMaterial() != Material.AIR
+-                 && worldIn.getBlockState(position).getBlock() != Blocks.NETHERRACK)
++        else if (!worldIn.isAirBlock(position) && worldIn.getBlockState(position).getBlock() != Blocks.NETHERRACK)
          {
              return false;
          }
 @@ -37,54 +35,54 @@
  
-             if (p_180709_1_.func_180495_p(p_180709_3_.func_177976_e()).func_177230_c() == Blocks.field_150424_aL)
+             if (worldIn.getBlockState(position.west()).getBlock() == Blocks.NETHERRACK)
              {
 -                i++;
 +                ++i;
              }
  
-             if (p_180709_1_.func_180495_p(p_180709_3_.func_177974_f()).func_177230_c() == Blocks.field_150424_aL)
+             if (worldIn.getBlockState(position.east()).getBlock() == Blocks.NETHERRACK)
              {
 -                i++;
 +                ++i;
              }
  
-             if (p_180709_1_.func_180495_p(p_180709_3_.func_177978_c()).func_177230_c() == Blocks.field_150424_aL)
+             if (worldIn.getBlockState(position.north()).getBlock() == Blocks.NETHERRACK)
              {
 -                i++;
 +                ++i;
              }
  
-             if (p_180709_1_.func_180495_p(p_180709_3_.func_177968_d()).func_177230_c() == Blocks.field_150424_aL)
+             if (worldIn.getBlockState(position.south()).getBlock() == Blocks.NETHERRACK)
              {
 -                i++;
 +                ++i;
              }
  
-             if (p_180709_1_.func_180495_p(p_180709_3_.func_177977_b()).func_177230_c() == Blocks.field_150424_aL)
+             if (worldIn.getBlockState(position.down()).getBlock() == Blocks.NETHERRACK)
              {
 -                i++;
 +                ++i;
@@ -51,34 +51,34 @@
  
              int j = 0;
  
-             if (p_180709_1_.func_175623_d(p_180709_3_.func_177976_e()))
+             if (worldIn.isAirBlock(position.west()))
              {
 -                j++;
 +                ++j;
              }
  
-             if (p_180709_1_.func_175623_d(p_180709_3_.func_177974_f()))
+             if (worldIn.isAirBlock(position.east()))
              {
 -                j++;
 +                ++j;
              }
  
-             if (p_180709_1_.func_175623_d(p_180709_3_.func_177978_c()))
+             if (worldIn.isAirBlock(position.north()))
              {
 -                j++;
 +                ++j;
              }
  
-             if (p_180709_1_.func_175623_d(p_180709_3_.func_177968_d()))
+             if (worldIn.isAirBlock(position.south()))
              {
 -                j++;
 +                ++j;
              }
  
-             if (p_180709_1_.func_175623_d(p_180709_3_.func_177977_b()))
+             if (worldIn.isAirBlock(position.down()))
              {
 -                j++;
 +                ++j;
              }
  
-             if (!this.field_94524_b && i == 4 && j == 1 || i == 5)
+             if (!this.insideRock && i == 4 && j == 1 || i == 5)

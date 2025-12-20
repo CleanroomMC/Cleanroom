@@ -1,30 +1,30 @@
 --- before/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
 +++ after/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
 @@ -21,15 +21,9 @@
-         this.field_186628_b = p_i46614_2_;
+         this.lootingMultiplier = lootingMultiplierIn;
      }
  
 -    @Override
-     public boolean func_186618_a(Random p_186618_1_, LootContext p_186618_2_)
+     public boolean testCondition(Random rand, LootContext context)
      {
 -        int i = 0;
 -
--        if (p_186618_2_.func_186492_c() instanceof EntityLivingBase)
+-        if (context.getKiller() instanceof EntityLivingBase)
 -        {
--            i = EnchantmentHelper.func_185283_h((EntityLivingBase)p_186618_2_.func_186492_c());
+-            i = EnchantmentHelper.getLootingModifier((EntityLivingBase)context.getKiller());
 -        }
-+        int i = p_186618_2_.getLootingModifier();
++        int i = context.getLootingModifier();
  
-         return p_186618_1_.nextFloat() < this.field_186627_a + (float)i * this.field_186628_b;
+         return rand.nextFloat() < this.chance + (float)i * this.lootingMultiplier;
      }
 @@ -43,8 +37,8 @@
  
-             public void func_186605_a(JsonObject p_186605_1_, RandomChanceWithLooting p_186605_2_, JsonSerializationContext p_186605_3_)
+             public void serialize(JsonObject json, RandomChanceWithLooting value, JsonSerializationContext context)
              {
--                p_186605_1_.addProperty("chance", p_186605_2_.field_186627_a);
--                p_186605_1_.addProperty("looting_multiplier", p_186605_2_.field_186628_b);
-+                p_186605_1_.addProperty("chance", Float.valueOf(p_186605_2_.field_186627_a));
-+                p_186605_1_.addProperty("looting_multiplier", Float.valueOf(p_186605_2_.field_186628_b));
+-                json.addProperty("chance", value.chance);
+-                json.addProperty("looting_multiplier", value.lootingMultiplier);
++                json.addProperty("chance", Float.valueOf(value.chance));
++                json.addProperty("looting_multiplier", Float.valueOf(value.lootingMultiplier));
              }
  
-             public RandomChanceWithLooting func_186603_b(JsonObject p_186603_1_, JsonDeserializationContext p_186603_2_)
+             public RandomChanceWithLooting deserialize(JsonObject json, JsonDeserializationContext context)

@@ -1,22 +1,22 @@
 --- before/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
 +++ after/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
 @@ -29,18 +29,16 @@
-         p_148833_1_.func_147344_a(this);
+         handler.processCreativeInventoryAction(this);
      }
  
 -    @Override
-     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     public void readPacketData(PacketBuffer buf) throws IOException
      {
-         this.field_149629_a = p_148837_1_.readShort();
-         this.field_149628_b = p_148837_1_.func_150791_c();
+         this.slotId = buf.readShort();
+         this.stack = buf.readItemStack();
      }
  
 -    @Override
-     public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
+     public void writePacketData(PacketBuffer buf) throws IOException
      {
-         p_148840_1_.writeShort(this.field_149629_a);
--        p_148840_1_.func_150788_a(this.field_149628_b);
-+        net.minecraftforge.common.util.PacketUtil.writeItemStackFromClientToServer(p_148840_1_, this.field_149628_b);
+         buf.writeShort(this.slotId);
+-        buf.writeItemStack(this.stack);
++        net.minecraftforge.common.util.PacketUtil.writeItemStackFromClientToServer(buf, this.stack);
      }
  
-     public int func_149627_c()
+     public int getSlotId()

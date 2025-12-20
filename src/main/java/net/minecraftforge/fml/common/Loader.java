@@ -67,9 +67,7 @@ import net.minecraftforge.fml.common.versioning.DependencyParser;
 import net.minecraftforge.fml.common.versioning.VersionParser;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.libraries.Artifact;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import net.minecraftforge.fml.relauncher.libraries.Repository;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.ObjectHolderRegistry;
 
@@ -388,7 +386,7 @@ public class Loader
             ModContainer mc;
             try
             {
-                mc = (ModContainer) Class.forName(cont,true,modClassLoader).getConstructor().newInstance();
+                mc = (ModContainer) Class.forName(cont,true, modClassLoader).getConstructor().newInstance();
             }
             catch (Exception e)
             {
@@ -406,29 +404,21 @@ public class Loader
             FMLLog.log.debug("Minecraft jar mods loaded successfully");
         }
 
-        List<Artifact> maven_canidates = LibraryManager.flattenLists(minecraftDir);
-        List<File> file_canidates = LibraryManager.gatherLegacyCanidates(minecraftDir);
-
-        for (Artifact artifact : maven_canidates)
-        {
-            artifact = Repository.resolveAll(artifact);
-            if (artifact != null)
-            {
-                File target = artifact.getFile();
-                if (!file_canidates.contains(target))
-                    file_canidates.add(target);
-            }
-        }
+        List<File> candidates = LibraryManager.getCandidates();
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
 
-        for (File mod : file_canidates)
+        for (File mod : candidates)
         {
             // skip loaded coremods
             if (CoreModManager.getIgnoredMods().contains(mod.getName()))
             {
                 FMLLog.log.trace("Skipping already parsed coremod or tweaker {}", mod.getName());
             }
+            else if(mod.isDirectory())
+            {
+                FMLLog.log.trace("Skipping directory {}", mod.getName());
+            } 
             else
             {
                 FMLLog.log.debug("Found a candidate zip or jar file {}", mod.getName());
@@ -994,13 +984,12 @@ public class Loader
             FMLLog.log.debug("File {} not found. No dependencies injected", injectedDepFile.getAbsolutePath());
             return;
         }
-        JsonParser parser = new JsonParser();
         JsonElement injectedDeps;
         try
         {
             try (Reader reader = new InputStreamReader(new FileInputStream(injectedDepFile), StandardCharsets.UTF_8))
             {
-                injectedDeps = parser.parse(reader);
+                injectedDeps = JsonParser.parseReader(reader);
             }
             for (JsonElement el : injectedDeps.getAsJsonArray())
             {
