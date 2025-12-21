@@ -13,7 +13,7 @@
          }
  
 -        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity()));
-+        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1.0F)));
++        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1.0F))); // Forge: fix MC-51150
          float f4 = (float)this.mc.gameSettings.renderDistanceChunks / 32.0F;
          float f2 = f3 * (1.0F - f4) + f4;
          this.fogColor1 = this.fogColor1 + (f2 - this.fogColor1) * 0.1F;
@@ -22,7 +22,7 @@
                          if (d3 < d2 || d2 == 0.0)
                          {
 -                            if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity())
-+                            if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity() && entity1.canRiderInteract())
++                            if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity() && !entity1.canRiderInteract())
                              {
                                  if (d2 == 0.0)
                                  {
