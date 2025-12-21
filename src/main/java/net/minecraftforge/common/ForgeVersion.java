@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -216,9 +217,8 @@ public class ForgeVersion
                 for (int redirects = 0; redirects < MAX_HTTP_REDIRECTS; redirects++)
                 {
                     URLConnection c = currentUrl.openConnection();
-                    if (c instanceof HttpURLConnection)
+                    if (c instanceof HttpURLConnection huc)
                     {
-                        HttpURLConnection huc = (HttpURLConnection) c;
                         huc.setInstanceFollowRedirects(false);
                         int responseCode = huc.getResponseCode();
                         if (responseCode >= 300 && responseCode <= 399)
@@ -250,7 +250,7 @@ public class ForgeVersion
                     ComparableVersion target = null;
 
                     InputStream con = openUrlStream(url);
-                    String data = new String(ByteStreams.toByteArray(con), "UTF-8");
+                    String data = new String(ByteStreams.toByteArray(con), StandardCharsets.UTF_8);
                     con.close();
 
                     log.debug("[{}] Received version check data:\n{}", mod.getModId(), data);
@@ -375,7 +375,7 @@ public class ForgeVersion
         return ret;
     }
 
-    private static Map<ModContainer, CheckResult> results = new ConcurrentHashMap<ModContainer, CheckResult>();
+    private static final Map<ModContainer, CheckResult> results = new ConcurrentHashMap<>();
     private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null, null, null);
 
     public static CheckResult getResult(ModContainer mod)
