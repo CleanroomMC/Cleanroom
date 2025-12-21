@@ -13,6 +13,7 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
@@ -113,7 +114,8 @@ public class DropdownMenu extends Gui implements LayoutElement {
 
     public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
         GlStateManager.pushMatrix();
-        drawRect(0, 0, minecraft.displayWidth, minecraft.displayHeight, 0x50000000);
+        final ScaledResolution sr = new ScaledResolution(minecraft);
+        drawRect(0, 0, sr.getScaledWidth(), sr.getScaledHeight(), 0x50000000);
         drawRect(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xAA000000);
         this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
         if (this.subMenu != null) {
