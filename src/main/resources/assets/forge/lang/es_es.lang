@@ -203,7 +203,6 @@ forge.controlsgui.alt=ALT + %s
 fml.menu.mods=Mods
 fml.menu.mods.normal=Normal
 fml.menu.mods.search=Buscar\:
-fml.menu.modoptions=Opciones de mods...
 
 item.forge.bucketFilled.name=Cubo de %s
 
