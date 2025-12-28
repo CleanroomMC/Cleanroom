@@ -59,6 +59,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     private static final Comparator<ModListEntry> SORT_FAVOURITES_FIRST = Comparator.comparing(ModListEntry::getData, Comparator.comparing(data -> FAVOURITES.has(data.getModId()))).reversed().thenComparing(SORT_ALPHABETICALLY);
     private static final MutableObject<String> OPTION_QUERY = new MutableObject<>("");
     private static final MutableBoolean OPTION_HIDE_LIBRARIES = new MutableBoolean(true);
+    private static final MutableBoolean OPTION_HIDE_CHILD_MODS = new MutableBoolean(true);
     private static final MutableBoolean OPTION_CONFIGS_ONLY = new MutableBoolean(false);
     private static final MutableBoolean OPTION_UPDATES_ONLY = new MutableBoolean(false);
     private static final MutableBoolean OPTION_FAVOURITES_ONLY = new MutableBoolean(false);
@@ -75,7 +76,10 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     private static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]{1,63}$");
     private static final Supplier<Pair<Integer, Integer>> COUNTS = Suppliers.memoize(() -> {
         int[] counts = new int[2];
-        CACHED_MODS.forEach((modId, data) -> counts[data.isLibrary() ? 1 : 0]++);
+        CACHED_MODS.forEach((modId, data) -> {
+            if (data.getType() == IModData.Type.CHILD) return;
+            counts[data.getType() == IModData.Type.LIBRARY ? 1 : 0]++;
+        });
         return Pair.of(counts[0], counts[1]);
     });
     private static final Map<String, SearchFilter> SEARCH_FILTERS = ImmutableMap.<String, SearchFilter>builder()
@@ -84,7 +88,14 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 return target != null && target.getDependencies().contains(data.getModId());
             }))
             .put("dependents", new SearchFilter((query, data) -> {
-                return data.getDependencies().contains(query.toLowerCase(Locale.ENGLISH));
+                return data.getDependencies().stream().anyMatch(query::equalsIgnoreCase);
+            }))
+            .put("childmods", new SearchFilter((query, data) -> {
+                IModData target = CACHED_MODS.get(query.toLowerCase(Locale.ENGLISH));
+                return target != null && target.getChildMods().contains(data.getModId());
+            }))
+            .put("parentmod", new SearchFilter((query, data) -> {
+                return data.getChildMods().stream().anyMatch(query::equalsIgnoreCase);
             })).build();
     private static final TextFormatting SEARCH_FILTER_KEY = TextFormatting.GOLD;
     private static final TextFormatting SEARCH_FILTER_VALUE = TextFormatting.WHITE;
@@ -115,7 +126,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         super();
         this.parentScreen = parent;
         if (!loaded) {
-            ClientServices.PLATFORM.getAllModData().forEach(data -> CACHED_MODS.put(data.getModId(), data));
+            ClientServices.PLATFORM.getAllModData().forEach(data -> CACHED_MODS.put(data.getModId().toLowerCase(Locale.ENGLISH), data));
             CACHED_MODS.put("minecraft", new MinecraftModData()); // Override minecraft
             BANNER_CACHE.put("minecraft", new ImageInfo(MINECRAFT_LOGO, 1024, 256, () -> {
             }));
@@ -147,9 +158,9 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         };
         this.searchTextField.setFormatter(this::formatQuery);
         this.searchTextField.setMaxStringLength(128);
-        this.searchTextField.setText(OPTION_QUERY.getValue());
+        this.searchTextField.setText(OPTION_QUERY.get());
         this.searchTextField.setResponder(s -> {
-            if (!OPTION_QUERY.getValue().equals(s)) {
+            if (!OPTION_QUERY.get().equals(s)) {
                 OPTION_QUERY.setValue(s);
                 this.updateSearchFieldSuggestion(s);
                 this.modList.filterAndUpdateList();
@@ -260,6 +271,10 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                         .addCheckbox(I18n.format("catalogue.gui.hide_libraries"), OPTION_HIDE_LIBRARIES, newValue -> {
                             this.modList.filterAndUpdateList();
                             return false;
+                        })
+                        .addCheckbox(I18n.format("catalogue.gui.hide_child_mods"), OPTION_HIDE_CHILD_MODS, newValue -> {
+                            this.modList.filterAndUpdateList();
+                            return false;
                         }).build();
                 menu.toggle(button);
                 break;
@@ -280,7 +295,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         this.drawModInfo(disableableMouseX, disableableMouseY, partialTicks);
         super.drawScreen(disableableMouseX, disableableMouseY, partialTicks);
 
-        if (OPTION_QUERY.getValue().startsWith("@")) {
+        if (OPTION_QUERY.get().startsWith("@")) {
             int iconX = this.searchTextField.x + this.searchTextField.width - 15;
             int iconY = this.searchTextField.y + (this.searchTextField.height - 10) / 2;
             this.mc.getTextureManager().bindTexture(CatalogueIconButton.TEXTURE);
@@ -291,7 +306,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             }
         }
 
-        Optional<IModData> optional = Optional.ofNullable(CACHED_MODS.get(CatalogueConstants.MOD_ID));
+        Optional<IModData> optional = Optional.ofNullable(CACHED_MODS.get(CatalogueConstants.MOD_ID.toLowerCase(Locale.ENGLISH)));
         optional.ifPresent(this::loadAndCacheLogo);
         ImageInfo bannerInfo = BANNER_CACHE.get(CatalogueConstants.MOD_ID);
         if (bannerInfo != null) {
@@ -433,7 +448,10 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         this.searchTextField.drawTextBox();
 
         String modsLabel = TextFormatting.BOLD + I18n.format("catalogue.gui.mod_list");
-        String countLabel = TextFormatting.GRAY + "(" + CACHED_MODS.size() + ")";
+        Pair<Integer, Integer> counts = COUNTS.get();
+        int modCount = counts.getLeft();
+        int libCount = counts.getRight();
+        String countLabel = TextFormatting.GRAY + "(" + (modCount + libCount) + ")";
         String title = modsLabel + " " + countLabel;
         int titleWidth = this.fontRenderer.getStringWidth(title);
         int titleLeft = this.modList.left + (this.modList.width - titleWidth) / 2;
@@ -441,10 +459,9 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
         int countLabelWidth = this.fontRenderer.getStringWidth(countLabel);
         if (ClientHelper.isMouseWithin(titleLeft + titleWidth - countLabelWidth, 10, countLabelWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
-            Pair<Integer, Integer> counts = COUNTS.get();
-            List<String> lines = List.of(
-                    I18n.format("catalogue.gui.mod_count", counts.getLeft()),
-                    I18n.format("catalogue.gui.library_count", counts.getRight())
+            List<String> lines = Arrays.asList(
+                    I18n.format("catalogue.gui.mod_count", modCount),
+                    I18n.format("catalogue.gui.library_count", libCount)
             );
             this.setActiveTooltip(lines);
             this.tooltipYOffset = 10;
@@ -453,7 +470,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
     private class ModList extends CatalogueListSelection<ModListEntry> {
         private static final Predicate<IModData> SEARCH_PREDICATE = data -> {
-            String query = OPTION_QUERY.getValue();
+            String query = OPTION_QUERY.get();
             if (query.startsWith("@")) {
                 return performSearchFilter(query, data);
             }
@@ -463,7 +480,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         };
         private static final Predicate<IModData> FILTER_PREDICATE = data -> {
             // We ignore filters when using special query
-            String query = OPTION_QUERY.getValue();
+            String query = OPTION_QUERY.get();
             if (query.startsWith("@")) {
                 return true;
             }
@@ -473,7 +490,10 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             if (OPTION_UPDATES_ONLY.booleanValue() && (data.getUpdate() == null || !data.getUpdate().updatable())) {
                 return false;
             }
-            if (OPTION_HIDE_LIBRARIES.booleanValue() && data.isLibrary()) {
+            if (OPTION_HIDE_LIBRARIES.booleanValue() && data.getType() == IModData.Type.LIBRARY) {
+                return false;
+            }
+            if (OPTION_HIDE_CHILD_MODS.booleanValue() && data.getType() == IModData.Type.CHILD) {
                 return false;
             }
             //noinspection RedundantIfStatement
@@ -504,7 +524,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                     .filter(SEARCH_PREDICATE)
                     .filter(FILTER_PREDICATE)
                     .map(data -> new ModListEntry(data, this))
-                    .sorted(OPTION_SORT.getValue())
+                    .sorted(OPTION_SORT.get())
                     .collect(Collectors.toList());
             this.replaceEntries(entries);
             if (CatalogueModListScreen.this.selectedModData != null) {
@@ -570,7 +590,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     }
 
     private String formatQuery(String partial, int displayPos) {
-        String query = OPTION_QUERY.getValue();
+        String query = OPTION_QUERY.get();
         if (!query.startsWith("@")) {
             return partial;
         }
@@ -607,7 +627,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         public ModListEntry(@NotNull IModData data, @NotNull ModList list) {
             this.data = data;
             this.list = list;
-            this.button = new PinnedButton(data.getModId());
+            this.button = new PinnedButton();
             this.icon = this.getItemIcon();
         }
 
@@ -616,7 +636,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             this.hovered = hovered;
             // Draws mod name and version
             boolean inOptionsMenu = CatalogueModListScreen.this.menu != null;
-            boolean drawFavouriteIcon = !inOptionsMenu && !this.list.shouldHideFavourites() && ClientHelper.isMouseWithin(left + rowWidth - rowHeight - 4, top, rowHeight + 4, rowHeight, mouseX, mouseY) || FAVOURITES.has(this.data.getModId());
+            boolean drawFavouriteIcon = !inOptionsMenu && this.data.getType() != IModData.Type.CHILD && !this.list.shouldHideFavourites() && ClientHelper.isMouseWithin(left + rowWidth - rowHeight - 4, top, rowHeight + 4, rowHeight, mouseX, mouseY) || FAVOURITES.has(this.data.getModId());
             drawString(CatalogueModListScreen.this.fontRenderer, this.getFormattedModName(drawFavouriteIcon), left + 24, top + 2, 0xFFFFFF);
             drawString(CatalogueModListScreen.this.fontRenderer, this.getFormattedModVersion(drawFavouriteIcon), left + 24, top + 12, 0xFFFFFF);
 
@@ -738,7 +758,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                     .findFirst();
 
             // If the mod doesn't specify an item to use, Catalogue will attempt to get an item from the mod
-            if (!optional.isPresent()) {
+            if (optional.isEmpty()) {
                 optional = ForgeRegistries.ITEMS.getValuesCollection().stream()
                         .filter(Objects::nonNull)
                         .filter(item -> {
@@ -763,10 +783,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         private String getFormattedModName(boolean favouriteIconVisible) {
             String name = this.data.getDisplayName();
             name = this.getFormattedText(name, favouriteIconVisible);
-            if (this.data.isLibrary()) {
-                return TextFormatting.DARK_GRAY + name;
-            }
-            return name;
+            return data.getType().getStyle() + name;
         }
 
         @NotNull
@@ -798,7 +815,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         @Override
         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY) {
             if (mouseButton == 1) {
-                DropdownMenu menu = DropdownMenu.builder(CatalogueModListScreen.this)
+                DropdownMenu.Builder builder = DropdownMenu.builder(CatalogueModListScreen.this)
                         .setMinItemSize(0, 16)
                         .setAlignment(DropdownMenu.Alignment.BELOW_LEFT)
                         .addItem(I18n.format("catalogue.gui.show_dependencies"), () -> {
@@ -808,11 +825,28 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                         .addItem(I18n.format("catalogue.gui.show_dependents"), () -> {
                             String filter = "@dependents:" + this.data.getModId();
                             CatalogueModListScreen.this.searchTextField.setText(filter);
-                        }).build();
+                        });
+                if (this.data.getType() == IModData.Type.CHILD) {
+                    builder.addItem(I18n.format("catalogue.gui.show_parent_mod"), () -> {
+                        String filter = "@parentmod:" + this.data.getModId();
+                        CatalogueModListScreen.this.searchTextField.setText(filter);
+                    });
+                } else if (!this.data.getChildMods().isEmpty()) {
+                    builder.addItem(I18n.format("catalogue.gui.show_child_mods"), () -> {
+                        String filter = "@childmods:" + this.data.getModId();
+                        CatalogueModListScreen.this.searchTextField.setText(filter);
+                    });
+                }
+                DropdownMenu menu = builder.build();
                 menu.toggle(mouseX, mouseY);
                 return true;
             } else if (mouseButton == 0) {
-                if (this.button.mousePressed(CatalogueModListScreen.this.mc, mouseX, mouseY)) return true;
+                if (this.button.mousePressed(CatalogueModListScreen.this.mc, mouseX, mouseY)) {
+                    FAVOURITES.toggle(this.data.getModId());
+                    ModListEntry.this.list.filterAndUpdateList();
+                    this.button.playPressSound(mc.getSoundHandler());
+                    return true;
+                }
                 CatalogueModListScreen.this.setSelectedModData(this.data);
                 this.list.setSelected(this);
                 return true;
@@ -827,11 +861,8 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         private class PinnedButton extends GuiButton {
             private static final ResourceLocation TEXTURE = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/icons.png");
 
-            private final String modId;
-
-            public PinnedButton(String modId) {
+            public PinnedButton() {
                 super(0, 0, 0, 10, 10, "");
-                this.modId = modId;
             }
 
             @Override
@@ -839,7 +870,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 if (!this.visible) return;
                 this.hovered = ModListEntry.this.isMouseOver() && ClientHelper.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
                 this.mouseDragged(mc, mouseX, mouseY);
-                int textureU = FAVOURITES.has(this.modId) ? 10 : 0;
+                int textureU = FAVOURITES.has(ModListEntry.this.data.getModId()) ? 10 : 0;
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.enableBlend();
                 mc.getTextureManager().bindTexture(TEXTURE);
@@ -849,13 +880,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
             @Override
             public boolean mousePressed(@NotNull Minecraft mc, int mouseX, int mouseY) {
-                if (super.mousePressed(mc, mouseX, mouseY) && !ModListEntry.this.list.shouldHideFavourites()) {
-                    FAVOURITES.toggle(this.modId);
-                    ModListEntry.this.list.filterAndUpdateList();
-                    this.playPressSound(mc.getSoundHandler());
-                    return true;
-                }
-                return false;
+                return super.mousePressed(mc, mouseX, mouseY) && ModListEntry.this.data.getType() != IModData.Type.CHILD && !ModListEntry.this.list.shouldHideFavourites();
             }
         }
     }
@@ -919,6 +944,19 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             drawGradientRect(listRight + 12, this.height - 50, this.width, this.height, 0x00000000, 0x66000000);
 
             int labelOffset = this.height - 18;
+
+            // Draw child mods
+            String childMods = this.selectedModData.getChildModNames();
+            if (childMods != null && !childMods.isBlank()) {
+                this.drawStringWithLabel("catalogue.gui.child_mods", childMods, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+                labelOffset -= 15;
+            }
+
+            String parentMod = this.selectedModData.getParentModName();
+            if (parentMod != null && !parentMod.isBlank()) {
+                this.drawStringWithLabel("catalogue.gui.parent_mod", parentMod, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+                labelOffset -= 15;
+            }
 
             // Draw license
             String license = this.selectedModData.getLicense();
@@ -1227,6 +1265,8 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
      */
     private int getFooterTextElementCount(@NotNull IModData data) {
         int count = 0;
+        if (data.getChildModNames() != null && !data.getChildModNames().isBlank()) count++;
+        if (data.getParentModName() != null && !data.getParentModName().isBlank()) count++;
         if (data.getLicense() != null && !data.getLicense().isBlank()) count++;
         if (data.getCredits() != null && !data.getCredits().isBlank()) count++;
         if (data.getAuthors() != null && !data.getAuthors().isBlank()) count++;

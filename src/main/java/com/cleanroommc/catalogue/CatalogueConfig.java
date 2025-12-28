@@ -23,7 +23,6 @@ public class CatalogueConfig {
     })
     @Config.LangKey("catalogue.config.library_list")
     public static String[] libraryList = new String[]{
-            "minecraft",
             "forge",
             "FML",
             "mcp",
