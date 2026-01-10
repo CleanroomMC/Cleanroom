@@ -276,7 +276,7 @@ dependencies {
     installer 'org.javassist:javassist:3.30.2-GA'
     installer "zone.rong:imaginebreaker:2.1"
 
-    installer 'com.ibm.icu:icu4j:78.1'
+    installer 'com.ibm.icu:icu4j:78.2'
 
     installer 'org.jline:jline:3.30.6'
     installer 'org.jline:jline-native:3.30.6'
@@ -291,7 +291,7 @@ dependencies {
     installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
     installer 'org.apache.commons:commons-lang3:3.20.0'
     installer 'org.apache.commons:commons-compress:1.28.0'
-    installer 'com.github.oshi:oshi-core:6.9.1'
+    installer 'com.github.oshi:oshi-core:6.9.2'
     installer 'net.java.dev.jna:jna:5.18.1'
     installer 'net.java.dev.jna:jna-platform:5.18.1'
     installer 'it.unimi.dsi:fastutil:8.5.18'
