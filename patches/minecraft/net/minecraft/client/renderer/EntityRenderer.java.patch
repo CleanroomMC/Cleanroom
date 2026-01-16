@@ -96,24 +96,34 @@
                      if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION))
                      {
                          float f15 = this.getNightVisionBrightness(this.mc.player, partialTicks);
-@@ -1108,7 +1114,15 @@
+@@ -1108,7 +1114,25 @@
                  j = Math.max(j, 60);
                  long k = System.nanoTime() - nanoTime;
                  long l = Math.max((long)(1000000000 / j / 4) - k, 0L);
 -                this.renderWorld(partialTicks, System.nanoTime() + l);
 +
-+                if (com.cleanroommc.kirino.KirinoCore.isEnableRenderDelegate())
++                boolean renderVanilla = true;
++                if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable)
 +                {
-+                    com.cleanroommc.kirino.KirinoCore.EntityRenderer$renderWorld(System.nanoTime() + l);
++                    if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate && !com.cleanroommc.kirino.KirinoCore.isUnsupported())
++                    {
++                        com.cleanroommc.kirino.KirinoCore.EntityRenderer$renderWorld(System.nanoTime() + l);
++                        renderVanilla = false;
++                    }
++                    else
++                    {
++                        com.cleanroommc.kirino.KirinoCore.EntityRenderer$renderWorldHeadlessly(System.nanoTime() + l);
++                    }
 +                }
-+                else
++
++                if (renderVanilla)
 +                {
 +                    this.renderWorld(partialTicks, System.nanoTime() + l);
 +                }
  
                  if (this.mc.isSingleplayer() && this.timeWorldIcon < Minecraft.getSystemTime() - 1000L)
                  {
-@@ -1158,6 +1172,10 @@
+@@ -1158,6 +1182,10 @@
                  GlStateManager.loadIdentity();
                  this.setupOverlayRendering();
                  this.renderEndNanoTime = System.nanoTime();
@@ -124,7 +134,7 @@
              }
  
              if (this.mc.currentScreen != null)
-@@ -1166,7 +1184,7 @@
+@@ -1166,7 +1194,7 @@
  
                  try
                  {
@@ -133,7 +143,7 @@
                  }
                  catch (Throwable throwable)
                  {
-@@ -1275,7 +1293,7 @@
+@@ -1275,7 +1303,7 @@
  
                      if (this.mc.playerController.getCurrentGameType() == GameType.SPECTATOR)
                      {
@@ -142,7 +152,7 @@
                      }
                      else
                      {
-@@ -1396,7 +1414,9 @@
+@@ -1396,7 +1424,9 @@
          GlStateManager.disableAlpha();
          renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, (double)partialTicks, pass, entity);
          GlStateManager.enableAlpha();
@@ -152,7 +162,7 @@
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
          renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT, (double)partialTicks, pass, entity);
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
-@@ -1410,7 +1430,9 @@
+@@ -1410,7 +1440,9 @@
              GlStateManager.pushMatrix();
              RenderHelper.enableStandardItemLighting();
              this.mc.profiler.endStartSection("entities");
@@ -162,7 +172,7 @@
              RenderHelper.disableStandardItemLighting();
              this.disableLightmap();
          }
-@@ -1423,6 +1445,7 @@
+@@ -1423,6 +1455,7 @@
              EntityPlayer entityplayer = (EntityPlayer)entity;
              GlStateManager.disableAlpha();
              this.mc.profiler.endStartSection("outline");
@@ -170,7 +180,7 @@
              renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
              GlStateManager.enableAlpha();
          }
-@@ -1473,6 +1496,17 @@
+@@ -1473,6 +1506,17 @@
          GlStateManager.shadeModel(7425);
          this.mc.profiler.endStartSection("translucent");
          renderglobal.renderBlockLayer(BlockRenderLayer.TRANSLUCENT, (double)partialTicks, pass, entity);
@@ -188,7 +198,7 @@
          GlStateManager.shadeModel(7424);
          GlStateManager.depthMask(true);
          GlStateManager.enableCull();
-@@ -1485,6 +1519,9 @@
+@@ -1485,6 +1529,9 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
@@ -198,7 +208,7 @@
          this.mc.profiler.endStartSection("hand");
  
          if (this.renderHand)
-@@ -1635,6 +1672,13 @@
+@@ -1635,6 +1682,13 @@
  
      protected void renderRainSnow(float partialTicks)
      {
@@ -212,7 +222,7 @@
          float f = this.mc.world.getRainStrength(partialTicks);
  
          if (!(f <= 0.0F))
-@@ -1908,29 +1952,16 @@
+@@ -1908,29 +1962,16 @@
              this.fogColorGreen = (float)vec3d3.y;
              this.fogColorBlue = (float)vec3d3.z;
          }
@@ -252,7 +262,7 @@
          }
  
          float f13 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * partialTicks;
-@@ -1989,6 +2020,9 @@
+@@ -1989,6 +2030,9 @@
                  f6 = 1.0F / this.fogColorBlue;
              }
  
@@ -262,7 +272,7 @@
              this.fogColorRed = this.fogColorRed * (1.0F - f15) + this.fogColorRed * f6 * f15;
              this.fogColorGreen = this.fogColorGreen * (1.0F - f15) + this.fogColorGreen * f6 * f15;
              this.fogColorBlue = this.fogColorBlue * (1.0F - f15) + this.fogColorBlue * f6 * f15;
-@@ -2004,6 +2038,13 @@
+@@ -2004,6 +2048,13 @@
              this.fogColorBlue = f7;
          }
  
@@ -276,7 +286,7 @@
          GlStateManager.clearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
      }
  
-@@ -2014,7 +2055,9 @@
+@@ -2014,7 +2065,9 @@
          GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
@@ -287,7 +297,7 @@
          if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(MobEffects.BLINDNESS))
          {
              float f1 = 5.0F;
-@@ -2100,6 +2143,7 @@
+@@ -2100,6 +2153,7 @@
                  GlStateManager.setFogStart(f * 0.05F);
                  GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
              }
