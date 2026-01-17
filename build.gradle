@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'top.outlands.gradle:ForgeGradle:6.0.+'
-        classpath('top.outlands:artifactural:3.0.1') {
+        classpath('top.outlands:artifactural:3.0.4') {
             transitive = false
         }
     }
