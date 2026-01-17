@@ -286,6 +286,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             }
         }
 
+        com.cleanroommc.kirino.KirinoCore.KIRINO_EVENT_BUS.post(new com.cleanroommc.kirino.config.event.KirinoOneTimeConfigEvent());
         com.cleanroommc.kirino.KirinoCore.init();
     }
 

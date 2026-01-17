@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/renderer/EntityRenderer.java
 +++ after/net/minecraft/client/renderer/EntityRenderer.java
-@@ -235,6 +235,7 @@
+@@ -13,7 +13,6 @@
+ import javax.annotation.Nullable;
+ import javax.imageio.ImageIO;
+ import net.minecraft.block.Block;
+-import net.minecraft.block.BlockBed;
+ import net.minecraft.block.material.Material;
+ import net.minecraft.block.state.IBlockState;
+ import net.minecraft.client.Minecraft;
+@@ -235,6 +234,7 @@
              {
                  this.loadShader(new ResourceLocation("shaders/post/invert.json"));
              }
@@ -8,7 +16,7 @@
          }
      }
  
-@@ -538,7 +539,7 @@
+@@ -538,7 +538,7 @@
                  f = f * 60.0F / 70.0F;
              }
  
@@ -17,7 +25,7 @@
          }
      }
  
-@@ -604,13 +605,7 @@
+@@ -604,13 +604,7 @@
              {
                  BlockPos blockpos = new BlockPos(entity);
                  IBlockState iblockstate = this.mc.world.getBlockState(blockpos);
@@ -32,7 +40,7 @@
  
                  GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
                  GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
-@@ -683,19 +678,20 @@
+@@ -683,19 +677,20 @@
  
          if (!this.mc.gameSettings.debugCamEnable)
          {
@@ -63,7 +71,7 @@
          }
  
          GlStateManager.translate(0.0F, -f, 0.0F);
-@@ -707,7 +703,7 @@
+@@ -707,7 +702,7 @@
  
      private void setupCameraTransform(float partialTicks, int pass)
      {
@@ -72,7 +80,7 @@
          GlStateManager.matrixMode(5889);
          GlStateManager.loadIdentity();
          float f = 0.07F;
-@@ -825,6 +821,7 @@
+@@ -825,6 +820,7 @@
              boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase
                             && ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping();
  
@@ -80,7 +88,7 @@
              if (this.mc.gameSettings.thirdPersonView == 0
                      && !flag
                      && !this.mc.gameSettings.hideGUI
-@@ -932,6 +929,15 @@
+@@ -932,6 +928,15 @@
                          f10 = 0.25F + f7 * 0.75F;
                      }
  
@@ -96,29 +104,26 @@
                      if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION))
                      {
                          float f15 = this.getNightVisionBrightness(this.mc.player, partialTicks);
-@@ -1108,7 +1114,20 @@
+@@ -1108,7 +1113,17 @@
                  j = Math.max(j, 60);
                  long k = System.nanoTime() - nanoTime;
                  long l = Math.max((long)(1000000000 / j / 4) - k, 0L);
 -                this.renderWorld(partialTicks, System.nanoTime() + l);
 +
-+                boolean renderVanilla = true;
-+                if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                        && com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                        && !com.cleanroommc.kirino.KirinoCore.isUnsupported())
++                if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnable()
++                        && com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++                        && !com.cleanroommc.kirino.KirinoCore.isRenderUnsupported())
 +                {
 +                    com.cleanroommc.kirino.KirinoCore.EntityRenderer$renderWorld(System.nanoTime() + l);
-+                    renderVanilla = false;
 +                }
-+
-+                if (renderVanilla)
++                else
 +                {
 +                    this.renderWorld(partialTicks, System.nanoTime() + l);
 +                }
  
                  if (this.mc.isSingleplayer() && this.timeWorldIcon < Minecraft.getSystemTime() - 1000L)
                  {
-@@ -1158,6 +1177,10 @@
+@@ -1158,6 +1173,10 @@
                  GlStateManager.loadIdentity();
                  this.setupOverlayRendering();
                  this.renderEndNanoTime = System.nanoTime();
@@ -129,7 +134,7 @@
              }
  
              if (this.mc.currentScreen != null)
-@@ -1166,7 +1189,7 @@
+@@ -1166,7 +1185,7 @@
  
                  try
                  {
@@ -138,7 +143,7 @@
                  }
                  catch (Throwable throwable)
                  {
-@@ -1275,7 +1298,7 @@
+@@ -1275,7 +1294,7 @@
  
                      if (this.mc.playerController.getCurrentGameType() == GameType.SPECTATOR)
                      {
@@ -147,13 +152,13 @@
                      }
                      else
                      {
-@@ -1323,6 +1346,14 @@
+@@ -1323,6 +1342,14 @@
  
      private void renderWorldPass(int pass, float partialTicks, long finishTimeNano)
      {
-+        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
++        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnable()
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++                || com.cleanroommc.kirino.KirinoCore.isRenderUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.PREPARE);
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.PRE_UPDATE);
@@ -162,13 +167,13 @@
          RenderGlobal renderglobal = this.mc.renderGlobal;
          ParticleManager particlemanager = this.mc.effectRenderer;
          boolean flag = this.isDrawBlockOutline();
-@@ -1377,6 +1408,14 @@
+@@ -1377,6 +1404,14 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
-+        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
++        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnable()
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++                || com.cleanroommc.kirino.KirinoCore.isRenderUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.UPDATE);
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_OPAQUE);
@@ -177,7 +182,7 @@
          this.mc.profiler.endStartSection("prepareterrain");
          this.setupFog(0, partialTicks);
          this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-@@ -1396,7 +1435,9 @@
+@@ -1396,7 +1431,9 @@
          GlStateManager.disableAlpha();
          renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, (double)partialTicks, pass, entity);
          GlStateManager.enableAlpha();
@@ -187,7 +192,7 @@
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
          renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT, (double)partialTicks, pass, entity);
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
-@@ -1410,7 +1451,9 @@
+@@ -1410,7 +1447,9 @@
              GlStateManager.pushMatrix();
              RenderHelper.enableStandardItemLighting();
              this.mc.profiler.endStartSection("entities");
@@ -197,7 +202,7 @@
              RenderHelper.disableStandardItemLighting();
              this.disableLightmap();
          }
-@@ -1423,6 +1466,7 @@
+@@ -1423,6 +1462,7 @@
              EntityPlayer entityplayer = (EntityPlayer)entity;
              GlStateManager.disableAlpha();
              this.mc.profiler.endStartSection("outline");
@@ -205,14 +210,14 @@
              renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
              GlStateManager.enableAlpha();
          }
-@@ -1471,8 +1515,27 @@
+@@ -1471,8 +1511,27 @@
          GlStateManager.depthMask(false);
          this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
          GlStateManager.shadeModel(7425);
 +
-+        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
++        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnable()
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++                || com.cleanroommc.kirino.KirinoCore.isRenderUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_TRANSPARENT);
 +        }
@@ -233,7 +238,7 @@
          GlStateManager.shadeModel(7424);
          GlStateManager.depthMask(true);
          GlStateManager.enableCull();
-@@ -1485,6 +1548,9 @@
+@@ -1485,6 +1544,9 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
@@ -243,14 +248,14 @@
          this.mc.profiler.endStartSection("hand");
  
          if (this.renderHand)
-@@ -1492,6 +1558,14 @@
+@@ -1492,6 +1554,14 @@
              GlStateManager.clear(256);
              this.renderHand(partialTicks, pass);
          }
 +
-+        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
++        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnable()
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++                || com.cleanroommc.kirino.KirinoCore.isRenderUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.POST_UPDATE);
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_OVERLAY);
@@ -258,7 +263,7 @@
      }
  
      private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass, double x, double y, double z)
-@@ -1635,6 +1709,13 @@
+@@ -1635,6 +1705,13 @@
  
      protected void renderRainSnow(float partialTicks)
      {
@@ -272,7 +277,7 @@
          float f = this.mc.world.getRainStrength(partialTicks);
  
          if (!(f <= 0.0F))
-@@ -1908,29 +1989,16 @@
+@@ -1908,29 +1985,16 @@
              this.fogColorGreen = (float)vec3d3.y;
              this.fogColorBlue = (float)vec3d3.z;
          }
@@ -312,7 +317,7 @@
          }
  
          float f13 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * partialTicks;
-@@ -1989,6 +2057,9 @@
+@@ -1989,6 +2053,9 @@
                  f6 = 1.0F / this.fogColorBlue;
              }
  
@@ -322,7 +327,7 @@
              this.fogColorRed = this.fogColorRed * (1.0F - f15) + this.fogColorRed * f6 * f15;
              this.fogColorGreen = this.fogColorGreen * (1.0F - f15) + this.fogColorGreen * f6 * f15;
              this.fogColorBlue = this.fogColorBlue * (1.0F - f15) + this.fogColorBlue * f6 * f15;
-@@ -2004,6 +2075,13 @@
+@@ -2004,6 +2071,13 @@
              this.fogColorBlue = f7;
          }
  
@@ -336,7 +341,7 @@
          GlStateManager.clearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
      }
  
-@@ -2014,7 +2092,9 @@
+@@ -2014,7 +2088,9 @@
          GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
@@ -347,7 +352,7 @@
          if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(MobEffects.BLINDNESS))
          {
              float f1 = 5.0F;
-@@ -2100,6 +2180,7 @@
+@@ -2100,6 +2176,7 @@
                  GlStateManager.setFogStart(f * 0.05F);
                  GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
              }
