@@ -152,8 +152,8 @@
      private void renderWorldPass(int pass, float partialTicks, long finishTimeNano)
      {
 +        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                && !com.cleanroommc.kirino.KirinoCore.isUnsupported())
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
++                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.PREPARE);
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.PRE_UPDATE);
@@ -167,8 +167,8 @@
          }
  
 +        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                && !com.cleanroommc.kirino.KirinoCore.isUnsupported())
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
++                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.UPDATE);
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_OPAQUE);
@@ -211,8 +211,8 @@
          GlStateManager.shadeModel(7425);
 +
 +        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                && !com.cleanroommc.kirino.KirinoCore.isUnsupported())
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
++                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_TRANSPARENT);
 +        }
@@ -249,8 +249,8 @@
          }
 +
 +        if (com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enable
-+                && com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
-+                && !com.cleanroommc.kirino.KirinoCore.isUnsupported())
++                && (!com.cleanroommc.kirino.KirinoCore.KIRINO_CONFIG_HUB.enableRenderDelegate
++                || com.cleanroommc.kirino.KirinoCore.isUnsupported()))
 +        {
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.POST_UPDATE);
 +            com.cleanroommc.kirino.KirinoCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_OVERLAY);
