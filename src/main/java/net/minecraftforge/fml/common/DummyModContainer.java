@@ -94,13 +94,13 @@ public class DummyModContainer implements ModContainer
     @Override
     public String getModId()
     {
-        return md == null ? "placeholder" : md.modId;
+        return md.modId;
     }
 
     @Override
     public String getName()
     {
-        return md == null ? "" : md.name;
+        return md.name;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class DummyModContainer implements ModContainer
     @Override
     public String getVersion()
     {
-        return md == null ? "" : md.version;
+        return md.version;
     }
 
     @Override
@@ -157,7 +157,7 @@ public class DummyModContainer implements ModContainer
     @Override
     public String getDisplayVersion()
     {
-        return md == null ? "" : md.version;
+        return md.version;
     }
     @Override
     public VersionRange acceptableMinecraftVersionRange()

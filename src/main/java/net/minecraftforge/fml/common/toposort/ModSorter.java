@@ -138,7 +138,7 @@ public class ModSorter
     public List<ModContainer> sort()
     {
         List<ModContainer> sortedList = TopologicalSort.topologicalSort(modGraph);
-        sortedList.removeAll(Arrays.asList(beforeAll, before, after, afterAll));
+        sortedList.removeAll(Arrays.asList(new ModContainer[] {beforeAll, before, after, afterAll}));
         return sortedList;
     }
 }
