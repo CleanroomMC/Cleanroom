@@ -28,3 +28,20 @@
                      }
                  }
              }
+ 
+@@ -183,6 +190,7 @@
+ 
+     public void renderRightArm(AbstractClientPlayer clientPlayer)
+     {
++        if (net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(clientPlayer, EnumHandSide.RIGHT)) return;
+         float f = 1.0F;
+         GlStateManager.color(1.0F, 1.0F, 1.0F);
+         float f1 = 0.0625F;
+@@ -201,6 +209,7 @@
+ 
+     public void renderLeftArm(AbstractClientPlayer clientPlayer)
+     {
++        if (net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(clientPlayer, EnumHandSide.LEFT)) return;
+         float f = 1.0F;
+         GlStateManager.color(1.0F, 1.0F, 1.0F);
+         float f1 = 0.0625F;
