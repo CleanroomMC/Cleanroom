@@ -499,7 +499,7 @@ public enum B3DLoader implements ICustomModelLoader
             boolean hasChanged = false;
             if(data.containsKey("mesh"))
             {
-                JsonElement e = new JsonParser().parse(data.get("mesh"));
+                JsonElement e = JsonParser.parseString(data.get("mesh"));
                 if(e.isJsonPrimitive() && e.getAsJsonPrimitive().isString())
                 {
                     return new ModelWrapper(modelLocation, model, ImmutableSet.of(e.getAsString()), smooth, gui3d, defaultKey, textures);
@@ -530,7 +530,7 @@ public enum B3DLoader implements ICustomModelLoader
             }
             if(data.containsKey("key"))
             {
-                JsonElement e = new JsonParser().parse(data.get("key"));
+                JsonElement e = JsonParser.parseString(data.get("key"));
                 if(e.isJsonPrimitive() && e.getAsJsonPrimitive().isNumber())
                 {
                     newDefaultKey = e.getAsNumber().intValue();

@@ -1,59 +1,11 @@
 --- before/net/minecraft/entity/NpcMerchant.java
 +++ after/net/minecraft/entity/NpcMerchant.java
-@@ -29,54 +29,45 @@
-     }
- 
-     @Nullable
--    @Override
-     public EntityPlayer getCustomer()
-     {
-         return this.customer;
-     }
- 
--    @Override
-     public void setCustomer(@Nullable EntityPlayer player)
-     {
-     }
- 
-     @Nullable
--    @Override
+@@ -44,7 +44,7 @@
+     @Override
      public MerchantRecipeList getRecipes(EntityPlayer player)
      {
 -        return this.recipeList;
 +        return net.minecraftforge.event.ForgeEventFactory.listTradeOffers(this, player, this.recipeList);
      }
  
--    @Override
-     public void setRecipes(@Nullable MerchantRecipeList recipeList)
-     {
-         this.recipeList = recipeList;
-     }
- 
--    @Override
-     public void useRecipe(MerchantRecipe recipe)
-     {
-         recipe.incrementToolUses();
-     }
- 
--    @Override
-     public void verifySellingItem(ItemStack stack)
-     {
-     }
- 
--    @Override
-     public ITextComponent getDisplayName()
-     {
--        return (ITextComponent)(this.name != null ? this.name : new TextComponentTranslation("entity.Villager.name"));
-+        return (ITextComponent)(this.name != null ? this.name : new TextComponentTranslation("entity.Villager.name", new Object[0]));
-     }
- 
--    @Override
-     public World getWorld()
-     {
-         return this.customer.world;
-     }
- 
--    @Override
-     public BlockPos getPos()
-     {
-         return new BlockPos(this.customer);
+     @Override

@@ -13,12 +13,3 @@
      }
  
      public ModelBlockDefinition(Map<String, VariantList> variants, Multipart multipartIn)
-@@ -194,8 +198,5 @@
-     @SideOnly(Side.CLIENT)
-     public class MissingVariantException extends RuntimeException
-     {
--        protected MissingVariantException()
--        {
--        }
-     }
- }

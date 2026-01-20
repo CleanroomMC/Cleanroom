@@ -5,6 +5,10 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 
 public class CleanroomContainer extends DummyModContainer {
@@ -20,10 +24,19 @@ public class CleanroomContainer extends DummyModContainer {
                 """;
         meta.version = CleanroomVersion.VERSION;
         meta.authorList = Arrays.asList("LexManos", "cpw", "fry", "Rongmario", "kappa_maintainer", "Li");
+        meta.updateJSON = "https://download.cleanroommc.com/api/forge";
     }
 
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
         return true;
+    }
+    
+    @Override
+    public URL getUpdateUrl() {
+        try{
+            return new URI("https://download.cleanroommc.com/api/forge").toURL();
+        } catch (MalformedURLException | URISyntaxException ignored){}
+        return null;
     }
 }

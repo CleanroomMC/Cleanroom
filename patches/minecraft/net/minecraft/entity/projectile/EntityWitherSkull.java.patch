@@ -1,43 +1,6 @@
 --- before/net/minecraft/entity/projectile/EntityWitherSkull.java
 +++ after/net/minecraft/entity/projectile/EntityWitherSkull.java
-@@ -21,7 +21,7 @@
- 
- public class EntityWitherSkull extends EntityFireball
- {
--    private static final DataParameter<Boolean> INVULNERABLE = EntityDataManager.createKey(EntityWitherSkull.class, DataSerializers.BOOLEAN);
-+    private static final DataParameter<Boolean> INVULNERABLE = EntityDataManager.<Boolean>createKey(EntityWitherSkull.class, DataSerializers.BOOLEAN);
- 
-     public EntityWitherSkull(World worldIn)
-     {
-@@ -40,34 +40,29 @@
-         EntityFireball.registerFixesFireball(fixer, "WitherSkull");
-     }
- 
--    @Override
-     protected float getMotionFactor()
-     {
-         return this.isInvulnerable() ? 0.73F : super.getMotionFactor();
-     }
- 
-     @SideOnly(Side.CLIENT)
--    public EntityWitherSkull(
--        World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ
--    )
-+    public EntityWitherSkull(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ)
-     {
-         super(worldIn, x, y, z, accelX, accelY, accelZ);
-         this.setSize(0.3125F, 0.3125F);
-     }
- 
--    @Override
-     public boolean isBurning()
-     {
-         return false;
-     }
- 
--    @Override
-     public float getExplosionResistance(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn)
-     {
+@@ -67,7 +67,7 @@
          float f = super.getExplosionResistance(explosionIn, worldIn, pos, blockStateIn);
          Block block = blockStateIn.getBlock();
  
@@ -46,59 +9,12 @@
          {
              f = Math.min(0.8F, f);
          }
-@@ -75,7 +70,6 @@
-         return f;
-     }
+@@ -123,7 +123,7 @@
  
--    @Override
-     protected void onImpact(RayTraceResult result)
-     {
-         if (!this.world.isRemote)
-@@ -121,43 +115,36 @@
-                 }
-             }
- 
--            this.world
--            .newExplosion(
+             this.world
+             .newExplosion(
 -                this, this.posX, this.posY, this.posZ, 1.0F, false, this.world.getGameRules().getBoolean("mobGriefing")
--            );
-+            this.world.newExplosion(this, this.posX, this.posY, this.posZ, 1.0F, false, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
++                this, this.posX, this.posY, this.posZ, 1.0F, false, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity)
+             );
              this.setDead();
          }
-     }
- 
--    @Override
-     public boolean canBeCollidedWith()
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean attackEntityFrom(DamageSource source, float amount)
-     {
-         return false;
-     }
- 
--    @Override
-     protected void entityInit()
-     {
--        this.dataManager.register(INVULNERABLE, false);
-+        this.dataManager.register(INVULNERABLE, Boolean.valueOf(false));
-     }
- 
-     public boolean isInvulnerable()
-     {
--        return this.dataManager.get(INVULNERABLE);
-+        return ((Boolean)this.dataManager.get(INVULNERABLE)).booleanValue();
-     }
- 
-     public void setInvulnerable(boolean invulnerable)
-     {
--        this.dataManager.set(INVULNERABLE, invulnerable);
-+        this.dataManager.set(INVULNERABLE, Boolean.valueOf(invulnerable));
-     }
- 
--    @Override
-     protected boolean isFireballFiery()
-     {
-         return false;

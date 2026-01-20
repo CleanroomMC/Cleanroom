@@ -18,8 +18,8 @@
 -                                 || block == Blocks.BEDROCK
 -                                 || block == Blocks.END_PORTAL
 -                                 || block == Blocks.END_PORTAL_FRAME)
-+                        else if (block.canEntityDestroy(iblockstate, this.world, blockpos, this)
-+                                 && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, iblockstate))
++                        else if (!block.canEntityDestroy(iblockstate, this.world, blockpos, this)
++                            || !net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, iblockstate))
                          {
                              flag = true;
                          }

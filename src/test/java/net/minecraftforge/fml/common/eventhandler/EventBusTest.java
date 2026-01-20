@@ -1,5 +1,7 @@
 package net.minecraftforge.fml.common.eventhandler;
 
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.impl.AbnormalListeners;
 import net.minecraftforge.fml.common.eventhandler.impl.ExampleEvent;
 import net.minecraftforge.fml.common.eventhandler.impl.InstanceListeners;
@@ -7,6 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.impl.StaticListeners;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -57,5 +60,30 @@ public class EventBusTest {
         bus.post(event);
 
         Assertions.assertTrue(AbnormalListeners.nonVoid, "listener with non-void return type is valid");
+    }
+
+    @Test
+    public void registerIllegalParamType() throws Exception {
+        var bus = new EventBus();
+
+        var listener = new AbnormalListeners.IllegalParamType();
+
+        var method = EventBus.class.getDeclaredMethod(
+            "register",
+            Class.class, Object.class, Method.class, ModContainer.class
+        );
+        method.setAccessible(true);
+        method.invoke(
+            bus,
+            ExampleEvent.class,
+            listener,
+            AbnormalListeners.IllegalParamType.class.getMethod("onEvent", Object.class),
+            Loader.instance().getMinecraftModContainer()
+        );
+
+        var event = new ExampleEvent();
+        bus.post(event);
+
+        Assertions.assertEquals(event.id, listener.captured);
     }
 }

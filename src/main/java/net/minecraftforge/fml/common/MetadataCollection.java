@@ -43,9 +43,8 @@ import javax.annotation.Nullable;
 
 public class MetadataCollection
 {
-    private String modListVersion;
     private ModMetadata[] modList;
-    private Map<String, ModMetadata> metadatas = Maps.newHashMap();
+    private final Map<String, ModMetadata> metadatas = Maps.newHashMap();
 
     public static MetadataCollection from(@Nullable InputStream inputStream, String sourceName)
     {
@@ -59,8 +58,7 @@ public class MetadataCollection
         {
             MetadataCollection collection;
             Gson gson = new GsonBuilder().registerTypeAdapter(ArtifactVersion.class, new ArtifactVersionAdapter()).create();
-            JsonParser parser = new JsonParser();
-            JsonElement rootElement = parser.parse(reader);
+            JsonElement rootElement = JsonParser.parseReader(reader);
             if (rootElement.isJsonArray())
             {
                 collection = new MetadataCollection();

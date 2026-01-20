@@ -1,11 +1,6 @@
 --- before/net/minecraft/entity/EntitySpawnPlacementRegistry.java
 +++ after/net/minecraft/entity/EntitySpawnPlacementRegistry.java
-@@ -46,11 +46,16 @@
- 
- public class EntitySpawnPlacementRegistry
- {
--    private static final Map < Class<?>, EntityLiving.SpawnPlacementType > ENTITY_PLACEMENTS = Maps.newHashMap();
-+    private static final Map < Class<?>, EntityLiving.SpawnPlacementType > ENTITY_PLACEMENTS = Maps. < Class<?>, EntityLiving.SpawnPlacementType > newHashMap();
+@@ -50,7 +50,12 @@
  
      public static EntityLiving.SpawnPlacementType getPlacementForEntity(Class<?> entityClass)
      {

@@ -30,7 +30,7 @@
              int k = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
              int l = this.top + 4 - (int)this.amountScrolled;
  
-@@ -517,5 +498,19 @@
+@@ -517,5 +498,31 @@
      public int getSlotHeight()
      {
          return this.slotHeight;
@@ -43,10 +43,22 @@
 +        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 +        float f = 32.0F;
 +        buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-+        buffer.pos((double)this.left,  (double)this.bottom, 0.0D).tex((double)((float)this.left  / f), (double)((float)(this.bottom + (int)this.amountScrolled) / f)).color(32, 32, 32, 255).endVertex();
-+        buffer.pos((double)this.right, (double)this.bottom, 0.0D).tex((double)((float)this.right / f), (double)((float)(this.bottom + (int)this.amountScrolled) / f)).color(32, 32, 32, 255).endVertex();
-+        buffer.pos((double)this.right, (double)this.top,    0.0D).tex((double)((float)this.right / f), (double)((float)(this.top    + (int)this.amountScrolled) / f)).color(32, 32, 32, 255).endVertex();
-+        buffer.pos((double)this.left,  (double)this.top,    0.0D).tex((double)((float)this.left  / f), (double)((float)(this.top    + (int)this.amountScrolled) / f)).color(32, 32, 32, 255).endVertex();
++        buffer.pos(this.left, this.bottom, 0.0)
++        .tex((float)this.left / f, (float)(this.bottom + (int)this.amountScrolled) / f)
++        .color(32, 32, 32, 255)
++        .endVertex();
++        buffer.pos(this.right, this.bottom, 0.0)
++        .tex((float)this.right / f, (float)(this.bottom + (int)this.amountScrolled) / f)
++        .color(32, 32, 32, 255)
++        .endVertex();
++        buffer.pos(this.right, this.top, 0.0)
++        .tex((float)this.right / f, (float)(this.top + (int)this.amountScrolled) / f)
++        .color(32, 32, 32, 255)
++        .endVertex();
++        buffer.pos(this.left, this.top, 0.0)
++        .tex((float)this.left / f, (float)(this.top + (int)this.amountScrolled) / f)
++        .color(32, 32, 32, 255)
++        .endVertex();
 +        tessellator.draw();
      }
  }

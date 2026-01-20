@@ -1,23 +1,18 @@
 --- before/net/minecraft/entity/EntityList.java
 +++ after/net/minecraft/entity/EntityList.java
-@@ -107,49 +107,63 @@
+@@ -107,10 +107,8 @@
      public static final ResourceLocation LIGHTNING_BOLT = new ResourceLocation("lightning_bolt");
      private static final ResourceLocation PLAYER = new ResourceLocation("player");
      private static final Logger LOGGER = LogManager.getLogger();
 -    public static final RegistryNamespaced < ResourceLocation, Class <? extends Entity >> REGISTRY = new RegistryNamespaced<>();
--    public static final Map<ResourceLocation, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.newLinkedHashMap();
+     public static final Map<ResourceLocation, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.newLinkedHashMap();
 -    public static final Set<ResourceLocation> KNOWN_TYPES = Sets.newHashSet();
 -    private static final List<String> OLD_NAMES = Lists.newArrayList();
-+    public static final Map<ResourceLocation, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.<ResourceLocation, EntityList.EntityEggInfo>newLinkedHashMap();
 +    private static final Set<ResourceLocation> EXTRA_NAMES = Sets.newHashSet();
  
      @Nullable
      public static ResourceLocation getKey(Entity entityIn)
-     {
--        return getKey((Class <? extends Entity >)entityIn.getClass());
-+        return getKey(entityIn.getClass());
-     }
- 
+@@ -121,35 +119,51 @@
      @Nullable
      public static ResourceLocation getKey(Class <? extends Entity > entityIn)
      {
@@ -103,12 +98,7 @@
      }
  
      @Nullable
-@@ -194,11 +212,20 @@
- 
-         if (entity == null)
-         {
--            LOGGER.warn("Skipping Entity with id {}", resourcelocation);
-+            LOGGER.warn("Skipping Entity with id {}", (Object)resourcelocation);
+@@ -198,7 +216,16 @@
          }
          else
          {
@@ -125,7 +115,7 @@
          }
  
          return entity;
-@@ -206,12 +233,12 @@
+@@ -206,7 +233,7 @@
  
      public static Set<ResourceLocation> getEntityNameList()
      {
@@ -134,25 +124,6 @@
      }
  
      public static boolean isMatchingName(Entity entityIn, ResourceLocation entityName)
-     {
--        ResourceLocation resourcelocation = getKey((Class <? extends Entity >)entityIn.getClass());
-+        ResourceLocation resourcelocation = getKey(entityIn.getClass());
- 
-         if (resourcelocation != null)
-         {
-@@ -238,10 +265,10 @@
- 
-         for (ResourceLocation resourcelocation : getEntityNameList())
-         {
--            stringbuilder.append(resourcelocation).append(", ");
-+            stringbuilder.append((Object)resourcelocation).append(", ");
-         }
- 
--        stringbuilder.append(PLAYER);
-+        stringbuilder.append((Object)PLAYER);
-         return stringbuilder.toString();
-     }
- 
 @@ -373,7 +400,7 @@
          addSpawnInfo("zombie_horse", 3232308, 9945732);
          addSpawnInfo("zombie_pigman", 15373203, 5009705);
@@ -162,15 +133,6 @@
      }
  
      private static void register(int id, String name, Class <? extends Entity > clazz, String oldName)
-@@ -382,7 +409,7 @@
-         {
-             clazz.getConstructor(World.class);
-         }
--        catch (NoSuchMethodException nosuchmethodexception)
-+        catch (NoSuchMethodException var5)
-         {
-             throw new RuntimeException("Invalid class " + clazz + " no constructor taking " + World.class.getName());
-         }
 @@ -394,22 +421,17 @@
          else
          {

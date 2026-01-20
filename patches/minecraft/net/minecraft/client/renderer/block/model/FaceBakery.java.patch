@@ -1,27 +1,34 @@
 --- before/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ after/net/minecraft/client/renderer/block/model/FaceBakery.java
-@@ -51,27 +51,22 @@
-         }
-     };
- 
--    public BakedQuad makeBakedQuad(
--        Vector3f posFrom,
--        Vector3f posTo,
--        BlockPartFace face,
--        TextureAtlasSprite sprite,
--        EnumFacing facing,
--        ModelRotation modelRotationIn,
--        @Nullable BlockPartRotation partRotation,
--        boolean uvLocked,
--        boolean shade
--    )
-+    public BakedQuad makeBakedQuad(Vector3f posFrom, Vector3f posTo, BlockPartFace face, TextureAtlasSprite sprite, EnumFacing facing, ModelRotation modelRotationIn, @Nullable BlockPartRotation partRotation, boolean uvLocked, boolean shade)
-+    {
-+        return makeBakedQuad(posFrom, posTo, face, sprite, facing, (net.minecraftforge.common.model.ITransformation)modelRotationIn, partRotation, uvLocked, shade);
+@@ -63,15 +63,40 @@
+         boolean shade
+     )
+     {
++        return makeBakedQuad(
++            posFrom,
++            posTo,
++            face,
++            sprite,
++            facing,
++            (net.minecraftforge.common.model.ITransformation)modelRotationIn,
++            partRotation,
++            uvLocked,
++            shade
++        );
 +    }
 +
-+    public BakedQuad makeBakedQuad(Vector3f posFrom, Vector3f posTo, BlockPartFace face, TextureAtlasSprite sprite, EnumFacing facing, net.minecraftforge.common.model.ITransformation modelRotationIn, BlockPartRotation partRotation, boolean uvLocked, boolean shade)
-     {
++    public BakedQuad makeBakedQuad(
++        Vector3f posFrom,
++        Vector3f posTo,
++        BlockPartFace face,
++        TextureAtlasSprite sprite,
++        EnumFacing facing,
++        net.minecraftforge.common.model.ITransformation modelRotationIn,
++        BlockPartRotation partRotation,
++        boolean uvLocked,
++        boolean shade
++    )
++    {
          BlockFaceUV blockfaceuv = face.blockFaceUV;
  
          if (uvLocked)
@@ -36,7 +43,7 @@
                       );
          EnumFacing enumfacing = getFacingFromVertexData(aint);
  
-@@ -80,7 +75,8 @@
+@@ -80,7 +105,8 @@
              this.applyFacing(aint, enumfacing);
          }
  
@@ -46,43 +53,69 @@
      }
  
      private BlockFaceUV applyUVLock(BlockFaceUV p_188010_1_, EnumFacing p_188010_2_, ModelRotation p_188010_3_)
-@@ -88,15 +84,12 @@
-         return UV_ROTATIONS[getIndex(p_188010_3_, p_188010_2_)].rotateUV(p_188010_1_);
-     }
- 
--    private int[] makeQuadVertexData(
--        BlockFaceUV uvs,
--        TextureAtlasSprite sprite,
--        EnumFacing orientation,
--        float[] p_188012_4_,
--        ModelRotation rotationIn,
--        @Nullable BlockPartRotation partRotation,
--        boolean shade
--    )
-+    private int[] makeQuadVertexData(BlockFaceUV uvs, TextureAtlasSprite sprite, EnumFacing orientation, float[] p_188012_4_, ModelRotation rotationIn, @Nullable BlockPartRotation partRotation, boolean shade)
-+    {
-+        return makeQuadVertexData(uvs, sprite, orientation, p_188012_4_, (net.minecraftforge.common.model.ITransformation)rotationIn, partRotation, shade);
+@@ -98,6 +124,27 @@
+         boolean shade
+     )
+     {
++        return makeQuadVertexData(
++            uvs,
++            sprite,
++            orientation,
++            p_188012_4_,
++            (net.minecraftforge.common.model.ITransformation)rotationIn,
++            partRotation,
++            shade
++        );
 +    }
 +
-+    private int[] makeQuadVertexData(BlockFaceUV uvs, TextureAtlasSprite sprite, EnumFacing orientation, float[] p_188012_4_, net.minecraftforge.common.model.ITransformation rotationIn, BlockPartRotation partRotation, boolean shade)
-     {
++    private int[] makeQuadVertexData(
++        BlockFaceUV uvs,
++        TextureAtlasSprite sprite,
++        EnumFacing orientation,
++        float[] p_188012_4_,
++        net.minecraftforge.common.model.ITransformation rotationIn,
++        BlockPartRotation partRotation,
++        boolean shade
++    )
++    {
          int[] aint = new int[28];
  
-@@ -158,7 +151,12 @@
+         for (int i = 0; i < 4; i++)
+@@ -158,7 +205,32 @@
          boolean p_188015_9_
      )
      {
 -        EnumFacing enumfacing = p_188015_7_.rotateFace(p_188015_3_);
-+        fillVertexData(p_188015_1_, p_188015_2_, p_188015_3_, p_188015_4_, p_188015_5_, p_188015_6_, (net.minecraftforge.common.model.ITransformation)p_188015_7_, p_188015_8_, p_188015_9_);
++        fillVertexData(
++            p_188015_1_,
++            p_188015_2_,
++            p_188015_3_,
++            p_188015_4_,
++            p_188015_5_,
++            p_188015_6_,
++            (net.minecraftforge.common.model.ITransformation)p_188015_7_,
++            p_188015_8_,
++            p_188015_9_
++        );
 +    }
 +
-+    private void fillVertexData(int[] p_188015_1_, int p_188015_2_, EnumFacing p_188015_3_, BlockFaceUV p_188015_4_, float[] p_188015_5_, TextureAtlasSprite p_188015_6_, net.minecraftforge.common.model.ITransformation p_188015_7_, BlockPartRotation p_188015_8_, boolean p_188015_9_)
++    private void fillVertexData(
++        int[] p_188015_1_,
++        int p_188015_2_,
++        EnumFacing p_188015_3_,
++        BlockFaceUV p_188015_4_,
++        float[] p_188015_5_,
++        TextureAtlasSprite p_188015_6_,
++        net.minecraftforge.common.model.ITransformation p_188015_7_,
++        BlockPartRotation p_188015_8_,
++        boolean p_188015_9_
++    )
 +    {
 +        EnumFacing enumfacing = p_188015_7_.rotate(p_188015_3_);
          int i = p_188015_9_ ? this.getFaceShadeColor(enumfacing) : -1;
          EnumFaceDirection.VertexInformation enumfacedirection$vertexinformation = EnumFaceDirection.getFacing(p_188015_3_).getVertexInformation(p_188015_2_);
          Vector3f vector3f = new Vector3f(
-@@ -180,8 +178,8 @@
+@@ -180,8 +252,8 @@
          faceData[i + 1] = Float.floatToRawIntBits(position.y);
          faceData[i + 2] = Float.floatToRawIntBits(position.z);
          faceData[i + 3] = shadeColor;
@@ -93,7 +126,7 @@
      }
  
      private void rotatePart(Vector3f p_178407_1_, @Nullable BlockPartRotation partRotation)
-@@ -230,14 +228,19 @@
+@@ -230,14 +302,19 @@
  
      public int rotateVertex(Vector3f p_188011_1_, EnumFacing p_188011_2_, int p_188011_3_, ModelRotation p_188011_4_)
      {

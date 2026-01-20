@@ -411,6 +411,10 @@ public class Loader
             {
                 FMLLog.log.trace("Skipping already parsed coremod or tweaker {}", mod.getName());
             }
+            else if(mod.isDirectory())
+            {
+                FMLLog.log.trace("Skipping directory {}", mod.getName());
+            } 
             else
             {
                 FMLLog.log.debug("Found a candidate zip or jar file {}", mod.getName());
@@ -971,13 +975,12 @@ public class Loader
             FMLLog.log.debug("File {} not found. No dependencies injected", injectedDepFile.getAbsolutePath());
             return;
         }
-        JsonParser parser = new JsonParser();
         JsonElement injectedDeps;
         try
         {
             try (Reader reader = new InputStreamReader(new FileInputStream(injectedDepFile), StandardCharsets.UTF_8))
             {
-                injectedDeps = parser.parse(reader);
+                injectedDeps = JsonParser.parseReader(reader);
             }
             for (JsonElement el : injectedDeps.getAsJsonArray())
             {

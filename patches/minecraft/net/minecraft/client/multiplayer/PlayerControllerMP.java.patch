@@ -153,96 +153,39 @@
                  }
  
                  if (!flag && itemstack.getItem() instanceof ItemBlock)
-@@ -434,44 +462,53 @@
+@@ -434,7 +462,7 @@
  
              this.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f1, f2));
  
 -            if (flag || this.currentGameType == GameType.SPECTATOR)
-+            if (!flag && this.currentGameType != GameType.SPECTATOR || event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
-+            {
-+                if (itemstack.isEmpty())
-+                {
-+                    return EnumActionResult.PASS;
-+                }
-+                else if (player.getCooldownTracker().hasCooldown(itemstack.getItem()))
-+                {
-+                    return EnumActionResult.PASS;
-+                }
-+                else
-+                {
-+                    if (itemstack.getItem() instanceof ItemBlock && !player.canUseCommandBlock())
-+                    {
-+                        Block block = ((ItemBlock)itemstack.getItem()).getBlock();
-+
-+                        if (block instanceof BlockCommandBlock || block instanceof BlockStructure)
-+                        {
-+                            return EnumActionResult.FAIL;
-+                        }
-+                    }
-+
-+                    if (this.currentGameType.isCreative())
-+                    {
-+                        int i = itemstack.getMetadata();
-+                        int j = itemstack.getCount();
-+                        if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) {
-+                        EnumActionResult enumactionresult = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
-+                        itemstack.setItemDamage(i);
-+                        itemstack.setCount(j);
-+                        return enumactionresult;
-+                        } else return result;
-+                    }
-+                    else
-+                    {
-+                        ItemStack copyForUse = itemstack.copy();
-+                        if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
-+                        result = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
-+                        if (itemstack.isEmpty()) net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyForUse, hand);
-+                        return result;
-+                    }
-+                }
-+            }
-+            else
++            if ((flag || this.currentGameType == GameType.SPECTATOR) && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
              {
                  return EnumActionResult.SUCCESS;
              }
--            else if (itemstack.isEmpty())
--            {
--                return EnumActionResult.PASS;
--            }
--            else if (player.getCooldownTracker().hasCooldown(itemstack.getItem()))
--            {
--                return EnumActionResult.PASS;
--            }
--            else
--            {
--                if (itemstack.getItem() instanceof ItemBlock && !player.canUseCommandBlock())
--                {
--                    Block block = ((ItemBlock)itemstack.getItem()).getBlock();
--
--                    if (block instanceof BlockCommandBlock || block instanceof BlockStructure)
--                    {
--                        return EnumActionResult.FAIL;
--                    }
--                }
--
--                if (this.currentGameType.isCreative())
--                {
--                    int i = itemstack.getMetadata();
--                    int j = itemstack.getCount();
--                    EnumActionResult enumactionresult = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
--                    itemstack.setItemDamage(i);
--                    itemstack.setCount(j);
--                    return enumactionresult;
--                }
--                else
--                {
+@@ -462,14 +490,21 @@
+                 {
+                     int i = itemstack.getMetadata();
+                     int j = itemstack.getCount();
++                    if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) {
+                     EnumActionResult enumactionresult = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
+                     itemstack.setItemDamage(i);
+                     itemstack.setCount(j);
+                     return enumactionresult;
++                    } else return result;
+                 }
+                 else
+                 {
 -                    return itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
--                }
--            }
++                    ItemStack copyForUse = itemstack.copy();
++                    if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
++                        result = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
++                    if (itemstack.isEmpty())
++                        net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyForUse, hand);
++                    return result;
+                 }
+             }
          }
-     }
- 
-@@ -493,6 +530,8 @@
+@@ -493,6 +528,8 @@
              }
              else
              {
@@ -251,7 +194,7 @@
                  int i = itemstack.getCount();
                  ActionResult<ItemStack> actionresult = itemstack.useItemRightClick(worldIn, player, hand);
                  ItemStack itemstack1 = actionresult.getResult();
-@@ -500,6 +539,10 @@
+@@ -500,6 +537,10 @@
                  if (itemstack1 != itemstack || itemstack1.getCount() != i)
                  {
                      player.setHeldItem(hand, itemstack1);
@@ -262,7 +205,7 @@
                  }
  
                  return actionresult.getType();
-@@ -540,6 +583,9 @@
+@@ -540,6 +581,9 @@
              ray.hitVec.z - target.posZ
          );
          this.connection.sendPacket(new CPacketUseEntity(target, hand, vec3d));

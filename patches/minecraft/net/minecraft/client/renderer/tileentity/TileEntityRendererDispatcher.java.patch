@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
+@@ -92,7 +92,7 @@
+     @Nullable
+     public <T extends TileEntity> TileEntitySpecialRenderer<T> getRenderer(@Nullable TileEntity tileEntityIn)
+     {
+-        return tileEntityIn == null ? null : this.getRenderer((Class <? extends TileEntity >)tileEntityIn.getClass());
++        return tileEntityIn == null || tileEntityIn.isInvalid() ? null : this.getRenderer(tileEntityIn.getClass()); // Forge: fix MC-123363
+     }
+ 
+     public void prepare(
 @@ -119,13 +119,17 @@
      {
          if (tileentityIn.getDistanceSq(this.entityX, this.entityY, this.entityZ) < tileentityIn.getMaxRenderDistanceSquared())

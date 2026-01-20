@@ -1,22 +1,10 @@
 --- before/net/minecraft/client/resources/FallbackResourceManager.java
 +++ after/net/minecraft/client/resources/FallbackResourceManager.java
-@@ -144,18 +144,7 @@
+@@ -144,6 +144,7 @@
                  this.isClosed = true;
              }
  
--            @Override
--            protected void finalize() throws Throwable
--            {
--                if (!this.isClosed)
--                {
--                    FallbackResourceManager.LOGGER.warn(this.message);
--                }
--
--                super.finalize();
--            }
--
--            @Override
-+
-             public int read() throws IOException
++            @SuppressWarnings("removal")
+             @Override
+             protected void finalize() throws Throwable
              {
-                 return this.inputStream.read();

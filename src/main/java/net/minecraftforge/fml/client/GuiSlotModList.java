@@ -21,6 +21,7 @@ package net.minecraftforge.fml.client;
 
 import java.util.ArrayList;
 
+import com.google.common.base.Strings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -98,7 +99,7 @@ public class GuiSlotModList extends GuiScrollingList
     {
         ModContainer mc       = mods.get(idx);
         String       name     = StringUtils.stripControlCodes(mc.getName());
-        String       version  = StringUtils.stripControlCodes(mc.getDisplayVersion().isEmpty() ? mc.getVersion() : mc.getDisplayVersion());
+        String       version  = StringUtils.stripControlCodes(Strings.isNullOrEmpty(mc.getDisplayVersion()) ? mc.getVersion() : mc.getDisplayVersion());
         FontRenderer font     = this.parent.getFontRenderer();
         CheckResult  vercheck = ForgeVersion.getCleanResult(mc);
 

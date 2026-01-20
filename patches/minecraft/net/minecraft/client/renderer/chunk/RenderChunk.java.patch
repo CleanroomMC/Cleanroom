@@ -59,13 +59,8 @@
  
          try
          {
-@@ -312,17 +318,18 @@
- 
-                 this.compileTask = new ChunkCompileTaskGenerator(this, ChunkCompileTaskGenerator.Type.RESORT_TRANSPARENCY, this.getDistanceSq());
-                 this.compileTask.setCompiledChunk(this.compiledChunk);
--                return this.compileTask;
-+                chunkcompiletaskgenerator = this.compileTask;
-+                return chunkcompiletaskgenerator;
+@@ -315,14 +321,14 @@
+                 return this.compileTask;
              }
  
 -            object = null;
@@ -81,7 +76,7 @@
      }
  
      protected double getDistanceSq()
-@@ -440,6 +447,26 @@
+@@ -440,6 +446,26 @@
      {
          return this.needsUpdate && this.needsImmediateUpdate;
      }

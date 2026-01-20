@@ -38,28 +38,20 @@
          }
  
          this.updateDisplayState();
-@@ -460,6 +451,31 @@
+@@ -460,6 +451,23 @@
      @Override
      protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
      {
 +        if (this.btnMapType.mousePressed(this.mc, mouseX, mouseY)) {
 +            if (mouseButton == 1) {
-+                --this.selectedIndex;
 +
-+                if (this.selectedIndex < 0)
-+                {
-+                    this.selectedIndex = WorldType.WORLD_TYPES.length - 1;
-+                }
++                do {
++                    this.selectedIndex--;
 +
-+                while (!this.canSelectCurWorldType())
-+                {
-+                    --this.selectedIndex;
-+
-+                    if (this.selectedIndex < 0)
-+                    {
++                    if (this.selectedIndex < 0) {
 +                        this.selectedIndex = WorldType.WORLD_TYPES.length - 1;
 +                    }
-+                }
++                } while (!this.canSelectCurWorldType());
 +
 +                this.chunkProviderSettingsJson = "";
 +                this.updateDisplayState();

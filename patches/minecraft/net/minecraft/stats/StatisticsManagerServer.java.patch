@@ -1,0 +1,11 @@
+--- before/net/minecraft/stats/StatisticsManagerServer.java
++++ after/net/minecraft/stats/StatisticsManagerServer.java
+@@ -84,7 +84,7 @@
+ 
+     public Map<StatBase, TupleIntJsonSerializable> parseJson(String p_150881_1_)
+     {
+-        JsonElement jsonelement = new JsonParser().parse(p_150881_1_);
++        JsonElement jsonelement = JsonParser.parseString(p_150881_1_);
+ 
+         if (!jsonelement.isJsonObject())
+         {

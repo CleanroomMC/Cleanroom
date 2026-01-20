@@ -47,16 +47,22 @@
 
 ## Pack-making with Cleanroom
 
-### Steps of Migrating to Cleanroom
+### Steps of Making Your Pack Cleanroom Ready
 
 1. Add Scalar and Fugue in your pack.
 2. Add Relauncher (optional, this will make your pack a full Cleanroom pack)
 3. Test launching and remove incompatible mods
 
+### Steps of Migrating Your Pack Fully to Cleanroom
+
+1. Make your pack Cleanroom ready.
+2. Install relauncher to your pack. There are 3 variants available: [official](https://www.curseforge.com/minecraft/mc-mods/cleanroom-relauncher), [unofficial](https://www.curseforge.com/minecraft/mc-mods/cleanroom-relauncher-unofficial), [improved](https://www.curseforge.com/minecraft/mc-mods/improved-cleanroom-relauncher)
+3. Configure the relauncher. All variants have their pros and cons, choose what you need.
+
 ### About Cross-compat Between Forge and Cleanroom
 
-- Cleanroom mods (Fugue, Scalar) will be ignored by Forge, so then won't crash existed players
-- Cleanroom integrated mods (MixinBooter, ConfigAnyTime) will be ignored by Cleanroom, then won't crash new players
+- Cleanroom mods (Fugue, Scalar) will be ignored by Forge, so then won't crash Forge
+- Jar of Cleanroom integrated mods (MixinBooter, ConfigAnyTime) will be ignored by Cleanroom, then won't crash under Cleanroom
 - The version of built-in MixinBooter is configurable in forge_early.cfg
 
 ### List of Obsoleted/Incompatible Mods
