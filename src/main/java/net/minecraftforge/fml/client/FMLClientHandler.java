@@ -226,6 +226,8 @@ public class FMLClientHandler implements IFMLSidedHandler
             return;
         }
 
+        com.cleanroommc.kirino.KirinoCore.configEvent();
+
         List<String> injectedModContainers = FMLCommonHandler.instance().beginLoading(this);
         try
         {
@@ -286,7 +288,6 @@ public class FMLClientHandler implements IFMLSidedHandler
             }
         }
 
-        com.cleanroommc.kirino.KirinoCore.KIRINO_EVENT_BUS.post(new com.cleanroommc.kirino.config.event.KirinoOneTimeConfigEvent());
         com.cleanroommc.kirino.KirinoCore.init();
     }
 

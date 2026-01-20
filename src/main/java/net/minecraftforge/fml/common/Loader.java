@@ -375,6 +375,7 @@ public class Loader
         mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new MixinContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
+        com.cleanroommc.kirino.KirinoCore.identifyMods(mods);
 
         for (String cont : injectedContainers)
         {
