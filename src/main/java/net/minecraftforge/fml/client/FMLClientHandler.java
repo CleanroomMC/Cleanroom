@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.kirino.KirinoCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
@@ -226,6 +227,8 @@ public class FMLClientHandler implements IFMLSidedHandler
             return;
         }
 
+        KirinoCore.configEvent();
+
         List<String> injectedModContainers = FMLCommonHandler.instance().beginLoading(this);
         try
         {
@@ -285,6 +288,8 @@ public class FMLClientHandler implements IFMLSidedHandler
                 sharedModList.put(sharedModId, sharedModDescriptor);
             }
         }
+
+        KirinoCore.init();
     }
 
     private void detectOptifine()
@@ -392,6 +397,8 @@ public class FMLClientHandler implements IFMLSidedHandler
         if (!hasError())
             Loader.instance().loadingComplete();
         SplashProgress.finish();
+
+        KirinoCore.postInit();
     }
 
     public void extendModList()

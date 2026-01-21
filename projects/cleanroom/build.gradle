@@ -352,6 +352,9 @@ dependencies {
     testImplementation 'org.junit.vintage:junit-vintage-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Kirino Engine
+    installer 'org.joml:joml:1.10.8'
+    installer 'io.github.classgraph:classgraph:4.8.181'
 }
 
 test {
