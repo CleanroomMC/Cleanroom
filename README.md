@@ -43,7 +43,7 @@
 ## Cleanroom on Server
 
 - Cleanroom can be installed on server.
-- Just use the installer mentioned in previous section, and run the jar with `--intallServer`. See [this page](https://minecraft.fandom.com/wiki/Tutorials/Setting_up_a_Minecraft_Forge_server) for more detail. 
+- Just use the installer mentioned in previous section, and run the jar with `--installServer`. See [this page](https://minecraft.fandom.com/wiki/Tutorials/Setting_up_a_Minecraft_Forge_server) for more detail. 
 
 ## Pack-making with Cleanroom
 
