@@ -1,7 +1,12 @@
 /.idea/*
 /.run/
 /.gradle/
-/projects/
+/projects/cleanroom/**
+/projects/minecraft/**
+/projects/mcp/**
+/projects/cleanroom/!build.gradle
+/projects/minecraft/!build.gradle
+/projects/mcp/!build.gradle
 /buildSrc/.gradle/
 /buildSrc/build/
 /buildSrc/out/

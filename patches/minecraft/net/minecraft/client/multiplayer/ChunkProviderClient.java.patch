@@ -1,33 +1,19 @@
 --- before/net/minecraft/client/multiplayer/ChunkProviderClient.java
 +++ after/net/minecraft/client/multiplayer/ChunkProviderClient.java
-@@ -3,6 +3,7 @@
- import com.google.common.base.MoreObjects;
- import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
- import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-+import it.unimi.dsi.fastutil.objects.ObjectIterator;
- import javax.annotation.Nullable;
- import net.minecraft.util.math.ChunkPos;
- import net.minecraft.world.World;
-@@ -32,6 +33,14 @@
+@@ -32,6 +32,9 @@
      };
      private final World world;
  
-+    public Long2ObjectMap<Chunk> getLoadedChunks()
-+    {
-+        return loadedChunks;
-+    }
-+
-+    public java.util.function.BiConsumer<Integer, Integer> loadChunkCallback = null;
-+    public java.util.function.BiConsumer<Integer, Integer> unloadChunkCallback = null;
++    private java.util.function.BiConsumer<Integer, Integer> loadChunkCallback = null;
++    private java.util.function.BiConsumer<Integer, Integer> unloadChunkCallback = null;
 +
      public ChunkProviderClient(World worldIn)
      {
          this.blankChunk = new EmptyChunk(worldIn, 0, 0);
-@@ -48,6 +57,11 @@
+@@ -48,6 +51,10 @@
          }
  
          this.loadedChunks.remove(ChunkPos.asLong(x, z));
-+
 +        if (unloadChunkCallback != null)
 +        {
 +            unloadChunkCallback.accept(x, z);
@@ -35,31 +21,16 @@
      }
  
      @Nullable
-@@ -61,7 +75,14 @@
+@@ -61,7 +68,12 @@
      {
          Chunk chunk = new Chunk(this.world, chunkX, chunkZ);
          this.loadedChunks.put(ChunkPos.asLong(chunkX, chunkZ), chunk);
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Load(chunk));
          chunk.markLoaded(true);
-+
 +        if (loadChunkCallback != null)
 +        {
 +            loadChunkCallback.accept(chunkX, chunkZ);
 +        }
-+
          return chunk;
      }
- 
-@@ -75,9 +96,11 @@
-     public boolean tick()
-     {
-         long i = System.currentTimeMillis();
-+        ObjectIterator objectiterator = this.loadedChunks.values().iterator();
- 
--        for (Chunk chunk : this.loadedChunks.values())
-+        while (objectiterator.hasNext())
-         {
-+            Chunk chunk = (Chunk)objectiterator.next();
-             chunk.onTick(System.currentTimeMillis() - i > 5L);
-         }
  
