@@ -152,14 +152,14 @@
          int j = pos.getY();
          int k = pos.getZ();
          this.markBlocksForUpdate(i - 1, j - 1, k - 1, i + 1, j + 1, k + 1, (flags & 8) != 0);
-+        com.cleanroommc.kirino.KirinoCore.RenderGlobal$notifyBlockUpdate(i, j, k, oldState, newState);
++        com.cleanroommc.kirino.KirinoClientCore.RenderGlobal$notifyBlockUpdate(i, j, k, oldState, newState);
      }
  
      @Override
      public void notifyLightSet(BlockPos pos)
      {
          this.setLightUpdates.add(pos.toImmutable());
-+        com.cleanroommc.kirino.KirinoCore.RenderGlobal$notifyLightUpdate(pos.getX(), pos.getY(), pos.getZ());
++        com.cleanroommc.kirino.KirinoClientCore.RenderGlobal$notifyLightUpdate(pos.getX(), pos.getY(), pos.getZ());
      }
  
      @Override
