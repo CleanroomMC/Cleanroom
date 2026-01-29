@@ -40,7 +40,6 @@ import java.util.Set;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.MixinContainer;
 import com.cleanroommc.common.ConfigAnytimeContainer;
-import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
