@@ -6,6 +6,7 @@ buildscript {
             url = 'https://maven.outlands.top/releases/'
         }
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath 'top.outlands.gradle:ForgeGradle:6.0.+'
