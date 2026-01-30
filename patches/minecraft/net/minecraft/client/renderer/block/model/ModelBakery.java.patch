@@ -91,15 +91,15 @@
      }
  
      protected List<String> getVariantNames(Item stack)
-@@ -714,7 +730,7 @@
+@@ -713,7 +729,7 @@
+ 
      protected ResourceLocation getItemLocation(String location)
      {
-         ResourceLocation resourcelocation = new ResourceLocation(location);
--        return new ResourceLocation(resourcelocation.getNamespace(), "item/" + resourcelocation.getPath());
-+        return new ResourceLocation(resourcelocation.getNamespace(), "item/" + resourcelocation.getPath().replaceAll("#.*", ""));
+-        ResourceLocation resourcelocation = new ResourceLocation(location);
++        ResourceLocation resourcelocation = new ResourceLocation(location.replaceAll("#.*", ""));
+         return new ResourceLocation(resourcelocation.getNamespace(), "item/" + resourcelocation.getPath());
      }
  
-     private void bakeBlockModels()
 @@ -818,7 +834,7 @@
          for (Entry<String, ResourceLocation> entry : this.itemLocations.entrySet())
          {

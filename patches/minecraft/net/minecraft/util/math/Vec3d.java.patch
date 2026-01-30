@@ -1,6 +1,6 @@
 --- before/net/minecraft/util/math/Vec3d.java
 +++ after/net/minecraft/util/math/Vec3d.java
-@@ -1,31 +1,28 @@
+@@ -1,9 +1,6 @@
  package net.minecraft.util.math;
  
  import javax.annotation.Nullable;
@@ -9,183 +9,24 @@
 -
  public class Vec3d
  {
--    public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
-+    public static final Vec3d ZERO = new Vec3d(0.0D, 0.0D, 0.0D);
-     public final double x;
-     public final double y;
-     public final double z;
- 
-     public Vec3d(double xIn, double yIn, double zIn)
-     {
--        if (xIn == -0.0)
--        {
--            xIn = 0.0;
--        }
--
--        if (yIn == -0.0)
--        {
--            yIn = 0.0;
--        }
--
--        if (zIn == -0.0)
--        {
--            zIn = 0.0;
-+        if (xIn == -0.0D)
-+        {
-+            xIn = 0.0D;
-+        }
-+
-+        if (yIn == -0.0D)
-+        {
-+            yIn = 0.0D;
-+        }
-+
-+        if (zIn == -0.0D)
-+        {
-+            zIn = 0.0D;
-         }
- 
-         this.x = xIn;
-@@ -40,17 +37,13 @@
- 
-     public Vec3d subtractReverse(Vec3d vec)
-     {
--        return new Vec3d(
--                   vec.x - this.x, vec.y - this.y, vec.z - this.z
--               );
-+        return new Vec3d(vec.x - this.x, vec.y - this.y, vec.z - this.z);
-     }
- 
-     public Vec3d normalize()
-     {
--        double d0 = (double)MathHelper.sqrt(
--                        this.x * this.x + this.y * this.y + this.z * this.z
--                    );
--        return d0 < 1.0E-4 ? ZERO : new Vec3d(this.x / d0, this.y / d0, this.z / d0);
-+        double d0 = (double)MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-+        return d0 < 1.0E-4D ? ZERO : new Vec3d(this.x / d0, this.y / d0, this.z / d0);
-     }
- 
-     public double dotProduct(Vec3d vec)
-@@ -58,14 +51,9 @@
+     public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
+@@ -58,7 +55,6 @@
          return this.x * vec.x + this.y * vec.y + this.z * vec.z;
      }
  
 -    @SideOnly(Side.CLIENT)
      public Vec3d crossProduct(Vec3d vec)
      {
--        return new Vec3d(
--                   this.y * vec.z - this.z * vec.y,
--                   this.z * vec.x - this.x * vec.z,
--                   this.x * vec.y - this.y * vec.x
--               );
-+        return new Vec3d(this.y * vec.z - this.z * vec.y, this.z * vec.x - this.x * vec.z, this.x * vec.y - this.y * vec.x);
-     }
- 
-     public Vec3d subtract(Vec3d vec)
-@@ -119,12 +107,9 @@
- 
-     public double length()
-     {
--        return (double)MathHelper.sqrt(
--                   this.x * this.x + this.y * this.y + this.z * this.z
--               );
-+        return (double)MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+         return new Vec3d(
+@@ -124,7 +120,6 @@
+                );
      }
  
 -    @SideOnly(Side.CLIENT)
      public double lengthSquared()
      {
          return this.x * this.x + this.y * this.y + this.z * this.z;
-@@ -137,14 +122,14 @@
-         double d1 = vec.y - this.y;
-         double d2 = vec.z - this.z;
- 
--        if (d0 * d0 < 1.0E-7F)
-+        if (d0 * d0 < 1.0000000116860974E-7D)
-         {
-             return null;
-         }
-         else
-         {
-             double d3 = (x - this.x) / d0;
--            return !(d3 < 0.0) && !(d3 > 1.0) ? new Vec3d(this.x + d0 * d3, this.y + d1 * d3, this.z + d2 * d3) : null;
-+            return d3 >= 0.0D && d3 <= 1.0D ? new Vec3d(this.x + d0 * d3, this.y + d1 * d3, this.z + d2 * d3) : null;
-         }
-     }
- 
-@@ -155,14 +140,14 @@
-         double d1 = vec.y - this.y;
-         double d2 = vec.z - this.z;
- 
--        if (d1 * d1 < 1.0E-7F)
-+        if (d1 * d1 < 1.0000000116860974E-7D)
-         {
-             return null;
-         }
-         else
-         {
-             double d3 = (y - this.y) / d1;
--            return !(d3 < 0.0) && !(d3 > 1.0) ? new Vec3d(this.x + d0 * d3, this.y + d1 * d3, this.z + d2 * d3) : null;
-+            return d3 >= 0.0D && d3 <= 1.0D ? new Vec3d(this.x + d0 * d3, this.y + d1 * d3, this.z + d2 * d3) : null;
-         }
-     }
- 
-@@ -173,18 +158,17 @@
-         double d1 = vec.y - this.y;
-         double d2 = vec.z - this.z;
- 
--        if (d2 * d2 < 1.0E-7F)
-+        if (d2 * d2 < 1.0000000116860974E-7D)
-         {
-             return null;
-         }
-         else
-         {
-             double d3 = (z - this.z) / d2;
--            return !(d3 < 0.0) && !(d3 > 1.0) ? new Vec3d(this.x + d0 * d3, this.y + d1 * d3, this.z + d2 * d3) : null;
-+            return d3 >= 0.0D && d3 <= 1.0D ? new Vec3d(this.x + d0 * d3, this.y + d1 * d3, this.z + d2 * d3) : null;
-         }
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (this == p_equals_1_)
-@@ -203,14 +187,17 @@
-             {
-                 return false;
-             }
-+            else if (Double.compare(vec3d.y, this.y) != 0)
-+            {
-+                return false;
-+            }
-             else
-             {
--                return Double.compare(vec3d.y, this.y) != 0 ? false : Double.compare(vec3d.z, this.z) == 0;
-+                return Double.compare(vec3d.z, this.z) == 0;
-             }
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         long j = Double.doubleToLongBits(this.x);
-@@ -218,10 +205,10 @@
-         j = Double.doubleToLongBits(this.y);
-         i = 31 * i + (int)(j ^ j >>> 32);
-         j = Double.doubleToLongBits(this.z);
--        return 31 * i + (int)(j ^ j >>> 32);
-+        i = 31 * i + (int)(j ^ j >>> 32);
-+        return i;
-     }
- 
--    @Override
-     public String toString()
-     {
-         return "(" + this.x + ", " + this.y + ", " + this.z + ")";
-@@ -247,19 +234,17 @@
+@@ -247,13 +242,11 @@
          return new Vec3d(d0, d1, d2);
      }
  
@@ -198,14 +39,4 @@
 -    @SideOnly(Side.CLIENT)
      public static Vec3d fromPitchYaw(float p_189986_0_, float p_189986_1_)
      {
--        float f = MathHelper.cos(-p_189986_1_ * (float)(Math.PI / 180.0) - (float) Math.PI);
--        float f1 = MathHelper.sin(-p_189986_1_ * (float)(Math.PI / 180.0) - (float) Math.PI);
--        float f2 = -MathHelper.cos(-p_189986_0_ * (float)(Math.PI / 180.0));
--        float f3 = MathHelper.sin(-p_189986_0_ * (float)(Math.PI / 180.0));
-+        float f = MathHelper.cos(-p_189986_1_ * 0.017453292F - (float)Math.PI);
-+        float f1 = MathHelper.sin(-p_189986_1_ * 0.017453292F - (float)Math.PI);
-+        float f2 = -MathHelper.cos(-p_189986_0_ * 0.017453292F);
-+        float f3 = MathHelper.sin(-p_189986_0_ * 0.017453292F);
-         return new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
-     }
- }
+         float f = MathHelper.cos(-p_189986_1_ * (float)(Math.PI / 180.0) - (float) Math.PI);

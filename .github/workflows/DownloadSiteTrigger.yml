@@ -1,0 +1,17 @@
+name: Manually Trigger Download Site Update
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Trigger download server update
+        run: |
+          curl -X POST "https://download.cleanroommc.com/api/webhook" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${{ secrets.DOWNLOAD_UPDATE_TOKEN }}\",\"count\":10}"

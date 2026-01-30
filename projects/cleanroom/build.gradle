@@ -41,17 +41,17 @@ compileJava {
 sourceSets {
     main {
         java {
-            srcDirs = ["$rootDir/src/main/java"]
+            srcDirs = ["$rootDir/src/main/java", "$rootDir/projects/kirino/src/main/java"]
         }
         resources {
-            srcDirs = ["$rootDir/src/main/resources"]
+            srcDirs = ["$rootDir/src/main/resources", "$rootDir/projects/kirino/src/main/resources"]
         }
     }
     test {
         compileClasspath += sourceSets.main.runtimeClasspath
         runtimeClasspath += sourceSets.main.runtimeClasspath
         java {
-            srcDirs = ["$rootDir/src/test/java"]
+            srcDirs = ["$rootDir/src/test/java", "$rootDir/projects/kirino/src/test/java"]
         }
         resources {
             srcDirs = ["$rootDir/src/test/resources"]
@@ -251,6 +251,7 @@ configurations {
 }
 
 dependencies {
+    // LWJGL
     compileOnly "com.cleanroommc:lwjglx:1.0.0"
     compileOnly "org.jetbrains:annotations:26.0.2-1"
     installer "com.cleanroommc:lwjglxx:1.1.17"
@@ -263,51 +264,58 @@ dependencies {
         }
     }
 
-    // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
+    // ASM
     installer "org.ow2.asm:asm:$props.asm_version"
     installer "org.ow2.asm:asm-commons:$props.asm_version"
     installer "org.ow2.asm:asm-tree:$props.asm_version"
     installer "org.ow2.asm:asm-util:$props.asm_version"
     installer "org.ow2.asm:asm-analysis:$props.asm_version"
-    // Added back deprecated features for mods to load up properly
+    // Added back deprecated features for mods to load up properly, hosted on outlands
     installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
-    installer "top.outlands:foundation:0.18.3"
-    installer 'net.lenni0451:Reflect:1.6.1'
+    // Hacks
+    installer "top.outlands:foundation:0.18.4"
+    installer 'net.lenni0451:Reflect:1.6.2'
     installer 'org.javassist:javassist:3.30.2-GA'
     installer "zone.rong:imaginebreaker:2.1"
 
-    installer 'com.ibm.icu:icu4j:78.1'
-
+    // Regular deps
+    installer 'com.ibm.icu:icu4j:78.2'
     installer 'org.jline:jline:3.30.6'
     installer 'org.jline:jline-native:3.30.6'
-
     installer 'net.java.jinput:jinput:2.0.10'
 
     installer 'lzma:lzma:0.0.1'
     installer 'java3d:vecmath:1.5.2'
     installer 'net.sf.trove4j:core:3.1.0'
     installer 'net.sf.trove4j:experimental:3.1.0'
-    installer 'org.apache.maven:maven-artifact:3.9.11'
+
     installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
-    installer 'org.apache.commons:commons-lang3:3.19.0'
-    installer 'org.apache.commons:commons-compress:1.28.0'
-    installer 'com.github.oshi:oshi-core:6.9.0'
+
+    installer 'com.github.oshi:oshi-core:6.9.2'
     installer 'net.java.dev.jna:jna:5.18.1'
     installer 'net.java.dev.jna:jna-platform:5.18.1'
+
     installer 'it.unimi.dsi:fastutil:8.5.18'
-    installer 'commons-codec:commons-codec:1.19.0'
-    installer 'commons-io:commons-io:2.20.0'
-    installer 'commons-logging:commons-logging:1.3.5'
+
     installer 'com.google.guava:guava:33.5.0-jre'
     installer 'com.google.guava:failureaccess:1.0.2'
     installer 'com.google.code.gson:gson:2.13.2'
+
+    installer 'org.apache.commons:commons-lang3:3.20.0'
+    installer 'org.apache.commons:commons-compress:1.28.0'
+    installer 'commons-codec:commons-codec:1.20.0'
+    installer 'commons-io:commons-io:2.21.0'
+    installer 'commons-logging:commons-logging:1.3.5'
+    installer 'org.apache.maven:maven-artifact:3.9.12'
+
     installer 'com.google.code.findbugs:jsr305:3.0.2'
     installer 'org.jspecify:jspecify:1.0.0'
 
-    installer 'org.apache.httpcomponents.core5:httpcore5:5.3.6'
-    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.6'
-    installer 'org.apache.httpcomponents.client5:httpclient5:5.5.1'
+    // Apache HTTP, 4 and 5
+    installer 'org.apache.httpcomponents.core5:httpcore5:5.4'
+    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.4'
+    installer 'org.apache.httpcomponents.client5:httpclient5:5.6'
 
     installer 'org.apache.httpcomponents:httpclient:4.5.14'
     installer 'org.apache.httpcomponents:httpcore:4.4.16'
@@ -328,31 +336,39 @@ dependencies {
     installer "io.netty:netty-codec-compression:$props.netty_version"
     installer "io.netty:netty-resolver-dns:$props.netty_version"
 
-    installer 'org.apache.logging.log4j:log4j-api:2.25.2'
-    installer 'org.apache.logging.log4j:log4j-core:2.25.2'
-    installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.2'
-    installer 'org.slf4j:slf4j-api:2.0.17'
+    // Jakarta (javax in Java 8)
+    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
+    installer 'jakarta.activation:jakarta.activation-api:2.1.4'
     installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
     installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.4'
+    installer 'jakarta.inject:jakarta.inject-api:2.0.1'
+
+    // Logging
+    installer 'org.apache.logging.log4j:log4j-api:2.25.3'
+    installer 'org.apache.logging.log4j:log4j-core:2.25.3'
+    installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.3'
+    installer 'org.slf4j:slf4j-api:2.0.17'
+
+    // Scripts
     installer 'org.glassfish.jaxb:jaxb-runtime:4.0.6'
     installer 'org.glassfish.jaxb:jaxb-core:4.0.6'
     installer 'com.sun.istack:istack-commons-runtime:4.2.0'
-    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
-    installer 'jakarta.activation:jakarta.activation-api:2.1.4'
     installer 'org.glassfish.corba:glassfish-corba-omgapi:5.0.0'
     installer 'org.openjdk.nashorn:nashorn-core:15.7'
     // installer 'ca.weblite:java-objc-bridge:1.2'
 
+    // Kirino Engine
+    installer 'org.joml:joml:1.10.8'
+    installer 'io.github.classgraph:classgraph:4.8.184'
 
     // Mixin
     installer 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
-    installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.0')
+    installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.3')
 
-    testImplementation platform('org.junit:junit-bom:6.0.0')
+    testImplementation platform('org.junit:junit-bom:6.0.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.junit.vintage:junit-vintage-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 }
 
 test {
@@ -573,9 +589,9 @@ tasks.register('checkSAS') {
 //                def mtd = json[cls]['methods'][desc]
                 lines.add(cls + ' ' + desc.replace(' ', '') + (comment == null ? '' : ' ' + comment))
                 def children = json.values()
-                    .findAll { it.methods?[desc]?.override == cls }
-                    .collect { it.name + ' ' + desc.replace(' ', '') }
-                    as TreeSet
+                        .findAll { it.methods?[desc]?.override == cls }
+                        .collect { it.name + ' ' + desc.replace(' ', '') }
+                        as TreeSet
                 children.each { lines.add('\t' + it) }
             }
             f.text = lines.join('\n')

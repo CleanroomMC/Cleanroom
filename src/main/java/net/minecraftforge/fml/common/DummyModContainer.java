@@ -157,7 +157,7 @@ public class DummyModContainer implements ModContainer
     @Override
     public String getDisplayVersion()
     {
-        return md.version;
+        return md == null ? "" : md.version;
     }
     @Override
     public VersionRange acceptableMinecraftVersionRange()

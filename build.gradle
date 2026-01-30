@@ -6,10 +6,11 @@ buildscript {
             url = 'https://maven.outlands.top/releases/'
         }
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath 'top.outlands.gradle:ForgeGradle:6.0.+'
-        classpath('top.outlands:artifactural:3.0.1') {
+        classpath('top.outlands:artifactural:3.0.4') {
             transitive = false
         }
     }
@@ -23,27 +24,28 @@ apply plugin: 'com.palantir.git-version' // Declared in buildSrc/build.gradle
 
 import com.cleanroommc.gradle.helpers.ProjectConstants
 import com.cleanroommc.gradle.helpers.tasks.Util
+import com.palantir.gradle.gitversion.VersionDetails
 
 
 def props = project.properties
 def sysProps = System.getProperties()
-def details = versionDetails()
+VersionDetails details = versionDetails()
 
 group = 'com.cleanroommc'
 
 if (project.hasProperty("release")) {
     version = details.lastTag
 } else if (!project.hasProperty("run_number")) {
-    version = details.lastTag + "+build." + details.commitDistance
+    version = "${details.lastTag}+build.${details.commitDistance}"
 } else {
-    version = details.lastTag + "+build." + details.commitDistance + ".run." + props.run_number
+    version = "${details.lastTag}+build.${details.commitDistance}.run.${props.run_number}"
 }
 
 def version_txt = new File(project.projectDir, "version.txt")
 version_txt.write(version.toString())
 
 println "Setting up Cleanroom $version"
-if (project.hasProperty("run_number")) println("On GitHub runs #" + props.run_number)
+if (project.hasProperty('run_number')) println("On GitHub runs #${props.run_number}")
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
 
 // Initialize buildSrc

@@ -13,25 +13,3 @@
      private BlockPos blockPos;
      public RayTraceResult.Type typeOfHit;
      public EnumFacing sideHit;
-@@ -46,20 +52,9 @@
-         return this.blockPos;
-     }
- 
--    @Override
-     public String toString()
-     {
--        return "HitResult{type="
--               + this.typeOfHit
--               + ", blockpos="
--               + this.blockPos
--               + ", f="
--               + this.sideHit
--               + ", pos="
--               + this.hitVec
--               + ", entity="
--               + this.entityHit
--               + '}';
-+        return "HitResult{type=" + this.typeOfHit + ", blockpos=" + this.blockPos + ", f=" + this.sideHit + ", pos=" + this.hitVec + ", entity=" + this.entityHit + '}';
-     }
- 
-     public static enum Type

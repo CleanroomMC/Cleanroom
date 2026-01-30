@@ -1,0 +1,19 @@
+--- before/net/minecraft/util/math/ChunkPos.java
++++ after/net/minecraft/util/math/ChunkPos.java
+@@ -24,6 +24,16 @@
+         return (long)x & 4294967295L | ((long)z & 4294967295L) << 32;
+     }
+ 
++    public static int getX(long key)
++    {
++        return (int) (key & 0xFFFFFFFFL);
++    }
++
++    public static int getZ(long key)
++    {
++        return (int) ((key >>> 32) & 0xFFFFFFFFL);
++    }
++
+     @Override
+     public int hashCode()
+     {
