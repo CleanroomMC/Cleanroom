@@ -370,7 +370,10 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         // Version check button
         if (this.selectedModData != null) {
             int contentLeft = this.modList.right + 12 + 10;
-            String version = I18n.format("catalogue.gui.version", this.selectedModData.getVersion());
+            String displayVersion = this.selectedModData.getVersion();
+            String innerVersion = this.selectedModData.getInnerVersion();
+            boolean useInnerAsMain = displayVersion.isBlank() && !innerVersion.isBlank();
+            String version = I18n.format(useInnerAsMain ? "catalogue.gui.inner_version" : "catalogue.gui.version", useInnerAsMain ? innerVersion : displayVersion);
             int versionWidth = this.fontRenderer.getStringWidth(version);
             if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
                 IModData.Update update = this.selectedModData.getUpdate();
@@ -924,7 +927,10 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             String displayVersion = this.selectedModData.getVersion();
             String innerVersion = this.selectedModData.getInnerVersion();
             boolean useInnerAsMain = displayVersion.isBlank() && !innerVersion.isBlank();
-            int versionWidth = this.drawStringWithLabel(useInnerAsMain ? "catalogue.gui.inner_version" : "catalogue.gui.version", useInnerAsMain ? innerVersion : displayVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+            String drawKey = useInnerAsMain ? "catalogue.gui.inner_version" : "catalogue.gui.version";
+            String drawVersion = useInnerAsMain ? innerVersion : displayVersion;
+            this.drawStringWithLabel(drawKey, drawVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+            int versionWidth = this.fontRenderer.getStringWidth(I18n.format(drawKey, drawVersion));
 
             // Draw inner version tool tip if the display version is different from it
             if (!useInnerAsMain && !displayVersion.equals(innerVersion) && !innerVersion.isBlank() && ClientHelper.isMouseWithin(contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
@@ -1070,7 +1076,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
      * @param mouseY   the current mouse y position
      */
     @SuppressWarnings("SameParameterValue")
-    private int drawStringWithLabel(String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY, TextFormatting labelColor, TextFormatting contentColor) {
+    private void drawStringWithLabel(String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY, TextFormatting labelColor, TextFormatting contentColor) {
         String formatted = labelColor + I18n.format(format, contentColor + text);
         if (this.fontRenderer.getStringWidth(formatted) > maxWidth) {
             formatted = this.fontRenderer.trimStringToWidth(formatted, maxWidth - 7) + "...";
@@ -1079,7 +1085,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 this.setActiveTooltip(text);
             }
         }
-        return this.fontRenderer.drawStringWithShadow(formatted, x, y, 0xFFFFFF);
+        drawString(this.fontRenderer, formatted, x, y, 0xFFFFFF);
     }
 
     private ImageInfo getBanner(String modId) {
