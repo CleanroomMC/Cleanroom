@@ -789,6 +789,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         @NotNull
         private String getFormattedModVersion(boolean favouriteIconVisible) {
             String version = this.data.getVersion();
+            if (version.isBlank()) version = this.data.getInnerVersion();
             return TextFormatting.GRAY + this.getFormattedText(version, favouriteIconVisible);
         }
 
@@ -921,12 +922,12 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
             // Draw version
             String displayVersion = this.selectedModData.getVersion();
-            this.drawStringWithLabel("catalogue.gui.version", displayVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
-
-            // Draw inner version if the display version is different from it
-            int versionWidth = this.fontRenderer.getStringWidth(I18n.format("catalogue.gui.version", displayVersion));
             String innerVersion = this.selectedModData.getInnerVersion();
-            if (!displayVersion.equals(innerVersion) && ClientHelper.isMouseWithin(contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
+            boolean useInnerAsMain = displayVersion.isBlank() && !innerVersion.isBlank();
+            int versionWidth = this.drawStringWithLabel(useInnerAsMain ? "catalogue.gui.inner_version" : "catalogue.gui.version", useInnerAsMain ? innerVersion : displayVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+
+            // Draw inner version tool tip if the display version is different from it
+            if (!useInnerAsMain && !displayVersion.equals(innerVersion) && !innerVersion.isBlank() && ClientHelper.isMouseWithin(contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
                 this.setActiveTooltip(I18n.format("catalogue.gui.inner_version", innerVersion));
             }
 
@@ -1069,15 +1070,16 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
      * @param mouseY   the current mouse y position
      */
     @SuppressWarnings("SameParameterValue")
-    private void drawStringWithLabel(String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY, TextFormatting labelColor, TextFormatting contentColor) {
+    private int drawStringWithLabel(String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY, TextFormatting labelColor, TextFormatting contentColor) {
         String formatted = labelColor + I18n.format(format, contentColor + text);
         if (this.fontRenderer.getStringWidth(formatted) > maxWidth) {
             formatted = this.fontRenderer.trimStringToWidth(formatted, maxWidth - 7) + "...";
-            if (ClientHelper.isMouseWithin(x, y, maxWidth, 9, mouseX, mouseY)) { // Sets the active tool tip if string is too long so users can still read it
+            // Sets the active tool tip if string is too long so users can still read it
+            if (ClientHelper.isMouseWithin(x, y, maxWidth, 9, mouseX, mouseY)) {
                 this.setActiveTooltip(text);
             }
         }
-        drawString(this.fontRenderer, formatted, x, y, 0xFFFFFF);
+        return this.fontRenderer.drawStringWithShadow(formatted, x, y, 0xFFFFFF);
     }
 
     private ImageInfo getBanner(String modId) {

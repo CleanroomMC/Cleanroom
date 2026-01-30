@@ -245,6 +245,6 @@ public class CleanroomModData implements IModData {
         return metadata.childMods.stream()
                 .filter(Objects::nonNull)
                 .map(ModContainer::getModId)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
     }
 }
