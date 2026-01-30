@@ -5,6 +5,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 @SideOnly(Side.CLIENT)
 public class LinearLayout implements Layout {
@@ -42,8 +43,8 @@ public class LinearLayout implements Layout {
         return this.addChild(child, this.newCellSettings());
     }
 
-    public <T extends LayoutElement> T addChild(T child, Consumer<LayoutSettings> layoutSettingsFactory) {
-        return this.orientation.addChild(this.wrapped, child, this.nextChildIndex++, Utils.make(this.newCellSettings(), layoutSettingsFactory));
+    public <T extends LayoutElement> T addChild(T child, UnaryOperator<LayoutSettings> layoutSettingsFactory) {
+        return this.orientation.addChild(this.wrapped, child, this.nextChildIndex++, layoutSettingsFactory.apply(this.newCellSettings()));
     }
 
     @Override

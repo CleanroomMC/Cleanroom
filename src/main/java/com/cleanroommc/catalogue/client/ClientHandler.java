@@ -13,8 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class ClientHandler {
     @SubscribeEvent
     public static void onOpenScreen(@NotNull GuiOpenEvent event) {
-        if (!CatalogueConfig.enableMod) return;
-        //noinspection deprecation
+        if (!CatalogueConfig.enable) return;
         if (event.getGui() instanceof GuiModList screen) {
             event.setGui(new CatalogueModListScreen(screen.getParentScreen()));
         }

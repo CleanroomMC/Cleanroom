@@ -44,8 +44,8 @@ catalogue.gui.website=网站
 catalogue.gui.submit_bug=提交Bug
 catalogue.gui.mod_id=Mod ID：%s
 
-catalogue.config.enable_mod=启用模组
-catalogue.config.enable_mod.tooltip=控制是否启用Catalogue模组。 \n设置为否会阻止Catalogue重定向Forge模组列表的调用。
+catalogue.config.enable_mod=启用
+catalogue.config.enable_mod.tooltip=控制是否启用Catalogue。 \n设置为否会阻止Catalogue重定向Forge模组列表的调用。
 catalogue.config.library_list=库列表
 catalogue.config.library_list.tooltip=库模组的Mod ID列表。\n它们会在模组列表中显示灰色名字。
 catalogue.config.ignored_dependencies_list=忽略前置列表

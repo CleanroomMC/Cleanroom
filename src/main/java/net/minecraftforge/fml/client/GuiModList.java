@@ -69,10 +69,7 @@ import org.lwjgl.opengl.GL11;
 
 /**
  * @author cpw
- * @deprecated Use {@link com.cleanroommc.catalogue.client.screen.CatalogueModListScreen}
  */
-@Deprecated
-@SuppressWarnings("DeprecatedIsStillUsed")
 public class GuiModList extends GuiScreen
 {
     private enum SortType implements Comparator<ModContainer>

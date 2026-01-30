@@ -62,7 +62,7 @@ public class MinecraftModData implements IModData {
     @Nullable
     @Override
     public String getLicense() {
-        return "All Rights Reserved";
+        return "All Rights Reserved (https://www.minecraft.net/en-us/eula)";
     }
 
     @Nullable
@@ -86,7 +86,7 @@ public class MinecraftModData implements IModData {
     @Nullable
     @Override
     public String getIssueTracker() {
-        return "https://bugs.mojang.com/projects/MC/issues";
+        return "https://bugs.mojang.com/browse/MC";
     }
 
     @Nullable

@@ -145,20 +145,22 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public ForgeModContainer()
     {
         super(new ModMetadata());
-        ModMetadata meta = getMetadata();
-        meta.modId       = ForgeVersion.MOD_ID;
-        meta.name        = "Minecraft Forge";
-        meta.version     = ForgeVersion.getVersion();
-        meta.credits     = "Made possible with help from many people";
-        meta.authorList  = Arrays.asList("LexManos", "cpw", "fry");
-        meta.description = "Minecraft Forge is a common open source API allowing a broad range of mods " +
-                           "to work cooperatively together. It allows many mods to be created without " +
-                           "them editing the main Minecraft code.";
-        meta.url         = "http://minecraftforge.net";
-        meta.screenshots = new String[0];
-        meta.logoFile    = "/forge_logo.png";
+        ModMetadata meta     = getMetadata();
+        meta.modId           = ForgeVersion.MOD_ID;
+        meta.name            = "Minecraft Forge";
+        meta.version         = ForgeVersion.getVersion();
+        meta.credits         = "Anyone who has contributed on Github and supports our development";
+        meta.authorList      = Arrays.asList("LexManos", "cpw", "fry");
+        meta.description     = """
+                Forge, a broad compatibility API.
+                """;
+        meta.url             = "https://minecraftforge.net/";
+        meta.issueTrackerUrl = "https://minecraftforge.net/";
+        meta.license         = "LGPL v2.1";
+        meta.screenshots     = new String[0];
+        meta.logoFile        = "/forge_logo.png";
         try {
-            updateJSONUrl    = new URI("http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json").toURL();
+            updateJSONUrl    = new URI("https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json").toURL();
         } catch (MalformedURLException | URISyntaxException ignored) {}
 
         config = null;

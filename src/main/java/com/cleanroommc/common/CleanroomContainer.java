@@ -23,6 +23,10 @@ public class CleanroomContainer extends DummyModContainer {
                 """;
         meta.version = CleanroomVersion.VERSION;
         meta.authorList = Arrays.asList("LexManos", "cpw", "fry", "Rongmario", "kappa_maintainer", "Li");
+        meta.credits = "Thanks to MrCrayFish for his Catalogue mod for the backbone of our revamped mod list screen.";
+        meta.url = "https://cleanroommc.com";
+        meta.issueTrackerUrl = "https://github.com/CleanroomMC/Cleanroom/issues";
+        meta.license = "LGPL v2.1";
         meta.updateJSON = "https://download.cleanroommc.com/api/forge";
         meta.logoFile = "/cleanroom_banner.png";
         meta.iconFile = "/cleanroom_icon.png";

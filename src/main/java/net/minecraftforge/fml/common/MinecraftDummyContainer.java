@@ -46,8 +46,8 @@ public class MinecraftDummyContainer extends DummyModContainer
         meta.description = "Minecraft is a 3D sandbox adventure game developed by Mojang Studios where players can interact with a fully customizable three-dimensional world made of blocks and entities. Its diverse gameplay options allow players to choose the way they play, creating countless possibilities.";
         meta.authorList = List.of("Mojang AB");
         meta.url = "https://www.minecraft.net";
-        meta.issueTrackerUrl = "https://bugs.mojang.com/projects/MC/issues";
-        meta.license = "All Rights Reserved";
+        meta.issueTrackerUrl = "https://bugs.mojang.com/browse/MC";
+        meta.license = "All Rights Reserved (https://www.minecraft.net/en-us/eula)";
 
         staticRange = VersionParser.parseRange("["+actualMCVersion+"]");
     }

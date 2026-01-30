@@ -172,9 +172,6 @@ public class Loader
      * The canonical configuration directory
      */
     private File canonicalConfigDir;
-    /**
-     * The canonical mods directory
-     */
     private File canonicalModsDir;
     private LoadController modController;
     private MinecraftDummyContainer minecraft;

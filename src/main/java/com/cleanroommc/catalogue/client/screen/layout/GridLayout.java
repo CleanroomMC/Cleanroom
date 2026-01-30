@@ -7,6 +7,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 @SideOnly(Side.CLIENT)
 public class GridLayout extends AbstractLayout {
@@ -99,8 +100,8 @@ public class GridLayout extends AbstractLayout {
         return this.addChild(child, row, column, 1, 1, layoutSettings);
     }
 
-    public <T extends LayoutElement> T addChild(T child, int row, int column, Consumer<LayoutSettings> layoutSettingsFactory) {
-        return this.addChild(child, row, column, 1, 1, Utils.make(this.newCellSettings(), layoutSettingsFactory));
+    public <T extends LayoutElement> T addChild(T child, int row, int column, UnaryOperator<LayoutSettings> layoutSettingsFactory) {
+        return this.addChild(child, row, column, 1, 1, layoutSettingsFactory.apply(this.newCellSettings()));
     }
 
     public <T extends LayoutElement> T addChild(T child, int row, int column, int occupiedRows, int occupiedColumns) {
@@ -119,8 +120,8 @@ public class GridLayout extends AbstractLayout {
         }
     }
 
-    public <T extends LayoutElement> T addChild(T child, int row, int column, int occupiedRows, int occupiedColumns, Consumer<LayoutSettings> layoutSettingsFactory) {
-        return this.addChild(child, row, column, occupiedRows, occupiedColumns, Utils.make(this.newCellSettings(), layoutSettingsFactory));
+    public <T extends LayoutElement> T addChild(T child, int row, int column, int occupiedRows, int occupiedColumns, UnaryOperator<LayoutSettings> layoutSettingsFactory) {
+        return this.addChild(child, row, column, occupiedRows, occupiedColumns, layoutSettingsFactory.apply(this.newCellSettings()));
     }
 
     public GridLayout columnSpacing(int columnSpacing) {

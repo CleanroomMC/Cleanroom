@@ -16,11 +16,6 @@ public class Utils {
         return resource("textures/gui/sprites/" + name + ".png");
     }
 
-    public static <T> T make(T object, Consumer<? super T> consumer) {
-        consumer.accept(object);
-        return object;
-    }
-
     public static float lerp(float delta, float start, float end) {
         return start + delta * (end - start);
     }

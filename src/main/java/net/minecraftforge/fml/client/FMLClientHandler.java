@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.catalogue.CatalogueConfig;
 import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import net.minecraft.client.Minecraft;
@@ -769,7 +770,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public void showInGameModOptions(GuiIngameMenu guiIngameMenu)
     {
-        showGuiScreen(new CatalogueModListScreen(guiIngameMenu));
+        showGuiScreen(CatalogueConfig.enable ? new CatalogueModListScreen(guiIngameMenu) : new GuiModList(guiIngameMenu));
     }
 
     public IModGuiFactory getGuiFactoryFor(ModContainer selectedMod)

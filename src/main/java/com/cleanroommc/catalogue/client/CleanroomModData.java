@@ -35,6 +35,7 @@ public class CleanroomModData implements IModData {
     private final Type type;
     private final Set<String> dependencies;
     private final Set<String> childMods;
+    private final String modId;
 
     public CleanroomModData(@NotNull ModContainer info) {
         this.info = info;
@@ -42,6 +43,7 @@ public class CleanroomModData implements IModData {
         this.type = analyzeType(info);
         this.dependencies = analyzeDependencies(info);
         this.childMods = analyzeChildMods(info);
+        this.modId = this.info.getModId();
     }
 
     @Override
@@ -51,7 +53,7 @@ public class CleanroomModData implements IModData {
 
     @Override
     public String getModId() {
-        return this.info.getModId();
+        return this.modId;
     }
 
     @Override

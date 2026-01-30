@@ -361,11 +361,13 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         // Mod List
         if (this.modList.mouseClicked(mouseX, mouseY, button)) return;
 
+        /*
         // Catalogue button
         if (ClientHelper.isMouseWithin(10, 9, 10, 10, mouseX, mouseY) && button == 0) {
             this.openLink("https://www.curseforge.com/minecraft/mc-mods/catalogue");
             return;
         }
+        */
 
         // Version check button
         if (this.selectedModData != null) {
