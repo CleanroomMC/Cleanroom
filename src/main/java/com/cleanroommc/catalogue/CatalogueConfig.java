@@ -30,7 +30,10 @@ public class CatalogueConfig {
             "configanytime",
             "mixinbooter",
             "fugue",
-            "scalar"
+            "scalar",
+            "kirino_ecs",
+            "kirino_engine",
+            "kirino_gl"
     };
 
     @Config.RequiresMcRestart
