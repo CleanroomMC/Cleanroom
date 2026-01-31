@@ -24,7 +24,6 @@ public class CatalogueTextButton extends GuiButton {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         mc.getTextureManager().bindTexture(SPRITES.get(this.enabled, this.hovered));
         ClientHelper.blitNineSlicedSprite(new ClientHelper.NineSlice(200, 20, 3), this.x, this.y, this.width, this.height);
 
