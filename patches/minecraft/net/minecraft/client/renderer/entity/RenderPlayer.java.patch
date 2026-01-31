@@ -16,15 +16,31 @@
      }
  
      private void setModelVisibilities(AbstractClientPlayer clientPlayer)
-@@ -127,6 +129,11 @@
-                     if (enumaction1 == EnumAction.BLOCK)
+@@ -128,6 +130,11 @@
                      {
                          modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
-+                    }
+                     }
 +                    // FORGE: fix MC-88356 allow offhand to use bow and arrow animation
 +                    else if (enumaction1 == EnumAction.BOW)
 +                    {
 +                        modelbiped$armpose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
-                     }
++                    }
                  }
              }
+ 
+@@ -183,6 +190,7 @@
+ 
+     public void renderRightArm(AbstractClientPlayer clientPlayer)
+     {
++        if (net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(this, clientPlayer, EnumHandSide.RIGHT)) return;
+         float f = 1.0F;
+         GlStateManager.color(1.0F, 1.0F, 1.0F);
+         float f1 = 0.0625F;
+@@ -201,6 +209,7 @@
+ 
+     public void renderLeftArm(AbstractClientPlayer clientPlayer)
+     {
++        if (net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(this, clientPlayer, EnumHandSide.LEFT)) return;
+         float f = 1.0F;
+         GlStateManager.color(1.0F, 1.0F, 1.0F);
+         float f1 = 0.0625F;
