@@ -213,10 +213,8 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     @Override
     public void actionPerformed(@NotNull GuiButton button) {
         switch (button.id) {
-            case 1:
-                this.mc.displayGuiScreen(this.parentScreen);
-                break;
-            case 2:
+            case 1 -> this.mc.displayGuiScreen(this.parentScreen);
+            case 2 -> {
                 try {
                     Class<?> oclass = Class.forName("java.awt.Desktop");
                     Object object = oclass.getMethod("getDesktop", new Class[0]).invoke(null);
@@ -224,17 +222,11 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 } catch (Exception e) {
                     CatalogueConstants.LOG.error("Problem opening mods folder", e);
                 }
-                break;
-            case 3:
-                this.selectedModData.openConfigScreen(this.mc, this);
-                break;
-            case 4:
-                this.openLink(this.selectedModData.getHomepage());
-                break;
-            case 5:
-                this.openLink(this.selectedModData.getIssueTracker());
-                break;
-            case 6:
+            }
+            case 3 -> this.selectedModData.openConfigScreen(this.mc, this);
+            case 4 -> this.openLink(this.selectedModData.getHomepage());
+            case 5 -> this.openLink(this.selectedModData.getIssueTracker());
+            case 6 -> {
                 DropdownMenu menu = DropdownMenu.builder(this)
                         .setMinItemSize(100, 16)
                         .setAlignment(DropdownMenu.Alignment.BELOW_RIGHT)
@@ -277,9 +269,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                             return false;
                         }).build();
                 menu.toggle(button);
-                break;
-            default:
-                break;
+            }
         }
     }
 
