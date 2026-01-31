@@ -1,28 +1,28 @@
 --- before/net/minecraft/tileentity/TileEntityNote.java
 +++ after/net/minecraft/tileentity/TileEntityNote.java
 @@ -14,7 +14,6 @@
-     public byte field_145879_a;
-     public boolean field_145880_i;
+     public byte note;
+     public boolean previousRedstoneState;
  
 -    @Override
-     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+     public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
-         super.func_189515_b(p_189515_1_);
+         super.writeToNBT(compound);
 @@ -23,7 +22,6 @@
-         return p_189515_1_;
+         return compound;
      }
  
 -    @Override
-     public void func_145839_a(NBTTagCompound p_145839_1_)
+     public void readFromNBT(NBTTagCompound compound)
      {
-         super.func_145839_a(p_145839_1_);
+         super.readFromNBT(compound);
 @@ -34,7 +32,9 @@
  
-     public void func_145877_a()
+     public void changePitch()
      {
-+        byte old = field_145879_a;
-         this.field_145879_a = (byte)((this.field_145879_a + 1) % 25);
++        byte old = note;
+         this.note = (byte)((this.note + 1) % 25);
 +        if (!net.minecraftforge.common.ForgeHooks.onNoteChange(this, old)) return;
-         this.func_70296_d();
+         this.markDirty();
      }
  

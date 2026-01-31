@@ -2,25 +2,25 @@
 +++ after/net/minecraft/util/IntIdentityHashBiMap.java
 @@ -34,7 +34,7 @@
      @Nullable
-     public K func_186813_a(int p_186813_1_)
+     public K get(int idIn)
      {
--        return p_186813_1_ >= 0 && p_186813_1_ < this.field_186820_d.length ? this.field_186820_d[p_186813_1_] : null;
-+        return (K)(p_186813_1_ >= 0 && p_186813_1_ < this.field_186820_d.length ? this.field_186820_d[p_186813_1_] : null);
+-        return idIn >= 0 && idIn < this.byId.length ? this.byId[idIn] : null;
++        return (K)(idIn >= 0 && idIn < this.byId.length ? this.byId[idIn] : null);
      }
  
-     private int func_186805_c(int p_186805_1_)
+     private int getValue(int p_186805_1_)
 @@ -53,7 +53,7 @@
      {
-         while (this.field_186821_e < this.field_186820_d.length && this.field_186820_d[this.field_186821_e] != null)
+         while (this.nextFreeIndex < this.byId.length && this.byId[this.nextFreeIndex] != null)
          {
--            this.field_186821_e++;
-+            ++this.field_186821_e;
+-            this.nextFreeIndex++;
++            ++this.nextFreeIndex;
          }
  
-         return this.field_186821_e;
+         return this.nextFreeIndex;
 @@ -69,7 +69,7 @@
-         this.field_186821_e = 0;
-         this.field_186822_f = 0;
+         this.nextFreeIndex = 0;
+         this.mapSize = 0;
  
 -        for (int i = 0; i < ak.length; i++)
 +        for (int i = 0; i < ak.length; ++i)
@@ -29,45 +29,45 @@
              {
 @@ -84,11 +84,11 @@
  
-         if ((float)i >= (float)this.field_186818_b.length * 0.8F)
+         if ((float)i >= (float)this.values.length * 0.8F)
          {
--            int j = this.field_186818_b.length << 1;
+-            int j = this.values.length << 1;
 +            int j;
  
--            while (j < p_186814_2_)
-+            for (j = this.field_186818_b.length << 1; j < p_186814_2_; j <<= 1)
+-            while (j < intKey)
++            for (j = this.values.length << 1; j < intKey; j <<= 1)
              {
 -                j <<= 1;
 +                ;
              }
  
-             this.func_186807_d(j);
+             this.grow(j);
 @@ -98,22 +98,22 @@
-         this.field_186818_b[k] = p_186814_1_;
-         this.field_186819_c[k] = p_186814_2_;
-         this.field_186820_d[p_186814_2_] = p_186814_1_;
--        this.field_186822_f++;
-+        ++this.field_186822_f;
+         this.values[k] = objectIn;
+         this.intKeys[k] = intKey;
+         this.byId[intKey] = objectIn;
+-        this.mapSize++;
++        ++this.mapSize;
  
-         if (p_186814_2_ == this.field_186821_e)
+         if (intKey == this.nextFreeIndex)
          {
--            this.field_186821_e++;
-+            ++this.field_186821_e;
+-            this.nextFreeIndex++;
++            ++this.nextFreeIndex;
          }
      }
  
-     private int func_186811_d(@Nullable K p_186811_1_)
+     private int hashObject(@Nullable K obectIn)
      {
--        return (MathHelper.func_188208_f(System.identityHashCode(p_186811_1_)) & 2147483647) % this.field_186818_b.length;
-+        return (MathHelper.func_188208_f(System.identityHashCode(p_186811_1_)) & Integer.MAX_VALUE) % this.field_186818_b.length;
+-        return (MathHelper.hash(System.identityHashCode(obectIn)) & 2147483647) % this.values.length;
++        return (MathHelper.hash(System.identityHashCode(obectIn)) & Integer.MAX_VALUE) % this.values.length;
      }
  
-     private int func_186816_b(@Nullable K p_186816_1_, int p_186816_2_)
+     private int getIndex(@Nullable K objectIn, int p_186816_2_)
      {
--        for (int i = p_186816_2_; i < this.field_186818_b.length; i++)
-+        for (int i = p_186816_2_; i < this.field_186818_b.length; ++i)
+-        for (int i = p_186816_2_; i < this.values.length; i++)
++        for (int i = p_186816_2_; i < this.values.length; ++i)
          {
-             if (this.field_186818_b[i] == p_186816_1_)
+             if (this.values[i] == objectIn)
              {
 @@ -126,7 +126,7 @@
              }
@@ -76,16 +76,16 @@
 -        for (int j = 0; j < p_186816_2_; j++)
 +        for (int j = 0; j < p_186816_2_; ++j)
          {
-             if (this.field_186818_b[j] == p_186816_1_)
+             if (this.values[j] == objectIn)
              {
 @@ -144,7 +144,7 @@
  
-     private int func_186806_e(int p_186806_1_)
+     private int findEmpty(int p_186806_1_)
      {
--        for (int i = p_186806_1_; i < this.field_186818_b.length; i++)
-+        for (int i = p_186806_1_; i < this.field_186818_b.length; ++i)
+-        for (int i = p_186806_1_; i < this.values.length; i++)
++        for (int i = p_186806_1_; i < this.values.length; ++i)
          {
-             if (this.field_186818_b[i] == field_186817_a)
+             if (this.values[i] == EMPTY)
              {
 @@ -152,7 +152,7 @@
              }
@@ -94,7 +94,7 @@
 -        for (int j = 0; j < p_186806_1_; j++)
 +        for (int j = 0; j < p_186806_1_; ++j)
          {
-             if (this.field_186818_b[j] == field_186817_a)
+             if (this.values[j] == EMPTY)
              {
 @@ -163,17 +163,15 @@
          throw new RuntimeException("Overflowed :(");
@@ -103,16 +103,16 @@
 -    @Override
      public Iterator<K> iterator()
      {
-         return Iterators.filter(Iterators.forArray(this.field_186820_d), Predicates.notNull());
+         return Iterators.filter(Iterators.forArray(this.byId), Predicates.notNull());
      }
  
 -    @SideOnly(Side.CLIENT)
-     public void func_186812_a()
+     public void clear()
      {
--        Arrays.fill(this.field_186818_b, null);
--        Arrays.fill(this.field_186820_d, null);
-+        Arrays.fill(this.field_186818_b, (Object)null);
-+        Arrays.fill(this.field_186820_d, (Object)null);
-         this.field_186821_e = 0;
-         this.field_186822_f = 0;
+-        Arrays.fill(this.values, null);
+-        Arrays.fill(this.byId, null);
++        Arrays.fill(this.values, (Object)null);
++        Arrays.fill(this.byId, (Object)null);
+         this.nextFreeIndex = 0;
+         this.mapSize = 0;
      }

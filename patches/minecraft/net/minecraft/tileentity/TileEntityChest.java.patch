@@ -4,106 +4,106 @@
  
  public class TileEntityChest extends TileEntityLockableLoot implements ITickable
  {
--    private NonNullList<ItemStack> field_145985_p = NonNullList.func_191197_a(27, ItemStack.field_190927_a);
-+    private NonNullList<ItemStack> field_145985_p = NonNullList.<ItemStack>func_191197_a(27, ItemStack.field_190927_a);
-     public boolean field_145984_a;
-     public TileEntityChest field_145992_i;
-     public TileEntityChest field_145990_j;
+-    private NonNullList<ItemStack> chestContents = NonNullList.withSize(27, ItemStack.EMPTY);
++    private NonNullList<ItemStack> chestContents = NonNullList.<ItemStack>withSize(27, ItemStack.EMPTY);
+     public boolean adjacentChestChecked;
+     public TileEntityChest adjacentChestZNeg;
+     public TileEntityChest adjacentChestXPos;
 @@ -46,13 +46,11 @@
-         this.field_145982_r = p_i46677_1_;
+         this.cachedChestType = typeIn;
      }
  
 -    @Override
-     public int func_70302_i_()
+     public int getSizeInventory()
      {
          return 27;
      }
  
 -    @Override
-     public boolean func_191420_l()
+     public boolean isEmpty()
      {
-         for (ItemStack itemstack : this.field_145985_p)
+         for (ItemStack itemstack : this.chestContents)
 @@ -66,7 +64,6 @@
          return true;
      }
  
 -    @Override
-     public String func_70005_c_()
+     public String getName()
      {
-         return this.func_145818_k_() ? this.field_190577_o : "container.chest";
+         return this.hasCustomName() ? this.customName : "container.chest";
 @@ -74,14 +71,13 @@
  
-     public static void func_189677_a(DataFixer p_189677_0_)
+     public static void registerFixesChest(DataFixer fixer)
      {
--        p_189677_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityChest.class, "Items"));
-+        p_189677_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityChest.class, new String[] {"Items"}));
+-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityChest.class, "Items"));
++        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityChest.class, new String[] {"Items"}));
      }
  
 -    @Override
-     public void func_145839_a(NBTTagCompound p_145839_1_)
+     public void readFromNBT(NBTTagCompound compound)
      {
-         super.func_145839_a(p_145839_1_);
--        this.field_145985_p = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
-+        this.field_145985_p = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
+         super.readFromNBT(compound);
+-        this.chestContents = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
++        this.chestContents = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
  
-         if (!this.func_184283_b(p_145839_1_))
+         if (!this.checkLootAndRead(compound))
          {
 @@ -94,7 +90,6 @@
          }
      }
  
 -    @Override
-     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+     public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
-         super.func_189515_b(p_189515_1_);
+         super.writeToNBT(compound);
 @@ -112,17 +107,16 @@
-         return p_189515_1_;
+         return compound;
      }
  
 -    @Override
-     public int func_70297_j_()
+     public int getInventoryStackLimit()
      {
          return 64;
      }
  
 -    @Override
-     public void func_145836_u()
+     public void updateContainingBlockInfo()
      {
-         super.func_145836_u();
-         this.field_145984_a = false;
+         super.updateContainingBlockInfo();
+         this.adjacentChestChecked = false;
 +        doubleChestHandler = null;
      }
  
      @SuppressWarnings("incomplete-switch")
 @@ -174,6 +168,7 @@
      {
-         if (!this.field_145984_a)
+         if (!this.adjacentChestChecked)
          {
-+            if (this.field_145850_b == null || !this.field_145850_b.func_175697_a(this.field_174879_c, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbors
-             this.field_145984_a = true;
-             this.field_145991_k = this.func_174911_a(EnumFacing.WEST);
-             this.field_145990_j = this.func_174911_a(EnumFacing.EAST);
++            if (this.world == null || !this.world.isAreaLoaded(this.pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbors
+             this.adjacentChestChecked = true;
+             this.adjacentChestXNeg = this.getAdjacentChest(EnumFacing.WEST);
+             this.adjacentChestXPos = this.getAdjacentChest(EnumFacing.EAST);
 @@ -215,32 +210,20 @@
          }
      }
  
 -    @Override
-     public void func_73660_a()
+     public void update()
      {
-         this.func_145979_i();
-         int i = this.field_174879_c.func_177958_n();
-         int j = this.field_174879_c.func_177956_o();
-         int k = this.field_174879_c.func_177952_p();
--        this.field_145983_q++;
-+        ++this.field_145983_q;
+         this.checkForAdjacentChests();
+         int i = this.pos.getX();
+         int j = this.pos.getY();
+         int k = this.pos.getZ();
+-        this.ticksSinceSync++;
++        ++this.ticksSinceSync;
  
-         if (!this.field_145850_b.field_72995_K && this.field_145987_o != 0 && (this.field_145983_q + i + j + k) % 200 == 0)
+         if (!this.world.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0)
          {
-             this.field_145987_o = 0;
+             this.numPlayersUsing = 0;
              float f = 5.0F;
  
--            for (EntityPlayer entityplayer : this.field_145850_b
--                    .func_72872_a(
+-            for (EntityPlayer entityplayer : this.world
+-                    .getEntitiesWithinAABB(
 -                        EntityPlayer.class,
 -                        new AxisAlignedBB(
 -                            (double)((float)i - 5.0F),
@@ -114,129 +114,129 @@
 -                            (double)((float)(k + 1) + 5.0F)
 -                        )
 -                    ))
-+            for (EntityPlayer entityplayer : this.field_145850_b.func_72872_a(EntityPlayer.class, new AxisAlignedBB((double)((float)i - 5.0F), (double)((float)j - 5.0F), (double)((float)k - 5.0F), (double)((float)(i + 1) + 5.0F), (double)((float)(j + 1) + 5.0F), (double)((float)(k + 1) + 5.0F))))
++            for (EntityPlayer entityplayer : this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB((double)((float)i - 5.0F), (double)((float)j - 5.0F), (double)((float)k - 5.0F), (double)((float)(i + 1) + 5.0F), (double)((float)(j + 1) + 5.0F), (double)((float)(k + 1) + 5.0F))))
              {
-                 if (entityplayer.field_71070_bA instanceof ContainerChest)
+                 if (entityplayer.openContainer instanceof ContainerChest)
                  {
 @@ -248,7 +231,7 @@
  
-                     if (iinventory == this || iinventory instanceof InventoryLargeChest && ((InventoryLargeChest)iinventory).func_90010_a(this))
+                     if (iinventory == this || iinventory instanceof InventoryLargeChest && ((InventoryLargeChest)iinventory).isPartOfLargeChest(this))
                      {
--                        this.field_145987_o++;
-+                        ++this.field_145987_o;
+-                        this.numPlayersUsing++;
++                        ++this.numPlayersUsing;
                      }
                  }
              }
 @@ -259,30 +242,20 @@
  
-         if (this.field_145987_o > 0 && this.field_145989_m == 0.0F && this.field_145992_i == null && this.field_145991_k == null)
+         if (this.numPlayersUsing > 0 && this.lidAngle == 0.0F && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
          {
 -            double d1 = (double)i + 0.5;
 -            double d2 = (double)k + 0.5;
 +            double d1 = (double)i + 0.5D;
 +            double d2 = (double)k + 0.5D;
  
-             if (this.field_145988_l != null)
+             if (this.adjacentChestZPos != null)
              {
 -                d2 += 0.5;
 +                d2 += 0.5D;
              }
  
-             if (this.field_145990_j != null)
+             if (this.adjacentChestXPos != null)
              {
 -                d1 += 0.5;
 +                d1 += 0.5D;
              }
  
--            this.field_145850_b
--            .func_184148_a(
+-            this.world
+-            .playSound(
 -                null,
 -                d1,
 -                (double)j + 0.5,
 -                d2,
--                SoundEvents.field_187657_V,
+-                SoundEvents.BLOCK_CHEST_OPEN,
 -                SoundCategory.BLOCKS,
 -                0.5F,
--                this.field_145850_b.field_73012_v.nextFloat() * 0.1F + 0.9F
+-                this.world.rand.nextFloat() * 0.1F + 0.9F
 -            );
-+            this.field_145850_b.func_184148_a((EntityPlayer)null, d1, (double)j + 0.5D, d2, SoundEvents.field_187657_V, SoundCategory.BLOCKS, 0.5F, this.field_145850_b.field_73012_v.nextFloat() * 0.1F + 0.9F);
++            this.world.playSound((EntityPlayer)null, d1, (double)j + 0.5D, d2, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
          }
  
-         if (this.field_145987_o == 0 && this.field_145989_m > 0.0F || this.field_145987_o > 0 && this.field_145989_m < 1.0F)
+         if (this.numPlayersUsing == 0 && this.lidAngle > 0.0F || this.numPlayersUsing > 0 && this.lidAngle < 1.0F)
 @@ -307,30 +280,20 @@
  
-             if (this.field_145989_m < 0.5F && f2 >= 0.5F && this.field_145992_i == null && this.field_145991_k == null)
+             if (this.lidAngle < 0.5F && f2 >= 0.5F && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
              {
 -                double d3 = (double)i + 0.5;
 -                double d0 = (double)k + 0.5;
 +                double d3 = (double)i + 0.5D;
 +                double d0 = (double)k + 0.5D;
  
-                 if (this.field_145988_l != null)
+                 if (this.adjacentChestZPos != null)
                  {
 -                    d0 += 0.5;
 +                    d0 += 0.5D;
                  }
  
-                 if (this.field_145990_j != null)
+                 if (this.adjacentChestXPos != null)
                  {
 -                    d3 += 0.5;
 +                    d3 += 0.5D;
                  }
  
--                this.field_145850_b
--                .func_184148_a(
+-                this.world
+-                .playSound(
 -                    null,
 -                    d3,
 -                    (double)j + 0.5,
 -                    d0,
--                    SoundEvents.field_187651_T,
+-                    SoundEvents.BLOCK_CHEST_CLOSE,
 -                    SoundCategory.BLOCKS,
 -                    0.5F,
--                    this.field_145850_b.field_73012_v.nextFloat() * 0.1F + 0.9F
+-                    this.world.rand.nextFloat() * 0.1F + 0.9F
 -                );
-+                this.field_145850_b.func_184148_a((EntityPlayer)null, d3, (double)j + 0.5D, d0, SoundEvents.field_187651_T, SoundCategory.BLOCKS, 0.5F, this.field_145850_b.field_73012_v.nextFloat() * 0.1F + 0.9F);
++                this.world.playSound((EntityPlayer)null, d3, (double)j + 0.5D, d0, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
              }
  
-             if (this.field_145989_m < 0.0F)
+             if (this.lidAngle < 0.0F)
 @@ -340,7 +303,6 @@
          }
      }
  
 -    @Override
-     public boolean func_145842_c(int p_145842_1_, int p_145842_2_)
+     public boolean receiveClientEvent(int id, int type)
      {
-         if (p_145842_1_ == 1)
+         if (id == 1)
 @@ -354,7 +316,6 @@
          }
      }
  
 -    @Override
-     public void func_174889_b(EntityPlayer p_174889_1_)
+     public void openInventory(EntityPlayer player)
      {
-         if (!p_174889_1_.func_175149_v())
+         if (!player.isSpectator())
 @@ -364,7 +325,7 @@
-                 this.field_145987_o = 0;
+                 this.numPlayersUsing = 0;
              }
  
--            this.field_145987_o++;
-+            ++this.field_145987_o;
-             this.field_145850_b.func_175641_c(this.field_174879_c, this.func_145838_q(), 1, this.field_145987_o);
-             this.field_145850_b.func_175685_c(this.field_174879_c, this.func_145838_q(), false);
+-            this.numPlayersUsing++;
++            ++this.numPlayersUsing;
+             this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
+             this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
  
 @@ -375,12 +336,11 @@
          }
      }
  
 -    @Override
-     public void func_174886_c(EntityPlayer p_174886_1_)
+     public void closeInventory(EntityPlayer player)
      {
-         if (!p_174886_1_.func_175149_v() && this.func_145838_q() instanceof BlockChest)
+         if (!player.isSpectator() && this.getBlockType() instanceof BlockChest)
          {
--            this.field_145987_o--;
-+            --this.field_145987_o;
-             this.field_145850_b.func_175641_c(this.field_174879_c, this.func_145838_q(), 1, this.field_145987_o);
-             this.field_145850_b.func_175685_c(this.field_174879_c, this.func_145838_q(), false);
+-            this.numPlayersUsing--;
++            --this.numPlayersUsing;
+             this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
+             this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
  
 @@ -391,7 +351,29 @@
          }
@@ -265,27 +265,27 @@
 +    }
 +
 +
-     public void func_145843_s()
+     public void invalidate()
      {
-         super.func_145843_s();
+         super.invalidate();
 @@ -414,20 +396,17 @@
-         return this.field_145982_r;
+         return this.cachedChestType;
      }
  
 -    @Override
-     public String func_174875_k()
+     public String getGuiID()
      {
          return "minecraft:chest";
      }
  
 -    @Override
-     public Container func_174876_a(InventoryPlayer p_174876_1_, EntityPlayer p_174876_2_)
+     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
      {
-         this.func_184281_d(p_174876_2_);
-         return new ContainerChest(p_174876_1_, this, p_174876_2_);
+         this.fillWithLoot(playerIn);
+         return new ContainerChest(playerInventory, this, playerIn);
      }
  
 -    @Override
-     protected NonNullList<ItemStack> func_190576_q()
+     protected NonNullList<ItemStack> getItems()
      {
-         return this.field_145985_p;
+         return this.chestContents;

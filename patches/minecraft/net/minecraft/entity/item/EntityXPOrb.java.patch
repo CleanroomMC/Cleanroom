@@ -1,231 +1,53 @@
 --- before/net/minecraft/entity/item/EntityXPOrb.java
 +++ after/net/minecraft/entity/item/EntityXPOrb.java
-@@ -31,14 +31,13 @@
-         super(p_i1585_1_);
-         this.func_70105_a(0.5F, 0.5F);
-         this.func_70107_b(p_i1585_2_, p_i1585_4_, p_i1585_6_);
--        this.field_70177_z = (float)(Math.random() * 360.0);
--        this.field_70159_w = (double)((float)(Math.random() * 0.2F - 0.1F) * 2.0F);
--        this.field_70181_x = (double)((float)(Math.random() * 0.2) * 2.0F);
--        this.field_70179_y = (double)((float)(Math.random() * 0.2F - 0.1F) * 2.0F);
-+        this.field_70177_z = (float)(Math.random() * 360.0D);
-+        this.field_70159_w = (double)((float)(Math.random() * (double)0.2F - (double)0.1F) * 2.0F);
-+        this.field_70181_x = (double)((float)(Math.random() * 0.2D) * 2.0F);
-+        this.field_70179_y = (double)((float)(Math.random() * (double)0.2F - (double)0.1F) * 2.0F);
-         this.field_70530_e = p_i1585_8_;
-     }
+@@ -141,17 +141,9 @@
  
--    @Override
-     protected boolean func_70041_e_()
-     {
-         return false;
-@@ -50,20 +49,18 @@
-         this.func_70105_a(0.25F, 0.25F);
-     }
- 
--    @Override
-     protected void func_70088_a()
-     {
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public int func_70070_b()
-     {
-         float f = 0.5F;
-         f = MathHelper.func_76131_a(f, 0.0F, 1.0F);
-         int i = super.func_70070_b();
--        int j = i & 0xFF;
--        int k = i >> 16 & 0xFF;
-+        int j = i & 255;
-+        int k = i >> 16 & 255;
-         j += (int)(f * 15.0F * 16.0F);
- 
-         if (j > 240)
-@@ -74,14 +71,13 @@
-         return j | k << 16;
-     }
- 
--    @Override
-     public void func_70071_h_()
-     {
-         super.func_70071_h_();
- 
-         if (this.field_70532_c > 0)
+         if (this.onGround)
          {
--            this.field_70532_c--;
-+            --this.field_70532_c;
-         }
- 
-         this.field_70169_q = this.field_70165_t;
-@@ -90,25 +86,25 @@
- 
-         if (!this.func_189652_ae())
-         {
--            this.field_70181_x -= 0.03F;
-+            this.field_70181_x -= (double)0.03F;
-         }
- 
-         if (this.field_70170_p.func_180495_p(new BlockPos(this)).func_185904_a() == Material.field_151587_i)
-         {
--            this.field_70181_x = 0.2F;
-+            this.field_70181_x = (double)0.2F;
-             this.field_70159_w = (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F);
-             this.field_70179_y = (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F);
-             this.func_184185_a(SoundEvents.field_187658_bx, 0.4F, 2.0F + this.field_70146_Z.nextFloat() * 0.4F);
-         }
- 
--        this.func_145771_j(this.field_70165_t, (this.func_174813_aQ().field_72338_b + this.func_174813_aQ().field_72337_e) / 2.0, this.field_70161_v);
--        double d0 = 8.0;
-+        this.func_145771_j(this.field_70165_t, (this.func_174813_aQ().field_72338_b + this.func_174813_aQ().field_72337_e) / 2.0D, this.field_70161_v);
-+        double d0 = 8.0D;
- 
-         if (this.field_80002_g < this.field_70533_a - 20 + this.func_145782_y() % 100)
-         {
--            if (this.field_80001_f == null || this.field_80001_f.func_70068_e(this) > 64.0)
-+            if (this.field_80001_f == null || this.field_80001_f.func_70068_e(this) > 64.0D)
-             {
--                this.field_80001_f = this.field_70170_p.func_72890_a(this, 8.0);
-+                this.field_80001_f = this.field_70170_p.func_72890_a(this, 8.0D);
-             }
- 
-             this.field_80002_g = this.field_70533_a;
-@@ -121,18 +117,18 @@
- 
-         if (this.field_80001_f != null)
-         {
--            double d1 = (this.field_80001_f.field_70165_t - this.field_70165_t) / 8.0;
--            double d2 = (this.field_80001_f.field_70163_u + (double)this.field_80001_f.func_70047_e() / 2.0 - this.field_70163_u) / 8.0;
--            double d3 = (this.field_80001_f.field_70161_v - this.field_70161_v) / 8.0;
-+            double d1 = (this.field_80001_f.field_70165_t - this.field_70165_t) / 8.0D;
-+            double d2 = (this.field_80001_f.field_70163_u + (double)this.field_80001_f.func_70047_e() / 2.0D - this.field_70163_u) / 8.0D;
-+            double d3 = (this.field_80001_f.field_70161_v - this.field_70161_v) / 8.0D;
-             double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
--            double d5 = 1.0 - d4;
-+            double d5 = 1.0D - d4;
- 
--            if (d5 > 0.0)
-+            if (d5 > 0.0D)
-             {
-                 d5 *= d5;
--                this.field_70159_w += d1 / d4 * d5 * 0.1;
--                this.field_70181_x += d2 / d4 * d5 * 0.1;
--                this.field_70179_y += d3 / d4 * d5 * 0.1;
-+                this.field_70159_w += d1 / d4 * d5 * 0.1D;
-+                this.field_70181_x += d2 / d4 * d5 * 0.1D;
-+                this.field_70179_y += d3 / d4 * d5 * 0.1D;
-             }
-         }
- 
-@@ -141,30 +137,22 @@
- 
-         if (this.field_70122_E)
-         {
--            f = this.field_70170_p
--                .func_180495_p(
+-            f = this.world
+-                .getBlockState(
 -                    new BlockPos(
--                        MathHelper.func_76128_c(this.field_70165_t),
--                        MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) - 1,
--                        MathHelper.func_76128_c(this.field_70161_v)
+-                        MathHelper.floor(this.posX),
+-                        MathHelper.floor(this.getEntityBoundingBox().minY) - 1,
+-                        MathHelper.floor(this.posZ)
 -                    )
 -                )
--                .func_177230_c()
--                .field_149765_K
+-                .getBlock()
+-                .slipperiness
 -                * 0.98F;
-+            BlockPos underPos = new BlockPos(MathHelper.func_76128_c(this.field_70165_t), MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) - 1, MathHelper.func_76128_c(this.field_70161_v));
-+            net.minecraft.block.state.IBlockState underState = this.field_70170_p.func_180495_p(underPos);
-+            f = underState.func_177230_c().getSlipperiness(underState, this.field_70170_p, underPos, this) * 0.98F;
++            BlockPos underPos = new BlockPos(MathHelper.floor(this.posX), MathHelper.floor(this.getEntityBoundingBox().minY) - 1, MathHelper.floor(this.posZ));
++            net.minecraft.block.state.IBlockState underState = this.world.getBlockState(underPos);
++            f = underState.getBlock().getSlipperiness(underState, this.world, underPos, this) * 0.98F;
          }
  
-         this.field_70159_w *= (double)f;
--        this.field_70181_x *= 0.98F;
-+        this.field_70181_x *= (double)0.98F;
-         this.field_70179_y *= (double)f;
- 
-         if (this.field_70122_E)
-         {
--            this.field_70181_x *= -0.9F;
-+            this.field_70181_x *= (double) - 0.9F;
-         }
- 
--        this.field_70533_a++;
--        this.field_70531_b++;
-+        ++this.field_70533_a;
-+        ++this.field_70531_b;
- 
-         if (this.field_70531_b >= 6000)
-         {
-@@ -172,21 +160,19 @@
-         }
-     }
- 
--    @Override
-     public boolean func_70072_I()
+         this.motionX *= (double)f;
+@@ -187,6 +179,7 @@
+     @Override
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         return this.field_70170_p.func_72918_a(this.func_174813_aQ(), Material.field_151586_h, this);
-     }
- 
--    @Override
-     protected void func_70081_e(int p_70081_1_)
-     {
-         this.func_70097_a(DamageSource.field_76372_a, (float)p_70081_1_);
-     }
- 
--    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
-     {
-+        if (this.field_70170_p.field_72995_K || this.field_70128_L) return false; //Forge: Fixes MC-53850
-         if (this.func_180431_b(p_70097_1_))
++        if (this.world.isRemote || this.isDead) return false; //Forge: Fixes MC-53850
+         if (this.isEntityInvulnerable(source))
          {
              return false;
-@@ -205,7 +191,6 @@
-         }
-     }
- 
--    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
-     {
-         p_70014_1_.func_74777_a("Health", (short)this.field_70529_d);
-@@ -213,7 +198,6 @@
-         p_70014_1_.func_74777_a("Value", (short)this.field_70530_e);
-     }
- 
--    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
-     {
-         this.field_70529_d = p_70037_1_.func_74765_d("Health");
-@@ -221,21 +205,22 @@
-         this.field_70530_e = p_70037_1_.func_74765_d("Value");
-     }
- 
--    @Override
-     public void func_70100_b_(EntityPlayer p_70100_1_)
-     {
-         if (!this.field_70170_p.field_72995_K)
+@@ -228,13 +221,15 @@
          {
-             if (this.field_70532_c == 0 && p_70100_1_.field_71090_bL == 0)
+             if (this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0)
              {
-+                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerPickupXpEvent(p_70100_1_, this))) return;
-                 p_70100_1_.field_71090_bL = 2;
-                 p_70100_1_.func_71001_a(this, 1);
-                 ItemStack itemstack = EnchantmentHelper.func_92099_a(Enchantments.field_185296_A, p_70100_1_);
++                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerPickupXpEvent(entityIn, this))) return;
+                 entityIn.xpCooldown = 2;
+                 entityIn.onItemPickup(this, 1);
+                 ItemStack itemstack = EnchantmentHelper.getEnchantedItem(Enchantments.MENDING, entityIn);
  
-                 if (!itemstack.func_190926_b() && itemstack.func_77951_h())
+                 if (!itemstack.isEmpty() && itemstack.isItemDamaged())
                  {
--                    int i = Math.min(this.func_184514_c(this.field_70530_e), itemstack.func_77952_i());
--                    this.field_70530_e = this.field_70530_e - this.func_184515_b(i);
-+                    float ratio = itemstack.func_77973_b().getXpRepairRatio(itemstack);
-+                    int i = Math.min(roundAverage(this.field_70530_e * ratio), itemstack.func_77952_i());
-+                    this.field_70530_e -= roundAverage(i / ratio);
-                     itemstack.func_77964_b(itemstack.func_77952_i() - i);
+-                    int i = Math.min(this.xpToDurability(this.xpValue), itemstack.getItemDamage());
++                    float ratio = itemstack.getItem().getXpRepairRatio(itemstack);
++                    int i = Math.min(roundAverage(this.xpValue * ratio), itemstack.getItemDamage());
+                     this.xpValue = this.xpValue - this.durabilityToXp(i);
+                     itemstack.setItemDamage(itemstack.getItemDamage() - i);
                  }
- 
-@@ -353,9 +338,14 @@
-         }
-     }
- 
--    @Override
-     public boolean func_70075_an()
+@@ -357,5 +352,11 @@
+     public boolean canBeAttackedWithItem()
      {
          return false;
 +    }

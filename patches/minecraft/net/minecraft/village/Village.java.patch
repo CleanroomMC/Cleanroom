@@ -7,109 +7,109 @@
 -public class Village
 +public class Village implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
  {
-     private World field_75586_a;
--    private final List<VillageDoorInfo> field_75584_b = Lists.newArrayList();
-+    private final List<VillageDoorInfo> field_75584_b = Lists.<VillageDoorInfo>newArrayList();
-     private BlockPos field_75585_c = BlockPos.field_177992_a;
-     private BlockPos field_75582_d = BlockPos.field_177992_a;
-     private int field_75583_e;
+     private World world;
+-    private final List<VillageDoorInfo> villageDoorInfoList = Lists.newArrayList();
++    private final List<VillageDoorInfo> villageDoorInfoList = Lists.<VillageDoorInfo>newArrayList();
+     private BlockPos centerHelper = BlockPos.ORIGIN;
+     private BlockPos center = BlockPos.ORIGIN;
+     private int villageRadius;
 @@ -37,17 +37,19 @@
-     private int field_75581_g;
-     private int field_75588_h;
-     private int field_82694_i;
--    private final Map<String, Integer> field_82693_j = Maps.newHashMap();
--    private final List<Village.VillageAggressor> field_75589_i = Lists.newArrayList();
-+    private final Map<UUID, Integer> field_82693_j = Maps.<UUID, Integer>newHashMap();
-+    private final List<Village.VillageAggressor> field_75589_i = Lists.<Village.VillageAggressor>newArrayList();
-     private int field_75587_j;
+     private int tickCounter;
+     private int numVillagers;
+     private int noBreedTicks;
+-    private final Map<String, Integer> playerReputation = Maps.newHashMap();
+-    private final List<Village.VillageAggressor> villageAgressors = Lists.newArrayList();
++    private final Map<UUID, Integer> playerReputation = Maps.<UUID, Integer>newHashMap();
++    private final List<Village.VillageAggressor> villageAgressors = Lists.<Village.VillageAggressor>newArrayList();
+     private int numIronGolems;
  
      public Village()
      {
 +        this.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
      }
  
-     public Village(World p_i1675_1_)
+     public Village(World worldIn)
      {
-         this.field_75586_a = p_i1675_1_;
+         this.world = worldIn;
 +        this.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
      }
  
-     public void func_82691_a(World p_82691_1_)
+     public void setWorld(World worldIn)
 @@ -82,18 +84,16 @@
-                 EntityIronGolem entityirongolem = new EntityIronGolem(this.field_75586_a);
-                 entityirongolem.func_70107_b(vec3d.field_72450_a, vec3d.field_72448_b, vec3d.field_72449_c);
-                 this.field_75586_a.func_72838_d(entityirongolem);
--                this.field_75587_j++;
-+                ++this.field_75587_j;
+                 EntityIronGolem entityirongolem = new EntityIronGolem(this.world);
+                 entityirongolem.setPosition(vec3d.x, vec3d.y, vec3d.z);
+                 this.world.spawnEntity(entityirongolem);
+-                this.numIronGolems++;
++                ++this.numIronGolems;
              }
          }
      }
  
-     private Vec3d func_179862_a(BlockPos p_179862_1_, int p_179862_2_, int p_179862_3_, int p_179862_4_)
+     private Vec3d findRandomSpawnPos(BlockPos pos, int x, int y, int z)
      {
 -        for (int i = 0; i < 10; i++)
 +        for (int i = 0; i < 10; ++i)
          {
--            BlockPos blockpos = p_179862_1_.func_177982_a(
--                                    this.field_75586_a.field_73012_v.nextInt(16) - 8, this.field_75586_a.field_73012_v.nextInt(6) - 3, this.field_75586_a.field_73012_v.nextInt(16) - 8
+-            BlockPos blockpos = pos.add(
+-                                    this.world.rand.nextInt(16) - 8, this.world.rand.nextInt(6) - 3, this.world.rand.nextInt(16) - 8
 -                                );
-+            BlockPos blockpos = p_179862_1_.func_177982_a(this.field_75586_a.field_73012_v.nextInt(16) - 8, this.field_75586_a.field_73012_v.nextInt(6) - 3, this.field_75586_a.field_73012_v.nextInt(16) - 8);
++            BlockPos blockpos = pos.add(this.world.rand.nextInt(16) - 8, this.world.rand.nextInt(6) - 3, this.world.rand.nextInt(16) - 8);
  
-             if (this.func_179866_a(blockpos) && this.func_179861_a(new BlockPos(p_179862_2_, p_179862_3_, p_179862_4_), blockpos))
+             if (this.isBlockPosWithinSqVillageRadius(blockpos) && this.isAreaClearAround(new BlockPos(x, y, z), blockpos))
              {
 @@ -115,11 +115,11 @@
-             int i = p_179861_2_.func_177958_n() - p_179861_1_.func_177958_n() / 2;
-             int j = p_179861_2_.func_177952_p() - p_179861_1_.func_177952_p() / 2;
+             int i = blockLocation.getX() - blockSize.getX() / 2;
+             int j = blockLocation.getZ() - blockSize.getZ() / 2;
  
--            for (int k = i; k < i + p_179861_1_.func_177958_n(); k++)
-+            for (int k = i; k < i + p_179861_1_.func_177958_n(); ++k)
+-            for (int k = i; k < i + blockSize.getX(); k++)
++            for (int k = i; k < i + blockSize.getX(); ++k)
              {
--                for (int l = p_179861_2_.func_177956_o(); l < p_179861_2_.func_177956_o() + p_179861_1_.func_177956_o(); l++)
-+                for (int l = p_179861_2_.func_177956_o(); l < p_179861_2_.func_177956_o() + p_179861_1_.func_177956_o(); ++l)
+-                for (int l = blockLocation.getY(); l < blockLocation.getY() + blockSize.getY(); l++)
++                for (int l = blockLocation.getY(); l < blockLocation.getY() + blockSize.getY(); ++l)
                  {
--                    for (int i1 = j; i1 < j + p_179861_1_.func_177952_p(); i1++)
-+                    for (int i1 = j; i1 < j + p_179861_1_.func_177952_p(); ++i1)
+-                    for (int i1 = j; i1 < j + blockSize.getZ(); i1++)
++                    for (int i1 = j; i1 < j + blockSize.getZ(); ++i1)
                      {
-                         if (this.field_75586_a.func_180495_p(new BlockPos(k, l, i1)).func_185915_l())
+                         if (this.world.getBlockState(new BlockPos(k, l, i1)).isNormalCube())
                          {
 @@ -135,35 +135,13 @@
  
-     private void func_75579_h()
+     private void updateNumIronGolems()
      {
--        List<EntityIronGolem> list = this.field_75586_a
--                                     .func_72872_a(
+-        List<EntityIronGolem> list = this.world
+-                                     .getEntitiesWithinAABB(
 -                                         EntityIronGolem.class,
 -                                         new AxisAlignedBB(
--                                             (double)(this.field_75582_d.func_177958_n() - this.field_75583_e),
--                                             (double)(this.field_75582_d.func_177956_o() - 4),
--                                             (double)(this.field_75582_d.func_177952_p() - this.field_75583_e),
--                                             (double)(this.field_75582_d.func_177958_n() + this.field_75583_e),
--                                             (double)(this.field_75582_d.func_177956_o() + 4),
--                                             (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)
+-                                             (double)(this.center.getX() - this.villageRadius),
+-                                             (double)(this.center.getY() - 4),
+-                                             (double)(this.center.getZ() - this.villageRadius),
+-                                             (double)(this.center.getX() + this.villageRadius),
+-                                             (double)(this.center.getY() + 4),
+-                                             (double)(this.center.getZ() + this.villageRadius)
 -                                         )
 -                                     );
-+        List<EntityIronGolem> list = this.field_75586_a.<EntityIronGolem>func_72872_a(EntityIronGolem.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
-         this.field_75587_j = list.size();
++        List<EntityIronGolem> list = this.world.<EntityIronGolem>getEntitiesWithinAABB(EntityIronGolem.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
+         this.numIronGolems = list.size();
      }
  
-     private void func_75572_i()
+     private void updateNumVillagers()
      {
--        List<EntityVillager> list = this.field_75586_a
--                                    .func_72872_a(
+-        List<EntityVillager> list = this.world
+-                                    .getEntitiesWithinAABB(
 -                                        EntityVillager.class,
 -                                        new AxisAlignedBB(
--                                            (double)(this.field_75582_d.func_177958_n() - this.field_75583_e),
--                                            (double)(this.field_75582_d.func_177956_o() - 4),
--                                            (double)(this.field_75582_d.func_177952_p() - this.field_75583_e),
--                                            (double)(this.field_75582_d.func_177958_n() + this.field_75583_e),
--                                            (double)(this.field_75582_d.func_177956_o() + 4),
--                                            (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)
+-                                            (double)(this.center.getX() - this.villageRadius),
+-                                            (double)(this.center.getY() - 4),
+-                                            (double)(this.center.getZ() - this.villageRadius),
+-                                            (double)(this.center.getX() + this.villageRadius),
+-                                            (double)(this.center.getY() + 4),
+-                                            (double)(this.center.getZ() + this.villageRadius)
 -                                        )
 -                                    );
-+        List<EntityVillager> list = this.field_75586_a.<EntityVillager>func_72872_a(EntityVillager.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
-         this.field_75588_h = list.size();
++        List<EntityVillager> list = this.world.<EntityVillager>getEntitiesWithinAABB(EntityVillager.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
+         this.numVillagers = list.size();
  
-         if (this.field_75588_h == 0)
+         if (this.numVillagers == 0)
 @@ -237,7 +215,7 @@
  
              if (j > 256)
@@ -120,37 +120,37 @@
              else
              {
 @@ -249,22 +227,7 @@
-                 BlockPos blockpos = villagedoorinfo1.func_179852_d();
-                 EnumFacing enumfacing = villagedoorinfo1.func_188567_j();
+                 BlockPos blockpos = villagedoorinfo1.getDoorBlockPos();
+                 EnumFacing enumfacing = villagedoorinfo1.getInsideDirection();
  
--                if (this.field_75586_a
--                        .func_180495_p(blockpos.func_177967_a(enumfacing, 1))
--                        .func_177230_c()
--                        .func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, 1))
--                        && this.field_75586_a
--                        .func_180495_p(blockpos.func_177967_a(enumfacing, -1))
--                        .func_177230_c()
--                        .func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, -1))
--                        && this.field_75586_a
--                        .func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, 1))
--                        .func_177230_c()
--                        .func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, 1))
--                        && this.field_75586_a
--                        .func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, -1))
--                        .func_177230_c()
--                        .func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, -1)))
-+                if (this.field_75586_a.func_180495_p(blockpos.func_177967_a(enumfacing, 1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, 1)) && this.field_75586_a.func_180495_p(blockpos.func_177967_a(enumfacing, -1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, -1)) && this.field_75586_a.func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, 1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, 1)) && this.field_75586_a.func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, -1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, -1)))
+-                if (this.world
+-                        .getBlockState(blockpos.offset(enumfacing, 1))
+-                        .getBlock()
+-                        .isPassable(this.world, blockpos.offset(enumfacing, 1))
+-                        && this.world
+-                        .getBlockState(blockpos.offset(enumfacing, -1))
+-                        .getBlock()
+-                        .isPassable(this.world, blockpos.offset(enumfacing, -1))
+-                        && this.world
+-                        .getBlockState(blockpos.up().offset(enumfacing, 1))
+-                        .getBlock()
+-                        .isPassable(this.world, blockpos.up().offset(enumfacing, 1))
+-                        && this.world
+-                        .getBlockState(blockpos.up().offset(enumfacing, -1))
+-                        .getBlock()
+-                        .isPassable(this.world, blockpos.up().offset(enumfacing, -1)))
++                if (this.world.getBlockState(blockpos.offset(enumfacing, 1)).getBlock().isPassable(this.world, blockpos.offset(enumfacing, 1)) && this.world.getBlockState(blockpos.offset(enumfacing, -1)).getBlock().isPassable(this.world, blockpos.offset(enumfacing, -1)) && this.world.getBlockState(blockpos.up().offset(enumfacing, 1)).getBlock().isPassable(this.world, blockpos.up().offset(enumfacing, 1)) && this.world.getBlockState(blockpos.up().offset(enumfacing, -1)).getBlock().isPassable(this.world, blockpos.up().offset(enumfacing, -1)))
                  {
                      villagedoorinfo = villagedoorinfo1;
                      i = j;
 @@ -286,9 +249,7 @@
          {
-             for (VillageDoorInfo villagedoorinfo : this.field_75584_b)
+             for (VillageDoorInfo villagedoorinfo : this.villageDoorInfoList)
              {
--                if (villagedoorinfo.func_179852_d().func_177958_n() == p_179864_1_.func_177958_n()
--                        && villagedoorinfo.func_179852_d().func_177952_p() == p_179864_1_.func_177952_p()
--                        && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_179864_1_.func_177956_o()) <= 1)
-+                if (villagedoorinfo.func_179852_d().func_177958_n() == p_179864_1_.func_177958_n() && villagedoorinfo.func_179852_d().func_177952_p() == p_179864_1_.func_177952_p() && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_179864_1_.func_177956_o()) <= 1)
+-                if (villagedoorinfo.getDoorBlockPos().getX() == doorBlock.getX()
+-                        && villagedoorinfo.getDoorBlockPos().getZ() == doorBlock.getZ()
+-                        && Math.abs(villagedoorinfo.getDoorBlockPos().getY() - doorBlock.getY()) <= 1)
++                if (villagedoorinfo.getDoorBlockPos().getX() == doorBlock.getX() && villagedoorinfo.getDoorBlockPos().getZ() == doorBlock.getZ() && Math.abs(villagedoorinfo.getDoorBlockPos().getY() - doorBlock.getY()) <= 1)
                  {
                      return villagedoorinfo;
                  }
@@ -158,11 +158,11 @@
          double d0 = Double.MAX_VALUE;
          Village.VillageAggressor village$villageaggressor = null;
  
--        for (int i = 0; i < this.field_75589_i.size(); i++)
-+        for (int i = 0; i < this.field_75589_i.size(); ++i)
+-        for (int i = 0; i < this.villageAgressors.size(); i++)
++        for (int i = 0; i < this.villageAgressors.size(); ++i)
          {
-             Village.VillageAggressor village$villageaggressor1 = this.field_75589_i.get(i);
-             double d1 = village$villageaggressor1.field_75592_a.func_70068_e(p_75571_1_);
+             Village.VillageAggressor village$villageaggressor1 = this.villageAgressors.get(i);
+             double d1 = village$villageaggressor1.agressor.getDistanceSq(entitylivingbaseIn);
  
 -            if (!(d1 > d0))
 +            if (d1 <= d0)
@@ -173,18 +173,17 @@
          double d0 = Double.MAX_VALUE;
          EntityPlayer entityplayer = null;
  
--        for (String s : this.field_82693_j.keySet())
-+        for (UUID s : this.field_82693_j.keySet())
+-        for (String s : this.playerReputation.keySet())
++        for (UUID s : this.playerReputation.keySet())
          {
--            if (this.func_82687_d(s))
-+            if (this.isPlayerReputationTooLow(s))
+             if (this.isPlayerReputationTooLow(s))
              {
--                EntityPlayer entityplayer1 = this.field_75586_a.func_72924_a(s);
-+                EntityPlayer entityplayer1 = this.field_75586_a.func_152378_a(s);
+-                EntityPlayer entityplayer1 = this.world.getPlayerEntityByName(s);
++                EntityPlayer entityplayer1 = this.world.getPlayerEntityByUUID(s);
  
                  if (entityplayer1 != null)
                  {
-                     double d1 = entityplayer1.func_70068_e(p_82685_1_);
+                     double d1 = entityplayer1.getDistanceSq(villageDefender);
  
 -                    if (!(d1 > d0))
 +                    if (d1 <= d0)
@@ -192,22 +191,22 @@
                          entityplayer = entityplayer1;
                          d0 = d1;
 @@ -403,6 +364,7 @@
-                 villagedoorinfo.func_75466_d();
+                 villagedoorinfo.resetDoorOpeningRestrictionCounter();
              }
  
-+            if (field_75586_a.func_175667_e(villagedoorinfo.func_179852_d())) // Forge: check that the door block is loaded to avoid loading chunks
-             if (!this.func_179860_f(villagedoorinfo.func_179852_d()) || Math.abs(this.field_75581_g - villagedoorinfo.func_75473_b()) > 1200)
++            if (world.isBlockLoaded(villagedoorinfo.getDoorBlockPos())) // Forge: check that the door block is loaded to avoid loading chunks
+             if (!this.isWoodDoor(villagedoorinfo.getDoorBlockPos()) || Math.abs(this.tickCounter - villagedoorinfo.getLastActivityTimestamp()) > 1200)
              {
-                 this.field_75585_c = this.field_75585_c.func_177973_b(villagedoorinfo.func_179852_d());
+                 this.centerHelper = this.centerHelper.subtract(villagedoorinfo.getDoorBlockPos());
 @@ -422,7 +384,15 @@
      {
-         IBlockState iblockstate = this.field_75586_a.func_180495_p(p_179860_1_);
-         Block block = iblockstate.func_177230_c();
--        return block instanceof BlockDoor ? iblockstate.func_185904_a() == Material.field_151575_d : false;
+         IBlockState iblockstate = this.world.getBlockState(pos);
+         Block block = iblockstate.getBlock();
+-        return block instanceof BlockDoor ? iblockstate.getMaterial() == Material.WOOD : false;
 +
 +        if (block instanceof BlockDoor)
 +        {
-+            return iblockstate.func_185904_a() == Material.field_151575_d;
++            return iblockstate.getMaterial() == Material.WOOD;
 +        }
 +        else
 +        {
@@ -215,31 +214,31 @@
 +        }
      }
  
-     private void func_75573_l()
+     private void updateVillageRadiusAndCenter()
 @@ -436,9 +406,7 @@
          }
          else
          {
--            this.field_75582_d = new BlockPos(
--                this.field_75585_c.func_177958_n() / i, this.field_75585_c.func_177956_o() / i, this.field_75585_c.func_177952_p() / i
+-            this.center = new BlockPos(
+-                this.centerHelper.getX() / i, this.centerHelper.getY() / i, this.centerHelper.getZ() / i
 -            );
-+            this.field_75582_d = new BlockPos(this.field_75585_c.func_177958_n() / i, this.field_75585_c.func_177956_o() / i, this.field_75585_c.func_177952_p() / i);
++            this.center = new BlockPos(this.centerHelper.getX() / i, this.centerHelper.getY() / i, this.centerHelper.getZ() / i);
              int j = 0;
  
-             for (VillageDoorInfo villagedoorinfo : this.field_75584_b)
+             for (VillageDoorInfo villagedoorinfo : this.villageDoorInfoList)
 @@ -450,23 +418,49 @@
          }
      }
  
 +    @Deprecated //Hasn't worked since 1.9, use UUID version below.
-     public int func_82684_a(String p_82684_1_)
+     public int getPlayerReputation(String playerName)
      {
-+        return this.getPlayerReputation(findUUID(p_82684_1_));
++        return this.getPlayerReputation(findUUID(playerName));
 +    }
 +
-+    public int getPlayerReputation(UUID p_82684_1_)
++    public int getPlayerReputation(UUID playerName)
 +    {
-         Integer integer = this.field_82693_j.get(p_82684_1_);
+         Integer integer = this.playerReputation.get(playerName);
 -        return integer == null ? 0 : integer;
 -    }
 -
@@ -248,33 +247,32 @@
 +
 +    private UUID findUUID(String name)
 +    {
-+        if (this.field_75586_a == null || this.field_75586_a.func_73046_m() == null)
-+            return EntityPlayer.func_175147_b(name);
-+        GameProfile profile = this.field_75586_a.func_73046_m().func_152358_ax().func_152655_a(name);
-+        return profile == null ? EntityPlayer.func_175147_b(name) : profile.getId();
++        if (this.world == null || this.world.getMinecraftServer() == null)
++            return EntityPlayer.getOfflineUUID(name);
++        GameProfile profile = this.world.getMinecraftServer().getPlayerProfileCache().getGameProfileForUsername(name);
++        return profile == null ? EntityPlayer.getOfflineUUID(name) : profile.getId();
 +    }
 +
 +    @Deprecated //Hasn't worked since 1.9, use UUID version below.
-     public int func_82688_a(String p_82688_1_, int p_82688_2_)
+     public int modifyPlayerReputation(String playerName, int reputation)
      {
--        int i = this.func_82684_a(p_82688_1_);
-+        return this.modifyPlayerReputation(findUUID(p_82688_1_), p_82688_2_);
++        return this.modifyPlayerReputation(findUUID(playerName), reputation);
 +    }
 +
-+    public int modifyPlayerReputation(UUID p_82688_1_, int p_82688_2_)
++    public int modifyPlayerReputation(UUID playerName, int reputation)
 +    {
-+        int i = this.getPlayerReputation(p_82688_1_);
-         int j = MathHelper.func_76125_a(i + p_82688_2_, -30, 10);
--        this.field_82693_j.put(p_82688_1_, j);
-+        this.field_82693_j.put(p_82688_1_, Integer.valueOf(j));
+         int i = this.getPlayerReputation(playerName);
+         int j = MathHelper.clamp(i + reputation, -30, 10);
+-        this.playerReputation.put(playerName, j);
++        this.playerReputation.put(playerName, Integer.valueOf(j));
          return j;
      }
  
 +    @Deprecated //Hasn't worked since 1.9, use UUID version below.
-     public boolean func_82687_d(String p_82687_1_)
+     public boolean isPlayerReputationTooLow(String playerName)
      {
--        return this.func_82684_a(p_82687_1_) <= -15;
-+        return this.isPlayerReputationTooLow(findUUID(p_82687_1_));
+-        return this.getPlayerReputation(playerName) <= -15;
++        return this.isPlayerReputationTooLow(findUUID(playerName));
 +    }
 +
 +    public boolean isPlayerReputationTooLow(UUID uuid)
@@ -282,76 +280,76 @@
 +        return this.getPlayerReputation(uuid) <= -15;
      }
  
-     public void func_82690_a(NBTTagCompound p_82690_1_)
+     public void readVillageDataFromNBT(NBTTagCompound compound)
 @@ -481,39 +475,30 @@
-         this.field_75585_c = new BlockPos(p_82690_1_.func_74762_e("ACX"), p_82690_1_.func_74762_e("ACY"), p_82690_1_.func_74762_e("ACZ"));
-         NBTTagList nbttaglist = p_82690_1_.func_150295_c("Doors", 10);
+         this.centerHelper = new BlockPos(compound.getInteger("ACX"), compound.getInteger("ACY"), compound.getInteger("ACZ"));
+         NBTTagList nbttaglist = compound.getTagList("Doors", 10);
  
--        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
-+        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+-        for (int i = 0; i < nbttaglist.tagCount(); i++)
++        for (int i = 0; i < nbttaglist.tagCount(); ++i)
          {
-             NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
 -            VillageDoorInfo villagedoorinfo = new VillageDoorInfo(
--                new BlockPos(nbttagcompound.func_74762_e("X"), nbttagcompound.func_74762_e("Y"), nbttagcompound.func_74762_e("Z")),
--                nbttagcompound.func_74762_e("IDX"),
--                nbttagcompound.func_74762_e("IDZ"),
--                nbttagcompound.func_74762_e("TS")
+-                new BlockPos(nbttagcompound.getInteger("X"), nbttagcompound.getInteger("Y"), nbttagcompound.getInteger("Z")),
+-                nbttagcompound.getInteger("IDX"),
+-                nbttagcompound.getInteger("IDZ"),
+-                nbttagcompound.getInteger("TS")
 -            );
-+            VillageDoorInfo villagedoorinfo = new VillageDoorInfo(new BlockPos(nbttagcompound.func_74762_e("X"), nbttagcompound.func_74762_e("Y"), nbttagcompound.func_74762_e("Z")), nbttagcompound.func_74762_e("IDX"), nbttagcompound.func_74762_e("IDZ"), nbttagcompound.func_74762_e("TS"));
-             this.field_75584_b.add(villagedoorinfo);
++            VillageDoorInfo villagedoorinfo = new VillageDoorInfo(new BlockPos(nbttagcompound.getInteger("X"), nbttagcompound.getInteger("Y"), nbttagcompound.getInteger("Z")), nbttagcompound.getInteger("IDX"), nbttagcompound.getInteger("IDZ"), nbttagcompound.getInteger("TS"));
+             this.villageDoorInfoList.add(villagedoorinfo);
          }
  
-         NBTTagList nbttaglist1 = p_82690_1_.func_150295_c("Players", 10);
+         NBTTagList nbttaglist1 = compound.getTagList("Players", 10);
  
--        for (int j = 0; j < nbttaglist1.func_74745_c(); j++)
-+        for (int j = 0; j < nbttaglist1.func_74745_c(); ++j)
+-        for (int j = 0; j < nbttaglist1.tagCount(); j++)
++        for (int j = 0; j < nbttaglist1.tagCount(); ++j)
          {
-             NBTTagCompound nbttagcompound1 = nbttaglist1.func_150305_b(j);
+             NBTTagCompound nbttagcompound1 = nbttaglist1.getCompoundTagAt(j);
  
--            if (nbttagcompound1.func_74764_b("UUID") && this.field_75586_a != null && this.field_75586_a.func_73046_m() != null)
-+            if (nbttagcompound1.func_74764_b("UUID"))
+-            if (nbttagcompound1.hasKey("UUID") && this.world != null && this.world.getMinecraftServer() != null)
++            if (nbttagcompound1.hasKey("UUID"))
              {
--                PlayerProfileCache playerprofilecache = this.field_75586_a.func_73046_m().func_152358_ax();
--                GameProfile gameprofile = playerprofilecache.func_152652_a(UUID.fromString(nbttagcompound1.func_74779_i("UUID")));
+-                PlayerProfileCache playerprofilecache = this.world.getMinecraftServer().getPlayerProfileCache();
+-                GameProfile gameprofile = playerprofilecache.getProfileByUUID(UUID.fromString(nbttagcompound1.getString("UUID")));
 -
 -                if (gameprofile != null)
 -                {
--                    this.field_82693_j.put(gameprofile.getName(), nbttagcompound1.func_74762_e("S"));
+-                    this.playerReputation.put(gameprofile.getName(), nbttagcompound1.getInteger("S"));
 -                }
-+                this.field_82693_j.put(UUID.fromString(nbttagcompound1.func_74779_i("UUID")), Integer.valueOf(nbttagcompound1.func_74762_e("S")));
++                this.playerReputation.put(UUID.fromString(nbttagcompound1.getString("UUID")), Integer.valueOf(nbttagcompound1.getInteger("S")));
              }
              else
              {
--                this.field_82693_j.put(nbttagcompound1.func_74779_i("Name"), nbttagcompound1.func_74762_e("S"));
+-                this.playerReputation.put(nbttagcompound1.getString("Name"), nbttagcompound1.getInteger("S"));
 +                //World is never set here, so this will always be offline UUIDs, sadly there is no way to convert this.
-+                this.field_82693_j.put(findUUID(nbttagcompound1.func_74779_i("Name")), Integer.valueOf(nbttagcompound1.func_74762_e("S")));
++                this.playerReputation.put(findUUID(nbttagcompound1.getString("Name")), Integer.valueOf(nbttagcompound1.getInteger("S")));
              }
          }
-+        if (this.capabilities != null && p_82690_1_.func_74764_b("ForgeCaps")) this.capabilities.deserializeNBT(p_82690_1_.func_74775_l("ForgeCaps"));
++        if (this.capabilities != null && compound.hasKey("ForgeCaps")) this.capabilities.deserializeNBT(compound.getCompoundTag("ForgeCaps"));
      }
  
-     public void func_82689_b(NBTTagCompound p_82689_1_)
+     public void writeVillageDataToNBT(NBTTagCompound compound)
 @@ -547,28 +532,26 @@
-         p_82689_1_.func_74782_a("Doors", nbttaglist);
+         compound.setTag("Doors", nbttaglist);
          NBTTagList nbttaglist1 = new NBTTagList();
  
--        for (String s : this.field_82693_j.keySet())
-+        for (UUID s : this.field_82693_j.keySet())
+-        for (String s : this.playerReputation.keySet())
++        for (UUID s : this.playerReputation.keySet())
          {
              NBTTagCompound nbttagcompound1 = new NBTTagCompound();
--            PlayerProfileCache playerprofilecache = this.field_75586_a.func_73046_m().func_152358_ax();
+-            PlayerProfileCache playerprofilecache = this.world.getMinecraftServer().getPlayerProfileCache();
  
              try
              {
--                GameProfile gameprofile = playerprofilecache.func_152655_a(s);
+-                GameProfile gameprofile = playerprofilecache.getGameProfileForUsername(s);
 -
 -                if (gameprofile != null)
                  {
--                    nbttagcompound1.func_74778_a("UUID", gameprofile.getId().toString());
--                    nbttagcompound1.func_74768_a("S", this.field_82693_j.get(s));
-+                    nbttagcompound1.func_74778_a("UUID", s.toString());
-+                    nbttagcompound1.func_74768_a("S", ((Integer)this.field_82693_j.get(s)).intValue());
-                     nbttaglist1.func_74742_a(nbttagcompound1);
+-                    nbttagcompound1.setString("UUID", gameprofile.getId().toString());
+-                    nbttagcompound1.setInteger("S", this.playerReputation.get(s));
++                    nbttagcompound1.setString("UUID", s.toString());
++                    nbttagcompound1.setInteger("S", ((Integer)this.playerReputation.get(s)).intValue());
+                     nbttaglist1.appendTag(nbttagcompound1);
                  }
              }
 -            catch (RuntimeException runtimeexception)
@@ -361,25 +359,22 @@
              }
          }
  
-         p_82689_1_.func_74782_a("Players", nbttaglist1);
-+        if (this.capabilities != null) p_82689_1_.func_74782_a("ForgeCaps", this.capabilities.serializeNBT());
+         compound.setTag("Players", nbttaglist1);
++        if (this.capabilities != null) compound.setTag("ForgeCaps", this.capabilities.serializeNBT());
      }
  
-     public void func_82692_h()
-@@ -583,9 +566,9 @@
+     public void endMatingSeason()
+@@ -583,7 +566,7 @@
  
-     public void func_82683_b(int p_82683_1_)
+     public void setDefaultPlayerReputation(int defaultReputation)
      {
--        for (String s : this.field_82693_j.keySet())
-+        for (UUID s : this.field_82693_j.keySet())
+-        for (String s : this.playerReputation.keySet())
++        for (UUID s : this.playerReputation.keySet())
          {
--            this.func_82688_a(s, p_82683_1_);
-+            this.modifyPlayerReputation(s, p_82683_1_);
+             this.modifyPlayerReputation(s, defaultReputation);
          }
-     }
- 
 @@ -600,4 +583,31 @@
-             this.field_75590_b = p_i1674_3_;
+             this.agressionTime = agressionTimeIn;
          }
      }
 +
@@ -398,13 +393,13 @@
 +
 +    public void deserializeNBT(NBTTagCompound nbt)
 +    {
-+        this.func_82690_a(nbt);;
++        this.readVillageDataFromNBT(nbt);;
 +    }
 +
 +    public NBTTagCompound serializeNBT()
 +    {
 +        NBTTagCompound ret = new NBTTagCompound();
-+        this.func_82689_b(ret);
++        this.writeVillageDataToNBT(ret);
 +        return ret;
 +    }
 +

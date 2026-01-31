@@ -3,100 +3,100 @@
 @@ -22,16 +22,8 @@
  public class ContainerRepair extends Container
  {
-     private static final Logger field_148326_f = LogManager.getLogger();
--    private final IInventory field_82852_f = new InventoryCraftResult();
--    private final IInventory field_82853_g = new InventoryBasic("Repair", true, 2)
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private final IInventory outputSlot = new InventoryCraftResult();
+-    private final IInventory inputSlots = new InventoryBasic("Repair", true, 2)
 -    {
 -        @Override
--        public void func_70296_d()
+-        public void markDirty()
 -        {
--            super.func_70296_d();
--            ContainerRepair.this.func_75130_a(this);
+-            super.markDirty();
+-            ContainerRepair.this.onCraftMatrixChanged(this);
 -        }
 -    };
-+    private final IInventory field_82852_f;
-+    private final IInventory field_82853_g;
-     private final World field_82860_h;
-     private final BlockPos field_178156_j;
-     public int field_82854_e;
++    private final IInventory outputSlot;
++    private final IInventory inputSlots;
+     private final World world;
+     private final BlockPos pos;
+     public int maximumCost;
 @@ -47,27 +39,30 @@
  
-     public ContainerRepair(InventoryPlayer p_i45807_1_, final World p_i45807_2_, final BlockPos p_i45807_3_, EntityPlayer p_i45807_4_)
+     public ContainerRepair(InventoryPlayer playerInventory, final World worldIn, final BlockPos blockPosIn, EntityPlayer player)
      {
-+        this.field_82852_f = new InventoryCraftResult();
-+        this.field_82853_g = new InventoryBasic("Repair", true, 2)
++        this.outputSlot = new InventoryCraftResult();
++        this.inputSlots = new InventoryBasic("Repair", true, 2)
 +        {
-+            public void func_70296_d()
++            public void markDirty()
 +            {
-+                super.func_70296_d();
-+                ContainerRepair.this.func_75130_a(this);
++                super.markDirty();
++                ContainerRepair.this.onCraftMatrixChanged(this);
 +            }
 +        };
-         this.field_178156_j = p_i45807_3_;
-         this.field_82860_h = p_i45807_2_;
-         this.field_82855_n = p_i45807_4_;
-         this.func_75146_a(new Slot(this.field_82853_g, 0, 27, 47));
-         this.func_75146_a(new Slot(this.field_82853_g, 1, 76, 47));
--        this.func_75146_a(
--            new Slot(this.field_82852_f, 2, 134, 47)
-+        this.func_75146_a(new Slot(this.field_82852_f, 2, 134, 47)
+         this.pos = blockPosIn;
+         this.world = worldIn;
+         this.player = player;
+         this.addSlotToContainer(new Slot(this.inputSlots, 0, 27, 47));
+         this.addSlotToContainer(new Slot(this.inputSlots, 1, 76, 47));
+-        this.addSlotToContainer(
+-            new Slot(this.outputSlot, 2, 134, 47)
++        this.addSlotToContainer(new Slot(this.outputSlot, 2, 134, 47)
          {
 -            @Override
-             public boolean func_75214_a(ItemStack p_75214_1_)
+             public boolean isItemValid(ItemStack stack)
              {
                  return false;
              }
 -            @Override
-             public boolean func_82869_a(EntityPlayer p_82869_1_)
+             public boolean canTakeStack(EntityPlayer playerIn)
              {
--                return (p_82869_1_.field_71075_bZ.field_75098_d || p_82869_1_.field_71068_ca >= ContainerRepair.this.field_82854_e)
--                       && ContainerRepair.this.field_82854_e > 0
--                       && this.func_75216_d();
-+                return (p_82869_1_.field_71075_bZ.field_75098_d || p_82869_1_.field_71068_ca >= ContainerRepair.this.field_82854_e) && ContainerRepair.this.field_82854_e > 0 && this.func_75216_d();
+-                return (playerIn.capabilities.isCreativeMode || playerIn.experienceLevel >= ContainerRepair.this.maximumCost)
+-                       && ContainerRepair.this.maximumCost > 0
+-                       && this.getHasStack();
++                return (playerIn.capabilities.isCreativeMode || playerIn.experienceLevel >= ContainerRepair.this.maximumCost) && ContainerRepair.this.maximumCost > 0 && this.getHasStack();
              }
 -            @Override
-             public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
+             public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
              {
-                 if (!p_190901_1_.field_71075_bZ.field_75098_d)
+                 if (!thePlayer.capabilities.isCreativeMode)
 @@ -75,6 +70,8 @@
-                     p_190901_1_.func_82242_a(-ContainerRepair.this.field_82854_e);
+                     thePlayer.addExperienceLevel(-ContainerRepair.this.maximumCost);
                  }
  
-+                float breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(p_190901_1_, p_190901_2_, ContainerRepair.this.field_82853_g.func_70301_a(0), ContainerRepair.this.field_82853_g.func_70301_a(1));
++                float breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(thePlayer, stack, ContainerRepair.this.inputSlots.getStackInSlot(0), ContainerRepair.this.inputSlots.getStackInSlot(1));
 +
-                 ContainerRepair.this.field_82853_g.func_70299_a(0, ItemStack.field_190927_a);
+                 ContainerRepair.this.inputSlots.setInventorySlotContents(0, ItemStack.EMPTY);
  
-                 if (ContainerRepair.this.field_82856_l > 0)
+                 if (ContainerRepair.this.materialCost > 0)
 @@ -99,21 +96,19 @@
-                 ContainerRepair.this.field_82854_e = 0;
-                 IBlockState iblockstate = p_i45807_2_.func_180495_p(p_i45807_3_);
+                 ContainerRepair.this.maximumCost = 0;
+                 IBlockState iblockstate = worldIn.getBlockState(blockPosIn);
  
--                if (!p_190901_1_.field_71075_bZ.field_75098_d
--                        && !p_i45807_2_.field_72995_K
--                        && iblockstate.func_177230_c() == Blocks.field_150467_bQ
--                        && p_190901_1_.func_70681_au().nextFloat() < 0.12F)
-+                if (!p_190901_1_.field_71075_bZ.field_75098_d && !p_i45807_2_.field_72995_K && iblockstate.func_177230_c() == Blocks.field_150467_bQ && p_190901_1_.func_70681_au().nextFloat() < breakChance)
+-                if (!thePlayer.capabilities.isCreativeMode
+-                        && !worldIn.isRemote
+-                        && iblockstate.getBlock() == Blocks.ANVIL
+-                        && thePlayer.getRNG().nextFloat() < 0.12F)
++                if (!thePlayer.capabilities.isCreativeMode && !worldIn.isRemote && iblockstate.getBlock() == Blocks.ANVIL && thePlayer.getRNG().nextFloat() < breakChance)
                  {
--                    int l = iblockstate.func_177229_b(BlockAnvil.field_176505_b);
-+                    int l = ((Integer)iblockstate.func_177229_b(BlockAnvil.field_176505_b)).intValue();
+-                    int l = iblockstate.getValue(BlockAnvil.DAMAGE);
++                    int l = ((Integer)iblockstate.getValue(BlockAnvil.DAMAGE)).intValue();
 +                    ++l;
  
 -                    if (++l > 2)
 +                    if (l > 2)
                      {
-                         p_i45807_2_.func_175698_g(p_i45807_3_);
-                         p_i45807_2_.func_175718_b(1029, p_i45807_3_, 0);
+                         worldIn.setBlockToAir(blockPosIn);
+                         worldIn.playEvent(1029, blockPosIn, 0);
                      }
                      else
                      {
--                        p_i45807_2_.func_180501_a(p_i45807_3_, iblockstate.func_177226_a(BlockAnvil.field_176505_b, l), 2);
-+                        p_i45807_2_.func_180501_a(p_i45807_3_, iblockstate.func_177226_a(BlockAnvil.field_176505_b, Integer.valueOf(l)), 2);
-                         p_i45807_2_.func_175718_b(1030, p_i45807_3_, 0);
+-                        worldIn.setBlockState(blockPosIn, iblockstate.withProperty(BlockAnvil.DAMAGE, l), 2);
++                        worldIn.setBlockState(blockPosIn, iblockstate.withProperty(BlockAnvil.DAMAGE, Integer.valueOf(l)), 2);
+                         worldIn.playEvent(1030, blockPosIn, 0);
                      }
                  }
 @@ -124,24 +119,22 @@
  
-                 return p_190901_2_;
+                 return stack;
              }
 -        }
 -        );
@@ -108,60 +108,60 @@
 -            for (int j = 0; j < 9; j++)
 +            for (int j = 0; j < 9; ++j)
              {
-                 this.func_75146_a(new Slot(p_i45807_1_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                 this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
              }
          }
  
 -        for (int k = 0; k < 9; k++)
 +        for (int k = 0; k < 9; ++k)
          {
-             this.func_75146_a(new Slot(p_i45807_1_, k, 8 + k * 18, 142));
+             this.addSlotToContainer(new Slot(playerInventory, k, 8 + k * 18, 142));
          }
      }
  
 -    @Override
-     public void func_75130_a(IInventory p_75130_1_)
+     public void onCraftMatrixChanged(IInventory inventoryIn)
      {
-         super.func_75130_a(p_75130_1_);
+         super.onCraftMatrixChanged(inventoryIn);
 @@ -170,12 +163,14 @@
-             ItemStack itemstack1 = itemstack.func_77946_l();
-             ItemStack itemstack2 = this.field_82853_g.func_70301_a(1);
-             Map<Enchantment, Integer> map = EnchantmentHelper.func_82781_a(itemstack1);
--            j += itemstack.func_82838_A() + (itemstack2.func_190926_b() ? 0 : itemstack2.func_82838_A());
-+            j = j + itemstack.func_82838_A() + (itemstack2.func_190926_b() ? 0 : itemstack2.func_82838_A());
-             this.field_82856_l = 0;
+             ItemStack itemstack1 = itemstack.copy();
+             ItemStack itemstack2 = this.inputSlots.getStackInSlot(1);
+             Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
+-            j += itemstack.getRepairCost() + (itemstack2.isEmpty() ? 0 : itemstack2.getRepairCost());
++            j = j + itemstack.getRepairCost() + (itemstack2.isEmpty() ? 0 : itemstack2.getRepairCost());
+             this.materialCost = 0;
 +            boolean flag = false;
  
-             if (!itemstack2.func_190926_b())
+             if (!itemstack2.isEmpty())
              {
--                boolean flag = itemstack2.func_77973_b() == Items.field_151134_bR && !ItemEnchantedBook.func_92110_g(itemstack2).func_82582_d();
-+                if (!net.minecraftforge.common.ForgeHooks.onAnvilChange(this, itemstack, itemstack2, field_82852_f, field_82857_m, j, field_82855_n)) return;
-+                flag = itemstack2.func_77973_b() == Items.field_151134_bR && !ItemEnchantedBook.func_92110_g(itemstack2).func_82582_d();
+-                boolean flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !ItemEnchantedBook.getEnchantments(itemstack2).isEmpty();
++                if (!net.minecraftforge.common.ForgeHooks.onAnvilChange(this, itemstack, itemstack2, outputSlot, repairedItemName, j, player)) return;
++                flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !ItemEnchantedBook.getEnchantments(itemstack2).isEmpty();
  
-                 if (itemstack1.func_77984_f() && itemstack1.func_77973_b().func_82789_a(itemstack, itemstack2))
+                 if (itemstack1.isItemStackDamageable() && itemstack1.getItem().getIsRepairable(itemstack, itemstack2))
                  {
 @@ -190,11 +185,11 @@
  
                      int i3;
  
--                    for (i3 = 0; l2 > 0 && i3 < itemstack2.func_190916_E(); i3++)
-+                    for (i3 = 0; l2 > 0 && i3 < itemstack2.func_190916_E(); ++i3)
+-                    for (i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); i3++)
++                    for (i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3)
                      {
-                         int j3 = itemstack1.func_77952_i() - l2;
-                         itemstack1.func_77964_b(j3);
+                         int j3 = itemstack1.getItemDamage() - l2;
+                         itemstack1.setItemDamage(j3);
 -                        i++;
 +                        ++i;
-                         l2 = Math.min(itemstack1.func_77952_i(), itemstack1.func_77958_k() / 4);
+                         l2 = Math.min(itemstack1.getItemDamage(), itemstack1.getMaxDamage() / 4);
                      }
  
 @@ -222,7 +217,7 @@
                              l1 = 0;
                          }
  
--                        if (l1 < itemstack1.func_77960_j())
-+                        if (l1 < itemstack1.func_77952_i()) // vanilla uses metadata here instead of damage.
+-                        if (l1 < itemstack1.getMetadata())
++                        if (l1 < itemstack1.getItemDamage()) // vanilla uses metadata here instead of damage.
                          {
-                             itemstack1.func_77964_b(l1);
+                             itemstack1.setItemDamage(l1);
                              i += 2;
 @@ -237,8 +232,8 @@
                      {
@@ -172,10 +172,10 @@
 +                            int i2 = map.containsKey(enchantment1) ? ((Integer)map.get(enchantment1)).intValue() : 0;
 +                            int j2 = ((Integer)map1.get(enchantment1)).intValue();
                              j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
-                             boolean flag1 = enchantment1.func_92089_a(itemstack);
+                             boolean flag1 = enchantment1.canApply(itemstack);
  
 @@ -252,7 +247,7 @@
-                                 if (enchantment != enchantment1 && !enchantment1.func_191560_c(enchantment))
+                                 if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment))
                                  {
                                      flag1 = false;
 -                                    i++;
@@ -184,72 +184,72 @@
                              }
  
 @@ -269,7 +264,7 @@
-                                     j2 = enchantment1.func_77325_b();
+                                     j2 = enchantment1.getMaxLevel();
                                  }
  
 -                                map.put(enchantment1, j2);
 +                                map.put(enchantment1, Integer.valueOf(j2));
                                  int k3 = 0;
  
-                                 switch (enchantment1.func_77324_c())
+                                 switch (enchantment1.getRarity())
 @@ -326,6 +321,7 @@
                  i += k;
-                 itemstack1.func_151001_c(this.field_82857_m);
+                 itemstack1.setStackDisplayName(this.repairedItemName);
              }
-+            if (flag && !itemstack1.func_77973_b().isBookEnchantable(itemstack1, itemstack2)) itemstack1 = ItemStack.field_190927_a;
++            if (flag && !itemstack1.getItem().isBookEnchantable(itemstack1, itemstack2)) itemstack1 = ItemStack.EMPTY;
  
-             this.field_82854_e = j + i;
+             this.maximumCost = j + i;
  
 @@ -367,7 +363,6 @@
          }
      }
  
 -    @Override
-     public void func_75132_a(IContainerListener p_75132_1_)
+     public void addListener(IContainerListener listener)
      {
-         super.func_75132_a(p_75132_1_);
+         super.addListener(listener);
 @@ -375,7 +370,6 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_75137_b(int p_75137_1_, int p_75137_2_)
+     public void updateProgressBar(int id, int data)
      {
-         if (p_75137_1_ == 0)
+         if (id == 0)
 @@ -384,7 +378,6 @@
          }
      }
  
 -    @Override
-     public void func_75134_a(EntityPlayer p_75134_1_)
+     public void onContainerClosed(EntityPlayer playerIn)
      {
-         super.func_75134_a(p_75134_1_);
+         super.onContainerClosed(playerIn);
 @@ -395,20 +388,18 @@
          }
      }
  
 -    @Override
-     public boolean func_75145_c(EntityPlayer p_75145_1_)
+     public boolean canInteractWith(EntityPlayer playerIn)
      {
--        return this.field_82860_h.func_180495_p(this.field_178156_j).func_177230_c() != Blocks.field_150467_bQ
+-        return this.world.getBlockState(this.pos).getBlock() != Blocks.ANVIL
 -               ? false
--               : p_75145_1_.func_70092_e(
--                   (double)this.field_178156_j.func_177958_n() + 0.5,
--                   (double)this.field_178156_j.func_177956_o() + 0.5,
--                   (double)this.field_178156_j.func_177952_p() + 0.5
+-               : playerIn.getDistanceSq(
+-                   (double)this.pos.getX() + 0.5,
+-                   (double)this.pos.getY() + 0.5,
+-                   (double)this.pos.getZ() + 0.5
 -               )
 -               <= 64.0;
-+        if (this.field_82860_h.func_180495_p(this.field_178156_j).func_177230_c() != Blocks.field_150467_bQ)
++        if (this.world.getBlockState(this.pos).getBlock() != Blocks.ANVIL)
 +        {
 +            return false;
 +        }
 +        else
 +        {
-+            return p_75145_1_.func_70092_e((double)this.field_178156_j.func_177958_n() + 0.5D, (double)this.field_178156_j.func_177956_o() + 0.5D, (double)this.field_178156_j.func_177952_p() + 0.5D) <= 64.0D;
++            return playerIn.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
 +        }
      }
  
 -    @Override
-     public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
+     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
      {
-         ItemStack itemstack = ItemStack.field_190927_a;
+         ItemStack itemstack = ItemStack.EMPTY;

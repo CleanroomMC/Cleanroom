@@ -1,79 +1,33 @@
 --- before/net/minecraft/block/BlockLog.java
 +++ after/net/minecraft/block/BlockLog.java
-@@ -13,7 +13,7 @@
- 
- public abstract class BlockLog extends BlockRotatedPillar
- {
--    public static final PropertyEnum<BlockLog.EnumAxis> field_176299_a = PropertyEnum.func_177709_a("axis", BlockLog.EnumAxis.class);
-+    public static final PropertyEnum<BlockLog.EnumAxis> field_176299_a = PropertyEnum.<BlockLog.EnumAxis>func_177709_a("axis", BlockLog.EnumAxis.class);
- 
-     public BlockLog()
-     {
-@@ -23,7 +23,6 @@
-         this.func_149672_a(SoundType.field_185848_a);
-     }
- 
--    @Override
-     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
-     {
-         int i = 4;
-@@ -35,30 +34,19 @@
+@@ -35,9 +35,9 @@
              {
-                 IBlockState iblockstate = p_180663_1_.func_180495_p(blockpos);
+                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
  
--                if (iblockstate.func_185904_a() == Material.field_151584_j && !iblockstate.func_177229_b(BlockLeaves.field_176236_b))
-+                if (iblockstate.func_177230_c().isLeaves(iblockstate, p_180663_1_, blockpos))
+-                if (iblockstate.getMaterial() == Material.LEAVES && !iblockstate.getValue(BlockLeaves.CHECK_DECAY))
++                if (iblockstate.getBlock().isLeaves(iblockstate, worldIn, blockpos))
                  {
--                    p_180663_1_.func_180501_a(blockpos, iblockstate.func_177226_a(BlockLeaves.field_176236_b, true), 4);
-+                    iblockstate.func_177230_c().beginLeavesDecay(iblockstate, p_180663_1_, blockpos);
+-                    worldIn.setBlockState(blockpos, iblockstate.withProperty(BlockLeaves.CHECK_DECAY, true), 4);
++                    iblockstate.getBlock().beginLeavesDecay(iblockstate, worldIn, blockpos);
                  }
              }
          }
-     }
- 
--    @Override
--    public IBlockState func_180642_a(
--        World p_180642_1_,
--        BlockPos p_180642_2_,
--        EnumFacing p_180642_3_,
--        float p_180642_4_,
--        float p_180642_5_,
--        float p_180642_6_,
--        int p_180642_7_,
--        EntityLivingBase p_180642_8_
--    )
-+    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
-     {
-         return this.func_176203_a(p_180642_7_).func_177226_a(field_176299_a, BlockLog.EnumAxis.func_176870_a(p_180642_3_.func_176740_k()));
-     }
- 
--    @Override
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
-     {
-         switch (p_185499_2_)
-@@ -81,6 +69,9 @@
+@@ -79,6 +79,18 @@
+             default:
+                 return state;
          }
-     }
- 
-+    @Override public boolean canSustainLeaves(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos){ return true; }
-+    @Override public boolean isWood(net.minecraft.world.IBlockAccess world, BlockPos pos){ return true; }
++    }
 +
++    @Override
++    public boolean canSustainLeaves(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos)
++    {
++        return true;
++    }
++    
++    @Override
++    public boolean isWood(net.minecraft.world.IBlockAccess world, BlockPos pos)
++    {
++        return true;
+     }
+ 
      public static enum EnumAxis implements IStringSerializable
-     {
-         X("x"),
-@@ -95,7 +86,6 @@
-             this.field_176874_e = p_i45708_3_;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.field_176874_e;
-@@ -116,7 +106,6 @@
-             }
-         }
- 
--        @Override
-         public String func_176610_l()
-         {
-             return this.field_176874_e;

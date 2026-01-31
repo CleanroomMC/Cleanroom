@@ -1,47 +1,13 @@
 --- before/net/minecraft/entity/item/EntityMinecart.java
 +++ after/net/minecraft/entity/item/EntityMinecart.java
-@@ -38,26 +38,14 @@
- 
- public abstract class EntityMinecart extends Entity implements IWorldNameable
- {
--    private static final DataParameter<Integer> field_184265_a = EntityDataManager.func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
--    private static final DataParameter<Integer> field_184266_b = EntityDataManager.func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
--    private static final DataParameter<Float> field_184267_c = EntityDataManager.func_187226_a(EntityMinecart.class, DataSerializers.field_187193_c);
--    private static final DataParameter<Integer> field_184268_d = EntityDataManager.func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
--    private static final DataParameter<Integer> field_184269_e = EntityDataManager.func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
--    private static final DataParameter<Boolean> field_184270_f = EntityDataManager.func_187226_a(EntityMinecart.class, DataSerializers.field_187198_h);
-+    private static final DataParameter<Integer> field_184265_a = EntityDataManager.<Integer>func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<Integer> field_184266_b = EntityDataManager.<Integer>func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<Float> field_184267_c = EntityDataManager.<Float>func_187226_a(EntityMinecart.class, DataSerializers.field_187193_c);
-+    private static final DataParameter<Integer> field_184268_d = EntityDataManager.<Integer>func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<Integer> field_184269_e = EntityDataManager.<Integer>func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<Boolean> field_184270_f = EntityDataManager.<Boolean>func_187226_a(EntityMinecart.class, DataSerializers.field_187198_h);
-     private boolean field_70499_f;
--    private static final int[][][] field_70500_g = new int[][][]
--    {
--        {{0, 0, -1}, {0, 0, 1}},
--        {{ -1, 0, 0}, {1, 0, 0}},
--        {{ -1, -1, 0}, {1, 0, 0}},
--        {{ -1, 0, 0}, {1, -1, 0}},
--        {{0, 0, -1}, {0, -1, 1}},
--        {{0, -1, -1}, {0, 0, 1}},
--        {{0, 0, 1}, {1, 0, 0}},
--        {{0, 0, 1}, { -1, 0, 0}},
--        {{0, 0, -1}, { -1, 0, 0}},
--        {{0, 0, -1}, {1, 0, 0}}
--    };
-+    private static final int[][][] field_70500_g = new int[][][] {{{0, 0, -1}, {0, 0, 1}}, {{ -1, 0, 0}, {1, 0, 0}}, {{ -1, -1, 0}, {1, 0, 0}}, {{ -1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, { -1, 0, 0}}, {{0, 0, -1}, { -1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
-     private int field_70510_h;
-     private double field_70511_i;
-     private double field_70509_j;
-@@ -71,6 +59,20 @@
+@@ -71,6 +71,20 @@
      @SideOnly(Side.CLIENT)
-     private double field_70506_as;
+     private double velocityZ;
  
 +    /* Forge: Minecart Compatibility Layer Integration. */
 +    public static float defaultMaxSpeedAirLateral = 0.4f;
 +    public static float defaultMaxSpeedAirVertical = -1f;
-+    public static double defaultDragAir = 0.94999998807907104D;
++    public static double defaultDragAir = 0.95;
 +    protected boolean canUseRail = true;
 +    protected boolean canBePushed = true;
 +    private static net.minecraftforge.common.IMinecartCollisionHandler collisionHandler = null;
@@ -52,1026 +18,284 @@
 +    protected float maxSpeedAirVertical = defaultMaxSpeedAirVertical;
 +    protected double dragAir = defaultDragAir;
 +
-     public EntityMinecart(World p_i1712_1_)
+     public EntityMinecart(World worldIn)
      {
-         super(p_i1712_1_);
-@@ -99,94 +101,92 @@
-         }
+         super(worldIn);
+@@ -120,6 +134,7 @@
+     @Override
+     public AxisAlignedBB getCollisionBox(Entity entityIn)
+     {
++        if (getCollisionHandler() != null) return getCollisionHandler().getCollisionBox(this, entityIn);
+         return entityIn.canBePushed() ? entityIn.getEntityBoundingBox() : null;
      }
  
--    @Override
-     protected boolean func_70041_e_()
-     {
-         return false;
-     }
- 
--    @Override
-     protected void func_70088_a()
-     {
--        this.field_70180_af.func_187214_a(field_184265_a, 0);
--        this.field_70180_af.func_187214_a(field_184266_b, 1);
--        this.field_70180_af.func_187214_a(field_184267_c, 0.0F);
--        this.field_70180_af.func_187214_a(field_184268_d, 0);
--        this.field_70180_af.func_187214_a(field_184269_e, 6);
--        this.field_70180_af.func_187214_a(field_184270_f, false);
-+        this.field_70180_af.func_187214_a(field_184265_a, Integer.valueOf(0));
-+        this.field_70180_af.func_187214_a(field_184266_b, Integer.valueOf(1));
-+        this.field_70180_af.func_187214_a(field_184267_c, Float.valueOf(0.0F));
-+        this.field_70180_af.func_187214_a(field_184268_d, Integer.valueOf(0));
-+        this.field_70180_af.func_187214_a(field_184269_e, Integer.valueOf(6));
-+        this.field_70180_af.func_187214_a(field_184270_f, Boolean.valueOf(false));
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB func_70114_g(Entity p_70114_1_)
-     {
-+        if (getCollisionHandler() != null) return getCollisionHandler().getCollisionBox(this, p_70114_1_);
-         return p_70114_1_.func_70104_M() ? p_70114_1_.func_174813_aQ() : null;
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB func_70046_E()
+@@ -127,13 +142,14 @@
+     @Override
+     public AxisAlignedBB getCollisionBoundingBox()
      {
 +        if (getCollisionHandler() != null) return getCollisionHandler().getBoundingBox(this);
          return null;
      }
  
--    @Override
-     public boolean func_70104_M()
+     @Override
+     public boolean canBePushed()
      {
 -        return true;
 +        return canBePushed;
      }
  
-     public EntityMinecart(World p_i1713_1_, double p_i1713_2_, double p_i1713_4_, double p_i1713_6_)
-     {
-         this(p_i1713_1_);
-         this.func_70107_b(p_i1713_2_, p_i1713_4_, p_i1713_6_);
--        this.field_70159_w = 0.0;
--        this.field_70181_x = 0.0;
--        this.field_70179_y = 0.0;
-+        this.field_70159_w = 0.0D;
-+        this.field_70181_x = 0.0D;
-+        this.field_70179_y = 0.0D;
-         this.field_70169_q = p_i1713_2_;
-         this.field_70167_r = p_i1713_4_;
-         this.field_70166_s = p_i1713_6_;
-     }
- 
--    @Override
-     public double func_70042_X()
-     {
--        return 0.0;
-+        return 0.0D;
-     }
- 
--    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
-     {
--        if (this.field_70170_p.field_72995_K || this.field_70128_L)
--        {
--            return true;
--        }
--        else if (this.func_180431_b(p_70097_1_))
--        {
--            return false;
-+        if (!this.field_70170_p.field_72995_K && !this.field_70128_L)
-+        {
-+            if (this.func_180431_b(p_70097_1_))
-+            {
-+                return false;
-+            }
-+            else
-+            {
-+                this.func_70494_i(-this.func_70493_k());
-+                this.func_70497_h(10);
-+                this.func_70018_K();
-+                this.func_70492_c(this.func_70491_i() + p_70097_2_ * 10.0F);
-+                boolean flag = p_70097_1_.func_76346_g() instanceof EntityPlayer && ((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75098_d;
-+
-+                if (flag || this.func_70491_i() > 40.0F)
-+                {
-+                    this.func_184226_ay();
-+
-+                    if (flag && !this.func_145818_k_())
-+                    {
-+                        this.func_70106_y();
-+                    }
-+                    else
-+                    {
-+                        this.func_94095_a(p_70097_1_);
-+                    }
-+                }
-+
-+                return true;
-+            }
-         }
-         else
-         {
--            this.func_70494_i(-this.func_70493_k());
--            this.func_70497_h(10);
--            this.func_70018_K();
--            this.func_70492_c(this.func_70491_i() + p_70097_2_ * 10.0F);
--            boolean flag = p_70097_1_.func_76346_g() instanceof EntityPlayer && ((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75098_d;
--
--            if (flag || this.func_70491_i() > 40.0F)
--            {
--                this.func_184226_ay();
--
--                if (flag && !this.func_145818_k_())
--                {
--                    this.func_70106_y();
--                }
--                else
--                {
--                    this.func_94095_a(p_70097_1_);
--                }
--            }
--
-             return true;
-         }
-     }
-@@ -209,7 +209,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void func_70057_ab()
-     {
-         this.func_70494_i(-this.func_70493_k());
-@@ -217,19 +216,16 @@
-         this.func_70492_c(this.func_70491_i() + this.func_70491_i() * 10.0F);
-     }
- 
--    @Override
-     public boolean func_70067_L()
-     {
-         return !this.field_70128_L;
-     }
- 
--    @Override
-     public EnumFacing func_184172_bi()
-     {
-         return this.field_70499_f ? this.func_174811_aO().func_176734_d().func_176746_e() : this.func_174811_aO().func_176746_e();
-     }
- 
--    @Override
-     public void func_70071_h_()
-     {
-         if (this.func_70496_j() > 0)
-@@ -242,7 +238,7 @@
-             this.func_70492_c(this.func_70491_i() - 1.0F);
-         }
- 
--        if (this.field_70163_u < -64.0)
-+        if (this.field_70163_u < -64.0D)
-         {
-             this.func_70076_C();
-         }
-@@ -293,7 +289,7 @@
- 
-             if (this.field_71088_bW > 0)
-             {
--                this.field_71088_bW--;
-+                --this.field_71088_bW;
-             }
- 
-             this.field_70170_p.field_72984_F.func_76319_b();
-@@ -309,7 +305,7 @@
-                 double d1 = MathHelper.func_76138_g(this.field_70512_ao - (double)this.field_70177_z);
-                 this.field_70177_z = (float)((double)this.field_70177_z + d1 / (double)this.field_70510_h);
-                 this.field_70125_A = (float)((double)this.field_70125_A + (this.field_70513_ap - (double)this.field_70125_A) / (double)this.field_70510_h);
--                this.field_70510_h--;
-+                --this.field_70510_h;
-                 this.func_70107_b(d4, d5, d6);
-                 this.func_70101_b(this.field_70177_z, this.field_70125_A);
-             }
-@@ -327,7 +323,7 @@
- 
-             if (!this.func_189652_ae())
-             {
--                this.field_70181_x -= 0.04F;
-+                this.field_70181_x -= 0.03999999910593033D;
-             }
- 
-             int k = MathHelper.func_76128_c(this.field_70165_t);
-@@ -336,19 +332,19 @@
- 
-             if (BlockRailBase.func_176562_d(this.field_70170_p, new BlockPos(k, l - 1, i1)))
-             {
--                l--;
-+                --l;
-             }
- 
+     public EntityMinecart(World worldIn, double x, double y, double z)
+@@ -342,7 +358,7 @@
              BlockPos blockpos = new BlockPos(k, l, i1);
-             IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
+             IBlockState iblockstate = this.world.getBlockState(blockpos);
  
--            if (BlockRailBase.func_176563_d(iblockstate))
-+            if (canUseRail() && BlockRailBase.func_176563_d(iblockstate))
+-            if (BlockRailBase.isRailBlock(iblockstate))
++            if (canUseRail() && BlockRailBase.isRailBlock(iblockstate))
              {
-                 this.func_180460_a(blockpos, iblockstate);
+                 this.moveAlongTrack(blockpos, iblockstate);
  
-                 if (iblockstate.func_177230_c() == Blocks.field_150408_cc)
-                 {
--                    this.func_96095_a(k, l, i1, iblockstate.func_177229_b(BlockRailPowered.field_176569_M));
-+                    this.func_96095_a(k, l, i1, ((Boolean)iblockstate.func_177229_b(BlockRailPowered.field_176569_M)).booleanValue());
-                 }
-             }
-             else
-@@ -361,9 +357,9 @@
-             double d0 = this.field_70169_q - this.field_70165_t;
-             double d2 = this.field_70166_s - this.field_70161_v;
+@@ -381,10 +397,14 @@
  
--            if (d0 * d0 + d2 * d2 > 0.001)
-+            if (d0 * d0 + d2 * d2 > 0.001D)
-             {
--                this.field_70177_z = (float)(MathHelper.func_181159_b(d2, d0) * 180.0 / Math.PI);
-+                this.field_70177_z = (float)(MathHelper.func_181159_b(d2, d0) * 180.0D / Math.PI);
+             this.setRotation(this.rotationYaw, this.rotationPitch);
  
-                 if (this.field_70499_f)
-                 {
-@@ -373,7 +369,7 @@
- 
-             double d3 = (double)MathHelper.func_76142_g(this.field_70177_z - this.field_70126_B);
- 
--            if (d3 < -170.0 || d3 >= 170.0)
-+            if (d3 < -170.0D || d3 >= 170.0D)
-             {
-                 this.field_70177_z += 180.0F;
-                 this.field_70499_f = !this.field_70499_f;
-@@ -381,22 +377,21 @@
- 
-             this.func_70101_b(this.field_70177_z, this.field_70125_A);
- 
--            if (this.func_184264_v() == EntityMinecart.Type.RIDEABLE && this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > 0.01)
+-            if (this.getType() == EntityMinecart.Type.RIDEABLE && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01)
 +            AxisAlignedBB box;
 +            if (getCollisionHandler() != null) box = getCollisionHandler().getMinecartCollisionBox(this);
-+            else                               box = this.func_174813_aQ().func_72314_b(0.20000000298023224D, 0.0D, 0.20000000298023224D);
++            else                               box = this.getEntityBoundingBox().grow(0.2F, 0.0, 0.2F);
 +
-+            if (canBeRidden() && this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > 0.01D)
++            if (canBeRidden() && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01)
              {
--                List<Entity> list = this.field_70170_p
--                                    .func_175674_a(this, this.func_174813_aQ().func_72314_b(0.2F, 0.0, 0.2F), EntitySelectors.func_188442_a(this));
-+                List<Entity> list = this.field_70170_p.func_175674_a(this, box, EntitySelectors.func_188442_a(this));
+                 List<Entity> list = this.world
+-                                    .getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().grow(0.2F, 0.0, 0.2F), EntitySelectors.getTeamCollisionPredicate(this));
++                                    .getEntitiesInAABBexcluding(this, box, EntitySelectors.getTeamCollisionPredicate(this));
  
                  if (!list.isEmpty())
                  {
--                    for (int j1 = 0; j1 < list.size(); j1++)
-+                    for (int j1 = 0; j1 < list.size(); ++j1)
-                     {
-                         Entity entity1 = list.get(j1);
- 
--                        if (!(entity1 instanceof EntityPlayer)
--                                && !(entity1 instanceof EntityIronGolem)
--                                && !(entity1 instanceof EntityMinecart)
--                                && !this.func_184207_aI()
--                                && !entity1.func_184218_aH())
-+                        if (!(entity1 instanceof EntityPlayer) && !(entity1 instanceof EntityIronGolem) && !(entity1 instanceof EntityMinecart) && !this.func_184207_aI() && !entity1.func_184218_aH())
-                         {
-                             entity1.func_184220_m(this);
-                         }
-@@ -409,7 +404,7 @@
+@@ -409,7 +429,7 @@
              }
              else
              {
--                for (Entity entity : this.field_70170_p.func_72839_b(this, this.func_174813_aQ().func_72314_b(0.2F, 0.0, 0.2F)))
-+                for (Entity entity : this.field_70170_p.func_72839_b(this, box))
+-                for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(0.2F, 0.0, 0.2F)))
++                for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, box))
                  {
-                     if (!this.func_184196_w(entity) && entity.func_70104_M() && entity instanceof EntityMinecart)
+                     if (!this.isPassenger(entity) && entity.canBePushed() && entity instanceof EntityMinecart)
                      {
-@@ -419,12 +414,13 @@
+@@ -419,6 +439,7 @@
              }
  
-             this.func_70072_I();
+             this.handleWaterMovement();
 +            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartUpdateEvent(this, this.getCurrentRailPosition()));
          }
      }
  
-     protected double func_174898_m()
+@@ -433,10 +454,21 @@
+ 
+     protected void moveDerailedMinecart()
      {
--        return 0.4;
-+        return 0.4D;
-     }
+-        double d0 = this.getMaximumSpeed();
++        double d0 = onGround ? this.getMaximumSpeed() : getMaxSpeedAirLateral();
+         this.motionX = MathHelper.clamp(this.motionX, -d0, d0);
+         this.motionZ = MathHelper.clamp(this.motionZ, -d0, d0);
  
-     public void func_96095_a(int p_96095_1_, int p_96095_2_, int p_96095_3_, boolean p_96095_4_)
-@@ -433,24 +429,35 @@
- 
-     protected void func_180459_n()
-     {
--        double d0 = this.func_174898_m();
-+        double d0 = field_70122_E ? this.func_174898_m() : getMaxSpeedAirLateral();
-         this.field_70159_w = MathHelper.func_151237_a(this.field_70159_w, -d0, d0);
-         this.field_70179_y = MathHelper.func_151237_a(this.field_70179_y, -d0, d0);
- 
-+        double moveY = field_70181_x;
-+        if(getMaxSpeedAirVertical() > 0 && field_70181_x > getMaxSpeedAirVertical())
++        double moveY = motionY;
++        if(getMaxSpeedAirVertical() > 0 && motionY > getMaxSpeedAirVertical())
 +        {
 +            moveY = getMaxSpeedAirVertical();
-+            if(Math.abs(field_70159_w) < 0.3f && Math.abs(field_70179_y) < 0.3f)
++            if(Math.abs(motionX) < 0.3f && Math.abs(motionZ) < 0.3f)
 +            {
 +                moveY = 0.15f;
-+                field_70181_x = moveY;
++                motionY = moveY;
 +            }
 +        }
 +
-         if (this.field_70122_E)
+         if (this.onGround)
          {
--            this.field_70159_w *= 0.5;
--            this.field_70181_x *= 0.5;
--            this.field_70179_y *= 0.5;
-+            this.field_70159_w *= 0.5D;
-+            this.field_70181_x *= 0.5D;
-+            this.field_70179_y *= 0.5D;
+             this.motionX *= 0.5;
+@@ -444,13 +476,13 @@
+             this.motionZ *= 0.5;
          }
  
--        this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
-+        this.func_70091_d(MoverType.SELF, this.field_70159_w, moveY, this.field_70179_y);
+-        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
++        this.move(MoverType.SELF, this.motionX, moveY, this.motionZ);
  
-         if (!this.field_70122_E)
+         if (!this.onGround)
          {
--            this.field_70159_w *= 0.95F;
--            this.field_70181_x *= 0.95F;
--            this.field_70179_y *= 0.95F;
-+            this.field_70159_w *= getDragAir();
-+            this.field_70181_x *= getDragAir();
-+            this.field_70179_y *= getDragAir();
+-            this.motionX *= 0.95F;
+-            this.motionY *= 0.95F;
+-            this.motionZ *= 0.95F;
++            this.motionX *= getDragAir();
++            this.motionY *= getDragAir();
++            this.motionZ *= getDragAir();
          }
      }
  
-@@ -466,30 +473,30 @@
- 
-         if (blockrailbase == Blocks.field_150318_D)
-         {
--            flag = p_180460_2_.func_177229_b(BlockRailPowered.field_176569_M);
-+            flag = ((Boolean)p_180460_2_.func_177229_b(BlockRailPowered.field_176569_M)).booleanValue();
+@@ -470,25 +502,25 @@
              flag1 = !flag;
          }
  
 -        double d0 = 0.0078125;
--        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_180460_2_.func_177229_b(blockrailbase.func_176560_l());
+-        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = state.getValue(blockrailbase.getShapeProperty());
 +        double slopeAdjustment = getSlopeAdjustment();
-+        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = blockrailbase.getRailDirection(field_70170_p, p_180460_1_, p_180460_2_, this);
++        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = blockrailbase.getRailDirection(world, pos, state, this);
  
          switch (blockrailbase$enumraildirection)
          {
              case ASCENDING_EAST:
--                this.field_70159_w -= 0.0078125;
--                this.field_70163_u++;
-+                this.field_70159_w -= slopeAdjustment;
-+                ++this.field_70163_u;
+-                this.motionX -= 0.0078125;
++                this.motionX -= slopeAdjustment;
+                 this.posY++;
                  break;
              case ASCENDING_WEST:
--                this.field_70159_w += 0.0078125;
--                this.field_70163_u++;
-+                this.field_70159_w += slopeAdjustment;
-+                ++this.field_70163_u;
+-                this.motionX += 0.0078125;
++                this.motionX += slopeAdjustment;
+                 this.posY++;
                  break;
              case ASCENDING_NORTH:
--                this.field_70179_y += 0.0078125;
--                this.field_70163_u++;
-+                this.field_70179_y += slopeAdjustment;
-+                ++this.field_70163_u;
+-                this.motionZ += 0.0078125;
++                this.motionZ += slopeAdjustment;
+                 this.posY++;
                  break;
              case ASCENDING_SOUTH:
--                this.field_70179_y -= 0.0078125;
--                this.field_70163_u++;
-+                this.field_70179_y -= slopeAdjustment;
-+                ++this.field_70163_u;
+-                this.motionZ -= 0.0078125;
++                this.motionZ -= slopeAdjustment;
+                 this.posY++;
          }
  
-         int[][] aint = field_70500_g[blockrailbase$enumraildirection.func_177015_a()];
-@@ -498,7 +505,7 @@
-         double d3 = Math.sqrt(d1 * d1 + d2 * d2);
-         double d4 = this.field_70159_w * d1 + this.field_70179_y * d2;
+@@ -521,8 +553,8 @@
  
--        if (d4 < 0.0)
-+        if (d4 < 0.0D)
-         {
-             d1 = -d1;
-             d2 = -d2;
-@@ -506,103 +513,87 @@
- 
-         double d5 = Math.sqrt(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
- 
--        if (d5 > 2.0)
-+        if (d5 > 2.0D)
-         {
--            d5 = 2.0;
-+            d5 = 2.0D;
-         }
- 
-         this.field_70159_w = d5 * d1 / d3;
-         this.field_70179_y = d5 * d2 / d3;
--        Entity entity = this.func_184188_bt().isEmpty() ? null : this.func_184188_bt().get(0);
-+        Entity entity = this.func_184188_bt().isEmpty() ? null : (Entity)this.func_184188_bt().get(0);
- 
-         if (entity instanceof EntityLivingBase)
-         {
-             double d6 = (double)((EntityLivingBase)entity).field_191988_bg;
- 
--            if (d6 > 0.0)
-+            if (d6 > 0.0D)
+             if (d6 > 0.0)
              {
--                double d7 = -Math.sin((double)(entity.field_70177_z * (float)(Math.PI / 180.0)));
--                double d8 = Math.cos((double)(entity.field_70177_z * (float)(Math.PI / 180.0)));
-+                double d7 = -Math.sin((double)(entity.field_70177_z * 0.017453292F));
-+                double d8 = Math.cos((double)(entity.field_70177_z * 0.017453292F));
-                 double d9 = this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y;
+-                double d7 = -Math.sin((double)(entity.rotationYaw * (float)(Math.PI / 180.0)));
+-                double d8 = Math.cos((double)(entity.rotationYaw * (float)(Math.PI / 180.0)));
++                double d7 = -Math.sin((double)(entity.rotationYaw * 0.017453292F));
++                double d8 = Math.cos((double)(entity.rotationYaw * 0.017453292F));
+                 double d9 = this.motionX * this.motionX + this.motionZ * this.motionZ;
  
--                if (d9 < 0.01)
-+                if (d9 < 0.01D)
-                 {
--                    this.field_70159_w += d7 * 0.1;
--                    this.field_70179_y += d8 * 0.1;
-+                    this.field_70159_w += d7 * 0.1D;
-+                    this.field_70179_y += d8 * 0.1D;
-                     flag1 = false;
-                 }
+                 if (d9 < 0.01)
+@@ -534,7 +566,7 @@
              }
          }
  
 -        if (flag1)
 +        if (flag1 && shouldDoRailFunctions())
          {
-             double d17 = Math.sqrt(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
+             double d17 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
  
--            if (d17 < 0.03)
-+            if (d17 < 0.03D)
-             {
--                this.field_70159_w *= 0.0;
--                this.field_70181_x *= 0.0;
--                this.field_70179_y *= 0.0;
-+                this.field_70159_w *= 0.0D;
-+                this.field_70181_x *= 0.0D;
-+                this.field_70179_y *= 0.0D;
-             }
-             else
-             {
--                this.field_70159_w *= 0.5;
--                this.field_70181_x *= 0.0;
--                this.field_70179_y *= 0.5;
-+                this.field_70159_w *= 0.5D;
-+                this.field_70181_x *= 0.0D;
-+                this.field_70179_y *= 0.5D;
-             }
-         }
- 
--        double d18 = (double)p_180460_1_.func_177958_n() + 0.5 + (double)aint[0][0] * 0.5;
--        double d19 = (double)p_180460_1_.func_177952_p() + 0.5 + (double)aint[0][2] * 0.5;
--        double d20 = (double)p_180460_1_.func_177958_n() + 0.5 + (double)aint[1][0] * 0.5;
--        double d21 = (double)p_180460_1_.func_177952_p() + 0.5 + (double)aint[1][2] * 0.5;
-+        double d18 = (double)p_180460_1_.func_177958_n() + 0.5D + (double)aint[0][0] * 0.5D;
-+        double d19 = (double)p_180460_1_.func_177952_p() + 0.5D + (double)aint[0][2] * 0.5D;
-+        double d20 = (double)p_180460_1_.func_177958_n() + 0.5D + (double)aint[1][0] * 0.5D;
-+        double d21 = (double)p_180460_1_.func_177952_p() + 0.5D + (double)aint[1][2] * 0.5D;
-         d1 = d20 - d18;
-         d2 = d21 - d19;
-         double d10;
- 
--        if (d1 == 0.0)
-+        if (d1 == 0.0D)
-         {
--            this.field_70165_t = (double)p_180460_1_.func_177958_n() + 0.5;
-+            this.field_70165_t = (double)p_180460_1_.func_177958_n() + 0.5D;
-             d10 = this.field_70161_v - (double)p_180460_1_.func_177952_p();
-         }
--        else if (d2 == 0.0)
-+        else if (d2 == 0.0D)
-         {
--            this.field_70161_v = (double)p_180460_1_.func_177952_p() + 0.5;
-+            this.field_70161_v = (double)p_180460_1_.func_177952_p() + 0.5D;
-             d10 = this.field_70165_t - (double)p_180460_1_.func_177958_n();
-         }
-         else
-         {
-             double d11 = this.field_70165_t - d18;
-             double d12 = this.field_70161_v - d19;
--            d10 = (d11 * d1 + d12 * d2) * 2.0;
-+            d10 = (d11 * d1 + d12 * d2) * 2.0D;
-         }
- 
-         this.field_70165_t = d18 + d1 * d10;
-         this.field_70161_v = d19 + d2 * d10;
-         this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
--        double d22 = this.field_70159_w;
--        double d23 = this.field_70179_y;
+@@ -580,23 +612,9 @@
+         this.posX = d18 + d1 * d10;
+         this.posZ = d19 + d2 * d10;
+         this.setPosition(this.posX, this.posY, this.posZ);
+-        double d22 = this.motionX;
+-        double d23 = this.motionZ;
 -
--        if (this.func_184207_aI())
+-        if (this.isBeingRidden())
 -        {
 -            d22 *= 0.75;
 -            d23 *= 0.75;
 -        }
 -
--        double d13 = this.func_174898_m();
--        d22 = MathHelper.func_151237_a(d22, -d13, d13);
--        d23 = MathHelper.func_151237_a(d23, -d13, d13);
--        this.func_70091_d(MoverType.SELF, d22, 0.0, d23);
+-        double d13 = this.getMaximumSpeed();
+-        d22 = MathHelper.clamp(d22, -d13, d13);
+-        d23 = MathHelper.clamp(d23, -d13, d13);
+-        this.move(MoverType.SELF, d22, 0.0, d23);
 -
 -        if (aint[0][1] != 0
--                && MathHelper.func_76128_c(this.field_70165_t) - p_180460_1_.func_177958_n() == aint[0][0]
--                && MathHelper.func_76128_c(this.field_70161_v) - p_180460_1_.func_177952_p() == aint[0][2])
-+        this.moveMinecartOnRail(p_180460_1_);
+-                && MathHelper.floor(this.posX) - pos.getX() == aint[0][0]
+-                && MathHelper.floor(this.posZ) - pos.getZ() == aint[0][2])
++        this.moveMinecartOnRail(pos);
 +
-+        if (aint[0][1] != 0 && MathHelper.func_76128_c(this.field_70165_t) - p_180460_1_.func_177958_n() == aint[0][0] && MathHelper.func_76128_c(this.field_70161_v) - p_180460_1_.func_177952_p() == aint[0][2])
++        if (aint[0][1] != 0 && MathHelper.floor(this.posX) - pos.getX() == aint[0][0] && MathHelper.floor(this.posZ) - pos.getZ() == aint[0][2])
          {
-             this.func_70107_b(this.field_70165_t, this.field_70163_u + (double)aint[0][1], this.field_70161_v);
+             this.setPosition(this.posX, this.posY + (double)aint[0][1], this.posZ);
          }
--        else if (aint[1][1] != 0
--                 && MathHelper.func_76128_c(this.field_70165_t) - p_180460_1_.func_177958_n() == aint[1][0]
--                 && MathHelper.func_76128_c(this.field_70161_v) - p_180460_1_.func_177952_p() == aint[1][2])
-+        else if (aint[1][1] != 0 && MathHelper.func_76128_c(this.field_70165_t) - p_180460_1_.func_177958_n() == aint[1][0] && MathHelper.func_76128_c(this.field_70161_v) - p_180460_1_.func_177952_p() == aint[1][2])
-         {
-             this.func_70107_b(this.field_70165_t, this.field_70163_u + (double)aint[1][1], this.field_70161_v);
-         }
-@@ -612,10 +603,10 @@
- 
-         if (vec3d1 != null && vec3d != null)
-         {
--            double d14 = (vec3d.field_72448_b - vec3d1.field_72448_b) * 0.05;
-+            double d14 = (vec3d.field_72448_b - vec3d1.field_72448_b) * 0.05D;
-             d5 = Math.sqrt(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
- 
--            if (d5 > 0.0)
-+            if (d5 > 0.0D)
-             {
-                 this.field_70159_w = this.field_70159_w / d5 * (d5 + d14);
-                 this.field_70179_y = this.field_70179_y / d5 * (d5 + d14);
-@@ -634,36 +625,42 @@
-             this.field_70179_y = d5 * (double)(i - p_180460_1_.func_177952_p());
+@@ -634,7 +652,13 @@
+             this.motionZ = d5 * (double)(i - pos.getZ());
          }
  
 -        if (flag)
 +
 +        if(shouldDoRailFunctions())
 +        {
-+            ((BlockRailBase)p_180460_2_.func_177230_c()).onMinecartPass(field_70170_p, this, p_180460_1_);
++            ((BlockRailBase)state.getBlock()).onMinecartPass(world, this, pos);
 +        }
 +
 +        if (flag && shouldDoRailFunctions())
          {
-             double d15 = Math.sqrt(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
+             double d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
  
--            if (d15 > 0.01)
-+            if (d15 > 0.01D)
-             {
--                double d16 = 0.06;
--                this.field_70159_w = this.field_70159_w + this.field_70159_w / d15 * 0.06;
--                this.field_70179_y = this.field_70179_y + this.field_70179_y / d15 * 0.06;
-+                double d16 = 0.06D;
-+                this.field_70159_w += this.field_70159_w / d15 * 0.06D;
-+                this.field_70179_y += this.field_70179_y / d15 * 0.06D;
-             }
-             else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.EAST_WEST)
-             {
-                 if (this.field_70170_p.func_180495_p(p_180460_1_.func_177976_e()).func_185915_l())
-                 {
--                    this.field_70159_w = 0.02;
-+                    this.field_70159_w = 0.02D;
-                 }
-                 else if (this.field_70170_p.func_180495_p(p_180460_1_.func_177974_f()).func_185915_l())
-                 {
--                    this.field_70159_w = -0.02;
-+                    this.field_70159_w = -0.02D;
-                 }
-             }
-             else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.NORTH_SOUTH)
-             {
-                 if (this.field_70170_p.func_180495_p(p_180460_1_.func_177978_c()).func_185915_l())
-                 {
--                    this.field_70179_y = 0.02;
-+                    this.field_70179_y = 0.02D;
-                 }
-                 else if (this.field_70170_p.func_180495_p(p_180460_1_.func_177968_d()).func_185915_l())
-                 {
--                    this.field_70179_y = -0.02;
-+                    this.field_70179_y = -0.02D;
-                 }
-             }
-         }
-@@ -673,19 +670,18 @@
-     {
-         if (this.func_184207_aI())
+@@ -715,9 +739,7 @@
+ 
+         if (BlockRailBase.isRailBlock(iblockstate))
          {
--            this.field_70159_w *= 0.997F;
--            this.field_70181_x *= 0.0;
--            this.field_70179_y *= 0.997F;
-+            this.field_70159_w *= 0.996999979019165D;
-+            this.field_70181_x *= 0.0D;
-+            this.field_70179_y *= 0.996999979019165D;
-         }
-         else
-         {
--            this.field_70159_w *= 0.96F;
--            this.field_70181_x *= 0.0;
--            this.field_70179_y *= 0.96F;
-+            this.field_70159_w *= 0.9599999785423279D;
-+            this.field_70181_x *= 0.0D;
-+            this.field_70179_y *= 0.9599999785423279D;
-         }
-     }
- 
--    @Override
-     public void func_70107_b(double p_70107_1_, double p_70107_3_, double p_70107_5_)
-     {
-         this.field_70165_t = p_70107_1_;
-@@ -693,9 +689,7 @@
-         this.field_70161_v = p_70107_5_;
-         float f = this.field_70130_N / 2.0F;
-         float f1 = this.field_70131_O;
--        this.func_174826_a(
--            new AxisAlignedBB(p_70107_1_ - (double)f, p_70107_3_, p_70107_5_ - (double)f, p_70107_1_ + (double)f, p_70107_3_ + (double)f1, p_70107_5_ + (double)f)
--        );
-+        this.func_174826_a(new AxisAlignedBB(p_70107_1_ - (double)f, p_70107_3_, p_70107_5_ - (double)f, p_70107_1_ + (double)f, p_70107_3_ + (double)f1, p_70107_5_ + (double)f));
-     }
- 
-     @Nullable
-@@ -708,16 +702,14 @@
- 
-         if (BlockRailBase.func_176562_d(this.field_70170_p, new BlockPos(i, j - 1, k)))
-         {
--            j--;
-+            --j;
-         }
- 
-         IBlockState iblockstate = this.field_70170_p.func_180495_p(new BlockPos(i, j, k));
- 
-         if (BlockRailBase.func_176563_d(iblockstate))
-         {
--            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177229_b(
--                        ((BlockRailBase)iblockstate.func_177230_c()).func_176560_l()
+-            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getValue(
+-                        ((BlockRailBase)iblockstate.getBlock()).getShapeProperty()
 -                    );
-+            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = ((BlockRailBase)iblockstate.func_177230_c()).getRailDirection(field_70170_p, new BlockPos(i, j, k), iblockstate, this);
-             p_70495_3_ = (double)j;
++            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, new BlockPos(i, j, k), iblockstate, this);
+             y = (double)j;
  
-             if (blockrailbase$enumraildirection.func_177018_c())
-@@ -729,10 +721,10 @@
-             double d0 = (double)(aint[1][0] - aint[0][0]);
-             double d1 = (double)(aint[1][2] - aint[0][2]);
-             double d2 = Math.sqrt(d0 * d0 + d1 * d1);
--            d0 /= d2;
--            d1 /= d2;
--            p_70495_1_ += d0 * p_70495_7_;
--            p_70495_5_ += d1 * p_70495_7_;
-+            d0 = d0 / d2;
-+            d1 = d1 / d2;
-+            p_70495_1_ = p_70495_1_ + d0 * p_70495_7_;
-+            p_70495_5_ = p_70495_5_ + d1 * p_70495_7_;
+             if (blockrailbase$enumraildirection.isAscending())
+@@ -767,9 +789,7 @@
  
-             if (aint[0][1] != 0 && MathHelper.func_76128_c(p_70495_1_) - i == aint[0][0] && MathHelper.func_76128_c(p_70495_5_) - k == aint[0][2])
-             {
-@@ -760,33 +752,31 @@
- 
-         if (BlockRailBase.func_176562_d(this.field_70170_p, new BlockPos(i, j - 1, k)))
+         if (BlockRailBase.isRailBlock(iblockstate))
          {
--            j--;
-+            --j;
-         }
- 
-         IBlockState iblockstate = this.field_70170_p.func_180495_p(new BlockPos(i, j, k));
- 
-         if (BlockRailBase.func_176563_d(iblockstate))
-         {
--            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177229_b(
--                        ((BlockRailBase)iblockstate.func_177230_c()).func_176560_l()
+-            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getValue(
+-                        ((BlockRailBase)iblockstate.getBlock()).getShapeProperty()
 -                    );
-+            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = ((BlockRailBase)iblockstate.func_177230_c()).getRailDirection(field_70170_p, new BlockPos(i, j, k), iblockstate, this);
-             int[][] aint = field_70500_g[blockrailbase$enumraildirection.func_177015_a()];
--            double d0 = (double)i + 0.5 + (double)aint[0][0] * 0.5;
--            double d1 = (double)j + 0.0625 + (double)aint[0][1] * 0.5;
--            double d2 = (double)k + 0.5 + (double)aint[0][2] * 0.5;
--            double d3 = (double)i + 0.5 + (double)aint[1][0] * 0.5;
--            double d4 = (double)j + 0.0625 + (double)aint[1][1] * 0.5;
--            double d5 = (double)k + 0.5 + (double)aint[1][2] * 0.5;
-+            double d0 = (double)i + 0.5D + (double)aint[0][0] * 0.5D;
-+            double d1 = (double)j + 0.0625D + (double)aint[0][1] * 0.5D;
-+            double d2 = (double)k + 0.5D + (double)aint[0][2] * 0.5D;
-+            double d3 = (double)i + 0.5D + (double)aint[1][0] * 0.5D;
-+            double d4 = (double)j + 0.0625D + (double)aint[1][1] * 0.5D;
-+            double d5 = (double)k + 0.5D + (double)aint[1][2] * 0.5D;
-             double d6 = d3 - d0;
--            double d7 = (d4 - d1) * 2.0;
-+            double d7 = (d4 - d1) * 2.0D;
-             double d8 = d5 - d2;
-             double d9;
- 
--            if (d6 == 0.0)
-+            if (d6 == 0.0D)
-             {
-                 d9 = p_70489_5_ - (double)k;
-             }
--            else if (d8 == 0.0)
-+            else if (d8 == 0.0D)
-             {
-                 d9 = p_70489_1_ - (double)i;
-             }
-@@ -794,21 +784,21 @@
-             {
-                 double d10 = p_70489_1_ - d0;
-                 double d11 = p_70489_5_ - d2;
--                d9 = (d10 * d6 + d11 * d8) * 2.0;
-+                d9 = (d10 * d6 + d11 * d8) * 2.0D;
-             }
- 
-             p_70489_1_ = d0 + d6 * d9;
-             p_70489_3_ = d1 + d7 * d9;
-             p_70489_5_ = d2 + d8 * d9;
- 
--            if (d7 < 0.0)
-+            if (d7 < 0.0D)
-             {
--                p_70489_3_++;
-+                ++p_70489_3_;
-             }
- 
--            if (d7 > 0.0)
-+            if (d7 > 0.0D)
-             {
--                p_70489_3_ += 0.5;
-+                p_70489_3_ += 0.5D;
-             }
- 
-             return new Vec3d(p_70489_1_, p_70489_3_, p_70489_5_);
-@@ -820,18 +810,16 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public AxisAlignedBB func_184177_bl()
++            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, new BlockPos(i, j, k), iblockstate, this);
+             int[][] aint = MATRIX[blockrailbase$enumraildirection.getMetadata()];
+             double d0 = (double)i + 0.5 + (double)aint[0][0] * 0.5;
+             double d1 = (double)j + 0.0625 + (double)aint[0][1] * 0.5;
+@@ -870,6 +890,12 @@
+     @Override
+     public void applyEntityCollision(Entity entityIn)
      {
-         AxisAlignedBB axisalignedbb = this.func_174813_aQ();
--        return this.func_94100_s() ? axisalignedbb.func_186662_g((double)Math.abs(this.func_94099_q()) / 16.0) : axisalignedbb;
-+        return this.func_94100_s() ? axisalignedbb.func_186662_g((double)Math.abs(this.func_94099_q()) / 16.0D) : axisalignedbb;
-     }
- 
-     public static void func_189669_a(DataFixer p_189669_0_, Class<?> p_189669_1_)
-     {
-     }
- 
--    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
-     {
-         if (p_70037_1_.func_74767_n("CustomDisplayTile"))
-@@ -853,7 +841,6 @@
-         }
-     }
- 
--    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
-     {
-         if (this.func_94100_s())
-@@ -867,9 +854,14 @@
-         }
-     }
- 
--    @Override
-     public void func_70108_f(Entity p_70108_1_)
-     {
-+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartCollisionEvent(this, p_70108_1_));
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartCollisionEvent(this, entityIn));
 +        if (getCollisionHandler() != null)
 +        {
-+            getCollisionHandler().onEntityCollision(this, p_70108_1_);
++            getCollisionHandler().onEntityCollision(this, entityIn);
 +            return;
 +        }
-         if (!this.field_70170_p.field_72995_K)
+         if (!this.world.isRemote)
          {
-             if (!p_70108_1_.field_70145_X && !this.field_70145_X)
-@@ -880,41 +872,36 @@
-                     double d1 = p_70108_1_.field_70161_v - this.field_70161_v;
-                     double d2 = d0 * d0 + d1 * d1;
+             if (!entityIn.noClip && !this.noClip)
+@@ -922,7 +948,7 @@
+                             double d7 = entityIn.motionX + this.motionX;
+                             double d8 = entityIn.motionZ + this.motionZ;
  
--                    if (d2 >= 1.0E-4F)
-+                    if (d2 >= 9.999999747378752E-5D)
-                     {
-                         d2 = (double)MathHelper.func_76133_a(d2);
--                        d0 /= d2;
--                        d1 /= d2;
--                        double d3 = 1.0 / d2;
-+                        d0 = d0 / d2;
-+                        d1 = d1 / d2;
-+                        double d3 = 1.0D / d2;
- 
--                        if (d3 > 1.0)
-+                        if (d3 > 1.0D)
-                         {
--                            d3 = 1.0;
-+                            d3 = 1.0D;
-                         }
- 
--                        d0 *= d3;
--                        d1 *= d3;
--                        d0 *= 0.1F;
--                        d1 *= 0.1F;
--                        d0 *= (double)(1.0F - this.field_70144_Y);
--                        d1 *= (double)(1.0F - this.field_70144_Y);
--                        d0 *= 0.5;
--                        d1 *= 0.5;
-+                        d0 = d0 * d3;
-+                        d1 = d1 * d3;
-+                        d0 = d0 * 0.10000000149011612D;
-+                        d1 = d1 * 0.10000000149011612D;
-+                        d0 = d0 * (double)(1.0F - this.field_70144_Y);
-+                        d1 = d1 * (double)(1.0F - this.field_70144_Y);
-+                        d0 = d0 * 0.5D;
-+                        d1 = d1 * 0.5D;
- 
-                         if (p_70108_1_ instanceof EntityMinecart)
-                         {
-                             double d4 = p_70108_1_.field_70165_t - this.field_70165_t;
-                             double d5 = p_70108_1_.field_70161_v - this.field_70161_v;
--                            Vec3d vec3d = new Vec3d(d4, 0.0, d5).func_72432_b();
--                            Vec3d vec3d1 = new Vec3d(
--                                (double)MathHelper.func_76134_b(this.field_70177_z * (float)(Math.PI / 180.0)),
--                                0.0,
--                                (double)MathHelper.func_76126_a(this.field_70177_z * (float)(Math.PI / 180.0))
--                            )
--                            .func_72432_b();
-+                            Vec3d vec3d = (new Vec3d(d4, 0.0D, d5)).func_72432_b();
-+                            Vec3d vec3d1 = (new Vec3d((double)MathHelper.func_76134_b(this.field_70177_z * 0.017453292F), 0.0D, (double)MathHelper.func_76126_a(this.field_70177_z * 0.017453292F))).func_72432_b();
-                             double d6 = Math.abs(vec3d.func_72430_b(vec3d1));
- 
--                            if (d6 < 0.8F)
-+                            if (d6 < 0.800000011920929D)
+-                            if (((EntityMinecart)entityIn).getType() == EntityMinecart.Type.FURNACE && this.getType() != EntityMinecart.Type.FURNACE)
++                            if (((EntityMinecart)entityIn).isPoweredCart() && !isPoweredCart())
                              {
-                                 return;
+                                 this.motionX *= 0.2F;
+                                 this.motionZ *= 0.2F;
+@@ -930,8 +956,7 @@
+                                 entityIn.motionX *= 0.95F;
+                                 entityIn.motionZ *= 0.95F;
                              }
-@@ -922,39 +909,38 @@
-                             double d7 = p_70108_1_.field_70159_w + this.field_70159_w;
-                             double d8 = p_70108_1_.field_70179_y + this.field_70179_y;
- 
--                            if (((EntityMinecart)p_70108_1_).func_184264_v() == EntityMinecart.Type.FURNACE && this.func_184264_v() != EntityMinecart.Type.FURNACE)
-+                            if (((EntityMinecart)p_70108_1_).isPoweredCart() && !isPoweredCart())
+-                            else if (((EntityMinecart)entityIn).getType() != EntityMinecart.Type.FURNACE
+-                                     && this.getType() == EntityMinecart.Type.FURNACE)
++                            else if (!((EntityMinecart)entityIn).isPoweredCart() && isPoweredCart())
                              {
--                                this.field_70159_w *= 0.2F;
--                                this.field_70179_y *= 0.2F;
--                                this.func_70024_g(p_70108_1_.field_70159_w - d0, 0.0, p_70108_1_.field_70179_y - d1);
--                                p_70108_1_.field_70159_w *= 0.95F;
--                                p_70108_1_.field_70179_y *= 0.95F;
-+                                this.field_70159_w *= 0.20000000298023224D;
-+                                this.field_70179_y *= 0.20000000298023224D;
-+                                this.func_70024_g(p_70108_1_.field_70159_w - d0, 0.0D, p_70108_1_.field_70179_y - d1);
-+                                p_70108_1_.field_70159_w *= 0.949999988079071D;
-+                                p_70108_1_.field_70179_y *= 0.949999988079071D;
-                             }
--                            else if (((EntityMinecart)p_70108_1_).func_184264_v() != EntityMinecart.Type.FURNACE
--                                     && this.func_184264_v() == EntityMinecart.Type.FURNACE)
-+                            else if (!((EntityMinecart)p_70108_1_).isPoweredCart() && isPoweredCart())
-                             {
--                                p_70108_1_.field_70159_w *= 0.2F;
--                                p_70108_1_.field_70179_y *= 0.2F;
--                                p_70108_1_.func_70024_g(this.field_70159_w + d0, 0.0, this.field_70179_y + d1);
--                                this.field_70159_w *= 0.95F;
--                                this.field_70179_y *= 0.95F;
-+                                p_70108_1_.field_70159_w *= 0.20000000298023224D;
-+                                p_70108_1_.field_70179_y *= 0.20000000298023224D;
-+                                p_70108_1_.func_70024_g(this.field_70159_w + d0, 0.0D, this.field_70179_y + d1);
-+                                this.field_70159_w *= 0.949999988079071D;
-+                                this.field_70179_y *= 0.949999988079071D;
-                             }
-                             else
-                             {
--                                d7 /= 2.0;
--                                d8 /= 2.0;
--                                this.field_70159_w *= 0.2F;
--                                this.field_70179_y *= 0.2F;
--                                this.func_70024_g(d7 - d0, 0.0, d8 - d1);
--                                p_70108_1_.field_70159_w *= 0.2F;
--                                p_70108_1_.field_70179_y *= 0.2F;
--                                p_70108_1_.func_70024_g(d7 + d0, 0.0, d8 + d1);
-+                                d7 = d7 / 2.0D;
-+                                d8 = d8 / 2.0D;
-+                                this.field_70159_w *= 0.20000000298023224D;
-+                                this.field_70179_y *= 0.20000000298023224D;
-+                                this.func_70024_g(d7 - d0, 0.0D, d8 - d1);
-+                                p_70108_1_.field_70159_w *= 0.20000000298023224D;
-+                                p_70108_1_.field_70179_y *= 0.20000000298023224D;
-+                                p_70108_1_.func_70024_g(d7 + d0, 0.0D, d8 + d1);
-                             }
-                         }
-                         else
-                         {
--                            this.func_70024_g(-d0, 0.0, -d1);
--                            p_70108_1_.func_70024_g(d0 / 4.0, 0.0, d1 / 4.0);
-+                            this.func_70024_g(-d0, 0.0D, -d1);
-+                            p_70108_1_.func_70024_g(d0 / 4.0D, 0.0D, d1 / 4.0D);
-                         }
-                     }
-                 }
-@@ -963,10 +949,7 @@
+                                 entityIn.motionX *= 0.2F;
+                                 entityIn.motionZ *= 0.2F;
+@@ -963,10 +988,7 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
--    public void func_180426_a(
--        double p_180426_1_, double p_180426_3_, double p_180426_5_, float p_180426_7_, float p_180426_8_, int p_180426_9_, boolean p_180426_10_
+-    public void setPositionAndRotationDirect(
+-        double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport
 -    )
-+    public void func_180426_a(double p_180426_1_, double p_180426_3_, double p_180426_5_, float p_180426_7_, float p_180426_8_, int p_180426_9_, boolean p_180426_10_)
++    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
      {
-         this.field_70511_i = p_180426_1_;
-         this.field_70509_j = p_180426_3_;
-@@ -979,8 +962,12 @@
-         this.field_70179_y = this.field_70506_as;
+         this.minecartX = x;
+         this.minecartY = y;
+@@ -1064,6 +1086,236 @@
+     {
+         this.getDataManager().set(SHOW_BLOCK, showBlock);
      }
- 
-+    public void func_70492_c(float p_70492_1_)
-+    {
-+        this.field_70180_af.func_187227_b(field_184267_c, Float.valueOf(p_70492_1_));
-+    }
-+
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void func_70016_h(double p_70016_1_, double p_70016_3_, double p_70016_5_)
-     {
-         this.field_70159_w = p_70016_1_;
-@@ -991,41 +978,36 @@
-         this.field_70506_as = this.field_70179_y;
-     }
- 
--    public void func_70492_c(float p_70492_1_)
--    {
--        this.field_70180_af.func_187227_b(field_184267_c, p_70492_1_);
--    }
--
-     public float func_70491_i()
-     {
--        return this.field_70180_af.func_187225_a(field_184267_c);
-+        return ((Float)this.field_70180_af.func_187225_a(field_184267_c)).floatValue();
-     }
- 
-     public void func_70497_h(int p_70497_1_)
-     {
--        this.field_70180_af.func_187227_b(field_184265_a, p_70497_1_);
-+        this.field_70180_af.func_187227_b(field_184265_a, Integer.valueOf(p_70497_1_));
-     }
- 
-     public int func_70496_j()
-     {
--        return this.field_70180_af.func_187225_a(field_184265_a);
-+        return ((Integer)this.field_70180_af.func_187225_a(field_184265_a)).intValue();
-     }
- 
-     public void func_70494_i(int p_70494_1_)
-     {
--        this.field_70180_af.func_187227_b(field_184266_b, p_70494_1_);
-+        this.field_70180_af.func_187227_b(field_184266_b, Integer.valueOf(p_70494_1_));
-     }
- 
-     public int func_70493_k()
-     {
--        return this.field_70180_af.func_187225_a(field_184266_b);
-+        return ((Integer)this.field_70180_af.func_187225_a(field_184266_b)).intValue();
-     }
- 
-     public abstract EntityMinecart.Type func_184264_v();
- 
-     public IBlockState func_174897_t()
-     {
--        return !this.func_94100_s() ? this.func_180457_u() : Block.func_176220_d(this.func_184212_Q().func_187225_a(field_184268_d));
-+        return !this.func_94100_s() ? this.func_180457_u() : Block.func_176220_d(((Integer)this.func_184212_Q().func_187225_a(field_184268_d)).intValue());
-     }
- 
-     public IBlockState func_180457_u()
-@@ -1035,7 +1017,7 @@
- 
-     public int func_94099_q()
-     {
--        return !this.func_94100_s() ? this.func_94085_r() : this.func_184212_Q().func_187225_a(field_184269_e);
-+        return !this.func_94100_s() ? this.func_94085_r() : ((Integer)this.func_184212_Q().func_187225_a(field_184269_e)).intValue();
-     }
- 
-     public int func_94085_r()
-@@ -1045,25 +1027,255 @@
- 
-     public void func_174899_a(IBlockState p_174899_1_)
-     {
--        this.func_184212_Q().func_187227_b(field_184268_d, Block.func_176210_f(p_174899_1_));
-+        this.func_184212_Q().func_187227_b(field_184268_d, Integer.valueOf(Block.func_176210_f(p_174899_1_)));
-         this.func_94096_e(true);
-     }
- 
-     public void func_94086_l(int p_94086_1_)
-     {
--        this.func_184212_Q().func_187227_b(field_184269_e, p_94086_1_);
-+        this.func_184212_Q().func_187227_b(field_184269_e, Integer.valueOf(p_94086_1_));
-         this.func_94096_e(true);
-     }
- 
-     public boolean func_94100_s()
-     {
--        return this.func_184212_Q().func_187225_a(field_184270_f);
-+        return ((Boolean)this.func_184212_Q().func_187225_a(field_184270_f)).booleanValue();
-     }
- 
-     public void func_94096_e(boolean p_94096_1_)
-     {
--        this.func_184212_Q().func_187227_b(field_184270_f, p_94096_1_);
--    }
-+        this.func_184212_Q().func_187227_b(field_184270_f, Boolean.valueOf(p_94096_1_));
-+    }
 +    
 +    @Override
-+    public boolean func_184230_a(EntityPlayer player, net.minecraft.util.EnumHand hand)
++    public boolean processInitialInteract(EntityPlayer player, net.minecraft.util.EnumHand hand)
 +    {
 +        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, hand));
 +    }
@@ -1079,22 +303,22 @@
 +    /* =================================== FORGE START ===========================================*/
 +    private BlockPos getCurrentRailPosition()
 +    {
-+        int x = MathHelper.func_76128_c(this.field_70165_t);
-+        int y = MathHelper.func_76128_c(this.field_70163_u);
-+        int z = MathHelper.func_76128_c(this.field_70161_v);
++        int x = MathHelper.floor(this.posX);
++        int y = MathHelper.floor(this.posY);
++        int z = MathHelper.floor(this.posZ);
 +
-+        if (BlockRailBase.func_176562_d(this.field_70170_p, new BlockPos(x, y - 1, z))) y--;
++        if (BlockRailBase.isRailBlock(this.world, new BlockPos(x, y - 1, z))) y--;
 +        return new BlockPos(x, y, z);
 +    }
 +
 +    protected double getMaxSpeed()
 +    {
-+        if (!canUseRail()) return func_174898_m();
++        if (!canUseRail()) return getMaximumSpeed();
 +        BlockPos pos = this.getCurrentRailPosition();
-+        IBlockState state = this.field_70170_p.func_180495_p(pos);
-+        if (!BlockRailBase.func_176563_d(state)) return func_174898_m();
++        IBlockState state = this.world.getBlockState(pos);
++        if (!BlockRailBase.isRailBlock(state)) return getMaximumSpeed();
 +
-+        float railMaxSpeed = ((BlockRailBase)state.func_177230_c()).getRailMaxSpeed(field_70170_p, this, pos);
++        float railMaxSpeed = ((BlockRailBase)state.getBlock()).getRailMaxSpeed(world, this, pos);
 +        return Math.min(railMaxSpeed, getCurrentCartSpeedCapOnRail());
 +    }
 +
@@ -1104,19 +328,19 @@
 +     */
 +    public void moveMinecartOnRail(BlockPos pos)
 +    {
-+        double mX = this.field_70159_w;
-+        double mZ = this.field_70179_y;
++        double mX = this.motionX;
++        double mZ = this.motionZ;
 +
-+        if (this.func_184207_aI())
++        if (this.isBeingRidden())
 +        {
 +            mX *= 0.75D;
 +            mZ *= 0.75D;
 +        }
 +
 +        double max = this.getMaxSpeed();
-+        mX = MathHelper.func_151237_a(mX, -max, max);
-+        mZ = MathHelper.func_151237_a(mZ, -max, max);
-+        this.func_70091_d(MoverType.SELF, mX, 0.0D, mZ);
++        mX = MathHelper.clamp(mX, -max, max);
++        mZ = MathHelper.clamp(mZ, -max, max);
++        this.move(MoverType.SELF, mX, 0.0D, mZ);
 +    }
 +
 +    /**
@@ -1150,25 +374,25 @@
 +    {
 +        if (this instanceof EntityMinecartFurnace)
 +        {
-+            return new ItemStack(Items.field_151109_aJ);
++            return new ItemStack(Items.FURNACE_MINECART);
 +        }
 +        else if (this instanceof EntityMinecartChest)
 +        {
-+            return new ItemStack(Items.field_151108_aI);
++            return new ItemStack(Items.CHEST_MINECART);
 +        }
 +        else if (this instanceof EntityMinecartTNT)
 +        {
-+            return new ItemStack(Items.field_151142_bV);
++            return new ItemStack(Items.TNT_MINECART);
 +        }
 +        else if (this instanceof EntityMinecartHopper)
 +        {
-+            return new ItemStack(Items.field_151140_bW);
++            return new ItemStack(Items.HOPPER_MINECART);
 +        }
 +        else if (this instanceof EntityMinecartCommandBlock)
 +        {
-+            return new ItemStack(Items.field_151095_cc);
++            return new ItemStack(Items.COMMAND_BLOCK_MINECART);
 +        }
-+        return new ItemStack(Items.field_151143_au);
++        return new ItemStack(Items.MINECART);
 +    }
 +
 +    /**
@@ -1206,7 +430,7 @@
 +     */
 +    public boolean isPoweredCart()
 +    {
-+        return func_184264_v() == EntityMinecart.Type.FURNACE;
++        return getType() == EntityMinecart.Type.FURNACE;
 +    }
 +
 +    /**
@@ -1215,7 +439,7 @@
 +     */
 +    public boolean canBeRidden()
 +    {
-+        return this.func_184264_v() == EntityMinecart.Type.RIDEABLE;
++        return this.getType() == EntityMinecart.Type.RIDEABLE;
 +    }
 +
 +    /**
@@ -1302,30 +526,3 @@
  
      public static enum Type
      {
-@@ -1075,7 +1287,7 @@
-         HOPPER(5, "MinecartHopper"),
-         COMMAND_BLOCK(6, "MinecartCommandBlock");
- 
--        private static final Map<Integer, EntityMinecart.Type> field_184965_h = Maps.newHashMap();
-+        private static final Map<Integer, EntityMinecart.Type> field_184965_h = Maps.<Integer, EntityMinecart.Type>newHashMap();
-         private final int field_184966_i;
-         private final String field_184967_j;
- 
-@@ -1098,7 +1310,7 @@
-         @SideOnly(Side.CLIENT)
-         public static EntityMinecart.Type func_184955_a(int p_184955_0_)
-         {
--            EntityMinecart.Type entityminecart$type = field_184965_h.get(p_184955_0_);
-+            EntityMinecart.Type entityminecart$type = field_184965_h.get(Integer.valueOf(p_184955_0_));
-             return entityminecart$type == null ? RIDEABLE : entityminecart$type;
-         }
- 
-@@ -1106,7 +1318,7 @@
-         {
-             for (EntityMinecart.Type entityminecart$type : values())
-             {
--                field_184965_h.put(entityminecart$type.func_184956_a(), entityminecart$type);
-+                field_184965_h.put(Integer.valueOf(entityminecart$type.func_184956_a()), entityminecart$type);
-             }
-         }
-     }

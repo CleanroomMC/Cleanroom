@@ -13,7 +13,7 @@
  import net.minecraft.util.math.BlockPos;
 @@ -39,7 +42,7 @@
              {
-                 float f = this.field_75537_a.func_72826_c(0.0F);
+                 float f = this.world.getCelestialAngle(0.0F);
  
 -                if ((double)f < 0.5 || (double)f > 0.501)
 +                if ((double)f < 0.5D || (double)f > 0.501D)
@@ -22,28 +22,28 @@
                  }
 @@ -67,7 +70,7 @@
  
-                 if (this.field_75534_e > 0)
+                 if (this.nextSpawnTime > 0)
                  {
--                    this.field_75534_e--;
-+                    --this.field_75534_e;
+-                    this.nextSpawnTime--;
++                    --this.nextSpawnTime;
                  }
                  else
                  {
 @@ -76,7 +79,7 @@
-                     if (this.field_75533_d > 0)
+                     if (this.siegeCount > 0)
                      {
-                         this.func_75530_c();
--                        this.field_75533_d--;
-+                        --this.field_75533_d;
+                         this.spawnZombie();
+-                        this.siegeCount--;
++                        --this.siegeCount;
                      }
                      else
                      {
 @@ -89,27 +92,34 @@
  
-     private boolean func_75529_b()
+     private boolean trySetupSiege()
      {
--        for (EntityPlayer entityplayer : this.field_75537_a.field_73010_i)
-+        List<EntityPlayer> list = this.field_75537_a.field_73010_i;
+-        for (EntityPlayer entityplayer : this.world.playerEntities)
++        List<EntityPlayer> list = this.world.playerEntities;
 +        Iterator iterator = list.iterator();
 +
 +        while (true)
@@ -55,41 +55,41 @@
 +
 +            EntityPlayer entityplayer = (EntityPlayer)iterator.next();
 +
-             if (!entityplayer.func_175149_v())
+             if (!entityplayer.isSpectator())
              {
-                 this.field_75531_f = this.field_75537_a.func_175714_ae().func_176056_a(new BlockPos(entityplayer), 1);
+                 this.village = this.world.getVillageCollection().getNearestVillage(new BlockPos(entityplayer), 1);
  
--                if (this.field_75531_f != null
--                        && this.field_75531_f.func_75567_c() >= 10
--                        && this.field_75531_f.func_75561_d() >= 20
--                        && this.field_75531_f.func_75562_e() >= 20)
-+                if (this.field_75531_f != null && this.field_75531_f.func_75567_c() >= 10 && this.field_75531_f.func_75561_d() >= 20 && this.field_75531_f.func_75562_e() >= 20)
+-                if (this.village != null
+-                        && this.village.getNumVillageDoors() >= 10
+-                        && this.village.getTicksSinceLastDoorAdding() >= 20
+-                        && this.village.getNumVillagers() >= 20)
++                if (this.village != null && this.village.getNumVillageDoors() >= 10 && this.village.getTicksSinceLastDoorAdding() >= 20 && this.village.getNumVillagers() >= 20)
                  {
-                     BlockPos blockpos = this.field_75531_f.func_180608_a();
-                     float f = (float)this.field_75531_f.func_75568_b();
+                     BlockPos blockpos = this.village.getCenter();
+                     float f = (float)this.village.getVillageRadius();
                      boolean flag = false;
  
 -                    for (int i = 0; i < 10; i++)
 +                    for (int i = 0; i < 10; ++i)
                      {
--                        float f1 = this.field_75537_a.field_73012_v.nextFloat() * (float)(Math.PI * 2);
--                        this.field_75532_g = blockpos.func_177958_n() + (int)((double)(MathHelper.func_76134_b(f1) * f) * 0.9);
-+                        float f1 = this.field_75537_a.field_73012_v.nextFloat() * ((float)Math.PI * 2F);
-+                        this.field_75532_g = blockpos.func_177958_n() + (int)((double)(MathHelper.func_76134_b(f1) * f) * 0.9D);
-                         this.field_75538_h = blockpos.func_177956_o();
--                        this.field_75539_i = blockpos.func_177952_p() + (int)((double)(MathHelper.func_76126_a(f1) * f) * 0.9);
-+                        this.field_75539_i = blockpos.func_177952_p() + (int)((double)(MathHelper.func_76126_a(f1) * f) * 0.9D);
+-                        float f1 = this.world.rand.nextFloat() * (float)(Math.PI * 2);
+-                        this.spawnX = blockpos.getX() + (int)((double)(MathHelper.cos(f1) * f) * 0.9);
++                        float f1 = this.world.rand.nextFloat() * ((float)Math.PI * 2F);
++                        this.spawnX = blockpos.getX() + (int)((double)(MathHelper.cos(f1) * f) * 0.9D);
+                         this.spawnY = blockpos.getY();
+-                        this.spawnZ = blockpos.getZ() + (int)((double)(MathHelper.sin(f1) * f) * 0.9);
++                        this.spawnZ = blockpos.getZ() + (int)((double)(MathHelper.sin(f1) * f) * 0.9D);
                          flag = false;
  
-                         for (Village village : this.field_75537_a.func_175714_ae().func_75540_b())
+                         for (Village village : this.world.getVillageCollection().getVillageList())
 @@ -136,15 +146,16 @@
  
                      if (vec3d != null)
                      {
--                        this.field_75534_e = 0;
--                        this.field_75533_d = 20;
+-                        this.nextSpawnTime = 0;
+-                        this.siegeCount = 20;
 -                        return true;
-+                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.village.VillageSiegeEvent(this, field_75537_a, entityplayer, field_75531_f, vec3d))) return false;
++                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.village.VillageSiegeEvent(this, world, entityplayer, village, vec3d))) return false;
 +                        break;
                      }
                  }
@@ -97,36 +97,36 @@
          }
  
 -        return false;
-+        this.field_75534_e = 0;
-+        this.field_75533_d = 20;
++        this.nextSpawnTime = 0;
++        this.siegeCount = 20;
 +        return true;
      }
  
-     private boolean func_75530_c()
+     private boolean spawnZombie()
 @@ -162,7 +173,7 @@
              try
              {
-                 entityzombie = new EntityZombie(this.field_75537_a);
--                entityzombie.func_180482_a(this.field_75537_a.func_175649_E(new BlockPos(entityzombie)), null);
-+                entityzombie.func_180482_a(this.field_75537_a.func_175649_E(new BlockPos(entityzombie)), (IEntityLivingData)null);
+                 entityzombie = new EntityZombie(this.world);
+-                entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), null);
++                entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
              }
              catch (Exception exception)
              {
 @@ -181,14 +192,11 @@
      @Nullable
-     private Vec3d func_179867_a(BlockPos p_179867_1_)
+     private Vec3d findRandomSpawnPos(BlockPos pos)
      {
 -        for (int i = 0; i < 10; i++)
 +        for (int i = 0; i < 10; ++i)
          {
--            BlockPos blockpos = p_179867_1_.func_177982_a(
--                                    this.field_75537_a.field_73012_v.nextInt(16) - 8, this.field_75537_a.field_73012_v.nextInt(6) - 3, this.field_75537_a.field_73012_v.nextInt(16) - 8
+-            BlockPos blockpos = pos.add(
+-                                    this.world.rand.nextInt(16) - 8, this.world.rand.nextInt(6) - 3, this.world.rand.nextInt(16) - 8
 -                                );
-+            BlockPos blockpos = p_179867_1_.func_177982_a(this.field_75537_a.field_73012_v.nextInt(16) - 8, this.field_75537_a.field_73012_v.nextInt(6) - 3, this.field_75537_a.field_73012_v.nextInt(16) - 8);
++            BlockPos blockpos = pos.add(this.world.rand.nextInt(16) - 8, this.world.rand.nextInt(6) - 3, this.world.rand.nextInt(16) - 8);
  
--            if (this.field_75531_f.func_179866_a(blockpos)
--                    && WorldEntitySpawner.func_180267_a(EntityLiving.SpawnPlacementType.ON_GROUND, this.field_75537_a, blockpos))
-+            if (this.field_75531_f.func_179866_a(blockpos) && WorldEntitySpawner.func_180267_a(EntityLiving.SpawnPlacementType.ON_GROUND, this.field_75537_a, blockpos))
+-            if (this.village.isBlockPosWithinSqVillageRadius(blockpos)
+-                    && WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, this.world, blockpos))
++            if (this.village.isBlockPosWithinSqVillageRadius(blockpos) && WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, this.world, blockpos))
              {
-                 return new Vec3d((double)blockpos.func_177958_n(), (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p());
+                 return new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
              }

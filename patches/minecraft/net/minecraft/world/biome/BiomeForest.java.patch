@@ -2,55 +2,55 @@
 +++ after/net/minecraft/world/biome/BiomeForest.java
 @@ -46,36 +46,41 @@
          {
-             this.field_76760_I.field_76832_z = -999;
+             this.decorator.treesPerChunk = -999;
          }
 +
-+        if (this.field_150632_aF == BiomeForest.Type.FLOWER) //Needs to be done here so we have access to this.type
++        if (this.type == BiomeForest.Type.FLOWER) //Needs to be done here so we have access to this.type
 +        {
 +            this.flowers.clear();
 +            for (BlockFlower.EnumFlowerType type : BlockFlower.EnumFlowerType.values())
 +            {
-+                if (type.func_176964_a() == BlockFlower.EnumFlowerColor.YELLOW) continue;
++                if (type.getBlockType() == BlockFlower.EnumFlowerColor.YELLOW) continue;
 +                if (type == BlockFlower.EnumFlowerType.BLUE_ORCHID) type = BlockFlower.EnumFlowerType.POPPY;
-+                addFlower(net.minecraft.init.Blocks.field_150328_O.func_176223_P().func_177226_a(net.minecraft.init.Blocks.field_150328_O.func_176494_l(), type), 10);
++                addFlower(net.minecraft.init.Blocks.RED_FLOWER.getDefaultState().withProperty(net.minecraft.init.Blocks.RED_FLOWER.getTypeProperty(), type), 10);
 +            }
 +        }
      }
  
 -    @Override
-     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
      {
-         if (this.field_150632_aF == BiomeForest.Type.ROOFED && p_150567_1_.nextInt(3) > 0)
+         if (this.type == BiomeForest.Type.ROOFED && rand.nextInt(3) > 0)
          {
-             return field_150631_aE;
+             return ROOF_TREE;
          }
--        else if (this.field_150632_aF == BiomeForest.Type.BIRCH || p_150567_1_.nextInt(5) == 0)
+-        else if (this.type == BiomeForest.Type.BIRCH || rand.nextInt(5) == 0)
 -        {
--            return field_150630_aD;
+-            return BIRCH_TREE;
 -        }
 -        else
-+        else if (this.field_150632_aF != BiomeForest.Type.BIRCH && p_150567_1_.nextInt(5) != 0)
++        else if (this.type != BiomeForest.Type.BIRCH && rand.nextInt(5) != 0)
          {
-             return (WorldGenAbstractTree)(p_150567_1_.nextInt(10) == 0 ? field_76758_O : field_76757_N);
+             return (WorldGenAbstractTree)(rand.nextInt(10) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
          }
 +        else
 +        {
-+            return field_150630_aD;
++            return BIRCH_TREE;
 +        }
      }
  
 -    @Override
-     public BlockFlower.EnumFlowerType func_180623_a(Random p_180623_1_, BlockPos p_180623_2_)
+     public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
      {
-         if (this.field_150632_aF == BiomeForest.Type.FLOWER)
+         if (this.type == BiomeForest.Type.FLOWER)
          {
--            double d0 = MathHelper.func_151237_a(
--                            (1.0 + field_180281_af.func_151601_a((double)p_180623_2_.func_177958_n() / 48.0, (double)p_180623_2_.func_177952_p() / 48.0)) / 2.0, 0.0, 0.9999
+-            double d0 = MathHelper.clamp(
+-                            (1.0 + GRASS_COLOR_NOISE.getValue((double)pos.getX() / 48.0, (double)pos.getZ() / 48.0)) / 2.0, 0.0, 0.9999
 -                        );
 -            BlockFlower.EnumFlowerType blockflower$enumflowertype = BlockFlower.EnumFlowerType.values()[(int)(
 -                        d0 * (double)BlockFlower.EnumFlowerType.values().length
 -                    )];
-+            double d0 = MathHelper.func_151237_a((1.0D + field_180281_af.func_151601_a((double)p_180623_2_.func_177958_n() / 48.0D, (double)p_180623_2_.func_177952_p() / 48.0D)) / 2.0D, 0.0D, 0.9999D);
++            double d0 = MathHelper.clamp((1.0D + GRASS_COLOR_NOISE.getValue((double)pos.getX() / 48.0D, (double)pos.getZ() / 48.0D)) / 2.0D, 0.0D, 0.9999D);
 +            BlockFlower.EnumFlowerType blockflower$enumflowertype = BlockFlower.EnumFlowerType.values()[(int)(d0 * (double)BlockFlower.EnumFlowerType.values().length)];
              return blockflower$enumflowertype == BlockFlower.EnumFlowerType.BLUE_ORCHID ? BlockFlower.EnumFlowerType.POPPY : blockflower$enumflowertype;
          }
@@ -60,27 +60,27 @@
      }
  
 -    @Override
-     public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
+     public void decorate(World worldIn, Random rand, BlockPos pos)
      {
-         if (this.field_150632_aF == BiomeForest.Type.ROOFED)
+         if (this.type == BiomeForest.Type.ROOFED)
 @@ -92,6 +96,8 @@
-             this.func_185379_b(p_180624_1_, p_180624_2_, p_180624_3_);
+             this.addMushrooms(worldIn, rand, pos);
          }
  
-+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
++        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
 +        { // no tab for patch
-         int i = p_180624_2_.nextInt(5) - 3;
+         int i = rand.nextInt(5) - 3;
  
-         if (this.field_150632_aF == BiomeForest.Type.FLOWER)
+         if (this.type == BiomeForest.Type.FLOWER)
 @@ -100,25 +106,27 @@
          }
  
-         this.func_185378_a(p_180624_1_, p_180624_2_, p_180624_3_, i);
+         this.addDoublePlants(worldIn, rand, pos, i);
 +        }
-         super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
+         super.decorate(worldIn, rand, pos);
      }
  
-     public void func_185379_b(World p_185379_1_, Random p_185379_2_, BlockPos p_185379_3_)
+     public void addMushrooms(World p_185379_1_, Random p_185379_2_, BlockPos p_185379_3_)
      {
 -        for (int i = 0; i < 4; i++)
 +
@@ -91,22 +91,22 @@
              {
                  int k = i * 4 + 1 + 8 + p_185379_2_.nextInt(3);
                  int l = j * 4 + 1 + 8 + p_185379_2_.nextInt(3);
-                 BlockPos blockpos = p_185379_1_.func_175645_m(p_185379_3_.func_177982_a(k, 0, l));
+                 BlockPos blockpos = p_185379_1_.getHeight(p_185379_3_.add(k, 0, l));
  
 -                if (p_185379_2_.nextInt(20) == 0)
 +                if (p_185379_2_.nextInt(20) == 0 && net.minecraftforge.event.terraingen.TerrainGen.decorate(p_185379_1_, p_185379_2_, new net.minecraft.util.math.ChunkPos(p_185379_3_), blockpos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.BIG_SHROOM))
                  {
                      WorldGenBigMushroom worldgenbigmushroom = new WorldGenBigMushroom();
-                     worldgenbigmushroom.func_180709_b(p_185379_1_, p_185379_2_, blockpos);
+                     worldgenbigmushroom.generate(p_185379_1_, p_185379_2_, blockpos);
                  }
 -                else
 +                else if (net.minecraftforge.event.terraingen.TerrainGen.decorate(p_185379_1_, p_185379_2_, new net.minecraft.util.math.ChunkPos(p_185379_3_), blockpos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.TREE))
                  {
-                     WorldGenAbstractTree worldgenabstracttree = this.func_150567_a(p_185379_2_);
-                     worldgenabstracttree.func_175904_e();
+                     WorldGenAbstractTree worldgenabstracttree = this.getRandomTreeFeature(p_185379_2_);
+                     worldgenabstracttree.setDecorationDefaults();
 @@ -134,7 +142,7 @@
  
-     public void func_185378_a(World p_185378_1_, Random p_185378_2_, BlockPos p_185378_3_, int p_185378_4_)
+     public void addDoublePlants(World p_185378_1_, Random p_185378_2_, BlockPos p_185378_3_, int p_185378_4_)
      {
 -        for (int i = 0; i < p_185378_4_; i++)
 +        for (int i = 0; i < p_185378_4_; ++i)
@@ -114,7 +114,7 @@
              int j = p_185378_2_.nextInt(3);
  
 @@ -151,7 +159,7 @@
-                 field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.PAEONIA);
+                 DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.PAEONIA);
              }
  
 -            for (int k = 0; k < 5; k++)
@@ -127,13 +127,13 @@
      }
  
 -    @Override
-     public Class <? extends Biome > func_150562_l()
+     public Class <? extends Biome > getBiomeClass()
      {
          return BiomeForest.class;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public int func_180627_b(BlockPos p_180627_1_)
+     public int getGrassColorAtPos(BlockPos pos)
      {
-         int i = super.func_180627_b(p_180627_1_);
+         int i = super.getGrassColorAtPos(pos);

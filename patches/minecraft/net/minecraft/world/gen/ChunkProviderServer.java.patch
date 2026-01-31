@@ -11,92 +11,92 @@
 @@ -29,11 +30,12 @@
  public class ChunkProviderServer implements IChunkProvider
  {
-     private static final Logger field_147417_b = LogManager.getLogger();
--    private final Set<Long> field_73248_b = Sets.newHashSet();
-+    private final Set<Long> field_73248_b = Sets.<Long>newHashSet();
-     public final IChunkGenerator field_186029_c;
-     public final IChunkLoader field_73247_e;
--    public final Long2ObjectMap<Chunk> field_73244_f = new Long2ObjectOpenHashMap<>(8192);
-+    public final Long2ObjectMap<Chunk> field_73244_f = new Long2ObjectOpenHashMap<Chunk>(8192);
-     public final WorldServer field_73251_h;
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private final Set<Long> droppedChunks = Sets.newHashSet();
++    private final Set<Long> droppedChunks = Sets.<Long>newHashSet();
+     public final IChunkGenerator chunkGenerator;
+     public final IChunkLoader chunkLoader;
+-    public final Long2ObjectMap<Chunk> loadedChunks = new Long2ObjectOpenHashMap<>(8192);
++    public final Long2ObjectMap<Chunk> loadedChunks = new Long2ObjectOpenHashMap<Chunk>(8192);
+     public final WorldServer world;
 +    private final Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
  
-     public ChunkProviderServer(WorldServer p_i46838_1_, IChunkLoader p_i46838_2_, IChunkGenerator p_i46838_3_)
+     public ChunkProviderServer(WorldServer worldObjIn, IChunkLoader chunkLoaderIn, IChunkGenerator chunkGeneratorIn)
      {
 @@ -51,25 +53,27 @@
      {
-         if (this.field_73251_h.field_73011_w.func_186056_c(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h))
+         if (this.world.provider.canDropChunk(chunkIn.x, chunkIn.z))
          {
--            this.field_73248_b.add(ChunkPos.func_77272_a(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h));
-+            this.field_73248_b.add(Long.valueOf(ChunkPos.func_77272_a(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h)));
-             p_189549_1_.field_189550_d = true;
+-            this.droppedChunks.add(ChunkPos.asLong(chunkIn.x, chunkIn.z));
++            this.droppedChunks.add(Long.valueOf(ChunkPos.asLong(chunkIn.x, chunkIn.z)));
+             chunkIn.unloadQueued = true;
          }
      }
  
-     public void func_73240_a()
+     public void queueUnloadAll()
      {
--        for (Chunk chunk : this.field_73244_f.values())
-+        ObjectIterator objectiterator = this.field_73244_f.values().iterator();
+-        for (Chunk chunk : this.loadedChunks.values())
++        ObjectIterator objectiterator = this.loadedChunks.values().iterator();
 +
 +        while (objectiterator.hasNext())
          {
 +            Chunk chunk = (Chunk)objectiterator.next();
-             this.func_189549_a(chunk);
+             this.queueUnload(chunk);
          }
      }
  
      @Nullable
 -    @Override
-     public Chunk func_186026_b(int p_186026_1_, int p_186026_2_)
+     public Chunk getLoadedChunk(int x, int z)
      {
-         long i = ChunkPos.func_77272_a(p_186026_1_, p_186026_2_);
--        Chunk chunk = this.field_73244_f.get(i);
-+        Chunk chunk = (Chunk)this.field_73244_f.get(i);
+         long i = ChunkPos.asLong(x, z);
+-        Chunk chunk = this.loadedChunks.get(i);
++        Chunk chunk = (Chunk)this.loadedChunks.get(i);
  
          if (chunk != null)
          {
 @@ -82,24 +86,50 @@
      @Nullable
-     public Chunk func_186028_c(int p_186028_1_, int p_186028_2_)
+     public Chunk loadChunk(int x, int z)
      {
-+        return loadChunk(p_186028_1_, p_186028_2_, null);
++        return loadChunk(x, z, null);
 +    }
 +
 +    @Nullable
-+    public Chunk loadChunk(int p_186028_1_, int p_186028_2_, @Nullable Runnable runnable)
++    public Chunk loadChunk(int x, int z, @Nullable Runnable runnable)
 +    {
-         Chunk chunk = this.func_186026_b(p_186028_1_, p_186028_2_);
+         Chunk chunk = this.getLoadedChunk(x, z);
 -
          if (chunk == null)
          {
--            chunk = this.func_73239_e(p_186028_1_, p_186028_2_);
+-            chunk = this.loadChunkFromFile(x, z);
 -
 -            if (chunk != null)
-+            long pos = ChunkPos.func_77272_a(p_186028_1_, p_186028_2_);
-+            chunk = net.minecraftforge.common.ForgeChunkManager.fetchDormantChunk(pos, this.field_73251_h);
-+            if (chunk != null || !(this.field_73247_e instanceof net.minecraft.world.chunk.storage.AnvilChunkLoader))
++            long pos = ChunkPos.asLong(x, z);
++            chunk = net.minecraftforge.common.ForgeChunkManager.fetchDormantChunk(pos, this.world);
++            if (chunk != null || !(this.chunkLoader instanceof net.minecraft.world.chunk.storage.AnvilChunkLoader))
              {
-+                if (!loadingChunks.add(pos)) net.minecraftforge.fml.common.FMLLog.bigWarning("There is an attempt to load a chunk ({},{}) in dimension {} that is already being loaded. This will cause weird chunk breakages.", p_186028_1_, p_186028_2_, this.field_73251_h.field_73011_w.getDimension());
-+                if (chunk == null) chunk = this.func_73239_e(p_186028_1_, p_186028_2_);
++                if (!loadingChunks.add(pos)) net.minecraftforge.fml.common.FMLLog.bigWarning("There is an attempt to load a chunk ({},{}) in dimension {} that is already being loaded. This will cause weird chunk breakages.", x, z, this.world.provider.getDimension());
++                if (chunk == null) chunk = this.loadChunkFromFile(x, z);
 +
 +                if (chunk != null)
 +                {
-                 this.field_73244_f.put(ChunkPos.func_77272_a(p_186028_1_, p_186028_2_), chunk);
-                 chunk.func_76631_c();
-                 chunk.func_186030_a(this, this.field_186029_c);
+                 this.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
+                 chunk.onLoad();
+                 chunk.populate(this, this.chunkGenerator);
 +                }
 +
 +                loadingChunks.remove(pos);
 +            }
 +            else
 +            {
-+                net.minecraft.world.chunk.storage.AnvilChunkLoader loader = (net.minecraft.world.chunk.storage.AnvilChunkLoader) this.field_73247_e;
++                net.minecraft.world.chunk.storage.AnvilChunkLoader loader = (net.minecraft.world.chunk.storage.AnvilChunkLoader) this.chunkLoader;
 +                if (runnable == null || !net.minecraftforge.common.ForgeChunkManager.asyncChunkLoading)
-+                    chunk = net.minecraftforge.common.chunkio.ChunkIOExecutor.syncChunkLoad(this.field_73251_h, loader, this, p_186028_1_, p_186028_2_);
-+                else if (loader.func_191063_a(p_186028_1_, p_186028_2_))
++                    chunk = net.minecraftforge.common.chunkio.ChunkIOExecutor.syncChunkLoad(this.world, loader, this, x, z);
++                else if (loader.isChunkGeneratedAt(x, z))
 +                {
 +                    // We can only use the async queue for already generated chunks
-+                    net.minecraftforge.common.chunkio.ChunkIOExecutor.queueChunkLoad(this.field_73251_h, loader, this, p_186028_1_, p_186028_2_, runnable);
++                    net.minecraftforge.common.chunkio.ChunkIOExecutor.queueChunkLoad(this.world, loader, this, x, z, runnable);
 +                    return null;
 +                }
              }
@@ -108,21 +108,21 @@
      }
  
 -    @Override
-     public Chunk func_186025_d(int p_186025_1_, int p_186025_2_)
+     public Chunk provideChunk(int x, int z)
      {
-         Chunk chunk = this.func_186028_c(p_186025_1_, p_186025_2_);
+         Chunk chunk = this.loadChunk(x, z);
 @@ -117,7 +147,7 @@
-                 CrashReport crashreport = CrashReport.func_85055_a(throwable, "Exception generating new chunk");
-                 CrashReportCategory crashreportcategory = crashreport.func_85058_a("Chunk to be generated");
-                 crashreportcategory.func_71507_a("Location", String.format("%d,%d", p_186025_1_, p_186025_2_));
--                crashreportcategory.func_71507_a("Position hash", i);
-+                crashreportcategory.func_71507_a("Position hash", Long.valueOf(i));
-                 crashreportcategory.func_71507_a("Generator", this.field_186029_c);
+                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception generating new chunk");
+                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Chunk to be generated");
+                 crashreportcategory.addCrashSection("Location", String.format("%d,%d", x, z));
+-                crashreportcategory.addCrashSection("Position hash", i);
++                crashreportcategory.addCrashSection("Position hash", Long.valueOf(i));
+                 crashreportcategory.addCrashSection("Generator", this.chunkGenerator);
                  throw new ReportedException(crashreport);
              }
 @@ -186,7 +216,7 @@
          int i = 0;
-         List<Chunk> list = Lists.newArrayList(this.field_73244_f.values());
+         List<Chunk> list = Lists.newArrayList(this.loadedChunks.values());
  
 -        for (int j = 0; j < list.size(); j++)
 +        for (int j = 0; j < list.size(); ++j)
@@ -131,70 +131,70 @@
  
 @@ -199,8 +229,9 @@
              {
-                 this.func_73242_b(chunk);
-                 chunk.func_177427_f(false);
+                 this.saveChunkData(chunk);
+                 chunk.setModified(false);
 +                ++i;
  
--                if (++i == 24 && !p_186027_1_)
-+                if (i == 24 && !p_186027_1_)
+-                if (++i == 24 && !all)
++                if (i == 24 && !all)
                  {
                      return false;
                  }
 @@ -215,31 +246,38 @@
-         this.field_73247_e.func_75818_b();
+         this.chunkLoader.flush();
      }
  
 -    @Override
-     public boolean func_73156_b()
+     public boolean tick()
      {
-         if (!this.field_73251_h.field_73058_d)
+         if (!this.world.disableLevelSaving)
          {
-             if (!this.field_73248_b.isEmpty())
+             if (!this.droppedChunks.isEmpty())
              {
-+                for (ChunkPos forced : this.field_73251_h.getPersistentChunks().keySet())
++                for (ChunkPos forced : this.world.getPersistentChunks().keySet())
 +                {
-+                    this.field_73248_b.remove(ChunkPos.func_77272_a(forced.field_77276_a, forced.field_77275_b));
++                    this.droppedChunks.remove(ChunkPos.asLong(forced.x, forced.z));
 +                }
 +
-                 Iterator<Long> iterator = this.field_73248_b.iterator();
+                 Iterator<Long> iterator = this.droppedChunks.iterator();
  
                  for (int i = 0; i < 100 && iterator.hasNext(); iterator.remove())
                  {
                      Long olong = iterator.next();
--                    Chunk chunk = this.field_73244_f.get(olong);
-+                    Chunk chunk = (Chunk)this.field_73244_f.get(olong);
+-                    Chunk chunk = this.loadedChunks.get(olong);
++                    Chunk chunk = (Chunk)this.loadedChunks.get(olong);
  
-                     if (chunk != null && chunk.field_189550_d)
+                     if (chunk != null && chunk.unloadQueued)
                      {
-                         chunk.func_76623_d();
-+                        net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkPos.func_77272_a(chunk.field_76635_g, chunk.field_76647_h), chunk);
-                         this.func_73242_b(chunk);
-                         this.func_73243_a(chunk);
-                         this.field_73244_f.remove(olong);
+                         chunk.onUnload();
++                        net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkPos.asLong(chunk.x, chunk.z), chunk);
+                         this.saveChunkData(chunk);
+                         this.saveChunkExtraData(chunk);
+                         this.loadedChunks.remove(olong);
 -                        i++;
 +                        ++i;
                      }
                  }
              }
  
-+            if (this.field_73244_f.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.field_73251_h.field_73011_w.getDimension());
++            if (this.loadedChunks.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.world.provider.getDimension());
 +
-             this.field_73247_e.func_75817_a();
+             this.chunkLoader.chunkTick();
          }
  
 @@ -251,7 +289,6 @@
-         return !this.field_73251_h.field_73058_d;
+         return !this.world.disableLevelSaving;
      }
  
 -    @Override
-     public String func_73148_d()
+     public String makeString()
      {
-         return "ServerChunkCache: " + this.field_73244_f.size() + " Drop: " + this.field_73248_b.size();
+         return "ServerChunkCache: " + this.loadedChunks.size() + " Drop: " + this.droppedChunks.size();
 @@ -283,7 +320,6 @@
-         return this.field_73244_f.containsKey(ChunkPos.func_77272_a(p_73149_1_, p_73149_2_));
+         return this.loadedChunks.containsKey(ChunkPos.asLong(x, z));
      }
  
 -    @Override
-     public boolean func_191062_e(int p_191062_1_, int p_191062_2_)
+     public boolean isChunkGeneratedAt(int x, int z)
      {
-         return this.field_73244_f.containsKey(ChunkPos.func_77272_a(p_191062_1_, p_191062_2_)) || this.field_73247_e.func_191063_a(p_191062_1_, p_191062_2_);
+         return this.loadedChunks.containsKey(ChunkPos.asLong(x, z)) || this.chunkLoader.isChunkGeneratedAt(x, z);

@@ -1,53 +1,6 @@
 --- before/net/minecraft/client/renderer/vertex/VertexFormatElement.java
 +++ after/net/minecraft/client/renderer/vertex/VertexFormatElement.java
-@@ -56,7 +56,6 @@
-         return this.field_177377_d;
-     }
- 
--    @Override
-     public String toString()
-     {
-         return this.field_177378_e + "," + this.field_177380_c.func_177384_a() + "," + this.field_177379_b.func_177396_b();
-@@ -72,7 +71,6 @@
-         return this.field_177380_c == VertexFormatElement.EnumUsage.POSITION;
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (this == p_equals_1_)
-@@ -91,9 +89,13 @@
-             {
-                 return false;
-             }
-+            else if (this.field_177379_b != vertexformatelement.field_177379_b)
-+            {
-+                return false;
-+            }
-             else
-             {
--                return this.field_177379_b != vertexformatelement.field_177379_b ? false : this.field_177380_c == vertexformatelement.field_177380_c;
-+                return this.field_177380_c == vertexformatelement.field_177380_c;
-             }
-         }
-         else
-@@ -102,13 +104,13 @@
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         int i = this.field_177379_b.hashCode();
-         i = 31 * i + this.field_177380_c.hashCode();
-         i = 31 * i + this.field_177377_d;
--        return 31 * i + this.field_177378_e;
-+        i = 31 * i + this.field_177378_e;
-+        return i;
-     }
- 
-     @SideOnly(Side.CLIENT)
-@@ -156,9 +158,16 @@
+@@ -156,9 +156,16 @@
          NORMAL("Normal"),
          COLOR("Vertex Color"),
          UV("UV"),
@@ -63,5 +16,5 @@
 +        public void preDraw(VertexFormat format, int element, int stride, java.nio.ByteBuffer buffer) { net.minecraftforge.client.ForgeHooksClient.preDraw(this, format, element, stride, buffer); }
 +        public void postDraw(VertexFormat format, int element, int stride, java.nio.ByteBuffer buffer) { net.minecraftforge.client.ForgeHooksClient.postDraw(this, format, element, stride, buffer); }
  
-         private final String field_177392_h;
+         private final String displayName;
  

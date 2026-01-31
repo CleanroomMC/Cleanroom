@@ -1,77 +1,77 @@
 --- before/net/minecraft/world/biome/BiomePlains.java
 +++ after/net/minecraft/world/biome/BiomePlains.java
 @@ -25,12 +25,11 @@
-         this.field_76760_I.field_76803_B = 10;
+         this.decorator.grassPerChunk = 10;
      }
  
 -    @Override
-     public BlockFlower.EnumFlowerType func_180623_a(Random p_180623_1_, BlockPos p_180623_2_)
+     public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
      {
--        double d0 = field_180281_af.func_151601_a((double)p_180623_2_.func_177958_n() / 200.0, (double)p_180623_2_.func_177952_p() / 200.0);
-+        double d0 = field_180281_af.func_151601_a((double)p_180623_2_.func_177958_n() / 200.0D, (double)p_180623_2_.func_177952_p() / 200.0D);
+-        double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() / 200.0, (double)pos.getZ() / 200.0);
++        double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() / 200.0D, (double)pos.getZ() / 200.0D);
  
 -        if (d0 < -0.8)
 +        if (d0 < -0.8D)
          {
-             int j = p_180623_1_.nextInt(4);
+             int j = rand.nextInt(4);
  
 @@ -66,12 +65,11 @@
          }
      }
  
 -    @Override
-     public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
+     public void decorate(World worldIn, Random rand, BlockPos pos)
      {
--        double d0 = field_180281_af.func_151601_a((double)(p_180624_3_.func_177958_n() + 8) / 200.0, (double)(p_180624_3_.func_177952_p() + 8) / 200.0);
-+        double d0 = field_180281_af.func_151601_a((double)(p_180624_3_.func_177958_n() + 8) / 200.0D, (double)(p_180624_3_.func_177952_p() + 8) / 200.0D);
+-        double d0 = GRASS_COLOR_NOISE.getValue((double)(pos.getX() + 8) / 200.0, (double)(pos.getZ() + 8) / 200.0);
++        double d0 = GRASS_COLOR_NOISE.getValue((double)(pos.getX() + 8) / 200.0D, (double)(pos.getZ() + 8) / 200.0D);
  
 -        if (d0 < -0.8)
 +        if (d0 < -0.8D)
          {
-             this.field_76760_I.field_76802_A = 15;
-             this.field_76760_I.field_76803_B = 5;
+             this.decorator.flowersPerChunk = 15;
+             this.decorator.grassPerChunk = 5;
 @@ -82,7 +80,8 @@
-             this.field_76760_I.field_76803_B = 10;
-             field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.GRASS);
+             this.decorator.grassPerChunk = 10;
+             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.GRASS);
  
 -            for (int i = 0; i < 7; i++)
-+            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
++            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
 +            for (int i = 0; i < 7; ++i)
              {
-                 int j = p_180624_2_.nextInt(16) + 8;
-                 int k = p_180624_2_.nextInt(16) + 8;
+                 int j = rand.nextInt(16) + 8;
+                 int k = rand.nextInt(16) + 8;
 @@ -91,11 +90,11 @@
              }
          }
  
--        if (this.field_150628_aC)
-+        if (this.field_150628_aC && net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
+-        if (this.sunflowers)
++        if (this.sunflowers && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
          {
-             field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.SUNFLOWER);
+             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.SUNFLOWER);
  
 -            for (int i1 = 0; i1 < 10; i1++)
 +            for (int i1 = 0; i1 < 10; ++i1)
              {
-                 int j1 = p_180624_2_.nextInt(16) + 8;
-                 int k1 = p_180624_2_.nextInt(16) + 8;
+                 int j1 = rand.nextInt(16) + 8;
+                 int k1 = rand.nextInt(16) + 8;
 @@ -108,6 +107,20 @@
      }
  
      @Override
 +    public void addDefaultFlowers()
 +    {
-+        BlockFlower red = net.minecraft.init.Blocks.field_150328_O;
-+        BlockFlower yel = net.minecraft.init.Blocks.field_150327_N;
-+        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.ORANGE_TULIP), 3);
-+        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.RED_TULIP), 3);
-+        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.PINK_TULIP), 3);
-+        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.WHITE_TULIP), 3);
-+        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.POPPY), 20);
-+        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.HOUSTONIA), 20);
-+        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.OXEYE_DAISY), 20);
-+        addFlower(yel.func_176223_P().func_177226_a(yel.func_176494_l(), BlockFlower.EnumFlowerType.DANDELION), 30);
++        BlockFlower red = net.minecraft.init.Blocks.RED_FLOWER;
++        BlockFlower yel = net.minecraft.init.Blocks.YELLOW_FLOWER;
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.ORANGE_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.RED_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.PINK_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.WHITE_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.POPPY), 20);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.HOUSTONIA), 20);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.OXEYE_DAISY), 20);
++        addFlower(yel.getDefaultState().withProperty(yel.getTypeProperty(), BlockFlower.EnumFlowerType.DANDELION), 30);
 +    }
 +
-     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
      {
-         return (WorldGenAbstractTree)(p_150567_1_.nextInt(3) == 0 ? field_76758_O : field_76757_N);
+         return (WorldGenAbstractTree)(rand.nextInt(3) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);

@@ -4,55 +4,55 @@
  
  public abstract class TextComponentBase implements ITextComponent
  {
--    protected List<ITextComponent> field_150264_a = Lists.newArrayList();
-+    protected List<ITextComponent> field_150264_a = Lists.<ITextComponent>newArrayList();
-     private Style field_150263_b;
+-    protected List<ITextComponent> siblings = Lists.newArrayList();
++    protected List<ITextComponent> siblings = Lists.<ITextComponent>newArrayList();
+     private Style style;
  
 -    @Override
-     public ITextComponent func_150257_a(ITextComponent p_150257_1_)
+     public ITextComponent appendSibling(ITextComponent component)
      {
-         p_150257_1_.func_150256_b().func_150221_a(this.func_150256_b());
+         component.getStyle().setParentStyle(this.getStyle());
 @@ -22,19 +21,16 @@
          return this;
      }
  
 -    @Override
-     public List<ITextComponent> func_150253_a()
+     public List<ITextComponent> getSiblings()
      {
-         return this.field_150264_a;
+         return this.siblings;
      }
  
 -    @Override
-     public ITextComponent func_150258_a(String p_150258_1_)
+     public ITextComponent appendText(String text)
      {
-         return this.func_150257_a(new TextComponentString(p_150258_1_));
+         return this.appendSibling(new TextComponentString(text));
      }
  
 -    @Override
-     public ITextComponent func_150255_a(Style p_150255_1_)
+     public ITextComponent setStyle(Style style)
      {
-         this.field_150263_b = p_150255_1_;
+         this.style = style;
 @@ -47,7 +43,6 @@
          return this;
      }
  
 -    @Override
-     public Style func_150256_b()
+     public Style getStyle()
      {
-         if (this.field_150263_b == null)
+         if (this.style == null)
 @@ -63,13 +58,11 @@
-         return this.field_150263_b;
+         return this.style;
      }
  
 -    @Override
      public Iterator<ITextComponent> iterator()
      {
--        return Iterators.concat(Iterators.forArray(this), func_150262_a(this.field_150264_a));
-+        return Iterators.<ITextComponent>concat(Iterators.forArray(this), func_150262_a(this.field_150264_a));
+-        return Iterators.concat(Iterators.forArray(this), createDeepCopyIterator(this.siblings));
++        return Iterators.<ITextComponent>concat(Iterators.forArray(this), createDeepCopyIterator(this.siblings));
      }
  
 -    @Override
-     public final String func_150260_c()
+     public final String getUnformattedText()
      {
          StringBuilder stringbuilder = new StringBuilder();
 @@ -82,8 +75,6 @@
@@ -61,12 +61,12 @@
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
-     public final String func_150254_d()
+     public final String getFormattedText()
      {
          StringBuilder stringbuilder = new StringBuilder();
 @@ -96,7 +87,7 @@
              {
-                 stringbuilder.append(itextcomponent.func_150256_b().func_150218_j());
+                 stringbuilder.append(itextcomponent.getStyle().getFormattingCode());
                  stringbuilder.append(s);
 -                stringbuilder.append(TextFormatting.RESET);
 +                stringbuilder.append((Object)TextFormatting.RESET);
@@ -75,11 +75,11 @@
  
 @@ -105,16 +96,14 @@
  
-     public static Iterator<ITextComponent> func_150262_a(Iterable<ITextComponent> p_150262_0_)
+     public static Iterator<ITextComponent> createDeepCopyIterator(Iterable<ITextComponent> components)
      {
 -        Iterator<ITextComponent> iterator = Iterators.concat(
--                                                Iterators.transform(p_150262_0_.iterator(), new Function<ITextComponent, Iterator<ITextComponent>>()
-+        Iterator<ITextComponent> iterator = Iterators.concat(Iterators.transform(p_150262_0_.iterator(), new Function<ITextComponent, Iterator<ITextComponent>>()
+-                                                Iterators.transform(components.iterator(), new Function<ITextComponent, Iterator<ITextComponent>>()
++        Iterator<ITextComponent> iterator = Iterators.concat(Iterators.transform(components.iterator(), new Function<ITextComponent, Iterator<ITextComponent>>()
          {
              public Iterator<ITextComponent> apply(@Nullable ITextComponent p_apply_1_)
              {
@@ -111,10 +111,10 @@
 -    @Override
      public int hashCode()
      {
-         return 31 * this.field_150263_b.hashCode() + this.field_150264_a.hashCode();
+         return 31 * this.style.hashCode() + this.siblings.hashCode();
      }
  
 -    @Override
      public String toString()
      {
-         return "BaseComponent{style=" + this.field_150263_b + ", siblings=" + this.field_150264_a + '}';
+         return "BaseComponent{style=" + this.style + ", siblings=" + this.siblings + '}';

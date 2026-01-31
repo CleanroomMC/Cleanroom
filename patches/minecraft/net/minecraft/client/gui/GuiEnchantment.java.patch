@@ -1,160 +1,26 @@
 --- before/net/minecraft/client/gui/GuiEnchantment.java
 +++ after/net/minecraft/client/gui/GuiEnchantment.java
-@@ -10,6 +10,7 @@
- import net.minecraft.client.renderer.RenderHelper;
- import net.minecraft.client.resources.I18n;
- import net.minecraft.enchantment.Enchantment;
-+import net.minecraft.entity.Entity;
- import net.minecraft.entity.player.InventoryPlayer;
- import net.minecraft.inventory.ContainerEnchantment;
- import net.minecraft.item.ItemStack;
-@@ -50,28 +51,25 @@
-         this.field_175380_I = p_i45502_3_;
-     }
- 
--    @Override
-     protected void func_146979_b(int p_146979_1_, int p_146979_2_)
-     {
-         this.field_146289_q.func_78276_b(this.field_175380_I.func_145748_c_().func_150260_c(), 12, 5, 4210752);
-         this.field_146289_q.func_78276_b(this.field_175379_F.func_145748_c_().func_150260_c(), 8, this.field_147000_g - 96 + 2, 4210752);
-     }
- 
--    @Override
-     public void func_73876_c()
-     {
-         super.func_73876_c();
-         this.func_147068_g();
-     }
- 
--    @Override
-     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
-     {
-         super.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
-         int i = (this.field_146294_l - this.field_146999_f) / 2;
-         int j = (this.field_146295_m - this.field_147000_g) / 2;
- 
--        for (int k = 0; k < 3; k++)
-+        for (int k = 0; k < 3; ++k)
-         {
-             int l = p_73864_1_ - (i + 60);
-             int i1 = p_73864_2_ - (j + 14 + 19 * k);
-@@ -83,7 +81,6 @@
-         }
-     }
- 
--    @Override
-     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_)
-     {
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -96,12 +93,7 @@
-         GlStateManager.func_179094_E();
-         GlStateManager.func_179096_D();
-         ScaledResolution scaledresolution = new ScaledResolution(this.field_146297_k);
--        GlStateManager.func_179083_b(
--            (scaledresolution.func_78326_a() - 320) / 2 * scaledresolution.func_78325_e(),
--            (scaledresolution.func_78328_b() - 240) / 2 * scaledresolution.func_78325_e(),
--            320 * scaledresolution.func_78325_e(),
--            240 * scaledresolution.func_78325_e()
--        );
-+        GlStateManager.func_179083_b((scaledresolution.func_78326_a() - 320) / 2 * scaledresolution.func_78325_e(), (scaledresolution.func_78328_b() - 240) / 2 * scaledresolution.func_78325_e(), 320 * scaledresolution.func_78325_e(), 240 * scaledresolution.func_78325_e());
-         GlStateManager.func_179109_b(-0.34F, 0.23F, 0.0F);
-         Project.gluPerspective(90.0F, 1.3333334F, 9.0F, 80.0F);
-         float f = 1.0F;
-@@ -145,7 +137,7 @@
-         }
- 
-         GlStateManager.func_179091_B();
--        field_147072_E.func_78088_a(null, 0.0F, f3, f4, f2, 0.0F, 0.0625F);
-+        field_147072_E.func_78088_a((Entity)null, 0.0F, f3, f4, f2, 0.0F, 0.0625F);
-         GlStateManager.func_179101_C();
-         RenderHelper.func_74518_a();
-         GlStateManager.func_179128_n(5889);
-@@ -158,7 +150,7 @@
-         EnchantmentNameParts.func_178176_a().func_148335_a((long)this.field_147075_G.field_178149_f);
-         int k = this.field_147075_G.func_178147_e();
- 
--        for (int l = 0; l < 3; l++)
-+        for (int l = 0; l < 3; ++l)
-         {
-             int i1 = i + 60;
-             int j1 = i1 + 20;
-@@ -179,7 +171,7 @@
-                 FontRenderer fontrenderer = this.field_146297_k.field_71464_q;
+@@ -179,7 +179,7 @@
+                 FontRenderer fontrenderer = this.mc.standardGalacticFontRenderer;
                  int i2 = 6839882;
  
--                if ((k < l + 1 || this.field_146297_k.field_71439_g.field_71068_ca < k1) && !this.field_146297_k.field_71439_g.field_71075_bZ.field_75098_d)
-+                if (((k < l + 1 || this.field_146297_k.field_71439_g.field_71068_ca < k1) && !this.field_146297_k.field_71439_g.field_71075_bZ.field_75098_d) || this.field_147075_G.field_185001_h[l] == -1) // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
+-                if ((k < l + 1 || this.mc.player.experienceLevel < k1) && !this.mc.player.capabilities.isCreativeMode)
++                if (((k < l + 1 || this.mc.player.experienceLevel < k1) && !this.mc.player.capabilities.isCreativeMode) || this.container.enchantClue[l] == -1) // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
                  {
-                     this.func_73729_b(i1, j + 14 + 19 * l, 0, 185, 108, 19);
-                     this.func_73729_b(i1 + 1, j + 15 + 19 * l, 16 * l, 239, 16, 16);
-@@ -212,7 +204,6 @@
-         }
-     }
- 
--    @Override
-     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
-     {
-         p_73863_3_ = this.field_146297_k.func_193989_ak();
-@@ -222,18 +213,19 @@
-         boolean flag = this.field_146297_k.field_71439_g.field_71075_bZ.field_75098_d;
-         int i = this.field_147075_G.func_178147_e();
- 
--        for (int j = 0; j < 3; j++)
-+        for (int j = 0; j < 3; ++j)
-         {
-             int k = this.field_147075_G.field_75167_g[j];
-             Enchantment enchantment = Enchantment.func_185262_c(this.field_147075_G.field_185001_h[j]);
-             int l = this.field_147075_G.field_185002_i[j];
+                     this.drawTexturedModalRect(i1, j + 14 + 19 * l, 0, 185, 108, 19);
+                     this.drawTexturedModalRect(i1 + 1, j + 15 + 19 * l, 16 * l, 239, 16, 16);
+@@ -229,11 +229,12 @@
+             int l = this.container.worldClue[j];
              int i1 = j + 1;
  
--            if (this.func_146978_c(60, 14 + 19 * j, 108, 17, p_73863_1_, p_73863_2_) && k > 0 && l >= 0 && enchantment != null)
-+            if (this.func_146978_c(60, 14 + 19 * j, 108, 17, p_73863_1_, p_73863_2_) && k > 0)
+-            if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, mouseX, mouseY) && k > 0 && l >= 0 && enchantment != null)
++            if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, mouseX, mouseY) && k > 0)
              {
--                List<String> list = Lists.newArrayList();
--                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.func_135052_a("container.enchant.clue", enchantment.func_77316_c(l)));
-+                List<String> list = Lists.<String>newArrayList();
-+                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.func_135052_a("container.enchant.clue", enchantment == null ? "" : enchantment.func_77316_c(l)));
+                 List<String> list = Lists.newArrayList();
+-                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.format("container.enchant.clue", enchantment.getTranslatedName(l)));
++                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.format("container.enchant.clue", enchantment == null ? "" : enchantment.getTranslatedName(l)));
  
-+                if(enchantment == null) java.util.Collections.addAll(list, "", TextFormatting.RED + I18n.func_135052_a("forge.container.enchant.limitedEnchantability")); else
++                if(enchantment == null) java.util.Collections.addAll(list, "", TextFormatting.RED + I18n.format("forge.container.enchant.limitedEnchantability")); else
                  if (!flag)
                  {
                      list.add("");
-@@ -285,19 +277,23 @@
-         {
-             this.field_147077_B = itemstack;
- 
--            do
-+            while (true)
-             {
--                this.field_147082_x = this.field_147082_x + (float)(this.field_147074_F.nextInt(4) - this.field_147074_F.nextInt(4));
-+                this.field_147082_x += (float)(this.field_147074_F.nextInt(4) - this.field_147074_F.nextInt(4));
-+
-+                if (this.field_147071_v > this.field_147082_x + 1.0F || this.field_147071_v < this.field_147082_x - 1.0F)
-+                {
-+                    break;
-+                }
-             }
--            while (this.field_147071_v <= this.field_147082_x + 1.0F && this.field_147071_v >= this.field_147082_x - 1.0F);
-         }
- 
--        this.field_147073_u++;
-+        ++this.field_147073_u;
-         this.field_147069_w = this.field_147071_v;
-         this.field_147076_A = this.field_147080_z;
-         boolean flag = false;
- 
--        for (int i = 0; i < 3; i++)
-+        for (int i = 0; i < 3; ++i)
-         {
-             if (this.field_147075_G.field_75167_g[i] != 0)
-             {
-@@ -318,7 +314,7 @@
-         float f1 = (this.field_147082_x - this.field_147071_v) * 0.4F;
-         float f = 0.2F;
-         f1 = MathHelper.func_76131_a(f1, -0.2F, 0.2F);
--        this.field_147081_y = this.field_147081_y + (f1 - this.field_147081_y) * 0.9F;
--        this.field_147071_v = this.field_147071_v + this.field_147081_y;
-+        this.field_147081_y += (f1 - this.field_147081_y) * 0.9F;
-+        this.field_147071_v += this.field_147081_y;
-     }
- }

@@ -116,7 +116,7 @@ public final class MultiLayerModel implements IModel
 
     private ModelResourceLocation getLocation(String json)
     {
-        JsonElement e = new JsonParser().parse(json);
+        JsonElement e = JsonParser.parseString(json);
         if(e.isJsonPrimitive() && e.getAsJsonPrimitive().isString())
         {
             return new ModelResourceLocation(e.getAsString());

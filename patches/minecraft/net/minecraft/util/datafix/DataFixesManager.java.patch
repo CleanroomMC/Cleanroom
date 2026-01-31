@@ -1,19 +1,19 @@
 --- before/net/minecraft/util/datafix/DataFixesManager.java
 +++ after/net/minecraft/util/datafix/DataFixesManager.java
 @@ -165,6 +165,7 @@
-     public static DataFixer func_188279_a()
+     public static DataFixer createFixer()
      {
          DataFixer datafixer = new DataFixer(1343);
 +        datafixer = new net.minecraftforge.common.util.CompoundDataFixer(datafixer);
-         WorldInfo.func_189967_a(datafixer);
-         EntityPlayerMP.func_191522_a(datafixer);
-         EntityPlayer.func_189806_a(datafixer);
+         WorldInfo.registerFixes(datafixer);
+         EntityPlayerMP.registerFixesPlayerMP(datafixer);
+         EntityPlayer.registerFixesPlayer(datafixer);
 @@ -272,7 +273,7 @@
          {
-             NBTTagList nbttaglist = p_188278_1_.func_150295_c(p_188278_3_, 10);
+             NBTTagList nbttaglist = compound.getTagList(key, 10);
  
--            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
-+            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+-            for (int i = 0; i < nbttaglist.tagCount(); i++)
++            for (int i = 0; i < nbttaglist.tagCount(); ++i)
              {
-                 nbttaglist.func_150304_a(i, p_188278_0_.func_188251_a(FixTypes.ITEM_INSTANCE, nbttaglist.func_150305_b(i), p_188278_2_));
+                 nbttaglist.set(i, fixer.process(FixTypes.ITEM_INSTANCE, nbttaglist.getCompoundTagAt(i), version));
              }

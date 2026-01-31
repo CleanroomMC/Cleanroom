@@ -1,75 +1,75 @@
 --- before/net/minecraft/world/biome/BiomeProvider.java
 +++ after/net/minecraft/world/biome/BiomeProvider.java
 @@ -20,13 +20,14 @@
-     private ChunkGeneratorSettings field_190945_a;
-     private GenLayer field_76944_d;
-     private GenLayer field_76945_e;
--    private final BiomeCache field_76942_f = new BiomeCache(this);
--    private final List<Biome> field_76943_g = Lists.newArrayList(
--                Biomes.field_76767_f, Biomes.field_76772_c, Biomes.field_76768_g, Biomes.field_76784_u, Biomes.field_76785_t, Biomes.field_76782_w, Biomes.field_76792_x
+     private ChunkGeneratorSettings settings;
+     private GenLayer genBiomes;
+     private GenLayer biomeIndexLayer;
+-    private final BiomeCache biomeCache = new BiomeCache(this);
+-    private final List<Biome> biomesToSpawnIn = Lists.newArrayList(
+-                Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS
 -            );
-+    private final BiomeCache field_76942_f;
-+    private final List<Biome> field_76943_g;
-+    public static List<Biome> allowedBiomes = Lists.newArrayList(Biomes.field_76767_f, Biomes.field_76772_c, Biomes.field_76768_g, Biomes.field_76784_u, Biomes.field_76785_t, Biomes.field_76782_w, Biomes.field_76792_x);
++    private final BiomeCache biomeCache;
++    private final List<Biome> biomesToSpawnIn;
++    public static List<Biome> allowedBiomes = Lists.newArrayList(Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
  
      protected BiomeProvider()
      {
-+        this.field_76942_f = new BiomeCache(this);
-+        this.field_76943_g = Lists.newArrayList(allowedBiomes);
++        this.biomeCache = new BiomeCache(this);
++        this.biomesToSpawnIn = Lists.newArrayList(allowedBiomes);
      }
  
-     private BiomeProvider(long p_i45744_1_, WorldType p_i45744_3_, String p_i45744_4_)
+     private BiomeProvider(long seed, WorldType worldTypeIn, String options)
 @@ -39,6 +40,7 @@
          }
  
-         GenLayer[] agenlayer = GenLayer.func_180781_a(p_i45744_1_, p_i45744_3_, this.field_190945_a);
-+        agenlayer = getModdedBiomeGenerators(p_i45744_3_, p_i45744_1_, agenlayer);
-         this.field_76944_d = agenlayer[0];
-         this.field_76945_e = agenlayer[1];
+         GenLayer[] agenlayer = GenLayer.initializeAllBiomeGenerators(seed, worldTypeIn, this.settings);
++        agenlayer = getModdedBiomeGenerators(worldTypeIn, seed, agenlayer);
+         this.genBiomes = agenlayer[0];
+         this.biomeIndexLayer = agenlayer[1];
      }
 @@ -55,7 +57,7 @@
  
-     public Biome func_180631_a(BlockPos p_180631_1_)
+     public Biome getBiome(BlockPos pos)
      {
--        return this.func_180300_a(p_180631_1_, null);
-+        return this.func_180300_a(p_180631_1_, (Biome)null);
+-        return this.getBiome(pos, null);
++        return this.getBiome(pos, (Biome)null);
      }
  
-     public Biome func_180300_a(BlockPos p_180300_1_, Biome p_180300_2_)
+     public Biome getBiome(BlockPos pos, Biome defaultBiome)
 @@ -81,7 +83,7 @@
  
          try
          {
--            for (int i = 0; i < p_76937_4_ * p_76937_5_; i++)
-+            for (int i = 0; i < p_76937_4_ * p_76937_5_; ++i)
+-            for (int i = 0; i < width * height; i++)
++            for (int i = 0; i < width * height; ++i)
              {
-                 p_76937_1_[i] = Biome.func_180276_a(aint[i], Biomes.field_180279_ad);
+                 biomes[i] = Biome.getBiome(aint[i], Biomes.DEFAULT);
              }
 @@ -92,11 +94,11 @@
          {
-             CrashReport crashreport = CrashReport.func_85055_a(throwable, "Invalid Biome id");
-             CrashReportCategory crashreportcategory = crashreport.func_85058_a("RawBiomeBlock");
--            crashreportcategory.func_71507_a("biomes[] size", p_76937_1_.length);
--            crashreportcategory.func_71507_a("x", p_76937_2_);
--            crashreportcategory.func_71507_a("z", p_76937_3_);
--            crashreportcategory.func_71507_a("w", p_76937_4_);
--            crashreportcategory.func_71507_a("h", p_76937_5_);
-+            crashreportcategory.func_71507_a("biomes[] size", Integer.valueOf(p_76937_1_.length));
-+            crashreportcategory.func_71507_a("x", Integer.valueOf(p_76937_2_));
-+            crashreportcategory.func_71507_a("z", Integer.valueOf(p_76937_3_));
-+            crashreportcategory.func_71507_a("w", Integer.valueOf(p_76937_4_));
-+            crashreportcategory.func_71507_a("h", Integer.valueOf(p_76937_5_));
+             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Invalid Biome id");
+             CrashReportCategory crashreportcategory = crashreport.makeCategory("RawBiomeBlock");
+-            crashreportcategory.addCrashSection("biomes[] size", biomes.length);
+-            crashreportcategory.addCrashSection("x", x);
+-            crashreportcategory.addCrashSection("z", z);
+-            crashreportcategory.addCrashSection("w", width);
+-            crashreportcategory.addCrashSection("h", height);
++            crashreportcategory.addCrashSection("biomes[] size", Integer.valueOf(biomes.length));
++            crashreportcategory.addCrashSection("x", Integer.valueOf(x));
++            crashreportcategory.addCrashSection("z", Integer.valueOf(z));
++            crashreportcategory.addCrashSection("w", Integer.valueOf(width));
++            crashreportcategory.addCrashSection("h", Integer.valueOf(height));
              throw new ReportedException(crashreport);
          }
      }
 @@ -125,7 +127,7 @@
          {
-             int[] aint = this.field_76945_e.func_75904_a(p_76931_2_, p_76931_3_, p_76931_4_, p_76931_5_);
+             int[] aint = this.biomeIndexLayer.getInts(x, z, width, length);
  
--            for (int i = 0; i < p_76931_4_ * p_76931_5_; i++)
-+            for (int i = 0; i < p_76931_4_ * p_76931_5_; ++i)
+-            for (int i = 0; i < width * length; i++)
++            for (int i = 0; i < width * length; ++i)
              {
-                 p_76931_1_[i] = Biome.func_180276_a(aint[i], Biomes.field_180279_ad);
+                 listToReuse[i] = Biome.getBiome(aint[i], Biomes.DEFAULT);
              }
 @@ -147,7 +149,7 @@
  
@@ -78,19 +78,19 @@
 -            for (int k1 = 0; k1 < i1 * j1; k1++)
 +            for (int k1 = 0; k1 < i1 * j1; ++k1)
              {
-                 Biome biome = Biome.func_150568_d(aint[k1]);
+                 Biome biome = Biome.getBiome(aint[k1]);
  
 @@ -164,9 +166,9 @@
-             CrashReport crashreport = CrashReport.func_85055_a(throwable, "Invalid Biome id");
-             CrashReportCategory crashreportcategory = crashreport.func_85058_a("Layer");
-             crashreportcategory.func_71507_a("Layer", this.field_76944_d.toString());
--            crashreportcategory.func_71507_a("x", p_76940_1_);
--            crashreportcategory.func_71507_a("z", p_76940_2_);
--            crashreportcategory.func_71507_a("radius", p_76940_3_);
-+            crashreportcategory.func_71507_a("x", Integer.valueOf(p_76940_1_));
-+            crashreportcategory.func_71507_a("z", Integer.valueOf(p_76940_2_));
-+            crashreportcategory.func_71507_a("radius", Integer.valueOf(p_76940_3_));
-             crashreportcategory.func_71507_a("allowed", p_76940_4_);
+             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Invalid Biome id");
+             CrashReportCategory crashreportcategory = crashreport.makeCategory("Layer");
+             crashreportcategory.addCrashSection("Layer", this.genBiomes.toString());
+-            crashreportcategory.addCrashSection("x", x);
+-            crashreportcategory.addCrashSection("z", z);
+-            crashreportcategory.addCrashSection("radius", radius);
++            crashreportcategory.addCrashSection("x", Integer.valueOf(x));
++            crashreportcategory.addCrashSection("z", Integer.valueOf(z));
++            crashreportcategory.addCrashSection("radius", Integer.valueOf(radius));
+             crashreportcategory.addCrashSection("allowed", allowed);
              throw new ReportedException(crashreport);
          }
 @@ -186,7 +188,7 @@
@@ -103,7 +103,7 @@
              int i2 = i + l1 % i1 << 2;
              int j2 = j + l1 / i1 << 2;
 @@ -195,7 +197,7 @@
-             if (p_180630_4_.contains(biome) && (blockpos == null || p_180630_5_.nextInt(k1 + 1) == 0))
+             if (biomes.contains(biome) && (blockpos == null || random.nextInt(k1 + 1) == 0))
              {
                  blockpos = new BlockPos(i2, 0, j2);
 -                k1++;
@@ -112,9 +112,9 @@
          }
  
 @@ -205,6 +207,13 @@
-     public void func_76938_b()
+     public void cleanupCache()
      {
-         this.field_76942_f.func_76838_a();
+         this.biomeCache.cleanupCache();
 +    }
 +
 +    public GenLayer[] getModdedBiomeGenerators(WorldType worldType, long seed, GenLayer[] original)
@@ -124,4 +124,4 @@
 +        return event.getNewBiomeGens();
      }
  
-     public boolean func_190944_c()
+     public boolean isFixedBiome()

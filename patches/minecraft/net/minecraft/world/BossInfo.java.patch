@@ -10,18 +10,18 @@
  public abstract class BossInfo
  {
 @@ -55,7 +53,6 @@
-         return this.field_186751_c;
+         return this.color;
      }
  
 -    @SideOnly(Side.CLIENT)
-     public void func_186745_a(BossInfo.Color p_186745_1_)
+     public void setColor(BossInfo.Color colorIn)
      {
-         this.field_186751_c = p_186745_1_;
+         this.color = colorIn;
 @@ -66,7 +63,6 @@
-         return this.field_186752_d;
+         return this.overlay;
      }
  
 -    @SideOnly(Side.CLIENT)
-     public void func_186746_a(BossInfo.Overlay p_186746_1_)
+     public void setOverlay(BossInfo.Overlay overlayIn)
      {
-         this.field_186752_d = p_186746_1_;
+         this.overlay = overlayIn;

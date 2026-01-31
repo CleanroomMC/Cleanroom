@@ -1,31 +1,31 @@
 --- before/net/minecraft/item/ItemMinecart.java
 +++ after/net/minecraft/item/ItemMinecart.java
 @@ -21,30 +21,27 @@
-     private static final IBehaviorDispenseItem field_96602_b = new BehaviorDefaultDispenseItem()
+     private static final IBehaviorDispenseItem MINECART_DISPENSER_BEHAVIOR = new BehaviorDefaultDispenseItem()
      {
-         private final BehaviorDefaultDispenseItem field_96465_b = new BehaviorDefaultDispenseItem();
+         private final BehaviorDefaultDispenseItem behaviourDefaultDispenseItem = new BehaviorDefaultDispenseItem();
 -        @Override
-         public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+         public ItemStack dispenseStack(IBlockSource source, ItemStack stack)
          {
--            EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
-+            EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
-             World world = p_82487_1_.func_82618_k();
--            double d0 = p_82487_1_.func_82615_a() + (double)enumfacing.func_82601_c() * 1.125;
-+            double d0 = p_82487_1_.func_82615_a() + (double)enumfacing.func_82601_c() * 1.125D;
-             double d1 = Math.floor(p_82487_1_.func_82617_b()) + (double)enumfacing.func_96559_d();
--            double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e() * 1.125;
-+            double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e() * 1.125D;
-             BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(enumfacing);
-             IBlockState iblockstate = world.func_180495_p(blockpos);
--            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase
--                    ? iblockstate.func_177229_b(((BlockRailBase)iblockstate.func_177230_c()).func_176560_l())
+-            EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
++            EnumFacing enumfacing = (EnumFacing)source.getBlockState().getValue(BlockDispenser.FACING);
+             World world = source.getWorld();
+-            double d0 = source.getX() + (double)enumfacing.getXOffset() * 1.125;
++            double d0 = source.getX() + (double)enumfacing.getXOffset() * 1.125D;
+             double d1 = Math.floor(source.getY()) + (double)enumfacing.getYOffset();
+-            double d2 = source.getZ() + (double)enumfacing.getZOffset() * 1.125;
++            double d2 = source.getZ() + (double)enumfacing.getZOffset() * 1.125D;
+             BlockPos blockpos = source.getBlockPos().offset(enumfacing);
+             IBlockState iblockstate = world.getBlockState(blockpos);
+-            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase
+-                    ? iblockstate.getValue(((BlockRailBase)iblockstate.getBlock()).getShapeProperty())
 -                    : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
-+            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.func_177230_c()).getRailDirection(world, blockpos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, blockpos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
              double d3;
  
-             if (BlockRailBase.func_176563_d(iblockstate))
+             if (BlockRailBase.isRailBlock(iblockstate))
              {
-                 if (blockrailbase$enumraildirection.func_177018_c())
+                 if (blockrailbase$enumraildirection.isAscending())
                  {
 -                    d3 = 0.6;
 +                    d3 = 0.6D;
@@ -40,13 +40,13 @@
 @@ -55,17 +52,15 @@
                  }
  
-                 IBlockState iblockstate1 = world.func_180495_p(blockpos.func_177977_b());
--                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.func_177230_c() instanceof BlockRailBase
--                        ? iblockstate1.func_177229_b(((BlockRailBase)iblockstate1.func_177230_c()).func_176560_l())
+                 IBlockState iblockstate1 = world.getBlockState(blockpos.down());
+-                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.getBlock() instanceof BlockRailBase
+-                        ? iblockstate1.getValue(((BlockRailBase)iblockstate1.getBlock()).getShapeProperty())
 -                        : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
-+                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.func_177230_c() instanceof BlockRailBase ? ((BlockRailBase)iblockstate1.func_177230_c()).getRailDirection(world, blockpos.func_177977_b(), iblockstate1, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate1.getBlock()).getRailDirection(world, blockpos.down(), iblockstate1, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
  
-                 if (enumfacing != EnumFacing.DOWN && blockrailbase$enumraildirection1.func_177018_c())
+                 if (enumfacing != EnumFacing.DOWN && blockrailbase$enumraildirection1.isAscending())
                  {
 -                    d3 = -0.4;
 +                    d3 = -0.4D;
@@ -59,57 +59,57 @@
              }
  
 @@ -80,7 +75,6 @@
-             p_82487_2_.func_190918_g(1);
-             return p_82487_2_;
+             stack.shrink(1);
+             return stack;
          }
 -        @Override
-         protected void func_82485_a(IBlockSource p_82485_1_)
+         protected void playDispenseSound(IBlockSource source)
          {
-             p_82485_1_.func_82618_k().func_175718_b(1000, p_82485_1_.func_180699_d(), 0);
+             source.getWorld().playEvent(1000, source.getBlockPos(), 0);
 @@ -96,17 +90,7 @@
-         BlockDispenser.field_149943_a.func_82595_a(this, field_96602_b);
+         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, MINECART_DISPENSER_BEHAVIOR);
      }
  
 -    @Override
--    public EnumActionResult func_180614_a(
--        EntityPlayer p_180614_1_,
--        World p_180614_2_,
--        BlockPos p_180614_3_,
--        EnumHand p_180614_4_,
--        EnumFacing p_180614_5_,
--        float p_180614_6_,
--        float p_180614_7_,
--        float p_180614_8_
+-    public EnumActionResult onItemUse(
+-        EntityPlayer player,
+-        World worldIn,
+-        BlockPos pos,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
++    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         IBlockState iblockstate = p_180614_2_.func_180495_p(p_180614_3_);
+         IBlockState iblockstate = worldIn.getBlockState(pos);
  
 @@ -120,23 +104,15 @@
  
-             if (!p_180614_2_.field_72995_K)
+             if (!worldIn.isRemote)
              {
--                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase
--                        ? iblockstate.func_177229_b(((BlockRailBase)iblockstate.func_177230_c()).func_176560_l())
+-                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase
+-                        ? iblockstate.getValue(((BlockRailBase)iblockstate.getBlock()).getShapeProperty())
 -                        : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 -                double d0 = 0.0;
-+                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.func_177230_c()).getRailDirection(p_180614_2_, p_180614_3_, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(worldIn, pos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 +                double d0 = 0.0D;
  
-                 if (blockrailbase$enumraildirection.func_177018_c())
+                 if (blockrailbase$enumraildirection.isAscending())
                  {
 -                    d0 = 0.5;
 +                    d0 = 0.5D;
                  }
  
--                EntityMinecart entityminecart = EntityMinecart.func_184263_a(
--                                                    p_180614_2_,
--                                                    (double)p_180614_3_.func_177958_n() + 0.5,
--                                                    (double)p_180614_3_.func_177956_o() + 0.0625 + d0,
--                                                    (double)p_180614_3_.func_177952_p() + 0.5,
--                                                    this.field_77841_a
+-                EntityMinecart entityminecart = EntityMinecart.create(
+-                                                    worldIn,
+-                                                    (double)pos.getX() + 0.5,
+-                                                    (double)pos.getY() + 0.0625 + d0,
+-                                                    (double)pos.getZ() + 0.5,
+-                                                    this.minecartType
 -                                                );
-+                EntityMinecart entityminecart = EntityMinecart.func_184263_a(p_180614_2_, (double)p_180614_3_.func_177958_n() + 0.5D, (double)p_180614_3_.func_177956_o() + 0.0625D + d0, (double)p_180614_3_.func_177952_p() + 0.5D, this.field_77841_a);
++                EntityMinecart entityminecart = EntityMinecart.create(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.0625D + d0, (double)pos.getZ() + 0.5D, this.minecartType);
  
-                 if (itemstack.func_82837_s())
+                 if (itemstack.hasDisplayName())
                  {

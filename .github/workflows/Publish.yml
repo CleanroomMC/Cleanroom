@@ -10,16 +10,20 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.0
         with:
           fetch-tags: true
           fetch-depth: 0
+          submodules: recursive
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4.7.1
+        uses: actions/setup-java@v5.0.0
         with:
           java-version: '21'
           distribution: 'temurin'
+          
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
@@ -40,4 +44,10 @@ jobs:
         run: ./gradlew --stop
 
       - name: Publish to maven for mod development
-        run: ./gradlew publish -PoutlandUsername=${{ secrets.MAVEN_USERNAME }} -PoutlandPassword="${{ secrets.MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }}
+        run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }}
+
+      - name: Trigger download server update
+        run: |
+          curl -X POST "http://download.cleanroommc.com/api/webhook" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${{ secrets.DOWNLOAD_UPDATE_TOKEN }}\",\"count\":10}"

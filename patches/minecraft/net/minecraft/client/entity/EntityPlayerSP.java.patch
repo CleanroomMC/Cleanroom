@@ -1,200 +1,14 @@
 --- before/net/minecraft/client/entity/EntityPlayerSP.java
 +++ after/net/minecraft/client/entity/EntityPlayerSP.java
-@@ -12,6 +12,7 @@
- import net.minecraft.client.gui.GuiHopper;
- import net.minecraft.client.gui.GuiMerchant;
- import net.minecraft.client.gui.GuiRepair;
-+import net.minecraft.client.gui.GuiScreen;
- import net.minecraft.client.gui.GuiScreenBook;
- import net.minecraft.client.gui.inventory.GuiBeacon;
- import net.minecraft.client.gui.inventory.GuiBrewingStand;
-@@ -128,18 +129,16 @@
-         this.field_71093_bK = 0;
-     }
- 
--    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+@@ -131,6 +131,7 @@
+     @Override
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-+        net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, p_70097_1_, p_70097_2_);
++        net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, source, amount);
          return false;
      }
  
--    @Override
-     public void func_70691_i(float p_70691_1_)
-     {
-     }
- 
--    @Override
-     public boolean func_184205_a(Entity p_184205_1_, boolean p_184205_2_)
-     {
-         if (!super.func_184205_a(p_184205_1_, p_184205_2_))
-@@ -164,31 +163,27 @@
-         }
-     }
- 
--    @Override
-     public void func_184210_p()
-     {
-         super.func_184210_p();
-         this.field_184844_co = false;
-     }
- 
--    @Override
-     public Vec3d func_70676_i(float p_70676_1_)
-     {
-         return this.func_174806_f(this.field_70125_A, this.field_70177_z);
-     }
- 
--    @Override
-     public void func_70071_h_()
-     {
--        if (this.field_70170_p.func_175667_e(new BlockPos(this.field_70165_t, 0.0, this.field_70161_v)))
-+        if (this.field_70170_p.func_175667_e(new BlockPos(this.field_70165_t, 0.0D, this.field_70161_v)))
-         {
-             super.func_70071_h_();
- 
-             if (this.func_184218_aH())
-             {
-                 this.field_71174_a.func_147297_a(new CPacketPlayer.Rotation(this.field_70177_z, this.field_70125_A, this.field_70122_E));
--                this.field_71174_a
--                .func_147297_a(new CPacketInput(this.field_70702_br, this.field_191988_bg, this.field_71158_b.field_78901_c, this.field_71158_b.field_78899_d));
-+                this.field_71174_a.func_147297_a(new CPacketInput(this.field_70702_br, this.field_191988_bg, this.field_71158_b.field_78901_c, this.field_71158_b.field_78899_d));
-                 Entity entity = this.func_184208_bv();
- 
-                 if (entity != this && entity.func_184186_bw())
-@@ -245,31 +240,22 @@
-             double d2 = this.field_70161_v - this.field_175167_bK;
-             double d3 = (double)(this.field_70177_z - this.field_175164_bL);
-             double d4 = (double)(this.field_70125_A - this.field_175165_bM);
--            this.field_175168_bP++;
--            boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4 || this.field_175168_bP >= 20;
--            boolean flag3 = d3 != 0.0 || d4 != 0.0;
-+            ++this.field_175168_bP;
-+            boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || this.field_175168_bP >= 20;
-+            boolean flag3 = d3 != 0.0D || d4 != 0.0D;
- 
-             if (this.func_184218_aH())
-             {
--                this.field_71174_a
--                .func_147297_a(
--                    new CPacketPlayer.PositionRotation(this.field_70159_w, -999.0, this.field_70179_y, this.field_70177_z, this.field_70125_A, this.field_70122_E)
--                );
-+                this.field_71174_a.func_147297_a(new CPacketPlayer.PositionRotation(this.field_70159_w, -999.0D, this.field_70179_y, this.field_70177_z, this.field_70125_A, this.field_70122_E));
-                 flag2 = false;
-             }
-             else if (flag2 && flag3)
-             {
--                this.field_71174_a
--                .func_147297_a(
--                    new CPacketPlayer.PositionRotation(
--                        this.field_70165_t, axisalignedbb.field_72338_b, this.field_70161_v, this.field_70177_z, this.field_70125_A, this.field_70122_E
--                    )
--                );
-+                this.field_71174_a.func_147297_a(new CPacketPlayer.PositionRotation(this.field_70165_t, axisalignedbb.field_72338_b, this.field_70161_v, this.field_70177_z, this.field_70125_A, this.field_70122_E));
-             }
-             else if (flag2)
-             {
--                this.field_71174_a
--                .func_147297_a(new CPacketPlayer.Position(this.field_70165_t, axisalignedbb.field_72338_b, this.field_70161_v, this.field_70122_E));
-+                this.field_71174_a.func_147297_a(new CPacketPlayer.Position(this.field_70165_t, axisalignedbb.field_72338_b, this.field_70161_v, this.field_70122_E));
-             }
-             else if (flag3)
-             {
-@@ -300,7 +286,6 @@
-     }
- 
-     @Nullable
--    @Override
-     public EntityItem func_71040_bB(boolean p_71040_1_)
-     {
-         CPacketPlayerDigging.Action cpacketplayerdigging$action = p_71040_1_ ? CPacketPlayerDigging.Action.DROP_ALL_ITEMS : CPacketPlayerDigging.Action.DROP_ITEM;
-@@ -308,7 +293,6 @@
-         return null;
-     }
- 
--    @Override
-     public ItemStack func_184816_a(EntityItem p_184816_1_)
-     {
-         return ItemStack.field_190927_a;
-@@ -319,20 +303,17 @@
-         this.field_71174_a.func_147297_a(new CPacketChatMessage(p_71165_1_));
-     }
- 
--    @Override
-     public void func_184609_a(EnumHand p_184609_1_)
-     {
-         super.func_184609_a(p_184609_1_);
-         this.field_71174_a.func_147297_a(new CPacketAnimation(p_184609_1_));
-     }
- 
--    @Override
-     public void func_71004_bE()
-     {
-         this.field_71174_a.func_147297_a(new CPacketClientStatus(CPacketClientStatus.State.PERFORM_RESPAWN));
-     }
- 
--    @Override
-     protected void func_70665_d(DamageSource p_70665_1_, float p_70665_2_)
-     {
-         if (!this.func_180431_b(p_70665_1_))
-@@ -341,7 +322,6 @@
-         }
-     }
- 
--    @Override
-     public void func_71053_j()
-     {
-         this.field_71174_a.func_147297_a(new CPacketCloseWindow(this.field_71070_bA.field_75152_c));
-@@ -352,7 +332,7 @@
-     {
-         this.field_71071_by.func_70437_b(ItemStack.field_190927_a);
-         super.func_71053_j();
--        this.field_71159_c.func_147108_a(null);
-+        this.field_71159_c.func_147108_a((GuiScreen)null);
-     }
- 
-     public void func_71150_b(float p_71150_1_)
-@@ -387,7 +367,6 @@
-         }
-     }
- 
--    @Override
-     public void func_71064_a(StatBase p_71064_1_, int p_71064_2_)
-     {
-         if (p_71064_1_ != null)
-@@ -399,13 +378,11 @@
-         }
-     }
- 
--    @Override
-     public void func_71016_p()
-     {
-         this.field_71174_a.func_147297_a(new CPacketPlayerAbilities(this.field_71075_bZ));
-     }
- 
--    @Override
-     public boolean func_175144_cb()
-     {
-         return true;
-@@ -413,8 +390,7 @@
- 
-     protected void func_110318_g()
-     {
--        this.field_71174_a
--        .func_147297_a(new CPacketEntityAction(this, CPacketEntityAction.Action.START_RIDING_JUMP, MathHelper.func_76141_d(this.func_110319_bJ() * 100.0F)));
-+        this.field_71174_a.func_147297_a(new CPacketEntityAction(this, CPacketEntityAction.Action.START_RIDING_JUMP, MathHelper.func_76141_d(this.func_110319_bJ() * 100.0F)));
-     }
- 
-     public void func_175163_u()
-@@ -461,7 +437,6 @@
-         this.field_184845_bX = p_184839_1_;
-     }
- 
--    @Override
-     public void func_146105_b(ITextComponent p_146105_1_, boolean p_146105_2_)
-     {
-         if (p_146105_2_)
-@@ -474,7 +449,15 @@
+@@ -474,7 +475,15 @@
          }
      }
  
@@ -203,613 +17,106 @@
 +    {
 +        for (int y = 0; y < height; y++)
 +        {
-+            if (!func_175162_d(pos.func_177982_a(0, y, 0))) return false;
++            if (!isOpenBlockSpace(pos.add(0, y, 0))) return false;
 +        }
 +        return true;
 +    }
 +
-     protected boolean func_145771_j(double p_145771_1_, double p_145771_3_, double p_145771_5_)
+     protected boolean pushOutOfBlocks(double x, double y, double z)
      {
-         if (this.field_70145_X)
-@@ -487,32 +470,36 @@
-             double d0 = p_145771_1_ - (double)blockpos.func_177958_n();
-             double d1 = p_145771_5_ - (double)blockpos.func_177952_p();
+         if (this.noClip)
+@@ -487,30 +496,34 @@
+             double d0 = x - (double)blockpos.getX();
+             double d1 = z - (double)blockpos.getZ();
  
--            if (!this.func_175162_d(blockpos))
-+            int entHeight = Math.max((int)Math.ceil(this.field_70131_O), 1);
+-            if (!this.isOpenBlockSpace(blockpos))
++            int entHeight = Math.max((int)Math.ceil(this.height), 1);
 +
 +            boolean inTranslucentBlock = !this.isHeadspaceFree(blockpos, entHeight);
 +
 +            if (inTranslucentBlock)
              {
                  int i = -1;
--                double d2 = 9999.0;
-+                double d2 = 9999.0D;
+                 double d2 = 9999.0;
  
--                if (this.func_175162_d(blockpos.func_177976_e()) && d0 < d2)
-+                if (this.isHeadspaceFree(blockpos.func_177976_e(), entHeight) && d0 < d2)
+-                if (this.isOpenBlockSpace(blockpos.west()) && d0 < d2)
++                if (this.isHeadspaceFree(blockpos.west(), entHeight) && d0 < d2)
                  {
                      d2 = d0;
                      i = 0;
                  }
  
--                if (this.func_175162_d(blockpos.func_177974_f()) && 1.0 - d0 < d2)
-+                if (this.isHeadspaceFree(blockpos.func_177974_f(), entHeight) && 1.0D - d0 < d2)
+-                if (this.isOpenBlockSpace(blockpos.east()) && 1.0 - d0 < d2)
++                if (this.isHeadspaceFree(blockpos.east(), entHeight) && 1.0D - d0 < d2)
                  {
--                    d2 = 1.0 - d0;
-+                    d2 = 1.0D - d0;
+                     d2 = 1.0 - d0;
                      i = 1;
                  }
  
--                if (this.func_175162_d(blockpos.func_177978_c()) && d1 < d2)
-+                if (this.isHeadspaceFree(blockpos.func_177978_c(), entHeight) && d1 < d2)
+-                if (this.isOpenBlockSpace(blockpos.north()) && d1 < d2)
++                if (this.isHeadspaceFree(blockpos.north(), entHeight) && d1 < d2)
                  {
                      d2 = d1;
                      i = 4;
                  }
  
--                if (this.func_175162_d(blockpos.func_177968_d()) && 1.0 - d1 < d2)
-+                if (this.isHeadspaceFree(blockpos.func_177968_d(), entHeight) && 1.0D - d1 < d2)
+-                if (this.isOpenBlockSpace(blockpos.south()) && 1.0 - d1 < d2)
++                if (this.isHeadspaceFree(blockpos.south(), entHeight) && 1.0D - d1 < d2)
                  {
--                    d2 = 1.0 - d1;
-+                    d2 = 1.0D - d1;
+                     d2 = 1.0 - d1;
                      i = 5;
-                 }
+@@ -545,7 +558,8 @@
  
-@@ -520,22 +507,22 @@
- 
-                 if (i == 0)
-                 {
--                    this.field_70159_w = -0.1F;
-+                    this.field_70159_w = -0.10000000149011612D;
-                 }
- 
-                 if (i == 1)
-                 {
--                    this.field_70159_w = 0.1F;
-+                    this.field_70159_w = 0.10000000149011612D;
-                 }
- 
-                 if (i == 4)
-                 {
--                    this.field_70179_y = -0.1F;
-+                    this.field_70179_y = -0.10000000149011612D;
-                 }
- 
-                 if (i == 5)
-                 {
--                    this.field_70179_y = 0.1F;
-+                    this.field_70179_y = 0.10000000149011612D;
-                 }
-             }
- 
-@@ -545,10 +532,10 @@
- 
-     private boolean func_175162_d(BlockPos p_175162_1_)
+     private boolean isOpenBlockSpace(BlockPos pos)
      {
--        return !this.field_70170_p.func_180495_p(p_175162_1_).func_185915_l() && !this.field_70170_p.func_180495_p(p_175162_1_.func_177984_a()).func_185915_l();
-+        IBlockState iblockstate = field_70170_p.func_180495_p(p_175162_1_);
-+        return !iblockstate.func_177230_c().isNormalCube(iblockstate, field_70170_p, p_175162_1_);
+-        return !this.world.getBlockState(pos).isNormalCube() && !this.world.getBlockState(pos.up()).isNormalCube();
++        IBlockState iblockstate = world.getBlockState(pos);
++        return !iblockstate.getBlock().isNormalCube(iblockstate, world, pos);
      }
  
--    @Override
-     public void func_70031_b(boolean p_70031_1_)
+     @Override
+@@ -596,8 +610,13 @@
+     @Override
+     public void playSound(SoundEvent soundIn, float volume, float pitch)
      {
-         super.func_70031_b(p_70031_1_);
-@@ -562,19 +549,16 @@
-         this.field_71068_ca = p_71152_3_;
-     }
- 
--    @Override
-     public void func_145747_a(ITextComponent p_145747_1_)
-     {
-         this.field_71159_c.field_71456_v.func_146158_b().func_146227_a(p_145747_1_);
-     }
- 
--    @Override
-     public boolean func_70003_b(int p_70003_1_, String p_70003_2_)
-     {
-         return p_70003_1_ <= this.func_184840_I();
-     }
- 
--    @Override
-     public void func_70103_a(byte p_70103_1_)
-     {
-         if (p_70103_1_ >= 24 && p_70103_1_ <= 28)
-@@ -587,26 +571,27 @@
-         }
-     }
- 
--    @Override
-     public BlockPos func_180425_c()
-     {
--        return new BlockPos(this.field_70165_t + 0.5, this.field_70163_u + 0.5, this.field_70161_v + 0.5);
-+        return new BlockPos(this.field_70165_t + 0.5D, this.field_70163_u + 0.5D, this.field_70161_v + 0.5D);
-     }
- 
--    @Override
-     public void func_184185_a(SoundEvent p_184185_1_, float p_184185_2_, float p_184185_3_)
-     {
--        this.field_70170_p
--        .func_184134_a(this.field_70165_t, this.field_70163_u, this.field_70161_v, p_184185_1_, this.func_184176_by(), p_184185_2_, p_184185_3_, false);
-+        net.minecraftforge.event.entity.PlaySoundAtEntityEvent event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(this, p_184185_1_, this.func_184176_by(), p_184185_2_, p_184185_3_);
+-        this.world
+-        .playSound(this.posX, this.posY, this.posZ, soundIn, this.getSoundCategory(), volume, pitch, false);
++        net.minecraftforge.event.entity.PlaySoundAtEntityEvent event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(this, soundIn, this.getSoundCategory(), volume, pitch);
 +        if (event.isCanceled() || event.getSound() == null) return;
-+        p_184185_1_ = event.getSound();
-+        p_184185_2_ = event.getVolume();
-+        p_184185_3_ = event.getPitch();
++        soundIn = event.getSound();
++        volume = event.getVolume();
++        pitch = event.getPitch();
 +
-+        this.field_70170_p.func_184134_a(this.field_70165_t, this.field_70163_u, this.field_70161_v, p_184185_1_, event.getCategory(), p_184185_2_, p_184185_3_, false);
++        this.world.playSound(this.posX, this.posY, this.posZ, soundIn, event.getCategory(), volume, pitch, false);
      }
  
--    @Override
-     public boolean func_70613_aW()
-     {
-         return true;
-     }
- 
--    @Override
-     public void func_184598_c(EnumHand p_184598_1_)
-     {
-         ItemStack itemstack = this.func_184586_b(p_184598_1_);
-@@ -619,34 +604,30 @@
-         }
-     }
- 
--    @Override
-     public boolean func_184587_cr()
-     {
-         return this.field_184842_cm;
-     }
- 
--    @Override
-     public void func_184602_cy()
-     {
-         super.func_184602_cy();
-         this.field_184842_cm = false;
-     }
- 
--    @Override
-     public EnumHand func_184600_cs()
-     {
-         return this.field_184843_cn;
-     }
- 
--    @Override
-     public void func_184206_a(DataParameter<?> p_184206_1_)
-     {
-         super.func_184206_a(p_184206_1_);
- 
-         if (field_184621_as.equals(p_184206_1_))
-         {
--            boolean flag = (this.field_70180_af.func_187225_a(field_184621_as) & 1) > 0;
--            EnumHand enumhand = (this.field_70180_af.func_187225_a(field_184621_as) & 2) > 0 ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND;
-+            boolean flag = (((Byte)this.field_70180_af.func_187225_a(field_184621_as)).byteValue() & 1) > 0;
-+            EnumHand enumhand = (((Byte)this.field_70180_af.func_187225_a(field_184621_as)).byteValue() & 2) > 0 ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND;
- 
-             if (flag && !this.field_184842_cm)
-             {
-@@ -675,31 +656,26 @@
-         return this.field_110321_bQ;
-     }
- 
--    @Override
-     public void func_175141_a(TileEntitySign p_175141_1_)
-     {
-         this.field_71159_c.func_147108_a(new GuiEditSign(p_175141_1_));
-     }
- 
--    @Override
-     public void func_184809_a(CommandBlockBaseLogic p_184809_1_)
-     {
-         this.field_71159_c.func_147108_a(new GuiEditCommandBlockMinecart(p_184809_1_));
-     }
- 
--    @Override
-     public void func_184824_a(TileEntityCommandBlock p_184824_1_)
-     {
-         this.field_71159_c.func_147108_a(new GuiCommandBlock(p_184824_1_));
-     }
- 
--    @Override
-     public void func_189807_a(TileEntityStructure p_189807_1_)
-     {
-         this.field_71159_c.func_147108_a(new GuiEditStructure(p_189807_1_));
-     }
- 
--    @Override
-     public void func_184814_a(ItemStack p_184814_1_, EnumHand p_184814_2_)
-     {
-         Item item = p_184814_1_.func_77973_b();
-@@ -710,7 +686,6 @@
-         }
-     }
- 
--    @Override
-     public void func_71007_a(IInventory p_71007_1_)
-     {
-         String s = p_71007_1_ instanceof IInteractionObject ? ((IInteractionObject)p_71007_1_).func_174875_k() : "minecraft:container";
-@@ -735,27 +710,28 @@
-         {
-             this.field_71159_c.func_147108_a(new GuiBeacon(this.field_71071_by, p_71007_1_));
-         }
--        else if ("minecraft:dispenser".equals(s) || "minecraft:dropper".equals(s))
-+        else if (!"minecraft:dispenser".equals(s) && !"minecraft:dropper".equals(s))
-+        {
-+            if ("minecraft:shulker_box".equals(s))
-+            {
-+                this.field_71159_c.func_147108_a(new GuiShulkerBox(this.field_71071_by, p_71007_1_));
-+            }
-+            else
-+            {
-+                this.field_71159_c.func_147108_a(new GuiChest(this.field_71071_by, p_71007_1_));
-+            }
-+        }
-+        else
-         {
-             this.field_71159_c.func_147108_a(new GuiDispenser(this.field_71071_by, p_71007_1_));
-         }
--        else if ("minecraft:shulker_box".equals(s))
--        {
--            this.field_71159_c.func_147108_a(new GuiShulkerBox(this.field_71071_by, p_71007_1_));
--        }
--        else
--        {
--            this.field_71159_c.func_147108_a(new GuiChest(this.field_71071_by, p_71007_1_));
--        }
-     }
- 
--    @Override
-     public void func_184826_a(AbstractHorse p_184826_1_, IInventory p_184826_2_)
-     {
-         this.field_71159_c.func_147108_a(new GuiScreenHorseInventory(this.field_71071_by, p_184826_2_, p_184826_1_));
-     }
- 
--    @Override
-     public void func_180468_a(IInteractionObject p_180468_1_)
-     {
-         String s = p_180468_1_.func_174875_k();
-@@ -774,32 +750,27 @@
-         }
-     }
- 
--    @Override
-     public void func_180472_a(IMerchant p_180472_1_)
-     {
-         this.field_71159_c.func_147108_a(new GuiMerchant(this.field_71071_by, p_180472_1_, this.field_70170_p));
-     }
- 
--    @Override
-     public void func_71009_b(Entity p_71009_1_)
-     {
-         this.field_71159_c.field_71452_i.func_178926_a(p_71009_1_, EnumParticleTypes.CRIT);
-     }
- 
--    @Override
-     public void func_71047_c(Entity p_71047_1_)
-     {
-         this.field_71159_c.field_71452_i.func_178926_a(p_71047_1_, EnumParticleTypes.CRIT_MAGIC);
-     }
- 
--    @Override
-     public boolean func_70093_af()
-     {
-         boolean flag = this.field_71158_b != null && this.field_71158_b.field_78899_d;
-         return flag && !this.field_71083_bS;
-     }
- 
--    @Override
-     public void func_70626_be()
-     {
-         super.func_70626_be();
-@@ -811,8 +782,8 @@
-             this.field_70703_bu = this.field_71158_b.field_78901_c;
-             this.field_71163_h = this.field_71154_f;
-             this.field_71164_i = this.field_71155_g;
--            this.field_71155_g = (float)((double)this.field_71155_g + (double)(this.field_70125_A - this.field_71155_g) * 0.5);
--            this.field_71154_f = (float)((double)this.field_71154_f + (double)(this.field_70177_z - this.field_71154_f) * 0.5);
-+            this.field_71155_g = (float)((double)this.field_71155_g + (double)(this.field_70125_A - this.field_71155_g) * 0.5D);
-+            this.field_71154_f = (float)((double)this.field_71154_f + (double)(this.field_70177_z - this.field_71154_f) * 0.5D);
-         }
-     }
- 
-@@ -821,14 +792,13 @@
-         return this.field_71159_c.func_175606_aa() == this;
-     }
- 
--    @Override
-     public void func_70636_d()
-     {
--        this.field_71157_e++;
-+        ++this.field_71157_e;
- 
-         if (this.field_71156_d > 0)
-         {
--            this.field_71156_d--;
-+            --this.field_71156_d;
-         }
- 
-         this.field_71080_cy = this.field_71086_bY;
-@@ -842,14 +812,12 @@
-                     this.func_71053_j();
-                 }
- 
--                this.field_71159_c.func_147108_a(null);
-+                this.field_71159_c.func_147108_a((GuiScreen)null);
-             }
- 
-             if (this.field_71086_bY == 0.0F)
-             {
--                this.field_71159_c
--                .func_147118_V()
--                .func_147682_a(PositionedSoundRecord.func_184371_a(SoundEvents.field_187814_ei, this.field_70146_Z.nextFloat() * 0.4F + 0.8F));
-+                this.field_71159_c.func_147118_V().func_147682_a(PositionedSoundRecord.func_184371_a(SoundEvents.field_187814_ei, this.field_70146_Z.nextFloat() * 0.4F + 0.8F));
-             }
- 
-             this.field_71086_bY += 0.0125F;
-@@ -885,7 +853,7 @@
- 
-         if (this.field_71088_bW > 0)
-         {
--            this.field_71088_bW--;
-+            --this.field_71088_bW;
-         }
- 
-         boolean flag = this.field_71158_b.field_78901_c;
-@@ -893,6 +861,7 @@
+     @Override
+@@ -893,6 +912,7 @@
          float f = 0.8F;
-         boolean flag2 = this.field_71158_b.field_192832_b >= 0.8F;
-         this.field_71158_b.func_78898_a();
-+        net.minecraftforge.client.ForgeHooksClient.onInputUpdate(this, this.field_71158_b);
-         this.field_71159_c.func_193032_ao().func_193293_a(this.field_71158_b);
+         boolean flag2 = this.movementInput.moveForward >= 0.8F;
+         this.movementInput.updatePlayerMoveState();
++        net.minecraftforge.client.ForgeHooksClient.onInputUpdate(this, this.movementInput);
+         this.mc.getTutorial().handleMovement(this.movementInput);
  
-         if (this.func_184587_cr() && !this.func_184218_aH())
-@@ -906,34 +875,22 @@
- 
-         if (this.field_189812_cs > 0)
-         {
--            this.field_189812_cs--;
-+            --this.field_189812_cs;
-             flag3 = true;
-             this.field_71158_b.field_78901_c = true;
+         if (this.isHandActive() && !this.isRiding())
+@@ -912,6 +932,8 @@
          }
  
-         AxisAlignedBB axisalignedbb = this.func_174813_aQ();
--        this.func_145771_j(
--            this.field_70165_t - (double)this.field_70130_N * 0.35, axisalignedbb.field_72338_b + 0.5, this.field_70161_v + (double)this.field_70130_N * 0.35
--        );
--        this.func_145771_j(
--            this.field_70165_t - (double)this.field_70130_N * 0.35, axisalignedbb.field_72338_b + 0.5, this.field_70161_v - (double)this.field_70130_N * 0.35
--        );
--        this.func_145771_j(
--            this.field_70165_t + (double)this.field_70130_N * 0.35, axisalignedbb.field_72338_b + 0.5, this.field_70161_v - (double)this.field_70130_N * 0.35
--        );
--        this.func_145771_j(
--            this.field_70165_t + (double)this.field_70130_N * 0.35, axisalignedbb.field_72338_b + 0.5, this.field_70161_v + (double)this.field_70130_N * 0.35
--        );
+         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
 +        net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent event = new net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent(this, axisalignedbb);
 +        if(!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) { axisalignedbb = event.getEntityBoundingBox();
-+        this.func_145771_j(this.field_70165_t - (double)this.field_70130_N * 0.35D, axisalignedbb.field_72338_b + 0.5D, this.field_70161_v + (double)this.field_70130_N * 0.35D);
-+        this.func_145771_j(this.field_70165_t - (double)this.field_70130_N * 0.35D, axisalignedbb.field_72338_b + 0.5D, this.field_70161_v - (double)this.field_70130_N * 0.35D);
-+        this.func_145771_j(this.field_70165_t + (double)this.field_70130_N * 0.35D, axisalignedbb.field_72338_b + 0.5D, this.field_70161_v - (double)this.field_70130_N * 0.35D);
-+        this.func_145771_j(this.field_70165_t + (double)this.field_70130_N * 0.35D, axisalignedbb.field_72338_b + 0.5D, this.field_70161_v + (double)this.field_70130_N * 0.35D);
+         this.pushOutOfBlocks(
+             this.posX - (double)this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ + (double)this.width * 0.35
+         );
+@@ -924,6 +946,7 @@
+         this.pushOutOfBlocks(
+             this.posX + (double)this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ + (double)this.width * 0.35
+         );
 +        }
-         boolean flag4 = (float)this.func_71024_bL().func_75116_a() > 6.0F || this.field_71075_bZ.field_75101_c;
+         boolean flag4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
  
--        if (this.field_70122_E
--                && !flag1
--                && !flag2
--                && this.field_71158_b.field_192832_b >= 0.8F
--                && !this.func_70051_ag()
--                && flag4
--                && !this.func_184587_cr()
--                && !this.func_70644_a(MobEffects.field_76440_q))
-+        if (this.field_70122_E && !flag1 && !flag2 && this.field_71158_b.field_192832_b >= 0.8F && !this.func_70051_ag() && flag4 && !this.func_184587_cr() && !this.func_70644_a(MobEffects.field_76440_q))
-         {
-             if (this.field_71156_d <= 0 && !this.field_71159_c.field_71474_y.field_151444_V.func_151470_d())
-             {
-@@ -945,12 +902,7 @@
-             }
-         }
- 
--        if (!this.func_70051_ag()
--                && this.field_71158_b.field_192832_b >= 0.8F
--                && flag4
--                && !this.func_184587_cr()
--                && !this.func_70644_a(MobEffects.field_76440_q)
--                && this.field_71159_c.field_71474_y.field_151444_V.func_151470_d())
-+        if (!this.func_70051_ag() && this.field_71158_b.field_192832_b >= 0.8F && flag4 && !this.func_184587_cr() && !this.func_70644_a(MobEffects.field_76440_q) && this.field_71159_c.field_71474_y.field_151444_V.func_151470_d())
-         {
-             this.func_70031_b(true);
-         }
-@@ -985,12 +937,7 @@
-             }
-         }
- 
--        if (this.field_71158_b.field_78901_c
--                && !flag
--                && !this.field_70122_E
--                && this.field_70181_x < 0.0
--                && !this.func_184613_cA()
--                && !this.field_71075_bZ.field_75100_b)
-+        if (this.field_71158_b.field_78901_c && !flag && !this.field_70122_E && this.field_70181_x < 0.0D && !this.func_184613_cA() && !this.field_71075_bZ.field_75100_b)
-         {
-             ItemStack itemstack = this.func_184582_a(EntityEquipmentSlot.CHEST);
- 
-@@ -1006,14 +953,14 @@
-         {
-             if (this.field_71158_b.field_78899_d)
-             {
--                this.field_71158_b.field_78902_a = (float)((double)this.field_71158_b.field_78902_a / 0.3);
--                this.field_71158_b.field_192832_b = (float)((double)this.field_71158_b.field_192832_b / 0.3);
--                this.field_70181_x = this.field_70181_x - (double)(this.field_71075_bZ.func_75093_a() * 3.0F);
-+                this.field_71158_b.field_78902_a = (float)((double)this.field_71158_b.field_78902_a / 0.3D);
-+                this.field_71158_b.field_192832_b = (float)((double)this.field_71158_b.field_192832_b / 0.3D);
-+                this.field_70181_x -= (double)(this.field_71075_bZ.func_75093_a() * 3.0F);
-             }
- 
-             if (this.field_71158_b.field_78901_c)
-             {
--                this.field_70181_x = this.field_70181_x + (double)(this.field_71075_bZ.func_75093_a() * 3.0F);
-+                this.field_70181_x += (double)(this.field_71075_bZ.func_75093_a() * 3.0F);
-             }
-         }
- 
-@@ -1023,7 +970,7 @@
- 
-             if (this.field_110320_a < 0)
-             {
--                this.field_110320_a++;
-+                ++this.field_110320_a;
- 
-                 if (this.field_110320_a == 0)
-                 {
-@@ -1044,7 +991,7 @@
-             }
-             else if (flag)
-             {
--                this.field_110320_a++;
-+                ++this.field_110320_a;
- 
-                 if (this.field_110320_a < 10)
-                 {
-@@ -1070,7 +1017,6 @@
-         }
-     }
- 
--    @Override
-     public void func_70098_U()
-     {
-         super.func_70098_U();
-@@ -1079,11 +1025,8 @@
-         if (this.func_184187_bx() instanceof EntityBoat)
-         {
-             EntityBoat entityboat = (EntityBoat)this.func_184187_bx();
--            entityboat.func_184442_a(
--                this.field_71158_b.field_187257_e, this.field_71158_b.field_187258_f, this.field_71158_b.field_187255_c, this.field_71158_b.field_187256_d
--            );
--            this.field_184844_co = this.field_184844_co
--                                   | (this.field_71158_b.field_187257_e || this.field_71158_b.field_187258_f || this.field_71158_b.field_187255_c || this.field_71158_b.field_187256_d);
-+            entityboat.func_184442_a(this.field_71158_b.field_187257_e, this.field_71158_b.field_187258_f, this.field_71158_b.field_187255_c, this.field_71158_b.field_187256_d);
-+            this.field_184844_co |= this.field_71158_b.field_187257_e || this.field_71158_b.field_187258_f || this.field_71158_b.field_187255_c || this.field_71158_b.field_187256_d;
-         }
-     }
- 
-@@ -1093,7 +1036,6 @@
-     }
- 
-     @Nullable
--    @Override
-     public PotionEffect func_184596_c(@Nullable Potion p_184596_1_)
-     {
-         if (p_184596_1_ == MobEffects.field_76431_k)
-@@ -1105,7 +1047,6 @@
-         return super.func_184596_c(p_184596_1_);
-     }
- 
--    @Override
-     public void func_70091_d(MoverType p_70091_1_, double p_70091_2_, double p_70091_4_, double p_70091_6_)
-     {
-         double d0 = this.field_70165_t;
-@@ -1130,8 +1071,10 @@
-                 if (vec2f.field_189982_i != 0.0F || vec2f.field_189983_j != 0.0F)
-                 {
-                     Vec3d vec3d = new Vec3d(this.field_70165_t, this.func_174813_aQ().field_72338_b, this.field_70161_v);
--                    Vec3d vec3d1 = new Vec3d(this.field_70165_t + (double)p_189810_1_, this.func_174813_aQ().field_72338_b, this.field_70161_v + (double)p_189810_2_);
--                    Vec3d vec3d2 = new Vec3d((double)p_189810_1_, 0.0, (double)p_189810_2_);
-+                    double d0 = this.field_70165_t + (double)p_189810_1_;
-+                    double d1 = this.field_70161_v + (double)p_189810_2_;
-+                    Vec3d vec3d1 = new Vec3d(d0, this.func_174813_aQ().field_72338_b, d1);
-+                    Vec3d vec3d2 = new Vec3d((double)p_189810_1_, 0.0D, (double)p_189810_2_);
-                     float f = this.func_70689_ay();
-                     float f1 = (float)vec3d2.func_189985_c();
- 
-@@ -1139,8 +1082,8 @@
-                     {
-                         float f2 = f * vec2f.field_189982_i;
-                         float f3 = f * vec2f.field_189983_j;
--                        float f4 = MathHelper.func_76126_a(this.field_70177_z * (float)(Math.PI / 180.0));
--                        float f5 = MathHelper.func_76134_b(this.field_70177_z * (float)(Math.PI / 180.0));
-+                        float f4 = MathHelper.func_76126_a(this.field_70177_z * 0.017453292F);
-+                        float f5 = MathHelper.func_76134_b(this.field_70177_z * 0.017453292F);
-                         vec3d2 = new Vec3d((double)(f2 * f5 - f3 * f4), vec3d2.field_72448_b, (double)(f3 * f5 + f2 * f4));
-                         f1 = (float)vec3d2.func_189985_c();
- 
-@@ -1155,7 +1098,7 @@
-                     Vec3d vec3d13 = this.func_189651_aD();
-                     float f13 = (float)(vec3d13.field_72450_a * vec3d12.field_72450_a + vec3d13.field_72449_c * vec3d12.field_72449_c);
- 
--                    if (!(f13 < -0.15F))
-+                    if (f13 >= -0.15F)
-                     {
-                         BlockPos blockpos = new BlockPos(this.field_70165_t, this.func_174813_aQ().field_72337_e, this.field_70161_v);
-                         IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
-@@ -1179,11 +1122,10 @@
-                                 Vec3d vec3d4 = vec3d1.func_178787_e(vec3d12.func_186678_a((double)f8));
-                                 float f9 = this.field_70130_N;
-                                 float f10 = this.field_70131_O;
--                                AxisAlignedBB axisalignedbb = new AxisAlignedBB(vec3d, vec3d4.func_72441_c(0.0, (double)f10, 0.0))
--                                .func_72314_b((double)f9, 0.0, (double)f9);
--                                Vec3d lvt_19_1_ = vec3d.func_72441_c(0.0, 0.51F, 0.0);
--                                vec3d4 = vec3d4.func_72441_c(0.0, 0.51F, 0.0);
--                                Vec3d vec3d5 = vec3d12.func_72431_c(new Vec3d(0.0, 1.0, 0.0));
-+                                AxisAlignedBB axisalignedbb = (new AxisAlignedBB(vec3d, vec3d4.func_72441_c(0.0D, (double)f10, 0.0D))).func_72314_b((double)f9, 0.0D, (double)f9);
-+                                Vec3d lvt_19_1_ = vec3d.func_72441_c(0.0D, 0.5099999904632568D, 0.0D);
-+                                vec3d4 = vec3d4.func_72441_c(0.0D, 0.5099999904632568D, 0.0D);
-+                                Vec3d vec3d5 = vec3d12.func_72431_c(new Vec3d(0.0D, 1.0D, 0.0D));
-                                 Vec3d vec3d6 = vec3d5.func_186678_a((double)(f9 * 0.5F));
-                                 Vec3d vec3d7 = lvt_19_1_.func_178788_d(vec3d6);
-                                 Vec3d vec3d8 = vec3d4.func_178788_d(vec3d6);
-@@ -1193,9 +1135,11 @@
- 
-                                 if (!list.isEmpty())
-                                 {
-+                                    ;
-                                 }
- 
-                                 float f11 = Float.MIN_VALUE;
-+                                label86:
- 
-                                 for (AxisAlignedBB axisalignedbb2 : list)
-                                 {
-@@ -1204,9 +1148,15 @@
-                                         f11 = (float)axisalignedbb2.field_72337_e;
-                                         Vec3d vec3d11 = axisalignedbb2.func_189972_c();
-                                         BlockPos blockpos1 = new BlockPos(vec3d11);
-+                                        int i = 1;
- 
--                                        for (int i = 1; (float)i < f7; i++)
-+                                        while (true)
-                                         {
-+                                            if ((float)i >= f7)
-+                                            {
-+                                                break label86;
-+                                            }
-+
-                                             BlockPos blockpos2 = blockpos1.func_177981_b(i);
-                                             IBlockState iblockstate2 = this.field_70170_p.func_180495_p(blockpos2);
-                                             AxisAlignedBB axisalignedbb1;
-@@ -1231,9 +1181,9 @@
-                                                     return;
-                                                 }
-                                             }
-+
-+                                            ++i;
-                                         }
--
--                                        break;
-                                     }
-                                 }
- 
-@@ -1241,7 +1191,7 @@
-                                 {
-                                     float f14 = (float)((double)f11 - this.func_174813_aQ().field_72338_b);
- 
--                                    if (!(f14 <= 0.5F) && !(f14 > f7))
-+                                    if (f14 > 0.5F && f14 <= f7)
-                                     {
-                                         this.field_189812_cs = 1;
-                                     }
-@@ -1252,5 +1202,18 @@
+         if (this.onGround
+@@ -1252,5 +1275,18 @@
                  }
              }
          }
@@ -817,14 +124,14 @@
 +
 +    public void updateSyncFields(EntityPlayerSP old)
 +    {
-+        this.field_175172_bI = old.field_175172_bI;
-+        this.field_175166_bJ = old.field_175166_bJ;
-+        this.field_175167_bK = old.field_175167_bK;
-+        this.field_175164_bL = old.field_175164_bL;
-+        this.field_175165_bM = old.field_175165_bM;
-+        this.field_184841_cd = old.field_184841_cd;
-+        this.field_175170_bN = old.field_175170_bN;
-+        this.field_175171_bO = old.field_175171_bO;
-+        this.field_175168_bP = old.field_175168_bP;
++        this.lastReportedPosX = old.lastReportedPosX;
++        this.lastReportedPosY = old.lastReportedPosY;
++        this.lastReportedPosZ = old.lastReportedPosZ;
++        this.lastReportedYaw = old.lastReportedYaw;
++        this.lastReportedPitch = old.lastReportedPitch;
++        this.prevOnGround = old.prevOnGround;
++        this.serverSneakState = old.serverSneakState;
++        this.serverSprintState = old.serverSprintState;
++        this.positionUpdateTicks = old.positionUpdateTicks;
      }
  }

@@ -7,80 +7,11 @@
  import com.google.common.base.Predicate;
  import com.google.common.base.Predicates;
  import net.minecraft.client.Minecraft;
-@@ -54,7 +55,7 @@
- 
-     public void func_146178_a()
-     {
--        this.field_146214_l++;
-+        ++this.field_146214_l;
-     }
- 
-     public void func_146180_a(String p_146180_1_)
-@@ -214,7 +215,7 @@
-         boolean flag = p_146197_1_ < 0;
-         int j = Math.abs(p_146197_1_);
- 
--        for (int k = 0; k < j; k++)
-+        for (int k = 0; k < j; ++k)
-         {
-             if (!flag)
-             {
-@@ -229,7 +230,7 @@
-                 {
-                     while (p_146197_3_ && i < l && this.field_146216_j.charAt(i) == ' ')
-                     {
--                        i++;
-+                        ++i;
-                     }
-                 }
-             }
-@@ -237,12 +238,12 @@
-             {
-                 while (p_146197_3_ && i > 0 && this.field_146216_j.charAt(i - 1) == ' ')
-                 {
--                    i--;
-+                    --i;
-                 }
- 
-                 while (i > 0 && this.field_146216_j.charAt(i - 1) != ' ')
-                 {
--                    i--;
-+                    --i;
-                 }
-             }
-         }
-@@ -513,7 +514,7 @@
-             else if (flag2)
-             {
-                 k1 = j1 - 1;
--                j1--;
-+                --j1;
-             }
- 
-             if (!s.isEmpty() && flag && j < s.length())
 @@ -631,6 +632,7 @@
          }
  
-         this.field_146213_o = p_146195_1_;
-+        IMEHandler.setIME(this.field_146213_o);
+         this.isFocused = isFocusedIn;
++        IMEHandler.setIME(this.isFocused);
  
-         if (Minecraft.func_71410_x().field_71462_r != null)
+         if (Minecraft.getMinecraft().currentScreen != null)
          {
-@@ -687,7 +689,7 @@
- 
-             if (p_146199_1_ == this.field_146225_q)
-             {
--                this.field_146225_q = this.field_146225_q - this.field_146211_a.func_78262_a(this.field_146216_j, j, true).length();
-+                this.field_146225_q -= this.field_146211_a.func_78262_a(this.field_146216_j, j, true).length();
-             }
- 
-             if (p_146199_1_ > k)
-@@ -696,7 +698,7 @@
-             }
-             else if (p_146199_1_ <= this.field_146225_q)
-             {
--                this.field_146225_q = this.field_146225_q - (this.field_146225_q - p_146199_1_);
-+                this.field_146225_q -= this.field_146225_q - p_146199_1_;
-             }
- 
-             this.field_146225_q = MathHelper.func_76125_a(this.field_146225_q, 0, i);

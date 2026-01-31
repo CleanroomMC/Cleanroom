@@ -2,17 +2,17 @@
 +++ after/net/minecraft/world/gen/structure/StructureComponent.java
 @@ -41,6 +41,10 @@
  
-     public final NBTTagCompound func_143010_b()
+     public final NBTTagCompound createStructureBaseNBT()
      {
-+        if (MapGenStructureIO.func_143036_a(this) == null) // Friendlier error then the Null String error below.
++        if (MapGenStructureIO.getStructureComponentName(this) == null) // Friendlier error then the Null String error below.
 +        {
 +            throw new RuntimeException("StructureComponent \"" + this.getClass().getName() + "\" missing ID Mapping, Modder see MapGenStructureIO");
 +        }
          NBTTagCompound nbttagcompound = new NBTTagCompound();
-         nbttagcompound.func_74778_a("id", MapGenStructureIO.func_143036_a(this));
-         nbttagcompound.func_74782_a("BB", this.field_74887_e.func_151535_h());
+         nbttagcompound.setString("id", MapGenStructureIO.getStructureComponentName(this));
+         nbttagcompound.setTag("BB", this.boundingBox.toNBTTagIntArray());
 @@ -107,9 +111,9 @@
-         int j1 = Math.min(this.field_74887_e.field_78892_f + 1, p_74860_2_.field_78892_f);
+         int j1 = Math.min(this.boundingBox.maxZ + 1, boundingboxIn.maxZ);
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
 -        for (int k1 = i; k1 <= l; k1++)
@@ -21,7 +21,7 @@
 -            for (int l1 = k; l1 <= j1; l1++)
 +            for (int l1 = k; l1 <= j1; ++l1)
              {
-                 if (p_74860_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k1, j, l1)).func_185904_a().func_76224_d())
+                 if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, j, l1)).getMaterial().isLiquid())
                  {
 @@ -123,9 +127,9 @@
              }
@@ -33,7 +33,7 @@
 -            for (int k2 = j; k2 <= i1; k2++)
 +            for (int k2 = j; k2 <= i1; ++k2)
              {
-                 if (p_74860_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(i2, k2, k)).func_185904_a().func_76224_d())
+                 if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i2, k2, k)).getMaterial().isLiquid())
                  {
 @@ -139,9 +143,9 @@
              }
@@ -45,211 +45,211 @@
 -            for (int l2 = j; l2 <= i1; l2++)
 +            for (int l2 = j; l2 <= i1; ++l2)
              {
-                 if (p_74860_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(i, l2, j2)).func_185904_a().func_76224_d())
+                 if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i, l2, j2)).getMaterial().isLiquid())
                  {
 @@ -251,15 +255,13 @@
-         return !p_189916_5_.func_175898_b(blockpos) ? EnumSkyBlock.SKY.field_77198_c : p_189916_1_.func_175642_b(EnumSkyBlock.SKY, blockpos);
+         return !boundingboxIn.isVecInside(blockpos) ? EnumSkyBlock.SKY.defaultLightValue : worldIn.getLightFor(EnumSkyBlock.SKY, blockpos);
      }
  
--    protected void func_74878_a(
--        World p_74878_1_, StructureBoundingBox p_74878_2_, int p_74878_3_, int p_74878_4_, int p_74878_5_, int p_74878_6_, int p_74878_7_, int p_74878_8_
+-    protected void fillWithAir(
+-        World worldIn, StructureBoundingBox structurebb, int minX, int minY, int minZ, int maxX, int maxY, int maxZ
 -    )
-+    protected void func_74878_a(World p_74878_1_, StructureBoundingBox p_74878_2_, int p_74878_3_, int p_74878_4_, int p_74878_5_, int p_74878_6_, int p_74878_7_, int p_74878_8_)
++    protected void fillWithAir(World worldIn, StructureBoundingBox structurebb, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
      {
--        for (int i = p_74878_4_; i <= p_74878_7_; i++)
-+        for (int i = p_74878_4_; i <= p_74878_7_; ++i)
+-        for (int i = minY; i <= maxY; i++)
++        for (int i = minY; i <= maxY; ++i)
          {
--            for (int j = p_74878_3_; j <= p_74878_6_; j++)
-+            for (int j = p_74878_3_; j <= p_74878_6_; ++j)
+-            for (int j = minX; j <= maxX; j++)
++            for (int j = minX; j <= maxX; ++j)
              {
--                for (int k = p_74878_5_; k <= p_74878_8_; k++)
-+                for (int k = p_74878_5_; k <= p_74878_8_; ++k)
+-                for (int k = minZ; k <= maxZ; k++)
++                for (int k = minZ; k <= maxZ; ++k)
                  {
-                     this.func_175811_a(p_74878_1_, Blocks.field_150350_a.func_176223_P(), j, i, k, p_74878_2_);
+                     this.setBlockState(worldIn, Blocks.AIR.getDefaultState(), j, i, k, structurebb);
                  }
 @@ -267,25 +269,13 @@
          }
      }
  
--    protected void func_175804_a(
--        World p_175804_1_,
--        StructureBoundingBox p_175804_2_,
--        int p_175804_3_,
--        int p_175804_4_,
--        int p_175804_5_,
--        int p_175804_6_,
--        int p_175804_7_,
--        int p_175804_8_,
--        IBlockState p_175804_9_,
--        IBlockState p_175804_10_,
--        boolean p_175804_11_
+-    protected void fillWithBlocks(
+-        World worldIn,
+-        StructureBoundingBox boundingboxIn,
+-        int xMin,
+-        int yMin,
+-        int zMin,
+-        int xMax,
+-        int yMax,
+-        int zMax,
+-        IBlockState boundaryBlockState,
+-        IBlockState insideBlockState,
+-        boolean existingOnly
 -    )
-+    protected void func_175804_a(World p_175804_1_, StructureBoundingBox p_175804_2_, int p_175804_3_, int p_175804_4_, int p_175804_5_, int p_175804_6_, int p_175804_7_, int p_175804_8_, IBlockState p_175804_9_, IBlockState p_175804_10_, boolean p_175804_11_)
++    protected void fillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax, IBlockState boundaryBlockState, IBlockState insideBlockState, boolean existingOnly)
      {
--        for (int i = p_175804_4_; i <= p_175804_7_; i++)
-+        for (int i = p_175804_4_; i <= p_175804_7_; ++i)
+-        for (int i = yMin; i <= yMax; i++)
++        for (int i = yMin; i <= yMax; ++i)
          {
--            for (int j = p_175804_3_; j <= p_175804_6_; j++)
-+            for (int j = p_175804_3_; j <= p_175804_6_; ++j)
+-            for (int j = xMin; j <= xMax; j++)
++            for (int j = xMin; j <= xMax; ++j)
              {
--                for (int k = p_175804_5_; k <= p_175804_8_; k++)
-+                for (int k = p_175804_5_; k <= p_175804_8_; ++k)
+-                for (int k = zMin; k <= zMax; k++)
++                for (int k = zMin; k <= zMax; ++k)
                  {
-                     if (!p_175804_11_ || this.func_175807_a(p_175804_1_, j, i, k, p_175804_2_).func_185904_a() != Material.field_151579_a)
+                     if (!existingOnly || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
                      {
 @@ -303,31 +293,17 @@
          }
      }
  
--    protected void func_74882_a(
--        World p_74882_1_,
--        StructureBoundingBox p_74882_2_,
--        int p_74882_3_,
--        int p_74882_4_,
--        int p_74882_5_,
--        int p_74882_6_,
--        int p_74882_7_,
--        int p_74882_8_,
--        boolean p_74882_9_,
--        Random p_74882_10_,
--        StructureComponent.BlockSelector p_74882_11_
+-    protected void fillWithRandomizedBlocks(
+-        World worldIn,
+-        StructureBoundingBox boundingboxIn,
+-        int minX,
+-        int minY,
+-        int minZ,
+-        int maxX,
+-        int maxY,
+-        int maxZ,
+-        boolean alwaysReplace,
+-        Random rand,
+-        StructureComponent.BlockSelector blockselector
 -    )
-+    protected void func_74882_a(World p_74882_1_, StructureBoundingBox p_74882_2_, int p_74882_3_, int p_74882_4_, int p_74882_5_, int p_74882_6_, int p_74882_7_, int p_74882_8_, boolean p_74882_9_, Random p_74882_10_, StructureComponent.BlockSelector p_74882_11_)
++    protected void fillWithRandomizedBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean alwaysReplace, Random rand, StructureComponent.BlockSelector blockselector)
      {
--        for (int i = p_74882_4_; i <= p_74882_7_; i++)
-+        for (int i = p_74882_4_; i <= p_74882_7_; ++i)
+-        for (int i = minY; i <= maxY; i++)
++        for (int i = minY; i <= maxY; ++i)
          {
--            for (int j = p_74882_3_; j <= p_74882_6_; j++)
-+            for (int j = p_74882_3_; j <= p_74882_6_; ++j)
+-            for (int j = minX; j <= maxX; j++)
++            for (int j = minX; j <= maxX; ++j)
              {
--                for (int k = p_74882_5_; k <= p_74882_8_; k++)
-+                for (int k = p_74882_5_; k <= p_74882_8_; ++k)
+-                for (int k = minZ; k <= maxZ; k++)
++                for (int k = minZ; k <= maxZ; ++k)
                  {
-                     if (!p_74882_9_ || this.func_175807_a(p_74882_1_, j, i, k, p_74882_2_).func_185904_a() != Material.field_151579_a)
+                     if (!alwaysReplace || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
                      {
--                        p_74882_11_.func_75062_a(
--                            p_74882_10_, j, i, k, i == p_74882_4_ || i == p_74882_7_ || j == p_74882_3_ || j == p_74882_6_ || k == p_74882_5_ || k == p_74882_8_
+-                        blockselector.selectBlocks(
+-                            rand, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ
 -                        );
-+                        p_74882_11_.func_75062_a(p_74882_10_, j, i, k, i == p_74882_4_ || i == p_74882_7_ || j == p_74882_3_ || j == p_74882_6_ || k == p_74882_5_ || k == p_74882_8_);
-                         this.func_175811_a(p_74882_1_, p_74882_11_.func_180780_a(), j, i, k, p_74882_2_);
++                        blockselector.selectBlocks(rand, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
+                         this.setBlockState(worldIn, blockselector.getBlockState(), j, i, k, boundingboxIn);
                      }
                  }
 @@ -335,32 +311,15 @@
          }
      }
  
--    protected void func_189914_a(
--        World p_189914_1_,
--        StructureBoundingBox p_189914_2_,
--        Random p_189914_3_,
--        float p_189914_4_,
--        int p_189914_5_,
--        int p_189914_6_,
--        int p_189914_7_,
--        int p_189914_8_,
--        int p_189914_9_,
--        int p_189914_10_,
--        IBlockState p_189914_11_,
--        IBlockState p_189914_12_,
--        boolean p_189914_13_,
--        int p_189914_14_
+-    protected void generateMaybeBox(
+-        World worldIn,
+-        StructureBoundingBox sbb,
+-        Random rand,
+-        float chance,
+-        int x1,
+-        int y1,
+-        int z1,
+-        int x2,
+-        int y2,
+-        int z2,
+-        IBlockState edgeState,
+-        IBlockState state,
+-        boolean requireNonAir,
+-        int requiredSkylight
 -    )
-+    protected void func_189914_a(World p_189914_1_, StructureBoundingBox p_189914_2_, Random p_189914_3_, float p_189914_4_, int p_189914_5_, int p_189914_6_, int p_189914_7_, int p_189914_8_, int p_189914_9_, int p_189914_10_, IBlockState p_189914_11_, IBlockState p_189914_12_, boolean p_189914_13_, int p_189914_14_)
++    protected void generateMaybeBox(World worldIn, StructureBoundingBox sbb, Random rand, float chance, int x1, int y1, int z1, int x2, int y2, int z2, IBlockState edgeState, IBlockState state, boolean requireNonAir, int requiredSkylight)
      {
--        for (int i = p_189914_6_; i <= p_189914_9_; i++)
-+        for (int i = p_189914_6_; i <= p_189914_9_; ++i)
+-        for (int i = y1; i <= y2; i++)
++        for (int i = y1; i <= y2; ++i)
          {
--            for (int j = p_189914_5_; j <= p_189914_8_; j++)
-+            for (int j = p_189914_5_; j <= p_189914_8_; ++j)
+-            for (int j = x1; j <= x2; j++)
++            for (int j = x1; j <= x2; ++j)
              {
--                for (int k = p_189914_7_; k <= p_189914_10_; k++)
-+                for (int k = p_189914_7_; k <= p_189914_10_; ++k)
+-                for (int k = z1; k <= z2; k++)
++                for (int k = z1; k <= z2; ++k)
                  {
--                    if (!(p_189914_3_.nextFloat() > p_189914_4_)
--                            && (!p_189914_13_ || this.func_175807_a(p_189914_1_, j, i, k, p_189914_2_).func_185904_a() != Material.field_151579_a)
--                            && (p_189914_14_ <= 0 || this.func_189916_b(p_189914_1_, j, i, k, p_189914_2_) < p_189914_14_))
-+                    if (p_189914_3_.nextFloat() <= p_189914_4_ && (!p_189914_13_ || this.func_175807_a(p_189914_1_, j, i, k, p_189914_2_).func_185904_a() != Material.field_151579_a) && (p_189914_14_ <= 0 || this.func_189916_b(p_189914_1_, j, i, k, p_189914_2_) < p_189914_14_))
+-                    if (!(rand.nextFloat() > chance)
+-                            && (!requireNonAir || this.getBlockStateFromPos(worldIn, j, i, k, sbb).getMaterial() != Material.AIR)
+-                            && (requiredSkylight <= 0 || this.getSkyBrightness(worldIn, j, i, k, sbb) < requiredSkylight))
++                    if (rand.nextFloat() <= chance && (!requireNonAir || this.getBlockStateFromPos(worldIn, j, i, k, sbb).getMaterial() != Material.AIR) && (requiredSkylight <= 0 || this.getSkyBrightness(worldIn, j, i, k, sbb) < requiredSkylight))
                      {
-                         if (i != p_189914_6_ && i != p_189914_9_ && j != p_189914_5_ && j != p_189914_8_ && k != p_189914_7_ && k != p_189914_10_)
+                         if (i != y1 && i != y2 && j != x1 && j != x2 && k != z1 && k != z2)
                          {
 @@ -376,16 +335,7 @@
          }
      }
  
--    protected void func_175809_a(
--        World p_175809_1_,
--        StructureBoundingBox p_175809_2_,
--        Random p_175809_3_,
--        float p_175809_4_,
--        int p_175809_5_,
--        int p_175809_6_,
--        int p_175809_7_,
--        IBlockState p_175809_8_
+-    protected void randomlyPlaceBlock(
+-        World worldIn,
+-        StructureBoundingBox boundingboxIn,
+-        Random rand,
+-        float chance,
+-        int x,
+-        int y,
+-        int z,
+-        IBlockState blockstateIn
 -    )
-+    protected void func_175809_a(World p_175809_1_, StructureBoundingBox p_175809_2_, Random p_175809_3_, float p_175809_4_, int p_175809_5_, int p_175809_6_, int p_175809_7_, IBlockState p_175809_8_)
++    protected void randomlyPlaceBlock(World worldIn, StructureBoundingBox boundingboxIn, Random rand, float chance, int x, int y, int z, IBlockState blockstateIn)
      {
-         if (p_175809_3_.nextFloat() < p_175809_4_)
+         if (rand.nextFloat() < chance)
          {
 @@ -393,18 +343,7 @@
          }
      }
  
--    protected void func_180777_a(
--        World p_180777_1_,
--        StructureBoundingBox p_180777_2_,
--        int p_180777_3_,
--        int p_180777_4_,
--        int p_180777_5_,
--        int p_180777_6_,
--        int p_180777_7_,
--        int p_180777_8_,
--        IBlockState p_180777_9_,
--        boolean p_180777_10_
+-    protected void randomlyRareFillWithBlocks(
+-        World worldIn,
+-        StructureBoundingBox boundingboxIn,
+-        int minX,
+-        int minY,
+-        int minZ,
+-        int maxX,
+-        int maxY,
+-        int maxZ,
+-        IBlockState blockstateIn,
+-        boolean excludeAir
 -    )
-+    protected void func_180777_a(World p_180777_1_, StructureBoundingBox p_180777_2_, int p_180777_3_, int p_180777_4_, int p_180777_5_, int p_180777_6_, int p_180777_7_, int p_180777_8_, IBlockState p_180777_9_, boolean p_180777_10_)
++    protected void randomlyRareFillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstateIn, boolean excludeAir)
      {
-         float f = (float)(p_180777_6_ - p_180777_3_ + 1);
-         float f1 = (float)(p_180777_7_ - p_180777_4_ + 1);
+         float f = (float)(maxX - minX + 1);
+         float f1 = (float)(maxY - minY + 1);
 @@ -412,15 +351,15 @@
-         float f3 = (float)p_180777_3_ + f / 2.0F;
-         float f4 = (float)p_180777_5_ + f2 / 2.0F;
+         float f3 = (float)minX + f / 2.0F;
+         float f4 = (float)minZ + f2 / 2.0F;
  
--        for (int i = p_180777_4_; i <= p_180777_7_; i++)
-+        for (int i = p_180777_4_; i <= p_180777_7_; ++i)
+-        for (int i = minY; i <= maxY; i++)
++        for (int i = minY; i <= maxY; ++i)
          {
-             float f5 = (float)(i - p_180777_4_) / f1;
+             float f5 = (float)(i - minY) / f1;
  
--            for (int j = p_180777_3_; j <= p_180777_6_; j++)
-+            for (int j = p_180777_3_; j <= p_180777_6_; ++j)
+-            for (int j = minX; j <= maxX; j++)
++            for (int j = minX; j <= maxX; ++j)
              {
                  float f6 = ((float)j - f3) / (f * 0.5F);
  
--                for (int k = p_180777_5_; k <= p_180777_8_; k++)
-+                for (int k = p_180777_5_; k <= p_180777_8_; ++k)
+-                for (int k = minZ; k <= maxZ; k++)
++                for (int k = minZ; k <= maxZ; ++k)
                  {
                      float f7 = ((float)k - f4) / (f2 * 0.5F);
  
 @@ -463,27 +402,18 @@
-             while ((p_175808_1_.func_175623_d(new BlockPos(i, j, k)) || p_175808_1_.func_180495_p(new BlockPos(i, j, k)).func_185904_a().func_76224_d()) && j > 1)
+             while ((worldIn.isAirBlock(new BlockPos(i, j, k)) || worldIn.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > 1)
              {
-                 p_175808_1_.func_180501_a(new BlockPos(i, j, k), p_175808_2_, 2);
+                 worldIn.setBlockState(new BlockPos(i, j, k), blockstateIn, 2);
 -                j--;
 +                --j;
              }
          }
      }
  
--    protected boolean func_186167_a(
--        World p_186167_1_, StructureBoundingBox p_186167_2_, Random p_186167_3_, int p_186167_4_, int p_186167_5_, int p_186167_6_, ResourceLocation p_186167_7_
+-    protected boolean generateChest(
+-        World worldIn, StructureBoundingBox structurebb, Random randomIn, int x, int y, int z, ResourceLocation loot
 -    )
-+    protected boolean func_186167_a(World p_186167_1_, StructureBoundingBox p_186167_2_, Random p_186167_3_, int p_186167_4_, int p_186167_5_, int p_186167_6_, ResourceLocation p_186167_7_)
++    protected boolean generateChest(World worldIn, StructureBoundingBox structurebb, Random randomIn, int x, int y, int z, ResourceLocation loot)
      {
-         BlockPos blockpos = new BlockPos(this.func_74865_a(p_186167_4_, p_186167_6_), this.func_74862_a(p_186167_5_), this.func_74873_b(p_186167_4_, p_186167_6_));
--        return this.func_191080_a(p_186167_1_, p_186167_2_, p_186167_3_, blockpos, p_186167_7_, null);
-+        return this.func_191080_a(p_186167_1_, p_186167_2_, p_186167_3_, blockpos, p_186167_7_, (IBlockState)null);
+         BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
+-        return this.generateChest(worldIn, structurebb, randomIn, blockpos, loot, null);
++        return this.generateChest(worldIn, structurebb, randomIn, blockpos, loot, (IBlockState)null);
      }
  
--    protected boolean func_191080_a(
+-    protected boolean generateChest(
 -        World p_191080_1_,
 -        StructureBoundingBox p_191080_2_,
 -        Random p_191080_3_,
@@ -257,82 +257,82 @@
 -        ResourceLocation p_191080_5_,
 -        @Nullable IBlockState p_191080_6_
 -    )
-+    protected boolean func_191080_a(World p_191080_1_, StructureBoundingBox p_191080_2_, Random p_191080_3_, BlockPos p_191080_4_, ResourceLocation p_191080_5_, @Nullable IBlockState p_191080_6_)
++    protected boolean generateChest(World p_191080_1_, StructureBoundingBox p_191080_2_, Random p_191080_3_, BlockPos p_191080_4_, ResourceLocation p_191080_5_, @Nullable IBlockState p_191080_6_)
      {
-         if (p_191080_2_.func_175898_b(p_191080_4_) && p_191080_1_.func_180495_p(p_191080_4_).func_177230_c() != Blocks.field_150486_ae)
+         if (p_191080_2_.isVecInside(p_191080_4_) && p_191080_1_.getBlockState(p_191080_4_).getBlock() != Blocks.CHEST)
          {
 @@ -508,29 +438,13 @@
          }
      }
  
--    protected boolean func_189419_a(
--        World p_189419_1_,
--        StructureBoundingBox p_189419_2_,
--        Random p_189419_3_,
--        int p_189419_4_,
--        int p_189419_5_,
--        int p_189419_6_,
--        EnumFacing p_189419_7_,
--        ResourceLocation p_189419_8_
+-    protected boolean createDispenser(
+-        World worldIn,
+-        StructureBoundingBox sbb,
+-        Random rand,
+-        int x,
+-        int y,
+-        int z,
+-        EnumFacing facing,
+-        ResourceLocation lootTableIn
 -    )
-+    protected boolean func_189419_a(World p_189419_1_, StructureBoundingBox p_189419_2_, Random p_189419_3_, int p_189419_4_, int p_189419_5_, int p_189419_6_, EnumFacing p_189419_7_, ResourceLocation p_189419_8_)
++    protected boolean createDispenser(World worldIn, StructureBoundingBox sbb, Random rand, int x, int y, int z, EnumFacing facing, ResourceLocation lootTableIn)
      {
-         BlockPos blockpos = new BlockPos(this.func_74865_a(p_189419_4_, p_189419_6_), this.func_74862_a(p_189419_5_), this.func_74873_b(p_189419_4_, p_189419_6_));
+         BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
  
-         if (p_189419_2_.func_175898_b(blockpos) && p_189419_1_.func_180495_p(blockpos).func_177230_c() != Blocks.field_150367_z)
+         if (sbb.isVecInside(blockpos) && worldIn.getBlockState(blockpos).getBlock() != Blocks.DISPENSER)
          {
--            this.func_175811_a(
--                p_189419_1_,
--                Blocks.field_150367_z.func_176223_P().func_177226_a(BlockDispenser.field_176441_a, p_189419_7_),
--                p_189419_4_,
--                p_189419_5_,
--                p_189419_6_,
--                p_189419_2_
+-            this.setBlockState(
+-                worldIn,
+-                Blocks.DISPENSER.getDefaultState().withProperty(BlockDispenser.FACING, facing),
+-                x,
+-                y,
+-                z,
+-                sbb
 -            );
-+            this.func_175811_a(p_189419_1_, Blocks.field_150367_z.func_176223_P().func_177226_a(BlockDispenser.field_176441_a, p_189419_7_), p_189419_4_, p_189419_5_, p_189419_6_, p_189419_2_);
-             TileEntity tileentity = p_189419_1_.func_175625_s(blockpos);
++            this.setBlockState(worldIn, Blocks.DISPENSER.getDefaultState().withProperty(BlockDispenser.FACING, facing), x, y, z, sbb);
+             TileEntity tileentity = worldIn.getTileEntity(blockpos);
  
              if (tileentity instanceof TileEntityDispenser)
 @@ -546,28 +460,10 @@
          }
      }
  
--    protected void func_189915_a(
--        World p_189915_1_,
--        StructureBoundingBox p_189915_2_,
--        Random p_189915_3_,
--        int p_189915_4_,
--        int p_189915_5_,
--        int p_189915_6_,
--        EnumFacing p_189915_7_,
--        BlockDoor p_189915_8_
+-    protected void generateDoor(
+-        World worldIn,
+-        StructureBoundingBox sbb,
+-        Random rand,
+-        int x,
+-        int y,
+-        int z,
+-        EnumFacing facing,
+-        BlockDoor door
 -    )
-+    protected void func_189915_a(World p_189915_1_, StructureBoundingBox p_189915_2_, Random p_189915_3_, int p_189915_4_, int p_189915_5_, int p_189915_6_, EnumFacing p_189915_7_, BlockDoor p_189915_8_)
++    protected void generateDoor(World worldIn, StructureBoundingBox sbb, Random rand, int x, int y, int z, EnumFacing facing, BlockDoor door)
      {
--        this.func_175811_a(
--            p_189915_1_, p_189915_8_.func_176223_P().func_177226_a(BlockDoor.field_176520_a, p_189915_7_), p_189915_4_, p_189915_5_, p_189915_6_, p_189915_2_
+-        this.setBlockState(
+-            worldIn, door.getDefaultState().withProperty(BlockDoor.FACING, facing), x, y, z, sbb
 -        );
--        this.func_175811_a(
--            p_189915_1_,
--            p_189915_8_.func_176223_P().func_177226_a(BlockDoor.field_176520_a, p_189915_7_).func_177226_a(BlockDoor.field_176523_O, BlockDoor.EnumDoorHalf.UPPER),
--            p_189915_4_,
--            p_189915_5_ + 1,
--            p_189915_6_,
--            p_189915_2_
+-        this.setBlockState(
+-            worldIn,
+-            door.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER),
+-            x,
+-            y + 1,
+-            z,
+-            sbb
 -        );
-+        this.func_175811_a(p_189915_1_, p_189915_8_.func_176223_P().func_177226_a(BlockDoor.field_176520_a, p_189915_7_), p_189915_4_, p_189915_5_, p_189915_6_, p_189915_2_);
-+        this.func_175811_a(p_189915_1_, p_189915_8_.func_176223_P().func_177226_a(BlockDoor.field_176520_a, p_189915_7_).func_177226_a(BlockDoor.field_176523_O, BlockDoor.EnumDoorHalf.UPPER), p_189915_4_, p_189915_5_ + 1, p_189915_6_, p_189915_2_);
++        this.setBlockState(worldIn, door.getDefaultState().withProperty(BlockDoor.FACING, facing), x, y, z, sbb);
++        this.setBlockState(worldIn, door.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), x, y + 1, z, sbb);
      }
  
-     public void func_181138_a(int p_181138_1_, int p_181138_2_, int p_181138_3_)
+     public void offset(int x, int y, int z)
 @@ -616,10 +512,6 @@
      public abstract static class BlockSelector
          {
-             protected IBlockState field_151562_a = Blocks.field_150350_a.func_176223_P();
+             protected IBlockState blockstate = Blocks.AIR.getDefaultState();
 -
 -            protected BlockSelector()
 -            {
 -            }
  
-             public abstract void func_75062_a(Random p_75062_1_, int p_75062_2_, int p_75062_3_, int p_75062_4_, boolean p_75062_5_);
+             public abstract void selectBlocks(Random rand, int x, int y, int z, boolean wall);
  

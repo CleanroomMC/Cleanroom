@@ -4,77 +4,77 @@
  
  public class BiomeHills extends Biome
  {
--    private final WorldGenerator field_82915_S = new WorldGenMinable(
--        Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.STONE), 9
+-    private final WorldGenerator silverfishSpawner = new WorldGenMinable(
+-        Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.STONE), 9
 -    );
-+    private final WorldGenerator field_82915_S = new WorldGenMinable(Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.STONE), 9);
-     private final WorldGenTaiga2 field_150634_aD = new WorldGenTaiga2(false);
-     private final BiomeHills.Type field_150638_aH;
++    private final WorldGenerator silverfishSpawner = new WorldGenMinable(Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.STONE), 9);
+     private final WorldGenTaiga2 spruceGenerator = new WorldGenTaiga2(false);
+     private final BiomeHills.Type type;
  
 @@ -33,52 +31,42 @@
-         this.field_150638_aH = p_i46710_1_;
+         this.type = p_i46710_1_;
      }
  
 -    @Override
-     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
      {
-         return (WorldGenAbstractTree)(p_150567_1_.nextInt(3) > 0 ? this.field_150634_aD : super.func_150567_a(p_150567_1_));
+         return (WorldGenAbstractTree)(rand.nextInt(3) > 0 ? this.spruceGenerator : super.getRandomTreeFeature(rand));
      }
  
 -    @Override
-     public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
+     public void decorate(World worldIn, Random rand, BlockPos pos)
      {
-         super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
--        int i = 3 + p_180624_2_.nextInt(6);
+         super.decorate(worldIn, rand, pos);
+-        int i = 3 + rand.nextInt(6);
 -
 -        for (int j = 0; j < i; j++)
 -        {
--            int k = p_180624_2_.nextInt(16);
--            int l = p_180624_2_.nextInt(28) + 4;
--            int i1 = p_180624_2_.nextInt(16);
--            BlockPos blockpos = p_180624_3_.func_177982_a(k, l, i1);
+-            int k = rand.nextInt(16);
+-            int l = rand.nextInt(28) + 4;
+-            int i1 = rand.nextInt(16);
+-            BlockPos blockpos = pos.add(k, l, i1);
 -
--            if (p_180624_1_.func_180495_p(blockpos).func_177230_c() == Blocks.field_150348_b)
+-            if (worldIn.getBlockState(blockpos).getBlock() == Blocks.STONE)
 -            {
--                p_180624_1_.func_180501_a(blockpos, Blocks.field_150412_bA.func_176223_P(), 2);
+-                worldIn.setBlockState(blockpos, Blocks.EMERALD_ORE.getDefaultState(), 2);
 -            }
 -        }
 -
 -        for (int j1 = 0; j1 < 7; j1++)
 +
-+        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Pre(p_180624_1_, p_180624_2_, p_180624_3_));
++        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Pre(worldIn, rand, pos));
 +        WorldGenerator emeralds = new EmeraldGenerator();
-+        if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(p_180624_1_, p_180624_2_, emeralds, p_180624_3_, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.EMERALD))
-+            emeralds.func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
++        if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, rand, emeralds, pos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.EMERALD))
++            emeralds.generate(worldIn, rand, pos);
 +
 +        for (int j1 = 0; j1 < 7; ++j1)
          {
-             int k1 = p_180624_2_.nextInt(16);
-             int l1 = p_180624_2_.nextInt(64);
-             int i2 = p_180624_2_.nextInt(16);
-+            if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(p_180624_1_, p_180624_2_, field_82915_S, p_180624_3_.func_177982_a(j1, k1, l1), net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.SILVERFISH))
-             this.field_82915_S.func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_.func_177982_a(k1, l1, i2));
+             int k1 = rand.nextInt(16);
+             int l1 = rand.nextInt(64);
+             int i2 = rand.nextInt(16);
++            if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, rand, silverfishSpawner, pos.add(j1, k1, l1), net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.SILVERFISH))
+             this.silverfishSpawner.generate(worldIn, rand, pos.add(k1, l1, i2));
          }
-+        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Post(p_180624_1_, p_180624_2_, p_180624_3_));
++        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Post(worldIn, rand, pos));
      }
  
 -    @Override
-     public void func_180622_a(World p_180622_1_, Random p_180622_2_, ChunkPrimer p_180622_3_, int p_180622_4_, int p_180622_5_, double p_180622_6_)
+     public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
      {
-         this.field_76752_A = Blocks.field_150349_c.func_176223_P();
-         this.field_76753_B = Blocks.field_150346_d.func_176223_P();
+         this.topBlock = Blocks.GRASS.getDefaultState();
+         this.fillerBlock = Blocks.DIRT.getDefaultState();
  
--        if ((p_180622_6_ < -1.0 || p_180622_6_ > 2.0) && this.field_150638_aH == BiomeHills.Type.MUTATED)
-+        if ((p_180622_6_ < -1.0D || p_180622_6_ > 2.0D) && this.field_150638_aH == BiomeHills.Type.MUTATED)
+-        if ((noiseVal < -1.0 || noiseVal > 2.0) && this.type == BiomeHills.Type.MUTATED)
++        if ((noiseVal < -1.0D || noiseVal > 2.0D) && this.type == BiomeHills.Type.MUTATED)
          {
-             this.field_76752_A = Blocks.field_150351_n.func_176223_P();
-             this.field_76753_B = Blocks.field_150351_n.func_176223_P();
+             this.topBlock = Blocks.GRAVEL.getDefaultState();
+             this.fillerBlock = Blocks.GRAVEL.getDefaultState();
          }
--        else if (p_180622_6_ > 1.0 && this.field_150638_aH != BiomeHills.Type.EXTRA_TREES)
-+        else if (p_180622_6_ > 1.0D && this.field_150638_aH != BiomeHills.Type.EXTRA_TREES)
+-        else if (noiseVal > 1.0 && this.type != BiomeHills.Type.EXTRA_TREES)
++        else if (noiseVal > 1.0D && this.type != BiomeHills.Type.EXTRA_TREES)
          {
-             this.field_76752_A = Blocks.field_150348_b.func_176223_P();
-             this.field_76753_B = Blocks.field_150348_b.func_176223_P();
+             this.topBlock = Blocks.STONE.getDefaultState();
+             this.fillerBlock = Blocks.STONE.getDefaultState();
 @@ -92,5 +80,26 @@
          NORMAL,
          EXTRA_TREES,
@@ -84,18 +84,18 @@
 +    private static class EmeraldGenerator extends WorldGenerator
 +    {
 +        @Override
-+        public boolean func_180709_b(World worldIn, Random rand, BlockPos pos)
++        public boolean generate(World worldIn, Random rand, BlockPos pos)
 +        {
 +            int count = 3 + rand.nextInt(6);
 +            for (int i = 0; i < count; i++)
 +            {
 +                int offset = net.minecraftforge.common.ForgeModContainer.fixVanillaCascading ? 8 : 0; // MC-114332
-+                BlockPos blockpos = pos.func_177982_a(rand.nextInt(16) + offset, rand.nextInt(28) + 4, rand.nextInt(16) + offset);
++                BlockPos blockpos = pos.add(rand.nextInt(16) + offset, rand.nextInt(28) + 4, rand.nextInt(16) + offset);
 +
-+                net.minecraft.block.state.IBlockState state = worldIn.func_180495_p(blockpos);
-+                if (state.func_177230_c().isReplaceableOreGen(state, worldIn, blockpos, net.minecraft.block.state.pattern.BlockMatcher.func_177642_a(Blocks.field_150348_b)))
++                net.minecraft.block.state.IBlockState state = worldIn.getBlockState(blockpos);
++                if (state.getBlock().isReplaceableOreGen(state, worldIn, blockpos, net.minecraft.block.state.pattern.BlockMatcher.forBlock(Blocks.STONE)))
 +                {
-+                    worldIn.func_180501_a(blockpos, Blocks.field_150412_bA.func_176223_P(), 16 | 2);
++                    worldIn.setBlockState(blockpos, Blocks.EMERALD_ORE.getDefaultState(), 16 | 2);
 +                }
 +            }
 +            return true;

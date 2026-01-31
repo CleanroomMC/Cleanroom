@@ -1,22 +1,22 @@
 --- before/net/minecraft/server/dedicated/ServerHangWatchdog.java
 +++ after/net/minecraft/server/dedicated/ServerHangWatchdog.java
 @@ -29,7 +29,6 @@
-         this.field_180250_c = p_i46310_1_.func_175593_aQ();
+         this.maxTickTime = server.getMaxTickTime();
      }
  
 -    @Override
      public void run()
      {
-         while (this.field_180249_b.func_71278_l())
+         while (this.server.isServerRunning())
 @@ -40,14 +39,12 @@
  
-             if (k > this.field_180250_c)
+             if (k > this.maxTickTime)
              {
--                field_180251_a.fatal(
+-                LOGGER.fatal(
 -                    "A single server tick took {} seconds (should be max {})", String.format("%.2f", (float)k / 1000.0F), String.format("%.2f", 0.05F)
 -                );
-+                field_180251_a.fatal("A single server tick took {} seconds (should be max {})", String.format("%.2f", (float)k / 1000.0F), String.format("%.2f", 0.05F));
-                 field_180251_a.fatal("Considering it to be crashed, server will forcibly shutdown.");
++                LOGGER.fatal("A single server tick took {} seconds (should be max {})", String.format("%.2f", (float)k / 1000.0F), String.format("%.2f", 0.05F));
+                 LOGGER.fatal("Considering it to be crashed, server will forcibly shutdown.");
                  ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
                  ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
                  StringBuilder stringbuilder = new StringBuilder();
@@ -35,19 +35,19 @@
                  }
  
 @@ -64,14 +61,11 @@
-                 this.field_180249_b.func_71230_b(crashreport);
-                 CrashReportCategory crashreportcategory = crashreport.func_85058_a("Thread Dump");
-                 crashreportcategory.func_71507_a("Threads", stringbuilder);
+                 this.server.addServerInfoToCrashReport(crashreport);
+                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Thread Dump");
+                 crashreportcategory.addCrashSection("Threads", stringbuilder);
 -                File file1 = new File(
--                    new File(this.field_180249_b.func_71238_n(), "crash-reports"),
+-                    new File(this.server.getDataDirectory(), "crash-reports"),
 -                    "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
 -                );
-+                File file1 = new File(new File(this.field_180249_b.func_71238_n(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
++                File file1 = new File(new File(this.server.getDataDirectory(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
  
-                 if (crashreport.func_147149_a(file1))
+                 if (crashreport.saveToFile(file1))
                  {
--                    field_180251_a.error("This crash report has been saved to: {}", file1.getAbsolutePath());
-+                    field_180251_a.error("This crash report has been saved to: {}", (Object)file1.getAbsolutePath());
+-                    LOGGER.error("This crash report has been saved to: {}", file1.getAbsolutePath());
++                    LOGGER.error("This crash report has been saved to: {}", (Object)file1.getAbsolutePath());
                  }
                  else
                  {

@@ -1,223 +1,67 @@
 --- before/net/minecraft/creativetab/CreativeTabs.java
 +++ after/net/minecraft/creativetab/CreativeTabs.java
-@@ -19,7 +19,6 @@
-     public static final CreativeTabs field_78030_b = new CreativeTabs(0, "buildingBlocks")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Item.func_150898_a(Blocks.field_150336_V));
-@@ -28,7 +27,6 @@
-     public static final CreativeTabs field_78031_c = new CreativeTabs(1, "decorations")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Item.func_150898_a(Blocks.field_150398_cm), 1, BlockDoublePlant.EnumPlantType.PAEONIA.func_176936_a());
-@@ -37,7 +35,6 @@
-     public static final CreativeTabs field_78028_d = new CreativeTabs(2, "redstone")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Items.field_151137_ax);
-@@ -46,7 +43,6 @@
-     public static final CreativeTabs field_78029_e = new CreativeTabs(3, "transportation")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Item.func_150898_a(Blocks.field_150318_D));
-@@ -55,7 +51,6 @@
-     public static final CreativeTabs field_78026_f = new CreativeTabs(6, "misc")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Items.field_151129_at);
-@@ -64,7 +59,6 @@
-     public static final CreativeTabs field_78027_g = (new CreativeTabs(5, "search")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Items.field_151111_aL);
-@@ -73,7 +67,6 @@
-     public static final CreativeTabs field_78039_h = new CreativeTabs(7, "food")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Items.field_151034_e);
-@@ -82,43 +75,22 @@
-     public static final CreativeTabs field_78040_i = (new CreativeTabs(8, "tools")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Items.field_151036_c);
-         }
--    })
--            .func_111229_a(
--                new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.DIGGER, EnumEnchantmentType.FISHING_ROD, EnumEnchantmentType.BREAKABLE}
--            );
-+    }).func_111229_a(new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.DIGGER, EnumEnchantmentType.FISHING_ROD, EnumEnchantmentType.BREAKABLE});
-     public static final CreativeTabs field_78037_j = (new CreativeTabs(9, "combat")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Items.field_151010_B);
-         }
--    })
--            .func_111229_a(
--                new EnumEnchantmentType[]
--                {
--                    EnumEnchantmentType.ALL,
--                    EnumEnchantmentType.ARMOR,
--                    EnumEnchantmentType.ARMOR_FEET,
--                    EnumEnchantmentType.ARMOR_HEAD,
--                    EnumEnchantmentType.ARMOR_LEGS,
--                    EnumEnchantmentType.ARMOR_CHEST,
--                    EnumEnchantmentType.BOW,
--                    EnumEnchantmentType.WEAPON,
--                    EnumEnchantmentType.WEARABLE,
--                    EnumEnchantmentType.BREAKABLE
--                }
--            );
-+    }).func_111229_a(new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.ARMOR, EnumEnchantmentType.ARMOR_FEET, EnumEnchantmentType.ARMOR_HEAD, EnumEnchantmentType.ARMOR_LEGS, EnumEnchantmentType.ARMOR_CHEST, EnumEnchantmentType.BOW, EnumEnchantmentType.WEAPON, EnumEnchantmentType.WEARABLE, EnumEnchantmentType.BREAKABLE});
-     public static final CreativeTabs field_78038_k = new CreativeTabs(10, "brewing")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return PotionUtils.func_185188_a(new ItemStack(Items.field_151068_bn), PotionTypes.field_185230_b);
-@@ -128,19 +100,16 @@
-     public static final CreativeTabs field_192395_m = new CreativeTabs(4, "hotbar")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Blocks.field_150342_X);
-         }
-         @SideOnly(Side.CLIENT)
--        @Override
-         public void func_78018_a(NonNullList<ItemStack> p_78018_1_)
-         {
-             throw new RuntimeException("Implement exception client-side.");
-         }
-         @SideOnly(Side.CLIENT)
--        @Override
-         public boolean func_192394_m()
-         {
-             return true;
-@@ -149,7 +118,6 @@
-     public static final CreativeTabs field_78036_m = (new CreativeTabs(11, "inventory")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack func_78016_d()
-         {
-             return new ItemStack(Item.func_150898_a(Blocks.field_150486_ae));
-@@ -163,8 +131,22 @@
-     private EnumEnchantmentType[] field_111230_s = new EnumEnchantmentType[0];
-     private ItemStack field_151245_t;
+@@ -163,8 +163,22 @@
+     private EnumEnchantmentType[] enchantmentTypes = new EnumEnchantmentType[0];
+     private ItemStack icon;
  
 +    public CreativeTabs(String label)
 +    {
 +        this(getNextID(), label);
 +    }
 +
-     public CreativeTabs(int p_i1853_1_, String p_i1853_2_)
+     public CreativeTabs(int index, String label)
      {
-+        if (p_i1853_1_ >= field_78032_a.length)
++        if (index >= CREATIVE_TAB_ARRAY.length)
 +        {
-+            CreativeTabs[] tmp = new CreativeTabs[p_i1853_1_ + 1];
-+            for (int x = 0; x < field_78032_a.length; x++)
++            CreativeTabs[] tmp = new CreativeTabs[index + 1];
++            for (int x = 0; x < CREATIVE_TAB_ARRAY.length; x++)
 +            {
-+                tmp[x] = field_78032_a[x];
++                tmp[x] = CREATIVE_TAB_ARRAY[x];
 +            }
-+            field_78032_a = tmp;
++            CREATIVE_TAB_ARRAY = tmp;
 +        }
-         this.field_78033_n = p_i1853_1_;
-         this.field_78034_o = p_i1853_2_;
-         this.field_151245_t = ItemStack.field_190927_a;
-@@ -177,6 +159,12 @@
-         return this.field_78033_n;
-     }
- 
-+    public CreativeTabs func_78025_a(String p_78025_1_)
-+    {
-+        this.field_78043_p = p_78025_1_;
-+        return this;
-+    }
-+
+         this.index = index;
+         this.tabLabel = label;
+         this.icon = ItemStack.EMPTY;
+@@ -242,12 +256,20 @@
      @SideOnly(Side.CLIENT)
-     public String func_78013_b()
+     public int getColumn()
      {
-@@ -209,12 +197,6 @@
-         return this.field_78043_p;
-     }
- 
--    public CreativeTabs func_78025_a(String p_78025_1_)
--    {
--        this.field_78043_p = p_78025_1_;
--        return this;
--    }
--
-     @SideOnly(Side.CLIENT)
-     public boolean func_78019_g()
-     {
-@@ -242,12 +224,20 @@
-     @SideOnly(Side.CLIENT)
-     public int func_78020_k()
-     {
-+        if (field_78033_n > 11)
++        if (index > 11)
 +        {
-+            return ((field_78033_n - 12) % 10) % 5;
++            return ((index - 12) % 10) % 5;
 +        }
-         return this.field_78033_n % 6;
+         return this.index % 6;
      }
  
      @SideOnly(Side.CLIENT)
-     public boolean func_78023_l()
+     public boolean isOnTopRow()
      {
-+        if (field_78033_n > 11)
++        if (index > 11)
 +        {
-+            return ((field_78033_n - 12) % 10) < 5;
++            return ((index - 12) % 10) < 5;
 +        }
-         return this.field_78033_n < 6;
+         return this.index < 6;
      }
  
-@@ -291,5 +281,51 @@
+@@ -291,5 +313,51 @@
          {
-             item.func_150895_a(this, p_78018_1_);
+             item.getSubItems(this, p_78018_1_);
          }
 +    }
 +
 +    public int getTabPage()
 +    {
-+        if (field_78033_n > 11)
++        if (index > 11)
 +        {
-+            return ((field_78033_n - 12) / 10) + 1;
++            return ((index - 12) / 10) + 1;
 +        }
 +        return 0;
 +    }
 +
 +    public static int getNextID()
 +    {
-+        return field_78032_a.length;
++        return CREATIVE_TAB_ARRAY.length;
 +    }
 +
 +    /**
@@ -227,7 +71,7 @@
 +     */
 +    public boolean hasSearchBar()
 +    {
-+        return field_78033_n == CreativeTabs.field_78027_g.field_78033_n;
++        return index == CreativeTabs.SEARCH.index;
 +    }
 +
 +    /**
@@ -244,7 +88,7 @@
 +    @SideOnly(Side.CLIENT)
 +    public net.minecraft.util.ResourceLocation getBackgroundImage()
 +    {
-+        return new net.minecraft.util.ResourceLocation("textures/gui/container/creative_inventory/tab_" + this.func_78015_f());
++        return new net.minecraft.util.ResourceLocation("textures/gui/container/creative_inventory/tab_" + this.getBackgroundImageName());
 +    }
 +
 +    public int getLabelColor()

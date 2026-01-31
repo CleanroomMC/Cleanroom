@@ -1,13 +1,13 @@
 --- before/net/minecraft/item/ItemLilyPad.java
 +++ after/net/minecraft/item/ItemLilyPad.java
 @@ -25,7 +25,6 @@
-         super(p_i45357_1_, false);
+         super(block, false);
      }
  
 -    @Override
-     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
      {
-         ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
+         ItemStack itemstack = playerIn.getHeldItem(handIn);
 @@ -33,7 +32,7 @@
  
          if (raytraceresult == null)
@@ -19,40 +19,40 @@
          {
 @@ -41,19 +40,25 @@
              {
-                 BlockPos blockpos = raytraceresult.func_178782_a();
+                 BlockPos blockpos = raytraceresult.getBlockPos();
  
--                if (!p_77659_1_.func_175660_a(p_77659_2_, blockpos)
--                        || !p_77659_2_.func_175151_a(blockpos.func_177972_a(raytraceresult.field_178784_b), raytraceresult.field_178784_b, itemstack))
-+                if (!p_77659_1_.func_175660_a(p_77659_2_, blockpos) || !p_77659_2_.func_175151_a(blockpos.func_177972_a(raytraceresult.field_178784_b), raytraceresult.field_178784_b, itemstack))
+-                if (!worldIn.isBlockModifiable(playerIn, blockpos)
+-                        || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack))
++                if (!worldIn.isBlockModifiable(playerIn, blockpos) || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack))
                  {
 -                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
 +                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                  }
  
-                 BlockPos blockpos1 = blockpos.func_177984_a();
-                 IBlockState iblockstate = p_77659_1_.func_180495_p(blockpos);
+                 BlockPos blockpos1 = blockpos.up();
+                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
  
--                if (iblockstate.func_185904_a() == Material.field_151586_h
--                        && iblockstate.func_177229_b(BlockLiquid.field_176367_b) == 0
--                        && p_77659_1_.func_175623_d(blockpos1))
-+                if (iblockstate.func_185904_a() == Material.field_151586_h && ((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue() == 0 && p_77659_1_.func_175623_d(blockpos1))
+-                if (iblockstate.getMaterial() == Material.WATER
+-                        && iblockstate.getValue(BlockLiquid.LEVEL) == 0
+-                        && worldIn.isAirBlock(blockpos1))
++                if (iblockstate.getMaterial() == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.isAirBlock(blockpos1))
                  {
 +                    // special case for handling block placement with water lilies
-+                    net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(p_77659_1_, blockpos1);
-+                    p_77659_1_.func_175656_a(blockpos1, Blocks.field_150392_bi.func_176223_P());
-+                    if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(p_77659_2_, blocksnapshot, net.minecraft.util.EnumFacing.UP, p_77659_3_).isCanceled())
++                    net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(worldIn, blockpos1);
++                    worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState());
++                    if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(playerIn, blocksnapshot, net.minecraft.util.EnumFacing.UP, handIn).isCanceled())
 +                    {
 +                        blocksnapshot.restore(true, false);
 +                        return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
 +                    }
 +
-                     p_77659_1_.func_180501_a(blockpos1, Blocks.field_150392_bi.func_176223_P(), 11);
+                     worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState(), 11);
  
-                     if (p_77659_2_ instanceof EntityPlayerMP)
+                     if (playerIn instanceof EntityPlayerMP)
 @@ -68,11 +73,11 @@
  
-                     p_77659_2_.func_71029_a(StatList.func_188057_b(this));
-                     p_77659_1_.func_184133_a(p_77659_2_, blockpos, SoundEvents.field_187916_gp, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                     playerIn.addStat(StatList.getObjectUseStats(this));
+                     worldIn.playSound(playerIn, blockpos, SoundEvents.BLOCK_WATERLILY_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 -                    return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 +                    return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
                  }

@@ -1,85 +1,44 @@
 --- before/net/minecraft/client/resources/SimpleReloadableResourceManager.java
 +++ after/net/minecraft/client/resources/SimpleReloadableResourceManager.java
-@@ -24,9 +24,9 @@
- {
-     private static final Logger field_147967_a = LogManager.getLogger();
-     private static final Joiner field_130074_a = Joiner.on(", ");
--    private final Map<String, FallbackResourceManager> field_110548_a = Maps.newHashMap();
--    private final List<IResourceManagerReloadListener> field_110546_b = Lists.newArrayList();
--    private final Set<String> field_135057_d = Sets.newLinkedHashSet();
-+    private final Map<String, FallbackResourceManager> field_110548_a = Maps.<String, FallbackResourceManager>newHashMap();
-+    private final List<IResourceManagerReloadListener> field_110546_b = Lists.<IResourceManagerReloadListener>newArrayList();
-+    private final Set<String> field_135057_d = Sets.<String>newLinkedHashSet();
-     private final MetadataSerializer field_110547_c;
- 
-     public SimpleReloadableResourceManager(MetadataSerializer p_i1299_1_)
-@@ -51,13 +51,11 @@
-         }
-     }
- 
--    @Override
-     public Set<String> func_135055_a()
+@@ -96,6 +96,7 @@
+     @Override
+     public void reloadResources(List<IResourcePack> resourcesPacksList)
      {
-         return this.field_135057_d;
-     }
- 
--    @Override
-     public IResource func_110536_a(ResourceLocation p_110536_1_) throws IOException
-     {
-         IResourceManager iresourcemanager = this.field_110548_a.get(p_110536_1_.func_110624_b());
-@@ -72,7 +70,6 @@
-         }
-     }
- 
--    @Override
-     public List<IResource> func_135056_b(ResourceLocation p_135056_1_) throws IOException
-     {
-         IResourceManager iresourcemanager = this.field_110548_a.get(p_135056_1_.func_110624_b());
-@@ -93,11 +90,11 @@
-         this.field_135057_d.clear();
-     }
- 
--    @Override
-     public void func_110541_a(List<IResourcePack> p_110541_1_)
-     {
-+        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resources", p_110541_1_.size()+1, true);
-         this.func_110543_a();
--        field_147967_a.info("Reloading ResourceManager: {}", field_130074_a.join(Iterables.transform(p_110541_1_, new Function<IResourcePack, String>()
-+        field_147967_a.info("Reloading ResourceManager: {}", (Object)field_130074_a.join(Iterables.transform(p_110541_1_, new Function<IResourcePack, String>()
++        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resources", resourcesPacksList.size()+1, true);
+         this.clearResources();
+         LOGGER.info("Reloading ResourceManager: {}", JOINER_RESOURCE_PACKS.join(Iterables.transform(resourcesPacksList, new Function<IResourcePack, String>()
          {
-             public String apply(@Nullable IResourcePack p_apply_1_)
-             {
-@@ -107,24 +104,33 @@
+@@ -107,24 +108,34 @@
  
-         for (IResourcePack iresourcepack : p_110541_1_)
+         for (IResourcePack iresourcepack : resourcesPacksList)
          {
-+            resReload.step(iresourcepack.func_130077_b());
-             this.func_110545_a(iresourcepack);
++            resReload.step(iresourcepack.getPackName());
+             this.reloadResourcePack(iresourcepack);
          }
  
 +        resReload.step("Reloading listeners");
-         this.func_110544_b();
+         this.notifyReloadListeners();
 +        net.minecraftforge.fml.common.ProgressManager.pop(resReload);
      }
  
--    @Override
-     public void func_110542_a(IResourceManagerReloadListener p_110542_1_)
+     @Override
+     public void registerReloadListener(IResourceManagerReloadListener reloadListener)
      {
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resource", 1);
-+        resReload.step(p_110542_1_.getClass());
-         this.field_110546_b.add(p_110542_1_);
-         p_110542_1_.func_110549_a(this);
++        resReload.step(reloadListener.getClass());
+         this.reloadListeners.add(reloadListener);
+         reloadListener.onResourceManagerReload(this);
 +        net.minecraftforge.fml.common.ProgressManager.pop(resReload);
      }
  
-     private void func_110544_b()
+     private void notifyReloadListeners()
      {
-+        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Reloading", this.field_110546_b.size());
-         for (IResourceManagerReloadListener iresourcemanagerreloadlistener : this.field_110546_b)
++        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Reloading", this.reloadListeners.size());
+         for (IResourceManagerReloadListener iresourcemanagerreloadlistener : this.reloadListeners)
          {
 +            resReload.step(iresourcemanagerreloadlistener.getClass());
 +            if (!net.minecraftforge.client.ForgeHooksClient.shouldUseVanillaReloadableListener(iresourcemanagerreloadlistener)) continue; // Forge: Selective reloading for vanilla listeners
-             iresourcemanagerreloadlistener.func_110549_a(this);
+             iresourcemanagerreloadlistener.onResourceManagerReload(this);
          }
 +        net.minecraftforge.fml.common.ProgressManager.pop(resReload);
      }

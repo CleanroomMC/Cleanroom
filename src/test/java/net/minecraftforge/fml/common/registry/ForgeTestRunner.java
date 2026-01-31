@@ -55,21 +55,8 @@ import java.util.Set;
  */
 public class ForgeTestRunner extends Runner
 {
-    private static List<URL> getClassPathURLs() {
-        String[] classpaths = System.getProperty("java.class.path").split(File.pathSeparator);
-        List<URL> urls = new ArrayList<>();
-        try {
-            for (String classpath : classpaths) {
-                urls.add(new File(classpath).toURI().toURL());
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        return urls;
-    }
 
-    private final Object innerRunner;
-    private final Class<?> innerRunnerClass;
+    private final Runner inner;
 
     public ForgeTestRunner(Class<?> testFileClass) throws InitializationError
     {
@@ -78,15 +65,14 @@ public class ForgeTestRunner extends Runner
         String testFileClassName = testFileClass.getName();
         String delegateRunningToClassName = delegateRunningTo.getName();
 
-        String[] allPatterns = new String[]{testFileClassName, delegateRunningToClassName};
-
-        ResettingClassLoader classLoader = new ResettingClassLoader(allPatterns);
+        ResettingClassLoader classLoader = new ResettingClassLoader(testFileClassName, delegateRunningToClassName);
 
         try
         {
-            innerRunnerClass = classLoader.loadClass(delegateRunningToClassName);
+            Class<?> innerRunnerClass = classLoader.loadClass(delegateRunningToClassName);
             Class<?> testClass = classLoader.loadClass(testFileClassName);
-            innerRunner = innerRunnerClass.cast(innerRunnerClass.getConstructor(Class.class).newInstance(testClass));
+            inner = (Runner) innerRunnerClass.getConstructor(Class.class)
+                .newInstance(testClass);
         }
         catch (Exception e)
         {
@@ -98,35 +84,21 @@ public class ForgeTestRunner extends Runner
     @Override
     public Description getDescription()
     {
-        try
-        {
-            return (Description) innerRunnerClass.getMethod("getDescription").invoke(innerRunner);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Could not get description", e);
-        }
+        return inner.getDescription();
     }
 
     @Override
     public void run(RunNotifier notifier)
     {
-        try
-        {
-            System.setProperty("forge.disableVanillaGameData", "false");
-            innerRunnerClass.getMethod("run", RunNotifier.class).invoke(innerRunner, notifier);
-        }
-        catch (Exception e)
-        {
-            notifier.fireTestFailure(new Failure(getDescription(), e));
-        }
+        System.setProperty("forge.disableVanillaGameData", "false");
+        inner.run(notifier);
     }
 
     /**
      * If a class name starts with any of the supplied patterns, it is loaded by
      * <em>this</em> classloader; otherwise it is loaded by the parent classloader.
      */
-    private class ResettingClassLoader extends URLClassLoader
+    private static class ResettingClassLoader extends URLClassLoader
     {
         private final Set<String> quarantinedClassNames;
 
@@ -164,17 +136,23 @@ public class ForgeTestRunner extends Runner
 
             if (quarantine)
             {
-                try
-                {
-                    return findClass(name);
-                }
-                catch (ClassNotFoundException e)
-                {
-                    throw e;
-                }
+                return findClass(name);
             }
 
             return super.loadClass(name);
+        }
+
+        private static List<URL> getClassPathURLs() {
+            String[] paths = System.getProperty("java.class.path").split(File.pathSeparator);
+            List<URL> urls = new ArrayList<>(paths.length);
+            try {
+                for (String classpath : paths) {
+                    urls.add(new File(classpath).toURI().toURL());
+                }
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+            return urls;
         }
     }
 }

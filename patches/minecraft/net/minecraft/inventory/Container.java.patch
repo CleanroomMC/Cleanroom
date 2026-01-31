@@ -4,258 +4,258 @@
  
  public abstract class Container
  {
--    public NonNullList<ItemStack> field_75153_a = NonNullList.func_191196_a();
--    public List<Slot> field_75151_b = Lists.newArrayList();
-+    public NonNullList<ItemStack> field_75153_a = NonNullList.<ItemStack>func_191196_a();
-+    public List<Slot> field_75151_b = Lists.<Slot>newArrayList();
-     public int field_75152_c;
+-    public NonNullList<ItemStack> inventoryItemStacks = NonNullList.create();
+-    public List<Slot> inventorySlots = Lists.newArrayList();
++    public NonNullList<ItemStack> inventoryItemStacks = NonNullList.<ItemStack>create();
++    public List<Slot> inventorySlots = Lists.<Slot>newArrayList();
+     public int windowId;
      @SideOnly(Side.CLIENT)
-     private short field_75150_e;
-     private int field_94535_f = -1;
-     private int field_94536_g;
--    private final Set<Slot> field_94537_h = Sets.newHashSet();
--    protected List<IContainerListener> field_75149_d = Lists.newArrayList();
--    private final Set<EntityPlayer> field_75148_f = Sets.newHashSet();
-+    private final Set<Slot> field_94537_h = Sets.<Slot>newHashSet();
-+    protected List<IContainerListener> field_75149_d = Lists.<IContainerListener>newArrayList();
-+    private final Set<EntityPlayer> field_75148_f = Sets.<EntityPlayer>newHashSet();
+     private short transactionID;
+     private int dragMode = -1;
+     private int dragEvent;
+-    private final Set<Slot> dragSlots = Sets.newHashSet();
+-    protected List<IContainerListener> listeners = Lists.newArrayList();
+-    private final Set<EntityPlayer> playerList = Sets.newHashSet();
++    private final Set<Slot> dragSlots = Sets.<Slot>newHashSet();
++    protected List<IContainerListener> listeners = Lists.<IContainerListener>newArrayList();
++    private final Set<EntityPlayer> playerList = Sets.<EntityPlayer>newHashSet();
  
-     protected Slot func_75146_a(Slot p_75146_1_)
+     protected Slot addSlotToContainer(Slot slotIn)
      {
 @@ -54,39 +54,41 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
--    public void func_82847_b(IContainerListener p_82847_1_)
+-    public void removeListener(IContainerListener listener)
 -    {
--        this.field_75149_d.remove(p_82847_1_);
+-        this.listeners.remove(listener);
 -    }
 -
-     public NonNullList<ItemStack> func_75138_a()
+     public NonNullList<ItemStack> getInventory()
      {
--        NonNullList<ItemStack> nonnulllist = NonNullList.func_191196_a();
-+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191196_a();
+-        NonNullList<ItemStack> nonnulllist = NonNullList.create();
++        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>create();
  
--        for (int i = 0; i < this.field_75151_b.size(); i++)
-+        for (int i = 0; i < this.field_75151_b.size(); ++i)
+-        for (int i = 0; i < this.inventorySlots.size(); i++)
++        for (int i = 0; i < this.inventorySlots.size(); ++i)
          {
--            nonnulllist.add(this.field_75151_b.get(i).func_75211_c());
-+            nonnulllist.add(((Slot)this.field_75151_b.get(i)).func_75211_c());
+-            nonnulllist.add(this.inventorySlots.get(i).getStack());
++            nonnulllist.add(((Slot)this.inventorySlots.get(i)).getStack());
          }
  
          return nonnulllist;
      }
  
 +    @SideOnly(Side.CLIENT)
-+    public void func_82847_b(IContainerListener p_82847_1_)
++    public void removeListener(IContainerListener listener)
 +    {
-+        this.field_75149_d.remove(p_82847_1_);
++        this.listeners.remove(listener);
 +    }
 +
-     public void func_75142_b()
+     public void detectAndSendChanges()
      {
--        for (int i = 0; i < this.field_75151_b.size(); i++)
-+        for (int i = 0; i < this.field_75151_b.size(); ++i)
+-        for (int i = 0; i < this.inventorySlots.size(); i++)
++        for (int i = 0; i < this.inventorySlots.size(); ++i)
          {
--            ItemStack itemstack = this.field_75151_b.get(i).func_75211_c();
-+            ItemStack itemstack = ((Slot)this.field_75151_b.get(i)).func_75211_c();
-             ItemStack itemstack1 = this.field_75153_a.get(i);
+-            ItemStack itemstack = this.inventorySlots.get(i).getStack();
++            ItemStack itemstack = ((Slot)this.inventorySlots.get(i)).getStack();
+             ItemStack itemstack1 = this.inventoryItemStacks.get(i);
  
-             if (!ItemStack.func_77989_b(itemstack1, itemstack))
+             if (!ItemStack.areItemStacksEqual(itemstack1, itemstack))
              {
 +                boolean clientStackChanged = !ItemStack.areItemStacksEqualUsingNBTShareTag(itemstack1, itemstack);
-                 itemstack1 = itemstack.func_190926_b() ? ItemStack.field_190927_a : itemstack.func_77946_l();
-                 this.field_75153_a.set(i, itemstack1);
+                 itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
+                 this.inventoryItemStacks.set(i, itemstack1);
  
--                for (int j = 0; j < this.field_75149_d.size(); j++)
+-                for (int j = 0; j < this.listeners.size(); j++)
 +                if (clientStackChanged)
-+                for (int j = 0; j < this.field_75149_d.size(); ++j)
++                for (int j = 0; j < this.listeners.size(); ++j)
                  {
--                    this.field_75149_d.get(j).func_71111_a(this, i, itemstack1);
-+                    ((IContainerListener)this.field_75149_d.get(j)).func_71111_a(this, i, itemstack1);
+-                    this.listeners.get(j).sendSlotContents(this, i, itemstack1);
++                    ((IContainerListener)this.listeners.get(j)).sendSlotContents(this, i, itemstack1);
                  }
              }
          }
 @@ -100,7 +102,7 @@
      @Nullable
-     public Slot func_75147_a(IInventory p_75147_1_, int p_75147_2_)
+     public Slot getSlotFromInventory(IInventory inv, int slotIn)
      {
--        for (int i = 0; i < this.field_75151_b.size(); i++)
-+        for (int i = 0; i < this.field_75151_b.size(); ++i)
+-        for (int i = 0; i < this.inventorySlots.size(); i++)
++        for (int i = 0; i < this.inventorySlots.size(); ++i)
          {
-             Slot slot = this.field_75151_b.get(i);
+             Slot slot = this.inventorySlots.get(i);
  
 @@ -161,11 +163,7 @@
-                 Slot slot7 = this.field_75151_b.get(p_184996_1_);
-                 ItemStack itemstack12 = inventoryplayer.func_70445_o();
+                 Slot slot7 = this.inventorySlots.get(slotId);
+                 ItemStack itemstack12 = inventoryplayer.getItemStack();
  
 -                if (slot7 != null
--                        && func_94527_a(slot7, itemstack12, true)
--                        && slot7.func_75214_a(itemstack12)
--                        && (this.field_94535_f == 2 || itemstack12.func_190916_E() > this.field_94537_h.size())
--                        && this.func_94531_b(slot7))
-+                if (slot7 != null && func_94527_a(slot7, itemstack12, true) && slot7.func_75214_a(itemstack12) && (this.field_94535_f == 2 || itemstack12.func_190916_E() > this.field_94537_h.size()) && this.func_94531_b(slot7))
+-                        && canAddItemToSlot(slot7, itemstack12, true)
+-                        && slot7.isItemValid(itemstack12)
+-                        && (this.dragMode == 2 || itemstack12.getCount() > this.dragSlots.size())
+-                        && this.canDragIntoSlot(slot7))
++                if (slot7 != null && canAddItemToSlot(slot7, itemstack12, true) && slot7.isItemValid(itemstack12) && (this.dragMode == 2 || itemstack12.getCount() > this.dragSlots.size()) && this.canDragIntoSlot(slot7))
                  {
-                     this.field_94537_h.add(slot7);
+                     this.dragSlots.add(slot7);
                  }
 @@ -181,11 +179,7 @@
                      {
-                         ItemStack itemstack13 = inventoryplayer.func_70445_o();
+                         ItemStack itemstack13 = inventoryplayer.getItemStack();
  
 -                        if (slot8 != null
--                                && func_94527_a(slot8, itemstack13, true)
--                                && slot8.func_75214_a(itemstack13)
--                                && (this.field_94535_f == 2 || itemstack13.func_190916_E() >= this.field_94537_h.size())
--                                && this.func_94531_b(slot8))
-+                        if (slot8 != null && func_94527_a(slot8, itemstack13, true) && slot8.func_75214_a(itemstack13) && (this.field_94535_f == 2 || itemstack13.func_190916_E() >= this.field_94537_h.size()) && this.func_94531_b(slot8))
+-                                && canAddItemToSlot(slot8, itemstack13, true)
+-                                && slot8.isItemValid(itemstack13)
+-                                && (this.dragMode == 2 || itemstack13.getCount() >= this.dragSlots.size())
+-                                && this.canDragIntoSlot(slot8))
++                        if (slot8 != null && canAddItemToSlot(slot8, itemstack13, true) && slot8.isItemValid(itemstack13) && (this.dragMode == 2 || itemstack13.getCount() >= this.dragSlots.size()) && this.canDragIntoSlot(slot8))
                          {
-                             ItemStack itemstack14 = itemstack9.func_77946_l();
-                             int j3 = slot8.func_75216_d() ? slot8.func_75211_c().func_190916_E() : 0;
+                             ItemStack itemstack14 = itemstack9.copy();
+                             int j3 = slot8.getHasStack() ? slot8.getStack().getCount() : 0;
 @@ -249,10 +243,7 @@
-                     return ItemStack.field_190927_a;
+                     return ItemStack.EMPTY;
                  }
  
--                for (ItemStack itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_);
--                        !itemstack7.func_190926_b() && ItemStack.func_179545_c(slot5.func_75211_c(), itemstack7);
--                        itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_)
+-                for (ItemStack itemstack7 = this.transferStackInSlot(player, slotId);
+-                        !itemstack7.isEmpty() && ItemStack.areItemsEqual(slot5.getStack(), itemstack7);
+-                        itemstack7 = this.transferStackInSlot(player, slotId)
 -                    )
-+                for (ItemStack itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_); !itemstack7.func_190926_b() && ItemStack.func_179545_c(slot5.func_75211_c(), itemstack7); itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_))
++                for (ItemStack itemstack7 = this.transferStackInSlot(player, slotId); !itemstack7.isEmpty() && ItemStack.areItemsEqual(slot5.getStack(), itemstack7); itemstack7 = this.transferStackInSlot(player, slotId))
                  {
-                     itemstack = itemstack7.func_77946_l();
+                     itemstack = itemstack7.copy();
                  }
 @@ -314,9 +305,7 @@
                          }
-                         else if (slot6.func_75214_a(itemstack11))
+                         else if (slot6.isItemValid(itemstack11))
                          {
--                            if (itemstack8.func_77973_b() == itemstack11.func_77973_b()
--                                    && itemstack8.func_77960_j() == itemstack11.func_77960_j()
--                                    && ItemStack.func_77970_a(itemstack8, itemstack11))
-+                            if (itemstack8.func_77973_b() == itemstack11.func_77973_b() && itemstack8.func_77960_j() == itemstack11.func_77960_j() && ItemStack.func_77970_a(itemstack8, itemstack11))
+-                            if (itemstack8.getItem() == itemstack11.getItem()
+-                                    && itemstack8.getMetadata() == itemstack11.getMetadata()
+-                                    && ItemStack.areItemStackTagsEqual(itemstack8, itemstack11))
++                            if (itemstack8.getItem() == itemstack11.getItem() && itemstack8.getMetadata() == itemstack11.getMetadata() && ItemStack.areItemStackTagsEqual(itemstack8, itemstack11))
                              {
-                                 int k2 = p_184996_2_ == 0 ? itemstack11.func_190916_E() : 1;
+                                 int k2 = dragType == 0 ? itemstack11.getCount() : 1;
  
 @@ -339,11 +328,7 @@
-                                 inventoryplayer.func_70437_b(itemstack8);
+                                 inventoryplayer.setItemStack(itemstack8);
                              }
                          }
--                        else if (itemstack8.func_77973_b() == itemstack11.func_77973_b()
--                                 && itemstack11.func_77976_d() > 1
--                                 && (!itemstack8.func_77981_g() || itemstack8.func_77960_j() == itemstack11.func_77960_j())
--                                 && ItemStack.func_77970_a(itemstack8, itemstack11)
--                                 && !itemstack8.func_190926_b())
-+                        else if (itemstack8.func_77973_b() == itemstack11.func_77973_b() && itemstack11.func_77976_d() > 1 && (!itemstack8.func_77981_g() || itemstack8.func_77960_j() == itemstack11.func_77960_j()) && ItemStack.func_77970_a(itemstack8, itemstack11) && !itemstack8.func_190926_b())
+-                        else if (itemstack8.getItem() == itemstack11.getItem()
+-                                 && itemstack11.getMaxStackSize() > 1
+-                                 && (!itemstack8.getHasSubtypes() || itemstack8.getMetadata() == itemstack11.getMetadata())
+-                                 && ItemStack.areItemStackTagsEqual(itemstack8, itemstack11)
+-                                 && !itemstack8.isEmpty())
++                        else if (itemstack8.getItem() == itemstack11.getItem() && itemstack11.getMaxStackSize() > 1 && (!itemstack8.getHasSubtypes() || itemstack8.getMetadata() == itemstack11.getMetadata()) && ItemStack.areItemStackTagsEqual(itemstack8, itemstack11) && !itemstack8.isEmpty())
                          {
-                             int j2 = itemstack8.func_190916_E();
+                             int j2 = itemstack8.getCount();
  
 @@ -424,10 +409,7 @@
                  }
              }
          }
--        else if (p_184996_3_ == ClickType.CLONE
--                 && p_184996_4_.field_71075_bZ.field_75098_d
--                 && inventoryplayer.func_70445_o().func_190926_b()
--                 && p_184996_1_ >= 0)
-+        else if (p_184996_3_ == ClickType.CLONE && p_184996_4_.field_71075_bZ.field_75098_d && inventoryplayer.func_70445_o().func_190926_b() && p_184996_1_ >= 0)
+-        else if (clickTypeIn == ClickType.CLONE
+-                 && player.capabilities.isCreativeMode
+-                 && inventoryplayer.getItemStack().isEmpty()
+-                 && slotId >= 0)
++        else if (clickTypeIn == ClickType.CLONE && player.capabilities.isCreativeMode && inventoryplayer.getItemStack().isEmpty() && slotId >= 0)
          {
-             Slot slot3 = this.field_75151_b.get(p_184996_1_);
+             Slot slot3 = this.inventorySlots.get(slotId);
  
 @@ -459,7 +441,7 @@
-                 int i = p_184996_2_ == 0 ? 0 : this.field_75151_b.size() - 1;
-                 int j = p_184996_2_ == 0 ? 1 : -1;
+                 int i = dragType == 0 ? 0 : this.inventorySlots.size() - 1;
+                 int j = dragType == 0 ? 1 : -1;
  
 -                for (int k = 0; k < 2; k++)
 +                for (int k = 0; k < 2; ++k)
                  {
-                     for (int l = i; l >= 0 && l < this.field_75151_b.size() && itemstack1.func_190916_E() < itemstack1.func_77976_d(); l += j)
+                     for (int l = i; l >= 0 && l < this.inventorySlots.size() && itemstack1.getCount() < itemstack1.getMaxStackSize(); l += j)
                      {
 @@ -513,14 +495,14 @@
      {
-         if (!p_193327_1_.func_70089_S() || p_193327_1_ instanceof EntityPlayerMP && ((EntityPlayerMP)p_193327_1_).func_193105_t())
+         if (!playerIn.isEntityAlive() || playerIn instanceof EntityPlayerMP && ((EntityPlayerMP)playerIn).hasDisconnected())
          {
--            for (int j = 0; j < p_193327_3_.func_70302_i_(); j++)
-+            for (int j = 0; j < p_193327_3_.func_70302_i_(); ++j)
+-            for (int j = 0; j < inventoryIn.getSizeInventory(); j++)
++            for (int j = 0; j < inventoryIn.getSizeInventory(); ++j)
              {
-                 p_193327_1_.func_71019_a(p_193327_3_.func_70304_b(j), false);
+                 playerIn.dropItem(inventoryIn.removeStackFromSlot(j), false);
              }
          }
          else
          {
--            for (int i = 0; i < p_193327_3_.func_70302_i_(); i++)
-+            for (int i = 0; i < p_193327_3_.func_70302_i_(); ++i)
+-            for (int i = 0; i < inventoryIn.getSizeInventory(); i++)
++            for (int i = 0; i < inventoryIn.getSizeInventory(); ++i)
              {
-                 p_193327_1_.field_71071_by.func_191975_a(p_193327_2_, p_193327_3_.func_70304_b(i));
+                 playerIn.inventory.placeItemBackInInventory(worldIn, inventoryIn.removeStackFromSlot(i));
              }
 @@ -540,7 +522,7 @@
      @SideOnly(Side.CLIENT)
-     public void func_190896_a(List<ItemStack> p_190896_1_)
+     public void setAll(List<ItemStack> p_190896_1_)
      {
 -        for (int i = 0; i < p_190896_1_.size(); i++)
 +        for (int i = 0; i < p_190896_1_.size(); ++i)
          {
-             this.func_75139_a(i).func_75215_d(p_190896_1_.get(i));
+             this.getSlot(i).putStack(p_190896_1_.get(i));
          }
 @@ -554,7 +536,7 @@
      @SideOnly(Side.CLIENT)
-     public short func_75136_a(InventoryPlayer p_75136_1_)
+     public short getNextTransactionID(InventoryPlayer invPlayer)
      {
--        this.field_75150_e++;
-+        ++this.field_75150_e;
-         return this.field_75150_e;
+-        this.transactionID++;
++        ++this.transactionID;
+         return this.transactionID;
      }
  
 @@ -589,29 +571,39 @@
  
-         if (p_75135_1_.func_77985_e())
+         if (stack.isStackable())
          {
--            while (!p_75135_1_.func_190926_b() && (p_75135_4_ ? i >= p_75135_2_ : i < p_75135_3_))
-+            while (!p_75135_1_.func_190926_b())
+-            while (!stack.isEmpty() && (reverseDirection ? i >= startIndex : i < endIndex))
++            while (!stack.isEmpty())
              {
-+                if (p_75135_4_)
++                if (reverseDirection)
 +                {
-+                    if (i < p_75135_2_)
++                    if (i < startIndex)
 +                    {
 +                        break;
 +                    }
 +                }
-+                else if (i >= p_75135_3_)
++                else if (i >= endIndex)
 +                {
 +                    break;
 +                }
 +
-                 Slot slot = this.field_75151_b.get(i);
-                 ItemStack itemstack = slot.func_75211_c();
+                 Slot slot = this.inventorySlots.get(i);
+                 ItemStack itemstack = slot.getStack();
  
--                if (!itemstack.func_190926_b()
--                        && itemstack.func_77973_b() == p_75135_1_.func_77973_b()
--                        && (!p_75135_1_.func_77981_g() || p_75135_1_.func_77960_j() == itemstack.func_77960_j())
--                        && ItemStack.func_77970_a(p_75135_1_, itemstack))
-+                if (!itemstack.func_190926_b() && itemstack.func_77973_b() == p_75135_1_.func_77973_b() && (!p_75135_1_.func_77981_g() || p_75135_1_.func_77960_j() == itemstack.func_77960_j()) && ItemStack.func_77970_a(p_75135_1_, itemstack))
+-                if (!itemstack.isEmpty()
+-                        && itemstack.getItem() == stack.getItem()
+-                        && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack.getMetadata())
+-                        && ItemStack.areItemStackTagsEqual(stack, itemstack))
++                if (!itemstack.isEmpty() && itemstack.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack.getMetadata()) && ItemStack.areItemStackTagsEqual(stack, itemstack))
                  {
-                     int j = itemstack.func_190916_E() + p_75135_1_.func_190916_E();
-+                    int maxSize = Math.min(slot.func_75219_a(), p_75135_1_.func_77976_d());
+                     int j = itemstack.getCount() + stack.getCount();
++                    int maxSize = Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
  
--                    if (j <= p_75135_1_.func_77976_d())
+-                    if (j <= stack.getMaxStackSize())
 +                    if (j <= maxSize)
                      {
-                         p_75135_1_.func_190920_e(0);
-                         itemstack.func_190920_e(j);
-                         slot.func_75218_e();
+                         stack.setCount(0);
+                         itemstack.setCount(j);
+                         slot.onSlotChanged();
                          flag = true;
                      }
--                    else if (itemstack.func_190916_E() < p_75135_1_.func_77976_d())
-+                    else if (itemstack.func_190916_E() < maxSize)
+-                    else if (itemstack.getCount() < stack.getMaxStackSize())
++                    else if (itemstack.getCount() < maxSize)
                      {
--                        p_75135_1_.func_190918_g(p_75135_1_.func_77976_d() - itemstack.func_190916_E());
--                        itemstack.func_190920_e(p_75135_1_.func_77976_d());
-+                        p_75135_1_.func_190918_g(maxSize - itemstack.func_190916_E());
-+                        itemstack.func_190920_e(maxSize);
-                         slot.func_75218_e();
+-                        stack.shrink(stack.getMaxStackSize() - itemstack.getCount());
+-                        itemstack.setCount(stack.getMaxStackSize());
++                        stack.shrink(maxSize - itemstack.getCount());
++                        itemstack.setCount(maxSize);
+                         slot.onSlotChanged();
                          flag = true;
                      }
 @@ -619,11 +611,11 @@
  
-                 if (p_75135_4_)
+                 if (reverseDirection)
                  {
 -                    i--;
 +                    --i;
@@ -268,30 +268,30 @@
              }
          }
 @@ -639,8 +631,20 @@
-                 i = p_75135_2_;
+                 i = startIndex;
              }
  
--            while (p_75135_4_ ? i >= p_75135_2_ : i < p_75135_3_)
+-            while (reverseDirection ? i >= startIndex : i < endIndex)
 +            while (true)
              {
-+                if (p_75135_4_)
++                if (reverseDirection)
 +                {
-+                    if (i < p_75135_2_)
++                    if (i < startIndex)
 +                    {
 +                        break;
 +                    }
 +                }
-+                else if (i >= p_75135_3_)
++                else if (i >= endIndex)
 +                {
 +                    break;
 +                }
 +
-                 Slot slot1 = this.field_75151_b.get(i);
-                 ItemStack itemstack1 = slot1.func_75211_c();
+                 Slot slot1 = this.inventorySlots.get(i);
+                 ItemStack itemstack1 = slot1.getStack();
  
 @@ -662,11 +666,11 @@
  
-                 if (p_75135_4_)
+                 if (reverseDirection)
                  {
 -                    i--;
 +                    --i;
@@ -307,28 +307,28 @@
          {
              return true;
          }
-+        else if (p_180610_0_ == 1)
++        else if (dragModeIn == 1)
 +        {
 +            return true;
 +        }
          else
          {
--            return p_180610_0_ == 1 ? true : p_180610_0_ == 2 && p_180610_1_.field_71075_bZ.field_75098_d;
-+            return p_180610_0_ == 2 && p_180610_1_.field_71075_bZ.field_75098_d;
+-            return dragModeIn == 1 ? true : dragModeIn == 2 && player.capabilities.isCreativeMode;
++            return dragModeIn == 2 && player.capabilities.isCreativeMode;
          }
      }
  
 @@ -711,9 +719,15 @@
-     public static boolean func_94527_a(@Nullable Slot p_94527_0_, ItemStack p_94527_1_, boolean p_94527_2_)
+     public static boolean canAddItemToSlot(@Nullable Slot slotIn, ItemStack stack, boolean stackSizeMatters)
      {
-         boolean flag = p_94527_0_ == null || !p_94527_0_.func_75216_d();
--        return !flag && p_94527_1_.func_77969_a(p_94527_0_.func_75211_c()) && ItemStack.func_77970_a(p_94527_0_.func_75211_c(), p_94527_1_)
--               ? p_94527_0_.func_75211_c().func_190916_E() + (p_94527_2_ ? 0 : p_94527_1_.func_190916_E()) <= p_94527_1_.func_77976_d()
+         boolean flag = slotIn == null || !slotIn.getHasStack();
+-        return !flag && stack.isItemEqual(slotIn.getStack()) && ItemStack.areItemStackTagsEqual(slotIn.getStack(), stack)
+-               ? slotIn.getStack().getCount() + (stackSizeMatters ? 0 : stack.getCount()) <= stack.getMaxStackSize()
 -               : flag;
 +
-+        if (!flag && p_94527_1_.func_77969_a(p_94527_0_.func_75211_c()) && ItemStack.func_77970_a(p_94527_0_.func_75211_c(), p_94527_1_))
++        if (!flag && stack.isItemEqual(slotIn.getStack()) && ItemStack.areItemStackTagsEqual(slotIn.getStack(), stack))
 +        {
-+            return p_94527_0_.func_75211_c().func_190916_E() + (p_94527_2_ ? 0 : p_94527_1_.func_190916_E()) <= p_94527_1_.func_77976_d();
++            return slotIn.getStack().getCount() + (stackSizeMatters ? 0 : stack.getCount()) <= stack.getMaxStackSize();
 +        }
 +        else
 +        {
@@ -336,49 +336,49 @@
 +        }
      }
  
-     public static void func_94525_a(Set<Slot> p_94525_0_, int p_94525_1_, ItemStack p_94525_2_, int p_94525_3_)
+     public static void computeStackSize(Set<Slot> dragSlotsIn, int dragModeIn, ItemStack stack, int slotStackSize)
 @@ -727,7 +741,7 @@
-                 p_94525_2_.func_190920_e(1);
+                 stack.setCount(1);
                  break;
              case 2:
--                p_94525_2_.func_190920_e(p_94525_2_.func_77973_b().func_77639_j());
-+                p_94525_2_.func_190920_e(p_94525_2_.func_77976_d());
+-                stack.setCount(stack.getItem().getItemStackLimit());
++                stack.setCount(stack.getMaxStackSize());
          }
  
-         p_94525_2_.func_190917_f(p_94525_3_);
+         stack.grow(slotStackSize);
 @@ -754,18 +768,18 @@
              int i = 0;
              float f = 0.0F;
  
--            for (int j = 0; j < p_94526_0_.func_70302_i_(); j++)
-+            for (int j = 0; j < p_94526_0_.func_70302_i_(); ++j)
+-            for (int j = 0; j < inv.getSizeInventory(); j++)
++            for (int j = 0; j < inv.getSizeInventory(); ++j)
              {
-                 ItemStack itemstack = p_94526_0_.func_70301_a(j);
+                 ItemStack itemstack = inv.getStackInSlot(j);
  
-                 if (!itemstack.func_190926_b())
+                 if (!itemstack.isEmpty())
                  {
-                     f += (float)itemstack.func_190916_E() / (float)Math.min(p_94526_0_.func_70297_j_(), itemstack.func_77976_d());
+                     f += (float)itemstack.getCount() / (float)Math.min(inv.getInventoryStackLimit(), itemstack.getMaxStackSize());
 -                    i++;
 +                    ++i;
                  }
              }
  
--            f /= (float)p_94526_0_.func_70302_i_();
-+            f = f / (float)p_94526_0_.func_70302_i_();
-             return MathHelper.func_76141_d(f * 14.0F) + (i > 0 ? 1 : 0);
+-            f /= (float)inv.getSizeInventory();
++            f = f / (float)inv.getSizeInventory();
+             return MathHelper.floor(f * 14.0F) + (i > 0 ? 1 : 0);
          }
      }
 @@ -778,12 +792,7 @@
-             ItemStack itemstack = ItemStack.field_190927_a;
-             IRecipe irecipe = CraftingManager.func_192413_b(p_192389_3_, p_192389_1_);
+             ItemStack itemstack = ItemStack.EMPTY;
+             IRecipe irecipe = CraftingManager.findMatchingRecipe(p_192389_3_, p_192389_1_);
  
 -            if (irecipe != null
 -                    && (
--                        irecipe.func_192399_d()
--                        || !p_192389_1_.func_82736_K().func_82766_b("doLimitedCrafting")
--                        || entityplayermp.func_192037_E().func_193830_f(irecipe)
+-                        irecipe.isDynamic()
+-                        || !p_192389_1_.getGameRules().getBoolean("doLimitedCrafting")
+-                        || entityplayermp.getRecipeBook().isUnlocked(irecipe)
 -                    ))
-+            if (irecipe != null && (irecipe.func_192399_d() || !p_192389_1_.func_82736_K().func_82766_b("doLimitedCrafting") || entityplayermp.func_192037_E().func_193830_f(irecipe)))
++            if (irecipe != null && (irecipe.isDynamic() || !p_192389_1_.getGameRules().getBoolean("doLimitedCrafting") || entityplayermp.getRecipeBook().isUnlocked(irecipe)))
              {
-                 p_192389_4_.func_193056_a(irecipe);
-                 itemstack = irecipe.func_77572_b(p_192389_3_);
+                 p_192389_4_.setRecipeUsed(irecipe);
+                 itemstack = irecipe.getCraftingResult(p_192389_3_);

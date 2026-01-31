@@ -1,275 +1,275 @@
 --- before/net/minecraft/world/storage/DerivedWorldInfo.java
 +++ after/net/minecraft/world/storage/DerivedWorldInfo.java
 @@ -20,255 +20,223 @@
-         this.field_76115_a = p_i2145_1_;
+         this.delegate = worldInfoIn;
      }
  
 -    @Override
-     public NBTTagCompound func_76082_a(@Nullable NBTTagCompound p_76082_1_)
+     public NBTTagCompound cloneNBTCompound(@Nullable NBTTagCompound nbt)
      {
-         return this.field_76115_a.func_76082_a(p_76082_1_);
+         return this.delegate.cloneNBTCompound(nbt);
      }
  
 -    @Override
-     public long func_76063_b()
+     public long getSeed()
      {
-         return this.field_76115_a.func_76063_b();
+         return this.delegate.getSeed();
      }
  
 -    @Override
-     public int func_76079_c()
+     public int getSpawnX()
      {
-         return this.field_76115_a.func_76079_c();
+         return this.delegate.getSpawnX();
      }
  
 -    @Override
-     public int func_76075_d()
+     public int getSpawnY()
      {
-         return this.field_76115_a.func_76075_d();
+         return this.delegate.getSpawnY();
      }
  
 -    @Override
-     public int func_76074_e()
+     public int getSpawnZ()
      {
-         return this.field_76115_a.func_76074_e();
+         return this.delegate.getSpawnZ();
      }
  
 -    @Override
-     public long func_82573_f()
+     public long getWorldTotalTime()
      {
-         return this.field_76115_a.func_82573_f();
+         return this.delegate.getWorldTotalTime();
      }
  
 -    @Override
-     public long func_76073_f()
+     public long getWorldTime()
      {
-         return this.field_76115_a.func_76073_f();
+         return this.delegate.getWorldTime();
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public long func_76092_g()
+     public long getSizeOnDisk()
      {
-         return this.field_76115_a.func_76092_g();
+         return this.delegate.getSizeOnDisk();
      }
  
 -    @Override
-     public NBTTagCompound func_76072_h()
+     public NBTTagCompound getPlayerNBTTagCompound()
      {
-         return this.field_76115_a.func_76072_h();
+         return this.delegate.getPlayerNBTTagCompound();
      }
  
 -    @Override
-     public String func_76065_j()
+     public String getWorldName()
      {
-         return this.field_76115_a.func_76065_j();
+         return this.delegate.getWorldName();
      }
  
 -    @Override
-     public int func_76088_k()
+     public int getSaveVersion()
      {
-         return this.field_76115_a.func_76088_k();
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public long func_76057_l()
-     {
-         return this.field_76115_a.func_76057_l();
-     }
- 
--    @Override
-     public boolean func_76061_m()
-     {
-         return this.field_76115_a.func_76061_m();
-     }
- 
--    @Override
-     public int func_76071_n()
-     {
-         return this.field_76115_a.func_76071_n();
-     }
- 
--    @Override
-     public boolean func_76059_o()
-     {
-         return this.field_76115_a.func_76059_o();
-     }
- 
--    @Override
-     public int func_76083_p()
-     {
-         return this.field_76115_a.func_76083_p();
-     }
- 
--    @Override
-     public GameType func_76077_q()
-     {
-         return this.field_76115_a.func_76077_q();
+         return this.delegate.getSaveVersion();
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_76058_a(int p_76058_1_)
+     public long getLastTimePlayed()
+     {
+         return this.delegate.getLastTimePlayed();
+     }
+ 
+-    @Override
+     public boolean isThundering()
+     {
+         return this.delegate.isThundering();
+     }
+ 
+-    @Override
+     public int getThunderTime()
+     {
+         return this.delegate.getThunderTime();
+     }
+ 
+-    @Override
+     public boolean isRaining()
+     {
+         return this.delegate.isRaining();
+     }
+ 
+-    @Override
+     public int getRainTime()
+     {
+         return this.delegate.getRainTime();
+     }
+ 
+-    @Override
+     public GameType getGameType()
+     {
+         return this.delegate.getGameType();
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void setSpawnX(int x)
      {
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_76056_b(int p_76056_1_)
+     public void setSpawnY(int y)
      {
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
--    public void func_76087_c(int p_76087_1_)
+-    public void setSpawnZ(int z)
 -    {
 -    }
 -
 -    @Override
-     public void func_82572_b(long p_82572_1_)
+     public void setWorldTotalTime(long time)
      {
      }
  
 -    @Override
 +    @SideOnly(Side.CLIENT)
-+    public void func_76087_c(int p_76087_1_)
++    public void setSpawnZ(int z)
 +    {
 +    }
 +
-     public void func_76068_b(long p_76068_1_)
+     public void setWorldTime(long time)
      {
      }
  
 -    @Override
-     public void func_176143_a(BlockPos p_176143_1_)
+     public void setSpawn(BlockPos spawnPoint)
      {
      }
  
 -    @Override
-     public void func_76062_a(String p_76062_1_)
+     public void setWorldName(String worldName)
      {
      }
  
 -    @Override
-     public void func_76078_e(int p_76078_1_)
+     public void setSaveVersion(int version)
      {
      }
  
 -    @Override
-     public void func_76069_a(boolean p_76069_1_)
+     public void setThundering(boolean thunderingIn)
      {
      }
  
 -    @Override
-     public void func_76090_f(int p_76090_1_)
+     public void setThunderTime(int time)
      {
      }
  
 -    @Override
-     public void func_76084_b(boolean p_76084_1_)
+     public void setRaining(boolean isRaining)
      {
      }
  
 -    @Override
-     public void func_76080_g(int p_76080_1_)
+     public void setRainTime(int time)
      {
      }
  
 -    @Override
-     public boolean func_76089_r()
+     public boolean isMapFeaturesEnabled()
      {
-         return this.field_76115_a.func_76089_r();
+         return this.delegate.isMapFeaturesEnabled();
      }
  
 -    @Override
-     public boolean func_76093_s()
+     public boolean isHardcoreModeEnabled()
      {
-         return this.field_76115_a.func_76093_s();
+         return this.delegate.isHardcoreModeEnabled();
      }
  
 -    @Override
-     public WorldType func_76067_t()
+     public WorldType getTerrainType()
      {
-         return this.field_76115_a.func_76067_t();
+         return this.delegate.getTerrainType();
      }
  
 -    @Override
-     public void func_76085_a(WorldType p_76085_1_)
-     {
-     }
- 
--    @Override
-     public boolean func_76086_u()
-     {
-         return this.field_76115_a.func_76086_u();
-     }
- 
--    @Override
-     public void func_176121_c(boolean p_176121_1_)
+     public void setTerrainType(WorldType type)
      {
      }
  
 -    @Override
-     public boolean func_76070_v()
+     public boolean areCommandsAllowed()
      {
-         return this.field_76115_a.func_76070_v();
+         return this.delegate.areCommandsAllowed();
      }
  
 -    @Override
-     public void func_76091_d(boolean p_76091_1_)
-     {
-     }
- 
--    @Override
-     public GameRules func_82574_x()
-     {
-         return this.field_76115_a.func_82574_x();
-     }
- 
--    @Override
-     public EnumDifficulty func_176130_y()
-     {
-         return this.field_76115_a.func_176130_y();
-     }
- 
--    @Override
-     public void func_176144_a(EnumDifficulty p_176144_1_)
+     public void setAllowCommands(boolean allow)
      {
      }
  
 -    @Override
-     public boolean func_176123_z()
+     public boolean isInitialized()
      {
-         return this.field_76115_a.func_176123_z();
+         return this.delegate.isInitialized();
      }
  
 -    @Override
-     public void func_180783_e(boolean p_180783_1_)
+     public void setServerInitialized(boolean initializedIn)
      {
      }
  
 -    @Override
-+    @Deprecated
-     public void func_186345_a(DimensionType p_186345_1_, NBTTagCompound p_186345_2_)
+     public GameRules getGameRulesInstance()
      {
-         this.field_76115_a.func_186345_a(p_186345_1_, p_186345_2_);
+         return this.delegate.getGameRulesInstance();
+     }
+ 
+-    @Override
+     public EnumDifficulty getDifficulty()
+     {
+         return this.delegate.getDifficulty();
+     }
+ 
+-    @Override
+     public void setDifficulty(EnumDifficulty newDifficulty)
+     {
+     }
+ 
+-    @Override
+     public boolean isDifficultyLocked()
+     {
+         return this.delegate.isDifficultyLocked();
+     }
+ 
+-    @Override
+     public void setDifficultyLocked(boolean locked)
+     {
      }
  
 -    @Override
 +    @Deprecated
-     public NBTTagCompound func_186347_a(DimensionType p_186347_1_)
+     public void setDimensionData(DimensionType dimensionIn, NBTTagCompound compound)
      {
-         return this.field_76115_a.func_186347_a(p_186347_1_);
+         this.delegate.setDimensionData(dimensionIn, compound);
+     }
+ 
+-    @Override
++    @Deprecated
+     public NBTTagCompound getDimensionData(DimensionType dimensionIn)
+     {
+         return this.delegate.getDimensionData(dimensionIn);
 +    }
 +
 +    public void setDimensionData(int dimensionID, NBTTagCompound compound)
 +    {
-+        this.field_76115_a.setDimensionData(dimensionID, compound);
++        this.delegate.setDimensionData(dimensionID, compound);
 +    }
 +
 +    public NBTTagCompound getDimensionData(int dimensionID)
 +    {
-+        return this.field_76115_a.getDimensionData(dimensionID);
++        return this.delegate.getDimensionData(dimensionID);
      }
  }

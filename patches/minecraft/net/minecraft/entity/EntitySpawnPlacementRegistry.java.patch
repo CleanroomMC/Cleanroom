@@ -1,21 +1,16 @@
 --- before/net/minecraft/entity/EntitySpawnPlacementRegistry.java
 +++ after/net/minecraft/entity/EntitySpawnPlacementRegistry.java
-@@ -46,11 +46,16 @@
+@@ -50,7 +50,12 @@
  
- public class EntitySpawnPlacementRegistry
- {
--    private static final Map < Class<?>, EntityLiving.SpawnPlacementType > field_180110_a = Maps.newHashMap();
-+    private static final Map < Class<?>, EntityLiving.SpawnPlacementType > field_180110_a = Maps. < Class<?>, EntityLiving.SpawnPlacementType > newHashMap();
- 
-     public static EntityLiving.SpawnPlacementType func_180109_a(Class<?> p_180109_0_)
+     public static EntityLiving.SpawnPlacementType getPlacementForEntity(Class<?> entityClass)
      {
--        return field_180110_a.get(p_180109_0_);
-+        return field_180110_a.getOrDefault(p_180109_0_, EntityLiving.SpawnPlacementType.ON_GROUND);
+-        return ENTITY_PLACEMENTS.get(entityClass);
++        return ENTITY_PLACEMENTS.getOrDefault(entityClass, EntityLiving.SpawnPlacementType.ON_GROUND);
 +    }
 +
 +    public static void setPlacementType(Class<? extends Entity> entityClass, EntityLiving.SpawnPlacementType placementType)
 +    {
-+        field_180110_a.putIfAbsent(entityClass, placementType);
++        ENTITY_PLACEMENTS.putIfAbsent(entityClass, placementType);
      }
  
      static

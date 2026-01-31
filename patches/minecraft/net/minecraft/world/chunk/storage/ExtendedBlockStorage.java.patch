@@ -2,41 +2,41 @@
 +++ after/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
 @@ -34,27 +34,29 @@
  
-     public void func_177484_a(int p_177484_1_, int p_177484_2_, int p_177484_3_, IBlockState p_177484_4_)
+     public void set(int x, int y, int z, IBlockState state)
      {
-+        if (p_177484_4_ instanceof net.minecraftforge.common.property.IExtendedBlockState)
-+            p_177484_4_ = ((net.minecraftforge.common.property.IExtendedBlockState) p_177484_4_).getClean();
-         IBlockState iblockstate = this.func_177485_a(p_177484_1_, p_177484_2_, p_177484_3_);
-         Block block = iblockstate.func_177230_c();
-         Block block1 = p_177484_4_.func_177230_c();
++        if (state instanceof net.minecraftforge.common.property.IExtendedBlockState)
++            state = ((net.minecraftforge.common.property.IExtendedBlockState) state).getClean();
+         IBlockState iblockstate = this.get(x, y, z);
+         Block block = iblockstate.getBlock();
+         Block block1 = state.getBlock();
  
-         if (block != Blocks.field_150350_a)
+         if (block != Blocks.AIR)
          {
--            this.field_76682_b--;
-+            --this.field_76682_b;
+-            this.blockRefCount--;
++            --this.blockRefCount;
  
-             if (block.func_149653_t())
+             if (block.getTickRandomly())
              {
--                this.field_76683_c--;
-+                --this.field_76683_c;
+-                this.tickRefCount--;
++                --this.tickRefCount;
              }
          }
  
-         if (block1 != Blocks.field_150350_a)
+         if (block1 != Blocks.AIR)
          {
--            this.field_76682_b++;
-+            ++this.field_76682_b;
+-            this.blockRefCount++;
++            ++this.blockRefCount;
  
-             if (block1.func_149653_t())
+             if (block1.getTickRandomly())
              {
--                this.field_76683_c++;
-+                ++this.field_76683_c;
+-                this.tickRefCount++;
++                ++this.tickRefCount;
              }
          }
  
 @@ -101,21 +103,21 @@
-         this.field_76682_b = 0;
-         this.field_76683_c = 0;
+         this.blockRefCount = 0;
+         this.tickRefCount = 0;
  
 -        for (int i = 0; i < 16; i++)
 +        for (int i = 0; i < 16; ++i)
@@ -47,17 +47,17 @@
 -                for (int k = 0; k < 16; k++)
 +                for (int k = 0; k < 16; ++k)
                  {
-                     Block block = this.func_177485_a(i, j, k).func_177230_c();
+                     Block block = this.get(i, j, k).getBlock();
  
-                     if (block != Blocks.field_150350_a)
+                     if (block != Blocks.AIR)
                      {
--                        this.field_76682_b++;
-+                        ++this.field_76682_b;
+-                        this.blockRefCount++;
++                        ++this.blockRefCount;
  
-                         if (block.func_149653_t())
+                         if (block.getTickRandomly())
                          {
--                            this.field_76683_c++;
-+                            ++this.field_76683_c;
+-                            this.tickRefCount++;
++                            ++this.tickRefCount;
                          }
                      }
                  }
