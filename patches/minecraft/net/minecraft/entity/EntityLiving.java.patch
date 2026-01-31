@@ -8,7 +8,7 @@
      }
  
      public boolean canAttackClass(Class <? extends EntityLivingBase > cls)
-@@ -601,7 +602,7 @@
+@@ -601,7 +601,7 @@
          super.onLivingUpdate();
          this.world.profiler.startSection("looting");
  
