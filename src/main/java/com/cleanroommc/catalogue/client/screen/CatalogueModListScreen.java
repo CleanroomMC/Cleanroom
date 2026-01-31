@@ -788,10 +788,9 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         private String getFormattedModName(boolean favouriteIconVisible) {
             String name = this.data.getDisplayName();
             name = this.getFormattedText(name, favouriteIconVisible);
-            return data.getType().getStyle() + name;
+            return this.data.getType().getStyle() + name;
         }
 
-        @NotNull
         private String getFormattedModVersion(boolean favouriteIconVisible) {
             String version = this.data.getVersion();
             if (version.isBlank()) version = this.data.getInnerVersion();
