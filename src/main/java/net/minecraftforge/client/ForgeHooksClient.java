@@ -69,6 +69,7 @@ import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.block.model.SimpleBakedModel;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -196,9 +197,9 @@ public class ForgeHooksClient
         return MinecraftForge.EVENT_BUS.post(new RenderSpecificHandEvent(hand, partialTicks, interpPitch, swingProgress, equipProgress, stack));
     }
 
-    public static boolean renderSpecificFirstPersonArm(AbstractClientPlayer player, EnumHandSide arm)
+    public static boolean renderSpecificFirstPersonArm(RenderPlayer renderer, AbstractClientPlayer player, EnumHandSide arm)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderArmEvent(player, arm));
+        return MinecraftForge.EVENT_BUS.post(new RenderArmEvent(renderer, player, arm));
     }
 
     public static void onTextureStitchedPre(TextureMap map)

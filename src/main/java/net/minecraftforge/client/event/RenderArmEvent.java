@@ -20,6 +20,7 @@
 package net.minecraftforge.client.event;
 
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.util.EnumHandSide;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -36,11 +37,13 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 @Cancelable
 public class RenderArmEvent extends Event
 {
+    private final RenderPlayer renderer;
     private final AbstractClientPlayer player;
     private final EnumHandSide arm;
 
-    public RenderArmEvent(AbstractClientPlayer player, EnumHandSide arm)
+    public RenderArmEvent(RenderPlayer renderer, AbstractClientPlayer player, EnumHandSide arm)
     {
+        this.renderer = renderer;
         this.player = player;
         this.arm = arm;
     }
@@ -51,6 +54,11 @@ public class RenderArmEvent extends Event
     public EnumHandSide getArm()
     {
         return arm;
+    }
+
+    public RenderPlayer getRenderer()
+    {
+        return renderer;
     }
 
     /**
