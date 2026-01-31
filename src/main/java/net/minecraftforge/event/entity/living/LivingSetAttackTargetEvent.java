@@ -45,14 +45,14 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
 @Cancelable
 public class LivingSetAttackTargetEvent extends LivingEvent{
     private final EntityLivingBase originalTarget;
-    private EntityLivingBase redirectedTarget;
+    private EntityLivingBase newTarget;
     private boolean isModified;
     
     public LivingSetAttackTargetEvent(EntityLivingBase entity, EntityLivingBase target)
     {
         super(entity);
         this.originalTarget = target;
-        this.redirectedTarget = null;
+        this.newTarget = null;
         this.isModified = false;
     }
 
@@ -61,7 +61,7 @@ public class LivingSetAttackTargetEvent extends LivingEvent{
     **/
     public EntityLivingBase getTarget()
     {
-        return isModified ? redirectedTarget : originalTarget;
+        return isModified ? newTarget : originalTarget;
     }
 
     /**
@@ -72,9 +72,9 @@ public class LivingSetAttackTargetEvent extends LivingEvent{
     }
 
     /**
-    * Set the attack target of the living's
+    * Set the attack target of the living's, null if remove it
     **/
-    public void setTarget(EntityLivingBase living){
+    public void setNewTarget(EntityLivingBase living){
         this.redirectedTarget = living;
         this.isModified = true;
     }
