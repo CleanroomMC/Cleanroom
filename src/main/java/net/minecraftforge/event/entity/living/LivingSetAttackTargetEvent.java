@@ -34,7 +34,7 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * <br>
  * {@link #originalTarget} contains the newly targeted Entity.<br>
  * <br>
- * {@link #redirectedTarget} contains the redirected Targeted Entity.<br>
+ * {@link #newTarget} contains the redirected Targeted Entity.<br>
  * <br>
  * This event is {@link Cancelable}.<br>
  * <br>
@@ -75,7 +75,7 @@ public class LivingSetAttackTargetEvent extends LivingEvent{
     * Set the attack target of the living's, null if remove it
     **/
     public void setNewTarget(EntityLivingBase living){
-        this.redirectedTarget = living;
+        this.newTarget = living;
         this.isModified = true;
     }
 
