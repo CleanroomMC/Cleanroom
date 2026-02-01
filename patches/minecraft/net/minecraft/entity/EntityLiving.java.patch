@@ -1,14 +1,14 @@
 --- before/net/minecraft/entity/EntityLiving.java
 +++ after/net/minecraft/entity/EntityLiving.java
-@@ -171,6 +171,7 @@
+@@ -171,6 +171,6 @@
      public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn)
      {
-         this.attackTarget = entitylivingbaseIn;
-+        net.minecraftforge.common.ForgeHooks.onLivingSetAttackTarget(this, entitylivingbaseIn);
+-        this.attackTarget = entitylivingbaseIn;
++        this.attackTarget = net.minecraftforge.common.ForgeHooks.onLivingSetAttackTarget(this, entitylivingbaseIn);
      }
  
      public boolean canAttackClass(Class <? extends EntityLivingBase > cls)
-@@ -601,7 +602,7 @@
+@@ -601,7 +601,7 @@
          super.onLivingUpdate();
          this.world.profiler.startSection("looting");
  
@@ -17,7 +17,7 @@
          {
              for (EntityItem entityitem : this.world.getEntitiesWithinAABB(EntityItem.class, this.getEntityBoundingBox().grow(1.0, 0.0, 1.0)))
              {
-@@ -729,10 +730,22 @@
+@@ -729,10 +729,22 @@
  
      protected void despawnEntity()
      {
@@ -40,7 +40,7 @@
          else
          {
              Entity entity = this.world.getClosestPlayerToEntity(this, -1.0);
-@@ -870,7 +883,6 @@
+@@ -870,7 +882,6 @@
                 && this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this);
      }
  
@@ -48,7 +48,7 @@
      public float getRenderSizeModifier()
      {
          return 1.0F;
-@@ -1033,6 +1045,8 @@
+@@ -1033,6 +1044,8 @@
  
      public static EntityEquipmentSlot getSlotForItemStack(ItemStack stack)
      {
@@ -57,7 +57,7 @@
          if (stack.getItem() == Item.getItemFromBlock(Blocks.PUMPKIN) || stack.getItem() == Items.SKULL)
          {
              return EntityEquipmentSlot.HEAD;
-@@ -1047,7 +1061,7 @@
+@@ -1047,7 +1060,7 @@
          }
          else
          {
@@ -66,7 +66,7 @@
          }
      }
  
-@@ -1490,5 +1504,19 @@
+@@ -1490,5 +1503,19 @@
          ON_GROUND,
          IN_AIR,
          IN_WATER;
