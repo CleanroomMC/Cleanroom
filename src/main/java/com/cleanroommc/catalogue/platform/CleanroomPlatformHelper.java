@@ -75,7 +75,7 @@ public class CleanroomPlatformHelper implements IPlatformHelper {
 
     @Override
     public BufferedImage loadImageFromModResource(String modid, String resource) throws IOException {
-        InputStream is = getClass().getResourceAsStream(resource);
+        InputStream is = this.getClass().getResourceAsStream(resource);
         return is != null ? TextureUtil.readBufferedImage(is) : null;
     }
 

@@ -2,8 +2,6 @@ package com.cleanroommc.catalogue;
 
 import net.minecraft.util.ResourceLocation;
 
-import java.util.function.Consumer;
-
 /**
  * Author: MrCrayfish
  */

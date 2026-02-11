@@ -38,11 +38,11 @@ public class CatalogueTextButton extends GuiButton {
     protected void renderScrollingString(FontRenderer font, int width, int color) {
         int i = this.x + width;
         int j = this.x + this.width - width;
-        renderScrollingString(font, this.displayString, i, this.y, j, this.y + this.height, color);
+        this.renderScrollingString(font, this.displayString, i, this.y, j, this.y + this.height, color);
     }
 
     public void renderScrollingString(FontRenderer font, String text, int minX, int minY, int maxX, int maxY, int color) {
-        renderScrollingString(font, text, (minX + maxX) / 2, minX, minY, maxX, maxY, color);
+        this.renderScrollingString(font, text, (minX + maxX) / 2, minX, minY, maxX, maxY, color);
     }
 
     public void renderScrollingString(FontRenderer font, String text, int centerX, int minX, int minY, int maxX, int maxY, int color) {
@@ -52,15 +52,15 @@ public class CatalogueTextButton extends GuiButton {
         if (i > k) {
             int l = i - k;
             double d0 = (double) System.currentTimeMillis() / (double) 1000.0F;
-            double d1 = Math.max((double) l * (double) 0.5F, (double) 3.0F);
+            double d1 = Math.max((double) l * (double) 0.5F, 3.0F);
             double d2 = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * d0 / d1)) / (double) 2.0F + (double) 0.5F;
             double d3 = Utils.lerp(d2, 0.0F, l);
             ClientHelper.scissor(minX, minY, maxX - minX, maxY - minY);
-            drawString(font, text, minX - (int) d3, j, color);
+            this.drawString(font, text, minX - (int) d3, j, color);
             GL11.glDisable(GL11.GL_SCISSOR_TEST);
         } else {
             int i1 = MathHelper.clamp(centerX, minX + i / 2, maxX - i / 2);
-            drawCenteredString(font, text, i1, j, color);
+            this.drawCenteredString(font, text, i1, j, color);
         }
     }
 

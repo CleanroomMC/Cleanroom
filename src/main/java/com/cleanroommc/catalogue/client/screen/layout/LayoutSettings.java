@@ -62,7 +62,7 @@ public interface LayoutSettings {
     }
 
     @SideOnly(Side.CLIENT)
-    public static class LayoutSettingsImpl implements LayoutSettings {
+    class LayoutSettingsImpl implements LayoutSettings {
         public int paddingLeft;
         public int paddingTop;
         public int paddingRight;

@@ -57,7 +57,7 @@ public class CatalogueTextField extends GuiTextField {
         // Draw text before cursor
         if (!visibleText.isEmpty()) {
             String rawTextBeforeCursor = isCursorVisible ? visibleText.substring(0, cursorPosRelative) : visibleText;
-            currentDrawX = this.fontRenderer.drawStringWithShadow(formatText(rawTextBeforeCursor, this.lineScrollOffset), (float) textStartX, (float) textStartY, textColor);
+            currentDrawX = this.fontRenderer.drawStringWithShadow(this.formatText(rawTextBeforeCursor, this.lineScrollOffset), (float) textStartX, (float) textStartY, textColor);
         }
 
         this.isTextTruncated = this.cursorPosition < this.getText().length() || this.getText().length() >= this.getMaxStringLength();
@@ -73,7 +73,7 @@ public class CatalogueTextField extends GuiTextField {
         // Draw text after cursor
         if (!visibleText.isEmpty() && isCursorVisible && cursorPosRelative < visibleText.length()) {
             String rawTextAfterCursor = visibleText.substring(cursorPosRelative);
-            currentDrawX = this.fontRenderer.drawStringWithShadow(formatText(rawTextAfterCursor, this.cursorPosition), (float) currentDrawX, (float) textStartY, textColor);
+            currentDrawX = this.fontRenderer.drawStringWithShadow(this.formatText(rawTextAfterCursor, this.cursorPosition), (float) currentDrawX, (float) textStartY, textColor);
         }
 
         if (!this.isTextTruncated && !this.suggestion.isEmpty()) {

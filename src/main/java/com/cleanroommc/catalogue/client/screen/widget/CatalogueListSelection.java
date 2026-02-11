@@ -51,7 +51,7 @@ public class CatalogueListSelection<E extends CatalogueListExtended.IListEntry> 
     @Override
     protected void renderItem(int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX, int mouseY, float partialTicks) {
         if (this.showSelectionBox && this.isSelected(slotIndex)) {
-            renderSelection(rowLeft, rowTop, rowRight, rowBottom);
+            this.renderSelection(rowLeft, rowTop, rowRight, rowBottom);
         }
         super.renderItem(slotIndex, rowLeft, rowTop, rowRight, rowBottom, mouseX, mouseY, partialTicks);
     }

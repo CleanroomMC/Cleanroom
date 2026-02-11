@@ -189,7 +189,7 @@ public class DropdownMenu extends Gui implements LayoutElement {
 
             FontRenderer font = minecraft.fontRenderer;
             int offset = (this.getHeight() - font.FONT_HEIGHT) / 2 + 1;
-            drawString(font, this.label, this.getX() + offset, this.getY() + offset, 0xFFFFFFFF);
+            this.drawString(font, this.label, this.getX() + offset, this.getY() + offset, 0xFFFFFFFF);
         }
 
         public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
@@ -334,7 +334,7 @@ public class DropdownMenu extends Gui implements LayoutElement {
             super.drawWidget(minecraft, mouseX, mouseY, deltaTick);
             FontRenderer font = minecraft.fontRenderer;
             int top = this.getY() + (this.getHeight() - font.FONT_HEIGHT) / 2 + 1;
-            drawString(font, ">", this.getX() + this.getWidth() - 10, top, 0xFFFFFFFF);
+            this.drawString(font, ">", this.getX() + this.getWidth() - 10, top, 0xFFFFFFFF);
         }
 
         @Override

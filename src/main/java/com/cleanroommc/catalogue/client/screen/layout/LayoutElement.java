@@ -20,8 +20,8 @@ public interface LayoutElement {
     int getHeight();
 
     default void setPosition(int x, int y) {
-        setX(x);
-        setY(y);
+        this.setX(x);
+        this.setY(y);
     }
 
     default ScreenRectangle getRectangle() {
