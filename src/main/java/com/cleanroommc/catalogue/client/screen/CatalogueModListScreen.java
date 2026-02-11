@@ -308,10 +308,12 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         if (this.menu != null) {
             this.menu.drawScreen(this.mc, mouseX, mouseY, partialTicks);
         } else {
+            /*
             if (ClientHelper.isMouseWithin(10, 9, 10, 10, mouseX, mouseY)) {
                 this.setActiveTooltip(I18n.format("catalogue.gui.info"));
                 this.tooltipYOffset = 10;
             }
+            */
 
             if (this.optionsButton.isMouseOver()) {
                 this.setActiveTooltip(I18n.format("catalogue.gui.options"));
