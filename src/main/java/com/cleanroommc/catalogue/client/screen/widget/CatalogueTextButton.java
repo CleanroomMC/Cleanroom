@@ -68,11 +68,11 @@ public class CatalogueTextButton extends GuiButton {
         if (this.packedFGColour != 0) {
             return this.packedFGColour;
         } else if (!this.enabled) {
-            return 10526880;
+            return 0xA0A0A0;
         } else if (this.hovered) {
-            return 16777120;
+            return 0xFFFFA0;
         } else {
-            return 14737632;
+            return 0xE0E0E0;
         }
     }
 }
