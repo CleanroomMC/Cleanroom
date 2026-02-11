@@ -9,9 +9,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public record ImagePredicate(TriFunction<BufferedImage, Integer, Integer, Boolean> predicate,
                              BiFunction<Integer, Integer, String> errorMessage) implements BiPredicate<BufferedImage, Branding> {
     public static final ImagePredicate SQUARE = new ImagePredicate((image, maxWidth, maxHeight) -> Objects.equals(image.getWidth(), image.getHeight()), (maxWidth, maxHeight) -> "Image must be a square");

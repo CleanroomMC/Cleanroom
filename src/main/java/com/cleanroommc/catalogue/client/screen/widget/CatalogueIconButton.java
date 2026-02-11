@@ -7,9 +7,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public class CatalogueIconButton extends CatalogueTextButton {
     public static final ResourceLocation TEXTURE = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/icons.png");
 

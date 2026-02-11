@@ -26,9 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public class DropdownMenu extends Gui implements LayoutElement {
     private final DropdownMenuHandler handler;
     private final BorderedLinearLayout layout = (BorderedLinearLayout)

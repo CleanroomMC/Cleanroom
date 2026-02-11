@@ -16,9 +16,7 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public record Branding(String prefix, int imageWidth, int imageHeight,
                        BiPredicate<BufferedImage, Branding> predicate,
                        Function<IModData, String> locator, boolean override) {

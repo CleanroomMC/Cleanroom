@@ -7,9 +7,7 @@ import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public class ClientHandler {
     @SubscribeEvent
     public static void onOpenScreen(@NotNull GuiOpenEvent event) {

@@ -7,9 +7,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public class ClientHelper {
     /**
      * Creates a scissor test using minecraft screen coordinates instead of pixel coordinates.

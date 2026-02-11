@@ -22,9 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public class CleanroomModData implements IModData {
     public static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation("forge", "textures/gui/version_check_icons.png");
     public static final List<String> LIB_MODS = Arrays.asList(CatalogueConfig.libraryList);

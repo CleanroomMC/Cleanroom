@@ -1,8 +1,6 @@
 package com.cleanroommc.catalogue.client.screen.layout;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public class BorderedLinearLayout extends LinearLayout {
     private int border;
 
