@@ -25,6 +25,8 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
+import javax.annotation.Nullable;
+
 /**
  * LivingSetAttackTargetEvent is fired when an Entity sets a target to attack.<br>
  * This event is fired whenever an Entity sets a target to attack in
@@ -32,8 +34,7 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * <br>
  * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLiving, EntityLivingBase)}.<br>
  * <br>
- * {@link #originalTarget} contains the newly targeted Entity.<br>
- * <br>
+ * {@link #originalTarget} contains the targeted Entity. Can be null.<br>
  * {@link #newTarget} contains the redirected Targeted Entity.<br>
  * <br>
  * This event is {@link Cancelable}.<br>
@@ -43,46 +44,56 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
 @Cancelable
-public class LivingSetAttackTargetEvent extends LivingEvent{
+public class LivingSetAttackTargetEvent extends LivingEvent
+{
+    @Nullable
     private final EntityLivingBase originalTarget;
+
     private EntityLivingBase newTarget;
-    private boolean isModified;
-    
-    public LivingSetAttackTargetEvent(EntityLivingBase entity, EntityLivingBase target)
+    private boolean modified;
+
+    public LivingSetAttackTargetEvent(EntityLivingBase entity, @Nullable EntityLivingBase target)
     {
         super(entity);
         this.originalTarget = target;
         this.newTarget = null;
-        this.isModified = false;
     }
 
     /**
-    * Get the target that will be actually applied
-    **/
+     * @return {@link EntityLivingBase} target that will be the new attack target
+     */
+    @Nullable
     public EntityLivingBase getTarget()
     {
-        return isModified ? newTarget : originalTarget;
+        return this.isModified() ? this.newTarget : this.originalTarget;
     }
 
     /**
-    * return the original attack target
-    **/
-    public EntityLivingBase getOriginalTarget(){
+     * @return Original attack target
+     */
+    @Nullable
+    public EntityLivingBase getOriginalTarget()
+    {
         return originalTarget;
     }
 
     /**
-    * Set the attack target of the living's, null if remove it
-    **/
-    public void setNewTarget(EntityLivingBase living){
-        this.newTarget = living;
-        this.isModified = true;
+     * @return If the attack target is modified
+     */
+    public boolean isModified()
+    {
+        return this.modified;
     }
 
     /**
-    * Is the attack target is modified
-    **/
-    public boolean isModified(){
-        return this.isModified;
+     * Sets a new attack target
+     *
+     * @param target The new attack target, can be null to remove the attack target altogether
+     */
+    public void setNewTarget(@Nullable EntityLivingBase target)
+    {
+        this.newTarget = target;
+        this.modified = true;
     }
+
 }
