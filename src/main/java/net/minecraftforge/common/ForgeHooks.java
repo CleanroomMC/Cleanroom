@@ -45,6 +45,7 @@ import com.google.gson.JsonParseException;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
+import net.minecraft.advancements.FunctionManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
@@ -52,7 +53,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.crash.CrashReport;
+import net.minecraft.command.FunctionObject;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -125,6 +126,7 @@ import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.DifficultyChangeEvent;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.MCFunctionLoadEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -1424,6 +1426,9 @@ public class ForgeHooks
             },
             true, true
         );
+    }
+    public static void onMCFunctionLoad(FunctionManager manager, Map<ResourceLocation, FunctionObject> functionsIn){
+        MinecraftForge.EVENT_BUS.post(new MCFunctionLoadEvent(manager, functionsIn));
     }
 
     public static void sendRecipeBook(NetHandlerPlayServer connection, State state, List<IRecipe> recipes, List<IRecipe> display, boolean isGuiOpen, boolean isFilteringCraftable)
