@@ -78,22 +78,22 @@ public class CleanroomModData implements IModData {
     @Nullable
     @Override
     public String getItemIcon() {
-        return this.metadata != null ? (this.metadata.iconItem.isBlank() ?
-                this.info.getCustomModProperties().get("iconItem") : null) : null;
+        return this.metadata != null && !this.metadata.iconItem.isBlank() ?
+                this.metadata.iconItem : this.info.getCustomModProperties().get("iconItem");
     }
 
     @Nullable
     @Override
     public String getImageIcon() {
-        return this.metadata != null ? (this.metadata.iconFile.isBlank() ?
-                this.info.getCustomModProperties().get("iconFile") : null) : null;
+        return this.metadata != null && !this.metadata.iconFile.isBlank() ?
+                this.metadata.iconFile : this.info.getCustomModProperties().get("iconFile");
     }
 
     @Nullable
     @Override
     public String getLicense() {
-        return this.metadata != null ? (this.metadata.license.isBlank() ?
-                this.info.getCustomModProperties().get("license") : null) : null;
+        return this.metadata != null && !this.metadata.license.isBlank() ?
+                this.metadata.license : this.info.getCustomModProperties().get("license");
     }
 
     @Nullable
@@ -117,8 +117,8 @@ public class CleanroomModData implements IModData {
     @Nullable
     @Override
     public String getIssueTracker() {
-        return this.metadata != null ? (this.metadata.issueTrackerUrl.isBlank() ?
-                this.info.getCustomModProperties().get("issueTrackerUrl") : null) : null;
+        return this.metadata != null && !this.metadata.issueTrackerUrl.isBlank() ?
+                this.metadata.issueTrackerUrl : this.info.getCustomModProperties().get("issueTrackerUrl");
     }
 
     @Nullable
@@ -130,8 +130,8 @@ public class CleanroomModData implements IModData {
     @Nullable
     @Override
     public String getBackground() {
-        return this.metadata != null ? (this.metadata.backgroundFile.isBlank() ?
-                this.info.getCustomModProperties().get("backgroundFile") : null) : null;
+        return this.metadata != null && !this.metadata.backgroundFile.isBlank() ?
+                this.metadata.backgroundFile : this.info.getCustomModProperties().get("backgroundFile");
     }
 
     @Nullable
