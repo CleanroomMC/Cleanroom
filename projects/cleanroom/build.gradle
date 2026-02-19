@@ -273,7 +273,7 @@ dependencies {
     installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
     // Hacks
-    installer "top.outlands:foundation:0.18.4"
+    installer "top.outlands:foundation:0.18.5"
     installer 'net.lenni0451:Reflect:1.6.2'
     installer 'org.javassist:javassist:3.30.2-GA'
     installer "zone.rong:imaginebreaker:2.1"
