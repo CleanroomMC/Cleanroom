@@ -15,16 +15,24 @@
      int trunkSize = 1;
      int heightLimitLimit = 12;
      int leafDistanceLimit = 4;
-@@ -43,7 +43,7 @@
+@@ -36,14 +36,14 @@
+ 
+     void generateLeafNodeList()
+     {
+-        this.height = (int)(this.heightLimit * this.heightAttenuation);
++        this.height = (int)((double)this.heightLimit * this.heightAttenuation);
+ 
+         if (this.height >= this.heightLimit)
+         {
              this.height = this.heightLimit - 1;
          }
  
--        int i = (int)(1.382 + Math.pow(this.leafDensity * (double)this.heightLimit / 13.0, 2.0));
+-        int i = (int)(1.382 + Math.pow(this.leafDensity * this.heightLimit / 13.0, 2.0));
 +        int i = (int)(1.382D + Math.pow(this.leafDensity * (double)this.heightLimit / 13.0D, 2.0D));
  
          if (i < 1)
          {
-@@ -52,21 +52,21 @@
+@@ -52,30 +52,30 @@
  
          int j = this.basePos.getY() + this.height;
          int k = this.heightLimit - this.leafDistanceLimit;
@@ -43,21 +51,34 @@
 -                for (int l = 0; l < i; l++)
 +                for (int l = 0; l < i; ++l)
                  {
--                    double d0 = this.scaleWidth * (double)f * ((double)this.rand.nextFloat() + 0.328);
-+                    double d0 = this.scaleWidth * (double)f * ((double)this.rand.nextFloat() + 0.328D);
-                     double d1 = (double)(this.rand.nextFloat() * 2.0F) * Math.PI;
+-                    double d0 = this.scaleWidth * f * (this.rand.nextFloat() + 0.328);
+-                    double d1 = this.rand.nextFloat() * 2.0F * Math.PI;
 -                    double d2 = d0 * Math.sin(d1) + 0.5;
 -                    double d3 = d0 * Math.cos(d1) + 0.5;
+-                    BlockPos blockpos = this.basePos.add(d2, k - 1, d3);
++                    double d0 = this.scaleWidth * (double)f * ((double)this.rand.nextFloat() + 0.328D);
++                    double d1 = (double)(this.rand.nextFloat() * 2.0F) * Math.PI;
 +                    double d2 = d0 * Math.sin(d1) + 0.5D;
 +                    double d3 = d0 * Math.cos(d1) + 0.5D;
-                     BlockPos blockpos = this.basePos.add(d2, (double)(k - 1), d3);
++                    BlockPos blockpos = this.basePos.add(d2, (double)(k - 1), d3);
                      BlockPos blockpos1 = blockpos.up(this.leafDistanceLimit);
  
+                     if (this.checkBlockLine(blockpos, blockpos1) == -1)
+                     {
+                         int i1 = this.basePos.getX() - blockpos.getX();
+                         int j1 = this.basePos.getZ() - blockpos.getZ();
+-                        double d4 = blockpos.getY() - Math.sqrt(i1 * i1 + j1 * j1) * this.branchSlope;
+-                        int k1 = d4 > j ? j : (int)d4;
++                        double d4 = (double)blockpos.getY() - Math.sqrt((double)(i1 * i1 + j1 * j1)) * this.branchSlope;
++                        int k1 = d4 > (double)j ? j : (int)d4;
+                         BlockPos blockpos2 = new BlockPos(this.basePos.getX(), k1, this.basePos.getZ());
+ 
+                         if (this.checkBlockLine(blockpos2, blockpos) == -1)
 @@ -90,18 +90,18 @@
  
      void crosSection(BlockPos pos, float p_181631_2_, IBlockState p_181631_3_)
      {
--        int i = (int)((double)p_181631_2_ + 0.618);
+-        int i = (int)(p_181631_2_ + 0.618);
 +        int i = (int)((double)p_181631_2_ + 0.618D);
  
 -        for (int j = -i; j <= i; j++)
@@ -66,7 +87,7 @@
 -            for (int k = -i; k <= i; k++)
 +            for (int k = -i; k <= i; ++k)
              {
--                if (Math.pow((double)Math.abs(j) + 0.5, 2.0) + Math.pow((double)Math.abs(k) + 0.5, 2.0) <= (double)(p_181631_2_ * p_181631_2_))
+-                if (Math.pow(Math.abs(j) + 0.5, 2.0) + Math.pow(Math.abs(k) + 0.5, 2.0) <= p_181631_2_ * p_181631_2_)
 +                if (Math.pow((double)Math.abs(j) + 0.5D, 2.0D) + Math.pow((double)Math.abs(k) + 0.5D, 2.0D) <= (double)(p_181631_2_ * p_181631_2_))
                  {
                      BlockPos blockpos = pos.add(j, 0, k);
@@ -78,6 +99,24 @@
                      {
                          this.setBlockAndNotifyAdequately(this.world, blockpos, p_181631_3_);
                      }
+@@ -112,14 +112,14 @@
+ 
+     float layerSize(int y)
+     {
+-        if (y < this.heightLimit * 0.3F)
++        if ((float)y < (float)this.heightLimit * 0.3F)
+         {
+             return -1.0F;
+         }
+         else
+         {
+-            float f = this.heightLimit / 2.0F;
+-            float f1 = f - y;
++            float f = (float)this.heightLimit / 2.0F;
++            float f1 = f - (float)y;
+             float f2 = MathHelper.sqrt(f * f - f1 * f1);
+ 
+             if (f1 == 0.0F)
 @@ -137,23 +137,21 @@
  
      float leafSize(int y)
@@ -109,24 +148,47 @@
          }
      }
  
-@@ -165,7 +163,7 @@
-         float f1 = (float)blockpos.getY() / (float)i;
-         float f2 = (float)blockpos.getZ() / (float)i;
+@@ -161,13 +159,13 @@
+     {
+         BlockPos blockpos = p_175937_2_.add(-p_175937_1_.getX(), -p_175937_1_.getY(), -p_175937_1_.getZ());
+         int i = this.getGreatestDistance(blockpos);
+-        float f = (float)blockpos.getX() / i;
+-        float f1 = (float)blockpos.getY() / i;
+-        float f2 = (float)blockpos.getZ() / i;
++        float f = (float)blockpos.getX() / (float)i;
++        float f1 = (float)blockpos.getY() / (float)i;
++        float f2 = (float)blockpos.getZ() / (float)i;
  
 -        for (int j = 0; j <= i; j++)
 +        for (int j = 0; j <= i; ++j)
          {
-             BlockPos blockpos1 = p_175937_1_.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
+-            BlockPos blockpos1 = p_175937_1_.add(0.5F + j * f, 0.5F + j * f1, 0.5F + j * f2);
++            BlockPos blockpos1 = p_175937_1_.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
              BlockLog.EnumAxis blocklog$enumaxis = this.getLogAxis(p_175937_1_, blockpos1);
+             this.setBlockAndNotifyAdequately(this.world, blockpos1, p_175937_3_.getDefaultState().withProperty(BlockLog.LOG_AXIS, blocklog$enumaxis));
+         }
 @@ -221,7 +219,7 @@
  
      boolean leafNodeNeedsBase(int p_76493_1_)
      {
--        return (double)p_76493_1_ >= (double)this.heightLimit * 0.2;
+-        return p_76493_1_ >= this.heightLimit * 0.2;
 +        return (double)p_76493_1_ >= (double)this.heightLimit * 0.2D;
      }
  
      void generateTrunk()
+@@ -257,9 +255,9 @@
+     {
+         BlockPos blockpos = posTwo.add(-posOne.getX(), -posOne.getY(), -posOne.getZ());
+         int i = this.getGreatestDistance(blockpos);
+-        float f = (float)blockpos.getX() / i;
+-        float f1 = (float)blockpos.getY() / i;
+-        float f2 = (float)blockpos.getZ() / i;
++        float f = (float)blockpos.getX() / (float)i;
++        float f1 = (float)blockpos.getY() / (float)i;
++        float f2 = (float)blockpos.getZ() / (float)i;
+ 
+         if (i == 0)
+         {
 @@ -267,11 +265,11 @@
          }
          else
@@ -134,7 +196,8 @@
 -            for (int j = 0; j <= i; j++)
 +            for (int j = 0; j <= i; ++j)
              {
-                 BlockPos blockpos1 = posOne.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
+-                BlockPos blockpos1 = posOne.add(0.5F + j * f, 0.5F + j * f1, 0.5F + j * f2);
++                BlockPos blockpos1 = posOne.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
  
 -                if (!this.canGrowInto(this.world.getBlockState(blockpos1).getBlock()))
 +                if (!this.isReplaceable(world, blockpos1))

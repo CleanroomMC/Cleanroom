@@ -55,7 +55,7 @@
      public void onEntityRemoved(Entity entityIn)
      {
          this.world.getEntityTracker().untrack(entityIn);
-@@ -78,75 +53,38 @@
+@@ -78,86 +53,49 @@
          }
      }
  
@@ -79,7 +79,7 @@
 -            x,
 -            y,
 -            z,
--            volume > 1.0F ? (double)(16.0F * volume) : 16.0,
+-            volume > 1.0F ? 16.0F * volume : 16.0,
 -            this.world.provider.getDimensionType().getId(),
 -            new SPacketSoundEffect(soundIn, category, x, y, z, volume, pitch)
 -        );
@@ -114,9 +114,9 @@
 -        .getPlayerList()
 -        .sendToAllNearExcept(
 -            player,
--            (double)blockPosIn.getX(),
--            (double)blockPosIn.getY(),
--            (double)blockPosIn.getZ(),
+-            blockPosIn.getX(),
+-            blockPosIn.getY(),
+-            blockPosIn.getZ(),
 -            64.0,
 -            this.world.provider.getDimensionType().getId(),
 -            new SPacketEffect(type, blockPosIn, data, false)
@@ -134,9 +134,15 @@
      public void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress)
      {
          for (EntityPlayerMP entityplayermp : this.server.getPlayerList().getPlayers())
-@@ -157,7 +95,7 @@
-                 double d1 = (double)pos.getY() - entityplayermp.posY;
-                 double d2 = (double)pos.getZ() - entityplayermp.posZ;
+         {
+             if (entityplayermp != null && entityplayermp.world == this.world && entityplayermp.getEntityId() != breakerId)
+             {
+-                double d0 = pos.getX() - entityplayermp.posX;
+-                double d1 = pos.getY() - entityplayermp.posY;
+-                double d2 = pos.getZ() - entityplayermp.posZ;
++                double d0 = (double)pos.getX() - entityplayermp.posX;
++                double d1 = (double)pos.getY() - entityplayermp.posY;
++                double d2 = (double)pos.getZ() - entityplayermp.posZ;
  
 -                if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0)
 +                if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D)

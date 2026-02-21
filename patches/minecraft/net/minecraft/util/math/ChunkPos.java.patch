@@ -1,9 +1,13 @@
 --- before/net/minecraft/util/math/ChunkPos.java
 +++ after/net/minecraft/util/math/ChunkPos.java
-@@ -24,6 +24,16 @@
-         return (long)x & 4294967295L | ((long)z & 4294967295L) << 32;
-     }
+@@ -21,7 +21,17 @@
  
+     public static long asLong(int x, int z)
+     {
+-        return x & 4294967295L | (z & 4294967295L) << 32;
++        return (long)x & 4294967295L | ((long)z & 4294967295L) << 32;
++    }
++
 +    public static int getX(long key)
 +    {
 +        return (int) (key & 0xFFFFFFFFL);
@@ -12,8 +16,17 @@
 +    public static int getZ(long key)
 +    {
 +        return (int) ((key >>> 32) & 0xFFFFFFFFL);
-+    }
-+
+     }
+ 
      @Override
-     public int hashCode()
+@@ -52,8 +62,8 @@
+ 
+     public double getDistanceSq(Entity entityIn)
      {
+-        double d0 = this.x * 16 + 8;
+-        double d1 = this.z * 16 + 8;
++        double d0 = (double)(this.x * 16 + 8);
++        double d1 = (double)(this.z * 16 + 8);
+         double d2 = d0 - entityIn.posX;
+         double d3 = d1 - entityIn.posZ;
+         return d2 * d2 + d3 * d3;

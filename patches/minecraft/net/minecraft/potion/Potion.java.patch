@@ -28,24 +28,58 @@
          }
  
          this.liquidColor = liquidColorIn;
-@@ -122,7 +122,7 @@
+@@ -94,7 +94,7 @@
+         }
+         else if (this == MobEffects.HUNGER && entityLivingBaseIn instanceof EntityPlayer)
+         {
+-            ((EntityPlayer)entityLivingBaseIn).addExhaustion(0.005F * (amplifier + 1));
++            ((EntityPlayer)entityLivingBaseIn).addExhaustion(0.005F * (float)(amplifier + 1));
+         }
+         else if (this == MobEffects.SATURATION && entityLivingBaseIn instanceof EntityPlayer)
+         {
+@@ -107,12 +107,12 @@
          {
              if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead())
              {
--                int j = (int)(health * (double)(6 << amplifier) + 0.5);
+-                entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, 6 << amplifier);
++                entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float)(6 << amplifier));
+             }
+         }
+         else
+         {
+-            entityLivingBaseIn.heal(Math.max(4 << amplifier, 0));
++            entityLivingBaseIn.heal((float)Math.max(4 << amplifier, 0));
+         }
+     }
+ 
+@@ -122,22 +122,22 @@
+         {
+             if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead())
+             {
+-                int j = (int)(health * (6 << amplifier) + 0.5);
 +                int j = (int)(health * (double)(6 << amplifier) + 0.5D);
  
                  if (source == null)
                  {
-@@ -136,7 +136,7 @@
+-                    entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, j);
++                    entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float)j);
+                 }
+                 else
+                 {
+-                    entityLivingBaseIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(source, indirectSource), j);
++                    entityLivingBaseIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(source, indirectSource), (float)j);
+                 }
+             }
          }
          else
          {
--            int i = (int)(health * (double)(4 << amplifier) + 0.5);
+-            int i = (int)(health * (4 << amplifier) + 0.5);
+-            entityLivingBaseIn.heal(i);
 +            int i = (int)(health * (double)(4 << amplifier) + 0.5D);
-             entityLivingBaseIn.heal((float)i);
++            entityLivingBaseIn.heal((float)i);
          }
      }
+ 
 @@ -146,17 +146,41 @@
          if (this == MobEffects.REGENERATION)
          {
@@ -112,7 +146,13 @@
      public boolean isBadEffect()
      {
          return this.isBadEffect;
-@@ -212,12 +241,6 @@
+@@ -207,17 +236,11 @@
+         }
+         else
+         {
+-            int i = MathHelper.floor(effect.getDuration() * durationFactor);
++            int i = MathHelper.floor((float)effect.getDuration() * durationFactor);
+             return StringUtils.ticksToElapsedTime(i);
          }
      }
  
@@ -151,7 +191,7 @@
      public void applyAttributesModifiersToEntity(EntityLivingBase entityLivingBaseIn, AbstractAttributeMap attributeMapIn, int amplifier)
      {
          for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet())
-@@ -259,14 +282,7 @@
+@@ -259,22 +282,130 @@
              {
                  AttributeModifier attributemodifier = entry.getValue();
                  iattributeinstance.removeModifier(attributemodifier);
@@ -167,10 +207,14 @@
              }
          }
      }
-@@ -276,6 +292,121 @@
-         return modifier.getAmount() * (double)(amplifier + 1);
-     }
  
+     public double getAttributeModifierAmount(int amplifier, AttributeModifier modifier)
+     {
+-        return modifier.getAmount() * (amplifier + 1);
+-    }
++        return modifier.getAmount() * (double)(amplifier + 1);
++    }
++
 +    /* ======================================== FORGE START =====================================*/
 +
 +    /**
@@ -285,10 +329,9 @@
 +    }
 +
 +    /* ======================================== FORGE END =====================================*/
-+
+ 
      @SideOnly(Side.CLIENT)
      public boolean isBeneficial()
-     {
 @@ -290,127 +421,32 @@
  
      public static void registerPotions()

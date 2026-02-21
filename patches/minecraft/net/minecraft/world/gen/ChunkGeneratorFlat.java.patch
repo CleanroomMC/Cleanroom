@@ -81,8 +81,12 @@
          int i = x * 16;
          int j = z * 16;
          BlockPos blockpos = new BlockPos(i, 0, j);
-@@ -177,6 +174,8 @@
-         this.random.setSeed((long)x * k + (long)z * l ^ this.world.getSeed());
+@@ -174,9 +171,11 @@
+         this.random.setSeed(this.world.getSeed());
+         long k = this.random.nextLong() / 2L * 2L + 1L;
+         long l = this.random.nextLong() / 2L * 2L + 1L;
+-        this.random.setSeed(x * k + z * l ^ this.world.getSeed());
++        this.random.setSeed((long)x * k + (long)z * l ^ this.world.getSeed());
          ChunkPos chunkpos = new ChunkPos(x, z);
  
 +        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.world, this.random, x, z, flag);

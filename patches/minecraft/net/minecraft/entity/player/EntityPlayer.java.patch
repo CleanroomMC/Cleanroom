@@ -85,7 +85,7 @@
 +
          if (cause != null)
          {
-             this.motionX = (double)(-MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)(Math.PI / 180.0)) * 0.1F);
+             this.motionX = -MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)(Math.PI / 180.0)) * 0.1F;
 @@ -703,21 +719,24 @@
      @Nullable
      public EntityItem dropItem(boolean dropAll)
@@ -121,7 +121,7 @@
      }
  
      @Nullable
-@@ -785,12 +804,20 @@
+@@ -781,12 +800,20 @@
  
      public ItemStack dropItemAndGetStack(EntityItem p_184816_1_)
      {
@@ -142,7 +142,7 @@
          float f = this.inventory.getDestroySpeed(state);
  
          if (f > 1.0F)
-@@ -842,12 +869,13 @@
+@@ -838,12 +865,13 @@
              f /= 5.0F;
          }
  
@@ -158,7 +158,7 @@
      }
  
      public static void registerFixesPlayer(DataFixer fixer)
-@@ -916,6 +944,17 @@
+@@ -912,6 +940,17 @@
              this.spawnForced = compound.getBoolean("SpawnForced");
          }
  
@@ -176,7 +176,7 @@
          this.foodStats.readNBT(compound);
          this.capabilities.readCapabilitiesFromNBT(compound);
  
-@@ -950,6 +989,7 @@
+@@ -946,6 +985,7 @@
          compound.setInteger("XpTotal", this.experienceTotal);
          compound.setInteger("XpSeed", this.xpSeed);
          compound.setInteger("Score", this.getScore());
@@ -184,7 +184,7 @@
  
          if (this.spawnPos != null)
          {
-@@ -959,6 +999,27 @@
+@@ -955,6 +995,27 @@
              compound.setBoolean("SpawnForced", this.spawnForced);
          }
  
@@ -212,7 +212,7 @@
          this.foodStats.writeNBT(compound);
          this.capabilities.writeCapabilitiesToNBT(compound);
          compound.setTag("EnderItems", this.enderChest.saveInventoryToNBT());
-@@ -977,6 +1038,7 @@
+@@ -973,6 +1034,7 @@
      @Override
      public boolean attackEntityFrom(DamageSource source, float amount)
      {
@@ -220,7 +220,7 @@
          if (this.isEntityInvulnerable(source))
          {
              return false;
-@@ -1030,7 +1092,7 @@
+@@ -1026,7 +1088,7 @@
      {
          super.blockUsingShield(p_190629_1_);
  
@@ -229,7 +229,7 @@
          {
              this.disableShield(true);
          }
-@@ -1060,14 +1122,16 @@
+@@ -1056,14 +1118,16 @@
      @Override
      protected void damageShield(float damage)
      {
@@ -247,7 +247,7 @@
  
                  if (enumhand == EnumHand.MAIN_HAND)
                  {
-@@ -1104,10 +1168,14 @@
+@@ -1100,10 +1164,14 @@
      {
          if (!this.isEntityInvulnerable(damageSrc))
          {
@@ -263,7 +263,7 @@
  
              if (f1 != 0.0F)
              {
-@@ -1173,6 +1241,8 @@
+@@ -1169,6 +1237,8 @@
          }
          else
          {
@@ -272,7 +272,7 @@
              ItemStack itemstack = this.getHeldItem(hand);
              ItemStack itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
  
-@@ -1182,7 +1252,10 @@
+@@ -1178,7 +1248,10 @@
                  {
                      itemstack.setCount(itemstack1.getCount());
                  }
@@ -284,7 +284,7 @@
                  return EnumActionResult.SUCCESS;
              }
              else
-@@ -1198,6 +1271,7 @@
+@@ -1194,6 +1267,7 @@
                      {
                          if (itemstack.isEmpty() && !this.capabilities.isCreativeMode)
                          {
@@ -292,7 +292,7 @@
                              this.setHeldItem(hand, ItemStack.EMPTY);
                          }
  
-@@ -1225,6 +1299,7 @@
+@@ -1221,6 +1295,7 @@
  
      public void attackTargetEntityWithCurrentItem(Entity targetEntity)
      {
@@ -300,7 +300,7 @@
          if (targetEntity.canBeAttackedWithItem())
          {
              if (!targetEntity.hitByEntity(this))
-@@ -1273,9 +1348,11 @@
+@@ -1269,9 +1344,11 @@
                                      && targetEntity instanceof EntityLivingBase;
                      flag2 = flag2 && !this.isSprinting();
  
@@ -313,7 +313,7 @@
                      }
  
                      f += f1;
-@@ -1433,10 +1510,12 @@
+@@ -1429,10 +1506,12 @@
  
                          if (!itemstack1.isEmpty() && entity instanceof EntityLivingBase)
                          {
@@ -326,7 +326,7 @@
                                  this.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
                              }
                          }
-@@ -1499,7 +1578,7 @@
+@@ -1495,7 +1574,7 @@
  
          if (this.rand.nextFloat() < f)
          {
@@ -335,7 +335,7 @@
              this.resetActiveHand();
              this.world.setEntityState(this, (byte)30);
          }
-@@ -1570,7 +1649,11 @@
+@@ -1566,7 +1645,11 @@
  
      public EntityPlayer.SleepResult trySleep(BlockPos bedLocation)
      {
@@ -348,7 +348,7 @@
  
          if (!this.world.isRemote)
          {
-@@ -1584,7 +1667,7 @@
+@@ -1580,7 +1663,7 @@
                  return EntityPlayer.SleepResult.NOT_POSSIBLE_HERE;
              }
  
@@ -357,16 +357,16 @@
              {
                  return EntityPlayer.SleepResult.NOT_POSSIBLE_NOW;
              }
-@@ -1624,7 +1707,7 @@
+@@ -1620,7 +1703,7 @@
          this.spawnShoulderEntities();
          this.setSize(0.2F, 0.2F);
  
 -        if (this.world.isBlockLoaded(bedLocation))
 +        if (enumfacing != null)
          {
-             float f1 = 0.5F + (float)enumfacing.getXOffset() * 0.4F;
-             float f = 0.5F + (float)enumfacing.getZOffset() * 0.4F;
-@@ -1667,6 +1750,7 @@
+             float f1 = 0.5F + enumfacing.getXOffset() * 0.4F;
+             float f = 0.5F + enumfacing.getZOffset() * 0.4F;
+@@ -1655,6 +1738,7 @@
          {
              return true;
          }
@@ -374,7 +374,7 @@
          else
          {
              BlockPos blockpos = p_190774_1_.offset(p_190774_2_.getOpposite());
-@@ -1684,13 +1768,14 @@
+@@ -1672,13 +1756,14 @@
  
      public void wakeUpPlayer(boolean immediately, boolean updateWorldFlag, boolean setSpawn)
      {
@@ -393,9 +393,9 @@
  
              if (blockpos == null)
              {
-@@ -1703,6 +1788,10 @@
-                 (double)((float)blockpos.getZ() + 0.5F)
-             );
+@@ -1687,6 +1772,10 @@
+ 
+             this.setPosition(blockpos.getX() + 0.5F, blockpos.getY() + 0.1F, blockpos.getZ() + 0.5F);
          }
 +        else
 +        {
@@ -404,7 +404,7 @@
  
          this.sleeping = false;
  
-@@ -1721,15 +1810,16 @@
+@@ -1705,15 +1794,16 @@
  
      private boolean isInBed()
      {
@@ -424,7 +424,7 @@
          {
              if (!forceSpawn)
              {
-@@ -1744,16 +1834,17 @@
+@@ -1728,16 +1818,17 @@
          }
          else
          {
@@ -445,7 +445,7 @@
  
              switch (enumfacing)
              {
-@@ -1794,16 +1885,24 @@
+@@ -1778,16 +1869,24 @@
  
      public BlockPos getBedLocation()
      {
@@ -472,7 +472,7 @@
          if (pos != null)
          {
              this.spawnPos = pos;
-@@ -2000,6 +2099,10 @@
+@@ -1984,6 +2083,10 @@
  
              super.fall(distance, damageMultiplier);
          }
@@ -483,7 +483,7 @@
      }
  
      @Override
-@@ -2356,7 +2459,10 @@
+@@ -2340,7 +2443,10 @@
      @Override
      public ITextComponent getDisplayName()
      {
@@ -495,7 +495,7 @@
          itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + this.getName() + " "));
          itextcomponent.getStyle().setHoverEvent(this.getHoverEvent());
          itextcomponent.getStyle().setInsertion(this.getName());
-@@ -2366,7 +2472,7 @@
+@@ -2350,7 +2456,7 @@
      @Override
      public float getEyeHeight()
      {
@@ -504,7 +504,7 @@
  
          if (this.isPlayerSleeping())
          {
-@@ -2604,6 +2710,168 @@
+@@ -2588,6 +2694,168 @@
      {
          return this.capabilities.isCreativeMode && this.canUseCommand(2, "");
      }

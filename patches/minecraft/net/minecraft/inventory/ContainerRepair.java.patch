@@ -224,7 +224,7 @@
      public void onContainerClosed(EntityPlayer playerIn)
      {
          super.onContainerClosed(playerIn);
-@@ -395,20 +388,18 @@
+@@ -395,18 +388,18 @@
          }
      }
  
@@ -234,9 +234,7 @@
 -        return this.world.getBlockState(this.pos).getBlock() != Blocks.ANVIL
 -               ? false
 -               : playerIn.getDistanceSq(
--                   (double)this.pos.getX() + 0.5,
--                   (double)this.pos.getY() + 0.5,
--                   (double)this.pos.getZ() + 0.5
+-                   this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5
 -               )
 -               <= 64.0;
 +        if (this.world.getBlockState(this.pos).getBlock() != Blocks.ANVIL)

@@ -65,7 +65,7 @@
          this.getItems().set(index, stack);
  
          if (stack.getCount() > this.getInventoryStackLimit())
-@@ -145,58 +139,48 @@
+@@ -145,56 +139,48 @@
          this.markDirty();
      }
  
@@ -76,9 +76,7 @@
 -               ? false
 -               : !(
 -                   player.getDistanceSq(
--                       (double)this.pos.getX() + 0.5,
--                       (double)this.pos.getY() + 0.5,
--                       (double)this.pos.getZ() + 0.5
+-                       this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5
 -                   )
 -                   > 64.0
 -               );

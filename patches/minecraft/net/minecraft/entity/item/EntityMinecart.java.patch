@@ -161,17 +161,6 @@
                  this.posY++;
          }
  
-@@ -521,8 +553,8 @@
- 
-             if (d6 > 0.0)
-             {
--                double d7 = -Math.sin((double)(entity.rotationYaw * (float)(Math.PI / 180.0)));
--                double d8 = Math.cos((double)(entity.rotationYaw * (float)(Math.PI / 180.0)));
-+                double d7 = -Math.sin((double)(entity.rotationYaw * 0.017453292F));
-+                double d8 = Math.cos((double)(entity.rotationYaw * 0.017453292F));
-                 double d9 = this.motionX * this.motionX + this.motionZ * this.motionZ;
- 
-                 if (d9 < 0.01)
 @@ -534,7 +566,7 @@
              }
          }
@@ -181,7 +170,7 @@
          {
              double d17 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
  
-@@ -580,23 +612,9 @@
+@@ -580,19 +612,7 @@
          this.posX = d18 + d1 * d10;
          this.posZ = d19 + d2 * d10;
          this.setPosition(this.posX, this.posY, this.posZ);
@@ -198,18 +187,12 @@
 -        d22 = MathHelper.clamp(d22, -d13, d13);
 -        d23 = MathHelper.clamp(d23, -d13, d13);
 -        this.move(MoverType.SELF, d22, 0.0, d23);
--
--        if (aint[0][1] != 0
--                && MathHelper.floor(this.posX) - pos.getX() == aint[0][0]
--                && MathHelper.floor(this.posZ) - pos.getZ() == aint[0][2])
 +        this.moveMinecartOnRail(pos);
-+
-+        if (aint[0][1] != 0 && MathHelper.floor(this.posX) - pos.getX() == aint[0][0] && MathHelper.floor(this.posZ) - pos.getZ() == aint[0][2])
-         {
-             this.setPosition(this.posX, this.posY + (double)aint[0][1], this.posZ);
-         }
-@@ -634,7 +652,13 @@
-             this.motionZ = d5 * (double)(i - pos.getZ());
+ 
+         if (aint[0][1] != 0
+                 && MathHelper.floor(this.posX) - pos.getX() == aint[0][0]
+@@ -634,7 +654,13 @@
+             this.motionZ = d5 * (i - pos.getZ());
          }
  
 -        if (flag)
@@ -223,7 +206,7 @@
          {
              double d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
  
-@@ -715,9 +739,7 @@
+@@ -713,9 +739,7 @@
  
          if (BlockRailBase.isRailBlock(iblockstate))
          {
@@ -231,10 +214,10 @@
 -                        ((BlockRailBase)iblockstate.getBlock()).getShapeProperty()
 -                    );
 +            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, new BlockPos(i, j, k), iblockstate, this);
-             y = (double)j;
+             y = j;
  
              if (blockrailbase$enumraildirection.isAscending())
-@@ -767,9 +789,7 @@
+@@ -765,9 +789,7 @@
  
          if (BlockRailBase.isRailBlock(iblockstate))
          {
@@ -243,9 +226,9 @@
 -                    );
 +            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, new BlockPos(i, j, k), iblockstate, this);
              int[][] aint = MATRIX[blockrailbase$enumraildirection.getMetadata()];
-             double d0 = (double)i + 0.5 + (double)aint[0][0] * 0.5;
-             double d1 = (double)j + 0.0625 + (double)aint[0][1] * 0.5;
-@@ -870,6 +890,12 @@
+             double d0 = i + 0.5 + aint[0][0] * 0.5;
+             double d1 = j + 0.0625 + aint[0][1] * 0.5;
+@@ -868,6 +890,12 @@
      @Override
      public void applyEntityCollision(Entity entityIn)
      {
@@ -258,7 +241,7 @@
          if (!this.world.isRemote)
          {
              if (!entityIn.noClip && !this.noClip)
-@@ -922,7 +948,7 @@
+@@ -920,7 +948,7 @@
                              double d7 = entityIn.motionX + this.motionX;
                              double d8 = entityIn.motionZ + this.motionZ;
  
@@ -267,7 +250,7 @@
                              {
                                  this.motionX *= 0.2F;
                                  this.motionZ *= 0.2F;
-@@ -930,8 +956,7 @@
+@@ -928,8 +956,7 @@
                                  entityIn.motionX *= 0.95F;
                                  entityIn.motionZ *= 0.95F;
                              }
@@ -277,7 +260,7 @@
                              {
                                  entityIn.motionX *= 0.2F;
                                  entityIn.motionZ *= 0.2F;
-@@ -963,10 +988,7 @@
+@@ -961,10 +988,7 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -289,7 +272,7 @@
      {
          this.minecartX = x;
          this.minecartY = y;
-@@ -1064,6 +1086,236 @@
+@@ -1062,6 +1086,236 @@
      {
          this.getDataManager().set(SHOW_BLOCK, showBlock);
      }

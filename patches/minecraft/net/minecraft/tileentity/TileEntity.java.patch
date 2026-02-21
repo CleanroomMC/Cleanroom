@@ -85,9 +85,9 @@
 -    @SideOnly(Side.CLIENT)
      public double getDistanceSq(double x, double y, double z)
      {
--        double d0 = (double)this.pos.getX() + 0.5 - x;
--        double d1 = (double)this.pos.getY() + 0.5 - y;
--        double d2 = (double)this.pos.getZ() + 0.5 - z;
+-        double d0 = this.pos.getX() + 0.5 - x;
+-        double d1 = this.pos.getY() + 0.5 - y;
+-        double d2 = this.pos.getZ() + 0.5 - z;
 +        double d0 = (double)this.pos.getX() + 0.5D - x;
 +        double d1 = (double)this.pos.getY() + 0.5D - y;
 +        double d2 = (double)this.pos.getZ() + 0.5D - z;

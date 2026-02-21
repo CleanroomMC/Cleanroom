@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/gui/GuiBossOverlay.java
 +++ after/net/minecraft/client/gui/GuiBossOverlay.java
-@@ -34,6 +34,9 @@
+@@ -34,13 +34,18 @@
              for (BossInfoClient bossinfoclient : this.mapBossInfos.values())
              {
                  int k = i / 2 - 91;
@@ -10,10 +10,8 @@
                  GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                  this.client.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
                  this.render(k, j, bossinfoclient);
-@@ -41,8 +44,10 @@
-                 this.client
-                 .fontRenderer
-                 .drawStringWithShadow(s, (float)(i / 2 - this.client.fontRenderer.getStringWidth(s) / 2), (float)(j - 9), 16777215);
+                 String s = bossinfoclient.getName().getFormattedText();
+                 this.client.fontRenderer.drawStringWithShadow(s, i / 2 - this.client.fontRenderer.getStringWidth(s) / 2, j - 9, 16777215);
 -                j += 10 + this.client.fontRenderer.FONT_HEIGHT;
 +                }
 +                j += event.getIncrement();

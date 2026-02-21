@@ -41,9 +41,15 @@
      protected void onCrafting(ItemStack stack)
      {
          stack.onCrafting(this.player.world, this.player, this.removeCount);
-@@ -69,7 +64,7 @@
+@@ -65,11 +60,11 @@
+             }
+             else if (f < 1.0F)
+             {
+-                int j = MathHelper.floor(i * f);
++                int j = MathHelper.floor((float)i * f);
  
-                 if (j < MathHelper.ceil((float)i * f) && Math.random() < (double)((float)i * f - (float)j))
+-                if (j < MathHelper.ceil(i * f) && Math.random() < i * f - j)
++                if (j < MathHelper.ceil((float)i * f) && Math.random() < (double)((float)i * f - (float)j))
                  {
 -                    j++;
 +                    ++j;

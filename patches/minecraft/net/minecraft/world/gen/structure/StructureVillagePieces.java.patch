@@ -1317,7 +1317,7 @@
                          if (this.isZombieInfested)
                          {
                              EntityZombieVillager entityzombievillager = new EntityZombieVillager(worldIn);
--                            entityzombievillager.setLocationAndAngles((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
+-                            entityzombievillager.setLocationAndAngles(j + 0.5, k, l + 0.5, 0.0F, 0.0F);
 -                            entityzombievillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombievillager)), null);
 -                            entityzombievillager.setProfession(this.chooseProfession(i, 0));
 +                            entityzombievillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
@@ -1329,7 +1329,7 @@
                          else
                          {
                              EntityVillager entityvillager = new EntityVillager(worldIn);
--                            entityvillager.setLocationAndAngles((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
+-                            entityvillager.setLocationAndAngles(j + 0.5, k, l + 0.5, 0.0F, 0.0F);
 -                            entityvillager.setProfession(this.chooseProfession(i, worldIn.rand.nextInt(6)));
 -                            entityvillager.finalizeMobSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), null, false);
 +                            entityvillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);

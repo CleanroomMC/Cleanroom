@@ -190,7 +190,7 @@
      {
          if (rand.nextFloat() < chance)
          {
-@@ -393,18 +343,7 @@
+@@ -393,36 +343,25 @@
          }
      }
  
@@ -208,27 +208,37 @@
 -    )
 +    protected void randomlyRareFillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstateIn, boolean excludeAir)
      {
-         float f = (float)(maxX - minX + 1);
-         float f1 = (float)(maxY - minY + 1);
-@@ -412,15 +351,15 @@
-         float f3 = (float)minX + f / 2.0F;
-         float f4 = (float)minZ + f2 / 2.0F;
+-        float f = maxX - minX + 1;
+-        float f1 = maxY - minY + 1;
+-        float f2 = maxZ - minZ + 1;
+-        float f3 = minX + f / 2.0F;
+-        float f4 = minZ + f2 / 2.0F;
++        float f = (float)(maxX - minX + 1);
++        float f1 = (float)(maxY - minY + 1);
++        float f2 = (float)(maxZ - minZ + 1);
++        float f3 = (float)minX + f / 2.0F;
++        float f4 = (float)minZ + f2 / 2.0F;
  
 -        for (int i = minY; i <= maxY; i++)
 +        for (int i = minY; i <= maxY; ++i)
          {
-             float f5 = (float)(i - minY) / f1;
+-            float f5 = (i - minY) / f1;
++            float f5 = (float)(i - minY) / f1;
  
 -            for (int j = minX; j <= maxX; j++)
 +            for (int j = minX; j <= maxX; ++j)
              {
-                 float f6 = ((float)j - f3) / (f * 0.5F);
+-                float f6 = (j - f3) / (f * 0.5F);
++                float f6 = ((float)j - f3) / (f * 0.5F);
  
 -                for (int k = minZ; k <= maxZ; k++)
 +                for (int k = minZ; k <= maxZ; ++k)
                  {
-                     float f7 = ((float)k - f4) / (f2 * 0.5F);
+-                    float f7 = (k - f4) / (f2 * 0.5F);
++                    float f7 = ((float)k - f4) / (f2 * 0.5F);
  
+                     if (!excludeAir || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
+                     {
 @@ -463,27 +402,18 @@
              while ((worldIn.isAirBlock(new BlockPos(i, j, k)) || worldIn.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > 1)
              {

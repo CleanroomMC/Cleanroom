@@ -26,7 +26,7 @@
      public ItemCameraTransforms(
          ItemTransformVec3f thirdperson_leftIn,
          ItemTransformVec3f thirdperson_rightIn,
-@@ -127,6 +132,7 @@
+@@ -125,6 +130,7 @@
          return new Quaternion(f3 * f6 * f8 + f4 * f5 * f7, f4 * f5 * f8 - f3 * f6 * f7, f3 * f5 * f8 + f4 * f6 * f7, f4 * f6 * f8 - f3 * f5 * f7);
      }
  
@@ -34,7 +34,7 @@
      public ItemTransformVec3f getTransform(ItemCameraTransforms.TransformType type)
      {
          switch (type)
-@@ -204,7 +210,7 @@
+@@ -202,7 +208,7 @@
          }
  
      @SideOnly(Side.CLIENT)

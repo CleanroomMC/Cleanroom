@@ -20,7 +20,7 @@
 +            f = underState.getBlock().getSlipperiness(underState, this.world, underPos, this) * 0.98F;
          }
  
-         this.motionX *= (double)f;
+         this.motionX *= f;
 @@ -187,6 +179,7 @@
      @Override
      public boolean attackEntityFrom(DamageSource source, float amount)

@@ -134,7 +134,7 @@
      public void onCraftMatrixChanged(IInventory inventoryIn)
      {
          if (inventoryIn == this.tableInventory)
-@@ -164,46 +163,22 @@
+@@ -164,56 +163,32 @@
                  if (!this.world.isRemote)
                  {
                      int l = 0;
@@ -191,9 +191,10 @@
                                  }
                              }
                          }
-@@ -211,9 +186,9 @@
+                     }
  
-                     this.rand.setSeed((long)this.xpSeed);
+-                    this.rand.setSeed(this.xpSeed);
++                    this.rand.setSeed((long)this.xpSeed);
  
 -                    for (int i1 = 0; i1 < 3; i1++)
 +                    for (int i1 = 0; i1 < 3; ++i1)
@@ -269,6 +270,15 @@
                  }
              }
  
+@@ -339,7 +304,7 @@
+ 
+     private List<EnchantmentData> getEnchantmentList(ItemStack stack, int enchantSlot, int level)
+     {
+-        this.rand.setSeed(this.xpSeed + enchantSlot);
++        this.rand.setSeed((long)(this.xpSeed + enchantSlot));
+         List<EnchantmentData> list = EnchantmentHelper.buildEnchantmentList(this.rand, stack, level, false);
+ 
+         if (stack.getItem() == Items.BOOK && list.size() > 1)
 @@ -357,7 +322,6 @@
          return itemstack.isEmpty() ? 0 : itemstack.getCount();
      }
@@ -277,7 +287,7 @@
      public void onContainerClosed(EntityPlayer playerIn)
      {
          super.onContainerClosed(playerIn);
-@@ -368,22 +332,18 @@
+@@ -368,20 +332,18 @@
          }
      }
  
@@ -288,9 +298,7 @@
 -               ? false
 -               : !(
 -                   playerIn.getDistanceSq(
--                       (double)this.position.getX() + 0.5,
--                       (double)this.position.getY() + 0.5,
--                       (double)this.position.getZ() + 0.5
+-                       this.position.getX() + 0.5, this.position.getY() + 0.5, this.position.getZ() + 0.5
 -                   )
 -                   > 64.0
 -               );
@@ -308,7 +316,7 @@
      public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
      {
          ItemStack itemstack = ItemStack.EMPTY;
-@@ -417,19 +377,18 @@
+@@ -415,19 +377,18 @@
              }
              else
              {

@@ -64,9 +64,9 @@
          for (Entity entity : list)
          {
 -            Vec3d vec3d = new Vec3d(
--                entity.posX - (double)startPos.getX(),
--                entity.posY - (double)startPos.getY(),
--                entity.posZ - (double)startPos.getZ()
+-                entity.posX - startPos.getX(),
+-                entity.posY - startPos.getY(),
+-                entity.posZ - startPos.getZ()
 -            );
 +            Vec3d vec3d = new Vec3d(entity.posX - (double)startPos.getX(), entity.posY - (double)startPos.getY(), entity.posZ - (double)startPos.getZ());
              NBTTagCompound nbttagcompound = new NBTTagCompound();
@@ -115,6 +115,15 @@
                      {
                          IBlockState iblockstate = template$blockinfo1.blockState.withMirror(placementIn.getMirror());
                          IBlockState iblockstate1 = iblockstate.withRotation(placementIn.getRotation());
+@@ -314,7 +297,7 @@
+             {
+                 NBTTagCompound nbttagcompound = template$entityinfo.entityData;
+                 Vec3d vec3d = transformedVec3d(template$entityinfo.pos, mirrorIn, rotationIn);
+-                Vec3d vec3d1 = vec3d.add(pos.getX(), pos.getY(), pos.getZ());
++                Vec3d vec3d1 = vec3d.add((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+                 NBTTagList nbttaglist = new NBTTagList();
+                 nbttaglist.appendTag(new NBTTagDouble(vec3d1.x));
+                 nbttaglist.appendTag(new NBTTagDouble(vec3d1.y));
 @@ -327,7 +310,7 @@
                  {
                      entity = EntityList.createEntityFromNBT(nbttagcompound, worldIn);

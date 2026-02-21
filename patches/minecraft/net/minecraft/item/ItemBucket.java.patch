@@ -94,7 +94,7 @@
                  }
              }
          }
-@@ -168,20 +167,11 @@
+@@ -168,18 +167,11 @@
                      int l = posIn.getX();
                      int i = posIn.getY();
                      int j = posIn.getZ();
@@ -111,14 +111,12 @@
 -                    for (int k = 0; k < 8; k++)
 +                    for (int k = 0; k < 8; ++k)
                      {
--                        worldIn.spawnParticle(
--                            EnumParticleTypes.SMOKE_LARGE, (double)l + Math.random(), (double)i + Math.random(), (double)j + Math.random(), 0.0, 0.0, 0.0
--                        );
+-                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, l + Math.random(), i + Math.random(), j + Math.random(), 0.0, 0.0, 0.0);
 +                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, (double)l + Math.random(), (double)i + Math.random(), (double)j + Math.random(), 0.0D, 0.0D, 0.0D);
                      }
                  }
                  else
-@@ -198,6 +188,18 @@
+@@ -196,6 +188,18 @@
  
                  return true;
              }

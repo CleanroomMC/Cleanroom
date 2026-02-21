@@ -242,14 +242,18 @@
                          }
                      }
                      else
-@@ -245,7 +258,6 @@
+@@ -245,10 +258,9 @@
          }
      }
  
 -    @Override
      public Chunk generateChunk(int x, int z)
      {
-         this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
+-        this.rand.setSeed(x * 341873128712L + z * 132897987541L);
++        this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
+         ChunkPrimer chunkprimer = new ChunkPrimer();
+         this.prepareHeights(x, z, chunkprimer);
+         this.buildSurfaces(x, z, chunkprimer);
 @@ -260,10 +272,10 @@
          }
  
@@ -263,7 +267,7 @@
          {
              abyte[i] = (byte)Biome.getIdForBiome(abiome[i]);
          }
-@@ -279,26 +291,23 @@
+@@ -279,59 +291,56 @@
              p_185938_1_ = new double[p_185938_5_ * p_185938_6_ * p_185938_7_];
          }
  
@@ -298,13 +302,15 @@
 -        for (int j = 0; j < p_185938_6_; j++)
 +        for (int j = 0; j < p_185938_6_; ++j)
          {
--            adouble[j] = Math.cos((double)j * Math.PI * 6.0 / (double)p_185938_6_) * 2.0;
+-            adouble[j] = Math.cos(j * Math.PI * 6.0 / p_185938_6_) * 2.0;
+-            double d2 = j;
 +            adouble[j] = Math.cos((double)j * Math.PI * 6.0D / (double)p_185938_6_) * 2.0D;
-             double d2 = (double)j;
++            double d2 = (double)j;
  
              if (j > p_185938_6_ / 2)
-@@ -306,32 +315,32 @@
-                 d2 = (double)(p_185938_6_ - 1 - j);
+             {
+-                d2 = p_185938_6_ - 1 - j;
++                d2 = (double)(p_185938_6_ - 1 - j);
              }
  
 -            if (d2 < 4.0)
@@ -357,15 +363,16 @@
  
                      if (k > p_185938_6_ - 4)
                      {
-                         double d9 = (double)((float)(k - (p_185938_6_ - 4)) / 3.0F);
+-                        double d9 = (k - (p_185938_6_ - 4)) / 3.0F;
 -                        d8 = d8 * (1.0 - d9) + -10.0 * d9;
++                        double d9 = (double)((float)(k - (p_185938_6_ - 4)) / 3.0F);
 +                        d8 = d8 * (1.0D - d9) + -10.0D * d9;
                      }
  
--                    if ((double)k < 0.0)
+-                    if (k < 0.0)
 +                    if ((double)k < 0.0D)
                      {
--                        double d10 = (0.0 - (double)k) / 4.0;
+-                        double d10 = (0.0 - k) / 4.0;
 -                        d10 = MathHelper.clamp(d10, 0.0, 1.0);
 -                        d8 = d8 * (1.0 - d10) + -10.0 * d10;
 +                        double d10 = (0.0D - (double)k) / 4.0D;

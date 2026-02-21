@@ -15,7 +15,7 @@
              {
                  float f = this.world.getCelestialAngle(0.0F);
  
--                if ((double)f < 0.5 || (double)f > 0.501)
+-                if (f < 0.5 || f > 0.501)
 +                if ((double)f < 0.5D || (double)f > 0.501D)
                  {
                      return;
@@ -66,18 +66,19 @@
 +                if (this.village != null && this.village.getNumVillageDoors() >= 10 && this.village.getTicksSinceLastDoorAdding() >= 20 && this.village.getNumVillagers() >= 20)
                  {
                      BlockPos blockpos = this.village.getCenter();
-                     float f = (float)this.village.getVillageRadius();
+-                    float f = this.village.getVillageRadius();
++                    float f = (float)this.village.getVillageRadius();
                      boolean flag = false;
  
 -                    for (int i = 0; i < 10; i++)
 +                    for (int i = 0; i < 10; ++i)
                      {
 -                        float f1 = this.world.rand.nextFloat() * (float)(Math.PI * 2);
--                        this.spawnX = blockpos.getX() + (int)((double)(MathHelper.cos(f1) * f) * 0.9);
+-                        this.spawnX = blockpos.getX() + (int)(MathHelper.cos(f1) * f * 0.9);
 +                        float f1 = this.world.rand.nextFloat() * ((float)Math.PI * 2F);
 +                        this.spawnX = blockpos.getX() + (int)((double)(MathHelper.cos(f1) * f) * 0.9D);
                          this.spawnY = blockpos.getY();
--                        this.spawnZ = blockpos.getZ() + (int)((double)(MathHelper.sin(f1) * f) * 0.9);
+-                        this.spawnZ = blockpos.getZ() + (int)(MathHelper.sin(f1) * f * 0.9);
 +                        this.spawnZ = blockpos.getZ() + (int)((double)(MathHelper.sin(f1) * f) * 0.9D);
                          flag = false;
  
@@ -112,7 +113,7 @@
              }
              catch (Exception exception)
              {
-@@ -181,14 +192,11 @@
+@@ -181,16 +192,13 @@
      @Nullable
      private Vec3d findRandomSpawnPos(BlockPos pos)
      {
@@ -128,5 +129,8 @@
 -                    && WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, this.world, blockpos))
 +            if (this.village.isBlockPosWithinSqVillageRadius(blockpos) && WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, this.world, blockpos))
              {
-                 return new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
+-                return new Vec3d(blockpos.getX(), blockpos.getY(), blockpos.getZ());
++                return new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
              }
+         }
+ 

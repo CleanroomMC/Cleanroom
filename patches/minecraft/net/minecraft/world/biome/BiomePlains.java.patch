@@ -7,7 +7,7 @@
 -    @Override
      public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
      {
--        double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() / 200.0, (double)pos.getZ() / 200.0);
+-        double d0 = GRASS_COLOR_NOISE.getValue(pos.getX() / 200.0, pos.getZ() / 200.0);
 +        double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() / 200.0D, (double)pos.getZ() / 200.0D);
  
 -        if (d0 < -0.8)
@@ -22,7 +22,7 @@
 -    @Override
      public void decorate(World worldIn, Random rand, BlockPos pos)
      {
--        double d0 = GRASS_COLOR_NOISE.getValue((double)(pos.getX() + 8) / 200.0, (double)(pos.getZ() + 8) / 200.0);
+-        double d0 = GRASS_COLOR_NOISE.getValue((pos.getX() + 8) / 200.0, (pos.getZ() + 8) / 200.0);
 +        double d0 = GRASS_COLOR_NOISE.getValue((double)(pos.getX() + 8) / 200.0D, (double)(pos.getZ() + 8) / 200.0D);
  
 -        if (d0 < -0.8)

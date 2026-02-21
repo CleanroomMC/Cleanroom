@@ -35,7 +35,7 @@
      }
  
      public void setWorld(World worldIn)
-@@ -82,18 +84,16 @@
+@@ -82,22 +84,20 @@
                  EntityIronGolem entityirongolem = new EntityIronGolem(this.world);
                  entityirongolem.setPosition(vec3d.x, vec3d.y, vec3d.z);
                  this.world.spawnEntity(entityirongolem);
@@ -57,6 +57,11 @@
  
              if (this.isBlockPosWithinSqVillageRadius(blockpos) && this.isAreaClearAround(new BlockPos(x, y, z), blockpos))
              {
+-                return new Vec3d(blockpos.getX(), blockpos.getY(), blockpos.getZ());
++                return new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
+             }
+         }
+ 
 @@ -115,11 +115,11 @@
              int i = blockLocation.getX() - blockSize.getX() / 2;
              int j = blockLocation.getZ() - blockSize.getZ() / 2;
@@ -80,12 +85,12 @@
 -                                     .getEntitiesWithinAABB(
 -                                         EntityIronGolem.class,
 -                                         new AxisAlignedBB(
--                                             (double)(this.center.getX() - this.villageRadius),
--                                             (double)(this.center.getY() - 4),
--                                             (double)(this.center.getZ() - this.villageRadius),
--                                             (double)(this.center.getX() + this.villageRadius),
--                                             (double)(this.center.getY() + 4),
--                                             (double)(this.center.getZ() + this.villageRadius)
+-                                             this.center.getX() - this.villageRadius,
+-                                             this.center.getY() - 4,
+-                                             this.center.getZ() - this.villageRadius,
+-                                             this.center.getX() + this.villageRadius,
+-                                             this.center.getY() + 4,
+-                                             this.center.getZ() + this.villageRadius
 -                                         )
 -                                     );
 +        List<EntityIronGolem> list = this.world.<EntityIronGolem>getEntitiesWithinAABB(EntityIronGolem.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
@@ -98,18 +103,27 @@
 -                                    .getEntitiesWithinAABB(
 -                                        EntityVillager.class,
 -                                        new AxisAlignedBB(
--                                            (double)(this.center.getX() - this.villageRadius),
--                                            (double)(this.center.getY() - 4),
--                                            (double)(this.center.getZ() - this.villageRadius),
--                                            (double)(this.center.getX() + this.villageRadius),
--                                            (double)(this.center.getY() + 4),
--                                            (double)(this.center.getZ() + this.villageRadius)
+-                                            this.center.getX() - this.villageRadius,
+-                                            this.center.getY() - 4,
+-                                            this.center.getZ() - this.villageRadius,
+-                                            this.center.getX() + this.villageRadius,
+-                                            this.center.getY() + 4,
+-                                            this.center.getZ() + this.villageRadius
 -                                        )
 -                                    );
 +        List<EntityVillager> list = this.world.<EntityVillager>getEntitiesWithinAABB(EntityVillager.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
          this.numVillagers = list.size();
  
          if (this.numVillagers == 0)
+@@ -199,7 +177,7 @@
+ 
+     public boolean isBlockPosWithinSqVillageRadius(BlockPos pos)
+     {
+-        return this.center.distanceSq(pos) < this.villageRadius * this.villageRadius;
++        return this.center.distanceSq(pos) < (double)(this.villageRadius * this.villageRadius);
+     }
+ 
+     public List<VillageDoorInfo> getVillageDoorInfoList()
 @@ -237,7 +215,7 @@
  
              if (j > 256)
@@ -143,6 +157,15 @@
                  {
                      villagedoorinfo = villagedoorinfo1;
                      i = j;
+@@ -278,7 +241,7 @@
+     @Nullable
+     public VillageDoorInfo getExistedDoor(BlockPos doorBlock)
+     {
+-        if (this.center.distanceSq(doorBlock) > this.villageRadius * this.villageRadius)
++        if (this.center.distanceSq(doorBlock) > (double)(this.villageRadius * this.villageRadius))
+         {
+             return null;
+         }
 @@ -286,9 +249,7 @@
          {
              for (VillageDoorInfo villagedoorinfo : this.villageDoorInfoList)
@@ -226,7 +249,12 @@
              int j = 0;
  
              for (VillageDoorInfo villagedoorinfo : this.villageDoorInfoList)
-@@ -450,23 +418,49 @@
+@@ -446,27 +414,53 @@
+                 j = Math.max(villagedoorinfo.getDistanceToDoorBlockSq(this.center), j);
+             }
+ 
+-            this.villageRadius = Math.max(32, (int)Math.sqrt(j) + 1);
++            this.villageRadius = Math.max(32, (int)Math.sqrt((double)j) + 1);
          }
      }
  

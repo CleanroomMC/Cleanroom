@@ -38,10 +38,11 @@
                  }
              }
  
-             entityIn.setLocationAndAngles((double)i, (double)j, (double)k, entityIn.rotationYaw, 0.0F);
+-            entityIn.setLocationAndAngles(i, j, k, entityIn.rotationYaw, 0.0F);
 -            entityIn.motionX = 0.0;
 -            entityIn.motionY = 0.0;
 -            entityIn.motionZ = 0.0;
++            entityIn.setLocationAndAngles((double)i, (double)j, (double)k, entityIn.rotationYaw, 0.0F);
 +            entityIn.motionX = 0.0D;
 +            entityIn.motionY = 0.0D;
 +            entityIn.motionZ = 0.0D;
@@ -122,17 +123,17 @@
                  this.destinationCoordinateCache.put(l, new Teleporter.PortalPosition(blockpos, this.world.getTotalWorldTime()));
              }
  
--            double d5 = (double)blockpos.getX() + 0.5;
--            double d7 = (double)blockpos.getZ() + 0.5;
+-            double d5 = blockpos.getX() + 0.5;
+-            double d7 = blockpos.getZ() + 0.5;
 +            double d5 = (double)blockpos.getX() + 0.5D;
 +            double d7 = (double)blockpos.getZ() + 0.5D;
              BlockPattern.PatternHelper blockpattern$patternhelper = Blocks.PORTAL.createPatternHelper(this.world, blockpos);
              boolean flag1 = blockpattern$patternhelper.getForwards().rotateY().getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE;
 -            double d2 = blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X
--                        ? (double)blockpattern$patternhelper.getFrontTopLeft().getZ()
--                        : (double)blockpattern$patternhelper.getFrontTopLeft().getX();
--            double d6 = (double)(blockpattern$patternhelper.getFrontTopLeft().getY() + 1)
--                        - entityIn.getLastPortalVec().y * (double)blockpattern$patternhelper.getHeight();
+-                        ? blockpattern$patternhelper.getFrontTopLeft().getZ()
+-                        : blockpattern$patternhelper.getFrontTopLeft().getX();
+-            double d6 = blockpattern$patternhelper.getFrontTopLeft().getY() + 1
+-                        - entityIn.getLastPortalVec().y * blockpattern$patternhelper.getHeight();
 +            double d2 = blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? (double)blockpattern$patternhelper.getFrontTopLeft().getZ() : (double)blockpattern$patternhelper.getFrontTopLeft().getX();
 +            double d6 = (double)(blockpattern$patternhelper.getFrontTopLeft().getY() + 1) - entityIn.getLastPortalVec().y * (double)blockpattern$patternhelper.getHeight();
  
@@ -146,27 +147,31 @@
              {
 -                d7 = d2
 -                     + (1.0 - entityIn.getLastPortalVec().x)
--                     * (double)blockpattern$patternhelper.getWidth()
--                     * (double)blockpattern$patternhelper.getForwards().rotateY().getAxisDirection().getOffset();
+-                     * blockpattern$patternhelper.getWidth()
+-                     * blockpattern$patternhelper.getForwards().rotateY().getAxisDirection().getOffset();
 +                d7 = d2 + (1.0D - entityIn.getLastPortalVec().x) * (double)blockpattern$patternhelper.getWidth() * (double)blockpattern$patternhelper.getForwards().rotateY().getAxisDirection().getOffset();
              }
              else
              {
 -                d5 = d2
 -                     + (1.0 - entityIn.getLastPortalVec().x)
--                     * (double)blockpattern$patternhelper.getWidth()
--                     * (double)blockpattern$patternhelper.getForwards().rotateY().getAxisDirection().getOffset();
+-                     * blockpattern$patternhelper.getWidth()
+-                     * blockpattern$patternhelper.getForwards().rotateY().getAxisDirection().getOffset();
 +                d5 = d2 + (1.0D - entityIn.getLastPortalVec().x) * (double)blockpattern$patternhelper.getWidth() * (double)blockpattern$patternhelper.getForwards().rotateY().getAxisDirection().getOffset();
              }
  
              float f = 0.0F;
-@@ -192,9 +177,7 @@
+@@ -190,11 +175,9 @@
+ 
+             double d3 = entityIn.motionX;
              double d4 = entityIn.motionZ;
-             entityIn.motionX = d3 * (double)f + d4 * (double)f3;
-             entityIn.motionZ = d3 * (double)f2 + d4 * (double)f1;
+-            entityIn.motionX = d3 * f + d4 * f3;
+-            entityIn.motionZ = d3 * f2 + d4 * f1;
 -            entityIn.rotationYaw = rotationYaw
--                                        - (float)(entityIn.getTeleportDirection().getOpposite().getHorizontalIndex() * 90)
--                                        + (float)(blockpattern$patternhelper.getForwards().getHorizontalIndex() * 90);
+-                                        - entityIn.getTeleportDirection().getOpposite().getHorizontalIndex() * 90
+-                                        + blockpattern$patternhelper.getForwards().getHorizontalIndex() * 90;
++            entityIn.motionX = d3 * (double)f + d4 * (double)f3;
++            entityIn.motionZ = d3 * (double)f2 + d4 * (double)f1;
 +            entityIn.rotationYaw = rotationYaw - (float)(entityIn.getTeleportDirection().getOpposite().getHorizontalIndex() * 90) + (float)(blockpattern$patternhelper.getForwards().getHorizontalIndex() * 90);
  
              if (entityIn instanceof EntityPlayerMP)
@@ -187,13 +192,13 @@
 -        for (int j2 = j - 16; j2 <= j + 16; j2++)
 +        for (int j2 = j - 16; j2 <= j + 16; ++j2)
          {
--            double d1 = (double)j2 + 0.5 - entityIn.posX;
+-            double d1 = j2 + 0.5 - entityIn.posX;
 +            double d1 = (double)j2 + 0.5D - entityIn.posX;
  
 -            for (int l2 = l - 16; l2 <= l + 16; l2++)
 +            for (int l2 = l - 16; l2 <= l + 16; ++l2)
              {
--                double d2 = (double)l2 + 0.5 - entityIn.posZ;
+-                double d2 = l2 + 0.5 - entityIn.posZ;
 -                label296:
 +                double d2 = (double)l2 + 0.5D - entityIn.posZ;
 +                label293:
@@ -243,7 +248,7 @@
                                  }
                              }
  
--                            double d5 = (double)j3 + 0.5 - entityIn.posY;
+-                            double d5 = j3 + 0.5 - entityIn.posY;
 +                            double d5 = (double)j3 + 0.5D - entityIn.posY;
                              double d7 = d1 * d1 + d5 * d5 + d2 * d2;
  
@@ -262,13 +267,13 @@
 -            for (int l5 = j - 16; l5 <= j + 16; l5++)
 +            for (int l5 = j - 16; l5 <= j + 16; ++l5)
              {
--                double d3 = (double)l5 + 0.5 - entityIn.posX;
+-                double d3 = l5 + 0.5 - entityIn.posX;
 +                double d3 = (double)l5 + 0.5D - entityIn.posX;
  
 -                for (int j6 = l - 16; j6 <= l + 16; j6++)
 +                for (int j6 = l - 16; j6 <= l + 16; ++j6)
                  {
--                    double d4 = (double)j6 + 0.5 - entityIn.posZ;
+-                    double d4 = j6 + 0.5 - entityIn.posZ;
 -                    label233:
 +                    double d4 = (double)j6 + 0.5D - entityIn.posZ;
 +                    label231:
@@ -311,7 +316,7 @@
                                      }
                                  }
  
--                                double d6 = (double)i7 + 0.5 - entityIn.posY;
+-                                double d6 = i7 + 0.5 - entityIn.posY;
 +                                double d6 = (double)i7 + 0.5D - entityIn.posY;
                                  double d8 = d3 * d3 + d6 * d6 + d4 * d4;
  

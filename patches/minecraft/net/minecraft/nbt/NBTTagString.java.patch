@@ -15,7 +15,7 @@
      {
          sizeTracker.read(288L);
          this.data = input.readUTF();
--        sizeTracker.read((long)(16 * this.data.length()));
+-        sizeTracker.read(16 * this.data.length());
 +        NBTSizeTracker.readUTF(sizeTracker, data); // Forge: Correctly read String length including header.
      }
  

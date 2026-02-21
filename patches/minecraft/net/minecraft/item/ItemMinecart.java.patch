@@ -10,10 +10,11 @@
 -            EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
 +            EnumFacing enumfacing = (EnumFacing)source.getBlockState().getValue(BlockDispenser.FACING);
              World world = source.getWorld();
--            double d0 = source.getX() + (double)enumfacing.getXOffset() * 1.125;
+-            double d0 = source.getX() + enumfacing.getXOffset() * 1.125;
+-            double d1 = Math.floor(source.getY()) + enumfacing.getYOffset();
+-            double d2 = source.getZ() + enumfacing.getZOffset() * 1.125;
 +            double d0 = source.getX() + (double)enumfacing.getXOffset() * 1.125D;
-             double d1 = Math.floor(source.getY()) + (double)enumfacing.getYOffset();
--            double d2 = source.getZ() + (double)enumfacing.getZOffset() * 1.125;
++            double d1 = Math.floor(source.getY()) + (double)enumfacing.getYOffset();
 +            double d2 = source.getZ() + (double)enumfacing.getZOffset() * 1.125D;
              BlockPos blockpos = source.getBlockPos().offset(enumfacing);
              IBlockState iblockstate = world.getBlockState(blockpos);
@@ -85,7 +86,7 @@
      {
          IBlockState iblockstate = worldIn.getBlockState(pos);
  
-@@ -120,23 +104,15 @@
+@@ -120,19 +104,15 @@
  
              if (!worldIn.isRemote)
              {
@@ -103,11 +104,7 @@
                  }
  
 -                EntityMinecart entityminecart = EntityMinecart.create(
--                                                    worldIn,
--                                                    (double)pos.getX() + 0.5,
--                                                    (double)pos.getY() + 0.0625 + d0,
--                                                    (double)pos.getZ() + 0.5,
--                                                    this.minecartType
+-                                                    worldIn, pos.getX() + 0.5, pos.getY() + 0.0625 + d0, pos.getZ() + 0.5, this.minecartType
 -                                                );
 +                EntityMinecart entityminecart = EntityMinecart.create(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.0625D + d0, (double)pos.getZ() + 0.5D, this.minecartType);
  

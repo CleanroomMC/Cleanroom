@@ -69,7 +69,7 @@
 -        for (int k = 0; k < i; k++)
 +        for (int k = 0; k < i; ++k)
          {
--            lvt_8_1_ = new GenLayerZoom((long)(1000 + k), lvt_8_1_);
+-            lvt_8_1_ = new GenLayerZoom(1000 + k, lvt_8_1_);
 +            genlayerhills = new GenLayerZoom((long)(1000 + k), genlayerhills);
  
              if (k == 0)
@@ -107,7 +107,7 @@
          this.baseSeed += p_i2125_1_;
      }
  
-@@ -103,24 +103,24 @@
+@@ -103,38 +103,38 @@
              this.parent.initWorldGenSeed(seed);
          }
  
@@ -142,7 +142,13 @@
          this.chunkSeed += p_75903_3_;
      }
  
-@@ -133,8 +133,8 @@
+     protected int nextInt(int p_75902_1_)
+     {
+-        int i = (int)((this.chunkSeed >> 24) % p_75902_1_);
++        int i = (int)((this.chunkSeed >> 24) % (long)p_75902_1_);
+ 
+         if (i < 0)
+         {
              i += p_75902_1_;
          }
  

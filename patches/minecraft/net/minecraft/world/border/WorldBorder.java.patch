@@ -37,19 +37,19 @@
  
      public boolean contains(BlockPos pos)
      {
--        return (double)(pos.getX() + 1) > this.minX()
--               && (double)pos.getX() < this.maxX()
--               && (double)(pos.getZ() + 1) > this.minZ()
--               && (double)pos.getZ() < this.maxZ();
+-        return pos.getX() + 1 > this.minX()
+-               && pos.getX() < this.maxX()
+-               && pos.getZ() + 1 > this.minZ()
+-               && pos.getZ() < this.maxZ();
 +        return (double)(pos.getX() + 1) > this.minX() && (double)pos.getX() < this.maxX() && (double)(pos.getZ() + 1) > this.minZ() && (double)pos.getZ() < this.maxZ();
      }
  
      public boolean contains(ChunkPos range)
      {
--        return (double)range.getXEnd() > this.minX()
--               && (double)range.getXStart() < this.maxX()
--               && (double)range.getZEnd() > this.minZ()
--               && (double)range.getZStart() < this.maxZ();
+-        return range.getXEnd() > this.minX()
+-               && range.getXStart() < this.maxX()
+-               && range.getZEnd() > this.minZ()
+-               && range.getZStart() < this.maxZ();
 +        return (double)range.getXEnd() > this.minX() && (double)range.getXStart() < this.maxX() && (double)range.getZEnd() > this.minZ() && (double)range.getZStart() < this.maxZ();
      }
  
@@ -63,45 +63,72 @@
      }
  
      public double getClosestDistance(Entity entityIn)
-@@ -78,7 +79,7 @@
+@@ -78,11 +79,11 @@
  
      public double minX()
      {
 -        double d0 = this.getCenterX() - this.getDiameter() / 2.0;
 +        double d0 = this.getCenterX() - this.getDiameter() / 2.0D;
  
-         if (d0 < (double)(-this.worldSize))
+-        if (d0 < -this.worldSize)
++        if (d0 < (double)(-this.worldSize))
          {
-@@ -90,7 +91,7 @@
+-            d0 = -this.worldSize;
++            d0 = (double)(-this.worldSize);
+         }
+ 
+         return d0;
+@@ -90,11 +91,11 @@
  
      public double minZ()
      {
 -        double d0 = this.getCenterZ() - this.getDiameter() / 2.0;
 +        double d0 = this.getCenterZ() - this.getDiameter() / 2.0D;
  
-         if (d0 < (double)(-this.worldSize))
+-        if (d0 < -this.worldSize)
++        if (d0 < (double)(-this.worldSize))
          {
-@@ -102,7 +103,7 @@
+-            d0 = -this.worldSize;
++            d0 = (double)(-this.worldSize);
+         }
+ 
+         return d0;
+@@ -102,11 +103,11 @@
  
      public double maxX()
      {
 -        double d0 = this.getCenterX() + this.getDiameter() / 2.0;
 +        double d0 = this.getCenterX() + this.getDiameter() / 2.0D;
  
-         if (d0 > (double)this.worldSize)
+-        if (d0 > this.worldSize)
++        if (d0 > (double)this.worldSize)
          {
-@@ -114,7 +115,7 @@
+-            d0 = this.worldSize;
++            d0 = (double)this.worldSize;
+         }
+ 
+         return d0;
+@@ -114,11 +115,11 @@
  
      public double maxZ()
      {
 -        double d0 = this.getCenterZ() + this.getDiameter() / 2.0;
 +        double d0 = this.getCenterZ() + this.getDiameter() / 2.0D;
  
-         if (d0 > (double)this.worldSize)
+-        if (d0 > this.worldSize)
++        if (d0 > (double)this.worldSize)
          {
-@@ -151,7 +152,7 @@
+-            d0 = this.worldSize;
++            d0 = (double)this.worldSize;
+         }
+ 
+         return d0;
+@@ -149,9 +150,9 @@
+     {
+         if (this.getStatus() != EnumBorderStatus.STATIONARY)
          {
-             double d0 = (double)((float)(System.currentTimeMillis() - this.startTime) / (float)(this.endTime - this.startTime));
+-            double d0 = (float)(System.currentTimeMillis() - this.startTime) / (float)(this.endTime - this.startTime);
++            double d0 = (double)((float)(System.currentTimeMillis() - this.startTime) / (float)(this.endTime - this.startTime));
  
 -            if (!(d0 >= 1.0))
 +            if (d0 < 1.0D)
@@ -114,7 +141,7 @@
      {
 -        return this.endTime == this.startTime
 -               ? 0.0
--               : Math.abs(this.startDiameter - this.endDiameter) / (double)(this.endTime - this.startTime);
+-               : Math.abs(this.startDiameter - this.endDiameter) / (this.endTime - this.startTime);
 +        return this.endTime == this.startTime ? 0.0D : Math.abs(this.startDiameter - this.endDiameter) / (double)(this.endTime - this.startTime);
      }
  

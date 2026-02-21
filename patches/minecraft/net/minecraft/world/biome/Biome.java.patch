@@ -77,34 +77,34 @@
          }
      }
  
-@@ -206,9 +211,7 @@
+@@ -206,8 +211,8 @@
      {
          if (pos.getY() > 64)
          {
--            float f = (float)(
--                          TEMPERATURE_NOISE.getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F)) * 4.0
--                      );
+-            float f = (float)(TEMPERATURE_NOISE.getValue(pos.getX() / 8.0F, pos.getZ() / 8.0F) * 4.0);
+-            return this.getDefaultTemperature() - (f + pos.getY() - 64.0F) * 0.05F / 30.0F;
 +            float f = (float)(TEMPERATURE_NOISE.getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F)) * 4.0D);
-             return this.getDefaultTemperature() - (f + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
++            return this.getDefaultTemperature() - (f + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
          }
          else
-@@ -222,39 +225,31 @@
+         {
+@@ -220,39 +225,31 @@
          this.decorator.decorate(worldIn, rand, this, pos);
      }
  
 -    @SideOnly(Side.CLIENT)
 -    public int getGrassColorAtPos(BlockPos pos)
 -    {
--        double d0 = (double)MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
--        double d1 = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
+-        double d0 = MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
+-        double d1 = MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
 -        return ColorizerGrass.getGrassColor(d0, d1);
 -    }
 -
 -    @SideOnly(Side.CLIENT)
 -    public int getFoliageColorAtPos(BlockPos pos)
 -    {
--        double d0 = (double)MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
--        double d1 = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
+-        double d0 = MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
+-        double d1 = MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
 -        return ColorizerFoliage.getFoliageColor(d0, d1);
 -    }
 -
@@ -138,7 +138,7 @@
          {
              if (j1 <= rand.nextInt(5))
              {
-@@ -314,7 +309,7 @@
+@@ -312,7 +309,7 @@
                      }
                      else if (j > 0)
                      {
@@ -147,7 +147,7 @@
                          chunkPrimerIn.setBlockState(i1, j1, l, iblockstate1);
  
                          if (j == 0 && iblockstate1.getBlock() == Blocks.SAND && k > 1)
-@@ -328,27 +323,35 @@
+@@ -326,27 +323,35 @@
          }
      }
  
@@ -167,14 +167,14 @@
  
      public Biome.TempCategory getTempCategory()
      {
--        if ((double)this.getDefaultTemperature() < 0.2)
+-        if (this.getDefaultTemperature() < 0.2)
 +        if ((double)this.getDefaultTemperature() < 0.2D)
          {
              return Biome.TempCategory.COLD;
          }
          else
          {
--            return (double)this.getDefaultTemperature() < 1.0 ? Biome.TempCategory.MEDIUM : Biome.TempCategory.WARM;
+-            return this.getDefaultTemperature() < 1.0 ? Biome.TempCategory.MEDIUM : Biome.TempCategory.WARM;
 +            return (double)this.getDefaultTemperature() < 1.0D ? Biome.TempCategory.MEDIUM : Biome.TempCategory.WARM;
          }
      }
@@ -187,7 +187,7 @@
      }
  
      public static Biome getBiome(int biomeId, Biome fallback)
-@@ -391,7 +394,7 @@
+@@ -389,7 +394,7 @@
      @SideOnly(Side.CLIENT)
      public final int getWaterColor()
      {
@@ -196,7 +196,7 @@
      }
  
      public final boolean isSnowyBiome()
-@@ -399,477 +402,148 @@
+@@ -397,477 +402,148 @@
          return this.enableSnow;
      }
  
@@ -814,7 +814,7 @@
      }
  
      public static void registerBiome(int id, String name, Biome biome)
-@@ -970,10 +644,16 @@
+@@ -968,10 +644,16 @@
                  this.maxGroupCount = groupCountMax;
              }
  

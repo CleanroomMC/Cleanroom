@@ -22,8 +22,8 @@
              this.countEntitiesHidden = 0;
 +            }
              Entity entity = this.mc.getRenderViewEntity();
-             double d3 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
-             double d4 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
+             double d3 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+             double d4 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
 @@ -602,11 +607,15 @@
              this.mc.entityRenderer.enableLightmap();
              this.world.profiler.endStartSection("global");
@@ -124,7 +124,7 @@
          if (this.mc.world.provider.isSurfaceWorld())
          {
              if (this.mc.gameSettings.shouldRenderClouds() == 2)
-@@ -2062,7 +2085,7 @@
+@@ -2046,7 +2069,7 @@
          );
          GlStateManager.enableBlend();
          GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
@@ -133,9 +133,9 @@
          GlStateManager.enablePolygonOffset();
          GlStateManager.alphaFunc(516, 0.1F);
          GlStateManager.enableAlpha();
-@@ -2102,8 +2125,13 @@
-                 double d4 = (double)blockpos.getY() - d1;
-                 double d5 = (double)blockpos.getZ() - d2;
+@@ -2086,8 +2109,13 @@
+                 double d4 = blockpos.getY() - d1;
+                 double d5 = blockpos.getZ() - d2;
                  Block block = this.world.getBlockState(blockpos).getBlock();
 +                TileEntity te = this.world.getTileEntity(blockpos);
 +                boolean hasBreak = block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockSign || block instanceof BlockSkull;
@@ -148,7 +148,7 @@
                  {
                      if (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0)
                      {
-@@ -2329,12 +2357,14 @@
+@@ -2313,12 +2341,14 @@
          int j = pos.getY();
          int k = pos.getZ();
          this.markBlocksForUpdate(i - 1, j - 1, k - 1, i + 1, j + 1, k + 1, (flags & 8) != 0);
@@ -163,7 +163,7 @@
      }
  
      @Override
-@@ -2836,7 +2866,7 @@
+@@ -2820,7 +2850,7 @@
  
                  if (block.getDefaultState().getMaterial() != Material.AIR)
                  {

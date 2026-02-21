@@ -1,11 +1,28 @@
 --- before/net/minecraft/pathfinding/PathNavigateClimber.java
 +++ after/net/minecraft/pathfinding/PathNavigateClimber.java
-@@ -57,7 +57,7 @@
+@@ -57,11 +57,11 @@
          {
              if (this.targetPosition != null)
              {
--                double d0 = (double)(this.entity.width * this.entity.width);
+-                double d0 = this.entity.width * this.entity.width;
 +                double d0 = Math.max((this.entity.width * this.entity.width), 1.0D);
  
                  if (!(this.entity.getDistanceSqToCenter(this.targetPosition) < d0)
                          && (
+-                            !(this.entity.posY > this.targetPosition.getY())
++                            !(this.entity.posY > (double)this.targetPosition.getY())
+                             || !(
+                                 this.entity
+                                 .getDistanceSqToCenter(
+@@ -78,7 +78,10 @@
+                     this.entity
+                     .getMoveHelper()
+                     .setMoveTo(
+-                        this.targetPosition.getX(), this.targetPosition.getY(), this.targetPosition.getZ(), this.speed
++                        (double)this.targetPosition.getX(),
++                        (double)this.targetPosition.getY(),
++                        (double)this.targetPosition.getZ(),
++                        this.speed
+                     );
+                 }
+                 else

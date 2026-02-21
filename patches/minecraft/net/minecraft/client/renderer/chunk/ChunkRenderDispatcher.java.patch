@@ -9,7 +9,7 @@
 +
 +    public ChunkRenderDispatcher(int countRenderBuilders)
 +    {
-         int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / 10485760);
+         int i = Math.max(1, (int)(Runtime.getRuntime().maxMemory() * 0.3) / 10485760);
          int j = Math.max(1, MathHelper.clamp(Runtime.getRuntime().availableProcessors(), 1, i / 5));
 -        this.countRenderBuilders = MathHelper.clamp(j * 10, 1, i);
 +        if(countRenderBuilders < 0) countRenderBuilders = MathHelper.clamp(j * 10, 1, i);

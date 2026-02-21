@@ -18,7 +18,7 @@
          {
              this.setDead();
              this.world
-@@ -109,8 +109,36 @@
+@@ -103,8 +103,36 @@
          return new EntityMooshroom(this.world);
      }
  

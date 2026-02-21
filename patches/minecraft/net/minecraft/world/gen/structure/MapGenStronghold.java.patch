@@ -112,7 +112,7 @@
 -            for (int i1 = 0; i1 < this.structureCoords.length; i1++)
 +            for (int i1 = 0; i1 < this.structureCoords.length; ++i1)
              {
--                double d0 = 4.0 * this.distance + this.distance * (double)j * 6.0 + (random.nextDouble() - 0.5) * this.distance * 2.5;
+-                double d0 = 4.0 * this.distance + this.distance * j * 6.0 + (random.nextDouble() - 0.5) * (this.distance * 2.5);
 +                double d0 = 4.0D * this.distance + this.distance * (double)j * 6.0D + (random.nextDouble() - 0.5D) * this.distance * 2.5D;
                  int j1 = (int)Math.round(Math.cos(d1) * d0);
                  int k1 = (int)Math.round(Math.sin(d1) * d0);
@@ -121,7 +121,7 @@
                      this.structureCoords[i1] = new ChunkPos(j1, k1);
                  }
  
--                d1 += (Math.PI * 2) / (double)this.spread;
+-                d1 += (Math.PI * 2) / this.spread;
 +                d1 += (Math.PI * 2D) / (double)this.spread;
 +                ++k;
  

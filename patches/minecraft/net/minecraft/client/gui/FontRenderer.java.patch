@@ -42,7 +42,7 @@
 -        this.renderEngine.bindTexture(this.locationFontTexture);
 +        bindTexture(this.locationFontTexture);
          int l = this.charWidth[ch];
-         float f = (float)l - 0.01F;
+         float f = l - 0.01F;
          GlStateManager.glBegin(5);
 @@ -231,7 +232,7 @@
  
@@ -87,8 +87,8 @@
  
                      int j1 = this.colorCode[i1];
                      this.textColor = j1;
--                    GlStateManager.color((float)(j1 >> 16) / 255.0F, (float)(j1 >> 8 & 0xFF) / 255.0F, (float)(j1 & 0xFF) / 255.0F, this.alpha);
-+                    setColor((float)(j1 >> 16) / 255.0F, (float)(j1 >> 8 & 255) / 255.0F, (float)(j1 & 255) / 255.0F, this.alpha);
+-                    GlStateManager.color((j1 >> 16) / 255.0F, (j1 >> 8 & 0xFF) / 255.0F, (j1 & 0xFF) / 255.0F, this.alpha);
++                    setColor((j1 >> 16) / 255.0F, (j1 >> 8 & 255) / 255.0F, (j1 & 255) / 255.0F, this.alpha);
                  }
                  else if (i1 == 16)
                  {
@@ -126,16 +126,16 @@
  
                  if (this.strikethroughStyle)
                  {
-@@ -526,7 +531,7 @@
-             this.blue = (float)(color >> 8 & 0xFF) / 255.0F;
-             this.green = (float)(color & 0xFF) / 255.0F;
-             this.alpha = (float)(color >> 24 & 0xFF) / 255.0F;
+@@ -520,7 +525,7 @@
+             this.blue = (color >> 8 & 0xFF) / 255.0F;
+             this.green = (color & 0xFF) / 255.0F;
+             this.alpha = (color >> 24 & 0xFF) / 255.0F;
 -            GlStateManager.color(this.red, this.blue, this.green, this.alpha);
 +            setColor(this.red, this.blue, this.green, this.alpha);
              this.posX = x;
              this.posY = y;
              this.renderStringAtPos(text, dropShadow);
-@@ -580,6 +585,7 @@
+@@ -574,6 +579,7 @@
  
      public int getCharWidth(char character)
      {
@@ -143,7 +143,7 @@
          if (character == 167)
          {
              return -1;
-@@ -678,7 +684,7 @@
+@@ -672,7 +678,7 @@
  
      private String trimStringNewline(String text)
      {
@@ -152,7 +152,7 @@
          {
              text = text.substring(0, text.length() - 1);
          }
-@@ -725,9 +731,96 @@
+@@ -719,9 +725,96 @@
  
      public List<String> listFormattedStringToWidth(String str, int wrapWidth)
      {
@@ -250,7 +250,7 @@
      String wrapFormattedStringToWidth(String str, int wrapWidth)
      {
          int i = this.sizeStringToWidth(str, wrapWidth);
-@@ -746,6 +839,7 @@
+@@ -740,6 +833,7 @@
          }
      }
  
@@ -258,7 +258,7 @@
      private int sizeStringToWidth(String str, int wrapWidth)
      {
          int i = str.length();
-@@ -844,6 +938,26 @@
+@@ -838,6 +932,26 @@
      public boolean getBidiFlag()
      {
          return this.bidiFlag;

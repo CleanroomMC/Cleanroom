@@ -12,7 +12,7 @@
          this.world.updateAllPlayersSleepingFlag();
      }
  
-@@ -84,14 +81,14 @@
+@@ -84,20 +81,20 @@
  
      public void updateBlockRemoving()
      {
@@ -29,6 +29,13 @@
              {
                  this.receivedFinishDiggingPacket = false;
              }
+             else
+             {
+-                float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, this.delayedDestroyPos) * (i + 1);
++                float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, this.delayedDestroyPos) * (float)(i + 1);
+                 int j = (int)(f * 10.0F);
+ 
+                 if (j != this.durabilityRemainingOnBlock)
 @@ -117,7 +114,7 @@
          {
              IBlockState iblockstate1 = this.world.getBlockState(this.destroyPos);
@@ -42,7 +49,7 @@
              else
              {
                  int k = this.curblockDamage - this.initialDamage;
--                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.player, this.player.world, this.delayedDestroyPos) * (float)(k + 1);
+-                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.player, this.player.world, this.delayedDestroyPos) * (k + 1);
 +                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.player, this.player.world, this.destroyPos) * (float)(k + 1); // Forge: Fix network break progress using wrong position
                  int l = (int)(f1 * 10.0F);
  
@@ -109,15 +116,18 @@
              {
                  this.tryHarvestBlock(pos);
              }
-@@ -207,7 +233,7 @@
+@@ -207,9 +233,9 @@
              int i = this.curblockDamage - this.initialDamage;
              IBlockState iblockstate = this.world.getBlockState(pos);
  
 -            if (iblockstate.getMaterial() != Material.AIR)
 +            if (!iblockstate.getBlock().isAir(iblockstate, world, pos))
              {
-                 float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, pos) * (float)(i + 1);
+-                float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, pos) * (i + 1);
++                float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, pos) * (float)(i + 1);
  
+                 if (f >= 0.7F)
+                 {
 @@ -236,9 +262,13 @@
  
      private boolean removeBlock(BlockPos pos)

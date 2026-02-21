@@ -23,8 +23,8 @@
      public void calculateMapCenter(double x, double z, int mapScale)
      {
          int i = 128 * (1 << mapScale);
--        int j = MathHelper.floor((x + 64.0) / (double)i);
--        int k = MathHelper.floor((z + 64.0) / (double)i);
+-        int j = MathHelper.floor((x + 64.0) / i);
+-        int k = MathHelper.floor((z + 64.0) / i);
 +        int j = MathHelper.floor((x + 64.0D) / (double)i);
 +        int k = MathHelper.floor((z + 64.0D) / (double)i);
          this.xCenter = j * i + i / 2 - 64;
@@ -88,7 +88,7 @@
 -                        mapdata$mapinfo1.player.getName(),
 -                        mapdata$mapinfo1.player.posX,
 -                        mapdata$mapinfo1.player.posZ,
--                        (double)mapdata$mapinfo1.player.rotationYaw
+-                        mapdata$mapinfo1.player.rotationYaw
 -                    );
 +                    this.updateDecorations(MapDecoration.Type.PLAYER, mapdata$mapinfo1.player.world, mapdata$mapinfo1.player.getName(), mapdata$mapinfo1.player.posX, mapdata$mapinfo1.player.posZ, (double)mapdata$mapinfo1.player.rotationYaw);
                  }
@@ -102,9 +102,9 @@
 -                MapDecoration.Type.FRAME,
 -                player.world,
 -                "frame-" + entityitemframe.getEntityId(),
--                (double)blockpos.getX(),
--                (double)blockpos.getZ(),
--                (double)(entityitemframe.facingDirection.getHorizontalIndex() * 90)
+-                blockpos.getX(),
+-                blockpos.getZ(),
+-                entityitemframe.facingDirection.getHorizontalIndex() * 90
 -            );
 +            this.updateDecorations(MapDecoration.Type.FRAME, player.world, "frame-" + entityitemframe.getEntityId(), (double)blockpos.getX(), (double)blockpos.getZ(), (double)(entityitemframe.facingDirection.getHorizontalIndex() * 90));
          }
@@ -132,21 +132,29 @@
                  }
              }
          }
-@@ -207,7 +183,7 @@
+@@ -205,9 +181,9 @@
+         NBTTagCompound nbttagcompound = new NBTTagCompound();
+         nbttagcompound.setByte("type", type.getIcon());
          nbttagcompound.setString("id", decorationName);
-         nbttagcompound.setDouble("x", (double)target.getX());
-         nbttagcompound.setDouble("z", (double)target.getZ());
+-        nbttagcompound.setDouble("x", target.getX());
+-        nbttagcompound.setDouble("z", target.getZ());
 -        nbttagcompound.setDouble("rot", 180.0);
++        nbttagcompound.setDouble("x", (double)target.getX());
++        nbttagcompound.setDouble("z", (double)target.getZ());
 +        nbttagcompound.setDouble("rot", 180.0D);
          nbttaglist.appendTag(nbttagcompound);
  
          if (type.hasMapColor())
-@@ -222,19 +198,19 @@
+@@ -220,21 +196,21 @@
+     private void updateDecorations(MapDecoration.Type type, World worldIn, String decorationName, double worldX, double worldZ, double rotationIn)
+     {
          int i = 1 << this.scale;
-         float f = (float)(worldX - (double)this.xCenter) / (float)i;
-         float f1 = (float)(worldZ - (double)this.zCenter) / (float)i;
--        byte b0 = (byte)((int)((double)(f * 2.0F) + 0.5));
--        byte b1 = (byte)((int)((double)(f1 * 2.0F) + 0.5));
+-        float f = (float)(worldX - this.xCenter) / i;
+-        float f1 = (float)(worldZ - this.zCenter) / i;
+-        byte b0 = (byte)(f * 2.0F + 0.5);
+-        byte b1 = (byte)(f1 * 2.0F + 0.5);
++        float f = (float)(worldX - (double)this.xCenter) / (float)i;
++        float f1 = (float)(worldZ - (double)this.zCenter) / (float)i;
 +        byte b0 = (byte)((int)((double)(f * 2.0F) + 0.5D));
 +        byte b1 = (byte)((int)((double)(f1 * 2.0F) + 0.5D));
          int j = 63;
@@ -155,7 +163,7 @@
          if (f >= -63.0F && f1 >= -63.0F && f <= 63.0F && f1 <= 63.0F)
          {
 -            rotationIn += rotationIn < 0.0 ? -8.0 : 8.0;
--            b2 = (byte)((int)(rotationIn * 16.0 / 360.0));
+-            b2 = (byte)(rotationIn * 16.0 / 360.0);
 +            rotationIn = rotationIn + (rotationIn < 0.0D ? -8.0D : 8.0D);
 +            b2 = (byte)((int)(rotationIn * 16.0D / 360.0D));
  

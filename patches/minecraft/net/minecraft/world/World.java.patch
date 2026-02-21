@@ -649,11 +649,11 @@
 -
 -                if (i > l)
 -                {
--                    d0 = (double)l + 1.0;
+-                    d0 = l + 1.0;
 -                }
 -                else if (i < l)
 -                {
--                    d0 = (double)l + 0.0;
+-                    d0 = l + 0.0;
 -                }
 -                else
 -                {
@@ -662,11 +662,11 @@
 -
 -                if (j > i1)
 -                {
--                    d1 = (double)i1 + 1.0;
+-                    d1 = i1 + 1.0;
 -                }
 -                else if (j < i1)
 -                {
--                    d1 = (double)i1 + 0.0;
+-                    d1 = i1 + 0.0;
 -                }
 -                else
 -                {
@@ -675,11 +675,11 @@
 -
 -                if (k > j1)
 -                {
--                    d2 = (double)j1 + 1.0;
+-                    d2 = j1 + 1.0;
 -                }
 -                else if (k < j1)
 -                {
--                    d2 = (double)j1 + 0.0;
+-                    d2 = j1 + 0.0;
 -                }
 -                else
 -                {
@@ -952,9 +952,9 @@
      {
 -        this.playSound(
 -            player,
--            (double)pos.getX() + 0.5,
--            (double)pos.getY() + 0.5,
--            (double)pos.getZ() + 0.5,
+-            pos.getX() + 0.5,
+-            pos.getY() + 0.5,
+-            pos.getZ() + 0.5,
 -            soundIn,
 -            category,
 -            volume,
@@ -1307,8 +1307,8 @@
 +        float f1 = 1.0F - (MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.5F);
          f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
          f1 = 1.0F - f1;
--        f1 = (float)((double)f1 * (1.0 - (double)(this.getRainStrength(partialTicks) * 5.0F) / 16.0));
--        f1 = (float)((double)f1 * (1.0 - (double)(this.getThunderStrength(partialTicks) * 5.0F) / 16.0));
+-        f1 = (float)(f1 * (1.0 - this.getRainStrength(partialTicks) * 5.0F / 16.0));
+-        f1 = (float)(f1 * (1.0 - this.getThunderStrength(partialTicks) * 5.0F / 16.0));
 -        f1 = 1.0F - f1;
 -        return (int)(f1 * 11.0F);
 +        f1 = (float)((double)f1 * (1.0D - (double)(this.getRainStrength(partialTicks) * 5.0F) / 16.0D));
@@ -1330,8 +1330,8 @@
 +        float f1 = 1.0F - (MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.2F);
          f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
          f1 = 1.0F - f1;
--        f1 = (float)((double)f1 * (1.0 - (double)(this.getRainStrength(partialTicks) * 5.0F) / 16.0));
--        f1 = (float)((double)f1 * (1.0 - (double)(this.getThunderStrength(partialTicks) * 5.0F) / 16.0));
+-        f1 = (float)(f1 * (1.0 - this.getRainStrength(partialTicks) * 5.0F / 16.0));
+-        f1 = (float)(f1 * (1.0 - this.getThunderStrength(partialTicks) * 5.0F / 16.0));
 +        f1 = (float)((double)f1 * (1.0D - (double)(this.getRainStrength(partialTicks) * 5.0F) / 16.0D));
 +        f1 = (float)((double)f1 * (1.0D - (double)(this.getThunderStrength(partialTicks) * 5.0F) / 16.0D));
          return f1 * 0.8F + 0.2F;
@@ -1357,9 +1357,9 @@
 -        Biome biome = this.getBiome(blockpos);
 -        float f2 = biome.getTemperature(blockpos);
 -        int l = biome.getSkyColorByTemp(f2);
--        float f3 = (float)(l >> 16 & 0xFF) / 255.0F;
--        float f4 = (float)(l >> 8 & 0xFF) / 255.0F;
--        float f5 = (float)(l & 0xFF) / 255.0F;
+-        float f3 = (l >> 16 & 0xFF) / 255.0F;
+-        float f4 = (l >> 8 & 0xFF) / 255.0F;
+-        float f5 = (l & 0xFF) / 255.0F;
 -        f3 *= f1;
 -        f4 *= f1;
 -        f5 *= f1;
@@ -1373,7 +1373,15 @@
          float f6 = this.getRainStrength(partialTicks);
  
          if (f6 > 0.0F)
-@@ -1555,7 +1526,7 @@
+@@ -1548,49 +1519,60 @@
+ 
+         if (this.lastLightningBolt > 0)
+         {
+-            float f12 = this.lastLightningBolt - partialTicks;
++            float f12 = (float)this.lastLightningBolt - partialTicks;
+ 
+             if (f12 > 1.0F)
+             {
                  f12 = 1.0F;
              }
  
@@ -1382,7 +1390,11 @@
              f3 = f3 * (1.0F - f12) + 0.8F * f12;
              f4 = f4 * (1.0F - f12) + 0.8F * f12;
              f5 = f5 * (1.0F - f12) + 1.0F * f12;
-@@ -1566,31 +1537,42 @@
+         }
+ 
+-        return new Vec3d(f3, f4, f5);
++        return new Vec3d((double)f3, (double)f4, (double)f5);
+     }
  
      public float getCelestialAngle(float partialTicks)
      {
@@ -1443,6 +1455,15 @@
          float f9 = this.getThunderStrength(partialTicks);
  
          if (f9 > 0.0F)
+@@ -1620,7 +1602,7 @@
+             f4 = f4 * f8 + f10 * (1.0F - f8);
+         }
+ 
+-        return new Vec3d(f2, f3, f4);
++        return new Vec3d((double)f2, (double)f3, (double)f4);
+     }
+ 
+     @SideOnly(Side.CLIENT)
 @@ -1638,19 +1620,18 @@
      public BlockPos getTopSolidOrLiquidBlock(BlockPos pos)
      {
@@ -1733,7 +1754,19 @@
                  entityIn.onUpdate();
              }
          }
-@@ -1982,24 +2024,24 @@
+@@ -1972,34 +2014,34 @@
+             entityIn.posZ = entityIn.lastTickPosZ;
+         }
+ 
+-        if (Double.isNaN(entityIn.rotationPitch) || Double.isInfinite(entityIn.rotationPitch))
++        if (Double.isNaN((double)entityIn.rotationPitch) || Double.isInfinite((double)entityIn.rotationPitch))
+         {
+             entityIn.rotationPitch = entityIn.prevRotationPitch;
+         }
+ 
+-        if (Double.isNaN(entityIn.rotationYaw) || Double.isInfinite(entityIn.rotationYaw))
++        if (Double.isNaN((double)entityIn.rotationYaw) || Double.isInfinite((double)entityIn.rotationYaw))
+         {
              entityIn.rotationYaw = entityIn.prevRotationYaw;
          }
  
@@ -1972,9 +2005,9 @@
 -
 -                        if (iblockstate.getMaterial() == materialIn)
 -                        {
--                            double d0 = (double)((float)(l1 + 1) - BlockLiquid.getLiquidHeightPercent(iblockstate.getValue(BlockLiquid.LEVEL)));
+-                            double d0 = l1 + 1 - BlockLiquid.getLiquidHeightPercent(iblockstate.getValue(BlockLiquid.LEVEL));
 -
--                            if ((double)l >= d0)
+-                            if (l >= d0)
 +                        blockpos$pooledmutableblockpos.setPos(l3, i4, j4);
 +                        IBlockState iblockstate1 = this.getBlockState(blockpos$pooledmutableblockpos);
 +                        Block block = iblockstate1.getBlock();
@@ -2069,7 +2102,7 @@
          explosion.doExplosionA();
          explosion.doExplosionB(true);
          return explosion;
-@@ -2245,16 +2314,16 @@
+@@ -2245,38 +2314,38 @@
  
      public float getBlockDensity(Vec3d vec, AxisAlignedBB bb)
      {
@@ -2092,9 +2125,21 @@
 +            int j2 = 0;
 +            int k2 = 0;
  
-             for (float f = 0.0F; f <= 1.0F; f = (float)((double)f + d0))
+-            for (float f = 0.0F; f <= 1.0F; f = (float)(f + d0))
++            for (float f = 0.0F; f <= 1.0F; f = (float)((double)f + d0))
              {
-@@ -2268,15 +2337,15 @@
+-                for (float f1 = 0.0F; f1 <= 1.0F; f1 = (float)(f1 + d1))
++                for (float f1 = 0.0F; f1 <= 1.0F; f1 = (float)((double)f1 + d1))
+                 {
+-                    for (float f2 = 0.0F; f2 <= 1.0F; f2 = (float)(f2 + d2))
++                    for (float f2 = 0.0F; f2 <= 1.0F; f2 = (float)((double)f2 + d2))
+                     {
+-                        double d5 = bb.minX + (bb.maxX - bb.minX) * f;
+-                        double d6 = bb.minY + (bb.maxY - bb.minY) * f1;
+-                        double d7 = bb.minZ + (bb.maxZ - bb.minZ) * f2;
++                        double d5 = bb.minX + (bb.maxX - bb.minX) * (double)f;
++                        double d6 = bb.minY + (bb.maxY - bb.minY) * (double)f1;
++                        double d7 = bb.minZ + (bb.maxZ - bb.minZ) * (double)f2;
  
                          if (this.rayTraceBlocks(new Vec3d(d5 + d3, d6, d7 + d4), vec) == null)
                          {
@@ -2108,7 +2153,7 @@
                  }
              }
  
--            return (float)i / (float)j;
+-            return (float)i / j;
 +            return (float)j2 / (float)k2;
          }
          else
@@ -2397,12 +2442,12 @@
  
                  if (this.worldInfo.isThundering())
                  {
--                    this.thunderingStrength = (float)((double)this.thunderingStrength + 0.01);
+-                    this.thunderingStrength = (float)(this.thunderingStrength + 0.01);
 +                    this.thunderingStrength = (float)((double)this.thunderingStrength + 0.01D);
                  }
                  else
                  {
--                    this.thunderingStrength = (float)((double)this.thunderingStrength - 0.01);
+-                    this.thunderingStrength = (float)(this.thunderingStrength - 0.01);
 +                    this.thunderingStrength = (float)((double)this.thunderingStrength - 0.01D);
                  }
  
@@ -2411,12 +2456,12 @@
  
                  if (this.worldInfo.isRaining())
                  {
--                    this.rainingStrength = (float)((double)this.rainingStrength + 0.01);
+-                    this.rainingStrength = (float)(this.rainingStrength + 0.01);
 +                    this.rainingStrength = (float)((double)this.rainingStrength + 0.01D);
                  }
                  else
                  {
--                    this.rainingStrength = (float)((double)this.rainingStrength - 0.01);
+-                    this.rainingStrength = (float)(this.rainingStrength - 0.01);
 +                    this.rainingStrength = (float)((double)this.rainingStrength - 0.01D);
                  }
  
@@ -3151,7 +3196,7 @@
                  {
                      return true;
                  }
-@@ -3281,52 +3388,33 @@
+@@ -3281,46 +3388,33 @@
      @Nullable
      public EntityPlayer getNearestAttackablePlayer(Entity entityIn, double maxXZDistance, double maxYDistance)
      {
@@ -3163,13 +3208,7 @@
      public EntityPlayer getNearestAttackablePlayer(BlockPos pos, double maxXZDistance, double maxYDistance)
      {
 -        return this.getNearestAttackablePlayer(
--                   (double)((float)pos.getX() + 0.5F),
--                   (double)((float)pos.getY() + 0.5F),
--                   (double)((float)pos.getZ() + 0.5F),
--                   maxXZDistance,
--                   maxYDistance,
--                   null,
--                   null
+-                   pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, maxXZDistance, maxYDistance, null, null
 -               );
 +        return this.getNearestAttackablePlayer((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F), maxXZDistance, maxYDistance, (Function)null, (Predicate)null);
      }
@@ -3212,7 +3251,13 @@
                  }
  
                  if (entityplayer1.isInvisible())
-@@ -3343,12 +3431,12 @@
+@@ -3332,17 +3426,17 @@
+                         f = 0.1F;
+                     }
+ 
+-                    d2 *= 0.7F * f;
++                    d2 *= (double)(0.7F * f);
+                 }
  
                  if (playerToDouble != null)
                  {
@@ -3229,7 +3274,7 @@
                  {
                      d0 = d1;
                      entityplayer = entityplayer1;
-@@ -3362,9 +3450,9 @@
+@@ -3356,9 +3450,9 @@
      @Nullable
      public EntityPlayer getPlayerEntityByName(String name)
      {
@@ -3241,7 +3286,7 @@
  
              if (name.equals(entityplayer.getName()))
              {
-@@ -3378,9 +3466,9 @@
+@@ -3372,9 +3466,9 @@
      @Nullable
      public EntityPlayer getPlayerEntityByUUID(UUID uuid)
      {
@@ -3253,7 +3298,7 @@
  
              if (uuid.equals(entityplayer.getUniqueID()))
              {
-@@ -3409,7 +3497,7 @@
+@@ -3403,7 +3497,7 @@
  
      public long getSeed()
      {
@@ -3262,7 +3307,7 @@
      }
  
      public long getTotalWorldTime()
-@@ -3419,54 +3507,60 @@
+@@ -3413,54 +3507,60 @@
  
      public long getWorldTime()
      {
@@ -3336,22 +3381,22 @@
          return true;
      }
  
-@@ -3529,12 +3623,12 @@
+@@ -3523,12 +3623,12 @@
  
      public boolean isThundering()
      {
--        return (double)this.getThunderStrength(1.0F) > 0.9;
+-        return this.getThunderStrength(1.0F) > 0.9;
 +        return (double)this.getThunderStrength(1.0F) > 0.9D;
      }
  
      public boolean isRaining()
      {
--        return (double)this.getRainStrength(1.0F) > 0.2;
+-        return this.getRainStrength(1.0F) > 0.2;
 +        return (double)this.getRainStrength(1.0F) > 0.2D;
      }
  
      public boolean isRainingAt(BlockPos position)
-@@ -3568,8 +3662,7 @@
+@@ -3562,8 +3662,7 @@
  
      public boolean isBlockinHighHumidity(BlockPos pos)
      {
@@ -3361,7 +3406,7 @@
      }
  
      @Nullable
-@@ -3596,73 +3689,67 @@
+@@ -3590,73 +3689,67 @@
  
      public void playBroadcastSound(int id, BlockPos pos, int data)
      {
@@ -3424,7 +3469,7 @@
  
      public Random setRandomSeed(int seedX, int seedY, int seedZ)
      {
--        long i = (long)seedX * 341873128712L + (long)seedY * 132897987541L + this.getWorldInfo().getSeed() + (long)seedZ;
+-        long i = seedX * 341873128712L + seedY * 132897987541L + this.getWorldInfo().getSeed() + seedZ;
 -        this.rand.setSeed(i);
 +        long j2 = (long)seedX * 341873128712L + (long)seedY * 132897987541L + this.getWorldInfo().getSeed() + (long)seedZ;
 +        this.rand.setSeed(j2);
@@ -3456,7 +3501,7 @@
          {
              public String call()
              {
-@@ -3672,21 +3759,27 @@
+@@ -3666,21 +3759,27 @@
  
          try
          {
@@ -3490,7 +3535,7 @@
              iworldeventlistener.sendBlockBreakProgress(breakerId, pos, progress);
          }
      }
-@@ -3702,9 +3795,7 @@
+@@ -3696,9 +3795,7 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -3501,7 +3546,7 @@
      {
      }
  
-@@ -3715,26 +3806,23 @@
+@@ -3709,26 +3806,23 @@
  
      public void updateComparatorOutputLevel(BlockPos pos, Block blockIn)
      {
@@ -3541,7 +3586,7 @@
                      }
                  }
              }
-@@ -3743,16 +3831,16 @@
+@@ -3737,16 +3831,16 @@
  
      public DifficultyInstance getDifficultyForLocation(BlockPos pos)
      {
@@ -3561,7 +3606,7 @@
      }
  
      public EnumDifficulty getDifficulty()
-@@ -3793,11 +3881,129 @@
+@@ -3787,11 +3881,129 @@
  
      public boolean isSpawnChunk(int x, int z)
      {

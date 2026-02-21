@@ -279,7 +279,7 @@
              }
          }
      }
-@@ -414,32 +409,26 @@
+@@ -414,30 +409,26 @@
          return getItemBurnTime(stack) > 0;
      }
  
@@ -290,9 +290,7 @@
 -               ? false
 -               : !(
 -                   player.getDistanceSq(
--                       (double)this.pos.getX() + 0.5,
--                       (double)this.pos.getY() + 0.5,
--                       (double)this.pos.getZ() + 0.5
+-                       this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5
 -                   )
 -                   > 64.0
 -               );
@@ -320,7 +318,7 @@
      public boolean isItemValidForSlot(int index, ItemStack stack)
      {
          if (index == 2)
-@@ -457,7 +446,6 @@
+@@ -455,7 +446,6 @@
          }
      }
  
@@ -328,7 +326,7 @@
      public int[] getSlotsForFace(EnumFacing side)
      {
          if (side == EnumFacing.DOWN)
-@@ -470,13 +458,11 @@
+@@ -468,13 +458,11 @@
          }
      }
  
@@ -342,7 +340,7 @@
      public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction)
      {
          if (direction == EnumFacing.DOWN && index == 1)
-@@ -492,19 +478,16 @@
+@@ -490,19 +478,16 @@
          return true;
      }
  
@@ -362,7 +360,7 @@
      public int getField(int id)
      {
          switch (id)
-@@ -522,7 +505,6 @@
+@@ -520,7 +505,6 @@
          }
      }
  
@@ -370,7 +368,7 @@
      public void setField(int id, int value)
      {
          switch (id)
-@@ -541,15 +523,32 @@
+@@ -539,15 +523,32 @@
          }
      }
  

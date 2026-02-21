@@ -64,14 +64,14 @@
          {
              int i = (x & -16) + (z & 15);
              int j = (z & -16) + (x & 15);
--            double d0 = Math.min(Math.abs(noiseVal), this.pillarNoise.getValue((double)i * 0.25, (double)j * 0.25));
+-            double d0 = Math.min(Math.abs(noiseVal), this.pillarNoise.getValue(i * 0.25, j * 0.25));
 +            double d0 = Math.min(Math.abs(noiseVal), this.pillarNoise.getValue((double)i * 0.25D, (double)j * 0.25D));
  
 -            if (d0 > 0.0)
 +            if (d0 > 0.0D)
              {
 -                double d1 = 0.001953125;
--                double d2 = Math.abs(this.pillarRoofNoise.getValue((double)i * 0.001953125, (double)j * 0.001953125));
+-                double d2 = Math.abs(this.pillarRoofNoise.getValue(i * 0.001953125, j * 0.001953125));
 -                d4 = d0 * d0 * 2.5;
 -                double d3 = Math.ceil(d2 * 50.0) + 14.0;
 +                double d1 = 0.001953125D;
@@ -281,7 +281,7 @@
  
      public IBlockState getBand(int p_180629_1_, int p_180629_2_, int p_180629_3_)
      {
--        int i = (int)Math.round(this.clayBandsOffsetNoise.getValue((double)p_180629_1_ / 512.0, (double)p_180629_1_ / 512.0) * 2.0);
+-        int i = (int)Math.round(this.clayBandsOffsetNoise.getValue(p_180629_1_ / 512.0, p_180629_1_ / 512.0) * 2.0);
 +        int i = (int)Math.round(this.clayBandsOffsetNoise.getValue((double)p_180629_1_ / 512.0D, (double)p_180629_1_ / 512.0D) * 2.0D);
          return this.clayBands[(p_180629_2_ + i + 64) % 64];
      }

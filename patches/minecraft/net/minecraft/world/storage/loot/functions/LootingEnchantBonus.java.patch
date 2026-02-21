@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/loot/functions/LootingEnchantBonus.java
 +++ after/net/minecraft/world/storage/loot/functions/LootingEnchantBonus.java
-@@ -26,14 +26,13 @@
+@@ -26,21 +26,20 @@
          this.limit = limitIn;
      }
  
@@ -16,6 +16,14 @@
  
              if (i == 0)
              {
+                 return stack;
+             }
+ 
+-            float f = i * this.count.generateFloat(rand);
++            float f = (float)i * this.count.generateFloat(rand);
+             stack.grow(Math.round(f));
+ 
+             if (this.limit != 0 && stack.getCount() > this.limit)
 @@ -65,14 +64,14 @@
  
                  if (functionClazz.limit > 0)

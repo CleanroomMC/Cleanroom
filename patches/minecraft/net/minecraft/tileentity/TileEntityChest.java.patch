@@ -83,7 +83,7 @@
              this.adjacentChestChecked = true;
              this.adjacentChestXNeg = this.getAdjacentChest(EnumFacing.WEST);
              this.adjacentChestXPos = this.getAdjacentChest(EnumFacing.EAST);
-@@ -215,32 +210,20 @@
+@@ -215,22 +210,20 @@
          }
      }
  
@@ -103,22 +103,12 @@
              float f = 5.0F;
  
 -            for (EntityPlayer entityplayer : this.world
--                    .getEntitiesWithinAABB(
--                        EntityPlayer.class,
--                        new AxisAlignedBB(
--                            (double)((float)i - 5.0F),
--                            (double)((float)j - 5.0F),
--                            (double)((float)k - 5.0F),
--                            (double)((float)(i + 1) + 5.0F),
--                            (double)((float)(j + 1) + 5.0F),
--                            (double)((float)(k + 1) + 5.0F)
--                        )
--                    ))
+-                    .getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(i - 5.0F, j - 5.0F, k - 5.0F, i + 1 + 5.0F, j + 1 + 5.0F, k + 1 + 5.0F)))
 +            for (EntityPlayer entityplayer : this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB((double)((float)i - 5.0F), (double)((float)j - 5.0F), (double)((float)k - 5.0F), (double)((float)(i + 1) + 5.0F), (double)((float)(j + 1) + 5.0F), (double)((float)(k + 1) + 5.0F))))
              {
                  if (entityplayer.openContainer instanceof ContainerChest)
                  {
-@@ -248,7 +231,7 @@
+@@ -238,7 +231,7 @@
  
                      if (iinventory == this || iinventory instanceof InventoryLargeChest && ((InventoryLargeChest)iinventory).isPartOfLargeChest(this))
                      {
@@ -127,12 +117,12 @@
                      }
                  }
              }
-@@ -259,30 +242,20 @@
+@@ -249,23 +242,20 @@
  
          if (this.numPlayersUsing > 0 && this.lidAngle == 0.0F && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
          {
--            double d1 = (double)i + 0.5;
--            double d2 = (double)k + 0.5;
+-            double d1 = i + 0.5;
+-            double d2 = k + 0.5;
 +            double d1 = (double)i + 0.5D;
 +            double d2 = (double)k + 0.5D;
  
@@ -150,25 +140,18 @@
  
 -            this.world
 -            .playSound(
--                null,
--                d1,
--                (double)j + 0.5,
--                d2,
--                SoundEvents.BLOCK_CHEST_OPEN,
--                SoundCategory.BLOCKS,
--                0.5F,
--                this.world.rand.nextFloat() * 0.1F + 0.9F
+-                null, d1, j + 0.5, d2, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F
 -            );
 +            this.world.playSound((EntityPlayer)null, d1, (double)j + 0.5D, d2, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
          }
  
          if (this.numPlayersUsing == 0 && this.lidAngle > 0.0F || this.numPlayersUsing > 0 && this.lidAngle < 1.0F)
-@@ -307,30 +280,20 @@
+@@ -290,23 +280,20 @@
  
              if (this.lidAngle < 0.5F && f2 >= 0.5F && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
              {
--                double d3 = (double)i + 0.5;
--                double d0 = (double)k + 0.5;
+-                double d3 = i + 0.5;
+-                double d0 = k + 0.5;
 +                double d3 = (double)i + 0.5D;
 +                double d0 = (double)k + 0.5D;
  
@@ -186,20 +169,13 @@
  
 -                this.world
 -                .playSound(
--                    null,
--                    d3,
--                    (double)j + 0.5,
--                    d0,
--                    SoundEvents.BLOCK_CHEST_CLOSE,
--                    SoundCategory.BLOCKS,
--                    0.5F,
--                    this.world.rand.nextFloat() * 0.1F + 0.9F
+-                    null, d3, j + 0.5, d0, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F
 -                );
 +                this.world.playSound((EntityPlayer)null, d3, (double)j + 0.5D, d0, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
              }
  
              if (this.lidAngle < 0.0F)
-@@ -340,7 +303,6 @@
+@@ -316,7 +303,6 @@
          }
      }
  
@@ -207,7 +183,7 @@
      public boolean receiveClientEvent(int id, int type)
      {
          if (id == 1)
-@@ -354,7 +316,6 @@
+@@ -330,7 +316,6 @@
          }
      }
  
@@ -215,7 +191,7 @@
      public void openInventory(EntityPlayer player)
      {
          if (!player.isSpectator())
-@@ -364,7 +325,7 @@
+@@ -340,7 +325,7 @@
                  this.numPlayersUsing = 0;
              }
  
@@ -224,7 +200,7 @@
              this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
              this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
  
-@@ -375,12 +336,11 @@
+@@ -351,12 +336,11 @@
          }
      }
  
@@ -238,7 +214,7 @@
              this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
              this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
  
-@@ -391,7 +351,29 @@
+@@ -367,7 +351,29 @@
          }
      }
  
@@ -268,7 +244,7 @@
      public void invalidate()
      {
          super.invalidate();
-@@ -414,20 +396,17 @@
+@@ -390,20 +396,17 @@
          return this.cachedChestType;
      }
  

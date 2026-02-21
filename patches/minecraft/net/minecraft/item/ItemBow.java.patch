@@ -20,7 +20,7 @@
                  {
 -                    return entityIn.getActiveItemStack().getItem() != Items.BOW
 -                           ? 0.0F
--                           : (float)(stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F;
+-                           : (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F;
 +                    return !(entityIn.getActiveItemStack().getItem() instanceof ItemBow) ? 0.0F : (float)(stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F;
                  }
              }
@@ -69,7 +69,7 @@
 -                int i = this.getMaxItemUseDuration(stack) - timeLeft;
                  float f = getArrowVelocity(i);
  
--                if (!((double)f < 0.1))
+-                if (!(f < 0.1))
 +                if ((double)f >= 0.1D)
                  {
 -                    boolean flag1 = flag && itemstack.getItem() == Items.ARROW;
@@ -87,7 +87,7 @@
  
                          if (j > 0)
                          {
--                            entityarrow.setDamage(entityarrow.getDamage() + (double)j * 0.5 + 0.5);
+-                            entityarrow.setDamage(entityarrow.getDamage() + j * 0.5 + 0.5);
 +                            entityarrow.setDamage(entityarrow.getDamage() + (double)j * 0.5D + 0.5D);
                          }
  
@@ -121,6 +121,15 @@
  
                      if (!flag1 && !entityplayer.capabilities.isCreativeMode)
                      {
+@@ -183,7 +168,7 @@
+ 
+     public static float getArrowVelocity(int charge)
+     {
+-        float f = charge / 20.0F;
++        float f = (float)charge / 20.0F;
+         f = (f * f + f * 2.0F) / 3.0F;
+ 
+         if (f > 1.0F)
 @@ -194,38 +179,42 @@
          return f;
      }

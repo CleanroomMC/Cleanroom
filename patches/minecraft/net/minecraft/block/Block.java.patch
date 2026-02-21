@@ -149,9 +149,9 @@
 +                return;
 +            }
              float f = 0.5F;
-             double d0 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25;
-             double d1 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25;
-@@ -646,6 +644,7 @@
+             double d0 = worldIn.rand.nextFloat() * 0.5F + 0.25;
+             double d1 = worldIn.rand.nextFloat() * 0.5F + 0.25;
+@@ -636,6 +634,7 @@
          return 0;
      }
  
@@ -159,7 +159,7 @@
      public float getExplosionResistance(Entity exploder)
      {
          return this.blockResistance / 5.0F;
-@@ -691,7 +690,7 @@
+@@ -680,7 +679,7 @@
  
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
@@ -168,7 +168,7 @@
      }
  
      public boolean onBlockActivated(
-@@ -713,6 +712,8 @@
+@@ -702,6 +701,8 @@
      {
      }
  
@@ -177,7 +177,7 @@
      public IBlockState getStateForPlacement(
          World worldIn,
          BlockPos pos,
-@@ -765,21 +766,35 @@
+@@ -754,21 +755,35 @@
          player.addStat(StatList.getBlockStats(this));
          player.addExhaustion(0.005F);
  
@@ -216,7 +216,7 @@
      }
  
      protected ItemStack getSilkTouchDrop(IBlockState state)
-@@ -865,6 +880,7 @@
+@@ -854,6 +869,7 @@
          entityIn.motionY = 0.0;
      }
  
@@ -224,7 +224,7 @@
      public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
      {
          return new ItemStack(Item.getItemFromBlock(this), 1, this.damageDropped(state));
-@@ -978,6 +994,7 @@
+@@ -967,6 +983,7 @@
          }
      }
  
@@ -232,7 +232,7 @@
      public SoundType getSoundType()
      {
          return this.blockSoundType;
-@@ -994,6 +1011,1388 @@
+@@ -983,6 +1000,1388 @@
      {
      }
  
@@ -1621,7 +1621,7 @@
      public static void registerBlocks()
      {
          registerBlock(0, AIR_ID, new BlockAir().setTranslationKey("air"));
-@@ -1520,7 +2919,7 @@
+@@ -1509,7 +2908,7 @@
              "quartz_stairs",
              new BlockStairs(block11.getDefaultState().withProperty(BlockQuartz.VARIANT, BlockQuartz.EnumType.DEFAULT)).setTranslationKey("stairsQuartz")
          );
@@ -1630,7 +1630,7 @@
          registerBlock(158, "dropper", new BlockDropper().setHardness(3.5F).setSoundType(SoundType.STONE).setTranslationKey("dropper"));
          registerBlock(
              159,
-@@ -1936,28 +3335,6 @@
+@@ -1925,28 +3324,6 @@
                  }
  
                  block15.useNeighborBrightness = flag;

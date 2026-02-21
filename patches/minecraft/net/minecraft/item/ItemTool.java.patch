@@ -60,7 +60,7 @@
 -    @Override
      public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
      {
--        if (!worldIn.isRemote && (double)state.getBlockHardness(worldIn, pos) != 0.0)
+-        if (!worldIn.isRemote && state.getBlockHardness(worldIn, pos) != 0.0)
 +        if (!worldIn.isRemote && (double)state.getBlockHardness(worldIn, pos) != 0.0D)
          {
              stack.damageItem(1, entityLiving);
@@ -79,7 +79,7 @@
      public int getItemEnchantability()
      {
          return this.toolMaterial.getEnchantability();
-@@ -81,27 +94,47 @@
+@@ -81,23 +94,47 @@
          return this.toolMaterial.toString();
      }
  
@@ -99,12 +99,8 @@
  
          if (equipmentSlot == EntityEquipmentSlot.MAINHAND)
          {
--            multimap.put(
--                SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", (double)this.attackDamage, 0)
--            );
--            multimap.put(
--                SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", (double)this.attackSpeed, 0)
--            );
+-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", this.attackDamage, 0));
+-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", this.attackSpeed, 0));
 +            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", (double)this.attackDamage, 0));
 +            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", (double)this.attackSpeed, 0));
          }

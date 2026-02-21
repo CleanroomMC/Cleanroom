@@ -60,7 +60,7 @@
 -            float f = entity.isSneaking() ? 32.0F : 64.0F;
 +            float f = entity.isSneaking() ? NAME_TAG_RANGE_SNEAK : NAME_TAG_RANGE;
  
-             if (!(d0 >= (double)(f * f)))
+             if (!(d0 >= f * f))
              {
 @@ -471,6 +479,7 @@
                  this.renderEntityName(entity, x, y, z, s, d0);

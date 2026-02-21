@@ -26,7 +26,7 @@
 +            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW
 +                    || entitylivingbase != null
                      && this.world.getDifficulty() == EnumDifficulty.HARD
-                     && (double)this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
+                     && this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
                      && this.world.getGameRules().getBoolean("doMobSpawning"))
              {
 -                int i = MathHelper.floor(this.posX);
@@ -54,7 +54,7 @@
 +                    if (this.world.getBlockState(new BlockPos(i1, j1 - 1, k1)).isSideSolid(this.world, new BlockPos(i1, j1 - 1, k1), net.minecraft.util.EnumFacing.UP)
                              && this.world.getLightFromNeighbors(new BlockPos(i1, j1, k1)) < 10)
                      {
-                         entityzombie.setPosition((double)i1, (double)j1, (double)k1);
+                         entityzombie.setPosition(i1, j1, k1);
 @@ -277,7 +293,7 @@
                                  && !this.world.containsAnyLiquid(entityzombie.getEntityBoundingBox()))
                          {

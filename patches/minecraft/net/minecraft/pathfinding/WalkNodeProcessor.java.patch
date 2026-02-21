@@ -93,19 +93,18 @@
      public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance)
      {
          int i = 0;
-@@ -125,9 +109,8 @@
+@@ -125,8 +109,8 @@
              j = MathHelper.floor(Math.max(1.0F, this.entity.stepHeight));
          }
  
 -        BlockPos blockpos = new BlockPos(currentPoint.x, currentPoint.y, currentPoint.z).down();
--        double d0 = (double)currentPoint.y
--                    - (1.0 - this.blockaccess.getBlockState(blockpos).getBoundingBox(this.blockaccess, blockpos).maxY);
+-        double d0 = currentPoint.y - (1.0 - this.blockaccess.getBlockState(blockpos).getBoundingBox(this.blockaccess, blockpos).maxY);
 +        BlockPos blockpos = (new BlockPos(currentPoint.x, currentPoint.y, currentPoint.z)).down();
 +        double d0 = (double)currentPoint.y - (1.0D - this.blockaccess.getBlockState(blockpos).getBoundingBox(this.blockaccess, blockpos).maxY);
          PathPoint pathpoint = this.getSafePoint(currentPoint.x, currentPoint.y, currentPoint.z + 1, j, d0, EnumFacing.SOUTH);
          PathPoint pathpoint1 = this.getSafePoint(currentPoint.x - 1, currentPoint.y, currentPoint.z, j, d0, EnumFacing.WEST);
          PathPoint pathpoint2 = this.getSafePoint(currentPoint.x + 1, currentPoint.y, currentPoint.z, j, d0, EnumFacing.EAST);
-@@ -160,9 +143,7 @@
+@@ -159,9 +143,7 @@
  
          if (flag && flag3)
          {
@@ -116,7 +115,7 @@
  
              if (pathpoint4 != null && !pathpoint4.visited && pathpoint4.distanceTo(targetPoint) < maxDistance)
              {
-@@ -172,9 +153,7 @@
+@@ -171,9 +153,7 @@
  
          if (flag && flag2)
          {
@@ -127,7 +126,7 @@
  
              if (pathpoint5 != null && !pathpoint5.visited && pathpoint5.distanceTo(targetPoint) < maxDistance)
              {
-@@ -184,9 +163,7 @@
+@@ -183,9 +163,7 @@
  
          if (flag1 && flag3)
          {
@@ -138,7 +137,7 @@
  
              if (pathpoint6 != null && !pathpoint6.visited && pathpoint6.distanceTo(targetPoint) < maxDistance)
              {
-@@ -196,9 +173,7 @@
+@@ -195,9 +173,7 @@
  
          if (flag1 && flag2)
          {
@@ -149,11 +148,11 @@
  
              if (pathpoint7 != null && !pathpoint7.visited && pathpoint7.distanceTo(targetPoint) < maxDistance)
              {
-@@ -215,9 +190,9 @@
+@@ -214,9 +190,9 @@
          PathPoint pathpoint = null;
          BlockPos blockpos = new BlockPos(x, y, z);
          BlockPos blockpos1 = blockpos.down();
--        double d0 = (double)y - (1.0 - this.blockaccess.getBlockState(blockpos1).getBoundingBox(this.blockaccess, blockpos1).maxY);
+-        double d0 = y - (1.0 - this.blockaccess.getBlockState(blockpos1).getBoundingBox(this.blockaccess, blockpos1).maxY);
 +        double d0 = (double)y - (1.0D - this.blockaccess.getBlockState(blockpos1).getBoundingBox(this.blockaccess, blockpos1).maxY);
  
 -        if (d0 - p_186332_5_ > 1.125)
@@ -161,16 +160,16 @@
          {
              return null;
          }
-@@ -225,7 +200,7 @@
+@@ -224,7 +200,7 @@
          {
              PathNodeType pathnodetype = this.getPathNodeType(this.entity, x, y, z);
              float f = this.entity.getPathPriority(pathnodetype);
--            double d1 = (double)this.entity.width / 2.0;
+-            double d1 = this.entity.width / 2.0;
 +            double d1 = (double)this.entity.width / 2.0D;
  
              if (f >= 0.0F)
              {
-@@ -244,17 +219,13 @@
+@@ -243,17 +219,13 @@
                  {
                      pathpoint = this.getSafePoint(x, y + 1, z, p_186332_4_ - 1, p_186332_5_, facing);
  
@@ -179,10 +178,10 @@
 -                            && this.entity.width < 1.0F)
 +                    if (pathpoint != null && (pathpoint.nodeType == PathNodeType.OPEN || pathpoint.nodeType == PathNodeType.WALKABLE) && this.entity.width < 1.0F)
                      {
--                        double d2 = (double)(x - facing.getXOffset()) + 0.5;
--                        double d3 = (double)(z - facing.getZOffset()) + 0.5;
+-                        double d2 = x - facing.getXOffset() + 0.5;
+-                        double d3 = z - facing.getZOffset() + 0.5;
 -                        AxisAlignedBB axisalignedbb = new AxisAlignedBB(
--                            d2 - d1, (double)y + 0.001, d3 - d1, d2 + d1, (double)((float)y + this.entity.height), d3 + d1
+-                            d2 - d1, y + 0.001, d3 - d1, d2 + d1, y + this.entity.height, d3 + d1
 -                        );
 +                        double d2 = (double)(x - facing.getXOffset()) + 0.5D;
 +                        double d3 = (double)(z - facing.getZOffset()) + 0.5D;
@@ -193,23 +192,23 @@
  
                          if (this.entity.world.collidesWithAnyBlock(axisalignedbb2))
                          {
-@@ -265,14 +236,7 @@
+@@ -264,14 +236,7 @@
  
                  if (pathnodetype == PathNodeType.OPEN)
                  {
 -                    AxisAlignedBB axisalignedbb3 = new AxisAlignedBB(
--                        (double)x - d1 + 0.5,
--                        (double)y + 0.001,
--                        (double)z - d1 + 0.5,
--                        (double)x + d1 + 0.5,
--                        (double)((float)y + this.entity.height),
--                        (double)z + d1 + 0.5
+-                        x - d1 + 0.5,
+-                        y + 0.001,
+-                        z - d1 + 0.5,
+-                        x + d1 + 0.5,
+-                        y + this.entity.height,
+-                        z + d1 + 0.5
 -                    );
 +                    AxisAlignedBB axisalignedbb3 = new AxisAlignedBB((double)x - d1 + 0.5D, (double)y + 0.001D, (double)z - d1 + 0.5D, (double)x + d1 + 0.5D, (double)((float)y + this.entity.height), (double)z + d1 + 0.5D);
  
                      if (this.entity.world.collidesWithAnyBlock(axisalignedbb3))
                      {
-@@ -296,7 +260,7 @@
+@@ -295,7 +260,7 @@
  
                      while (y > 0 && pathnodetype == PathNodeType.OPEN)
                      {
@@ -218,7 +217,7 @@
  
                          if (i++ >= this.entity.getMaxFallHeight())
                          {
-@@ -326,27 +290,15 @@
+@@ -325,27 +290,15 @@
          }
      }
  
@@ -240,7 +239,7 @@
 -        EnumSet<PathNodeType> enumset = EnumSet.noneOf(PathNodeType.class);
 +        EnumSet<PathNodeType> enumset = EnumSet.<PathNodeType>noneOf(PathNodeType.class);
          PathNodeType pathnodetype = PathNodeType.BLOCKED;
--        double d0 = (double)entitylivingIn.width / 2.0;
+-        double d0 = entitylivingIn.width / 2.0;
 +        double d0 = (double)entitylivingIn.width / 2.0D;
          BlockPos blockpos = new BlockPos(entitylivingIn);
 -        pathnodetype = this.getPathNodeType(
@@ -252,7 +251,7 @@
  
          if (enumset.contains(PathNodeType.FENCE))
          {
-@@ -369,30 +321,24 @@
+@@ -368,30 +321,24 @@
                  }
              }
  
@@ -295,7 +294,7 @@
                  {
                      int l = i + x;
                      int i1 = j + y;
-@@ -409,9 +355,7 @@
+@@ -408,9 +355,7 @@
                          pathnodetype = PathNodeType.BLOCKED;
                      }
  
@@ -306,7 +305,7 @@
                      {
                          pathnodetype = PathNodeType.FENCE;
                      }
-@@ -436,21 +380,9 @@
+@@ -435,21 +380,9 @@
  
      private PathNodeType getPathNodeType(EntityLiving entitylivingIn, int x, int y, int z)
      {
@@ -329,7 +328,7 @@
      public PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z)
      {
          PathNodeType pathnodetype = this.getPathNodeTypeRaw(blockaccessIn, x, y, z);
-@@ -459,12 +391,7 @@
+@@ -458,12 +391,7 @@
          {
              Block block = blockaccessIn.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
              PathNodeType pathnodetype1 = this.getPathNodeTypeRaw(blockaccessIn, x, y - 1, z);
@@ -343,7 +342,7 @@
  
              if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA)
              {
-@@ -475,9 +402,12 @@
+@@ -474,9 +402,12 @@
              {
                  pathnodetype = PathNodeType.DAMAGE_CACTUS;
              }
@@ -357,7 +356,7 @@
      }
  
      public PathNodeType checkNeighborBlocks(IBlockAccess p_193578_1_, int p_193578_2_, int p_193578_3_, int p_193578_4_, PathNodeType p_193578_5_)
-@@ -486,23 +416,25 @@
+@@ -485,23 +416,25 @@
  
          if (p_193578_5_ == PathNodeType.WALKABLE)
          {
@@ -389,7 +388,7 @@
                      }
                  }
              }
-@@ -519,58 +451,62 @@
+@@ -518,58 +451,62 @@
          Block block = iblockstate.getBlock();
          Material material = iblockstate.getMaterial();
  

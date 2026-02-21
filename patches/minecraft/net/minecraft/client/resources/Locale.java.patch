@@ -22,8 +22,8 @@
 -            }
 -        }
 -
--        float f = (float)i / (float)j;
--        this.unicode = (double)f > 0.1;
+-        float f = (float)i / j;
+-        this.unicode = f > 0.1;
      }
  
      private void loadLocaleData(List<IResource> resourcesList) throws IOException

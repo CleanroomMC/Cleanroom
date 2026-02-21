@@ -141,15 +141,18 @@
  
                  if (!s.isEmpty())
                  {
-@@ -247,7 +243,7 @@
+@@ -247,9 +243,9 @@
                              k = l;
                          }
                      }
 -                    catch (NumberFormatException numberformatexception)
 +                    catch (NumberFormatException var16)
                      {
-                         k = (long)s.hashCode();
+-                        k = s.hashCode();
++                        k = (long)s.hashCode();
                      }
+                 }
+ 
 @@ -267,21 +263,21 @@
                  this.setBuildLimit(this.settings.getIntProperty("max-build-height", 256));
                  this.setBuildLimit((this.getBuildLimit() + 8) / 16 * 16);
@@ -164,7 +167,7 @@
 +                LOGGER.info("Preparing level \"{}\"", (Object)this.getFolderName());
                  this.loadAllWorlds(this.getFolderName(), this.getFolderName(), k, worldtype, s2);
                  long i1 = System.nanoTime() - j;
--                String s3 = String.format("%.3fs", (double)i1 / 1.0E9);
+-                String s3 = String.format("%.3fs", i1 / 1.0E9);
 -                LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", s3);
 +                String s3 = String.format("%.3fs", (double)i1 / 1.0E9D);
 +                LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);

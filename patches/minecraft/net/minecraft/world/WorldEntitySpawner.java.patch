@@ -71,7 +71,7 @@
                                  {
                                      int l2 = k1;
                                      int i3 = l1;
-@@ -109,9 +109,9 @@
+@@ -109,18 +109,18 @@
                                      int k3 = 6;
                                      Biome.SpawnListEntry biome$spawnlistentry = null;
                                      IEntityLivingData ientitylivingdata = null;
@@ -83,17 +83,19 @@
                                      {
                                          l2 += worldServerIn.rand.nextInt(6) - worldServerIn.rand.nextInt(6);
                                          i3 += worldServerIn.rand.nextInt(1) - worldServerIn.rand.nextInt(1);
-@@ -120,8 +120,7 @@
-                                         float f = (float)l2 + 0.5F;
-                                         float f1 = (float)j3 + 0.5F;
+                                         j3 += worldServerIn.rand.nextInt(6) - worldServerIn.rand.nextInt(6);
+                                         blockpos$mutableblockpos.setPos(l2, i3, j3);
+-                                        float f = l2 + 0.5F;
+-                                        float f1 = j3 + 0.5F;
++                                        float f = (float)l2 + 0.5F;
++                                        float f1 = (float)j3 + 0.5F;
  
--                                        if (!worldServerIn.isAnyPlayerWithinRangeAt((double)f, (double)i3, (double)f1, 24.0)
--                                                && !(blockpos1.distanceSq((double)f, (double)i3, (double)f1) < 576.0))
+-                                        if (!worldServerIn.isAnyPlayerWithinRangeAt(f, i3, f1, 24.0) && !(blockpos1.distanceSq(f, i3, f1) < 576.0))
 +                                        if (!worldServerIn.isAnyPlayerWithinRangeAt((double)f, (double)i3, (double)f1, 24.0D) && blockpos1.distanceSq((double)f, (double)i3, (double)f1) >= 576.0D)
                                          {
                                              if (biome$spawnlistentry == null)
                                              {
-@@ -133,16 +132,13 @@
+@@ -132,16 +132,13 @@
                                                  }
                                              }
  
@@ -112,9 +114,12 @@
                                                  }
                                                  catch (Exception exception)
                                                  {
-@@ -152,13 +148,15 @@
+@@ -149,15 +146,17 @@
+                                                     return j4;
+                                                 }
  
-                                                 entityliving.setLocationAndAngles((double)f, (double)i3, (double)f1, worldServerIn.rand.nextFloat() * 360.0F, 0.0F);
+-                                                entityliving.setLocationAndAngles(f, i3, f1, worldServerIn.rand.nextFloat() * 360.0F, 0.0F);
++                                                entityliving.setLocationAndAngles((double)f, (double)i3, (double)f1, worldServerIn.rand.nextFloat() * 360.0F, 0.0F);
  
 -                                                if (entityliving.getCanSpawnHere() && entityliving.isNotColliding())
 +                                                net.minecraftforge.fml.common.eventhandler.Event.Result canSpawn = net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldServerIn, f, i3, f1, false);
@@ -130,7 +135,7 @@
                                                          worldServerIn.spawnEntity(entityliving);
                                                      }
                                                      else
-@@ -166,7 +164,7 @@
+@@ -165,7 +164,7 @@
                                                          entityliving.setDead();
                                                      }
  
@@ -139,7 +144,7 @@
                                                      {
                                                          continue label134;
                                                      }
-@@ -207,9 +205,13 @@
+@@ -206,9 +205,13 @@
          {
              return false;
          }
@@ -154,7 +159,7 @@
          }
      }
  
-@@ -221,19 +223,25 @@
+@@ -220,19 +223,25 @@
          }
          else
          {
@@ -184,7 +189,7 @@
                  {
                      return false;
                  }
-@@ -255,7 +263,7 @@
+@@ -254,7 +263,7 @@
          {
              while (randomIn.nextFloat() < biomeIn.getSpawningChance())
              {
@@ -193,7 +198,7 @@
                  int i = biome$spawnlistentry.minGroupCount + randomIn.nextInt(1 + biome$spawnlistentry.maxGroupCount - biome$spawnlistentry.minGroupCount);
                  IEntityLivingData ientitylivingdata = null;
                  int j = centerX + randomIn.nextInt(diameterX);
-@@ -263,11 +271,11 @@
+@@ -262,11 +271,11 @@
                  int l = j;
                  int i1 = k;
  
@@ -207,7 +212,7 @@
                      {
                          BlockPos blockpos = worldIn.getTopSolidOrLiquidBlock(new BlockPos(j, 0, k));
  
-@@ -277,7 +285,7 @@
+@@ -276,7 +285,7 @@
  
                              try
                              {
@@ -216,19 +221,17 @@
                              }
                              catch (Exception exception)
                              {
-@@ -285,9 +293,8 @@
+@@ -284,7 +293,8 @@
                                  continue;
                              }
  
--                            entityliving.setLocationAndAngles(
--                                (double)((float)j + 0.5F), (double)blockpos.getY(), (double)((float)k + 0.5F), randomIn.nextFloat() * 360.0F, 0.0F
--                            );
+-                            entityliving.setLocationAndAngles(j + 0.5F, blockpos.getY(), k + 0.5F, randomIn.nextFloat() * 360.0F, 0.0F);
 +                            if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldIn, j + 0.5f, (float) blockpos.getY(), k +0.5f, false) == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) continue;
 +                            entityliving.setLocationAndAngles((double)((float)j + 0.5F), (double)blockpos.getY(), (double)((float)k + 0.5F), randomIn.nextFloat() * 360.0F, 0.0F);
                              worldIn.spawnEntity(entityliving);
                              ientitylivingdata = entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
                              flag = true;
-@@ -295,10 +302,7 @@
+@@ -292,10 +302,7 @@
  
                          j += randomIn.nextInt(5) - randomIn.nextInt(5);
  

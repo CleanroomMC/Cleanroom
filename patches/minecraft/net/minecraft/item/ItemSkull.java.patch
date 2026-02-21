@@ -125,7 +125,7 @@
 -
 -                if (facing == EnumFacing.UP)
 -                {
--                    i = MathHelper.floor((double)(player.rotationYaw * 16.0F / 360.0F) + 0.5) & 15;
+-                    i = MathHelper.floor(player.rotationYaw * 16.0F / 360.0F + 0.5) & 15;
 -                }
 -
 -                TileEntity tileentity = worldIn.getTileEntity(pos);

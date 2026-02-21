@@ -17,7 +17,7 @@
          this.world = worldIn;
          this.mapFeaturesEnabled = mapFeaturesEnabledIn;
          this.terrainType = worldIn.getWorldInfo().getTerrainType();
-@@ -75,9 +85,9 @@
+@@ -75,11 +85,11 @@
          this.heightMap = new double[825];
          this.biomeWeights = new float[25];
  
@@ -27,8 +27,11 @@
 -            for (int j = -2; j <= 2; j++)
 +            for (int j = -2; j <= 2; ++j)
              {
-                 float f = 10.0F / MathHelper.sqrt((float)(i * i + j * j) + 0.2F);
+-                float f = 10.0F / MathHelper.sqrt(i * i + j * j + 0.2F);
++                float f = 10.0F / MathHelper.sqrt((float)(i * i + j * j) + 0.2F);
                  this.biomeWeights[i + 2 + (j + 2) * 5] = f;
+             }
+         }
 @@ -90,6 +100,17 @@
              this.oceanBlock = this.settings.useLavaOceans ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState();
              worldIn.setSeaLevel(this.settings.seaLevel);
@@ -112,13 +115,12 @@
                                  {
                                      primer.setBlockState(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, STONE);
                                  }
-@@ -163,23 +184,20 @@
+@@ -163,25 +184,23 @@
  
      public void replaceBiomeBlocks(int x, int z, ChunkPrimer primer, Biome[] biomesIn)
      {
 -        double d0 = 0.03125;
--        this.depthBuffer = this.surfaceNoise
--                              .getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, 0.0625, 0.0625, 1.0);
+-        this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, x * 16, z * 16, 16, 16, 0.0625, 0.0625, 1.0);
 +        if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, x, z, primer, this.world)) return;
 +        double d0 = 0.03125D;
 +        this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, 0.0625D, 0.0625D, 1.0D);
@@ -141,8 +143,12 @@
 -    @Override
      public Chunk generateChunk(int x, int z)
      {
-         this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
-@@ -234,7 +252,7 @@
+-        this.rand.setSeed(x * 341873128712L + z * 132897987541L);
++        this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
+         ChunkPrimer chunkprimer = new ChunkPrimer();
+         this.setBlocksInChunk(x, z, chunkprimer);
+         this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
+@@ -233,7 +252,7 @@
          Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
          byte[] abyte = chunk.getBiomeArray();
  
@@ -151,7 +157,7 @@
          {
              abyte[i] = (byte)Biome.getIdForBiome(this.biomesForGeneration[i]);
          }
-@@ -245,42 +263,18 @@
+@@ -244,40 +263,18 @@
  
      private void generateHeightmap(int x, int y, int z)
      {
@@ -162,9 +168,9 @@
 -                                  z,
 -                                  5,
 -                                  5,
--                                  (double)this.settings.depthNoiseScaleX,
--                                  (double)this.settings.depthNoiseScaleZ,
--                                  (double)this.settings.depthNoiseScaleExponent
+-                                  this.settings.depthNoiseScaleX,
+-                                  this.settings.depthNoiseScaleZ,
+-                                  this.settings.depthNoiseScaleExponent
 -                              );
 +        this.depthRegion = this.depthNoise.generateNoiseOctaves(this.depthRegion, x, z, 5, 5, (double)this.settings.depthNoiseScaleX, (double)this.settings.depthNoiseScaleZ, (double)this.settings.depthNoiseScaleExponent);
          float f = this.settings.coordinateScale;
@@ -178,14 +184,12 @@
 -                                  5,
 -                                  33,
 -                                  5,
--                                  (double)(f / this.settings.mainNoiseScaleX),
--                                  (double)(f1 / this.settings.mainNoiseScaleY),
--                                  (double)(f / this.settings.mainNoiseScaleZ)
+-                                  f / this.settings.mainNoiseScaleX,
+-                                  f1 / this.settings.mainNoiseScaleY,
+-                                  f / this.settings.mainNoiseScaleZ
 -                              );
--        this.minLimitRegion = this.minLimitPerlinNoise
--                              .generateNoiseOctaves(this.minLimitRegion, x, y, z, 5, 33, 5, (double)f, (double)f1, (double)f);
--        this.maxLimitRegion = this.maxLimitPerlinNoise
--                              .generateNoiseOctaves(this.maxLimitRegion, x, y, z, 5, 33, 5, (double)f, (double)f1, (double)f);
+-        this.minLimitRegion = this.minLimitPerlinNoise.generateNoiseOctaves(this.minLimitRegion, x, y, z, 5, 33, 5, f, f1, f);
+-        this.maxLimitRegion = this.maxLimitPerlinNoise.generateNoiseOctaves(this.maxLimitRegion, x, y, z, 5, 33, 5, f, f1, f);
 +        this.mainNoiseRegion = this.mainPerlinNoise.generateNoiseOctaves(this.mainNoiseRegion, x, y, z, 5, 33, 5, (double)(f / this.settings.mainNoiseScaleX), (double)(f1 / this.settings.mainNoiseScaleY), (double)(f / this.settings.mainNoiseScaleZ));
 +        this.minLimitRegion = this.minLimitPerlinNoise.generateNoiseOctaves(this.minLimitRegion, x, y, z, 5, 33, 5, (double)f, (double)f1, (double)f);
 +        this.maxLimitRegion = this.maxLimitPerlinNoise.generateNoiseOctaves(this.maxLimitRegion, x, y, z, 5, 33, 5, (double)f, (double)f1, (double)f);
@@ -200,7 +204,7 @@
              {
                  float f2 = 0.0F;
                  float f3 = 0.0F;
-@@ -288,9 +282,9 @@
+@@ -285,9 +282,9 @@
                  int i1 = 2;
                  Biome biome = this.biomesForGeneration[k + 2 + (l + 2) * 10];
  
@@ -212,7 +216,7 @@
                      {
                          Biome biome1 = this.biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
                          float f5 = this.settings.biomeDepthOffSet + biome1.getBaseHeight() * this.settings.biomeDepthWeight;
-@@ -315,76 +309,75 @@
+@@ -312,76 +309,75 @@
                      }
                  }
  
@@ -267,12 +271,14 @@
                  }
  
 -                j++;
-+                ++j;
-                 double d8 = (double)f3;
-                 double d9 = (double)f2;
+-                double d8 = f3;
+-                double d9 = f2;
 -                d8 += d7 * 0.2;
--                d8 = d8 * (double)this.settings.baseSize / 8.0;
--                double d0 = (double)this.settings.baseSize + d8 * 4.0;
+-                d8 = d8 * this.settings.baseSize / 8.0;
+-                double d0 = this.settings.baseSize + d8 * 4.0;
++                ++j;
++                double d8 = (double)f3;
++                double d9 = (double)f2;
 +                d8 = d8 + d7 * 0.2D;
 +                d8 = d8 * (double)this.settings.baseSize / 8.0D;
 +                double d0 = (double)this.settings.baseSize + d8 * 4.0D;
@@ -280,7 +286,7 @@
 -                for (int l1 = 0; l1 < 33; l1++)
 +                for (int l1 = 0; l1 < 33; ++l1)
                  {
--                    double d1 = ((double)l1 - d0) * (double)this.settings.stretchY * 128.0 / 256.0 / d9;
+-                    double d1 = (l1 - d0) * this.settings.stretchY * 128.0 / 256.0 / d9;
 +                    double d1 = ((double)l1 - d0) * (double)this.settings.stretchY * 128.0D / 256.0D / d9;
  
 -                    if (d1 < 0.0)
@@ -290,16 +296,19 @@
 +                        d1 *= 4.0D;
                      }
  
-                     double d2 = this.minLimitRegion[i] / (double)this.settings.lowerLimitScale;
-                     double d3 = this.maxLimitRegion[i] / (double)this.settings.upperLimitScale;
+-                    double d2 = this.minLimitRegion[i] / this.settings.lowerLimitScale;
+-                    double d3 = this.maxLimitRegion[i] / this.settings.upperLimitScale;
 -                    double d4 = (this.mainNoiseRegion[i] / 10.0 + 1.0) / 2.0;
++                    double d2 = this.minLimitRegion[i] / (double)this.settings.lowerLimitScale;
++                    double d3 = this.maxLimitRegion[i] / (double)this.settings.upperLimitScale;
 +                    double d4 = (this.mainNoiseRegion[i] / 10.0D + 1.0D) / 2.0D;
                      double d5 = MathHelper.clampedLerp(d2, d3, d4) - d1;
  
                      if (l1 > 29)
                      {
-                         double d6 = (double)((float)(l1 - 29) / 3.0F);
+-                        double d6 = (l1 - 29) / 3.0F;
 -                        d5 = d5 * (1.0 - d6) + -10.0 * d6;
++                        double d6 = (double)((float)(l1 - 29) / 3.0F);
 +                        d5 = d5 * (1.0D - d6) + -10.0D * d6;
                      }
  
@@ -315,7 +324,12 @@
      public void populate(int x, int z)
      {
          BlockFalling.fallInstantly = true;
-@@ -399,6 +392,8 @@
+@@ -392,10 +388,12 @@
+         this.rand.setSeed(this.world.getSeed());
+         long k = this.rand.nextLong() / 2L * 2L + 1L;
+         long l = this.rand.nextLong() / 2L * 2L + 1L;
+-        this.rand.setSeed(x * k + z * l ^ this.world.getSeed());
++        this.rand.setSeed((long)x * k + (long)z * l ^ this.world.getSeed());
          boolean flag = false;
          ChunkPos chunkpos = new ChunkPos(x, z);
  
@@ -324,7 +338,7 @@
          if (this.mapFeaturesEnabled)
          {
              if (this.settings.useMineShafts)
-@@ -432,19 +427,17 @@
+@@ -429,19 +427,17 @@
              }
          }
  
@@ -348,7 +362,7 @@
          {
              int i2 = this.rand.nextInt(16) + 8;
              int l2 = this.rand.nextInt(this.rand.nextInt(248) + 8);
-@@ -452,28 +445,32 @@
+@@ -449,28 +445,32 @@
  
              if (l2 < this.world.getSeaLevel() || this.rand.nextInt(this.settings.lavaLakeChance / 8) == 0)
              {
@@ -387,7 +401,7 @@
              {
                  BlockPos blockpos1 = this.world.getPrecipitationHeight(blockpos.add(k2, 0, j3));
                  BlockPos blockpos2 = blockpos1.down();
-@@ -489,11 +486,13 @@
+@@ -486,11 +486,13 @@
                  }
              }
          }
@@ -402,7 +416,7 @@
      public boolean generateStructures(Chunk chunkIn, int x, int z)
      {
          boolean flag = false;
-@@ -506,7 +505,6 @@
+@@ -503,7 +505,6 @@
          return flag;
      }
  
@@ -410,7 +424,7 @@
      public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
      {
          Biome biome = this.world.getBiome(pos);
-@@ -518,9 +516,7 @@
+@@ -515,9 +516,7 @@
                  return this.scatteredFeatureGenerator.getMonsters();
              }
  
@@ -421,7 +435,7 @@
              {
                  return this.oceanMonumentGenerator.getMonsters();
              }
-@@ -529,7 +525,6 @@
+@@ -526,7 +525,6 @@
          return biome.getSpawnableList(creatureType);
      }
  
@@ -429,7 +443,7 @@
      public boolean isInsideStructure(World worldIn, String structureName, BlockPos pos)
      {
          if (!this.mapFeaturesEnabled)
-@@ -563,7 +558,6 @@
+@@ -560,7 +558,6 @@
      }
  
      @Nullable
@@ -437,7 +451,7 @@
      public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored)
      {
          if (!this.mapFeaturesEnabled)
-@@ -596,39 +590,38 @@
+@@ -593,39 +590,38 @@
          }
      }
  

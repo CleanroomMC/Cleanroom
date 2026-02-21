@@ -14,15 +14,38 @@
      public int getBlockMetadata()
      {
          return 0;
+@@ -96,19 +94,19 @@
+     @SideOnly(Side.CLIENT)
+     public float getOffsetX(float ticks)
+     {
+-        return this.pistonFacing.getXOffset() * this.getExtendedProgress(this.getProgress(ticks));
++        return (float)this.pistonFacing.getXOffset() * this.getExtendedProgress(this.getProgress(ticks));
+     }
+ 
+     @SideOnly(Side.CLIENT)
+     public float getOffsetY(float ticks)
+     {
+-        return this.pistonFacing.getYOffset() * this.getExtendedProgress(this.getProgress(ticks));
++        return (float)this.pistonFacing.getYOffset() * this.getExtendedProgress(this.getProgress(ticks));
+     }
+ 
+     @SideOnly(Side.CLIENT)
+     public float getOffsetZ(float ticks)
+     {
+-        return this.pistonFacing.getZOffset() * this.getExtendedProgress(this.getProgress(ticks));
++        return (float)this.pistonFacing.getZOffset() * this.getExtendedProgress(this.getProgress(ticks));
+     }
+ 
+     private float getExtendedProgress(float p_184320_1_)
 @@ -125,46 +123,31 @@
      {
          p_184319_3_ = this.getExtendedProgress(p_184319_3_);
          IBlockState iblockstate = this.getCollisionRelatedBlockState();
 -        return iblockstate.getBoundingBox(p_184319_1_, p_184319_2_)
 -               .offset(
--                   (double)(p_184319_3_ * (float)this.pistonFacing.getXOffset()),
--                   (double)(p_184319_3_ * (float)this.pistonFacing.getYOffset()),
--                   (double)(p_184319_3_ * (float)this.pistonFacing.getZOffset())
+-                   p_184319_3_ * this.pistonFacing.getXOffset(),
+-                   p_184319_3_ * this.pistonFacing.getYOffset(),
+-                   p_184319_3_ * this.pistonFacing.getZOffset()
 -               );
 +        return iblockstate.getBoundingBox(p_184319_1_, p_184319_2_).offset((double)(p_184319_3_ * (float)this.pistonFacing.getXOffset()), (double)(p_184319_3_ * (float)this.pistonFacing.getYOffset()), (double)(p_184319_3_ * (float)this.pistonFacing.getZOffset()));
      }
@@ -46,9 +69,10 @@
      private void moveCollidedEntities(float p_184322_1_)
      {
          EnumFacing enumfacing = this.extending ? this.pistonFacing : this.pistonFacing.getOpposite();
-         double d0 = (double)(p_184322_1_ - this.progress);
+-        double d0 = p_184322_1_ - this.progress;
 -        List<AxisAlignedBB> list = Lists.newArrayList();
 -        this.getCollisionRelatedBlockState().addCollisionBoxToList(this.world, BlockPos.ORIGIN, new AxisAlignedBB(BlockPos.ORIGIN), list, null, true);
++        double d0 = (double)(p_184322_1_ - this.progress);
 +        List<AxisAlignedBB> list = Lists.<AxisAlignedBB>newArrayList();
 +        this.getCollisionRelatedBlockState().addCollisionBoxToList(this.world, BlockPos.ORIGIN, new AxisAlignedBB(BlockPos.ORIGIN), list, (Entity)null, true);
  
@@ -68,7 +92,20 @@
                  {
                      Entity entity = list1.get(i);
  
-@@ -185,9 +168,9 @@
+@@ -175,19 +158,19 @@
+                             switch (enumfacing.getAxis())
+                             {
+                                 case X:
+-                                    entity.motionX = enumfacing.getXOffset();
++                                    entity.motionX = (double)enumfacing.getXOffset();
+                                     break;
+                                 case Y:
+-                                    entity.motionY = enumfacing.getYOffset();
++                                    entity.motionY = (double)enumfacing.getYOffset();
+                                     break;
+                                 case Z:
+-                                    entity.motionZ = enumfacing.getZOffset();
++                                    entity.motionZ = (double)enumfacing.getZOffset();
                              }
                          }
  
@@ -80,7 +117,7 @@
                          {
                              AxisAlignedBB axisalignedbb1 = this.getMovementArea(this.moveByPositionAndProgress(list.get(j)), enumfacing, d0);
                              AxisAlignedBB axisalignedbb2 = entity.getEntityBoundingBox();
-@@ -203,16 +186,11 @@
+@@ -203,11 +186,11 @@
                              }
                          }
  
@@ -90,17 +127,12 @@
 -                            d1 = Math.min(d1, d0) + 0.01;
 +                            d1 = Math.min(d1, d0) + 0.01D;
                              MOVING_ENTITY.set(enumfacing);
--                            entity.move(
--                                MoverType.PISTON,
--                                d1 * (double)enumfacing.getXOffset(),
--                                d1 * (double)enumfacing.getYOffset(),
--                                d1 * (double)enumfacing.getZOffset()
--                            );
+-                            entity.move(MoverType.PISTON, d1 * enumfacing.getXOffset(), d1 * enumfacing.getYOffset(), d1 * enumfacing.getZOffset());
 +                            entity.move(MoverType.PISTON, d1 * (double)enumfacing.getXOffset(), d1 * (double)enumfacing.getYOffset(), d1 * (double)enumfacing.getZOffset());
                              MOVING_ENTITY.set(null);
  
                              if (!this.extending && this.shouldHeadBeRendered)
-@@ -228,12 +206,12 @@
+@@ -223,12 +206,12 @@
  
      private AxisAlignedBB getMinMaxPiecesAABB(List<AxisAlignedBB> p_191515_1_)
      {
@@ -119,23 +151,26 @@
  
          for (AxisAlignedBB axisalignedbb : p_191515_1_)
          {
-@@ -265,76 +243,30 @@
+@@ -259,77 +242,31 @@
+ 
      private AxisAlignedBB moveByPositionAndProgress(AxisAlignedBB p_190607_1_)
      {
-         double d0 = (double)this.getExtendedProgress(this.progress);
+-        double d0 = this.getExtendedProgress(this.progress);
 -        return p_190607_1_.offset(
--                   (double)this.pos.getX() + d0 * (double)this.pistonFacing.getXOffset(),
--                   (double)this.pos.getY() + d0 * (double)this.pistonFacing.getYOffset(),
--                   (double)this.pos.getZ() + d0 * (double)this.pistonFacing.getZOffset()
+-                   this.pos.getX() + d0 * this.pistonFacing.getXOffset(),
+-                   this.pos.getY() + d0 * this.pistonFacing.getYOffset(),
+-                   this.pos.getZ() + d0 * this.pistonFacing.getZOffset()
 -               );
++        double d0 = (double)this.getExtendedProgress(this.progress);
 +        return p_190607_1_.offset((double)this.pos.getX() + d0 * (double)this.pistonFacing.getXOffset(), (double)this.pos.getY() + d0 * (double)this.pistonFacing.getYOffset(), (double)this.pos.getZ() + d0 * (double)this.pistonFacing.getZOffset());
      }
  
      private AxisAlignedBB getMovementArea(AxisAlignedBB p_190610_1_, EnumFacing p_190610_2_, double p_190610_3_)
      {
-         double d0 = p_190610_3_ * (double)p_190610_2_.getAxisDirection().getOffset();
+-        double d0 = p_190610_3_ * p_190610_2_.getAxisDirection().getOffset();
 -        double d1 = Math.min(d0, 0.0);
 -        double d2 = Math.max(d0, 0.0);
++        double d0 = p_190610_3_ * (double)p_190610_2_.getAxisDirection().getOffset();
 +        double d1 = Math.min(d0, 0.0D);
 +        double d2 = Math.max(d0, 0.0D);
  
@@ -205,7 +240,7 @@
          }
      }
  
-@@ -346,16 +278,14 @@
+@@ -341,14 +278,14 @@
          if (axisalignedbb.intersects(axisalignedbb1))
          {
              EnumFacing enumfacing = p_190605_2_.getOpposite();
@@ -220,14 +255,12 @@
 -                d0 = Math.min(d0, p_190605_3_) + 0.01;
 +                d0 = Math.min(d0, p_190605_3_) + 0.01D;
                  MOVING_ENTITY.set(p_190605_2_);
--                p_190605_1_.move(
--                    MoverType.PISTON, d0 * (double)enumfacing.getXOffset(), d0 * (double)enumfacing.getYOffset(), d0 * (double)enumfacing.getZOffset()
--                );
+-                p_190605_1_.move(MoverType.PISTON, d0 * enumfacing.getXOffset(), d0 * enumfacing.getYOffset(), d0 * enumfacing.getZOffset());
 +                p_190605_1_.move(MoverType.PISTON, d0 * (double)enumfacing.getXOffset(), d0 * (double)enumfacing.getYOffset(), d0 * (double)enumfacing.getZOffset());
                  MOVING_ENTITY.set(null);
              }
          }
-@@ -363,23 +293,17 @@
+@@ -356,23 +293,17 @@
  
      private static double getDeltaX(AxisAlignedBB p_190611_0_, EnumFacing facing, AxisAlignedBB p_190611_2_)
      {
@@ -254,7 +287,7 @@
      }
  
      public void clearPistonTileEntity()
-@@ -399,7 +323,6 @@
+@@ -392,7 +323,6 @@
          }
      }
  
@@ -262,7 +295,7 @@
      public void update()
      {
          this.lastProgress = this.progress;
-@@ -432,7 +355,6 @@
+@@ -425,7 +355,6 @@
      {
      }
  
@@ -270,7 +303,7 @@
      public void readFromNBT(NBTTagCompound compound)
      {
          super.readFromNBT(compound);
-@@ -444,7 +366,6 @@
+@@ -437,7 +366,6 @@
          this.shouldHeadBeRendered = compound.getBoolean("source");
      }
  
@@ -278,7 +311,7 @@
      public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
          super.writeToNBT(compound);
-@@ -461,24 +382,19 @@
+@@ -454,24 +382,19 @@
      {
          if (!this.extending && this.shouldHeadBeRendered)
          {
@@ -290,7 +323,7 @@
  
          EnumFacing enumfacing = MOVING_ENTITY.get();
  
--        if (!((double)this.progress < 1.0) || enumfacing != (this.extending ? this.pistonFacing : this.pistonFacing.getOpposite()))
+-        if (!(this.progress < 1.0) || enumfacing != (this.extending ? this.pistonFacing : this.pistonFacing.getOpposite()))
 +        if ((double)this.progress >= 1.0D || enumfacing != (this.extending ? this.pistonFacing : this.pistonFacing.getOpposite()))
          {
              int i = p_190609_4_.size();
@@ -306,8 +339,16 @@
              }
              else
              {
-@@ -491,9 +407,9 @@
-             double d2 = (double)((float)this.pistonFacing.getZOffset() * f);
+@@ -479,14 +402,14 @@
+             }
+ 
+             float f = this.getExtendedProgress(this.progress);
+-            double d0 = this.pistonFacing.getXOffset() * f;
+-            double d1 = this.pistonFacing.getYOffset() * f;
+-            double d2 = this.pistonFacing.getZOffset() * f;
++            double d0 = (double)((float)this.pistonFacing.getXOffset() * f);
++            double d1 = (double)((float)this.pistonFacing.getYOffset() * f);
++            double d2 = (double)((float)this.pistonFacing.getZOffset() * f);
              iblockstate.addCollisionBoxToList(p_190609_1_, p_190609_2_, p_190609_3_.offset(-d0, -d1, -d2), p_190609_4_, p_190609_5_, true);
  
 -            for (int j = i; j < p_190609_4_.size(); j++)

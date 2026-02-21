@@ -32,7 +32,7 @@
      public void update()
      {
          this.updateAnimation();
-@@ -105,24 +106,18 @@
+@@ -105,23 +106,18 @@
  
      public AxisAlignedBB getBoundingBox(IBlockState p_190584_1_)
      {
@@ -44,9 +44,9 @@
      {
 -        return Block.FULL_BLOCK_AABB
 -               .expand(
--                   (double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getXOffset()),
--                   (double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getYOffset()),
--                   (double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getZOffset())
+-                   0.5F * this.getProgress(1.0F) * p_190587_1_.getXOffset(),
+-                   0.5F * this.getProgress(1.0F) * p_190587_1_.getYOffset(),
+-                   0.5F * this.getProgress(1.0F) * p_190587_1_.getZOffset()
 -               );
 +        return Block.FULL_BLOCK_AABB.expand((double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getXOffset()), (double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getYOffset()), (double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getZOffset()));
      }
@@ -54,13 +54,12 @@
      private AxisAlignedBB getTopBoundingBox(EnumFacing p_190588_1_)
      {
          EnumFacing enumfacing = p_190588_1_.getOpposite();
--        return this.getBoundingBox(p_190588_1_)
--               .contract((double)enumfacing.getXOffset(), (double)enumfacing.getYOffset(), (double)enumfacing.getZOffset());
+-        return this.getBoundingBox(p_190588_1_).contract(enumfacing.getXOffset(), enumfacing.getYOffset(), enumfacing.getZOffset());
 +        return this.getBoundingBox(p_190588_1_).contract((double)enumfacing.getXOffset(), (double)enumfacing.getYOffset(), (double)enumfacing.getZOffset());
      }
  
      private void moveCollidedEntities()
-@@ -131,21 +126,21 @@
+@@ -130,21 +126,21 @@
  
          if (iblockstate.getBlock() instanceof BlockShulkerBox)
          {
@@ -88,7 +87,7 @@
                          AxisAlignedBB axisalignedbb1 = entity.getEntityBoundingBox();
  
                          switch (enumfacing.getAxis())
-@@ -161,7 +156,7 @@
+@@ -160,7 +156,7 @@
                                      d0 = axisalignedbb1.maxX - axisalignedbb.minX;
                                  }
  
@@ -97,7 +96,7 @@
                                  break;
                              case Y:
  
-@@ -174,7 +169,7 @@
+@@ -173,7 +169,7 @@
                                      d1 = axisalignedbb1.maxY - axisalignedbb.minY;
                                  }
  
@@ -106,7 +105,7 @@
                                  break;
                              case Z:
  
-@@ -187,34 +182,26 @@
+@@ -186,29 +182,26 @@
                                      d2 = axisalignedbb1.maxZ - axisalignedbb.minZ;
                                  }
  
@@ -114,12 +113,7 @@
 +                                d2 = d2 + 0.01D;
                          }
  
--                        entity.move(
--                            MoverType.SHULKER_BOX,
--                            d0 * (double)enumfacing.getXOffset(),
--                            d1 * (double)enumfacing.getYOffset(),
--                            d2 * (double)enumfacing.getZOffset()
--                        );
+-                        entity.move(MoverType.SHULKER_BOX, d0 * enumfacing.getXOffset(), d1 * enumfacing.getYOffset(), d2 * enumfacing.getZOffset());
 +                        entity.move(MoverType.SHULKER_BOX, d0 * (double)enumfacing.getXOffset(), d1 * (double)enumfacing.getYOffset(), d2 * (double)enumfacing.getZOffset());
                      }
                  }
@@ -143,7 +137,7 @@
      public boolean receiveClientEvent(int id, int type)
      {
          if (id == 1)
-@@ -239,7 +226,6 @@
+@@ -233,7 +226,6 @@
          }
      }
  
@@ -151,7 +145,7 @@
      public void openInventory(EntityPlayer player)
      {
          if (!player.isSpectator())
-@@ -249,60 +235,40 @@
+@@ -243,60 +235,40 @@
                  this.openCount = 0;
              }
  
@@ -216,7 +210,7 @@
      public String getName()
      {
          return this.hasCustomName() ? this.customName : "container.shulkerBox";
-@@ -310,17 +276,15 @@
+@@ -304,17 +276,15 @@
  
      public static void registerFixesShulkerBox(DataFixer fixer)
      {
@@ -235,7 +229,7 @@
      public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
          super.writeToNBT(compound);
-@@ -329,7 +293,7 @@
+@@ -323,7 +293,7 @@
  
      public void loadFromNbt(NBTTagCompound compound)
      {
@@ -244,7 +238,7 @@
  
          if (!this.checkLootAndRead(compound) && compound.hasKey("Items", 9))
          {
-@@ -362,13 +326,11 @@
+@@ -356,13 +326,11 @@
          return compound;
      }
  
@@ -258,7 +252,7 @@
      public boolean isEmpty()
      {
          for (ItemStack itemstack : this.items)
-@@ -382,25 +344,21 @@
+@@ -376,25 +344,21 @@
          return true;
      }
  
@@ -284,7 +278,7 @@
      public void clear()
      {
          this.hasBeenCleared = true;
-@@ -429,7 +387,6 @@
+@@ -423,7 +387,6 @@
      }
  
      @Nullable
@@ -292,7 +286,7 @@
      public SPacketUpdateTileEntity getUpdatePacket()
      {
          return new SPacketUpdateTileEntity(this.pos, 10, this.getUpdateTag());
-@@ -452,11 +409,9 @@
+@@ -446,11 +409,9 @@
  
      static
      {
@@ -306,7 +300,7 @@
          }
      }
  
-@@ -466,5 +421,10 @@
+@@ -460,5 +421,10 @@
          OPENING,
          OPENED,
          CLOSING;

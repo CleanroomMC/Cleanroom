@@ -14,7 +14,7 @@
 -    @Override
 -    public int getGrassColorAtPos(BlockPos pos)
 -    {
--        double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() * 0.0225, (double)pos.getZ() * 0.0225);
+-        double d0 = GRASS_COLOR_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225);
 -        return d0 < -0.1 ? 5011004 : 6975545;
 -    }
 -
@@ -34,7 +34,7 @@
 -    @Override
      public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
      {
--        double d0 = GRASS_COLOR_NOISE.getValue((double)x * 0.25, (double)z * 0.25);
+-        double d0 = GRASS_COLOR_NOISE.getValue(x * 0.25, z * 0.25);
 +        double d0 = GRASS_COLOR_NOISE.getValue((double)x * 0.25D, (double)z * 0.25D);
  
 -        if (d0 > 0.0)

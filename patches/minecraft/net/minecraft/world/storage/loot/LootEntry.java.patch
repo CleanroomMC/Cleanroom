@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/loot/LootEntry.java
 +++ after/net/minecraft/world/storage/loot/LootEntry.java
-@@ -18,15 +18,17 @@
+@@ -18,21 +18,25 @@
  
  public abstract class LootEntry
  {
@@ -19,15 +19,15 @@
      }
  
      public int getEffectiveWeight(float luck)
-@@ -34,6 +36,8 @@
-         return Math.max(MathHelper.floor((float)this.weight + (float)this.quality * luck), 0);
+     {
+-        return Math.max(MathHelper.floor(this.weight + this.quality * luck), 0);
++        return Math.max(MathHelper.floor((float)this.weight + (float)this.quality * luck), 0);
      }
- 
-+    public String getEntryName(){ return this.entryName; }
 +
++    public String getEntryName(){ return this.entryName; }
+ 
      public abstract void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context);
  
-     protected abstract void serialize(JsonObject json, JsonSerializationContext context);
 @@ -50,13 +54,16 @@
  
                  if (jsonobject.has("conditions"))

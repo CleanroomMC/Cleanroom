@@ -9,16 +9,18 @@
          mapdata.trackingPosition = trackingPosition;
          mapdata.unlimitedTracking = unlimitedTracking;
          mapdata.markDirty();
-@@ -70,7 +70,7 @@
+@@ -69,8 +69,8 @@
+             s = "map_" + stack.getMetadata();
              mapdata = new MapData(s);
              mapdata.scale = 3;
-             mapdata.calculateMapCenter((double)worldIn.getWorldInfo().getSpawnX(), (double)worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);
+-            mapdata.calculateMapCenter(worldIn.getWorldInfo().getSpawnX(), worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);
 -            mapdata.dimension = (byte)worldIn.provider.getDimensionType().getId();
++            mapdata.calculateMapCenter((double)worldIn.getWorldInfo().getSpawnX(), (double)worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);
 +            mapdata.dimension = worldIn.provider.getDimension();
              mapdata.markDirty();
              worldIn.setData(s, mapdata);
          }
-@@ -80,7 +80,7 @@
+@@ -80,13 +80,13 @@
  
      public void updateMapData(World worldIn, Entity viewer, MapData data)
      {
@@ -27,6 +29,14 @@
          {
              int i = 1 << data.scale;
              int j = data.xCenter;
+             int k = data.zCenter;
+-            int l = MathHelper.floor(viewer.posX - j) / i + 64;
+-            int i1 = MathHelper.floor(viewer.posZ - k) / i + 64;
++            int l = MathHelper.floor(viewer.posX - (double)j) / i + 64;
++            int i1 = MathHelper.floor(viewer.posZ - (double)k) / i + 64;
+             int j1 = 128 / i;
+ 
+             if (worldIn.provider.isNether())
 @@ -95,17 +95,17 @@
              }
  
@@ -107,7 +117,7 @@
                                          {
                                              int k4 = chunk.getHeightValue(i4 + i3, j4 + j3) + 1;
                                              IBlockState iblockstate = Blocks.AIR.getDefaultState();
-@@ -169,24 +157,35 @@
+@@ -169,60 +157,71 @@
                                              }
                                              else
                                              {
@@ -161,12 +171,15 @@
                                                  }
                                              }
  
-@@ -196,33 +195,33 @@
+-                                            d1 += (double)k4 / (i * i);
++                                            d1 += (double)k4 / (double)(i * i);
+                                             multiset.add(iblockstate.getMapColor(worldIn, blockpos$mutableblockpos));
+                                         }
                                      }
                                  }
  
 -                                k3 /= i * i;
--                                double d2 = (d1 - d0) * 4.0 / (double)(i + 4) + ((double)(k1 + l1 & 1) - 0.5) * 0.4;
+-                                double d2 = (d1 - d0) * 4.0 / (i + 4) + ((k1 + l1 & 1) - 0.5) * 0.4;
 +                                k3 = k3 / (i * i);
 +                                double d2 = (d1 - d0) * 4.0D / (double)(i + 4) + ((double)(k1 + l1 & 1) - 0.5D) * 0.4D;
                                  int i5 = 1;
@@ -188,7 +201,7 @@
  
                                  if (mapcolor == MapColor.WATER)
                                  {
--                                    d2 = (double)k3 * 0.1 + (double)(k1 + l1 & 1) * 0.2;
+-                                    d2 = k3 * 0.1 + (k1 + l1 & 1) * 0.2;
 +                                    d2 = (double)k3 * 0.1D + (double)(k1 + l1 & 1) * 0.2D;
                                      i5 = 1;
  
@@ -283,6 +296,15 @@
                                  }
  
                                  if (biome.getBaseHeight() < 0.0F)
+@@ -324,7 +323,7 @@
+ 
+                                     if (i2 > 7 && i1 % 2 == 0)
+                                     {
+-                                        l1 = (l + (int)(MathHelper.sin(i1 + 0.0F) * 7.0F)) / 8 % 5;
++                                        l1 = (l + (int)(MathHelper.sin((float)i1 + 0.0F) * 7.0F)) / 8 % 5;
+ 
+                                         if (l1 == 3)
+                                         {
 @@ -379,7 +378,6 @@
          }
      }
@@ -305,6 +327,15 @@
      public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn)
      {
          NBTTagCompound nbttagcompound = stack.getTagCompound();
+@@ -436,7 +432,7 @@
+         {
+             mapdata1.scale = (byte)MathHelper.clamp(mapdata.scale + p_185063_2_, 0, 4);
+             mapdata1.trackingPosition = mapdata.trackingPosition;
+-            mapdata1.calculateMapCenter(mapdata.xCenter, mapdata.zCenter, mapdata1.scale);
++            mapdata1.calculateMapCenter((double)mapdata.xCenter, (double)mapdata.zCenter, mapdata1.scale);
+             mapdata1.dimension = mapdata.dimension;
+             mapdata1.markDirty();
+             p_185063_1_.setData("map_" + p_185063_0_.getMetadata(), mapdata1);
 @@ -462,7 +458,6 @@
      }
  

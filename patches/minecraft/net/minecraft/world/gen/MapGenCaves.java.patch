@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/gen/MapGenCaves.java
 +++ after/net/minecraft/world/gen/MapGenCaves.java
-@@ -17,42 +17,12 @@
+@@ -17,45 +17,15 @@
      protected static final IBlockState BLK_SANDSTONE = Blocks.SANDSTONE.getDefaultState();
      protected static final IBlockState BLK_RED_SANDSTONE = Blocks.RED_SANDSTONE.getDefaultState();
  
@@ -44,21 +44,31 @@
 -    )
 +    protected void addTunnel(long p_180702_1_, int p_180702_3_, int p_180702_4_, ChunkPrimer p_180702_5_, double p_180702_6_, double p_180702_8_, double p_180702_10_, float p_180702_12_, float p_180702_13_, float p_180702_14_, int p_180702_15_, int p_180702_16_, double p_180702_17_)
      {
-         double d0 = (double)(p_180702_3_ * 16 + 8);
-         double d1 = (double)(p_180702_4_ * 16 + 8);
-@@ -76,9 +46,9 @@
+-        double d0 = p_180702_3_ * 16 + 8;
+-        double d1 = p_180702_4_ * 16 + 8;
++        double d0 = (double)(p_180702_3_ * 16 + 8);
++        double d1 = (double)(p_180702_4_ * 16 + 8);
+         float f = 0.0F;
+         float f1 = 0.0F;
+         Random random = new Random(p_180702_1_);
+@@ -76,64 +46,36 @@
  
          int j = random.nextInt(p_180702_16_ / 2) + p_180702_16_ / 4;
  
 -        for (boolean flag = random.nextInt(6) == 0; p_180702_15_ < p_180702_16_; p_180702_15_++)
 +        for (boolean flag = random.nextInt(6) == 0; p_180702_15_ < p_180702_16_; ++p_180702_15_)
          {
--            double d2 = 1.5 + (double)(MathHelper.sin((float)p_180702_15_ * (float) Math.PI / (float)p_180702_16_) * p_180702_12_);
+-            double d2 = 1.5 + MathHelper.sin(p_180702_15_ * (float) Math.PI / p_180702_16_) * p_180702_12_;
 +            double d2 = 1.5D + (double)(MathHelper.sin((float)p_180702_15_ * (float)Math.PI / (float)p_180702_16_) * p_180702_12_);
              double d3 = d2 * p_180702_17_;
              float f2 = MathHelper.cos(p_180702_14_);
              float f3 = MathHelper.sin(p_180702_14_);
-@@ -88,52 +58,24 @@
+-            p_180702_6_ += MathHelper.cos(p_180702_13_) * f2;
+-            p_180702_8_ += f3;
+-            p_180702_10_ += MathHelper.sin(p_180702_13_) * f2;
++            p_180702_6_ += (double)(MathHelper.cos(p_180702_13_) * f2);
++            p_180702_8_ += (double)f3;
++            p_180702_10_ += (double)(MathHelper.sin(p_180702_13_) * f2);
  
              if (flag)
              {
@@ -120,7 +130,17 @@
                  return;
              }
  
-@@ -149,10 +91,7 @@
+@@ -141,18 +83,15 @@
+             {
+                 double d4 = p_180702_6_ - d0;
+                 double d5 = p_180702_10_ - d1;
+-                double d6 = p_180702_16_ - p_180702_15_;
+-                double d7 = p_180702_12_ + 2.0F + 16.0F;
++                double d6 = (double)(p_180702_16_ - p_180702_15_);
++                double d7 = (double)(p_180702_12_ + 2.0F + 16.0F);
+ 
+                 if (d4 * d4 + d5 * d5 - d6 * d6 > d7 * d7)
+                 {
                      return;
                  }
  
@@ -161,13 +181,13 @@
 -                        for (int j3 = k2; j3 < k; j3++)
 +                        for (int j3 = k2; j3 < k; ++j3)
                          {
--                            double d10 = ((double)(j3 + p_180702_3_ * 16) + 0.5 - p_180702_6_) / d2;
+-                            double d10 = (j3 + p_180702_3_ * 16 + 0.5 - p_180702_6_) / d2;
 +                            double d10 = ((double)(j3 + p_180702_3_ * 16) + 0.5D - p_180702_6_) / d2;
  
 -                            for (int i2 = i3; i2 < i1; i2++)
 +                            for (int i2 = i3; i2 < i1; ++i2)
                              {
--                                double d8 = ((double)(i2 + p_180702_4_ * 16) + 0.5 - p_180702_10_) / d2;
+-                                double d8 = (i2 + p_180702_4_ * 16 + 0.5 - p_180702_10_) / d2;
 +                                double d8 = ((double)(i2 + p_180702_4_ * 16) + 0.5D - p_180702_10_) / d2;
                                  boolean flag1 = false;
  
@@ -177,7 +197,7 @@
 -                                    for (int j2 = l; j2 > l2; j2--)
 +                                    for (int j2 = l; j2 > l2; --j2)
                                      {
--                                        double d9 = ((double)(j2 - 1) + 0.5 - p_180702_8_) / d3;
+-                                        double d9 = (j2 - 1 + 0.5 - p_180702_8_) / d3;
 +                                        double d9 = ((double)(j2 - 1) + 0.5D - p_180702_8_) / d3;
  
 -                                        if (d9 > -0.7 && d10 * d10 + d9 * d9 + d8 * d8 < 1.0)
@@ -241,15 +261,22 @@
      protected void recursiveGenerate(World worldIn, int chunkX, int chunkZ, int originalX, int originalZ, ChunkPrimer chunkPrimerIn)
      {
          int i = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(15) + 1) + 1);
-@@ -337,7 +253,7 @@
+@@ -337,11 +253,11 @@
              i = 0;
          }
  
 -        for (int j = 0; j < i; j++)
 +        for (int j = 0; j < i; ++j)
          {
-             double d0 = (double)(chunkX * 16 + this.rand.nextInt(16));
-             double d1 = (double)this.rand.nextInt(this.rand.nextInt(120) + 8);
+-            double d0 = chunkX * 16 + this.rand.nextInt(16);
+-            double d1 = this.rand.nextInt(this.rand.nextInt(120) + 8);
+-            double d2 = chunkZ * 16 + this.rand.nextInt(16);
++            double d0 = (double)(chunkX * 16 + this.rand.nextInt(16));
++            double d1 = (double)this.rand.nextInt(this.rand.nextInt(120) + 8);
++            double d2 = (double)(chunkZ * 16 + this.rand.nextInt(16));
+             int k = 1;
+ 
+             if (this.rand.nextInt(4) == 0)
 @@ -350,9 +266,9 @@
                  k += this.rand.nextInt(4);
              }

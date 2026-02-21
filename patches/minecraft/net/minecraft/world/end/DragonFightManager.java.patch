@@ -183,8 +183,8 @@
          if (!this.gateways.isEmpty())
          {
 -            int i = this.gateways.remove(this.gateways.size() - 1);
--            int j = (int)(96.0 * Math.cos(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
--            int k = (int)(96.0 * Math.sin(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
+-            int j = (int)(96.0 * Math.cos(2.0 * (-Math.PI + (Math.PI / 20) * i)));
+-            int k = (int)(96.0 * Math.sin(2.0 * (-Math.PI + (Math.PI / 20) * i)));
 +            int i = ((Integer)this.gateways.remove(this.gateways.size() - 1)).intValue();
 +            int j = (int)(96.0D * Math.cos(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));
 +            int k = (int)(96.0D * Math.sin(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));

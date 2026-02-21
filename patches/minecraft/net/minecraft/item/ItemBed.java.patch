@@ -23,7 +23,7 @@
                  pos = pos.up();
              }
  
--            int i = MathHelper.floor((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5) & 3;
+-            int i = MathHelper.floor(player.rotationYaw * 4.0F / 360.0F + 0.5) & 3;
 +            int i = MathHelper.floor((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
              EnumFacing enumfacing = EnumFacing.byHorizontalIndex(i);
              BlockPos blockpos = pos.offset(enumfacing);

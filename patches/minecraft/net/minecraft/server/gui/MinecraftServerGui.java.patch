@@ -80,7 +80,13 @@
                  public void run()
                  {
                      MinecraftServerGui.this.appendLine(textArea, scrollPane, line);
-@@ -188,7 +191,7 @@
+@@ -183,12 +186,12 @@
+ 
+             if (scrollPane.getViewport().getView() == textArea)
+             {
+-                flag = jscrollbar.getValue() + jscrollbar.getSize().getHeight() + SERVER_GUI_FONT.getSize() * 4 > jscrollbar.getMaximum();
++                flag = (double)jscrollbar.getValue() + jscrollbar.getSize().getHeight() + (double)(SERVER_GUI_FONT.getSize() * 4) > (double)jscrollbar.getMaximum();
+             }
  
              try
              {

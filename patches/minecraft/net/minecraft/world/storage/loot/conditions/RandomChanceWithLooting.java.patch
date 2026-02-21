@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
 +++ after/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
-@@ -21,15 +21,9 @@
+@@ -21,17 +21,11 @@
          this.lootingMultiplier = lootingMultiplierIn;
      }
  
@@ -13,10 +13,14 @@
 -        {
 -            i = EnchantmentHelper.getLootingModifier((EntityLivingBase)context.getKiller());
 -        }
+-
+-        return rand.nextFloat() < this.chance + i * this.lootingMultiplier;
 +        int i = context.getLootingModifier();
- 
-         return rand.nextFloat() < this.chance + (float)i * this.lootingMultiplier;
++
++        return rand.nextFloat() < this.chance + (float)i * this.lootingMultiplier;
      }
+ 
+     public static class Serializer extends LootCondition.Serializer<RandomChanceWithLooting>
 @@ -43,8 +37,8 @@
  
              public void serialize(JsonObject json, RandomChanceWithLooting value, JsonSerializationContext context)

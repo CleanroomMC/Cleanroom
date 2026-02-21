@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/passive/EntityLlama.java
 +++ after/net/minecraft/entity/passive/EntityLlama.java
-@@ -488,6 +488,9 @@
+@@ -486,6 +486,9 @@
      @Override
      public void fall(float distance, float damageMultiplier)
      {

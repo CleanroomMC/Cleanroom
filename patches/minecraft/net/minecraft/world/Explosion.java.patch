@@ -63,7 +63,7 @@
          this.world = worldIn;
          this.exploder = entityIn;
          this.size = size;
-@@ -86,18 +69,19 @@
+@@ -86,28 +69,29 @@
          this.z = z;
          this.causesFire = causesFire;
          this.damagesTerrain = damagesTerrain;
@@ -87,9 +87,12 @@
                  {
                      if (j == 0 || j == 15 || k == 0 || k == 15 || l == 0 || l == 15)
                      {
-@@ -105,9 +89,9 @@
-                         double d1 = (double)((float)k / 15.0F * 2.0F - 1.0F);
-                         double d2 = (double)((float)l / 15.0F * 2.0F - 1.0F);
+-                        double d0 = j / 15.0F * 2.0F - 1.0F;
+-                        double d1 = k / 15.0F * 2.0F - 1.0F;
+-                        double d2 = l / 15.0F * 2.0F - 1.0F;
++                        double d0 = (double)((float)j / 15.0F * 2.0F - 1.0F);
++                        double d1 = (double)((float)k / 15.0F * 2.0F - 1.0F);
++                        double d2 = (double)((float)l / 15.0F * 2.0F - 1.0F);
                          double d3 = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 -                        d0 /= d3;
 -                        d1 /= d3;
@@ -124,18 +127,17 @@
                          }
                      }
                  }
-@@ -142,17 +124,17 @@
+@@ -142,38 +124,39 @@
  
          this.affectedBlockPositions.addAll(set);
          float f3 = this.size * 2.0F;
--        int k1 = MathHelper.floor(this.x - (double)f3 - 1.0);
--        int l1 = MathHelper.floor(this.x + (double)f3 + 1.0);
--        int i2 = MathHelper.floor(this.y - (double)f3 - 1.0);
--        int i1 = MathHelper.floor(this.y + (double)f3 + 1.0);
--        int j2 = MathHelper.floor(this.z - (double)f3 - 1.0);
--        int j1 = MathHelper.floor(this.z + (double)f3 + 1.0);
--        List<Entity> list = this.world
--                            .getEntitiesWithinAABBExcludingEntity(this.exploder, new AxisAlignedBB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
+-        int k1 = MathHelper.floor(this.x - f3 - 1.0);
+-        int l1 = MathHelper.floor(this.x + f3 + 1.0);
+-        int i2 = MathHelper.floor(this.y - f3 - 1.0);
+-        int i1 = MathHelper.floor(this.y + f3 + 1.0);
+-        int j2 = MathHelper.floor(this.z - f3 - 1.0);
+-        int j1 = MathHelper.floor(this.z + f3 + 1.0);
+-        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this.exploder, new AxisAlignedBB(k1, i2, j2, l1, i1, j1));
 +        int k1 = MathHelper.floor(this.x - (double)f3 - 1.0D);
 +        int l1 = MathHelper.floor(this.x + (double)f3 + 1.0D);
 +        int i2 = MathHelper.floor(this.y - (double)f3 - 1.0D);
@@ -151,17 +153,20 @@
          {
              Entity entity = list.get(k2);
  
-@@ -160,21 +142,21 @@
+             if (!entity.isImmuneToExplosions())
              {
-                 double d12 = entity.getDistance(this.x, this.y, this.z) / (double)f3;
+-                double d12 = entity.getDistance(this.x, this.y, this.z) / f3;
++                double d12 = entity.getDistance(this.x, this.y, this.z) / (double)f3;
  
 -                if (d12 <= 1.0)
 +                if (d12 <= 1.0D)
                  {
                      double d5 = entity.posX - this.x;
-                     double d7 = entity.posY + (double)entity.getEyeHeight() - this.y;
+-                    double d7 = entity.posY + entity.getEyeHeight() - this.y;
++                    double d7 = entity.posY + (double)entity.getEyeHeight() - this.y;
                      double d9 = entity.posZ - this.z;
-                     double d13 = (double)MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
+-                    double d13 = MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
++                    double d13 = (double)MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
  
 -                    if (d13 != 0.0)
 +                    if (d13 != 0.0D)
@@ -169,18 +174,19 @@
 -                        d5 /= d13;
 -                        d7 /= d13;
 -                        d9 /= d13;
+-                        double d14 = this.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
+-                        double d10 = (1.0 - d12) * d14;
+-                        entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (int)((d10 * d10 + d10) / 2.0 * 7.0 * f3 + 1.0));
 +                        d5 = d5 / d13;
 +                        d7 = d7 / d13;
 +                        d9 = d9 / d13;
-                         double d14 = (double)this.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
--                        double d10 = (1.0 - d12) * d14;
--                        entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (float)((int)((d10 * d10 + d10) / 2.0 * 7.0 * (double)f3 + 1.0)));
++                        double d14 = (double)this.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
 +                        double d10 = (1.0D - d12) * d14;
 +                        entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (float)((int)((d10 * d10 + d10) / 2.0D * 7.0D * (double)f3 + 1.0D)));
                          double d11 = d10;
  
                          if (entity instanceof EntityLivingBase)
-@@ -203,25 +185,15 @@
+@@ -202,25 +185,15 @@
  
      public void doExplosionB(boolean spawnParticles)
      {
@@ -210,15 +216,25 @@
          }
  
          if (this.damagesTerrain)
-@@ -240,24 +212,15 @@
+@@ -232,31 +205,22 @@
+ 
+                 if (spawnParticles)
+                 {
+-                    double d0 = blockpos.getX() + this.world.rand.nextFloat();
+-                    double d1 = blockpos.getY() + this.world.rand.nextFloat();
+-                    double d2 = blockpos.getZ() + this.world.rand.nextFloat();
++                    double d0 = (double)((float)blockpos.getX() + this.world.rand.nextFloat());
++                    double d1 = (double)((float)blockpos.getY() + this.world.rand.nextFloat());
++                    double d2 = (double)((float)blockpos.getZ() + this.world.rand.nextFloat());
+                     double d3 = d0 - this.x;
                      double d4 = d1 - this.y;
                      double d5 = d2 - this.z;
-                     double d6 = (double)MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+-                    double d6 = MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 -                    d3 /= d6;
 -                    d4 /= d6;
 -                    d5 /= d6;
--                    double d7 = 0.5 / (d6 / (double)this.size + 0.1);
--                    d7 *= (double)(this.world.rand.nextFloat() * this.world.rand.nextFloat() + 0.3F);
+-                    double d7 = 0.5 / (d6 / this.size + 0.1);
+-                    d7 *= this.world.rand.nextFloat() * this.world.rand.nextFloat() + 0.3F;
 -                    d3 *= d7;
 -                    d4 *= d7;
 -                    d5 *= d7;
@@ -232,6 +248,7 @@
 -                        d4,
 -                        d5
 -                    );
++                    double d6 = (double)MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 +                    d3 = d3 / d6;
 +                    d4 = d4 / d6;
 +                    d5 = d5 / d6;
@@ -244,7 +261,7 @@
                      this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5);
                  }
  
-@@ -268,8 +231,7 @@
+@@ -267,8 +231,7 @@
                          block.dropBlockAsItemWithChance(this.world, blockpos, this.world.getBlockState(blockpos), 1.0F / this.size, 0);
                      }
  
@@ -254,7 +271,7 @@
                  }
              }
          }
-@@ -278,9 +240,7 @@
+@@ -277,9 +240,7 @@
          {
              for (BlockPos blockpos1 : this.affectedBlockPositions)
              {
@@ -265,7 +282,7 @@
                  {
                      this.world.setBlockState(blockpos1, Blocks.FIRE.getDefaultState());
                  }
-@@ -319,4 +279,6 @@
+@@ -318,4 +279,6 @@
      {
          return this.affectedBlockPositions;
      }

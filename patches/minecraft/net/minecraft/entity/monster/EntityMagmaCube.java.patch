@@ -2,7 +2,7 @@
 +++ after/net/minecraft/entity/monster/EntityMagmaCube.java
 @@ -111,6 +111,7 @@
      {
-         this.motionY = (double)(0.42F + (float)this.getSlimeSize() * 0.1F);
+         this.motionY = 0.42F + this.getSlimeSize() * 0.1F;
          this.isAirBorne = true;
 +        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
      }

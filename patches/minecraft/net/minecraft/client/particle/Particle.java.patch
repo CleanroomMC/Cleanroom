@@ -10,9 +10,9 @@
 -                    axisalignedbb.minX,
 -                    axisalignedbb.minY,
 -                    axisalignedbb.minZ,
--                    axisalignedbb.minX + (double)this.width,
--                    axisalignedbb.minY + (double)this.height,
--                    axisalignedbb.minZ + (double)this.width
+-                    axisalignedbb.minX + this.width,
+-                    axisalignedbb.minY + this.height,
+-                    axisalignedbb.minZ + this.width
 -                )
 -            );
 +            // FORGE: Fix MC-12269 - Glitchy movement when setSize is called without setPosition

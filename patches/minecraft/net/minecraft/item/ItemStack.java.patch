@@ -358,6 +358,15 @@
                          {
                              list.add(TextFormatting.DARK_PURPLE + "" + TextFormatting.ITALIC + nbttaglist3.getStringTagAt(l1));
                          }
+@@ -740,7 +798,7 @@
+                         if (attributemodifier.getID() == Item.ATTACK_DAMAGE_MODIFIER)
+                         {
+                             d0 += playerIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
+-                            d0 += EnchantmentHelper.getModifierForCreature(this, EnumCreatureAttribute.UNDEFINED);
++                            d0 += (double)EnchantmentHelper.getModifierForCreature(this, EnumCreatureAttribute.UNDEFINED);
+                             flag = true;
+                         }
+                         else if (attributemodifier.getID() == Item.ATTACK_SPEED_MODIFIER)
 @@ -768,7 +826,7 @@
                              + I18n.translateToLocalFormatted(
                                  "attribute.modifier.equals." + attributemodifier.getOperation(),
@@ -438,7 +447,14 @@
      }
  
      public void addEnchantment(Enchantment ench, int level)
-@@ -911,7 +979,14 @@
+@@ -905,13 +973,20 @@
+         NBTTagList nbttaglist = this.stackTagCompound.getTagList("ench", 10);
+         NBTTagCompound nbttagcompound = new NBTTagCompound();
+         nbttagcompound.setShort("id", (short)Enchantment.getEnchantmentID(ench));
+-        nbttagcompound.setShort("lvl", (byte)level);
++        nbttagcompound.setShort("lvl", (short)((byte)level));
+         nbttaglist.appendTag(nbttagcompound);
+     }
  
      public boolean isItemEnchanted()
      {

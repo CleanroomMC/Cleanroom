@@ -46,7 +46,7 @@
  
              if (k > 100000000L)
              {
--                LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", this.profilingSection, (double)k / 1000000.0);
+-                LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", this.profilingSection, k / 1000000.0);
 +                LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", this.profilingSection, Double.valueOf((double)k / 1000000.0D));
              }
  
@@ -100,8 +100,8 @@
 +                if (s1.length() > profilerName.length() && s1.startsWith(profilerName) && s1.indexOf(".", profilerName.length() + 1) < 0)
                  {
 -                    long l = this.profilingMap.get(s2);
--                    double d0 = (double)l * 100.0 / (double)k;
--                    double d1 = (double)l * 100.0 / (double)i;
+-                    double d0 = l * 100.0 / k;
+-                    double d1 = l * 100.0 / i;
 -                    String s3 = s2.substring(profilerName.length());
 -                    list.add(new Profiler.Result(s3, d0, d1));
 +                    long l = ((Long)this.profilingMap.get(s1)).longValue();
@@ -121,12 +121,12 @@
  
              if ((float)k > f)
              {
--                list.add(new Profiler.Result("unspecified", (double)((float)k - f) * 100.0 / (double)k, (double)((float)k - f) * 100.0 / (double)i));
+-                list.add(new Profiler.Result("unspecified", ((float)k - f) * 100.0 / k, ((float)k - f) * 100.0 / i));
 +                list.add(new Profiler.Result("unspecified", (double)((float)k - f) * 100.0D / (double)k, (double)((float)k - f) * 100.0D / (double)i));
              }
  
              Collections.sort(list);
--            list.add(0, new Profiler.Result(s, 100.0, (double)k * 100.0 / (double)i));
+-            list.add(0, new Profiler.Result(s, 100.0, k * 100.0 / i));
 +            list.add(0, new Profiler.Result(profilerName, 100.0D, (double)k * 100.0D / (double)i));
              return list;
          }

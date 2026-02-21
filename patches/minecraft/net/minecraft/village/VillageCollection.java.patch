@@ -36,9 +36,10 @@
 -            if (!(d1 >= d0))
 +            if (d1 < d0)
              {
-                 float f = (float)(radius + village1.getVillageRadius());
+-                float f = radius + village1.getVillageRadius();
++                float f = (float)(radius + village1.getVillageRadius());
  
--                if (!(d1 > (double)(f * f)))
+-                if (!(d1 > f * f))
 +                if (d1 <= (double)(f * f))
                  {
                      village = village1;

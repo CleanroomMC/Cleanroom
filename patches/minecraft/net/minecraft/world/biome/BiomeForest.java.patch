@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/biome/BiomeForest.java
 +++ after/net/minecraft/world/biome/BiomeForest.java
-@@ -46,36 +46,41 @@
+@@ -46,34 +46,41 @@
          {
              this.decorator.treesPerChunk = -999;
          }
@@ -45,17 +45,15 @@
          if (this.type == BiomeForest.Type.FLOWER)
          {
 -            double d0 = MathHelper.clamp(
--                            (1.0 + GRASS_COLOR_NOISE.getValue((double)pos.getX() / 48.0, (double)pos.getZ() / 48.0)) / 2.0, 0.0, 0.9999
+-                            (1.0 + GRASS_COLOR_NOISE.getValue(pos.getX() / 48.0, pos.getZ() / 48.0)) / 2.0, 0.0, 0.9999
 -                        );
--            BlockFlower.EnumFlowerType blockflower$enumflowertype = BlockFlower.EnumFlowerType.values()[(int)(
--                        d0 * (double)BlockFlower.EnumFlowerType.values().length
--                    )];
+-            BlockFlower.EnumFlowerType blockflower$enumflowertype = BlockFlower.EnumFlowerType.values()[(int)(d0 * BlockFlower.EnumFlowerType.values().length)];
 +            double d0 = MathHelper.clamp((1.0D + GRASS_COLOR_NOISE.getValue((double)pos.getX() / 48.0D, (double)pos.getZ() / 48.0D)) / 2.0D, 0.0D, 0.9999D);
 +            BlockFlower.EnumFlowerType blockflower$enumflowertype = BlockFlower.EnumFlowerType.values()[(int)(d0 * (double)BlockFlower.EnumFlowerType.values().length)];
              return blockflower$enumflowertype == BlockFlower.EnumFlowerType.BLUE_ORCHID ? BlockFlower.EnumFlowerType.POPPY : blockflower$enumflowertype;
          }
          else
-@@ -84,7 +89,6 @@
+@@ -82,7 +89,6 @@
          }
      }
  
@@ -63,7 +61,7 @@
      public void decorate(World worldIn, Random rand, BlockPos pos)
      {
          if (this.type == BiomeForest.Type.ROOFED)
-@@ -92,6 +96,8 @@
+@@ -90,6 +96,8 @@
              this.addMushrooms(worldIn, rand, pos);
          }
  
@@ -72,7 +70,7 @@
          int i = rand.nextInt(5) - 3;
  
          if (this.type == BiomeForest.Type.FLOWER)
-@@ -100,25 +106,27 @@
+@@ -98,25 +106,27 @@
          }
  
          this.addDoublePlants(worldIn, rand, pos, i);
@@ -104,7 +102,7 @@
                  {
                      WorldGenAbstractTree worldgenabstracttree = this.getRandomTreeFeature(p_185379_2_);
                      worldgenabstracttree.setDecorationDefaults();
-@@ -134,7 +142,7 @@
+@@ -132,7 +142,7 @@
  
      public void addDoublePlants(World p_185378_1_, Random p_185378_2_, BlockPos p_185378_3_, int p_185378_4_)
      {
@@ -113,7 +111,7 @@
          {
              int j = p_185378_2_.nextInt(3);
  
-@@ -151,7 +159,7 @@
+@@ -149,7 +159,7 @@
                  DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.PAEONIA);
              }
  
@@ -122,7 +120,7 @@
              {
                  int l = p_185378_2_.nextInt(16) + 8;
                  int i1 = p_185378_2_.nextInt(16) + 8;
-@@ -165,14 +173,12 @@
+@@ -163,14 +173,12 @@
          }
      }
  

@@ -10,6 +10,24 @@
  public class Vec3d
  {
      public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
+@@ -35,7 +32,7 @@
+ 
+     public Vec3d(Vec3i vector)
+     {
+-        this(vector.getX(), vector.getY(), vector.getZ());
++        this((double)vector.getX(), (double)vector.getY(), (double)vector.getZ());
+     }
+ 
+     public Vec3d subtractReverse(Vec3d vec)
+@@ -47,7 +44,7 @@
+ 
+     public Vec3d normalize()
+     {
+-        double d0 = MathHelper.sqrt(
++        double d0 = (double)MathHelper.sqrt(
+                         this.x * this.x + this.y * this.y + this.z * this.z
+                     );
+         return d0 < 1.0E-4 ? ZERO : new Vec3d(this.x / d0, this.y / d0, this.z / d0);
 @@ -58,7 +55,6 @@
          return this.x * vec.x + this.y * vec.y + this.z * vec.z;
      }
@@ -18,7 +36,22 @@
      public Vec3d crossProduct(Vec3d vec)
      {
          return new Vec3d(
-@@ -124,7 +120,6 @@
+@@ -93,7 +89,7 @@
+         double d0 = vec.x - this.x;
+         double d1 = vec.y - this.y;
+         double d2 = vec.z - this.z;
+-        return MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
++        return (double)MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+     }
+ 
+     public double squareDistanceTo(Vec3d vec)
+@@ -119,12 +115,11 @@
+ 
+     public double length()
+     {
+-        return MathHelper.sqrt(
++        return (double)MathHelper.sqrt(
+                    this.x * this.x + this.y * this.y + this.z * this.z
                 );
      }
  
@@ -26,7 +59,26 @@
      public double lengthSquared()
      {
          return this.x * this.x + this.y * this.y + this.z * this.z;
-@@ -247,13 +242,11 @@
+@@ -232,8 +227,8 @@
+         float f = MathHelper.cos(pitch);
+         float f1 = MathHelper.sin(pitch);
+         double d0 = this.x;
+-        double d1 = this.y * f + this.z * f1;
+-        double d2 = this.z * f - this.y * f1;
++        double d1 = this.y * (double)f + this.z * (double)f1;
++        double d2 = this.z * (double)f - this.y * (double)f1;
+         return new Vec3d(d0, d1, d2);
+     }
+ 
+@@ -241,25 +236,23 @@
+     {
+         float f = MathHelper.cos(yaw);
+         float f1 = MathHelper.sin(yaw);
+-        double d0 = this.x * f + this.z * f1;
++        double d0 = this.x * (double)f + this.z * (double)f1;
+         double d1 = this.y;
+-        double d2 = this.z * f - this.x * f1;
++        double d2 = this.z * (double)f - this.x * (double)f1;
          return new Vec3d(d0, d1, d2);
      }
  
@@ -40,3 +92,10 @@
      public static Vec3d fromPitchYaw(float p_189986_0_, float p_189986_1_)
      {
          float f = MathHelper.cos(-p_189986_1_ * (float)(Math.PI / 180.0) - (float) Math.PI);
+         float f1 = MathHelper.sin(-p_189986_1_ * (float)(Math.PI / 180.0) - (float) Math.PI);
+         float f2 = -MathHelper.cos(-p_189986_0_ * (float)(Math.PI / 180.0));
+         float f3 = MathHelper.sin(-p_189986_0_ * (float)(Math.PI / 180.0));
+-        return new Vec3d(f1 * f2, f3, f * f2);
++        return new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
+     }
+ }

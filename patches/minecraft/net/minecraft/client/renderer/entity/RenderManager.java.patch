@@ -21,6 +21,6 @@
              {
 -                int i = iblockstate.getValue(BlockBed.FACING).getHorizontalIndex();
 +                int i = block.getBedDirection(iblockstate, worldIn, new BlockPos(livingPlayerIn)).getHorizontalIndex();
-                 this.playerViewY = (float)(i * 90 + 180);
+                 this.playerViewY = i * 90 + 180;
                  this.playerViewX = 0.0F;
              }

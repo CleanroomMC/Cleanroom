@@ -61,9 +61,9 @@
              public Vec3d getPositionVector()
              {
 -                return new Vec3d(
--                           (double)TileEntitySign.this.pos.getX() + 0.5,
--                           (double)TileEntitySign.this.pos.getY() + 0.5,
--                           (double)TileEntitySign.this.pos.getZ() + 0.5
+-                           TileEntitySign.this.pos.getX() + 0.5,
+-                           TileEntitySign.this.pos.getY() + 0.5,
+-                           TileEntitySign.this.pos.getZ() + 0.5
 -                       );
 +                return new Vec3d((double)TileEntitySign.this.pos.getX() + 0.5D, (double)TileEntitySign.this.pos.getY() + 0.5D, (double)TileEntitySign.this.pos.getZ() + 0.5D);
              }
@@ -147,9 +147,9 @@
              public Vec3d getPositionVector()
              {
 -                return new Vec3d(
--                           (double)TileEntitySign.this.pos.getX() + 0.5,
--                           (double)TileEntitySign.this.pos.getY() + 0.5,
--                           (double)TileEntitySign.this.pos.getZ() + 0.5
+-                           TileEntitySign.this.pos.getX() + 0.5,
+-                           TileEntitySign.this.pos.getY() + 0.5,
+-                           TileEntitySign.this.pos.getZ() + 0.5
 -                       );
 +                return new Vec3d((double)TileEntitySign.this.pos.getX() + 0.5D, (double)TileEntitySign.this.pos.getY() + 0.5D, (double)TileEntitySign.this.pos.getZ() + 0.5D);
              }

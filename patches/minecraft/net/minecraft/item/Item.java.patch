@@ -18,15 +18,17 @@
          public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
          {
              return stack.isItemDamaged() ? 1.0F : 0.0F;
-@@ -74,7 +73,6 @@
+@@ -74,16 +73,14 @@
      private static final IItemPropertyGetter DAMAGE_GETTER = new IItemPropertyGetter()
      {
          @SideOnly(Side.CLIENT)
 -        @Override
          public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
          {
-             return MathHelper.clamp((float)stack.getItemDamage() / (float)stack.getMaxDamage(), 0.0F, 1.0F);
-@@ -83,7 +81,6 @@
+-            return MathHelper.clamp((float)stack.getItemDamage() / stack.getMaxDamage(), 0.0F, 1.0F);
++            return MathHelper.clamp((float)stack.getItemDamage() / (float)stack.getMaxDamage(), 0.0F, 1.0F);
+         }
+     };
      private static final IItemPropertyGetter LEFTHANDED_GETTER = new IItemPropertyGetter()
      {
          @SideOnly(Side.CLIENT)
@@ -151,8 +153,12 @@
      }
  
      protected RayTraceResult rayTrace(World worldIn, EntityPlayer playerIn, boolean useLiquids)
-@@ -395,14 +387,14 @@
-         double d1 = playerIn.posY + (double)playerIn.getEyeHeight();
+@@ -392,17 +384,17 @@
+         float f = playerIn.rotationPitch;
+         float f1 = playerIn.rotationYaw;
+         double d0 = playerIn.posX;
+-        double d1 = playerIn.posY + playerIn.getEyeHeight();
++        double d1 = playerIn.posY + (double)playerIn.getEyeHeight();
          double d2 = playerIn.posZ;
          Vec3d vec3d = new Vec3d(d0, d1, d2);
 -        float f2 = MathHelper.cos(-f1 * (float)(Math.PI / 180.0) - (float) Math.PI);
@@ -166,7 +172,7 @@
          float f6 = f3 * f4;
          float f7 = f2 * f4;
 -        double d3 = 5.0;
--        Vec3d vec3d1 = vec3d.add((double)f6 * 5.0, (double)f5 * 5.0, (double)f7 * 5.0);
+-        Vec3d vec3d1 = vec3d.add(f6 * 5.0, f5 * 5.0, f7 * 5.0);
 +        double d3 = playerIn.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
 +        Vec3d vec3d1 = vec3d.add((double)f6 * d3, (double)f5 * d3, (double)f7 * d3);
          return worldIn.rayTraceBlocks(vec3d, vec3d1, useLiquids, !useLiquids, false);

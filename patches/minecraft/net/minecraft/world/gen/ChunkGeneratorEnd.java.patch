@@ -117,17 +117,19 @@
                              primer.setBlockState(i, i1, j, iblockstate1);
                          }
                      }
-@@ -171,9 +186,9 @@
+@@ -171,10 +186,10 @@
          }
      }
  
 -    @Override
      public Chunk generateChunk(int x, int z)
      {
+-        this.rand.setSeed(x * 341873128712L + z * 132897987541L);
 +        this.chunkX = x; this.chunkZ = z;
-         this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
++        this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
          ChunkPrimer chunkprimer = new ChunkPrimer();
          this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
+         this.setBlocksInChunk(x, z, chunkprimer);
 @@ -188,7 +203,7 @@
          Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
          byte[] abyte = chunk.getBiomeArray();
@@ -137,7 +139,18 @@
          {
              abyte[i] = (byte)Biome.getIdForBiome(this.biomesForGeneration[i]);
          }
-@@ -213,14 +228,14 @@
+@@ -199,8 +214,8 @@
+ 
+     private float getIslandHeightValue(int p_185960_1_, int p_185960_2_, int p_185960_3_, int p_185960_4_)
+     {
+-        float f = p_185960_1_ * 2 + p_185960_3_;
+-        float f1 = p_185960_2_ * 2 + p_185960_4_;
++        float f = (float)(p_185960_1_ * 2 + p_185960_3_);
++        float f1 = (float)(p_185960_2_ * 2 + p_185960_4_);
+         float f2 = 100.0F - MathHelper.sqrt(f * f + f1 * f1) * 8.0F;
+ 
+         if (f2 > 80.0F)
+@@ -213,18 +228,18 @@
              f2 = -100.0F;
          }
  
@@ -147,20 +160,27 @@
 -            for (int j = -12; j <= 12; j++)
 +            for (int j = -12; j <= 12; ++j)
              {
-                 long k = (long)(p_185960_1_ + i);
-                 long l = (long)(p_185960_2_ + j);
+-                long k = p_185960_1_ + i;
+-                long l = p_185960_2_ + j;
++                long k = (long)(p_185960_1_ + i);
++                long l = (long)(p_185960_2_ + j);
  
--                if (k * k + l * l > 4096L && this.islandNoise.getValue((double)k, (double)l) < -0.9F)
+-                if (k * k + l * l > 4096L && this.islandNoise.getValue(k, l) < -0.9F)
 +                if (k * k + l * l > 4096L && this.islandNoise.getValue((double)k, (double)l) < -0.8999999761581421D)
                  {
                      float f3 = (MathHelper.abs((float)k) * 3439.0F + MathHelper.abs((float)l) * 147.0F) % 13.0F + 9.0F;
-                     f = (float)(p_185960_3_ - i * 2);
-@@ -250,50 +265,48 @@
+-                    f = p_185960_3_ - i * 2;
+-                    f1 = p_185960_4_ - j * 2;
++                    f = (float)(p_185960_3_ - i * 2);
++                    f1 = (float)(p_185960_4_ - j * 2);
+                     float f4 = 100.0F - MathHelper.sqrt(f * f + f1 * f1) * f3;
+ 
+                     if (f4 > 80.0F)
+@@ -250,49 +265,48 @@
  
      public boolean isIslandChunk(int p_185961_1_, int p_185961_2_)
      {
--        return (long)p_185961_1_ * (long)p_185961_1_ + (long)p_185961_2_ * (long)p_185961_2_ > 4096L
--               && this.getIslandHeightValue(p_185961_1_, p_185961_2_, 1, 1) >= 0.0F;
+-        return (long)p_185961_1_ * p_185961_1_ + (long)p_185961_2_ * p_185961_2_ > 4096L && this.getIslandHeightValue(p_185961_1_, p_185961_2_, 1, 1) >= 0.0F;
 +        return (long)p_185961_1_ * (long)p_185961_1_ + (long)p_185961_2_ * (long)p_185961_2_ > 4096L && this.getIslandHeightValue(p_185961_1_, p_185961_2_, 1, 1) >= 0.0F;
      }
  
@@ -225,21 +245,22 @@
                      {
                          d4 = d3;
                      }
-@@ -302,27 +315,27 @@
+@@ -301,27 +315,27 @@
                          d4 = d2 + (d3 - d2) * d5;
                      }
  
 -                    d4 -= 8.0;
--                    d4 += (double)f;
+-                    d4 += f;
 +                    d4 = d4 - 8.0D;
 +                    d4 = d4 + (double)f;
                      int k1 = 2;
  
                      if (j1 > p_185963_6_ / 2 - k1)
                      {
-                         double d6 = (double)((float)(j1 - (p_185963_6_ / 2 - k1)) / 64.0F);
+-                        double d6 = (j1 - (p_185963_6_ / 2 - k1)) / 64.0F;
 -                        d6 = MathHelper.clamp(d6, 0.0, 1.0);
 -                        d4 = d4 * (1.0 - d6) + -3000.0 * d6;
++                        double d6 = (double)((float)(j1 - (p_185963_6_ / 2 - k1)) / 64.0F);
 +                        d6 = MathHelper.clamp(d6, 0.0D, 1.0D);
 +                        d4 = d4 * (1.0D - d6) + -3000.0D * d6;
                      }
@@ -250,7 +271,7 @@
 -                    if (j1 < b0)
 +                    if (j1 < k1)
                      {
--                        double d7 = (double)((float)(b0 - j1) / ((float)b0 - 1.0F));
+-                        double d7 = (b0 - j1) / (b0 - 1.0F);
 -                        d4 = d4 * (1.0 - d7) + -30.0 * d7;
 +                        double d7 = (double)((float)(k1 - j1) / ((float)k1 - 1.0F));
 +                        d4 = d4 * (1.0D - d7) + -30.0D * d7;
@@ -262,7 +283,7 @@
                  }
              }
          }
-@@ -330,10 +343,10 @@
+@@ -329,10 +343,10 @@
          return p_185963_1_;
      }
  
@@ -274,7 +295,16 @@
          BlockPos blockpos = new BlockPos(x * 16, 0, z * 16);
  
          if (this.mapFeaturesEnabled)
-@@ -350,21 +363,11 @@
+@@ -341,7 +355,7 @@
+         }
+ 
+         this.world.getBiome(blockpos.add(16, 0, 16)).decorate(this.world, this.world.rand, blockpos);
+-        long i = (long)x * x + (long)z * z;
++        long i = (long)x * (long)x + (long)z * (long)z;
+ 
+         if (i > 4096L)
+         {
+@@ -349,21 +363,11 @@
  
              if (f < -20.0F && this.rand.nextInt(14) == 0)
              {
@@ -298,7 +328,7 @@
                  }
              }
  
-@@ -372,7 +375,7 @@
+@@ -371,7 +375,7 @@
              {
                  int j = this.rand.nextInt(5);
  
@@ -307,7 +337,7 @@
                  {
                      int l = this.rand.nextInt(16) + 8;
                      int i1 = this.rand.nextInt(16) + 8;
-@@ -382,8 +385,7 @@
+@@ -381,8 +385,7 @@
                      {
                          int k1 = j1 - 1;
  
@@ -317,7 +347,7 @@
                          {
                              BlockChorusFlower.generatePlant(this.world, blockpos.add(l, k1 + 1, i1), this.rand, 8);
                          }
-@@ -400,7 +402,7 @@
+@@ -399,7 +402,7 @@
                      {
                          int k2 = j2 + 3 + this.rand.nextInt(7);
                          BlockPos blockpos1 = blockpos.add(l1, k2, i2);
@@ -326,7 +356,7 @@
                          TileEntity tileentity = this.world.getTileEntity(blockpos1);
  
                          if (tileentity instanceof TileEntityEndGateway)
-@@ -413,35 +415,31 @@
+@@ -412,35 +415,31 @@
              }
          }
  

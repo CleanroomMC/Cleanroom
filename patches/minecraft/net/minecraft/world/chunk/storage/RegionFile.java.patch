@@ -14,7 +14,7 @@
  
              if ((this.dataFile.length() & 4095L) != 0L)
              {
--                for (int i = 0; (long)i < (this.dataFile.length() & 4095L); i++)
+-                for (int i = 0; i < (this.dataFile.length() & 4095L); i++)
 +                for (int i = 0; (long)i < (this.dataFile.length() & 4095L); ++i)
                  {
                      this.dataFile.write(0);
@@ -101,7 +101,13 @@
  
                      if (j + k > this.sectorFree.size())
                      {
-@@ -129,10 +155,12 @@
+@@ -124,15 +150,17 @@
+                     }
+                     else
+                     {
+-                        this.dataFile.seek(j * 4096);
++                        this.dataFile.seek((long)(j * 4096));
+                         int l = this.dataFile.readInt();
  
                          if (l > 4096 * k)
                          {
@@ -226,6 +232,32 @@
 +                    this.setOffset(x, z, j << 8 | (l > 255 ? 255 : l));
                  }
              }
+ 
+@@ -269,7 +301,7 @@
+ 
+     private void write(int sectorNumber, byte[] data, int length) throws IOException
+     {
+-        this.dataFile.seek(sectorNumber * 4096);
++        this.dataFile.seek((long)(sectorNumber * 4096));
+         this.dataFile.writeInt(length + 1);
+         this.dataFile.writeByte(2);
+         this.dataFile.write(data, 0, length);
+@@ -293,14 +325,14 @@
+     private void setOffset(int x, int z, int offset) throws IOException
+     {
+         this.offsets[x + z * 32] = offset;
+-        this.dataFile.seek((x + z * 32) * 4);
++        this.dataFile.seek((long)((x + z * 32) * 4));
+         this.dataFile.writeInt(offset);
+     }
+ 
+     private void setChunkTimestamp(int x, int z, int timestamp) throws IOException
+     {
+         this.chunkTimestamps[x + z * 32] = timestamp;
+-        this.dataFile.seek(4096 + (x + z * 32) * 4);
++        this.dataFile.seek((long)(4096 + (x + z * 32) * 4));
+         this.dataFile.writeInt(timestamp);
+     }
  
 @@ -324,7 +356,6 @@
              this.chunkZ = z;

@@ -1,5 +1,14 @@
 --- before/net/minecraft/util/IntIdentityHashBiMap.java
 +++ after/net/minecraft/util/IntIdentityHashBiMap.java
+@@ -20,7 +20,7 @@
+ 
+     public IntIdentityHashBiMap(int initialCapacity)
+     {
+-        initialCapacity = (int)(initialCapacity / 0.8F);
++        initialCapacity = (int)((float)initialCapacity / 0.8F);
+         this.values = (K[])(new Object[initialCapacity]);
+         this.intKeys = new int[initialCapacity];
+         this.byId = (K[])(new Object[initialCapacity]);
 @@ -34,7 +34,7 @@
      @Nullable
      public K get(int idIn)
@@ -27,9 +36,12 @@
          {
              if (ak[i] != null)
              {
-@@ -84,11 +84,11 @@
+@@ -82,13 +82,13 @@
+     {
+         int i = Math.max(intKey, this.mapSize + 1);
  
-         if ((float)i >= (float)this.values.length * 0.8F)
+-        if (i >= this.values.length * 0.8F)
++        if ((float)i >= (float)this.values.length * 0.8F)
          {
 -            int j = this.values.length << 1;
 +            int j;

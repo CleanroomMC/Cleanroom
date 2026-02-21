@@ -38,10 +38,14 @@
              }
          }
      }
-@@ -367,6 +367,7 @@
+@@ -365,8 +365,9 @@
+         nbt.setDouble("BorderSafeZone", this.borderSafeZone);
+         nbt.setDouble("BorderDamagePerBlock", this.borderDamagePerBlock);
          nbt.setDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
-         nbt.setDouble("BorderWarningBlocks", (double)this.borderWarningDistance);
-         nbt.setDouble("BorderWarningTime", (double)this.borderWarningTime);
+-        nbt.setDouble("BorderWarningBlocks", this.borderWarningDistance);
+-        nbt.setDouble("BorderWarningTime", this.borderWarningTime);
++        nbt.setDouble("BorderWarningBlocks", (double)this.borderWarningDistance);
++        nbt.setDouble("BorderWarningTime", (double)this.borderWarningTime);
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
  
          if (this.difficulty != null)

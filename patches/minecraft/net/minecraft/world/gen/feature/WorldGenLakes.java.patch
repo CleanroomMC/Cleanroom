@@ -46,9 +46,9 @@
 -                        for (int j1 = 1; j1 < 7; j1++)
 +                        for (int j1 = 1; j1 < 7; ++j1)
                          {
--                            double d6 = ((double)l - d3) / (d0 / 2.0);
--                            double d7 = ((double)j1 - d4) / (d1 / 2.0);
--                            double d8 = ((double)i1 - d5) / (d2 / 2.0);
+-                            double d6 = (l - d3) / (d0 / 2.0);
+-                            double d7 = (j1 - d4) / (d1 / 2.0);
+-                            double d8 = (i1 - d5) / (d2 / 2.0);
 +                            double d6 = ((double)l - d3) / (d0 / 2.0D);
 +                            double d7 = ((double)j1 - d4) / (d1 / 2.0D);
 +                            double d8 = ((double)i1 - d5) / (d2 / 2.0D);

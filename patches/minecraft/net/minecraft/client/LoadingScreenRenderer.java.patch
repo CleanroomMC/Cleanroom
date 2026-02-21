@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/LoadingScreenRenderer.java
 +++ after/net/minecraft/client/LoadingScreenRenderer.java
-@@ -145,6 +145,10 @@
+@@ -143,6 +143,10 @@
                      GlStateManager.clear(16640);
                  }
  
@@ -11,10 +11,10 @@
                  Tessellator tessellator = Tessellator.getInstance();
                  BufferBuilder bufferbuilder = tessellator.getBuffer();
                  this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
-@@ -196,6 +200,12 @@
-                 .drawStringWithShadow(
-                     this.message, (float)((k - this.mc.fontRenderer.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215
-                 );
+@@ -187,6 +191,12 @@
+                 this.mc
+                 .fontRenderer
+                 .drawStringWithShadow(this.message, (k - this.mc.fontRenderer.getStringWidth(this.message)) / 2, l / 2 - 4 + 8, 16777215);
 +                }
 +                }
 +                catch (java.io.IOException e)

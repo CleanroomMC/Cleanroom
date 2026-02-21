@@ -64,7 +64,7 @@
                      {
                          this.setBlockAndNotifyAdequately(worldIn, position.add(0, j, 1), this.woodMetadata);
                      }
-@@ -88,7 +75,7 @@
+@@ -88,16 +75,15 @@
          int i = rand.nextInt(5) + (this.useBaseHeight ? this.baseHeight : 3);
          int j = 0;
  
@@ -72,8 +72,10 @@
 +        for (int k = y - i; k <= y; ++k)
          {
              int l = y - k;
-             int i1 = p_150541_5_ + MathHelper.floor((float)l / (float)i * 3.5F);
-@@ -97,7 +84,6 @@
+-            int i1 = p_150541_5_ + MathHelper.floor((float)l / i * 3.5F);
++            int i1 = p_150541_5_ + MathHelper.floor((float)l / (float)i * 3.5F);
+             this.growLeavesLayerStrict(worldIn, new BlockPos(x, k, z), i1 + (l > 0 && i1 == j && (k & 1) == 0 ? 1 : 0));
+             j = i1;
          }
      }
  

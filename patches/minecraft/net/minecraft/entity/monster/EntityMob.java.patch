@@ -9,7 +9,7 @@
 +                        && itemstack.getItem().canDisableShield(itemstack, itemstack1, entityplayer, this)
 +                        && itemstack1.getItem().isShield(itemstack1, entityplayer))
                  {
-                     float f1 = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
+                     float f1 = 0.25F + EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
  
                      if (this.rand.nextFloat() < f1)
                      {

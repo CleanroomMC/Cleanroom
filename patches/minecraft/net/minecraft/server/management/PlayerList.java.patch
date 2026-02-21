@@ -346,22 +346,16 @@
          entityplayermp.setEntityId(playerIn.getEntityId());
          entityplayermp.setCommandStats(playerIn);
          entityplayermp.setPrimaryHand(playerIn.getPrimaryHand());
-@@ -541,13 +558,7 @@
+@@ -541,7 +558,7 @@
  
              if (blockpos1 != null)
              {
--                entityplayermp.setLocationAndAngles(
--                    (double)((float)blockpos1.getX() + 0.5F),
--                    (double)((float)blockpos1.getY() + 0.1F),
--                    (double)((float)blockpos1.getZ() + 0.5F),
--                    0.0F,
--                    0.0F
--                );
+-                entityplayermp.setLocationAndAngles(blockpos1.getX() + 0.5F, blockpos1.getY() + 0.1F, blockpos1.getZ() + 0.5F, 0.0F, 0.0F);
 +                entityplayermp.setLocationAndAngles((double)((float)blockpos1.getX() + 0.5F), (double)((float)blockpos1.getY() + 0.1F), (double)((float)blockpos1.getZ() + 0.5F), 0.0F, 0.0F);
                  entityplayermp.setSpawnPoint(blockpos, flag);
              }
              else
-@@ -558,32 +569,16 @@
+@@ -552,32 +569,16 @@
  
          worldserver.getChunkProvider().provideChunk((int)entityplayermp.posX >> 4, (int)entityplayermp.posZ >> 4);
  
@@ -399,7 +393,7 @@
          this.updateTimeAndWeatherForPlayer(entityplayermp, worldserver);
          this.updatePermissionLevel(entityplayermp);
          worldserver.getPlayerChunkMap().addPlayer(entityplayermp);
-@@ -592,6 +587,7 @@
+@@ -586,6 +587,7 @@
          this.uuidToPlayerMap.put(entityplayermp.getUniqueID(), entityplayermp);
          entityplayermp.addSelfToInternalCraftingInventory();
          entityplayermp.setHealth(entityplayermp.getHealth());
@@ -407,7 +401,7 @@
          return entityplayermp;
      }
  
-@@ -606,26 +602,28 @@
+@@ -600,26 +602,28 @@
  
      public void changePlayerDimension(EntityPlayerMP player, int dimensionIn)
      {
@@ -448,7 +442,7 @@
          player.interactionManager.setWorld(worldserver1);
          player.connection.sendPacket(new SPacketPlayerAbilities(player.capabilities));
          this.updateTimeAndWeatherForPlayer(player, worldserver1);
-@@ -635,39 +633,56 @@
+@@ -629,39 +633,56 @@
          {
              player.connection.sendPacket(new SPacketEntityEffect(player.getEntityId(), potioneffect));
          }
@@ -531,7 +525,20 @@
          {
              BlockPos blockpos;
  
-@@ -693,7 +708,7 @@
+@@ -674,9 +695,9 @@
+                 blockpos = toWorldIn.getSpawnCoordinate();
+             }
+ 
+-            d0 = blockpos.getX();
+-            entityIn.posY = blockpos.getY();
+-            d1 = blockpos.getZ();
++            d0 = (double)blockpos.getX();
++            entityIn.posY = (double)blockpos.getY();
++            d1 = (double)blockpos.getZ();
+             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, 90.0F, 0.0F);
+ 
+             if (entityIn.isEntityAlive())
+@@ -687,16 +708,17 @@
  
          oldWorldIn.profiler.endSection();
  
@@ -539,8 +546,11 @@
 +        if (lastDimension != 1 || !teleporter.isVanilla())
          {
              oldWorldIn.profiler.startSection("placing");
-             d0 = (double)MathHelper.clamp((int)d0, -29999872, 29999872);
-@@ -702,7 +717,8 @@
+-            d0 = MathHelper.clamp((int)d0, -29999872, 29999872);
+-            d1 = MathHelper.clamp((int)d1, -29999872, 29999872);
++            d0 = (double)MathHelper.clamp((int)d0, -29999872, 29999872);
++            d1 = (double)MathHelper.clamp((int)d1, -29999872, 29999872);
+ 
              if (entityIn.isEntityAlive())
              {
                  entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
@@ -550,7 +560,7 @@
                  toWorldIn.spawnEntity(entityIn);
                  toWorldIn.updateEntityWithOptionalForce(entityIn, false);
              }
-@@ -724,15 +740,15 @@
+@@ -718,15 +740,15 @@
  
      public void sendPacketToAllPlayers(Packet<?> packetIn)
      {
@@ -569,7 +579,7 @@
          {
              EntityPlayerMP entityplayermp = this.playerEntityList.get(i);
  
-@@ -771,7 +787,7 @@
+@@ -765,7 +787,7 @@
          }
          else
          {
@@ -578,7 +588,7 @@
              {
                  EntityPlayerMP entityplayermp = this.playerEntityList.get(i);
  
-@@ -788,18 +804,18 @@
+@@ -782,18 +804,18 @@
          String s = "";
          List<EntityPlayerMP> list = Lists.newArrayList(this.playerEntityList);
  
@@ -600,7 +610,7 @@
              }
          }
  
-@@ -810,9 +826,9 @@
+@@ -804,9 +826,9 @@
      {
          String[] astring = new String[this.playerEntityList.size()];
  
@@ -612,7 +622,7 @@
          }
  
          return astring;
-@@ -822,9 +838,9 @@
+@@ -816,9 +838,9 @@
      {
          GameProfile[] agameprofile = new GameProfile[this.playerEntityList.size()];
  
@@ -624,7 +634,7 @@
          }
  
          return agameprofile;
-@@ -883,11 +899,7 @@
+@@ -877,11 +899,7 @@
  
      public boolean canSendCommands(GameProfile profile)
      {
@@ -637,7 +647,7 @@
      }
  
      @Nullable
-@@ -904,17 +916,9 @@
+@@ -898,17 +916,9 @@
          return null;
      }
  
@@ -657,7 +667,7 @@
          {
              EntityPlayerMP entityplayermp = this.playerEntityList.get(i);
  
-@@ -934,7 +938,7 @@
+@@ -928,7 +938,7 @@
  
      public void saveAllPlayerData()
      {
@@ -666,7 +676,7 @@
          {
              this.writePlayerData(this.playerEntityList.get(i));
          }
-@@ -978,8 +982,7 @@
+@@ -972,8 +982,7 @@
      {
          WorldBorder worldborder = this.server.worlds[0].getWorldBorder();
          playerIn.connection.sendPacket(new SPacketWorldBorder(worldborder, SPacketWorldBorder.Action.INITIALIZE));
@@ -676,7 +686,7 @@
          BlockPos blockpos = worldIn.getSpawnPoint();
          playerIn.connection.sendPacket(new SPacketSpawnPosition(blockpos));
  
-@@ -1013,12 +1016,6 @@
+@@ -1007,12 +1016,6 @@
          return this.server.worlds[0].getSaveHandler().getPlayerNBTManager().getAvailablePlayerDat();
      }
  
@@ -689,7 +699,7 @@
      public void setWhiteListEnabled(boolean whitelistEnabled)
      {
          this.whiteListEnforced = whitelistEnabled;
-@@ -1026,7 +1023,7 @@
+@@ -1020,7 +1023,7 @@
  
      public List<EntityPlayerMP> getPlayersMatchingAddress(String address)
      {
@@ -698,7 +708,7 @@
  
          for (EntityPlayerMP entityplayermp : this.playerEntityList)
          {
-@@ -1082,9 +1079,9 @@
+@@ -1076,9 +1079,9 @@
  
      public void removeAllPlayers()
      {
@@ -710,7 +720,7 @@
          }
      }
  
-@@ -1103,7 +1100,7 @@
+@@ -1097,7 +1100,7 @@
      public StatisticsManagerServer getPlayerStatsFile(EntityPlayer playerIn)
      {
          UUID uuid = playerIn.getUniqueID();
@@ -719,7 +729,7 @@
  
          if (statisticsmanagerserver == null)
          {
-@@ -1183,5 +1180,11 @@
+@@ -1177,5 +1180,11 @@
          {
              playeradvancements.reload();
          }

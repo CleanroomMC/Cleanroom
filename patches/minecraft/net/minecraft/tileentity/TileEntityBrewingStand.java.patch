@@ -127,13 +127,11 @@
  
              if (itemstack.isEmpty())
              {
-@@ -206,26 +200,24 @@
+@@ -206,24 +200,24 @@
              }
              else
              {
--                InventoryHelper.spawnItemStack(
--                    this.world, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), itemstack1
--                );
+-                InventoryHelper.spawnItemStack(this.world, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemstack1);
 +                InventoryHelper.spawnItemStack(this.world, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), itemstack1);
              }
          }
@@ -158,7 +156,7 @@
          ItemStackHelper.loadAllItems(compound, this.brewingItemStacks);
          this.brewTime = compound.getShort("BrewTime");
  
-@@ -237,7 +229,6 @@
+@@ -235,7 +229,6 @@
          this.fuel = compound.getByte("Fuel");
      }
  
@@ -166,7 +164,7 @@
      public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
          super.writeToNBT(compound);
-@@ -253,25 +244,21 @@
+@@ -251,25 +244,21 @@
          return compound;
      }
  
@@ -193,7 +191,7 @@
      public void setInventorySlotContents(int index, ItemStack stack)
      {
          if (index >= 0 && index < this.brewingItemStacks.size())
-@@ -280,55 +267,52 @@
+@@ -278,53 +267,52 @@
          }
      }
  
@@ -210,9 +208,7 @@
 -               ? false
 -               : !(
 -                   player.getDistanceSq(
--                       (double)this.pos.getX() + 0.5,
--                       (double)this.pos.getY() + 0.5,
--                       (double)this.pos.getZ() + 0.5
+-                       this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5
 -                   )
 -                   > 64.0
 -               );
@@ -267,7 +263,7 @@
      public int[] getSlotsForFace(EnumFacing side)
      {
          if (side == EnumFacing.UP)
-@@ -341,31 +325,33 @@
+@@ -337,31 +325,33 @@
          }
      }
  
@@ -307,7 +303,7 @@
      public int getField(int id)
      {
          switch (id)
-@@ -379,7 +365,6 @@
+@@ -375,7 +365,6 @@
          }
      }
  
@@ -315,7 +311,7 @@
      public void setField(int id, int value)
      {
          switch (id)
-@@ -392,13 +377,32 @@
+@@ -388,13 +377,32 @@
          }
      }
  

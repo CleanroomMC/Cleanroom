@@ -833,10 +833,10 @@ tasks.register('installerJar', Zip) {
 // TODO: MDK Task
 
 userdevConfig {
-    def artifacts = Util.getArtifacts(project, project.configurations.installer, true)
+    /*def artifacts = Util.getArtifacts(project, project.configurations.installer, true)
     artifacts.each { key, lib ->
         libraries.add(lib.name)
-    }
+    }*/
     libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
     universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
 

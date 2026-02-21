@@ -65,7 +65,7 @@
      }
  
      public static EnumFacing byIndex(int index)
-@@ -225,7 +211,7 @@
+@@ -225,12 +211,12 @@
  
      public static EnumFacing fromAngle(double angle)
      {
@@ -74,6 +74,12 @@
      }
  
      public float getHorizontalAngle()
+     {
+-        return (this.horizontalIndex & 3) * 90;
++        return (float)((this.horizontalIndex & 3) * 90);
+     }
+ 
+     public static EnumFacing random(Random rand)
 @@ -238,7 +224,6 @@
          return values()[rand.nextInt(values().length)];
      }
@@ -86,9 +92,9 @@
  
          for (EnumFacing enumfacing1 : values())
          {
--            float f1 = x * (float)enumfacing1.directionVec.getX()
--                       + y * (float)enumfacing1.directionVec.getY()
--                       + z * (float)enumfacing1.directionVec.getZ();
+-            float f1 = x * enumfacing1.directionVec.getX()
+-                       + y * enumfacing1.directionVec.getY()
+-                       + z * enumfacing1.directionVec.getZ();
 +            float f1 = x * (float)enumfacing1.directionVec.getX() + y * (float)enumfacing1.directionVec.getY() + z * (float)enumfacing1.directionVec.getZ();
  
              if (f1 > f)
@@ -111,19 +117,20 @@
  
      public static EnumFacing getDirectionFromEntityLiving(BlockPos pos, EntityLivingBase placer)
      {
--        if (Math.abs(placer.posX - (double)((float)pos.getX() + 0.5F)) < 2.0
--                && Math.abs(placer.posZ - (double)((float)pos.getZ() + 0.5F)) < 2.0)
+-        if (Math.abs(placer.posX - (pos.getX() + 0.5F)) < 2.0
+-                && Math.abs(placer.posZ - (pos.getZ() + 0.5F)) < 2.0)
 +        if (Math.abs(placer.posX - (double)((float)pos.getX() + 0.5F)) < 2.0D && Math.abs(placer.posZ - (double)((float)pos.getZ() + 0.5F)) < 2.0D)
          {
-             double d0 = placer.posY + (double)placer.getEyeHeight();
+-            double d0 = placer.posY + placer.getEyeHeight();
++            double d0 = placer.posY + (double)placer.getEyeHeight();
  
--            if (d0 - (double)pos.getY() > 2.0)
+-            if (d0 - pos.getY() > 2.0)
 +            if (d0 - (double)pos.getY() > 2.0D)
              {
                  return UP;
              }
  
--            if ((double)pos.getY() - d0 > 0.0)
+-            if (pos.getY() - d0 > 0.0)
 +            if ((double)pos.getY() - d0 > 0.0D)
              {
                  return DOWN;

@@ -273,9 +273,9 @@
          EnumFacing enumfacing = BlockHopper.getFacing(this.getBlockMetadata());
 -        return getInventoryAtPosition(
 -                   this.getWorld(),
--                   this.getXPos() + (double)enumfacing.getXOffset(),
--                   this.getYPos() + (double)enumfacing.getYOffset(),
--                   this.getZPos() + (double)enumfacing.getZOffset()
+-                   this.getXPos() + enumfacing.getXOffset(),
+-                   this.getYPos() + enumfacing.getYOffset(),
+-                   this.getZPos() + enumfacing.getZOffset()
 -               );
 +        return getInventoryAtPosition(this.getWorld(), this.getXPos() + (double)enumfacing.getXOffset(), this.getYPos() + (double)enumfacing.getYOffset(), this.getZPos() + (double)enumfacing.getZOffset());
      }
@@ -341,21 +341,21 @@
 -    @Override
      public double getXPos()
      {
--        return (double)this.pos.getX() + 0.5;
+-        return this.pos.getX() + 0.5;
 +        return (double)this.pos.getX() + 0.5D;
      }
  
 -    @Override
      public double getYPos()
      {
--        return (double)this.pos.getY() + 0.5;
+-        return this.pos.getY() + 0.5;
 +        return (double)this.pos.getY() + 0.5D;
      }
  
 -    @Override
      public double getZPos()
      {
--        return (double)this.pos.getZ() + 0.5;
+-        return this.pos.getZ() + 0.5;
 +        return (double)this.pos.getZ() + 0.5D;
      }
  
