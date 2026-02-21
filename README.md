@@ -65,24 +65,20 @@
 - Jar of Cleanroom integrated mods (MixinBooter, ConfigAnyTime) will be ignored by Cleanroom, then won't crash under Cleanroom
 - The version of built-in MixinBooter is configurable in forge_early.cfg
 
-### List of Obsoleted/Incompatible Mods
+### Prepare Your Mods for Cleanroom
 
-- SpongeForge: Use [SpongeForge LTS](https://www.curseforge.com/minecraft/mc-mods/spongeforge)
-- Phosphor: Use [Hesperus](https://www.curseforge.com/minecraft/mc-mods/hesperus) or [Alfheim Lighting Engine](https://www.curseforge.com/minecraft/mc-mods/alfheim-lighting-engine)
-- Forgelin: Use [Forgelin-Continuous](https://www.curseforge.com/minecraft/mc-mods/forgelin-continuous)
-- LibrarianLib: Use [LibrarianLib-Continuous](https://www.curseforge.com/minecraft/mc-mods/librarianlib-continuous)
-- JustEnoughIds: Use [RoughlyEnoughIDs](https://www.curseforge.com/minecraft/mc-mods/reid)
-- AdvancedShader: Binary patching, incompatible
-- Polyfrost series: Waiting for official fix
-- Essential.gg: Patched but still buggy
+Some mods are obsoleted or need extra handle. See [wiki](https://cleanroommc.com/wiki/end-user-guide/preparing-your-modpack#incompatible-problematic-mods-on-cleanroom-launcher)
 
 ## Build Instructions:
 
 1. Clone this repository
-2. Import the `build.gradle` into your IDE (most preferably IntelliJ IDEA)
-3. Once the import has finished, run `gradlew setup`
-4. Run `gradlew --stop` to stop the daemon and prevent ForgeGradle gone wrong 
-5. Build with `gradlew build`
+2. `git submodule init` then `git submodule update`
+3. Import the `build.gradle` into your IDE (most preferably IntelliJ IDEA)
+4. Once the import has finished, run `gradlew setup`
+5. Run `gradlew --stop` to stop the daemon and prevent ForgeGradle gone wrong 
+6. Build with `gradlew build`
+
+**Remember to run `git submodule update` after everytime you fetched upstream!**
 
 ## Development Tips:
 
