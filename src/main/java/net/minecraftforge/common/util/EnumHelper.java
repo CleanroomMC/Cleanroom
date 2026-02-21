@@ -291,6 +291,7 @@ public class EnumHelper
     }
 
     @Nullable
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T extends Enum<? >> T addEnum(Class<T> enumType, String enumName, Class<?>[] paramTypes, Object... paramValues)
     {
         return (T) EnumHackery.addEnumEntry((Class<? extends Enum>) enumType, enumName, paramTypes, paramValues);
