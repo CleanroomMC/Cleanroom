@@ -882,6 +882,37 @@ tasks.register('userdevExtrasReobf', ReobfuscateJar) {
     srg = tasks.createMcp2Srg.output
 }
 
+tasks.register("cleanroomClientNsight", Exec) {
+    def javaExecTask = tasks.named('cleanroomClient', JavaExec).get()
+    def workingDir = javaExecTask.workingDir.absolutePath
+    def javaHome = javaExecTask.getJavaLauncher().get().getMetadata().getInstallationPath().asFile.absolutePath
+    def gradleWrapperJar = project.rootDir.toPath().resolve("gradle/wrapper/gradle-wrapper.jar").toFile().absolutePath
+    def ngfxPath = props.nsight_ngfx_path
+
+    println "Working Dir: $workingDir"
+    println "Java Home: $javaHome"
+    println "Gradle Wrapper Jar Path: $gradleWrapperJar"
+    println "Nsight Graphics NGFX Path: $ngfxPath"
+
+    def args = [
+            "-Dorg.gradle.appname=gradlew",
+            "-Dorg.gradle.java.home=$javaHome",
+            "-classpath",
+            gradleWrapperJar,
+            "org.gradle.wrapper.GradleWrapperMain",
+            "cleanroomClient"]
+
+    commandLine = [
+            ngfxPath,
+            "--activity", "\"Frame Debugger\"",
+            "--platform", "\"Windows\"",
+            "--wait-hotkey",
+            "--dir", workingDir,
+            "--output-dir", workingDir,
+            "--exe", "$javaHome\\bin\\java.exe",
+            "--args", args.join(" ")]
+}
+
 userdevJar {
     dependsOn userdevExtrasReobf
     from(zipTree(tasks.userdevExtrasReobf.output)) {
