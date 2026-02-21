@@ -9,7 +9,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'top.outlands.gradle:ForgeGradle:6.0.+'
+        classpath 'top.outlands.gradle:ForgeGradle:6.0.52'
         classpath('top.outlands:artifactural:3.0.4') {
             transitive = false
         }
