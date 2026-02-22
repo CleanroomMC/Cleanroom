@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipesBanners.java
 +++ after/net/minecraft/item/crafting/RecipesBanners.java
-@@ -12,19 +12,16 @@
+@@ -12,12 +12,10 @@
  import net.minecraft.tileentity.TileEntityBanner;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -12,47 +12,9 @@
 -    public static class RecipeAddPattern implements IRecipe
 +    public static class RecipeAddPattern extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
          {
--            @Override
+             @Override
              public boolean matches(InventoryCrafting inv, World worldIn)
-             {
-                 boolean flag = false;
- 
--                for (int i = 0; i < inv.getSizeInventory(); i++)
-+                for (int i = 0; i < inv.getSizeInventory(); ++i)
-                 {
-                     ItemStack itemstack = inv.getStackInSlot(i);
- 
-@@ -44,15 +41,21 @@
-                     }
-                 }
- 
--                return !flag ? false : this.matchPatterns(inv) != null;
-+                if (!flag)
-+                {
-+                    return false;
-+                }
-+                else
-+                {
-+                    return this.matchPatterns(inv) != null;
-+                }
-             }
- 
--            @Override
-             public ItemStack getCraftingResult(InventoryCrafting inv)
-             {
-                 ItemStack itemstack = ItemStack.EMPTY;
- 
--                for (int i = 0; i < inv.getSizeInventory(); i++)
-+                for (int i = 0; i < inv.getSizeInventory(); ++i)
-                 {
-                     ItemStack itemstack1 = inv.getStackInSlot(i);
- 
-@@ -70,13 +73,14 @@
-                 {
-                     int k = 0;
- 
--                    for (int j = 0; j < inv.getSizeInventory(); j++)
-+                    for (int j = 0; j < inv.getSizeInventory(); ++j)
+@@ -74,9 +72,10 @@
                      {
                          ItemStack itemstack2 = inv.getStackInSlot(j);
  
@@ -65,24 +27,8 @@
                              break;
                          }
                      }
-@@ -103,25 +107,19 @@
-                 return itemstack;
-             }
- 
--            @Override
-             public ItemStack getRecipeOutput()
-             {
-                 return ItemStack.EMPTY;
-             }
- 
--            @Override
-             public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-             {
--                NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
-+                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
- 
--                for (int i = 0; i < nonnulllist.size(); i++)
-+                for (int i = 0; i < nonnulllist.size(); ++i)
+@@ -117,11 +116,7 @@
+                 for (int i = 0; i < nonnulllist.size(); i++)
                  {
                      ItemStack itemstack = inv.getStackInSlot(i);
 -
@@ -94,14 +40,7 @@
                  }
  
                  return nonnulllist;
-@@ -141,13 +139,13 @@
-                             boolean flag1 = false;
-                             boolean flag2 = false;
- 
--                            for (int i = 0; i < p_190933_1_.getSizeInventory() && flag; i++)
-+                            for (int i = 0; i < p_190933_1_.getSizeInventory() && flag; ++i)
-                             {
-                                 ItemStack itemstack = p_190933_1_.getStackInSlot(i);
+@@ -147,7 +142,7 @@
  
                                  if (!itemstack.isEmpty() && itemstack.getItem() != Items.BANNER)
                                  {
@@ -110,16 +49,7 @@
                                      {
                                          if (flag2)
                                          {
-@@ -179,7 +177,7 @@
-                         {
-                             int j = -1;
- 
--                            for (int k = 0; k < p_190933_1_.getSizeInventory() && flag; k++)
-+                            for (int k = 0; k < p_190933_1_.getSizeInventory() && flag; ++k)
-                             {
-                                 int l = k / 3;
-                                 int i1 = k % 3;
-@@ -187,7 +185,7 @@
+@@ -187,7 +182,7 @@
  
                                  if (!itemstack1.isEmpty() && itemstack1.getItem() != Items.BANNER)
                                  {
@@ -128,70 +58,24 @@
                                      {
                                          flag = false;
                                          break;
-@@ -229,29 +227,25 @@
-                 return null;
-             }
- 
--            @Override
-             public boolean isDynamic()
-             {
+@@ -235,7 +230,6 @@
                  return true;
              }
  
 -            @SideOnly(Side.CLIENT)
--            @Override
+             @Override
              public boolean canFit(int width, int height)
              {
-                 return width >= 3 && height >= 3;
+@@ -243,7 +237,7 @@
              }
          }
  
 -    public static class RecipeDuplicatePattern implements IRecipe
 +    public static class RecipeDuplicatePattern extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
          {
--            @Override
+             @Override
              public boolean matches(InventoryCrafting inv, World worldIn)
-             {
-                 ItemStack itemstack = ItemStack.EMPTY;
-                 ItemStack itemstack1 = ItemStack.EMPTY;
- 
--                for (int i = 0; i < inv.getSizeInventory(); i++)
-+                for (int i = 0; i < inv.getSizeInventory(); ++i)
-                 {
-                     ItemStack itemstack2 = inv.getStackInSlot(i);
- 
-@@ -312,10 +306,9 @@
-                 return !itemstack.isEmpty() && !itemstack1.isEmpty();
-             }
- 
--            @Override
-             public ItemStack getCraftingResult(InventoryCrafting inv)
-             {
--                for (int i = 0; i < inv.getSizeInventory(); i++)
-+                for (int i = 0; i < inv.getSizeInventory(); ++i)
-                 {
-                     ItemStack itemstack = inv.getStackInSlot(i);
- 
-@@ -330,26 +323,24 @@
-                 return ItemStack.EMPTY;
-             }
- 
--            @Override
-             public ItemStack getRecipeOutput()
-             {
-                 return ItemStack.EMPTY;
-             }
- 
--            @Override
-             public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-             {
--                NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
-+                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
- 
--                for (int i = 0; i < nonnulllist.size(); i++)
-+                for (int i = 0; i < nonnulllist.size(); ++i)
-                 {
-                     ItemStack itemstack = inv.getStackInSlot(i);
+@@ -347,9 +341,9 @@
  
                      if (!itemstack.isEmpty())
                      {
@@ -203,18 +87,11 @@
                          }
                          else if (itemstack.hasTagCompound() && TileEntityBanner.getPatterns(itemstack) > 0)
                          {
-@@ -363,14 +354,11 @@
-                 return nonnulllist;
-             }
- 
--            @Override
-             public boolean isDynamic()
-             {
+@@ -369,7 +363,6 @@
                  return true;
              }
  
 -            @SideOnly(Side.CLIENT)
--            @Override
+             @Override
              public boolean canFit(int width, int height)
              {
-                 return width * height >= 2;

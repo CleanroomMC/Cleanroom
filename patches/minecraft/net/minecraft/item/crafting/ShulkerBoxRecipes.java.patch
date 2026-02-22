@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/ShulkerBoxRecipes.java
 +++ after/net/minecraft/item/crafting/ShulkerBoxRecipes.java
-@@ -8,20 +8,17 @@
+@@ -8,12 +8,10 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -12,23 +12,9 @@
 -    public static class ShulkerBoxColoring implements IRecipe
 +    public static class ShulkerBoxColoring extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
          {
--            @Override
+             @Override
              public boolean matches(InventoryCrafting inv, World worldIn)
-             {
-                 int i = 0;
-                 int j = 0;
- 
--                for (int k = 0; k < inv.getSizeInventory(); k++)
-+                for (int k = 0; k < inv.getSizeInventory(); ++k)
-                 {
-                     ItemStack itemstack = inv.getStackInSlot(k);
- 
-@@ -29,16 +26,16 @@
-                     {
-                         if (Block.getBlockFromItem(itemstack.getItem()) instanceof BlockShulkerBox)
-                         {
--                            i++;
-+                            ++i;
+@@ -33,7 +31,7 @@
                          }
                          else
                          {
@@ -37,28 +23,7 @@
                              {
                                  return false;
                              }
- 
--                            j++;
-+                            ++j;
-                         }
- 
-                         if (j > 1 || i > 1)
-@@ -51,13 +48,12 @@
-                 return i == 1 && j == 1;
-             }
- 
--            @Override
-             public ItemStack getCraftingResult(InventoryCrafting inv)
-             {
-                 ItemStack itemstack = ItemStack.EMPTY;
-                 ItemStack itemstack1 = ItemStack.EMPTY;
- 
--                for (int i = 0; i < inv.getSizeInventory(); i++)
-+                for (int i = 0; i < inv.getSizeInventory(); ++i)
-                 {
-                     ItemStack itemstack2 = inv.getStackInSlot(i);
- 
-@@ -67,14 +63,14 @@
+@@ -67,14 +65,14 @@
                          {
                              itemstack = itemstack2;
                          }
@@ -75,39 +40,11 @@
  
                  if (itemstack.hasTagCompound())
                  {
-@@ -84,18 +80,16 @@
-                 return itemstack3;
-             }
- 
--            @Override
-             public ItemStack getRecipeOutput()
-             {
-                 return ItemStack.EMPTY;
-             }
- 
--            @Override
-             public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-             {
--                NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
-+                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
- 
--                for (int i = 0; i < nonnulllist.size(); i++)
-+                for (int i = 0; i < nonnulllist.size(); ++i)
-                 {
-                     ItemStack itemstack = inv.getStackInSlot(i);
- 
-@@ -108,14 +102,11 @@
-                 return nonnulllist;
-             }
- 
--            @Override
-             public boolean isDynamic()
-             {
+@@ -114,7 +112,6 @@
                  return true;
              }
  
 -            @SideOnly(Side.CLIENT)
--            @Override
+             @Override
              public boolean canFit(int width, int height)
              {
-                 return width * height >= 2;

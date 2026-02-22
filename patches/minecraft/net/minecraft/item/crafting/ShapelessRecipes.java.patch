@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/ShapelessRecipes.java
 +++ after/net/minecraft/item/crafting/ShapelessRecipes.java
-@@ -10,96 +10,86 @@
+@@ -10,23 +10,25 @@
  import net.minecraft.util.JsonUtils;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -27,32 +27,10 @@
      }
  
 -    @SideOnly(Side.CLIENT)
--    @Override
+     @Override
      public String getGroup()
      {
-         return this.group;
-     }
- 
--    @Override
-     public ItemStack getRecipeOutput()
-     {
-         return this.recipeOutput;
-     }
- 
--    @Override
-     public NonNullList<Ingredient> getIngredients()
-     {
-         return this.recipeItems;
-     }
- 
--    @Override
-     public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-     {
--        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
-+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
- 
--        for (int i = 0; i < nonnulllist.size(); i++)
-+        for (int i = 0; i < nonnulllist.size(); ++i)
+@@ -54,10 +56,7 @@
          {
              ItemStack itemstack = inv.getStackInSlot(i);
  
@@ -64,9 +42,8 @@
          }
  
          return nonnulllist;
-     }
- 
--    @Override
+@@ -66,7 +65,9 @@
+     @Override
      public boolean matches(InventoryCrafting inv, World worldIn)
      {
 -        List<Ingredient> list = Lists.newArrayList(this.recipeItems);
@@ -74,13 +51,9 @@
 +        net.minecraft.client.util.RecipeItemHelper recipeItemHelper = new net.minecraft.client.util.RecipeItemHelper();
 +        List<ItemStack> inputs = Lists.newArrayList();
  
--        for (int i = 0; i < inv.getHeight(); i++)
-+        for (int i = 0; i < inv.getHeight(); ++i)
+         for (int i = 0; i < inv.getHeight(); i++)
          {
--            for (int j = 0; j < inv.getWidth(); j++)
-+            for (int j = 0; j < inv.getWidth(); ++j)
-             {
-                 ItemStack itemstack = inv.getStackInRowAndColumn(j, i);
+@@ -76,27 +77,22 @@
  
                  if (!itemstack.isEmpty())
                  {
@@ -119,28 +92,12 @@
 +        return net.minecraftforge.common.util.RecipeMatcher.findMatches(inputs, this.recipeItems) != null;
      }
  
--    @Override
-     public ItemStack getCraftingResult(InventoryCrafting inv)
-     {
-         return this.recipeOutput.copy();
-@@ -127,9 +117,9 @@
- 
-     private static NonNullList<Ingredient> deserializeIngredients(JsonArray array)
-     {
--        NonNullList<Ingredient> nonnulllist = NonNullList.create();
-+        NonNullList<Ingredient> nonnulllist = NonNullList.<Ingredient>create();
- 
--        for (int i = 0; i < array.size(); i++)
-+        for (int i = 0; i < array.size(); ++i)
-         {
-             Ingredient ingredient = ShapedRecipes.deserializeIngredient(array.get(i));
- 
-@@ -142,8 +132,6 @@
+     @Override
+@@ -142,7 +138,6 @@
          return nonnulllist;
      }
  
 -    @SideOnly(Side.CLIENT)
--    @Override
+     @Override
      public boolean canFit(int width, int height)
      {
-         return width * height >= this.recipeItems.size();

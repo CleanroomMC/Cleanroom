@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/IRecipe.java
 +++ after/net/minecraft/item/crafting/IRecipe.java
-@@ -4,25 +4,25 @@
+@@ -4,21 +4,21 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -27,11 +27,6 @@
  
  default NonNullList<Ingredient> getIngredients()
      {
--        return NonNullList.create();
-+        return NonNullList.<Ingredient>create();
-     }
- 
- default boolean isDynamic()
 @@ -30,7 +30,6 @@
          return false;
      }

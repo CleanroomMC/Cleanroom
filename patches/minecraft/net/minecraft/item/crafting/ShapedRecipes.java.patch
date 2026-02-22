@@ -12,31 +12,15 @@
  {
      public final int recipeWidth;
      public final int recipeHeight;
-@@ -39,56 +37,45 @@
+@@ -39,7 +37,6 @@
          this.recipeOutput = result;
      }
  
 -    @SideOnly(Side.CLIENT)
--    @Override
+     @Override
      public String getGroup()
      {
-         return this.group;
-     }
- 
--    @Override
-     public ItemStack getRecipeOutput()
-     {
-         return this.recipeOutput;
-     }
- 
--    @Override
-     public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-     {
--        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
-+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
- 
--        for (int i = 0; i < nonnulllist.size(); i++)
-+        for (int i = 0; i < nonnulllist.size(); ++i)
+@@ -61,10 +58,7 @@
          {
              ItemStack itemstack = inv.getStackInSlot(i);
  
@@ -48,22 +32,16 @@
          }
  
          return nonnulllist;
-     }
- 
--    @Override
-     public NonNullList<Ingredient> getIngredients()
-     {
+@@ -76,7 +70,6 @@
          return this.recipeItems;
      }
  
 -    @SideOnly(Side.CLIENT)
--    @Override
+     @Override
      public boolean canFit(int width, int height)
      {
-         return width >= this.recipeWidth && height >= this.recipeHeight;
-     }
- 
--    @Override
+@@ -86,9 +79,9 @@
+     @Override
      public boolean matches(InventoryCrafting inv, World worldIn)
      {
 -        for (int i = 0; i <= 3 - this.recipeWidth; i++)
@@ -74,7 +52,7 @@
              {
                  if (this.checkMatch(inv, i, j, true))
                  {
-@@ -107,9 +94,9 @@
+@@ -107,9 +100,9 @@
  
      private boolean checkMatch(InventoryCrafting craftingInventory, int p_77573_2_, int p_77573_3_, boolean p_77573_4_)
      {
@@ -86,190 +64,7 @@
              {
                  int k = i - p_77573_2_;
                  int l = j - p_77573_3_;
-@@ -137,7 +124,6 @@
-         return true;
-     }
- 
--    @Override
-     public ItemStack getCraftingResult(InventoryCrafting inv)
-     {
-         return this.getRecipeOutput().copy();
-@@ -167,13 +153,13 @@
- 
-     private static NonNullList<Ingredient> deserializeIngredients(String[] pattern, Map<String, Ingredient> keys, int patternWidth, int patternHeight)
-     {
--        NonNullList<Ingredient> nonnulllist = NonNullList.withSize(patternWidth * patternHeight, Ingredient.EMPTY);
-+        NonNullList<Ingredient> nonnulllist = NonNullList.<Ingredient>withSize(patternWidth * patternHeight, Ingredient.EMPTY);
-         Set<String> set = Sets.newHashSet(keys.keySet());
-         set.remove(" ");
- 
--        for (int i = 0; i < pattern.length; i++)
-+        for (int i = 0; i < pattern.length; ++i)
-         {
--            for (int j = 0; j < pattern[i].length(); j++)
-+            for (int j = 0; j < pattern[i].length(); ++j)
-             {
-                 String s = pattern[i].substring(j, j + 1);
-                 Ingredient ingredient = keys.get(s);
-@@ -206,7 +192,7 @@
-         int k = 0;
-         int l = 0;
- 
--        for (int i1 = 0; i1 < toShrink.length; i1++)
-+        for (int i1 = 0; i1 < toShrink.length; ++i1)
-         {
-             String s = toShrink[i1];
-             i = Math.min(i, firstNonSpace(s));
-@@ -217,10 +203,10 @@
-             {
-                 if (k == i1)
-                 {
--                    k++;
-+                    ++k;
-                 }
- 
--                l++;
-+                ++l;
-             }
-             else
-             {
-@@ -236,7 +222,7 @@
-         {
-             String[] astring = new String[toShrink.length - l - k];
- 
--            for (int k1 = 0; k1 < astring.length; k1++)
-+            for (int k1 = 0; k1 < astring.length; ++k1)
-             {
-                 astring[k1] = toShrink[k1 + k].substring(i, j + 1);
-             }
-@@ -247,11 +233,11 @@
- 
-     private static int firstNonSpace(String str)
-     {
--        int i = 0;
-+        int i;
- 
--        while (i < str.length() && str.charAt(i) == ' ')
-+        for (i = 0; i < str.length() && str.charAt(i) == ' '; ++i)
-         {
--            i++;
-+            ;
-         }
- 
-         return i;
-@@ -259,11 +245,11 @@
- 
-     private static int lastNonSpace(String str)
-     {
--        int i = str.length() - 1;
-+        int i;
- 
--        while (i >= 0 && str.charAt(i) == ' ')
-+        for (i = str.length() - 1; i >= 0 && str.charAt(i) == ' '; --i)
-         {
--            i--;
-+            ;
-         }
- 
-         return i;
-@@ -283,7 +269,7 @@
-         }
-         else
-         {
--            for (int i = 0; i < astring.length; i++)
-+            for (int i = 0; i < astring.length; ++i)
-             {
-                 String s = JsonUtils.getString(jsonArr.get(i), "pattern[" + i + "]");
- 
-@@ -306,13 +292,13 @@
- 
-     private static Map<String, Ingredient> deserializeKey(JsonObject json)
-     {
--        Map<String, Ingredient> map = Maps.newHashMap();
-+        Map<String, Ingredient> map = Maps.<String, Ingredient>newHashMap();
- 
-         for (Entry<String, JsonElement> entry : json.entrySet())
-         {
--            if (entry.getKey().length() != 1)
-+            if (((String)entry.getKey()).length() != 1)
-             {
--                throw new JsonSyntaxException("Invalid key entry: '" + entry.getKey() + "' is an invalid symbol (must be 1 character only).");
-+                throw new JsonSyntaxException("Invalid key entry: '" + (String)entry.getKey() + "' is an invalid symbol (must be 1 character only).");
-             }
- 
-             if (" ".equals(entry.getKey()))
-@@ -329,38 +315,41 @@
- 
-     public static Ingredient deserializeIngredient(@Nullable JsonElement jsonElement)
-     {
--        if (jsonElement == null || jsonElement.isJsonNull())
-+        if (jsonElement != null && !jsonElement.isJsonNull())
-+        {
-+            if (jsonElement.isJsonObject())
-+            {
-+                return Ingredient.fromStacks(deserializeItem(jsonElement.getAsJsonObject(), false));
-+            }
-+            else if (!jsonElement.isJsonArray())
-+            {
-+                throw new JsonSyntaxException("Expected item to be object or array of objects");
-+            }
-+            else
-+            {
-+                JsonArray jsonarray = jsonElement.getAsJsonArray();
-+
-+                if (jsonarray.size() == 0)
-+                {
-+                    throw new JsonSyntaxException("Item array cannot be empty, at least one item must be defined");
-+                }
-+                else
-+                {
-+                    ItemStack[] aitemstack = new ItemStack[jsonarray.size()];
-+
-+                    for (int i = 0; i < jsonarray.size(); ++i)
-+                    {
-+                        aitemstack[i] = deserializeItem(JsonUtils.getJsonObject(jsonarray.get(i), "item"), false);
-+                    }
-+
-+                    return Ingredient.fromStacks(aitemstack);
-+                }
-+            }
-+        }
-+        else
-         {
-             throw new JsonSyntaxException("Item cannot be null");
-         }
--        else if (jsonElement.isJsonObject())
--        {
--            return Ingredient.fromStacks(deserializeItem(jsonElement.getAsJsonObject(), false));
--        }
--        else if (!jsonElement.isJsonArray())
--        {
--            throw new JsonSyntaxException("Expected item to be object or array of objects");
--        }
--        else
--        {
--            JsonArray jsonarray = jsonElement.getAsJsonArray();
--
--            if (jsonarray.size() == 0)
--            {
--                throw new JsonSyntaxException("Item array cannot be empty, at least one item must be defined");
--            }
--            else
--            {
--                ItemStack[] aitemstack = new ItemStack[jsonarray.size()];
--
--                for (int i = 0; i < jsonarray.size(); i++)
--                {
--                    aitemstack[i] = deserializeItem(JsonUtils.getJsonObject(jsonarray.get(i), "item"), false);
--                }
--
--                return Ingredient.fromStacks(aitemstack);
--            }
--        }
-     }
- 
-     public static ItemStack deserializeItem(JsonObject json, boolean useCount)
-@@ -382,5 +371,17 @@
+@@ -382,5 +375,17 @@
              int j = useCount ? JsonUtils.getInt(json, "count", 1) : 1;
              return new ItemStack(item, j, i);
          }
