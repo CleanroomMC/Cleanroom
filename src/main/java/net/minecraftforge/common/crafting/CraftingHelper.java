@@ -45,6 +45,8 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CraftingFactoriesRegisterEvent;
 import net.minecraft.launchwrapper.Launch;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -591,7 +593,11 @@ public class CraftingHelper {
         {
             for (Entry<String, JsonElement> entry : JsonUtils.getJsonObject(json, loader.name).entrySet())
             {
-                ResourceLocation key = new ResourceLocation(context.getModId(), entry.getKey());
+                ResourceLocation key;
+                if (entry.getKey().contains(":")){
+                    key = new ResourceLocation(entry.getKey());
+                }else key = new ResourceLocation(context.getModId(), entry.getKey());
+                
                 String clsName = JsonUtils.getString(entry.getValue(), loader.name + "[" + entry.getValue() + "]");
                 loader.consumer.accept(key, getClassInstance(clsName, loader.type));
             }
@@ -633,6 +639,7 @@ public class CraftingHelper {
         //ModContainer old = Loader.instance().activeModContainer();
         Loader.instance().setActiveModContainer(null);
         Loader.instance().getActiveModList().forEach(CraftingHelper::loadFactories);
+        MinecraftForge.EVENT_BUS.post(new CraftingFactoriesRegisterEvent(conditions, ingredients, recipes));
         Loader.instance().getActiveModList().forEach(CraftingHelper::loadRecipes);
         Loader.instance().setActiveModContainer(null);
 
