@@ -46,7 +46,7 @@ public class NetworkModHolder
     /**
      * Validates that the mods versions on the client and server are compatible with mod.
      */
-    public abstract class NetworkChecker {
+    public static abstract class NetworkChecker {
         /**
          * @deprecated use {@link #checkCompatible(Map, Side)}
          */
@@ -66,7 +66,7 @@ public class NetworkModHolder
         }
     }
 
-    private class IgnoredChecker extends NetworkChecker {
+    private static class IgnoredChecker extends NetworkChecker {
         @Override
         public boolean check(Map<String, String> remoteVersions, Side side)
         {
@@ -151,12 +151,14 @@ public class NetworkModHolder
         {
             try
             {
-                Boolean result = (Boolean) checkHandler.invoke(container.getMod(), remoteVersions, side);
-                if (result != null && result)
-                {
-                    return null;
+                if (checkHandler.getReturnType() == String.class) {
+                    return (String) checkHandler.invoke(container.getMod(), remoteVersions, side);
+                } else {
+                    Boolean result = (Boolean) checkHandler.invoke(container.getMod(), remoteVersions, side);
+                    if (result != null && result) {
+                        return null;
+                    } else return String.format("Failed mod's custom NetworkCheckHandler %s", container);
                 }
-                return String.format("Failed mod's custom NetworkCheckHandler %s", container);
             }
             catch (Exception e)
             {
@@ -171,6 +173,7 @@ public class NetworkModHolder
             return String.format("Invoking method %s", checkHandler.getName());
         }
     }
+    
     private static int assignedIds = 1;
 
     private int localId;
