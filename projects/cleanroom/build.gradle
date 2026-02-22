@@ -883,11 +883,28 @@ tasks.register('userdevExtrasReobf', ReobfuscateJar) {
 }
 
 tasks.register("cleanroomClientNsight", Exec) {
+    def activity = props.nsight_activity
+    if (!activity) {
+        throw new InvalidUserDataException("\"nsight_activity\" from \"gradle.properties\" must not be empty!")
+    }
+
+    def platform = props.nsight_platform
+    if (!platform) {
+        throw new InvalidUserDataException("\"nsight_platform\" from \"gradle.properties\" must not be empty!")
+    }
+    if (platform != "Windows" && platform != "Linux") {
+        throw new InvalidUserDataException("\"nsight_platform\"=$platform is an invalid value! Must be either Windows OR Linux.")
+    }
+
+    def ngfxPath = props.nsight_ngfx_path
+    if (!ngfxPath) {
+        throw new InvalidUserDataException("\"nsight_ngfx_path\" from \"gradle.properties\" must not be empty!")
+    }
+
     def javaExecTask = tasks.named('cleanroomClient', JavaExec).get()
     def workingDir = javaExecTask.workingDir.absolutePath
     def javaHome = javaExecTask.getJavaLauncher().get().getMetadata().getInstallationPath().asFile.absolutePath
     def gradleWrapperJar = project.rootDir.toPath().resolve("gradle/wrapper/gradle-wrapper.jar").toFile().absolutePath
-    def ngfxPath = props.nsight_ngfx_path
 
     println "Working Dir: $workingDir"
     println "Java Home: $javaHome"
@@ -904,8 +921,8 @@ tasks.register("cleanroomClientNsight", Exec) {
 
     commandLine = [
             ngfxPath,
-            "--activity", "\"Frame Debugger\"",
-            "--platform", "\"Windows\"",
+            "--activity", activity,
+            "--platform", platform,
             "--wait-hotkey",
             "--dir", workingDir,
             "--output-dir", workingDir,
