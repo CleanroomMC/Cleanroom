@@ -890,7 +890,7 @@ tasks.register("cleanroomClientNsight", Exec) {
     doFirst {
         def os = org.gradle.internal.os.OperatingSystem.current()
         if (!os.isWindows() && !os.isLinux()) {
-            throw new GradleException("cleanroomClientNsight is only supported on Windows and Linux")
+            throw new GradleException("$it.name is only supported on Windows and Linux")
         }
         os = os.isWindows() ? "Windows" : "Linux"
 
