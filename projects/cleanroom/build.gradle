@@ -882,6 +882,51 @@ tasks.register('userdevExtrasReobf', ReobfuscateJar) {
     srg = tasks.createMcp2Srg.output
 }
 
+tasks.register("cleanroomClientNsight", Exec) {
+    group 'forgegradle runs'
+    dependsOn {
+        tasks.cleanroomClient.dependsOn
+    }
+    doFirst {
+        def os = org.gradle.internal.os.OperatingSystem.current()
+        if (!os.isWindows() && !os.isLinux()) {
+            throw new GradleException("$it.name is only supported on Windows and Linux")
+        }
+        os = os.isWindows() ? "Windows" : "Linux"
+
+        def activity = props.nsight_activity
+        if (!activity) {
+            throw new InvalidUserDataException("\"nsight_activity\" from \"gradle.properties\" must not be empty!")
+        }
+
+        def ngfxPath = props.nsight_ngfx_path
+        if (!ngfxPath) {
+            throw new InvalidUserDataException("\"nsight_ngfx_path\" from \"gradle.properties\" must not be empty!")
+        }
+
+        def javaExec = tasks.cleanroomClient.javaLauncher.get().executablePath.asFile.absolutePath
+        def args = [
+                "-classpath", rootProject.layout.projectDirectory.file('gradle/wrapper/gradle-wrapper.jar'),
+                "org.gradle.wrapper.GradleWrapperMain",
+                tasks.cleanroomClient.name
+        ]
+
+        logger.lifecycle "\nJava Executable: $javaExec"
+        logger.lifecycle "Nsight Graphics NGFX Path: $ngfxPath\n"
+
+        commandLine = [
+                ngfxPath,
+                "--activity", activity,
+                "--platform", os,
+                "--wait-hotkey",
+                "--dir", workingDir,
+                "--output-dir", workingDir,
+                "--exe", javaExec,
+                "--args", args.join(" ")
+        ]
+    }
+}
+
 userdevJar {
     dependsOn userdevExtrasReobf
     from(zipTree(tasks.userdevExtrasReobf.output)) {
