@@ -9,35 +9,19 @@
  {
      private final Block crops;
      private final Block soilBlockID;
-@@ -23,24 +23,11 @@
-         this.setCreativeTab(CreativeTabs.MATERIALS);
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+@@ -37,9 +37,10 @@
      {
          ItemStack itemstack = player.getHeldItem(hand);
--
--        if (facing == EnumFacing.UP
--                && player.canPlayerEdit(pos.offset(facing), facing, itemstack)
--                && worldIn.getBlockState(pos).getBlock() == this.soilBlockID
--                && worldIn.isAirBlock(pos.up()))
+ 
 +        net.minecraft.block.state.IBlockState state = worldIn.getBlockState(pos);
-+        if (facing == EnumFacing.UP && player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this) && worldIn.isAirBlock(pos.up()))
+         if (facing == EnumFacing.UP
+                 && player.canPlayerEdit(pos.offset(facing), facing, itemstack)
+-                && worldIn.getBlockState(pos).getBlock() == this.soilBlockID
++                && state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this)
+                 && worldIn.isAirBlock(pos.up()))
          {
              worldIn.setBlockState(pos.up(), this.crops.getDefaultState());
- 
-@@ -56,5 +43,17 @@
+@@ -56,5 +57,17 @@
          {
              return EnumActionResult.FAIL;
          }

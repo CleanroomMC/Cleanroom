@@ -1,44 +1,6 @@
 --- before/net/minecraft/item/ItemDye.java
 +++ after/net/minecraft/item/ItemDye.java
-@@ -23,10 +23,7 @@
- 
- public class ItemDye extends Item
- {
--    public static final int[] DYE_COLORS = new int[]
--        {
--            1973019, 11743532, 3887386, 5320730, 2437522, 8073150, 2651799, 11250603, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320
--        };
-+    public static final int[] DYE_COLORS = new int[] {1973019, 11743532, 3887386, 5320730, 2437522, 8073150, 2651799, 11250603, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320};
- 
-     public ItemDye()
-     {
-@@ -35,24 +32,13 @@
-         this.setCreativeTab(CreativeTabs.MATERIALS);
-     }
- 
--    @Override
-     public String getTranslationKey(ItemStack stack)
-     {
-         int i = stack.getMetadata();
-         return super.getTranslationKey() + "." + EnumDyeColor.byDyeDamage(i).getTranslationKey();
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         ItemStack itemstack = player.getHeldItem(hand);
- 
-@@ -66,7 +52,7 @@
+@@ -66,7 +66,7 @@
  
              if (enumdyecolor == EnumDyeColor.WHITE)
              {
@@ -47,17 +9,16 @@
                  {
                      if (!worldIn.isRemote)
                      {
-@@ -92,8 +78,7 @@
- 
+@@ -93,7 +93,7 @@
                      if (worldIn.isAirBlock(pos))
                      {
--                        IBlockState iblockstate1 = Blocks.COCOA
+                         IBlockState iblockstate1 = Blocks.COCOA
 -                                                   .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player);
-+                        IBlockState iblockstate1 = Blocks.COCOA.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player, hand);
++                                                   .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player, hand);
                          worldIn.setBlockState(pos, iblockstate1, 10);
  
                          if (!player.capabilities.isCreativeMode)
-@@ -114,8 +99,18 @@
+@@ -114,8 +114,18 @@
  
      public static boolean applyBonemeal(ItemStack stack, World worldIn, BlockPos target)
      {
@@ -76,59 +37,28 @@
          if (iblockstate.getBlock() instanceof IGrowable)
          {
              IGrowable igrowable = (IGrowable)iblockstate.getBlock();
-@@ -151,25 +146,26 @@
- 
-         if (iblockstate.getMaterial() != Material.AIR)
-         {
--            for (int i = 0; i < amount; i++)
--            {
--                double d0 = itemRand.nextGaussian() * 0.02;
--                double d1 = itemRand.nextGaussian() * 0.02;
--                double d2 = itemRand.nextGaussian() * 0.02;
--                worldIn.spawnParticle(
--                    EnumParticleTypes.VILLAGER_HAPPY,
--                    pos.getX() + itemRand.nextFloat(),
--                    pos.getY() + itemRand.nextFloat() * iblockstate.getBoundingBox(worldIn, pos).maxY,
--                    pos.getZ() + itemRand.nextFloat(),
--                    d0,
--                    d1,
--                    d2
--                );
-+            for (int i = 0; i < amount; ++i)
-+            {
-+                double d0 = itemRand.nextGaussian() * 0.02D;
-+                double d1 = itemRand.nextGaussian() * 0.02D;
-+                double d2 = itemRand.nextGaussian() * 0.02D;
-+                worldIn.spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, (double)((float)pos.getX() + itemRand.nextFloat()), (double)pos.getY() + (double)itemRand.nextFloat() * iblockstate.getBoundingBox(worldIn, pos).maxY, (double)((float)pos.getZ() + itemRand.nextFloat()), d0, d1, d2);
+@@ -160,6 +170,24 @@
+                     EnumParticleTypes.VILLAGER_HAPPY,
+                     pos.getX() + itemRand.nextFloat(),
+                     pos.getY() + itemRand.nextFloat() * iblockstate.getBoundingBox(worldIn, pos).maxY,
++                    pos.getZ() + itemRand.nextFloat(),
++                    d0,
++                    d1,
++                    d2
++                );
 +            }
 +        }
 +        else
 +        {
 +            for (int i1 = 0; i1 < amount; ++i1)
 +            {
-+                double d0 = itemRand.nextGaussian() * 0.02D;
-+                double d1 = itemRand.nextGaussian() * 0.02D;
-+                double d2 = itemRand.nextGaussian() * 0.02D;
-+                worldIn.spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, (double)((float)pos.getX() + itemRand.nextFloat()), (double)pos.getY() + (double)itemRand.nextFloat() * 1.0f, (double)((float)pos.getZ() + itemRand.nextFloat()), d0, d1, d2, new int[0]);
-             }
-         }
-     }
- 
--    @Override
-     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand)
-     {
-         if (target instanceof EntitySheep)
-@@ -191,12 +187,11 @@
-         }
-     }
- 
--    @Override
-     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-     {
-         if (this.isInCreativeTab(tab))
-         {
--            for (int i = 0; i < 16; i++)
-+            for (int i = 0; i < 16; ++i)
-             {
-                 items.add(new ItemStack(this, 1, i));
-             }
++                double d0 = itemRand.nextGaussian() * 0.02;
++                double d1 = itemRand.nextGaussian() * 0.02;
++                double d2 = itemRand.nextGaussian() * 0.02;
++                worldIn.spawnParticle(
++                    EnumParticleTypes.VILLAGER_HAPPY,
++                    pos.getX() + itemRand.nextFloat(),
++                    pos.getY() + itemRand.nextFloat() * 1.0f,
+                     pos.getZ() + itemRand.nextFloat(),
+                     d0,
+                     d1,

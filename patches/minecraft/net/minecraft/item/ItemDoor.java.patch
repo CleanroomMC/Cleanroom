@@ -1,71 +1,11 @@
 --- before/net/minecraft/item/ItemDoor.java
 +++ after/net/minecraft/item/ItemDoor.java
-@@ -23,17 +23,7 @@
-         this.setCreativeTab(CreativeTabs.REDSTONE);
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         if (facing != EnumFacing.UP)
-         {
-@@ -53,20 +43,13 @@
- 
-             if (player.canPlayerEdit(pos, facing, itemstack) && this.block.canPlaceBlockAt(worldIn, pos))
-             {
--                EnumFacing enumfacing = EnumFacing.fromAngle(player.rotationYaw);
-+                EnumFacing enumfacing = EnumFacing.fromAngle((double)player.rotationYaw);
-                 int i = enumfacing.getXOffset();
+@@ -58,7 +58,7 @@
                  int j = enumfacing.getZOffset();
                  boolean flag = i < 0 && hitZ < 0.5F || i > 0 && hitZ > 0.5F || j < 0 && hitX > 0.5F || j > 0 && hitX < 0.5F;
                  placeDoor(worldIn, pos, enumfacing, this.block, flag);
 -                SoundType soundtype = this.block.getSoundType();
--                worldIn.playSound(
--                    player,
--                    pos,
--                    soundtype.getPlaceSound(),
--                    SoundCategory.BLOCKS,
--                    (soundtype.getVolume() + 1.0F) / 2.0F,
--                    soundtype.getPitch() * 0.8F
--                );
 +                SoundType soundtype = worldIn.getBlockState(pos).getBlock().getSoundType(worldIn.getBlockState(pos), worldIn, pos, player);
-+                worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                 itemstack.shrink(1);
-                 return EnumActionResult.SUCCESS;
-             }
-@@ -83,10 +66,8 @@
-         BlockPos blockpos1 = pos.offset(facing.rotateYCCW());
-         int i = (worldIn.getBlockState(blockpos1).isNormalCube() ? 1 : 0) + (worldIn.getBlockState(blockpos1.up()).isNormalCube() ? 1 : 0);
-         int j = (worldIn.getBlockState(blockpos).isNormalCube() ? 1 : 0) + (worldIn.getBlockState(blockpos.up()).isNormalCube() ? 1 : 0);
--        boolean flag = worldIn.getBlockState(blockpos1).getBlock() == door
--                       || worldIn.getBlockState(blockpos1.up()).getBlock() == door;
--        boolean flag1 = worldIn.getBlockState(blockpos).getBlock() == door
--                        || worldIn.getBlockState(blockpos.up()).getBlock() == door;
-+        boolean flag = worldIn.getBlockState(blockpos1).getBlock() == door || worldIn.getBlockState(blockpos1.up()).getBlock() == door;
-+        boolean flag1 = worldIn.getBlockState(blockpos).getBlock() == door || worldIn.getBlockState(blockpos.up()).getBlock() == door;
- 
-         if ((!flag || flag1) && j <= i)
-         {
-@@ -102,11 +83,7 @@
- 
-         BlockPos blockpos2 = pos.up();
-         boolean flag2 = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(blockpos2);
--        IBlockState iblockstate = door.getDefaultState()
--                                  .withProperty(BlockDoor.FACING, facing)
--                                  .withProperty(BlockDoor.HINGE, isRightHinge ? BlockDoor.EnumHingePosition.RIGHT : BlockDoor.EnumHingePosition.LEFT)
--                                  .withProperty(BlockDoor.POWERED, flag2)
--                                  .withProperty(BlockDoor.OPEN, flag2);
-+        IBlockState iblockstate = door.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HINGE, isRightHinge ? BlockDoor.EnumHingePosition.RIGHT : BlockDoor.EnumHingePosition.LEFT).withProperty(BlockDoor.POWERED, Boolean.valueOf(flag2)).withProperty(BlockDoor.OPEN, Boolean.valueOf(flag2));
-         worldIn.setBlockState(pos, iblockstate.withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.LOWER), 2);
-         worldIn.setBlockState(blockpos2, iblockstate.withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), 2);
-         worldIn.notifyNeighborsOfStateChange(pos, door, false);
+                 worldIn.playSound(
+                     player,
+                     pos,

@@ -1,17 +1,14 @@
 --- before/net/minecraft/item/ItemBucketMilk.java
 +++ after/net/minecraft/item/ItemBucketMilk.java
-@@ -20,9 +20,9 @@
-         this.setCreativeTab(CreativeTabs.MISC);
-     }
- 
--    @Override
+@@ -23,6 +23,7 @@
+     @Override
      public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
      {
 +        if (!worldIn.isRemote) entityLiving.curePotionEffects(stack); // FORGE - move up so stack.shrink does not turn stack into air
          if (entityLiving instanceof EntityPlayerMP)
          {
              EntityPlayerMP entityplayermp = (EntityPlayerMP)entityLiving;
-@@ -35,30 +35,27 @@
+@@ -35,11 +36,6 @@
              stack.shrink(1);
          }
  
@@ -23,16 +20,7 @@
          return stack.isEmpty() ? new ItemStack(Items.BUCKET) : stack;
      }
  
--    @Override
-     public int getMaxItemUseDuration(ItemStack stack)
-     {
-         return 32;
-     }
- 
--    @Override
-     public EnumAction getItemUseAction(ItemStack stack)
-     {
-         return EnumAction.DRINK;
+@@ -56,6 +52,10 @@
      }
  
      @Override
@@ -43,7 +31,3 @@
      public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
      {
          playerIn.setActiveHand(handIn);
--        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
-+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
-     }
- }

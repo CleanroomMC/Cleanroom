@@ -1,35 +1,11 @@
 --- before/net/minecraft/item/ItemFlintAndSteel.java
 +++ after/net/minecraft/item/ItemFlintAndSteel.java
-@@ -23,17 +23,7 @@
-         this.setCreativeTab(CreativeTabs.TOOLS);
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         pos = pos.offset(facing);
-         ItemStack itemstack = player.getHeldItem(hand);
-@@ -44,11 +34,9 @@
+@@ -44,7 +44,7 @@
          }
          else
          {
 -            if (worldIn.getBlockState(pos).getMaterial() == Material.AIR)
 +            if (worldIn.isAirBlock(pos))
              {
--                worldIn.playSound(
--                    player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, itemRand.nextFloat() * 0.4F + 0.8F
--                );
-+                worldIn.playSound(player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, itemRand.nextFloat() * 0.4F + 0.8F);
-                 worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState(), 11);
-             }
- 
+                 worldIn.playSound(
+                     player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, itemRand.nextFloat() * 0.4F + 0.8F

@@ -1,12 +1,6 @@
 --- before/net/minecraft/item/ItemBucket.java
 +++ after/net/minecraft/item/ItemBucket.java
-@@ -35,20 +35,21 @@
-         this.setCreativeTab(CreativeTabs.MISC);
-     }
- 
--    @Override
-     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-     {
+@@ -41,6 +41,8 @@
          boolean flag = this.containedBlock == Blocks.AIR;
          ItemStack itemstack = playerIn.getHeldItem(handIn);
          RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, flag);
@@ -15,108 +9,7 @@
  
          if (raytraceresult == null)
          {
--            return new ActionResult<>(EnumActionResult.PASS, itemstack);
-+            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
-         }
-         else if (raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK)
-         {
--            return new ActionResult<>(EnumActionResult.PASS, itemstack);
-+            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
-         }
-         else
-         {
-@@ -56,36 +57,36 @@
- 
-             if (!worldIn.isBlockModifiable(playerIn, blockpos))
-             {
--                return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-+                return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-             }
-             else if (flag)
-             {
-                 if (!playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack))
-                 {
--                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-+                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-                 }
-                 else
-                 {
-                     IBlockState iblockstate = worldIn.getBlockState(blockpos);
-                     Material material = iblockstate.getMaterial();
- 
--                    if (material == Material.WATER && iblockstate.getValue(BlockLiquid.LEVEL) == 0)
-+                    if (material == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
-                     {
-                         worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 11);
-                         playerIn.addStat(StatList.getObjectUseStats(this));
-                         playerIn.playSound(SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
--                        return new ActionResult<>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.WATER_BUCKET));
-+                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.WATER_BUCKET));
-                     }
--                    else if (material == Material.LAVA && iblockstate.getValue(BlockLiquid.LEVEL) == 0)
-+                    else if (material == Material.LAVA && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
-                     {
-                         playerIn.playSound(SoundEvents.ITEM_BUCKET_FILL_LAVA, 1.0F, 1.0F);
-                         worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 11);
-                         playerIn.addStat(StatList.getObjectUseStats(this));
--                        return new ActionResult<>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.LAVA_BUCKET));
-+                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.LAVA_BUCKET));
-                     }
-                     else
-                     {
--                        return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-+                        return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-                     }
-                 }
-             }
-@@ -96,7 +97,7 @@
- 
-                 if (!playerIn.canPlayerEdit(blockpos1, raytraceresult.sideHit, itemstack))
-                 {
--                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-+                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-                 }
-                 else if (this.tryPlaceContainedLiquid(playerIn, worldIn, blockpos1))
-                 {
-@@ -106,13 +107,11 @@
-                     }
- 
-                     playerIn.addStat(StatList.getObjectUseStats(this));
--                    return !playerIn.capabilities.isCreativeMode
--                           ? new ActionResult<>(EnumActionResult.SUCCESS, new ItemStack(Items.BUCKET))
--                           : new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
-+                    return !playerIn.capabilities.isCreativeMode ? new ActionResult(EnumActionResult.SUCCESS, new ItemStack(Items.BUCKET)) : new ActionResult(EnumActionResult.SUCCESS, itemstack);
-                 }
-                 else
-                 {
--                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-+                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-                 }
-             }
-         }
-@@ -168,18 +167,11 @@
-                     int l = posIn.getX();
-                     int i = posIn.getY();
-                     int j = posIn.getZ();
--                    worldIn.playSound(
--                        player,
--                        posIn,
--                        SoundEvents.BLOCK_FIRE_EXTINGUISH,
--                        SoundCategory.BLOCKS,
--                        0.5F,
--                        2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F
--                    );
-+                    worldIn.playSound(player, posIn, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);
- 
--                    for (int k = 0; k < 8; k++)
-+                    for (int k = 0; k < 8; ++k)
-                     {
--                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, l + Math.random(), i + Math.random(), j + Math.random(), 0.0, 0.0, 0.0);
-+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, (double)l + Math.random(), (double)i + Math.random(), (double)j + Math.random(), 0.0D, 0.0D, 0.0D);
-                     }
-                 }
-                 else
-@@ -196,6 +188,18 @@
+@@ -196,6 +198,18 @@
  
                  return true;
              }

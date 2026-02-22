@@ -1,39 +1,17 @@
 --- before/net/minecraft/item/ItemShears.java
 +++ after/net/minecraft/item/ItemShears.java
-@@ -18,7 +18,6 @@
-         this.setCreativeTab(CreativeTabs.TOOLS);
-     }
- 
--    @Override
-     public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
-     {
-         if (!worldIn.isRemote)
-@@ -27,35 +26,96 @@
+@@ -27,6 +27,7 @@
          }
  
          Block block = state.getBlock();
--        return state.getMaterial() != Material.LEAVES
--               && block != Blocks.WEB
--               && block != Blocks.TALLGRASS
--               && block != Blocks.VINE
--               && block != Blocks.TRIPWIRE
--               && block != Blocks.WOOL
--               ? super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving)
--               : true;
 +        if (block instanceof net.minecraftforge.common.IShearable) return true;
-+        return state.getMaterial() != Material.LEAVES && block != Blocks.WEB && block != Blocks.TALLGRASS && block != Blocks.VINE && block != Blocks.TRIPWIRE && block != Blocks.WOOL ? super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving) : true;
+         return state.getMaterial() != Material.LEAVES
+                && block != Blocks.WEB
+                && block != Blocks.TALLGRASS
+@@ -45,6 +46,73 @@
      }
  
--    @Override
-     public boolean canHarvestBlock(IBlockState blockIn)
-     {
-         Block block = blockIn.getBlock();
-         return block == Blocks.WEB || block == Blocks.REDSTONE_WIRE || block == Blocks.TRIPWIRE;
-     }
- 
--    @Override
-+
-+    @Override
+     @Override
 +    public boolean itemInteractionForEntity(ItemStack itemstack, net.minecraft.entity.player.EntityPlayer player, EntityLivingBase entity, net.minecraft.util.EnumHand hand)
 +    {
 +        if (entity.world.isRemote)
@@ -84,10 +62,10 @@
 +                for (ItemStack stack : drops)
 +                {
 +                    float f = 0.7F;
-+                    double d  = (double)(rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-+                    double d1 = (double)(rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-+                    double d2 = (double)(rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-+                    net.minecraft.entity.item.EntityItem entityitem = new net.minecraft.entity.item.EntityItem(player.world, (double)pos.getX() + d, (double)pos.getY() + d1, (double)pos.getZ() + d2, stack);
++                    double d  = (rand.nextFloat() * f) + (1.0F - f) * 0.5D;
++                    double d1 = (rand.nextFloat() * f) + (1.0F - f) * 0.5D;
++                    double d2 = (rand.nextFloat() * f) + (1.0F - f) * 0.5D;
++                    net.minecraft.entity.item.EntityItem entityitem = new net.minecraft.entity.item.EntityItem(player.world, pos.getX() + d, pos.getY() + d1, pos.getZ() + d2, stack);
 +                    entityitem.setDefaultPickupDelay();
 +                    player.world.spawnEntity(entityitem);
 +                }
@@ -104,19 +82,3 @@
      public float getDestroySpeed(ItemStack stack, IBlockState state)
      {
          Block block = state.getBlock();
- 
--        if (block == Blocks.WEB || state.getMaterial() == Material.LEAVES)
--        {
--            return 15.0F;
--        }
--        else
-+        if (block != Blocks.WEB && state.getMaterial() != Material.LEAVES)
-         {
-             return block == Blocks.WOOL ? 5.0F : super.getDestroySpeed(stack, state);
-+        }
-+        else
-+        {
-+            return 15.0F;
-         }
-     }
- }

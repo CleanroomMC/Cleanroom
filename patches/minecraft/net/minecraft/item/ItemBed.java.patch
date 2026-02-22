@@ -1,82 +1,11 @@
 --- before/net/minecraft/item/ItemBed.java
 +++ after/net/minecraft/item/ItemBed.java
-@@ -29,17 +29,7 @@
-         this.setHasSubtypes(true);
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         if (worldIn.isRemote)
-         {
-@@ -60,7 +50,7 @@
-                 pos = pos.up();
-             }
- 
--            int i = MathHelper.floor(player.rotationYaw * 4.0F / 360.0F + 0.5) & 3;
-+            int i = MathHelper.floor((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-             EnumFacing enumfacing = EnumFacing.byHorizontalIndex(i);
-             BlockPos blockpos = pos.offset(enumfacing);
-             ItemStack itemstack = player.getHeldItem(hand);
-@@ -72,27 +62,13 @@
-                 boolean flag2 = flag || worldIn.isAirBlock(pos);
-                 boolean flag3 = flag1 || worldIn.isAirBlock(blockpos);
- 
--                if (flag2
--                        && flag3
--                        && worldIn.getBlockState(pos.down()).isTopSolid()
--                        && worldIn.getBlockState(blockpos.down()).isTopSolid())
-+                if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isTopSolid() && worldIn.getBlockState(blockpos.down()).isTopSolid())
-                 {
--                    IBlockState iblockstate2 = Blocks.BED
--                                               .getDefaultState()
--                                               .withProperty(BlockBed.OCCUPIED, false)
--                                               .withProperty(BlockBed.FACING, enumfacing)
--                                               .withProperty(BlockBed.PART, BlockBed.EnumPartType.FOOT);
-+                    IBlockState iblockstate2 = Blocks.BED.getDefaultState().withProperty(BlockBed.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockBed.FACING, enumfacing).withProperty(BlockBed.PART, BlockBed.EnumPartType.FOOT);
+@@ -84,7 +84,7 @@
+                                                .withProperty(BlockBed.PART, BlockBed.EnumPartType.FOOT);
                      worldIn.setBlockState(pos, iblockstate2, 10);
                      worldIn.setBlockState(blockpos, iblockstate2.withProperty(BlockBed.PART, BlockBed.EnumPartType.HEAD), 10);
 -                    SoundType soundtype = iblockstate2.getBlock().getSoundType();
--                    worldIn.playSound(
--                        null,
--                        pos,
--                        soundtype.getPlaceSound(),
--                        SoundCategory.BLOCKS,
--                        (soundtype.getVolume() + 1.0F) / 2.0F,
--                        soundtype.getPitch() * 0.8F
--                    );
 +                    SoundType soundtype = iblockstate2.getBlock().getSoundType(iblockstate2, worldIn, pos, player);
-+                    worldIn.playSound((EntityPlayer)null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                     TileEntity tileentity = worldIn.getTileEntity(blockpos);
- 
-                     if (tileentity instanceof TileEntityBed)
-@@ -130,18 +106,16 @@
-         }
-     }
- 
--    @Override
-     public String getTranslationKey(ItemStack stack)
-     {
-         return super.getTranslationKey() + "." + EnumDyeColor.byMetadata(stack.getMetadata()).getTranslationKey();
-     }
- 
--    @Override
-     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-     {
-         if (this.isInCreativeTab(tab))
-         {
--            for (int i = 0; i < 16; i++)
-+            for (int i = 0; i < 16; ++i)
-             {
-                 items.add(new ItemStack(this, 1, i));
-             }
+                     worldIn.playSound(
+                         null,
+                         pos,

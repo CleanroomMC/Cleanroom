@@ -1,38 +1,11 @@
 --- before/net/minecraft/item/ItemRedstone.java
 +++ after/net/minecraft/item/ItemRedstone.java
-@@ -2,6 +2,7 @@
- 
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.creativetab.CreativeTabs;
-+import net.minecraft.entity.Entity;
- import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.entity.player.EntityPlayerMP;
- import net.minecraft.init.Blocks;
-@@ -18,25 +19,13 @@
-         this.setCreativeTab(CreativeTabs.REDSTONE);
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         boolean flag = worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos);
-         BlockPos blockpos = flag ? pos : pos.offset(facing);
+@@ -35,7 +35,7 @@
          ItemStack itemstack = player.getHeldItem(hand);
  
--        if (player.canPlayerEdit(blockpos, facing, itemstack)
+         if (player.canPlayerEdit(blockpos, facing, itemstack)
 -                && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, null)
--                && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos))
-+        if (player.canPlayerEdit(blockpos, facing, itemstack) && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, player) && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos))
++                && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, player)
+                 && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos))
          {
              worldIn.setBlockState(blockpos, Blocks.REDSTONE_WIRE.getDefaultState());
- 
