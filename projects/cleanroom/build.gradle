@@ -911,8 +911,8 @@ tasks.register("cleanroomClientNsight", Exec) {
                 tasks.cleanroomClient.name
         ]
 
-        logger.info "Java Executable: $javaExec"
-        logger.info "Nsight Graphics NGFX Path: $ngfxPath"
+        logger.lifecycle "\nJava Executable: $javaExec"
+        logger.lifecycle "Nsight Graphics NGFX Path: $ngfxPath\n"
 
         commandLine = [
                 ngfxPath,
