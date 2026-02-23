@@ -1,202 +1,22 @@
 --- before/net/minecraft/pathfinding/FlyingNodeProcessor.java
 +++ after/net/minecraft/pathfinding/FlyingNodeProcessor.java
-@@ -13,21 +13,18 @@
- 
- public class FlyingNodeProcessor extends WalkNodeProcessor
- {
--    @Override
-     public void init(IBlockAccess sourceIn, EntityLiving mob)
-     {
-         super.init(sourceIn, mob);
-         this.avoidsWater = mob.getPathPriority(PathNodeType.WATER);
-     }
- 
--    @Override
-     public void postProcess()
-     {
-         this.entity.setPathPriority(PathNodeType.WATER, this.avoidsWater);
-         super.postProcess();
-     }
- 
--    @Override
-     public PathPoint getStart()
-     {
-         int i;
-@@ -35,23 +32,17 @@
-         if (this.getCanSwim() && this.entity.isInWater())
-         {
-             i = (int)this.entity.getEntityBoundingBox().minY;
--            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(
--                MathHelper.floor(this.entity.posX), i, MathHelper.floor(this.entity.posZ)
--            );
-+            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor(this.entity.posX), i, MathHelper.floor(this.entity.posZ));
- 
--            for (Block block = this.blockaccess.getBlockState(blockpos$mutableblockpos).getBlock();
--                    block == Blocks.FLOWING_WATER || block == Blocks.WATER;
--                    block = this.blockaccess.getBlockState(blockpos$mutableblockpos).getBlock()
--                )
-+            for (Block block = this.blockaccess.getBlockState(blockpos$mutableblockpos).getBlock(); block == Blocks.FLOWING_WATER || block == Blocks.WATER; block = this.blockaccess.getBlockState(blockpos$mutableblockpos).getBlock())
-             {
--                blockpos$mutableblockpos.setPos(
--                    MathHelper.floor(this.entity.posX), ++i, MathHelper.floor(this.entity.posZ)
--                );
-+                ++i;
-+                blockpos$mutableblockpos.setPos(MathHelper.floor(this.entity.posX), i, MathHelper.floor(this.entity.posZ));
-             }
-         }
-         else
-         {
--            i = MathHelper.floor(this.entity.getEntityBoundingBox().minY + 0.5);
-+            i = MathHelper.floor(this.entity.getEntityBoundingBox().minY + 0.5D);
-         }
- 
-         BlockPos blockpos1 = new BlockPos(this.entity);
-@@ -59,7 +50,7 @@
- 
-         if (this.entity.getPathPriority(pathnodetype1) < 0.0F)
-         {
--            Set<BlockPos> set = Sets.newHashSet();
-+            Set<BlockPos> set = Sets.<BlockPos>newHashSet();
-             set.add(new BlockPos(this.entity.getEntityBoundingBox().minX, (double)i, this.entity.getEntityBoundingBox().minZ));
-             set.add(new BlockPos(this.entity.getEntityBoundingBox().minX, (double)i, this.entity.getEntityBoundingBox().maxZ));
-             set.add(new BlockPos(this.entity.getEntityBoundingBox().maxX, (double)i, this.entity.getEntityBoundingBox().minZ));
-@@ -79,13 +70,11 @@
-         return super.openPoint(blockpos1.getX(), i, blockpos1.getZ());
-     }
- 
--    @Override
-     public PathPoint getPathPointToCoords(double x, double y, double z)
-     {
-         return super.openPoint(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
-     }
- 
--    @Override
-     public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance)
-     {
-         int i = 0;
-@@ -257,7 +246,6 @@
-     }
- 
-     @Nullable
--    @Override
-     protected PathPoint openPoint(int x, int y, int z)
-     {
-         PathPoint pathpoint = null;
-@@ -272,33 +260,21 @@
- 
-             if (pathnodetype == PathNodeType.WALKABLE)
-             {
--                pathpoint.costMalus++;
-+                ++pathpoint.costMalus;
-             }
-         }
- 
-         return pathnodetype != PathNodeType.OPEN && pathnodetype != PathNodeType.WALKABLE ? pathpoint : pathpoint;
-     }
- 
--    @Override
--    public PathNodeType getPathNodeType(
--        IBlockAccess blockaccessIn,
--        int x,
--        int y,
--        int z,
--        EntityLiving entitylivingIn,
--        int xSize,
--        int ySize,
--        int zSize,
--        boolean canBreakDoorsIn,
--        boolean canEnterDoorsIn
--    )
-+    public PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z, EntityLiving entitylivingIn, int xSize, int ySize, int zSize, boolean canBreakDoorsIn, boolean canEnterDoorsIn)
-     {
--        EnumSet<PathNodeType> enumset = EnumSet.noneOf(PathNodeType.class);
-+        EnumSet<PathNodeType> enumset = EnumSet.<PathNodeType>noneOf(PathNodeType.class);
+@@ -296,9 +296,11 @@
+         EnumSet<PathNodeType> enumset = EnumSet.noneOf(PathNodeType.class);
          PathNodeType pathnodetype = PathNodeType.BLOCKED;
          BlockPos blockpos = new BlockPos(entitylivingIn);
--        pathnodetype = this.getPathNodeType(
--                           blockaccessIn, x, y, z, xSize, ySize, zSize, canBreakDoorsIn, canEnterDoorsIn, enumset, pathnodetype, blockpos
--                       );
 +        this.currentEntity = entitylivingIn;
-+        pathnodetype = this.getPathNodeType(blockaccessIn, x, y, z, xSize, ySize, zSize, canBreakDoorsIn, canEnterDoorsIn, enumset, pathnodetype, blockpos);
+         pathnodetype = this.getPathNodeType(
+                            blockaccessIn, x, y, z, xSize, ySize, zSize, canBreakDoorsIn, canEnterDoorsIn, enumset, pathnodetype, blockpos
+                        );
 +        this.currentEntity = null;
  
          if (enumset.contains(PathNodeType.FENCE))
          {
-@@ -321,11 +297,17 @@
-                 }
-             }
- 
--            return pathnodetype == PathNodeType.OPEN && entitylivingIn.getPathPriority(pathnodetype1) == 0.0F ? PathNodeType.OPEN : pathnodetype1;
-+            if (pathnodetype == PathNodeType.OPEN && entitylivingIn.getPathPriority(pathnodetype1) == 0.0F)
-+            {
-+                return PathNodeType.OPEN;
-+            }
-+            else
-+            {
-+                return pathnodetype1;
-+            }
-         }
-     }
- 
--    @Override
-     public PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z)
-     {
-         PathNodeType pathnodetype = this.getPathNodeTypeRaw(blockaccessIn, x, y, z);
-@@ -335,23 +317,26 @@
-             Block block = blockaccessIn.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
-             PathNodeType pathnodetype1 = this.getPathNodeTypeRaw(blockaccessIn, x, y - 1, z);
- 
--            if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA || pathnodetype1 == PathNodeType.LAVA)
-+            if (pathnodetype1 != PathNodeType.DAMAGE_FIRE && block != Blocks.MAGMA && pathnodetype1 != PathNodeType.LAVA)
-+            {
-+                if (pathnodetype1 == PathNodeType.DAMAGE_CACTUS)
-+                {
-+                    pathnodetype = PathNodeType.DAMAGE_CACTUS;
-+                }
-+                else if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) pathnodetype = PathNodeType.DAMAGE_OTHER;
-+                else
-+                {
-+                    pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER ? PathNodeType.WALKABLE : PathNodeType.OPEN;
-+                }
-+            }
-+            else
+@@ -343,6 +345,7 @@
              {
-                 pathnodetype = PathNodeType.DAMAGE_FIRE;
+                 pathnodetype = PathNodeType.DAMAGE_CACTUS;
              }
--            else if (pathnodetype1 == PathNodeType.DAMAGE_CACTUS)
--            {
--                pathnodetype = PathNodeType.DAMAGE_CACTUS;
--            }
--            else
--            {
--                pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER
--                               ? PathNodeType.WALKABLE
--                               : PathNodeType.OPEN;
--            }
-         }
- 
--        return this.checkNeighborBlocks(blockaccessIn, x, y, z, pathnodetype);
-+        pathnodetype = this.checkNeighborBlocks(blockaccessIn, x, y, z, pathnodetype);
-+        return pathnodetype;
-     }
- 
-     private PathNodeType getPathNodeType(EntityLiving p_192559_1_, BlockPos p_192559_2_)
-@@ -361,17 +346,6 @@
- 
-     private PathNodeType getPathNodeType(EntityLiving p_192558_1_, int p_192558_2_, int p_192558_3_, int p_192558_4_)
-     {
--        return this.getPathNodeType(
--                   this.blockaccess,
--                   p_192558_2_,
--                   p_192558_3_,
--                   p_192558_4_,
--                   p_192558_1_,
--                   this.entitySizeX,
--                   this.entitySizeY,
--                   this.entitySizeZ,
--                   this.getCanOpenDoors(),
--                   this.getCanEnterDoors()
--               );
-+        return this.getPathNodeType(this.blockaccess, p_192558_2_, p_192558_3_, p_192558_4_, p_192558_1_, this.entitySizeX, this.entitySizeY, this.entitySizeZ, this.getCanOpenDoors(), this.getCanEnterDoors());
-     }
- }
++            else if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) pathnodetype = PathNodeType.DAMAGE_OTHER;
+             else
+             {
+                 pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER
