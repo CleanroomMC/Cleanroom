@@ -1,17 +1,6 @@
 --- before/net/minecraft/nbt/NBTTagString.java
 +++ after/net/minecraft/nbt/NBTTagString.java
-@@ -20,27 +20,23 @@
-         this.data = data;
-     }
- 
--    @Override
-     void write(DataOutput output) throws IOException
-     {
-         output.writeUTF(this.data);
-     }
- 
--    @Override
-     void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
+@@ -31,7 +31,7 @@
      {
          sizeTracker.read(288L);
          this.data = input.readUTF();
@@ -19,50 +8,4 @@
 +        NBTSizeTracker.readUTF(sizeTracker, data); // Forge: Correctly read String length including header.
      }
  
--    @Override
-     public byte getId()
-     {
-         return 8;
-     }
- 
--    @Override
-     public String toString()
-     {
-         return quoteAndEscape(this.data);
-@@ -51,13 +47,11 @@
-         return new NBTTagString(this.data);
-     }
- 
--    @Override
-     public boolean isEmpty()
-     {
-         return this.data.isEmpty();
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (!super.equals(p_equals_1_))
-@@ -71,13 +65,11 @@
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         return super.hashCode() ^ this.data.hashCode();
-     }
- 
--    @Override
-     public String getString()
-     {
-         return this.data;
-@@ -87,7 +79,7 @@
-     {
-         StringBuilder stringbuilder = new StringBuilder("\"");
- 
--        for (int i = 0; i < p_193588_0_.length(); i++)
-+        for (int i = 0; i < p_193588_0_.length(); ++i)
-         {
-             char c0 = p_193588_0_.charAt(i);
- 
+     @Override
