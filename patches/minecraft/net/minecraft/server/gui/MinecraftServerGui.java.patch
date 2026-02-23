@@ -1,35 +1,6 @@
 --- before/net/minecraft/server/gui/MinecraftServerGui.java
 +++ after/net/minecraft/server/gui/MinecraftServerGui.java
-@@ -2,6 +2,7 @@
- 
- import com.mojang.util.QueueLogAppender;
- import java.awt.BorderLayout;
-+import java.awt.Component;
- import java.awt.Dimension;
- import java.awt.Font;
- import java.awt.event.ActionEvent;
-@@ -22,6 +23,7 @@
- import javax.swing.UIManager;
- import javax.swing.border.EtchedBorder;
- import javax.swing.border.TitledBorder;
-+import javax.swing.text.AttributeSet;
- import javax.swing.text.BadLocationException;
- import javax.swing.text.Document;
- import net.minecraft.server.dedicated.DedicatedServer;
-@@ -51,11 +53,10 @@
-         JFrame jframe = new JFrame("Minecraft server");
-         jframe.add(minecraftservergui);
-         jframe.pack();
--        jframe.setLocationRelativeTo(null);
-+        jframe.setLocationRelativeTo((Component)null);
-         jframe.setVisible(true);
-         jframe.addWindowListener(new WindowAdapter()
-         {
--            @Override
-             public void windowClosing(WindowEvent p_windowClosing_1_)
-             {
-                 serverIn.initiateShutdown();
-@@ -75,6 +76,7 @@
+@@ -75,6 +75,7 @@
                  System.exit(0);
              }
          });
@@ -37,31 +8,7 @@
      }
  
      public MinecraftServerGui(DedicatedServer serverIn)
-@@ -121,7 +123,6 @@
-         final JTextField jtextfield = new JTextField();
-         jtextfield.addActionListener(new ActionListener()
-         {
--            @Override
-             public void actionPerformed(ActionEvent p_actionPerformed_1_)
-             {
-                 String s = jtextfield.getText().trim();
-@@ -136,7 +137,6 @@
-         });
-         jtextarea.addFocusListener(new FocusAdapter()
-         {
--            @Override
-             public void focusGained(FocusEvent p_focusGained_1_)
-             {
-             }
-@@ -146,7 +146,6 @@
-         jpanel.setBorder(new TitledBorder(new EtchedBorder(), "Log and chat"));
-         Thread thread = new Thread(new Runnable()
-         {
--            @Override
-             public void run()
-             {
-                 String s;
-@@ -162,13 +161,17 @@
+@@ -162,8 +163,13 @@
          return jpanel;
      }
  
@@ -75,23 +22,3 @@
          if (!SwingUtilities.isEventDispatchThread())
          {
              SwingUtilities.invokeLater(new Runnable()
-             {
--                @Override
-                 public void run()
-                 {
-                     MinecraftServerGui.this.appendLine(textArea, scrollPane, line);
-@@ -183,12 +186,12 @@
- 
-             if (scrollPane.getViewport().getView() == textArea)
-             {
--                flag = jscrollbar.getValue() + jscrollbar.getSize().getHeight() + SERVER_GUI_FONT.getSize() * 4 > jscrollbar.getMaximum();
-+                flag = (double)jscrollbar.getValue() + jscrollbar.getSize().getHeight() + (double)(SERVER_GUI_FONT.getSize() * 4) > (double)jscrollbar.getMaximum();
-             }
- 
-             try
-             {
--                document.insertString(document.getLength(), line, null);
-+                document.insertString(document.getLength(), line, (AttributeSet)null);
-             }
-             catch (BadLocationException badlocationexception)
-             {
