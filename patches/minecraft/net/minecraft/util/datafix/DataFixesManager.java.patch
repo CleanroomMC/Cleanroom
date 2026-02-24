@@ -8,12 +8,3 @@
          WorldInfo.registerFixes(datafixer);
          EntityPlayerMP.registerFixesPlayerMP(datafixer);
          EntityPlayer.registerFixesPlayer(datafixer);
-@@ -272,7 +273,7 @@
-         {
-             NBTTagList nbttaglist = compound.getTagList(key, 10);
- 
--            for (int i = 0; i < nbttaglist.tagCount(); i++)
-+            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-             {
-                 nbttaglist.set(i, fixer.process(FixTypes.ITEM_INSTANCE, nbttaglist.getCompoundTagAt(i), version));
-             }

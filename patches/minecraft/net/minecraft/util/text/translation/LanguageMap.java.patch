@@ -6,8 +6,7 @@
      {
 -        try
 -        {
--            InputStream inputstream = LanguageMap.class.getResourceAsStream("/assets/minecraft/lang/en_us.lang");
-+        InputStream inputstream = LanguageMap.class.getResourceAsStream("/assets/minecraft/lang/en_us.lang");
+             InputStream inputstream = LanguageMap.class.getResourceAsStream("/assets/minecraft/lang/en_us.lang");
 +        try
 +        {
 +            inject(this, inputstream);
@@ -40,7 +39,7 @@
  
              for (String s : IOUtils.readLines(inputstream, StandardCharsets.UTF_8))
              {
-@@ -37,16 +64,18 @@
+@@ -37,16 +64,17 @@
                      {
                          String s1 = astring[0];
                          String s2 = NUMERIC_VARIABLE_PATTERN.matcher(astring[1]).replaceAll("%$1s");
@@ -54,7 +53,6 @@
          }
          catch (IOException ioexception)
          {
-+            ;
          }
 +        catch (Exception ex) {}
 +        return table;

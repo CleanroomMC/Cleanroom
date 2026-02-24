@@ -1,92 +1,12 @@
 --- before/net/minecraft/util/ClassInheritanceMultiMap.java
 +++ after/net/minecraft/util/ClassInheritanceMultiMap.java
-@@ -13,11 +13,12 @@
+@@ -13,7 +13,8 @@
  
  public class ClassInheritanceMultiMap<T> extends AbstractSet<T>
  {
 -    private static final Set < Class<? >> ALL_KNOWN = Sets.newHashSet();
--    private final Map < Class<?>, List<T >> map = Maps.newHashMap();
--    private final Set < Class<? >> knownKeys = Sets.newIdentityHashSet();
 +    // Forge: Use concurrent collection to allow creating chunks from multiple threads safely
-+    private static final Set < Class<? >> ALL_KNOWN = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<Class<?>, Boolean>());
-+    private final Map < Class<?>, List<T >> map = Maps. < Class<?>, List<T >> newHashMap();
-+    private final Set < Class<? >> knownKeys = Sets. < Class<? >> newIdentityHashSet();
++    private static final Set < Class<? >> ALL_KNOWN = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+     private final Map < Class<?>, List<T >> map = Maps.newHashMap();
+     private final Set < Class<? >> knownKeys = Sets.newIdentityHashSet();
      private final Class<T> baseClass;
--    private final List<T> values = Lists.newArrayList();
-+    private final List<T> values = Lists.<T>newArrayList();
- 
-     public ClassInheritanceMultiMap(Class<T> baseClassIn)
-     {
-@@ -63,7 +64,6 @@
-         }
-     }
- 
--    @Override
-     public boolean add(T p_add_1_)
-     {
-         for (Class<?> oclass : this.knownKeys)
-@@ -79,7 +79,7 @@
- 
-     private void addForClass(T value, Class<?> parentClass)
-     {
--        List<T> list = this.map.get(parentClass);
-+        List<T> list = (List)this.map.get(parentClass);
- 
-         if (list == null)
-         {
-@@ -91,7 +91,6 @@
-         }
-     }
- 
--    @Override
-     public boolean remove(Object p_remove_1_)
-     {
-         T t = (T)p_remove_1_;
-@@ -101,7 +100,7 @@
-         {
-             if (oclass.isAssignableFrom(t.getClass()))
-             {
--                List<T> list = this.map.get(oclass);
-+                List<T> list = (List)this.map.get(oclass);
- 
-                 if (list != null && list.remove(t))
-                 {
-@@ -113,7 +112,6 @@
-         return flag;
-     }
- 
--    @Override
-     public boolean contains(Object p_contains_1_)
-     {
-         return Iterators.contains(this.getByClass(p_contains_1_.getClass()).iterator(), p_contains_1_);
-@@ -123,14 +121,13 @@
-     {
-         return new Iterable<S>()
-         {
--            @Override
-             public Iterator<S> iterator()
-             {
--                List<T> list = ClassInheritanceMultiMap.this.map.get(ClassInheritanceMultiMap.this.initializeClassLookup(clazz));
-+                List<T> list = (List)ClassInheritanceMultiMap.this.map.get(ClassInheritanceMultiMap.this.initializeClassLookup(clazz));
- 
-                 if (list == null)
-                 {
--                    return Collections.emptyIterator();
-+                    return Collections.<S>emptyIterator();
-                 }
-                 else
-                 {
-@@ -141,13 +138,11 @@
-         };
-     }
- 
--    @Override
-     public Iterator<T> iterator()
-     {
-         return (Iterator<T>)(this.values.isEmpty() ? Collections.emptyIterator() : Iterators.unmodifiableIterator(this.values.iterator()));
-     }
- 
--    @Override
-     public int size()
-     {
-         return this.values.size();

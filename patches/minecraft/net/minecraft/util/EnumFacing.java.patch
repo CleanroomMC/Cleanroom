@@ -9,27 +9,7 @@
  
  public enum EnumFacing implements IStringSerializable
  {
-@@ -33,17 +31,9 @@
-     private final Vec3i directionVec;
-     public static final EnumFacing[] VALUES = new EnumFacing[6];
-     public static final EnumFacing[] HORIZONTALS = new EnumFacing[4];
--    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.newHashMap();
-+    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.<String, EnumFacing>newHashMap();
- 
--    private EnumFacing(
--        int indexIn,
--        int oppositeIn,
--        int horizontalIndexIn,
--        String nameIn,
--        EnumFacing.AxisDirection axisDirectionIn,
--        EnumFacing.Axis axisIn,
--        Vec3i directionVecIn
--    )
-+    private EnumFacing(int indexIn, int oppositeIn, int horizontalIndexIn, String nameIn, EnumFacing.AxisDirection axisDirectionIn, EnumFacing.Axis axisIn, Vec3i directionVecIn)
-     {
-         this.index = indexIn;
-         this.horizontalIndex = horizontalIndexIn;
-@@ -74,7 +64,6 @@
+@@ -74,7 +72,6 @@
          return byIndex(this.opposite);
      }
  
@@ -37,7 +17,7 @@
      public EnumFacing rotateAround(EnumFacing.Axis axis)
      {
          switch (axis)
-@@ -125,7 +114,6 @@
+@@ -125,7 +122,6 @@
          }
      }
  
@@ -45,7 +25,7 @@
      private EnumFacing rotateX()
      {
          switch (this)
-@@ -145,7 +133,6 @@
+@@ -145,7 +141,6 @@
          }
      }
  
@@ -53,34 +33,15 @@
      private EnumFacing rotateZ()
      {
          switch (this)
-@@ -207,10 +194,9 @@
+@@ -207,7 +202,6 @@
      }
  
      @Nullable
 -    @SideOnly(Side.CLIENT)
      public static EnumFacing byName(String name)
      {
--        return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
-+        return name == null ? null : (EnumFacing)NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
-     }
- 
-     public static EnumFacing byIndex(int index)
-@@ -225,12 +211,12 @@
- 
-     public static EnumFacing fromAngle(double angle)
-     {
--        return byHorizontalIndex(MathHelper.floor(angle / 90.0 + 0.5) & 3);
-+        return byHorizontalIndex(MathHelper.floor(angle / 90.0D + 0.5D) & 3);
-     }
- 
-     public float getHorizontalAngle()
-     {
--        return (this.horizontalIndex & 3) * 90;
-+        return (float)((this.horizontalIndex & 3) * 90);
-     }
- 
-     public static EnumFacing random(Random rand)
-@@ -238,7 +224,6 @@
+         return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
+@@ -238,7 +232,6 @@
          return values()[rand.nextInt(values().length)];
      }
  
@@ -88,54 +49,7 @@
      public static EnumFacing getFacingFromVector(float x, float y, float z)
      {
          EnumFacing enumfacing = NORTH;
-@@ -246,9 +231,7 @@
- 
-         for (EnumFacing enumfacing1 : values())
-         {
--            float f1 = x * enumfacing1.directionVec.getX()
--                       + y * enumfacing1.directionVec.getY()
--                       + z * enumfacing1.directionVec.getZ();
-+            float f1 = x * (float)enumfacing1.directionVec.getX() + y * (float)enumfacing1.directionVec.getY() + z * (float)enumfacing1.directionVec.getZ();
- 
-             if (f1 > f)
-             {
-@@ -260,13 +243,11 @@
-         return enumfacing;
-     }
- 
--    @Override
-     public String toString()
-     {
-         return this.name;
-     }
- 
--    @Override
-     public String getName()
-     {
-         return this.name;
-@@ -287,17 +268,16 @@
- 
-     public static EnumFacing getDirectionFromEntityLiving(BlockPos pos, EntityLivingBase placer)
-     {
--        if (Math.abs(placer.posX - (pos.getX() + 0.5F)) < 2.0
--                && Math.abs(placer.posZ - (pos.getZ() + 0.5F)) < 2.0)
-+        if (Math.abs(placer.posX - (double)((float)pos.getX() + 0.5F)) < 2.0D && Math.abs(placer.posZ - (double)((float)pos.getZ() + 0.5F)) < 2.0D)
-         {
--            double d0 = placer.posY + placer.getEyeHeight();
-+            double d0 = placer.posY + (double)placer.getEyeHeight();
- 
--            if (d0 - pos.getY() > 2.0)
-+            if (d0 - (double)pos.getY() > 2.0D)
-             {
-                 return UP;
-             }
- 
--            if (pos.getY() - d0 > 0.0)
-+            if ((double)pos.getY() - d0 > 0.0D)
-             {
-                 return DOWN;
-             }
-@@ -306,7 +286,6 @@
+@@ -306,7 +299,6 @@
          return placer.getHorizontalFacing().getOpposite();
      }
  
@@ -143,60 +57,11 @@
      public Vec3i getDirectionVec()
      {
          return this.directionVec;
-@@ -332,7 +311,7 @@
-         Y("y", EnumFacing.Plane.VERTICAL),
-         Z("z", EnumFacing.Plane.HORIZONTAL);
- 
--        private static final Map<String, EnumFacing.Axis> NAME_LOOKUP = Maps.newHashMap();
-+        private static final Map<String, EnumFacing.Axis> NAME_LOOKUP = Maps.<String, EnumFacing.Axis>newHashMap();
-         private final String name;
-         private final EnumFacing.Plane plane;
- 
-@@ -343,10 +322,9 @@
+@@ -343,7 +335,6 @@
          }
  
          @Nullable
 -        @SideOnly(Side.CLIENT)
          public static EnumFacing.Axis byName(String name)
          {
--            return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
-+            return name == null ? null : (EnumFacing.Axis)NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
-         }
- 
-         public String getName2()
-@@ -364,7 +342,6 @@
-             return this.plane == EnumFacing.Plane.HORIZONTAL;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.name;
-@@ -380,7 +357,6 @@
-             return this.plane;
-         }
- 
--        @Override
-         public String getName()
-         {
-             return this.name;
-@@ -413,7 +389,6 @@
-             return this.offset;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.description;
-@@ -448,10 +423,9 @@
-             return p_apply_1_ != null && p_apply_1_.getAxis().getPlane() == this;
-         }
- 
--        @Override
-         public Iterator<EnumFacing> iterator()
-         {
--            return Iterators.forArray(this.facings());
-+            return Iterators.<EnumFacing>forArray(this.facings());
-         }
-     }
- }
+             return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
