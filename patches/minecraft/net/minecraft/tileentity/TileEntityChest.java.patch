@@ -1,73 +1,6 @@
 --- before/net/minecraft/tileentity/TileEntityChest.java
 +++ after/net/minecraft/tileentity/TileEntityChest.java
-@@ -25,7 +25,7 @@
- 
- public class TileEntityChest extends TileEntityLockableLoot implements ITickable
- {
--    private NonNullList<ItemStack> chestContents = NonNullList.withSize(27, ItemStack.EMPTY);
-+    private NonNullList<ItemStack> chestContents = NonNullList.<ItemStack>withSize(27, ItemStack.EMPTY);
-     public boolean adjacentChestChecked;
-     public TileEntityChest adjacentChestZNeg;
-     public TileEntityChest adjacentChestXPos;
-@@ -46,13 +46,11 @@
-         this.cachedChestType = typeIn;
-     }
- 
--    @Override
-     public int getSizeInventory()
-     {
-         return 27;
-     }
- 
--    @Override
-     public boolean isEmpty()
-     {
-         for (ItemStack itemstack : this.chestContents)
-@@ -66,7 +64,6 @@
-         return true;
-     }
- 
--    @Override
-     public String getName()
-     {
-         return this.hasCustomName() ? this.customName : "container.chest";
-@@ -74,14 +71,13 @@
- 
-     public static void registerFixesChest(DataFixer fixer)
-     {
--        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityChest.class, "Items"));
-+        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityChest.class, new String[] {"Items"}));
-     }
- 
--    @Override
-     public void readFromNBT(NBTTagCompound compound)
-     {
-         super.readFromNBT(compound);
--        this.chestContents = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
-+        this.chestContents = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
- 
-         if (!this.checkLootAndRead(compound))
-         {
-@@ -94,7 +90,6 @@
-         }
-     }
- 
--    @Override
-     public NBTTagCompound writeToNBT(NBTTagCompound compound)
-     {
-         super.writeToNBT(compound);
-@@ -112,17 +107,16 @@
-         return compound;
-     }
- 
--    @Override
-     public int getInventoryStackLimit()
-     {
-         return 64;
-     }
- 
--    @Override
-     public void updateContainingBlockInfo()
+@@ -123,6 +123,7 @@
      {
          super.updateContainingBlockInfo();
          this.adjacentChestChecked = false;
@@ -75,7 +8,7 @@
      }
  
      @SuppressWarnings("incomplete-switch")
-@@ -174,6 +168,7 @@
+@@ -174,6 +175,7 @@
      {
          if (!this.adjacentChestChecked)
          {
@@ -83,145 +16,16 @@
              this.adjacentChestChecked = true;
              this.adjacentChestXNeg = this.getAdjacentChest(EnumFacing.WEST);
              this.adjacentChestXPos = this.getAdjacentChest(EnumFacing.EAST);
-@@ -215,22 +210,20 @@
-         }
-     }
- 
--    @Override
-     public void update()
-     {
-         this.checkForAdjacentChests();
-         int i = this.pos.getX();
-         int j = this.pos.getY();
-         int k = this.pos.getZ();
--        this.ticksSinceSync++;
-+        ++this.ticksSinceSync;
- 
-         if (!this.world.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0)
-         {
-             this.numPlayersUsing = 0;
-             float f = 5.0F;
- 
--            for (EntityPlayer entityplayer : this.world
--                    .getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(i - 5.0F, j - 5.0F, k - 5.0F, i + 1 + 5.0F, j + 1 + 5.0F, k + 1 + 5.0F)))
-+            for (EntityPlayer entityplayer : this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB((double)((float)i - 5.0F), (double)((float)j - 5.0F), (double)((float)k - 5.0F), (double)((float)(i + 1) + 5.0F), (double)((float)(j + 1) + 5.0F), (double)((float)(k + 1) + 5.0F))))
-             {
-                 if (entityplayer.openContainer instanceof ContainerChest)
-                 {
-@@ -238,7 +231,7 @@
- 
-                     if (iinventory == this || iinventory instanceof InventoryLargeChest && ((InventoryLargeChest)iinventory).isPartOfLargeChest(this))
-                     {
--                        this.numPlayersUsing++;
-+                        ++this.numPlayersUsing;
-                     }
-                 }
+@@ -365,6 +367,28 @@
+                 this.world.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType(), false);
              }
-@@ -249,23 +242,20 @@
- 
-         if (this.numPlayersUsing > 0 && this.lidAngle == 0.0F && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
-         {
--            double d1 = i + 0.5;
--            double d2 = k + 0.5;
-+            double d1 = (double)i + 0.5D;
-+            double d2 = (double)k + 0.5D;
- 
-             if (this.adjacentChestZPos != null)
-             {
--                d2 += 0.5;
-+                d2 += 0.5D;
-             }
- 
-             if (this.adjacentChestXPos != null)
-             {
--                d1 += 0.5;
-+                d1 += 0.5D;
-             }
- 
--            this.world
--            .playSound(
--                null, d1, j + 0.5, d2, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F
--            );
-+            this.world.playSound((EntityPlayer)null, d1, (double)j + 0.5D, d2, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
          }
- 
-         if (this.numPlayersUsing == 0 && this.lidAngle > 0.0F || this.numPlayersUsing > 0 && this.lidAngle < 1.0F)
-@@ -290,23 +280,20 @@
- 
-             if (this.lidAngle < 0.5F && f2 >= 0.5F && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
-             {
--                double d3 = i + 0.5;
--                double d0 = k + 0.5;
-+                double d3 = (double)i + 0.5D;
-+                double d0 = (double)k + 0.5D;
- 
-                 if (this.adjacentChestZPos != null)
-                 {
--                    d0 += 0.5;
-+                    d0 += 0.5D;
-                 }
- 
-                 if (this.adjacentChestXPos != null)
-                 {
--                    d3 += 0.5;
-+                    d3 += 0.5D;
-                 }
- 
--                this.world
--                .playSound(
--                    null, d3, j + 0.5, d0, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F
--                );
-+                this.world.playSound((EntityPlayer)null, d3, (double)j + 0.5D, d0, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
-             }
- 
-             if (this.lidAngle < 0.0F)
-@@ -316,7 +303,6 @@
-         }
-     }
- 
--    @Override
-     public boolean receiveClientEvent(int id, int type)
-     {
-         if (id == 1)
-@@ -330,7 +316,6 @@
-         }
-     }
- 
--    @Override
-     public void openInventory(EntityPlayer player)
-     {
-         if (!player.isSpectator())
-@@ -340,7 +325,7 @@
-                 this.numPlayersUsing = 0;
-             }
- 
--            this.numPlayersUsing++;
-+            ++this.numPlayersUsing;
-             this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
-             this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
- 
-@@ -351,12 +336,11 @@
-         }
-     }
- 
--    @Override
-     public void closeInventory(EntityPlayer player)
-     {
-         if (!player.isSpectator() && this.getBlockType() instanceof BlockChest)
-         {
--            this.numPlayersUsing--;
-+            --this.numPlayersUsing;
-             this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
-             this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
- 
-@@ -367,7 +351,29 @@
-         }
-     }
- 
++    }
++
 +    public net.minecraftforge.items.VanillaDoubleChestItemHandler doubleChestHandler;
 +
 +    @SuppressWarnings("unchecked")
-     @Override
++    @Override
 +    @Nullable
 +    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
 +    {
@@ -238,30 +42,6 @@
 +    public net.minecraftforge.items.IItemHandler getSingleChestHandler()
 +    {
 +        return super.getCapability(net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-+    }
-+
-+
-     public void invalidate()
-     {
-         super.invalidate();
-@@ -390,20 +396,17 @@
-         return this.cachedChestType;
      }
  
--    @Override
-     public String getGuiID()
-     {
-         return "minecraft:chest";
-     }
- 
--    @Override
-     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
-     {
-         this.fillWithLoot(playerIn);
-         return new ContainerChest(playerInventory, this, playerIn);
-     }
- 
--    @Override
-     protected NonNullList<ItemStack> getItems()
-     {
-         return this.chestContents;
+     @Override

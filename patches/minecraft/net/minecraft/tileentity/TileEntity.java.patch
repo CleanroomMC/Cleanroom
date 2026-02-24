@@ -1,6 +1,6 @@
 --- before/net/minecraft/tileentity/TileEntity.java
 +++ after/net/minecraft/tileentity/TileEntity.java
-@@ -21,10 +21,10 @@
+@@ -21,7 +21,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -8,11 +8,7 @@
 +public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
  {
      private static final Logger LOGGER = LogManager.getLogger();
--    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> REGISTRY = new RegistryNamespaced<>();
-+    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> REGISTRY = new RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> ();
-     protected World world;
-     protected BlockPos pos = BlockPos.ORIGIN;
-     protected boolean tileEntityInvalid;
+     private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> REGISTRY = new RegistryNamespaced<>();
 @@ -60,6 +60,8 @@
      public void readFromNBT(NBTTagCompound compound)
      {
@@ -22,15 +18,6 @@
      }
  
      public NBTTagCompound writeToNBT(NBTTagCompound compound)
-@@ -69,7 +71,7 @@
- 
-     private NBTTagCompound writeInternal(NBTTagCompound compound)
-     {
--        ResourceLocation resourcelocation = REGISTRY.getNameForObject((Class <? extends TileEntity >)this.getClass());
-+        ResourceLocation resourcelocation = REGISTRY.getNameForObject(this.getClass());
- 
-         if (resourcelocation == null)
-         {
 @@ -81,6 +83,8 @@
              compound.setInteger("x", this.pos.getX());
              compound.setInteger("y", this.pos.getY());
@@ -40,7 +27,7 @@
              return compound;
          }
      }
-@@ -90,10 +94,11 @@
+@@ -90,19 +94,22 @@
      {
          TileEntity tileentity = null;
          String s = compound.getString("id");
@@ -49,11 +36,14 @@
          try
          {
 -            Class <? extends TileEntity > oclass = REGISTRY.getObject(new ResourceLocation(s));
-+            oclass = (Class)REGISTRY.getObject(new ResourceLocation(s));
++            oclass = REGISTRY.getObject(new ResourceLocation(s));
  
              if (oclass != null)
              {
-@@ -103,6 +108,8 @@
+-                tileentity = oclass.newInstance();
++                tileentity = oclass.getConstructor().newInstance();
+             }
+         }
          catch (Throwable throwable1)
          {
              LOGGER.error("Failed to create block entity {}", s, throwable1);
@@ -62,7 +52,7 @@
          }
  
          if (tileentity != null)
-@@ -115,12 +122,14 @@
+@@ -115,6 +122,8 @@
              catch (Throwable throwable)
              {
                  LOGGER.error("Failed to load data for block entity {}", s, throwable);
@@ -71,72 +61,24 @@
                  tileentity = null;
              }
          }
-         else
-         {
--            LOGGER.warn("Skipping BlockEntity with id {}", s);
-+            LOGGER.warn("Skipping BlockEntity with id {}", (Object)s);
-         }
- 
-         return tileentity;
-@@ -156,19 +165,18 @@
+@@ -156,7 +165,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
      public double getDistanceSq(double x, double y, double z)
      {
--        double d0 = this.pos.getX() + 0.5 - x;
--        double d1 = this.pos.getY() + 0.5 - y;
--        double d2 = this.pos.getZ() + 0.5 - z;
-+        double d0 = (double)this.pos.getX() + 0.5D - x;
-+        double d1 = (double)this.pos.getY() + 0.5D - y;
-+        double d2 = (double)this.pos.getZ() + 0.5D - z;
-         return d0 * d0 + d1 * d1 + d2 * d2;
-     }
- 
-     @SideOnly(Side.CLIENT)
-     public double getMaxRenderDistanceSquared()
-     {
--        return 4096.0;
-+        return 4096.0D;
-     }
- 
-     public BlockPos getPos()
-@@ -225,18 +233,13 @@
- 
-     public void addInfoToCrashReport(CrashReportCategory reportCategory)
-     {
--        reportCategory.addDetail(
--            "Name",
--            new ICrashReportDetail<String>()
-+        reportCategory.addDetail("Name", new ICrashReportDetail<String>()
-         {
-             public String call() throws Exception
-             {
--                return TileEntity.REGISTRY.getNameForObject((Class <? extends TileEntity >)TileEntity.this.getClass())
--                       + " // "
--                       + TileEntity.this.getClass().getCanonicalName();
-+                return TileEntity.REGISTRY.getNameForObject(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
-             }
--        }
--        );
-+        });
- 
-         if (this.world != null)
-         {
-@@ -249,9 +252,9 @@
+         double d0 = this.pos.getX() + 0.5 - x;
+@@ -249,7 +257,7 @@
  
                      try
                      {
 -                        return String.format("ID #%d (%s // %s)", i, Block.getBlockById(i).getTranslationKey(), Block.getBlockById(i).getClass().getCanonicalName());
 +                        return String.format("ID #%d (%s // %s // %s)", i, Block.getBlockById(i).getTranslationKey(), Block.getBlockById(i).getClass().getName(), Block.getBlockById(i).getRegistryName());
                      }
--                    catch (Throwable throwable)
-+                    catch (Throwable var3)
+                     catch (Throwable throwable)
                      {
-                         return "ID #" + i;
-                     }
-@@ -300,6 +303,204 @@
+@@ -300,6 +308,204 @@
  
      public void mirror(Mirror mirrorIn)
      {
