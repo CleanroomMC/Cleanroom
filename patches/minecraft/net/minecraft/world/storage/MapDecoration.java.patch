@@ -1,40 +1,9 @@
 --- before/net/minecraft/world/storage/MapDecoration.java
 +++ after/net/minecraft/world/storage/MapDecoration.java
-@@ -50,7 +50,6 @@
-         return this.type.isRenderedOnFrame();
+@@ -89,6 +89,17 @@
+         return 31 * i + this.rotation;
      }
  
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (this == p_equals_1_)
-@@ -73,20 +72,35 @@
-             {
-                 return false;
-             }
-+            else if (this.x != mapdecoration.x)
-+            {
-+                return false;
-+            }
-             else
-             {
--                return this.x != mapdecoration.x ? false : this.y == mapdecoration.y;
-+                return this.y == mapdecoration.y;
-             }
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         int i = this.type.getIcon();
-         i = 31 * i + this.x;
-         i = 31 * i + this.y;
--        return 31 * i + this.rotation;
-+        i = 31 * i + this.rotation;
-+        return i;
-+    }
-+
 +    /**
 +     * Renders this decoration, useful for custom sprite sheets.
 +     * @param index The index of this icon in the MapData's list. Used by vanilla to offset the Z-coordinate to prevent Z-fighting
@@ -44,23 +13,8 @@
 +    public boolean render(int index)
 +    {
 +        return false;
-     }
- 
++    }
++
      public static enum Type
-@@ -102,7 +116,7 @@
-         MANSION(true, 5393476),
-         MONUMENT(true, 3830373);
- 
--        private final byte icon = (byte)this.ordinal();
-+        private final byte icon;
-         private final boolean renderedOnFrame;
-         private final int mapColor;
- 
-@@ -113,6 +127,7 @@
- 
-         private Type(boolean p_i47344_3_, int p_i47344_4_)
-         {
-+            this.icon = (byte)this.ordinal();
-             this.renderedOnFrame = p_i47344_3_;
-             this.mapColor = p_i47344_4_;
-         }
+     {
+         PLAYER(false),

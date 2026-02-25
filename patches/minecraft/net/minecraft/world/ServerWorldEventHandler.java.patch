@@ -1,151 +1,20 @@
 --- before/net/minecraft/world/ServerWorldEventHandler.java
 +++ after/net/minecraft/world/ServerWorldEventHandler.java
-@@ -24,38 +24,14 @@
-         this.world = worldServerIn;
-     }
- 
--    @Override
--    public void spawnParticle(
--        int particleID,
--        boolean ignoreRange,
--        double xCoord,
--        double yCoord,
--        double zCoord,
--        double xSpeed,
--        double ySpeed,
--        double zSpeed,
--        int... parameters
--    )
--    {
--    }
--
--    @Override
--    public void spawnParticle(
--        int id,
--        boolean ignoreRange,
--        boolean minimiseParticleLevel,
--        double x,
--        double y,
--        double z,
--        double xSpeed,
--        double ySpeed,
--        double zSpeed,
--        int... parameters
--    )
--    {
--    }
--
--    @Override
-+    public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters)
-+    {
-+    }
-+
-+    public void spawnParticle(int id, boolean ignoreRange, boolean minimiseParticleLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters)
-+    {
-+    }
-+
-     public void onEntityAdded(Entity entityIn)
-     {
-         this.world.getEntityTracker().track(entityIn);
-@@ -66,7 +42,6 @@
-         }
-     }
- 
--    @Override
-     public void onEntityRemoved(Entity entityIn)
-     {
-         this.world.getEntityTracker().untrack(entityIn);
-@@ -78,86 +53,49 @@
-         }
-     }
- 
--    @Override
--    public void playSoundToAllNearExcept(
--        @Nullable EntityPlayer player,
--        SoundEvent soundIn,
--        SoundCategory category,
--        double x,
--        double y,
--        double z,
--        float volume,
--        float pitch
--    )
-+    public void playSoundToAllNearExcept(@Nullable EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x, double y, double z, float volume, float pitch)
-     {
--        this.server
--        .getPlayerList()
--        .sendToAllNearExcept(
--            player,
--            x,
--            y,
--            z,
--            volume > 1.0F ? 16.0F * volume : 16.0,
+@@ -98,7 +98,7 @@
+             y,
+             z,
+             volume > 1.0F ? 16.0F * volume : 16.0,
 -            this.world.provider.getDimensionType().getId(),
--            new SPacketSoundEffect(soundIn, category, x, y, z, volume, pitch)
--        );
-+        this.server.getPlayerList().sendToAllNearExcept(player, x, y, z, volume > 1.0F ? (double)(16.0F * volume) : 16.0D, this.world.provider.getDimension(), new SPacketSoundEffect(soundIn, category, x, y, z, volume, pitch));
++            this.world.provider.getDimension(),
+             new SPacketSoundEffect(soundIn, category, x, y, z, volume, pitch)
+         );
      }
- 
--    @Override
-     public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2)
-     {
-     }
- 
--    @Override
-     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags)
-     {
-         this.world.getPlayerChunkMap().markBlockForUpdate(pos);
-     }
- 
--    @Override
-     public void notifyLightSet(BlockPos pos)
-     {
-     }
- 
--    @Override
-     public void playRecord(SoundEvent soundIn, BlockPos pos)
-     {
-     }
- 
--    @Override
-     public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data)
-     {
--        this.server
--        .getPlayerList()
--        .sendToAllNearExcept(
--            player,
--            blockPosIn.getX(),
--            blockPosIn.getY(),
--            blockPosIn.getZ(),
--            64.0,
+@@ -135,7 +135,7 @@
+             blockPosIn.getY(),
+             blockPosIn.getZ(),
+             64.0,
 -            this.world.provider.getDimensionType().getId(),
--            new SPacketEffect(type, blockPosIn, data, false)
--        );
-+        this.server.getPlayerList().sendToAllNearExcept(player, (double)blockPosIn.getX(), (double)blockPosIn.getY(), (double)blockPosIn.getZ(), 64.0D, this.world.provider.getDimension(), new SPacketEffect(type, blockPosIn, data, false));
++            this.world.provider.getDimension(),
+             new SPacketEffect(type, blockPosIn, data, false)
+         );
      }
- 
--    @Override
-     public void broadcastSound(int soundID, BlockPos pos, int data)
-     {
-         this.server.getPlayerList().sendPacketToAllPlayers(new SPacketEffect(soundID, pos, data, true));
-     }
- 
--    @Override
-     public void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress)
-     {
-         for (EntityPlayerMP entityplayermp : this.server.getPlayerList().getPlayers())
-         {
-             if (entityplayermp != null && entityplayermp.world == this.world && entityplayermp.getEntityId() != breakerId)
-             {
--                double d0 = pos.getX() - entityplayermp.posX;
--                double d1 = pos.getY() - entityplayermp.posY;
--                double d2 = pos.getZ() - entityplayermp.posZ;
-+                double d0 = (double)pos.getX() - entityplayermp.posX;
-+                double d1 = (double)pos.getY() - entityplayermp.posY;
-+                double d2 = (double)pos.getZ() - entityplayermp.posZ;
- 
--                if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0)
-+                if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D)
-                 {
-                     entityplayermp.connection.sendPacket(new SPacketBlockBreakAnim(breakerId, pos, progress));
-                 }

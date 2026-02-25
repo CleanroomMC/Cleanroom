@@ -1,90 +1,31 @@
 --- before/net/minecraft/world/biome/BiomeSwamp.java
 +++ after/net/minecraft/world/biome/BiomeSwamp.java
-@@ -34,44 +34,26 @@
-         this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntitySlime.class, 1, 1, 1));
-     }
- 
--    @Override
-     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
+@@ -45,14 +45,14 @@
+     public int getGrassColorAtPos(BlockPos pos)
      {
-         return SWAMP_FEATURE;
-     }
- 
--    @SideOnly(Side.CLIENT)
--    @Override
--    public int getGrassColorAtPos(BlockPos pos)
--    {
--        double d0 = GRASS_COLOR_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225);
+         double d0 = GRASS_COLOR_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225);
 -        return d0 < -0.1 ? 5011004 : 6975545;
--    }
--
--    @SideOnly(Side.CLIENT)
--    @Override
--    public int getFoliageColorAtPos(BlockPos pos)
--    {
++        return getModdedBiomeGrassColor(d0 < -0.1 ? 5011004 : 6975545);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+     @Override
+     public int getFoliageColorAtPos(BlockPos pos)
+     {
 -        return 6975545;
--    }
--
--    @Override
-     public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
-     {
-         return BlockFlower.EnumFlowerType.BLUE_ORCHID;
++        return getModdedBiomeFoliageColor(6975545);
      }
  
--    @Override
-     public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
-     {
--        double d0 = GRASS_COLOR_NOISE.getValue(x * 0.25, z * 0.25);
-+        double d0 = GRASS_COLOR_NOISE.getValue((double)x * 0.25D, (double)z * 0.25D);
- 
--        if (d0 > 0.0)
-+        if (d0 > 0.0D)
-         {
-             int i = x & 15;
-             int j = z & 15;
- 
--            for (int k = 255; k >= 0; k--)
-+            for (int k = 255; k >= 0; --k)
-             {
-                 if (chunkPrimerIn.getBlockState(j, k, i).getMaterial() != Material.AIR)
-                 {
-@@ -79,7 +61,7 @@
-                     {
-                         chunkPrimerIn.setBlockState(j, k, i, WATER);
- 
--                        if (d0 < 0.12)
-+                        if (d0 < 0.12D)
-                         {
-                             chunkPrimerIn.setBlockState(j, k + 1, i, WATER_LILY);
-                         }
-@@ -93,14 +75,33 @@
-         this.generateBiomeTerrain(worldIn, rand, chunkPrimerIn, x, z, noiseVal);
-     }
- 
--    @Override
-     public void decorate(World worldIn, Random rand, BlockPos pos)
+     @Override
+@@ -98,9 +98,16 @@
      {
          super.decorate(worldIn, rand, pos);
  
 +        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
          if (rand.nextInt(64) == 0)
          {
--            new WorldGenFossils().generate(worldIn, rand, pos);
-+            (new WorldGenFossils()).generate(worldIn, rand, pos);
+             new WorldGenFossils().generate(worldIn, rand, pos);
          }
-+    }
-+
-+    @SideOnly(Side.CLIENT)
-+    public int getGrassColorAtPos(BlockPos pos)
-+    {
-+        double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() * 0.0225D, (double)pos.getZ() * 0.0225D);
-+        return getModdedBiomeGrassColor(d0 < -0.1D ? 5011004 : 6975545);
-+    }
-+
-+    @SideOnly(Side.CLIENT)
-+    public int getFoliageColorAtPos(BlockPos pos)
-+    {
-+        return getModdedBiomeFoliageColor(6975545);
 +    }
 +
 +    @Override

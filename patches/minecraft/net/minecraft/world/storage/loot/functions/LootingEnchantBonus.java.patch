@@ -1,13 +1,6 @@
 --- before/net/minecraft/world/storage/loot/functions/LootingEnchantBonus.java
 +++ after/net/minecraft/world/storage/loot/functions/LootingEnchantBonus.java
-@@ -26,21 +26,20 @@
-         this.limit = limitIn;
-     }
- 
--    @Override
-     public ItemStack apply(ItemStack stack, Random rand, LootContext context)
-     {
-         Entity entity = context.getKiller();
+@@ -33,7 +33,7 @@
  
          if (entity instanceof EntityLivingBase)
          {
@@ -16,28 +9,3 @@
  
              if (i == 0)
              {
-                 return stack;
-             }
- 
--            float f = i * this.count.generateFloat(rand);
-+            float f = (float)i * this.count.generateFloat(rand);
-             stack.grow(Math.round(f));
- 
-             if (this.limit != 0 && stack.getCount() > this.limit)
-@@ -65,14 +64,14 @@
- 
-                 if (functionClazz.limit > 0)
-                 {
--                    object.add("limit", serializationContext.serialize(functionClazz.limit));
-+                    object.add("limit", serializationContext.serialize(Integer.valueOf(functionClazz.limit)));
-                 }
-             }
- 
-             public LootingEnchantBonus deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootCondition[] conditionsIn)
-             {
-                 int i = JsonUtils.getInt(object, "limit", 0);
--                return new LootingEnchantBonus(conditionsIn, JsonUtils.deserializeClass(object, "count", deserializationContext, RandomValueRange.class), i);
-+                return new LootingEnchantBonus(conditionsIn, (RandomValueRange)JsonUtils.deserializeClass(object, "count", deserializationContext, RandomValueRange.class), i);
-             }
-         }
- }

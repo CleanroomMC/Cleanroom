@@ -1,39 +1,11 @@
 --- before/net/minecraft/world/biome/BiomeSnow.java
 +++ after/net/minecraft/world/biome/BiomeSnow.java
-@@ -49,25 +49,23 @@
-         this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntityStray.class, 80, 4, 4));
-     }
- 
--    @Override
-     public float getSpawningChance()
-     {
-         return 0.07F;
-     }
- 
--    @Override
+@@ -58,7 +58,7 @@
+     @Override
      public void decorate(World worldIn, Random rand, BlockPos pos)
      {
 -        if (this.superIcy)
 +        if (this.superIcy && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.ICE))
          {
--            for (int i = 0; i < 3; i++)
-+            for (int i = 0; i < 3; ++i)
+             for (int i = 0; i < 3; i++)
              {
-                 int j = rand.nextInt(16) + 8;
-                 int k = rand.nextInt(16) + 8;
-                 this.iceSpike.generate(worldIn, rand, worldIn.getHeight(pos.add(j, 0, k)));
-             }
- 
--            for (int l = 0; l < 2; l++)
-+            for (int l = 0; l < 2; ++l)
-             {
-                 int i1 = rand.nextInt(16) + 8;
-                 int j1 = rand.nextInt(16) + 8;
-@@ -78,7 +76,6 @@
-         super.decorate(worldIn, rand, pos);
-     }
- 
--    @Override
-     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
-     {
-         return new WorldGenTaiga2(false);

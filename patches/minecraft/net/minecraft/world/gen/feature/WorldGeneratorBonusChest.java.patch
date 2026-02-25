@@ -1,40 +1,24 @@
 --- before/net/minecraft/world/gen/feature/WorldGeneratorBonusChest.java
 +++ after/net/minecraft/world/gen/feature/WorldGeneratorBonusChest.java
-@@ -12,13 +12,9 @@
- 
- public class WorldGeneratorBonusChest extends WorldGenerator
- {
--    @Override
+@@ -16,7 +16,7 @@
      public boolean generate(World worldIn, Random rand, BlockPos position)
      {
--        for (IBlockState iblockstate = worldIn.getBlockState(position);
+         for (IBlockState iblockstate = worldIn.getBlockState(position);
 -                (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES) && position.getY() > 1;
--                iblockstate = worldIn.getBlockState(position)
--            )
-+        for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 1; iblockstate = worldIn.getBlockState(position))
++                (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 1;
+                 iblockstate = worldIn.getBlockState(position)
+             )
          {
-             position = position.down();
-         }
-@@ -31,15 +27,11 @@
-         {
-             position = position.up();
- 
--            for (int i = 0; i < 4; i++)
-+            for (int i = 0; i < 4; ++i)
-             {
--                BlockPos blockpos = position.add(
--                                        rand.nextInt(4) - rand.nextInt(4),
--                                        rand.nextInt(3) - rand.nextInt(3),
--                                        rand.nextInt(4) - rand.nextInt(4)
--                                    );
-+                BlockPos blockpos = position.add(rand.nextInt(4) - rand.nextInt(4), rand.nextInt(3) - rand.nextInt(3), rand.nextInt(4) - rand.nextInt(4));
+@@ -39,7 +39,7 @@
+                                         rand.nextInt(4) - rand.nextInt(4)
+                                     );
  
 -                if (worldIn.isAirBlock(blockpos) && worldIn.getBlockState(blockpos.down()).isTopSolid())
 +                if (worldIn.isAirBlock(blockpos) && worldIn.getBlockState(blockpos.down()).isSideSolid(worldIn, blockpos.down(), net.minecraft.util.EnumFacing.UP))
                  {
                      worldIn.setBlockState(blockpos, Blocks.CHEST.getDefaultState(), 2);
                      TileEntity tileentity = worldIn.getTileEntity(blockpos);
-@@ -54,22 +46,22 @@
+@@ -54,22 +54,22 @@
                      BlockPos blockpos3 = blockpos.north();
                      BlockPos blockpos4 = blockpos.south();
  

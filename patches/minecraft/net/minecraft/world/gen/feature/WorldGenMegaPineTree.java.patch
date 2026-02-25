@@ -1,35 +1,8 @@
 --- before/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
 +++ after/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
-@@ -16,13 +16,8 @@
+@@ -47,32 +47,25 @@
  
- public class WorldGenMegaPineTree extends WorldGenHugeTrees
- {
--    private static final IBlockState TRUNK = Blocks.LOG
--                .getDefaultState()
--                .withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
--    private static final IBlockState LEAF = Blocks.LEAVES
--                .getDefaultState()
--                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE)
--                .withProperty(BlockLeaves.CHECK_DECAY, false);
-+    private static final IBlockState TRUNK = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
-+    private static final IBlockState LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-     private static final IBlockState PODZOL = Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.PODZOL);
-     private final boolean useBaseHeight;
- 
-@@ -32,7 +27,6 @@
-         this.useBaseHeight = p_i45457_2_;
-     }
- 
--    @Override
-     public boolean generate(World worldIn, Random rand, BlockPos position)
-     {
-         int i = this.getHeight(rand);
-@@ -45,34 +39,27 @@
-         {
-             this.createCrown(worldIn, position.getX(), position.getZ(), position.getY() + i, 0, rand);
- 
--            for (int j = 0; j < i; j++)
-+            for (int j = 0; j < i; ++j)
+             for (int j = 0; j < i; j++)
              {
 -                IBlockState iblockstate = worldIn.getBlockState(position.up(j));
 -
@@ -64,54 +37,7 @@
                      {
                          this.setBlockAndNotifyAdequately(worldIn, position.add(0, j, 1), this.woodMetadata);
                      }
-@@ -88,16 +75,15 @@
-         int i = rand.nextInt(5) + (this.useBaseHeight ? this.baseHeight : 3);
-         int j = 0;
- 
--        for (int k = y - i; k <= y; k++)
-+        for (int k = y - i; k <= y; ++k)
-         {
-             int l = y - k;
--            int i1 = p_150541_5_ + MathHelper.floor((float)l / i * 3.5F);
-+            int i1 = p_150541_5_ + MathHelper.floor((float)l / (float)i * 3.5F);
-             this.growLeavesLayerStrict(worldIn, new BlockPos(x, k, z), i1 + (l > 0 && i1 == j && (k & 1) == 0 ? 1 : 0));
-             j = i1;
-         }
-     }
- 
--    @Override
-     public void generateSaplings(World worldIn, Random random, BlockPos pos)
-     {
-         this.placePodzolCircle(worldIn, pos.west().north());
-@@ -105,7 +91,7 @@
-         this.placePodzolCircle(worldIn, pos.west().south(2));
-         this.placePodzolCircle(worldIn, pos.east(2).south(2));
- 
--        for (int i = 0; i < 5; i++)
-+        for (int i = 0; i < 5; ++i)
-         {
-             int j = random.nextInt(64);
-             int k = j % 8;
-@@ -120,9 +106,9 @@
- 
-     private void placePodzolCircle(World worldIn, BlockPos center)
-     {
--        for (int i = -2; i <= 2; i++)
-+        for (int i = -2; i <= 2; ++i)
-         {
--            for (int j = -2; j <= 2; j++)
-+            for (int j = -2; j <= 2; ++j)
-             {
-                 if (Math.abs(i) != 2 || Math.abs(j) != 2)
-                 {
-@@ -134,13 +120,13 @@
- 
-     private void placePodzolAt(World worldIn, BlockPos pos)
-     {
--        for (int i = 2; i >= -3; i--)
-+        for (int i = 2; i >= -3; --i)
-         {
-             BlockPos blockpos = pos.up(i);
+@@ -140,7 +133,7 @@
              IBlockState iblockstate = worldIn.getBlockState(blockpos);
              Block block = iblockstate.getBlock();
  
@@ -120,7 +46,7 @@
              {
                  this.setBlockAndNotifyAdequately(worldIn, blockpos, PODZOL);
                  break;
-@@ -151,5 +137,12 @@
+@@ -151,5 +144,12 @@
                  break;
              }
          }

@@ -1,50 +1,8 @@
 --- before/net/minecraft/world/WorldEntitySpawner.java
 +++ after/net/minecraft/world/WorldEntitySpawner.java
-@@ -24,8 +24,8 @@
- 
- public final class WorldEntitySpawner
- {
--    private static final int MOB_COUNT_DIV = (int)Math.pow(17.0, 2.0);
--    private final Set<ChunkPos> eligibleChunksForSpawning = Sets.newHashSet();
-+    private static final int MOB_COUNT_DIV = (int)Math.pow(17.0D, 2.0D);
-+    private final Set<ChunkPos> eligibleChunksForSpawning = Sets.<ChunkPos>newHashSet();
- 
-     public int findChunksForSpawning(WorldServer worldServerIn, boolean spawnHostileMobs, boolean spawnPeacefulMobs, boolean spawnOnSetTickRate)
-     {
-@@ -42,20 +42,20 @@
-             {
-                 if (!entityplayer.isSpectator())
-                 {
--                    int j = MathHelper.floor(entityplayer.posX / 16.0);
--                    int k = MathHelper.floor(entityplayer.posZ / 16.0);
-+                    int j = MathHelper.floor(entityplayer.posX / 16.0D);
-+                    int k = MathHelper.floor(entityplayer.posZ / 16.0D);
-                     int l = 8;
- 
--                    for (int i1 = -8; i1 <= 8; i1++)
-+                    for (int i1 = -8; i1 <= 8; ++i1)
-                     {
--                        for (int j1 = -8; j1 <= 8; j1++)
-+                        for (int j1 = -8; j1 <= 8; ++j1)
-                         {
-                             boolean flag = i1 == -8 || i1 == 8 || j1 == -8 || j1 == 8;
-                             ChunkPos chunkpos = new ChunkPos(i1 + j, j1 + k);
- 
-                             if (!this.eligibleChunksForSpawning.contains(chunkpos))
-                             {
--                                i++;
-+                                ++i;
- 
-                                 if (!flag && worldServerIn.getWorldBorder().contains(chunkpos))
-                                 {
-@@ -77,19 +77,19 @@
- 
-             for (EnumCreatureType enumcreaturetype : EnumCreatureType.values())
-             {
--                if ((!enumcreaturetype.getPeacefulCreature() || spawnPeacefulMobs)
--                        && (enumcreaturetype.getPeacefulCreature() || spawnHostileMobs)
--                        && (!enumcreaturetype.getAnimal() || spawnOnSetTickRate))
-+                if ((!enumcreaturetype.getPeacefulCreature() || spawnPeacefulMobs) && (enumcreaturetype.getPeacefulCreature() || spawnHostileMobs) && (!enumcreaturetype.getAnimal() || spawnOnSetTickRate))
+@@ -81,15 +81,17 @@
+                         && (enumcreaturetype.getPeacefulCreature() || spawnHostileMobs)
+                         && (!enumcreaturetype.getAnimal() || spawnOnSetTickRate))
                  {
 -                    int k4 = worldServerIn.countEntities(enumcreaturetype.getCreatureClass());
 +                    int k4 = worldServerIn.countEntities(enumcreaturetype, true);
@@ -62,50 +20,7 @@
                          {
                              BlockPos blockpos = getRandomChunkPosition(worldServerIn, chunkpos1.x, chunkpos1.z);
                              int k1 = blockpos.getX();
-@@ -101,7 +101,7 @@
-                             {
-                                 int j2 = 0;
- 
--                                for (int k2 = 0; k2 < 3; k2++)
-+                                for (int k2 = 0; k2 < 3; ++k2)
-                                 {
-                                     int l2 = k1;
-                                     int i3 = l1;
-@@ -109,18 +109,18 @@
-                                     int k3 = 6;
-                                     Biome.SpawnListEntry biome$spawnlistentry = null;
-                                     IEntityLivingData ientitylivingdata = null;
--                                    int l3 = MathHelper.ceil(Math.random() * 4.0);
-+                                    int l3 = MathHelper.ceil(Math.random() * 4.0D);
- 
--                                    for (int i4 = 0; i4 < l3; i4++)
-+                                    for (int i4 = 0; i4 < l3; ++i4)
-                                     {
-                                         l2 += worldServerIn.rand.nextInt(6) - worldServerIn.rand.nextInt(6);
-                                         i3 += worldServerIn.rand.nextInt(1) - worldServerIn.rand.nextInt(1);
-                                         j3 += worldServerIn.rand.nextInt(6) - worldServerIn.rand.nextInt(6);
-                                         blockpos$mutableblockpos.setPos(l2, i3, j3);
--                                        float f = l2 + 0.5F;
--                                        float f1 = j3 + 0.5F;
-+                                        float f = (float)l2 + 0.5F;
-+                                        float f1 = (float)j3 + 0.5F;
- 
--                                        if (!worldServerIn.isAnyPlayerWithinRangeAt(f, i3, f1, 24.0) && !(blockpos1.distanceSq(f, i3, f1) < 576.0))
-+                                        if (!worldServerIn.isAnyPlayerWithinRangeAt((double)f, (double)i3, (double)f1, 24.0D) && blockpos1.distanceSq((double)f, (double)i3, (double)f1) >= 576.0D)
-                                         {
-                                             if (biome$spawnlistentry == null)
-                                             {
-@@ -132,16 +132,13 @@
-                                                 }
-                                             }
- 
--                                            if (worldServerIn.canCreatureTypeSpawnHere(enumcreaturetype, biome$spawnlistentry, blockpos$mutableblockpos)
--                                                    && canCreatureTypeSpawnAtLocation(
--                                                        EntitySpawnPlacementRegistry.getPlacementForEntity(biome$spawnlistentry.entityClass), worldServerIn, blockpos$mutableblockpos
--                                                    ))
-+                                            if (worldServerIn.canCreatureTypeSpawnHere(enumcreaturetype, biome$spawnlistentry, blockpos$mutableblockpos) && canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.getPlacementForEntity(biome$spawnlistentry.entityClass), worldServerIn, blockpos$mutableblockpos))
-                                             {
-                                                 EntityLiving entityliving;
+@@ -141,7 +143,7 @@
  
                                                  try
                                                  {
@@ -114,12 +29,9 @@
                                                  }
                                                  catch (Exception exception)
                                                  {
-@@ -149,15 +146,17 @@
-                                                     return j4;
-                                                 }
+@@ -151,8 +153,10 @@
  
--                                                entityliving.setLocationAndAngles(f, i3, f1, worldServerIn.rand.nextFloat() * 360.0F, 0.0F);
-+                                                entityliving.setLocationAndAngles((double)f, (double)i3, (double)f1, worldServerIn.rand.nextFloat() * 360.0F, 0.0F);
+                                                 entityliving.setLocationAndAngles(f, i3, f1, worldServerIn.rand.nextFloat() * 360.0F, 0.0F);
  
 -                                                if (entityliving.getCanSpawnHere() && entityliving.isNotColliding())
 +                                                net.minecraftforge.fml.common.eventhandler.Event.Result canSpawn = net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldServerIn, f, i3, f1, false);
@@ -129,13 +41,7 @@
                                                      ientitylivingdata = entityliving.onInitialSpawn(worldServerIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
  
                                                      if (entityliving.isNotColliding())
-                                                     {
--                                                        j2++;
-+                                                        ++j2;
-                                                         worldServerIn.spawnEntity(entityliving);
-                                                     }
-                                                     else
-@@ -165,7 +164,7 @@
+@@ -165,7 +169,7 @@
                                                          entityliving.setDead();
                                                      }
  
@@ -144,7 +50,7 @@
                                                      {
                                                          continue label134;
                                                      }
-@@ -206,9 +205,13 @@
+@@ -206,9 +210,13 @@
          {
              return false;
          }
@@ -159,7 +65,7 @@
          }
      }
  
-@@ -220,19 +223,25 @@
+@@ -220,6 +228,13 @@
          }
          else
          {
@@ -173,12 +79,7 @@
              IBlockState iblockstate = worldIn.getBlockState(pos);
  
              if (spawnPlacementTypeIn == EntityLiving.SpawnPlacementType.IN_WATER)
-             {
--                return iblockstate.getMaterial() == Material.WATER
--                       && worldIn.getBlockState(pos.down()).getMaterial() == Material.WATER
--                       && !worldIn.getBlockState(pos.up()).isNormalCube();
-+                return iblockstate.getMaterial() == Material.WATER && worldIn.getBlockState(pos.down()).getMaterial() == Material.WATER && !worldIn.getBlockState(pos.up()).isNormalCube();
-             }
+@@ -231,8 +246,9 @@
              else
              {
                  BlockPos blockpos = pos.down();
@@ -189,30 +90,7 @@
                  {
                      return false;
                  }
-@@ -254,7 +263,7 @@
-         {
-             while (randomIn.nextFloat() < biomeIn.getSpawningChance())
-             {
--                Biome.SpawnListEntry biome$spawnlistentry = WeightedRandom.getRandomItem(worldIn.rand, list);
-+                Biome.SpawnListEntry biome$spawnlistentry = (Biome.SpawnListEntry)WeightedRandom.getRandomItem(worldIn.rand, list);
-                 int i = biome$spawnlistentry.minGroupCount + randomIn.nextInt(1 + biome$spawnlistentry.maxGroupCount - biome$spawnlistentry.minGroupCount);
-                 IEntityLivingData ientitylivingdata = null;
-                 int j = centerX + randomIn.nextInt(diameterX);
-@@ -262,11 +271,11 @@
-                 int l = j;
-                 int i1 = k;
- 
--                for (int j1 = 0; j1 < i; j1++)
-+                for (int j1 = 0; j1 < i; ++j1)
-                 {
-                     boolean flag = false;
- 
--                    for (int k1 = 0; !flag && k1 < 4; k1++)
-+                    for (int k1 = 0; !flag && k1 < 4; ++k1)
-                     {
-                         BlockPos blockpos = worldIn.getTopSolidOrLiquidBlock(new BlockPos(j, 0, k));
- 
-@@ -276,7 +285,7 @@
+@@ -276,7 +292,7 @@
  
                              try
                              {
@@ -221,25 +99,11 @@
                              }
                              catch (Exception exception)
                              {
-@@ -284,7 +293,8 @@
+@@ -284,6 +300,7 @@
                                  continue;
                              }
  
--                            entityliving.setLocationAndAngles(j + 0.5F, blockpos.getY(), k + 0.5F, randomIn.nextFloat() * 360.0F, 0.0F);
 +                            if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldIn, j + 0.5f, (float) blockpos.getY(), k +0.5f, false) == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) continue;
-+                            entityliving.setLocationAndAngles((double)((float)j + 0.5F), (double)blockpos.getY(), (double)((float)k + 0.5F), randomIn.nextFloat() * 360.0F, 0.0F);
+                             entityliving.setLocationAndAngles(j + 0.5F, blockpos.getY(), k + 0.5F, randomIn.nextFloat() * 360.0F, 0.0F);
                              worldIn.spawnEntity(entityliving);
                              ientitylivingdata = entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
-                             flag = true;
-@@ -292,10 +302,7 @@
- 
-                         j += randomIn.nextInt(5) - randomIn.nextInt(5);
- 
--                        for (k += randomIn.nextInt(5) - randomIn.nextInt(5);
--                                j < centerX || j >= centerX + diameterX || k < centerZ || k >= centerZ + diameterX;
--                                k = i1 + randomIn.nextInt(5) - randomIn.nextInt(5)
--                            )
-+                        for (k += randomIn.nextInt(5) - randomIn.nextInt(5); j < centerX || j >= centerX + diameterX || k < centerZ || k >= centerZ + diameterX; k = i1 + randomIn.nextInt(5) - randomIn.nextInt(5))
-                         {
-                             j = l + randomIn.nextInt(5) - randomIn.nextInt(5);
-                         }

@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/loot/LootEntryItem.java
 +++ after/net/minecraft/world/storage/loot/LootEntryItem.java
-@@ -18,14 +18,13 @@
+@@ -18,9 +18,9 @@
      protected final Item item;
      protected final LootFunction[] functions;
  
@@ -12,12 +12,7 @@
          this.item = itemIn;
          this.functions = functionsIn;
      }
- 
--    @Override
-     public void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context)
-     {
-         ItemStack itemstack = new ItemStack(this.item);
-@@ -40,7 +39,7 @@
+@@ -40,7 +40,7 @@
  
          if (!itemstack.isEmpty())
          {
@@ -26,34 +21,15 @@
              {
                  stacks.add(itemstack);
              }
-@@ -59,7 +58,6 @@
-         }
-     }
- 
--    @Override
-     protected void serialize(JsonObject json, JsonSerializationContext context)
-     {
-         if (this.functions != null && this.functions.length > 0)
-@@ -79,22 +77,21 @@
-         }
-     }
- 
--    public static LootEntryItem deserialize(
--            JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn
--        )
-+    public static LootEntryItem deserialize(JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn)
+@@ -83,6 +83,7 @@
+             JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn
+         )
      {
 +        String name = net.minecraftforge.common.ForgeHooks.readLootEntryName(object, "item");
          Item item = JsonUtils.getItem(object, "name");
          LootFunction[] alootfunction;
  
-         if (object.has("functions"))
-         {
--            alootfunction = JsonUtils.deserializeClass(object, "functions", deserializationContext, LootFunction[].class);
-+            alootfunction = (LootFunction[])JsonUtils.deserializeClass(object, "functions", deserializationContext, LootFunction[].class);
-         }
-         else
-         {
+@@ -95,6 +96,6 @@
              alootfunction = new LootFunction[0];
          }
  

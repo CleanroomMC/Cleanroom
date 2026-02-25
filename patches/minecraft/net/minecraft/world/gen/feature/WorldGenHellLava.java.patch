@@ -1,84 +1,11 @@
 --- before/net/minecraft/world/gen/feature/WorldGenHellLava.java
 +++ after/net/minecraft/world/gen/feature/WorldGenHellLava.java
-@@ -19,15 +19,13 @@
-         this.insideRock = insideRockIn;
-     }
- 
--    @Override
-     public boolean generate(World worldIn, Random rand, BlockPos position)
-     {
-         if (worldIn.getBlockState(position.up()).getBlock() != Blocks.NETHERRACK)
+@@ -26,7 +26,7 @@
          {
              return false;
          }
 -        else if (worldIn.getBlockState(position).getMaterial() != Material.AIR
--                 && worldIn.getBlockState(position).getBlock() != Blocks.NETHERRACK)
-+        else if (!worldIn.isAirBlock(position) && worldIn.getBlockState(position).getBlock() != Blocks.NETHERRACK)
++        else if (!worldIn.isAirBlock(position)
+                  && worldIn.getBlockState(position).getBlock() != Blocks.NETHERRACK)
          {
              return false;
-         }
-@@ -37,54 +35,54 @@
- 
-             if (worldIn.getBlockState(position.west()).getBlock() == Blocks.NETHERRACK)
-             {
--                i++;
-+                ++i;
-             }
- 
-             if (worldIn.getBlockState(position.east()).getBlock() == Blocks.NETHERRACK)
-             {
--                i++;
-+                ++i;
-             }
- 
-             if (worldIn.getBlockState(position.north()).getBlock() == Blocks.NETHERRACK)
-             {
--                i++;
-+                ++i;
-             }
- 
-             if (worldIn.getBlockState(position.south()).getBlock() == Blocks.NETHERRACK)
-             {
--                i++;
-+                ++i;
-             }
- 
-             if (worldIn.getBlockState(position.down()).getBlock() == Blocks.NETHERRACK)
-             {
--                i++;
-+                ++i;
-             }
- 
-             int j = 0;
- 
-             if (worldIn.isAirBlock(position.west()))
-             {
--                j++;
-+                ++j;
-             }
- 
-             if (worldIn.isAirBlock(position.east()))
-             {
--                j++;
-+                ++j;
-             }
- 
-             if (worldIn.isAirBlock(position.north()))
-             {
--                j++;
-+                ++j;
-             }
- 
-             if (worldIn.isAirBlock(position.south()))
-             {
--                j++;
-+                ++j;
-             }
- 
-             if (worldIn.isAirBlock(position.down()))
-             {
--                j++;
-+                ++j;
-             }
- 
-             if (!this.insideRock && i == 4 && j == 1 || i == 5)

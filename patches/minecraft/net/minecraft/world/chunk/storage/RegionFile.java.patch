@@ -10,37 +10,7 @@
      private static final byte[] EMPTY_SECTOR = new byte[4096];
      private final File fileName;
      private RandomAccessFile dataFile;
-@@ -51,39 +54,51 @@
- 
-             if ((this.dataFile.length() & 4095L) != 0L)
-             {
--                for (int i = 0; i < (this.dataFile.length() & 4095L); i++)
-+                for (int i = 0; (long)i < (this.dataFile.length() & 4095L); ++i)
-                 {
-                     this.dataFile.write(0);
-                 }
-             }
- 
-             int i1 = (int)this.dataFile.length() / 4096;
--            this.sectorFree = Lists.newArrayListWithCapacity(i1);
-+            this.sectorFree = Lists.<Boolean>newArrayListWithCapacity(i1);
- 
--            for (int j = 0; j < i1; j++)
-+            for (int j = 0; j < i1; ++j)
-             {
--                this.sectorFree.add(true);
-+                this.sectorFree.add(Boolean.valueOf(true));
-             }
- 
--            this.sectorFree.set(0, false);
--            this.sectorFree.set(1, false);
-+            this.sectorFree.set(0, Boolean.valueOf(false));
-+            this.sectorFree.set(1, Boolean.valueOf(false));
-             this.dataFile.seek(0L);
- 
--            for (int j1 = 0; j1 < 1024; j1++)
-+            for (int j1 = 0; j1 < 1024; ++j1)
-             {
+@@ -74,13 +77,25 @@
                  int k = this.dataFile.readInt();
                  this.offsets[j1] = k;
  
@@ -59,21 +29,16 @@
 +                }
 +                if (k != 0 && (k >> 8) + length <= this.sectorFree.size())
 +                {
-+                    for (int l = 0; l < length; ++l)
++                    for (int l = 0; l < length; l++)
                      {
--                        this.sectorFree.set((k >> 8) + l, false);
-+                        this.sectorFree.set((k >> 8) + l, Boolean.valueOf(false));
+                         this.sectorFree.set((k >> 8) + l, false);
                      }
                  }
 +                else if (length > 0)
 +                    net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Length: {} runs off end file. {}", j1 % 32, (int)(j1 / 32), k >> 8, length, fileNameIn);
              }
  
--            for (int k1 = 0; k1 < 1024; k1++)
-+            for (int k1 = 0; k1 < 1024; ++k1)
-             {
-                 int l1 = this.dataFile.readInt();
-                 this.chunkTimestamps[k1] = l1;
+             for (int k1 = 0; k1 < 1024; k1++)
 @@ -95,6 +110,12 @@
          }
      }
@@ -87,12 +52,10 @@
      @Nullable
  
      public synchronized DataInputStream getChunkDataInputStream(int x, int z)
-@@ -116,7 +137,12 @@
-                 else
+@@ -117,6 +138,11 @@
                  {
                      int j = i >> 8;
--                    int k = i & 0xFF;
-+                    int k = i & 255;
+                     int k = i & 0xFF;
 +                    if (k == 255)
 +                    {
 +                        this.dataFile.seek(j * 4096);
@@ -101,13 +64,7 @@
  
                      if (j + k > this.sectorFree.size())
                      {
-@@ -124,15 +150,17 @@
-                     }
-                     else
-                     {
--                        this.dataFile.seek(j * 4096);
-+                        this.dataFile.seek((long)(j * 4096));
-                         int l = this.dataFile.readInt();
+@@ -129,10 +155,12 @@
  
                          if (l > 4096 * k)
                          {
@@ -120,32 +77,10 @@
                              return null;
                          }
                          else
-@@ -159,7 +187,7 @@
-                     }
-                 }
-             }
--            catch (IOException ioexception)
-+            catch (IOException var9)
-             {
-                 return null;
-             }
-@@ -169,9 +197,7 @@
-     @Nullable
-     public DataOutputStream getChunkDataOutputStream(int x, int z)
-     {
--        return this.outOfBounds(x, z)
--               ? null
--               : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(x, z))));
-+        return this.outOfBounds(x, z) ? null : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(x, z))));
-     }
- 
-     protected synchronized void write(int x, int z, byte[] data, int length)
-@@ -180,12 +206,18 @@
-         {
+@@ -181,11 +209,17 @@
              int i = this.getOffset(x, z);
              int j = i >> 8;
--            int k = i & 0xFF;
-+            int k = i & 255;
+             int k = i & 0xFF;
 +            if (k == 255)
 +            {
 +                this.dataFile.seek(j * 4096);
@@ -161,70 +96,16 @@
              }
  
              if (j != 0 && k == l)
-@@ -194,30 +226,30 @@
-             }
-             else
-             {
--                for (int i1 = 0; i1 < k; i1++)
-+                for (int i1 = 0; i1 < k; ++i1)
-                 {
--                    this.sectorFree.set(j + i1, true);
-+                    this.sectorFree.set(j + i1, Boolean.valueOf(true));
-                 }
- 
--                int l1 = this.sectorFree.indexOf(true);
-+                int l1 = this.sectorFree.indexOf(Boolean.valueOf(true));
-                 int j1 = 0;
- 
-                 if (l1 != -1)
-                 {
--                    for (int k1 = l1; k1 < this.sectorFree.size(); k1++)
-+                    for (int k1 = l1; k1 < this.sectorFree.size(); ++k1)
-                     {
-                         if (j1 != 0)
-                         {
--                            if (this.sectorFree.get(k1))
-+                            if (((Boolean)this.sectorFree.get(k1)).booleanValue())
-                             {
--                                j1++;
-+                                ++j1;
-                             }
-                             else
-                             {
-                                 j1 = 0;
-                             }
-                         }
--                        else if (this.sectorFree.get(k1))
-+                        else if (((Boolean)this.sectorFree.get(k1)).booleanValue())
-                         {
-                             l1 = k1;
-                             j1 = 1;
-@@ -233,11 +265,11 @@
+@@ -233,7 +267,7 @@
                  if (j1 >= l)
                  {
                      j = l1;
 -                    this.setOffset(x, z, l1 << 8 | l);
 +                    this.setOffset(x, z, l1 << 8 | (l > 255 ? 255 : l));
  
--                    for (int j2 = 0; j2 < l; j2++)
-+                    for (int j2 = 0; j2 < l; ++j2)
+                     for (int j2 = 0; j2 < l; j2++)
                      {
--                        this.sectorFree.set(j + j2, false);
-+                        this.sectorFree.set(j + j2, Boolean.valueOf(false));
-                     }
- 
-                     this.write(j, data, length);
-@@ -247,15 +279,15 @@
-                     this.dataFile.seek(this.dataFile.length());
-                     j = this.sectorFree.size();
- 
--                    for (int i2 = 0; i2 < l; i2++)
-+                    for (int i2 = 0; i2 < l; ++i2)
-                     {
-                         this.dataFile.write(EMPTY_SECTOR);
--                        this.sectorFree.add(false);
-+                        this.sectorFree.add(Boolean.valueOf(false));
-                     }
+@@ -255,7 +289,7 @@
  
                      this.sizeDelta += 4096 * l;
                      this.write(j, data, length);
@@ -233,37 +114,3 @@
                  }
              }
  
-@@ -269,7 +301,7 @@
- 
-     private void write(int sectorNumber, byte[] data, int length) throws IOException
-     {
--        this.dataFile.seek(sectorNumber * 4096);
-+        this.dataFile.seek((long)(sectorNumber * 4096));
-         this.dataFile.writeInt(length + 1);
-         this.dataFile.writeByte(2);
-         this.dataFile.write(data, 0, length);
-@@ -293,14 +325,14 @@
-     private void setOffset(int x, int z, int offset) throws IOException
-     {
-         this.offsets[x + z * 32] = offset;
--        this.dataFile.seek((x + z * 32) * 4);
-+        this.dataFile.seek((long)((x + z * 32) * 4));
-         this.dataFile.writeInt(offset);
-     }
- 
-     private void setChunkTimestamp(int x, int z, int timestamp) throws IOException
-     {
-         this.chunkTimestamps[x + z * 32] = timestamp;
--        this.dataFile.seek(4096 + (x + z * 32) * 4);
-+        this.dataFile.seek((long)(4096 + (x + z * 32) * 4));
-         this.dataFile.writeInt(timestamp);
-     }
- 
-@@ -324,7 +356,6 @@
-             this.chunkZ = z;
-         }
- 
--        @Override
-         public void close() throws IOException
-         {
-             RegionFile.this.write(this.chunkX, this.chunkZ, this.buf, this.count);

@@ -1,17 +1,13 @@
 --- before/net/minecraft/world/gen/feature/WorldGenShrub.java
 +++ after/net/minecraft/world/gen/feature/WorldGenShrub.java
-@@ -20,43 +20,39 @@
-         this.leavesMetadata = p_i46450_2_;
-     }
- 
--    @Override
+@@ -24,16 +24,16 @@
      public boolean generate(World worldIn, Random rand, BlockPos position)
      {
--        for (IBlockState iblockstate = worldIn.getBlockState(position);
+         for (IBlockState iblockstate = worldIn.getBlockState(position);
 -                (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES) && position.getY() > 0;
--                iblockstate = worldIn.getBlockState(position)
--            )
-+        for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0; iblockstate = worldIn.getBlockState(position))
++                (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0;
+                 iblockstate = worldIn.getBlockState(position)
+             )
          {
              position = position.down();
          }
@@ -24,23 +20,7 @@
          {
              position = position.up();
              this.setBlockAndNotifyAdequately(worldIn, position, this.woodMetadata);
- 
--            for (int i = position.getY(); i <= position.getY() + 2; i++)
-+            for (int i = position.getY(); i <= position.getY() + 2; ++i)
-             {
-                 int j = i - position.getY();
-                 int k = 2 - j;
- 
--                for (int l = position.getX() - k; l <= position.getX() + k; l++)
-+                for (int l = position.getX() - k; l <= position.getX() + k; ++l)
-                 {
-                     int i1 = l - position.getX();
- 
--                    for (int j1 = position.getZ() - k; j1 <= position.getZ() + k; j1++)
-+                    for (int j1 = position.getZ() - k; j1 <= position.getZ() + k; ++j1)
-                     {
-                         int k1 = j1 - position.getZ();
- 
+@@ -54,9 +54,9 @@
                          if (Math.abs(i1) != k || Math.abs(k1) != k || rand.nextInt(2) != 0)
                          {
                              BlockPos blockpos = new BlockPos(l, i, j1);
