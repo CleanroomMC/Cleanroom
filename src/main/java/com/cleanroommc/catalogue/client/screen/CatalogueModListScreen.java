@@ -120,7 +120,6 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
      * Time record of text box clicking.
      */
     private long lastClickTime;
-    private boolean didRepeatEvents;
 
     public CatalogueModListScreen(GuiScreen parent) {
         super();
@@ -145,7 +144,6 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
     @Override
     public void initGui() {
-        this.didRepeatEvents = Keyboard.areRepeatEventsEnabled();
         Keyboard.enableRepeatEvents(true);
         this.searchTextField = new CatalogueTextField(0, this.fontRenderer, 11, 25, 148, 20) {
             @Override
@@ -204,7 +202,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
     @Override
     public void onGuiClosed() {
-        Keyboard.enableRepeatEvents(this.didRepeatEvents);
+        Keyboard.enableRepeatEvents(false);
         FAVOURITES.save();
     }
 
