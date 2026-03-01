@@ -3,7 +3,6 @@ package com.cleanroommc.hackery;
 import net.lenni0451.reflect.Fields;
 import sun.misc.Unsafe;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import top.outlands.foundation.boot.UnsafeHolder;
 import zone.rong.imaginebreaker.ImagineBreaker;
 
 import javax.annotation.Nullable;
@@ -14,7 +13,7 @@ import java.util.function.Predicate;
 public final class ReflectionHackery {
 
     private static final Field field$modifiers;
-    public static Unsafe unsafe = UnsafeHolder.UNSAFE;
+    public static Unsafe unsafe = ImagineBreaker.unsafe();
 
     static {
         Field modifiers;
