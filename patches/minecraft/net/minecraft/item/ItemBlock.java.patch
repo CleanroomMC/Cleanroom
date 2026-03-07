@@ -1,45 +1,16 @@
 --- before/net/minecraft/item/ItemBlock.java
 +++ after/net/minecraft/item/ItemBlock.java
-@@ -8,6 +8,7 @@
- import net.minecraft.block.state.IBlockState;
- import net.minecraft.client.util.ITooltipFlag;
- import net.minecraft.creativetab.CreativeTabs;
-+import net.minecraft.entity.Entity;
- import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.entity.player.EntityPlayerMP;
- import net.minecraft.init.Blocks;
-@@ -33,17 +34,7 @@
-         this.block = block;
-     }
+@@ -57,28 +57,16 @@
  
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         IBlockState iblockstate = worldIn.getBlockState(pos);
-         Block block = iblockstate.getBlock();
-@@ -55,38 +46,16 @@
- 
-         ItemStack itemstack = player.getHeldItem(hand);
- 
--        if (!itemstack.isEmpty()
--                && player.canPlayerEdit(pos, facing, itemstack)
+         if (!itemstack.isEmpty()
+                 && player.canPlayerEdit(pos, facing, itemstack)
 -                && worldIn.mayPlace(this.block, pos, false, facing, null))
-+        if (!itemstack.isEmpty() && player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(this.block, pos, false, facing, player))
++                && worldIn.mayPlace(this.block, pos, false, facing, player))
          {
              int i = this.getMetadata(itemstack.getMetadata());
--            IBlockState iblockstate1 = this.block
+             IBlockState iblockstate1 = this.block
 -                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player);
-+            IBlockState iblockstate1 = this.block.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player, hand);
++                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player, hand);
  
 -            if (worldIn.setBlockState(pos, iblockstate1, 11))
 +            if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1))
@@ -58,20 +29,11 @@
 -                }
 -
 -                SoundType soundtype = this.block.getSoundType();
--                worldIn.playSound(
--                    player,
--                    pos,
--                    soundtype.getPlaceSound(),
--                    SoundCategory.BLOCKS,
--                    (soundtype.getVolume() + 1.0F) / 2.0F,
--                    soundtype.getPitch() * 0.8F
--                );
 +                SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
-+                worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                 itemstack.shrink(1);
-             }
- 
-@@ -146,7 +115,7 @@
+                 worldIn.playSound(
+                     player,
+                     pos,
+@@ -146,7 +134,7 @@
      {
          Block block = worldIn.getBlockState(pos).getBlock();
  
@@ -80,7 +42,7 @@
          {
              side = EnumFacing.UP;
          }
-@@ -155,28 +124,24 @@
+@@ -155,7 +143,7 @@
              pos = pos.offset(side);
          }
  
@@ -88,37 +50,8 @@
 +        return worldIn.mayPlace(this.block, pos, false, side, player);
      }
  
--    @Override
-     public String getTranslationKey(ItemStack stack)
-     {
-         return this.block.getTranslationKey();
-     }
- 
--    @Override
-     public String getTranslationKey()
-     {
-         return this.block.getTranslationKey();
-     }
- 
--    @Override
-     public CreativeTabs getCreativeTab()
-     {
-         return this.block.getCreativeTab();
-     }
- 
--    @Override
-     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-     {
-         if (this.isInCreativeTab(tab))
-@@ -186,7 +151,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-     {
-         super.addInformation(stack, worldIn, tooltip, flagIn);
-@@ -195,6 +159,36 @@
+     @Override
+@@ -195,6 +183,36 @@
  
      public Block getBlock()
      {

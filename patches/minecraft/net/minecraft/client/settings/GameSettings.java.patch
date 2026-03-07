@@ -25,7 +25,7 @@
              }
          }
  
-@@ -402,7 +404,7 @@
+@@ -400,7 +402,7 @@
          if (settingsOption == GameSettings.Options.ANAGLYPH)
          {
              this.anaglyph = !this.anaglyph;
@@ -34,7 +34,7 @@
          }
  
          if (settingsOption == GameSettings.Options.GRAPHICS)
-@@ -769,6 +771,7 @@
+@@ -767,6 +769,7 @@
  
      public void loadOptions()
      {
@@ -42,7 +42,7 @@
          try
          {
              if (!this.optionsFile.exists())
-@@ -777,7 +780,7 @@
+@@ -775,7 +778,7 @@
              }
  
              this.soundLevels.clear();
@@ -51,7 +51,7 @@
              NBTTagCompound nbttagcompound = new NBTTagCompound();
  
              for (String s : list)
-@@ -1113,7 +1116,12 @@
+@@ -1111,7 +1114,12 @@
                      {
                          if (s1.equals("key_" + keybinding.getKeyDescription()))
                          {
@@ -65,7 +65,7 @@
                          }
                      }
  
-@@ -1145,6 +1153,7 @@
+@@ -1143,6 +1151,7 @@
          {
              LOGGER.error("Failed to load options", (Throwable)exception2);
          }
@@ -73,7 +73,7 @@
      }
  
      private NBTTagCompound dataFix(NBTTagCompound p_189988_1_)
-@@ -1176,6 +1185,7 @@
+@@ -1174,6 +1183,7 @@
  
      public void saveOptions()
      {
@@ -81,7 +81,7 @@
          PrintWriter printwriter = null;
  
          try
-@@ -1250,7 +1260,8 @@
+@@ -1248,7 +1258,8 @@
  
              for (KeyBinding keybinding : this.keyBindings)
              {
@@ -91,7 +91,7 @@
              }
  
              for (SoundCategory soundcategory : SoundCategory.values())
-@@ -1487,4 +1498,35 @@
+@@ -1485,4 +1496,35 @@
              return value;
          }
      }

@@ -1,17 +1,6 @@
 --- before/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
 +++ after/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
-@@ -29,18 +29,16 @@
-         handler.processCreativeInventoryAction(this);
-     }
- 
--    @Override
-     public void readPacketData(PacketBuffer buf) throws IOException
-     {
-         this.slotId = buf.readShort();
-         this.stack = buf.readItemStack();
-     }
- 
--    @Override
+@@ -40,7 +40,7 @@
      public void writePacketData(PacketBuffer buf) throws IOException
      {
          buf.writeShort(this.slotId);

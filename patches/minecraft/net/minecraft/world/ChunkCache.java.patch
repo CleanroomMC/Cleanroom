@@ -1,32 +1,7 @@
 --- before/net/minecraft/world/ChunkCache.java
 +++ after/net/minecraft/world/ChunkCache.java
-@@ -30,17 +30,17 @@
-         this.chunkArray = new Chunk[i - this.chunkX + 1][j - this.chunkZ + 1];
-         this.empty = true;
- 
--        for (int k = this.chunkX; k <= i; k++)
-+        for (int k = this.chunkX; k <= i; ++k)
-         {
--            for (int l = this.chunkZ; l <= j; l++)
-+            for (int l = this.chunkZ; l <= j; ++l)
-             {
-                 this.chunkArray[k - this.chunkX][l - this.chunkZ] = worldIn.getChunk(k, l);
-             }
-         }
- 
--        for (int i1 = posFromIn.getX() >> 4; i1 <= posToIn.getX() >> 4; i1++)
-+        for (int i1 = posFromIn.getX() >> 4; i1 <= posToIn.getX() >> 4; ++i1)
-         {
--            for (int j1 = posFromIn.getZ() >> 4; j1 <= posToIn.getZ() >> 4; j1++)
-+            for (int j1 = posFromIn.getZ() >> 4; j1 <= posToIn.getZ() >> 4; ++j1)
-             {
-                 Chunk chunk = this.chunkArray[i1 - this.chunkX][j1 - this.chunkZ];
- 
-@@ -59,10 +59,9 @@
-     }
- 
-     @Nullable
--    @Override
+@@ -62,7 +62,7 @@
+     @Override
      public TileEntity getTileEntity(BlockPos pos)
      {
 -        return this.getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
@@ -34,7 +9,7 @@
      }
  
      @Nullable
-@@ -70,11 +69,11 @@
+@@ -70,6 +70,7 @@
      {
          int i = (pos.getX() >> 4) - this.chunkX;
          int j = (pos.getZ() >> 4) - this.chunkZ;
@@ -42,25 +17,7 @@
          return this.chunkArray[i][j].getTileEntity(pos, createType);
      }
  
-     @SideOnly(Side.CLIENT)
--    @Override
-     public int getCombinedLight(BlockPos pos, int lightValue)
-     {
-         int i = this.getLightForExt(EnumSkyBlock.SKY, pos);
-@@ -88,7 +87,6 @@
-         return i << 20 | j << 4;
-     }
- 
--    @Override
-     public IBlockState getBlockState(BlockPos pos)
-     {
-         if (pos.getY() >= 0 && pos.getY() < 256)
-@@ -111,11 +109,11 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public Biome getBiome(BlockPos pos)
+@@ -116,6 +117,7 @@
      {
          int i = (pos.getX() >> 4) - this.chunkX;
          int j = (pos.getZ() >> 4) - this.chunkZ;
@@ -68,7 +25,7 @@
          return this.chunkArray[i][j].getBiome(pos, this.world.getBiomeProvider());
      }
  
-@@ -153,6 +151,7 @@
+@@ -153,6 +155,7 @@
              {
                  int i = (pos.getX() >> 4) - this.chunkX;
                  int j = (pos.getZ() >> 4) - this.chunkZ;
@@ -76,11 +33,8 @@
                  return this.chunkArray[i][j].getLightFor(type, pos);
              }
          }
-@@ -162,10 +161,10 @@
-         }
-     }
- 
--    @Override
+@@ -165,7 +168,8 @@
+     @Override
      public boolean isAirBlock(BlockPos pos)
      {
 -        return this.getBlockState(pos).getMaterial() == Material.AIR;
@@ -89,7 +43,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -175,6 +174,7 @@
+@@ -175,6 +179,7 @@
          {
              int i = (pos.getX() >> 4) - this.chunkX;
              int j = (pos.getZ() >> 4) - this.chunkZ;
@@ -97,18 +51,7 @@
              return this.chunkArray[i][j].getLightFor(type, pos);
          }
          else
-@@ -183,16 +183,31 @@
-         }
-     }
- 
--    @Override
-     public int getStrongPower(BlockPos pos, EnumFacing direction)
-     {
-         return this.getBlockState(pos).getStrongPower(this, pos, direction);
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
+@@ -194,5 +199,22 @@
      public WorldType getWorldType()
      {
          return this.world.getWorldType();

@@ -4,8 +4,8 @@
          {
              if (this.targetPosition != null)
              {
--                double d0 = (double)(this.entity.width * this.entity.width);
-+                double d0 = Math.max((this.entity.width * this.entity.width), 1.0D);
+-                double d0 = this.entity.width * this.entity.width;
++                double d0 = Math.max((this.entity.width * this.entity.width), 1.0);
  
                  if (!(this.entity.getDistanceSqToCenter(this.targetPosition) < d0)
                          && (

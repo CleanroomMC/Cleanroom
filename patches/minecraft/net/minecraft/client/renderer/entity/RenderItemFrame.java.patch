@@ -16,7 +16,7 @@
 -            boolean flag = itemstack.getItem() == Items.FILLED_MAP;
 +            boolean flag = itemstack.getItem() instanceof net.minecraft.item.ItemMap;
              int i = flag ? itemFrame.getRotation() % 4 * 2 : itemFrame.getRotation();
-             GlStateManager.rotate((float)i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
+             GlStateManager.rotate(i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
  
 +            net.minecraftforge.client.event.RenderItemInFrameEvent event = new net.minecraftforge.client.event.RenderItemInFrameEvent(itemFrame, this);
 +            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))

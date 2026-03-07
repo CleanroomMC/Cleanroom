@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/item/EntityBoat.java
 +++ after/net/minecraft/entity/item/EntityBoat.java
-@@ -477,6 +477,12 @@
+@@ -475,6 +475,12 @@
                              blockpos$pooledmutableblockpos.setPos(l1, k1, i2);
                              IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
  
@@ -13,7 +13,7 @@
                              if (iblockstate.getMaterial() == Material.WATER)
                              {
                                  f = Math.max(f, BlockLiquid.getBlockLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos));
-@@ -552,7 +558,7 @@
+@@ -550,7 +556,7 @@
  
                                  if (!list.isEmpty())
                                  {
@@ -22,7 +22,7 @@
                                      k1++;
                                  }
  
-@@ -594,7 +600,16 @@
+@@ -592,7 +598,16 @@
                      {
                          blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                          IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
@@ -39,7 +39,7 @@
                          if (iblockstate.getMaterial() == Material.WATER)
                          {
                              float f = BlockLiquid.getLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos);
-@@ -638,6 +653,18 @@
+@@ -636,6 +651,18 @@
                          blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                          IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
  
@@ -56,9 +56,9 @@
 +                        }
 +
                          if (iblockstate.getMaterial() == Material.WATER
-                                 && d0 < (double)BlockLiquid.getLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos))
+                                 && d0 < BlockLiquid.getLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos))
                          {
-@@ -969,6 +996,22 @@
+@@ -967,6 +994,22 @@
          this.rightInputDown = p_184442_2_;
          this.forwardInputDown = p_184442_3_;
          this.backInputDown = p_184442_4_;

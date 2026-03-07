@@ -49,15 +49,7 @@
          this.resetTexturePrefix();
  
          if (!this.world.isRemote)
-@@ -179,14 +183,16 @@
-             if (i != 0)
-             {
-                 this.getEntityAttribute(SharedMonsterAttributes.ARMOR)
--                .applyModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Horse armor bonus", (double)i, 0).setSaved(false));
-+                .applyModifier((new AttributeModifier(ARMOR_MODIFIER_UUID, "Horse armor bonus", (double)i, 0)).setSaved(false));
-             }
-         }
-     }
+@@ -186,7 +190,9 @@
  
      public HorseArmorType getHorseArmorType()
      {

@@ -1,11 +1,6 @@
 --- before/net/minecraft/network/login/server/SPacketLoginSuccess.java
 +++ after/net/minecraft/network/login/server/SPacketLoginSuccess.java
-@@ -22,16 +22,14 @@
-         this.profile = profileIn;
-     }
- 
--    @Override
-     public void readPacketData(PacketBuffer buf) throws IOException
+@@ -27,7 +27,7 @@
      {
          String s = buf.readString(36);
          String s1 = buf.readString(16);
@@ -14,7 +9,3 @@
          this.profile = new GameProfile(uuid, s1);
      }
  
--    @Override
-     public void writePacketData(PacketBuffer buf) throws IOException
-     {
-         UUID uuid = this.profile.getId();

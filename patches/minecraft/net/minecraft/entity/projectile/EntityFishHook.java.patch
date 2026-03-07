@@ -12,9 +12,9 @@
          if (!this.angler.isDead && this.angler.isEntityAlive() && (flag || flag1) && !(this.getDistanceSq(this.angler) > 1024.0))
          {
 @@ -429,9 +429,9 @@
-                 double d0 = this.posX + (double)(f1 * (float)this.ticksCatchableDelay * 0.1F);
-                 double d1 = (double)((float)MathHelper.floor(this.getEntityBoundingBox().minY) + 1.0F);
-                 double d2 = this.posZ + (double)(f2 * (float)this.ticksCatchableDelay * 0.1F);
+                 double d0 = this.posX + f1 * this.ticksCatchableDelay * 0.1F;
+                 double d1 = MathHelper.floor(this.getEntityBoundingBox().minY) + 1.0F;
+                 double d2 = this.posZ + f2 * this.ticksCatchableDelay * 0.1F;
 -                Block block = worldserver.getBlockState(new BlockPos(d0, d1 - 1.0, d2)).getBlock();
 +                IBlockState state = worldserver.getBlockState(new BlockPos(d0, d1 - 1.0, d2));
  
@@ -24,9 +24,9 @@
                      if (this.rand.nextFloat() < 0.15F)
                      {
 @@ -499,9 +499,9 @@
-                 double d4 = this.posX + (double)(MathHelper.sin(f6) * f7 * 0.1F);
-                 double d5 = (double)((float)MathHelper.floor(this.getEntityBoundingBox().minY) + 1.0F);
-                 double d6 = this.posZ + (double)(MathHelper.cos(f6) * f7 * 0.1F);
+                 double d4 = this.posX + MathHelper.sin(f6) * f7 * 0.1F;
+                 double d5 = MathHelper.floor(this.getEntityBoundingBox().minY) + 1.0F;
+                 double d6 = this.posZ + MathHelper.cos(f6) * f7 * 0.1F;
 -                Block block1 = worldserver.getBlockState(new BlockPos((int)d4, (int)d5 - 1, (int)d6)).getBlock();
 +                IBlockState state = worldserver.getBlockState(new BlockPos((int) d4, (int) d5 - 1, (int) d6));
  
@@ -47,7 +47,7 @@
              else if (this.ticksCatchable > 0)
              {
                  LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.world);
--                lootcontext$builder.withLuck((float)this.luck + this.angler.getLuck());
+-                lootcontext$builder.withLuck(this.luck + this.angler.getLuck());
 +                lootcontext$builder.withLuck((float)this.luck + this.angler.getLuck()).withPlayer(this.angler).withLootedEntity(this); // Forge: add player & looted entity to LootContext
 +                List<ItemStack> result = this.world.getLootTableManager().getLootTableFromLocation(LootTableList.GAMEPLAY_FISHING).generateLootForPools(this.rand, lootcontext$builder.build());
 +                event = new net.minecraftforge.event.entity.player.ItemFishedEvent(result, this.inGround ? 2 : 1, this);

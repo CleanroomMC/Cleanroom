@@ -9,7 +9,7 @@
              for (int j = 0; j < i * 8; j++)
              {
                  float f = this.rand.nextFloat() * (float)(Math.PI * 2);
-@@ -325,7 +325,7 @@
+@@ -323,7 +323,7 @@
          BlockPos blockpos = new BlockPos(MathHelper.floor(this.posX), 0, MathHelper.floor(this.posZ));
          Chunk chunk = this.world.getChunk(blockpos);
  
@@ -18,7 +18,7 @@
          {
              return false;
          }
-@@ -377,6 +377,7 @@
+@@ -375,6 +375,7 @@
      {
          this.motionY = 0.42F;
          this.isAirBorne = true;
@@ -26,7 +26,7 @@
      }
  
      @Nullable
-@@ -399,6 +400,14 @@
+@@ -397,6 +398,14 @@
      {
          return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_SLIME_JUMP : SoundEvents.ENTITY_SLIME_JUMP;
      }

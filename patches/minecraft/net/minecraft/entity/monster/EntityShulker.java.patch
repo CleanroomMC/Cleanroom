@@ -15,9 +15,9 @@
                          this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(blockpos1));
                          this.dataManager.set(PEEK_TICK, (byte)0);
 @@ -553,6 +560,7 @@
-                 this.posX = (double)blockpos.getX() + 0.5;
-                 this.posY = (double)blockpos.getY();
-                 this.posZ = (double)blockpos.getZ() + 0.5;
+                 this.posX = blockpos.getX() + 0.5;
+                 this.posY = blockpos.getY();
+                 this.posZ = blockpos.getZ() + 0.5;
 +                if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
                  this.prevPosX = this.posX;
                  this.prevPosY = this.posY;

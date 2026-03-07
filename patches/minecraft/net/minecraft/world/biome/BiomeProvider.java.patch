@@ -1,24 +1,15 @@
 --- before/net/minecraft/world/biome/BiomeProvider.java
 +++ after/net/minecraft/world/biome/BiomeProvider.java
-@@ -20,13 +20,14 @@
-     private ChunkGeneratorSettings settings;
+@@ -21,7 +21,8 @@
      private GenLayer genBiomes;
      private GenLayer biomeIndexLayer;
--    private final BiomeCache biomeCache = new BiomeCache(this);
+     private final BiomeCache biomeCache = new BiomeCache(this);
 -    private final List<Biome> biomesToSpawnIn = Lists.newArrayList(
--                Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS
--            );
-+    private final BiomeCache biomeCache;
-+    private final List<Biome> biomesToSpawnIn;
-+    public static List<Biome> allowedBiomes = Lists.newArrayList(Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
++    private final List<Biome> biomesToSpawnIn = Lists.newArrayList(allowedBiomes);
++    public static List<Biome> allowedBiomes = Lists.newArrayList(
+                 Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS
+             );
  
-     protected BiomeProvider()
-     {
-+        this.biomeCache = new BiomeCache(this);
-+        this.biomesToSpawnIn = Lists.newArrayList(allowedBiomes);
-     }
- 
-     private BiomeProvider(long seed, WorldType worldTypeIn, String options)
 @@ -39,6 +40,7 @@
          }
  
@@ -27,90 +18,6 @@
          this.genBiomes = agenlayer[0];
          this.biomeIndexLayer = agenlayer[1];
      }
-@@ -55,7 +57,7 @@
- 
-     public Biome getBiome(BlockPos pos)
-     {
--        return this.getBiome(pos, null);
-+        return this.getBiome(pos, (Biome)null);
-     }
- 
-     public Biome getBiome(BlockPos pos, Biome defaultBiome)
-@@ -81,7 +83,7 @@
- 
-         try
-         {
--            for (int i = 0; i < width * height; i++)
-+            for (int i = 0; i < width * height; ++i)
-             {
-                 biomes[i] = Biome.getBiome(aint[i], Biomes.DEFAULT);
-             }
-@@ -92,11 +94,11 @@
-         {
-             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Invalid Biome id");
-             CrashReportCategory crashreportcategory = crashreport.makeCategory("RawBiomeBlock");
--            crashreportcategory.addCrashSection("biomes[] size", biomes.length);
--            crashreportcategory.addCrashSection("x", x);
--            crashreportcategory.addCrashSection("z", z);
--            crashreportcategory.addCrashSection("w", width);
--            crashreportcategory.addCrashSection("h", height);
-+            crashreportcategory.addCrashSection("biomes[] size", Integer.valueOf(biomes.length));
-+            crashreportcategory.addCrashSection("x", Integer.valueOf(x));
-+            crashreportcategory.addCrashSection("z", Integer.valueOf(z));
-+            crashreportcategory.addCrashSection("w", Integer.valueOf(width));
-+            crashreportcategory.addCrashSection("h", Integer.valueOf(height));
-             throw new ReportedException(crashreport);
-         }
-     }
-@@ -125,7 +127,7 @@
-         {
-             int[] aint = this.biomeIndexLayer.getInts(x, z, width, length);
- 
--            for (int i = 0; i < width * length; i++)
-+            for (int i = 0; i < width * length; ++i)
-             {
-                 listToReuse[i] = Biome.getBiome(aint[i], Biomes.DEFAULT);
-             }
-@@ -147,7 +149,7 @@
- 
-         try
-         {
--            for (int k1 = 0; k1 < i1 * j1; k1++)
-+            for (int k1 = 0; k1 < i1 * j1; ++k1)
-             {
-                 Biome biome = Biome.getBiome(aint[k1]);
- 
-@@ -164,9 +166,9 @@
-             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Invalid Biome id");
-             CrashReportCategory crashreportcategory = crashreport.makeCategory("Layer");
-             crashreportcategory.addCrashSection("Layer", this.genBiomes.toString());
--            crashreportcategory.addCrashSection("x", x);
--            crashreportcategory.addCrashSection("z", z);
--            crashreportcategory.addCrashSection("radius", radius);
-+            crashreportcategory.addCrashSection("x", Integer.valueOf(x));
-+            crashreportcategory.addCrashSection("z", Integer.valueOf(z));
-+            crashreportcategory.addCrashSection("radius", Integer.valueOf(radius));
-             crashreportcategory.addCrashSection("allowed", allowed);
-             throw new ReportedException(crashreport);
-         }
-@@ -186,7 +188,7 @@
-         BlockPos blockpos = null;
-         int k1 = 0;
- 
--        for (int l1 = 0; l1 < i1 * j1; l1++)
-+        for (int l1 = 0; l1 < i1 * j1; ++l1)
-         {
-             int i2 = i + l1 % i1 << 2;
-             int j2 = j + l1 / i1 << 2;
-@@ -195,7 +197,7 @@
-             if (biomes.contains(biome) && (blockpos == null || random.nextInt(k1 + 1) == 0))
-             {
-                 blockpos = new BlockPos(i2, 0, j2);
--                k1++;
-+                ++k1;
-             }
-         }
- 
 @@ -205,6 +207,13 @@
      public void cleanupCache()
      {

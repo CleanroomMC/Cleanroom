@@ -91,7 +91,7 @@
      }
  
      @Override
-@@ -548,6 +527,9 @@
+@@ -524,6 +503,9 @@
  
          this.mc.getTextureManager().bindTexture(field_194400_H);
          drawModalRectWithCustomSizedTexture(j + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
@@ -99,9 +99,9 @@
 +        this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRenderer, this.width, this.height, this.splashText);
 +
          GlStateManager.pushMatrix();
-         GlStateManager.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
+         GlStateManager.translate(this.width / 2 + 90, 70.0F, 0.0F);
          GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
-@@ -567,7 +549,16 @@
+@@ -543,7 +525,16 @@
              s = s + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
          }
  
@@ -119,7 +119,7 @@
          this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, -1);
  
          if (mouseX > this.widthCopyrightRest
-@@ -590,10 +581,7 @@
+@@ -566,10 +557,7 @@
  
          super.drawScreen(mouseX, mouseY, partialTicks);
  
@@ -131,7 +131,7 @@
      }
  
      @Override
-@@ -616,11 +604,6 @@
+@@ -592,11 +580,6 @@
              }
          }
  
@@ -143,7 +143,7 @@
          if (mouseX > this.widthCopyrightRest
                  && mouseX < this.widthCopyrightRest + this.widthCopyright
                  && mouseY > this.height - 10
-@@ -630,12 +613,4 @@
+@@ -606,12 +589,4 @@
          }
      }
  

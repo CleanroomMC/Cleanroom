@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/chunk/RenderChunk.java
 +++ after/net/minecraft/client/renderer/chunk/RenderChunk.java
-@@ -173,7 +173,7 @@
+@@ -171,7 +171,7 @@
                      lvt_9_1_.setOpaqueCube(blockpos$mutableblockpos);
                  }
  
@@ -9,7 +9,7 @@
                  {
                      TileEntity tileentity = this.worldView.getTileEntity(blockpos$mutableblockpos, Chunk.EnumCreateEntityType.CHECK);
  
-@@ -183,17 +183,19 @@
+@@ -181,17 +181,19 @@
  
                          if (tileentityspecialrenderer != null)
                          {
@@ -31,7 +31,7 @@
                  int j = blockrenderlayer1.ordinal();
  
                  if (block.getDefaultState().getRenderType() != EnumBlockRenderType.INVISIBLE)
-@@ -208,6 +210,8 @@
+@@ -206,6 +208,8 @@
  
                      aboolean[j] |= blockrendererdispatcher.renderBlock(iblockstate, blockpos$mutableblockpos, this.worldView, bufferbuilder);
                  }
@@ -40,7 +40,7 @@
              }
  
              for (BlockRenderLayer blockrenderlayer : BlockRenderLayer.values())
-@@ -291,14 +295,16 @@
+@@ -289,14 +293,16 @@
      private void rebuildWorldView()
      {
          int i = 1;
@@ -59,7 +59,7 @@
  
          try
          {
-@@ -315,14 +321,14 @@
+@@ -313,14 +319,14 @@
                  return this.compileTask;
              }
  
@@ -76,7 +76,7 @@
      }
  
      protected double getDistanceSq()
-@@ -440,6 +446,26 @@
+@@ -438,6 +444,26 @@
      {
          return this.needsUpdate && this.needsImmediateUpdate;
      }

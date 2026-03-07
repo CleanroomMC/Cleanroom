@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/chunk/Chunk.java
 +++ after/net/minecraft/world/chunk/Chunk.java
-@@ -41,21 +41,21 @@
+@@ -41,7 +41,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -9,57 +9,7 @@
  {
      private static final Logger LOGGER = LogManager.getLogger();
      public static final ExtendedBlockStorage NULL_BLOCK_STORAGE = null;
--    private final ExtendedBlockStorage[] storageArrays = new ExtendedBlockStorage[16];
--    private final byte[] blockBiomeArray = new byte[256];
--    private final int[] precipitationHeightMap = new int[256];
--    private final boolean[] updateSkylightColumns = new boolean[256];
-+    private final ExtendedBlockStorage[] storageArrays;
-+    private final byte[] blockBiomeArray;
-+    private final int[] precipitationHeightMap;
-+    private final boolean[] updateSkylightColumns;
-     private boolean loaded;
-     private final World world;
-     private final int[] heightMap;
-     public final int x;
-     public final int z;
-     private boolean isGapLightingUpdated;
--    private final Map<BlockPos, TileEntity> tileEntities = Maps.newHashMap();
-+    private final Map<BlockPos, TileEntity> tileEntities;
-     private final ClassInheritanceMultiMap<Entity>[] entityLists;
-     private boolean isTerrainPopulated;
-     private boolean isLightPopulated;
-@@ -65,25 +65,33 @@
-     private long lastSaveTime;
-     private int heightMapMinimum;
-     private long inhabitedTime;
--    private int queuedLightChecks = 4096;
--    private final ConcurrentLinkedQueue<BlockPos> tileEntityPosQueue = Queues.newConcurrentLinkedQueue();
-+    private int queuedLightChecks;
-+    private final ConcurrentLinkedQueue<BlockPos> tileEntityPosQueue;
-     public boolean unloadQueued;
- 
-     public Chunk(World worldIn, int x, int z)
-     {
--        this.entityLists = new ClassInheritanceMultiMap[16];
-+        this.storageArrays = new ExtendedBlockStorage[16];
-+        this.blockBiomeArray = new byte[256];
-+        this.precipitationHeightMap = new int[256];
-+        this.updateSkylightColumns = new boolean[256];
-+        this.tileEntities = Maps.<BlockPos, TileEntity>newHashMap();
-+        this.queuedLightChecks = 4096;
-+        this.tileEntityPosQueue = Queues.<BlockPos>newConcurrentLinkedQueue();
-+        this.entityLists = (ClassInheritanceMultiMap[])(new ClassInheritanceMultiMap[16]);
-         this.world = worldIn;
-         this.x = x;
-         this.z = z;
-         this.heightMap = new int[256];
- 
--        for (int i = 0; i < this.entityLists.length; i++)
-+        for (int i = 0; i < this.entityLists.length; ++i)
-         {
--            this.entityLists[i] = new ClassInheritanceMultiMap<>(Entity.class);
-+            this.entityLists[i] = new ClassInheritanceMultiMap(Entity.class);
-         }
+@@ -84,6 +84,7 @@
  
          Arrays.fill(this.precipitationHeightMap, -999);
          Arrays.fill(this.blockBiomeArray, (byte) - 1);
@@ -67,44 +17,7 @@
      }
  
      public Chunk(World worldIn, ChunkPrimer primer, int x, int z)
-@@ -92,11 +100,11 @@
-         int i = 256;
-         boolean flag = worldIn.provider.hasSkyLight();
- 
--        for (int j = 0; j < 16; j++)
-+        for (int j = 0; j < 16; ++j)
-         {
--            for (int k = 0; k < 16; k++)
-+            for (int k = 0; k < 16; ++k)
-             {
--                for (int l = 0; l < 256; l++)
-+                for (int l = 0; l < 256; ++l)
-                 {
-                     IBlockState iblockstate = primer.getBlockState(j, l, k);
- 
-@@ -134,7 +142,7 @@
-     @Nullable
-     private ExtendedBlockStorage getLastExtendedBlockStorage()
-     {
--        for (int i = this.storageArrays.length - 1; i >= 0; i--)
-+        for (int i = this.storageArrays.length - 1; i >= 0; --i)
-         {
-             if (this.storageArrays[i] != NULL_BLOCK_STORAGE)
-             {
-@@ -162,17 +170,17 @@
-         int i = this.getTopFilledSegment();
-         this.heightMapMinimum = Integer.MAX_VALUE;
- 
--        for (int j = 0; j < 16; j++)
-+        for (int j = 0; j < 16; ++j)
-         {
--            for (int k = 0; k < 16; k++)
-+            for (int k = 0; k < 16; ++k)
-             {
-                 this.precipitationHeightMap[j + (k << 4)] = -999;
- 
--                for (int l = i + 16; l > 0; l--)
-+                for (int l = i + 16; l > 0; --l)
+@@ -172,7 +173,7 @@
                  {
                      IBlockState iblockstate = this.getBlockState(j, l - 1, k);
  
@@ -113,102 +26,7 @@
                      {
                          this.heightMap[k << 4 | j] = l;
  
-@@ -195,13 +203,13 @@
-         int i = this.getTopFilledSegment();
-         this.heightMapMinimum = Integer.MAX_VALUE;
- 
--        for (int j = 0; j < 16; j++)
-+        for (int j = 0; j < 16; ++j)
-         {
--            for (int k = 0; k < 16; k++)
-+            for (int k = 0; k < 16; ++k)
-             {
-                 this.precipitationHeightMap[j + (k << 4)] = -999;
- 
--                for (int l = i + 16; l > 0; l--)
-+                for (int l = i + 16; l > 0; --l)
-                 {
-                     if (this.getBlockLightOpacity(j, l - 1, k) != 0)
-                     {
-@@ -243,7 +251,9 @@
-                             }
-                         }
- 
--                        if (--i1 <= 0 || k1 <= 0)
-+                        --i1;
-+
-+                        if (i1 <= 0 || k1 <= 0)
-                         {
-                             break;
-                         }
-@@ -267,9 +277,9 @@
- 
-         if (this.world.isAreaLoaded(new BlockPos(this.x * 16 + 8, 0, this.z * 16 + 8), 16))
-         {
--            for (int i = 0; i < 16; i++)
-+            for (int i = 0; i < 16; ++i)
-             {
--                for (int j = 0; j < 16; j++)
-+                for (int j = 0; j < 16; ++j)
-                 {
-                     if (this.updateSkylightColumns[i + j * 16])
-                     {
-@@ -324,7 +334,7 @@
-     {
-         if (endY > startY && this.world.isAreaLoaded(new BlockPos(x, 0, z), 16))
-         {
--            for (int i = startY; i < endY; i++)
-+            for (int i = startY; i < endY; ++i)
-             {
-                 this.world.checkLightFor(EnumSkyBlock.SKY, new BlockPos(x, i, z));
-             }
-@@ -335,7 +345,7 @@
- 
-     private void relightBlock(int x, int y, int z)
-     {
--        int i = this.heightMap[z << 4 | x] & 0xFF;
-+        int i = this.heightMap[z << 4 | x] & 255;
-         int j = i;
- 
-         if (y > i)
-@@ -345,7 +355,7 @@
- 
-         while (j > 0 && this.getBlockLightOpacity(x, j - 1, z) == 0)
-         {
--            j--;
-+            --j;
-         }
- 
-         if (j != i)
-@@ -359,7 +369,7 @@
-             {
-                 if (j < i)
-                 {
--                    for (int j1 = j; j1 < i; j1++)
-+                    for (int j1 = j; j1 < i; ++j1)
-                     {
-                         ExtendedBlockStorage extendedblockstorage2 = this.storageArrays[j1 >> 4];
- 
-@@ -372,7 +382,7 @@
-                 }
-                 else
-                 {
--                    for (int i1 = i; i1 < j; i1++)
-+                    for (int i1 = i; i1 < j; ++i1)
-                     {
-                         ExtendedBlockStorage extendedblockstorage = this.storageArrays[i1 >> 4];
- 
-@@ -388,7 +398,8 @@
- 
-                 while (j > 0 && k1 > 0)
-                 {
--                    int i2 = this.getBlockLightOpacity(x, --j, z);
-+                    --j;
-+                    int i2 = this.getBlockLightOpacity(x, j, z);
- 
-                     if (i2 == 0)
-                     {
-@@ -442,12 +453,13 @@
+@@ -442,12 +443,13 @@
  
      public int getBlockLightOpacity(BlockPos pos)
      {
@@ -224,7 +42,7 @@
      }
  
      public IBlockState getBlockState(BlockPos pos)
-@@ -529,6 +541,7 @@
+@@ -529,6 +531,7 @@
          {
              Block block = state.getBlock();
              Block block1 = iblockstate.getBlock();
@@ -232,7 +50,7 @@
              ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4];
              boolean flag = false;
  
-@@ -546,14 +559,19 @@
+@@ -546,14 +549,19 @@
  
              extendedblockstorage.set(i, j & 15, k, state);
  
@@ -254,7 +72,7 @@
                      this.world.removeTileEntity(pos);
                  }
              }
-@@ -570,8 +588,7 @@
+@@ -570,8 +578,7 @@
                  }
                  else
                  {
@@ -264,7 +82,7 @@
  
                      if (j1 > 0)
                      {
-@@ -591,28 +608,19 @@
+@@ -591,28 +598,19 @@
                      }
                  }
  
@@ -297,45 +115,7 @@
                          this.world.setTileEntity(pos, tileentity1);
                      }
  
-@@ -687,14 +695,12 @@
- 
-         if (extendedblockstorage == NULL_BLOCK_STORAGE)
-         {
--            return this.world.provider.hasSkyLight() && amount < EnumSkyBlock.SKY.defaultLightValue
--                   ? EnumSkyBlock.SKY.defaultLightValue - amount
--                   : 0;
-+            return this.world.provider.hasSkyLight() && amount < EnumSkyBlock.SKY.defaultLightValue ? EnumSkyBlock.SKY.defaultLightValue - amount : 0;
-         }
-         else
-         {
-             int l = !this.world.provider.hasSkyLight() ? 0 : extendedblockstorage.getSkyLight(i, j & 15, k);
--            l -= amount;
-+            l = l - amount;
-             int i1 = extendedblockstorage.getBlockLight(i, j & 15, k);
- 
-             if (i1 > l)
-@@ -709,16 +715,16 @@
-     public void addEntity(Entity entityIn)
-     {
-         this.hasEntities = true;
--        int i = MathHelper.floor(entityIn.posX / 16.0);
--        int j = MathHelper.floor(entityIn.posZ / 16.0);
-+        int i = MathHelper.floor(entityIn.posX / 16.0D);
-+        int j = MathHelper.floor(entityIn.posZ / 16.0D);
- 
-         if (i != this.x || j != this.z)
-         {
--            LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", i, j, this.x, this.z, entityIn);
-+            LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(this.x), Integer.valueOf(this.z), entityIn);
-             entityIn.setDead();
-         }
- 
--        int k = MathHelper.floor(entityIn.posY / 16.0);
-+        int k = MathHelper.floor(entityIn.posY / 16.0D);
- 
-         if (k < 0)
-         {
-@@ -730,11 +736,13 @@
+@@ -730,11 +728,13 @@
              k = this.entityLists.length - 1;
          }
  
@@ -349,7 +129,7 @@
      }
  
      public void removeEntity(Entity entityIn)
-@@ -755,6 +763,7 @@
+@@ -755,6 +755,7 @@
          }
  
          this.entityLists[index].remove(entityIn);
@@ -357,18 +137,19 @@
      }
  
      public boolean canSeeSky(BlockPos pos)
-@@ -770,9 +779,7 @@
+@@ -770,9 +771,9 @@
      {
          IBlockState iblockstate = this.getBlockState(pos);
          Block block = iblockstate.getBlock();
 -        return !block.hasTileEntity()
--               ? null
++        return !block.hasTileEntity(iblockstate)
+                ? null
 -               : ((ITileEntityProvider)block).createNewTileEntity(this.world, iblockstate.getBlock().getMetaFromState(iblockstate));
-+        return !block.hasTileEntity(iblockstate) ? null : block.createTileEntity(this.world, iblockstate);
++               : block.createTileEntity(this.world, iblockstate);
      }
  
      @Nullable
-@@ -780,6 +787,12 @@
+@@ -780,6 +781,12 @@
      {
          TileEntity tileentity = this.tileEntities.get(pos);
  
@@ -381,7 +162,7 @@
          if (tileentity == null)
          {
              if (creationMode == Chunk.EnumCreateEntityType.IMMEDIATE)
-@@ -789,13 +802,8 @@
+@@ -789,13 +796,8 @@
              }
              else if (creationMode == Chunk.EnumCreateEntityType.QUEUED)
              {
@@ -396,7 +177,7 @@
          }
  
          return tileentity;
-@@ -813,14 +821,15 @@
+@@ -813,10 +815,11 @@
  
      public void addTileEntity(BlockPos pos, TileEntity tileEntityIn)
      {
@@ -409,12 +190,7 @@
          {
              if (this.tileEntities.containsKey(pos))
              {
--                this.tileEntities.get(pos).invalidate();
-+                ((TileEntity)this.tileEntities.get(pos)).invalidate();
-             }
- 
-             tileEntityIn.validate();
-@@ -848,12 +857,14 @@
+@@ -848,12 +851,14 @@
  
          for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists)
          {
@@ -430,7 +206,7 @@
          this.loaded = false;
  
          for (TileEntity tileentity : this.tileEntities.values())
-@@ -865,6 +876,7 @@
+@@ -865,6 +870,7 @@
          {
              this.world.unloadEntities(classinheritancemultimap);
          }
@@ -438,70 +214,29 @@
      }
  
      public void markDirty()
-@@ -874,12 +886,12 @@
+@@ -874,8 +880,8 @@
  
      public void getEntitiesWithinAABBForEntity(@Nullable Entity entityIn, AxisAlignedBB aabb, List<Entity> listToFill, Predicate <? super Entity > filter)
      {
 -        int i = MathHelper.floor((aabb.minY - 2.0) / 16.0);
 -        int j = MathHelper.floor((aabb.maxY + 2.0) / 16.0);
-+        int i = MathHelper.floor((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0D);
-+        int j = MathHelper.floor((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0D);
++        int i = MathHelper.floor((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0);
++        int j = MathHelper.floor((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0);
          i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
          j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
  
--        for (int k = i; k <= j; k++)
-+        for (int k = i; k <= j; ++k)
-         {
-             if (!this.entityLists[k].isEmpty())
-             {
-@@ -898,8 +910,7 @@
-                         {
-                             for (Entity entity1 : aentity)
-                             {
--                                if (entity1 != entityIn && entity1.getEntityBoundingBox().intersects(aabb) && (filter == null || filter.apply(entity1))
--                                   )
-+                                if (entity1 != entityIn && entity1.getEntityBoundingBox().intersects(aabb) && (filter == null || filter.apply(entity1)))
-                                 {
-                                     listToFill.add(entity1);
-                                 }
-@@ -911,16 +922,14 @@
-         }
-     }
- 
--    public <T extends Entity> void getEntitiesOfTypeWithinAABB(
--        Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > filter
--    )
-+    public <T extends Entity> void getEntitiesOfTypeWithinAABB(Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > filter)
+@@ -915,8 +921,8 @@
+         Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > filter
+     )
      {
 -        int i = MathHelper.floor((aabb.minY - 2.0) / 16.0);
 -        int j = MathHelper.floor((aabb.maxY + 2.0) / 16.0);
-+        int i = MathHelper.floor((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0D);
-+        int j = MathHelper.floor((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0D);
++        int i = MathHelper.floor((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0);
++        int j = MathHelper.floor((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0);
          i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
          j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
  
--        for (int k = i; k <= j; k++)
-+        for (int k = i; k <= j; ++k)
-         {
-             for (T t : this.entityLists[k].getByClass(entityClass))
-             {
-@@ -951,14 +960,7 @@
- 
-     public Random getRandomWithSeed(long seed)
-     {
--        return new Random(
--                   this.world.getSeed()
--                   + (long)(this.x * this.x * 4987142)
--                   + (long)(this.x * 5947611)
--                   + (long)(this.z * this.z) * 4392871L
--                   + (long)(this.z * 389711)
--                   ^ seed
--               );
-+        return new Random(this.world.getSeed() + (long)(this.x * this.x * 4987142) + (long)(this.x * 5947611) + (long)(this.z * this.z) * 4392871L + (long)(this.z * 389711) ^ seed);
-     }
- 
-     public boolean isEmpty()
-@@ -1001,6 +1003,9 @@
+@@ -1001,6 +1007,9 @@
  
      protected void populate(IChunkGenerator generator)
      {
@@ -511,7 +246,7 @@
          if (this.isTerrainPopulated())
          {
              if (generator.generateStructures(this, this.x, this.z))
-@@ -1012,8 +1017,10 @@
+@@ -1012,8 +1021,10 @@
          {
              this.checkLight();
              generator.populate(this.x, this.z);
@@ -522,7 +257,7 @@
      }
  
      public BlockPos getPrecipitationHeight(BlockPos pos)
-@@ -1068,7 +1075,7 @@
+@@ -1068,7 +1079,7 @@
          {
              BlockPos blockpos = this.tileEntityPosQueue.poll();
  
@@ -531,16 +266,7 @@
              {
                  TileEntity tileentity = this.createNewTileEntity(blockpos);
                  this.world.setTileEntity(blockpos, tileentity);
-@@ -1121,7 +1128,7 @@
-     {
-         if (this.storageArrays.length != newStorageArrays.length)
-         {
--            LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", newStorageArrays.length, this.storageArrays.length);
-+            LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", Integer.valueOf(newStorageArrays.length), Integer.valueOf(this.storageArrays.length));
-         }
-         else
-         {
-@@ -1132,9 +1139,16 @@
+@@ -1132,6 +1143,13 @@
      @SideOnly(Side.CLIENT)
      public void read(PacketBuffer buf, int availableSections, boolean groundUpContinuous)
      {
@@ -553,25 +279,12 @@
 +
          boolean flag = this.world.provider.hasSkyLight();
  
--        for (int i = 0; i < this.storageArrays.length; i++)
-+        for (int i = 0; i < this.storageArrays.length; ++i)
-         {
-             ExtendedBlockStorage extendedblockstorage = this.storageArrays[i];
- 
-@@ -1168,7 +1182,7 @@
-             buf.readBytes(this.blockBiomeArray);
-         }
- 
--        for (int j = 0; j < this.storageArrays.length; j++)
-+        for (int j = 0; j < this.storageArrays.length; ++j)
-         {
-             if (this.storageArrays[j] != NULL_BLOCK_STORAGE && (availableSections & 1 << j) != 0)
-             {
-@@ -1180,10 +1194,16 @@
+         for (int i = 0; i < this.storageArrays.length; i++)
+@@ -1180,10 +1198,16 @@
          this.isTerrainPopulated = true;
          this.generateHeightMap();
  
-+        List<TileEntity> invalidList = new java.util.ArrayList<TileEntity>();
++        List<TileEntity> invalidList = new java.util.ArrayList<>();
 +
          for (TileEntity tileentity : this.tileEntities.values())
          {
@@ -584,7 +297,7 @@
      }
  
      public Biome getBiome(BlockPos pos, BiomeProvider provider)
-@@ -1194,9 +1214,14 @@
+@@ -1194,7 +1218,12 @@
  
          if (k == 255)
          {
@@ -596,45 +309,14 @@
 +            // This is not necessary in 1.13 and newer versions.
 +            Biome biome = world.isRemote ? Biomes.PLAINS : provider.getBiome(pos, Biomes.PLAINS);
              k = Biome.getIdForBiome(biome);
--            this.blockBiomeArray[j << 4 | i] = (byte)(k & 0xFF);
-+            this.blockBiomeArray[j << 4 | i] = (byte)(k & 255);
+             this.blockBiomeArray[j << 4 | i] = (byte)(k & 0xFF);
          }
- 
-         Biome biome1 = Biome.getBiome(k);
-@@ -1212,7 +1237,7 @@
-     {
-         if (this.blockBiomeArray.length != biomeArray.length)
-         {
--            LOGGER.warn("Could not set level chunk biomes, array length is {} instead of {}", biomeArray.length, this.blockBiomeArray.length);
-+            LOGGER.warn("Could not set level chunk biomes, array length is {} instead of {}", Integer.valueOf(biomeArray.length), Integer.valueOf(this.blockBiomeArray.length));
-         }
-         else
-         {
-@@ -1231,7 +1256,7 @@
-         {
-             BlockPos blockpos = new BlockPos(this.x << 4, 0, this.z << 4);
- 
--            for (int i = 0; i < 8; i++)
-+            for (int i = 0; i < 8; ++i)
-             {
-                 if (this.queuedLightChecks >= 4096)
-                 {
-@@ -1241,21 +1266,20 @@
-                 int j = this.queuedLightChecks % 16;
-                 int k = this.queuedLightChecks / 16 % 16;
-                 int l = this.queuedLightChecks / 256;
--                this.queuedLightChecks++;
-+                ++this.queuedLightChecks;
- 
--                for (int i1 = 0; i1 < 16; i1++)
-+                for (int i1 = 0; i1 < 16; ++i1)
-                 {
-                     BlockPos blockpos1 = blockpos.add(k, (j << 4) + i1, l);
+@@ -1249,13 +1278,13 @@
                      boolean flag = i1 == 0 || i1 == 15 || k == 0 || k == 15 || l == 0 || l == 15;
  
--                    if (this.storageArrays[j] == NULL_BLOCK_STORAGE && flag
+                     if (this.storageArrays[j] == NULL_BLOCK_STORAGE && flag
 -                            || this.storageArrays[j] != NULL_BLOCK_STORAGE && this.storageArrays[j].get(k, i1, l).getMaterial() == Material.AIR)
-+                    if (this.storageArrays[j] == NULL_BLOCK_STORAGE && flag || this.storageArrays[j] != NULL_BLOCK_STORAGE && this.storageArrays[j].get(k, i1, l).getBlock().isAir(this.storageArrays[j].get(k, i1, l), this.world, blockpos1))
++                            || this.storageArrays[j] != NULL_BLOCK_STORAGE && this.storageArrays[j].get(k, i1, l).getBlock().isAir(this.storageArrays[j].get(k, i1, l), this.world, blockpos1))
                      {
                          for (EnumFacing enumfacing : EnumFacing.values())
                          {
@@ -645,80 +327,7 @@
                              {
                                  this.world.checkLight(blockpos2);
                              }
-@@ -1280,9 +1304,9 @@
-             {
-                 label44:
- 
--                for (int i = 0; i < 16; i++)
-+                for (int i = 0; i < 16; ++i)
-                 {
--                    for (int j = 0; j < 16; j++)
-+                    for (int j = 0; j < 16; ++j)
-                     {
-                         if (!this.checkLight(i, j))
-                         {
-@@ -1312,7 +1336,7 @@
- 
-     private void setSkylightUpdated()
-     {
--        for (int i = 0; i < this.updateSkylightColumns.length; i++)
-+        for (int i = 0; i < this.updateSkylightColumns.length; ++i)
-         {
-             this.updateSkylightColumns[i] = true;
-         }
-@@ -1326,28 +1350,28 @@
-         {
-             if (facing == EnumFacing.EAST)
-             {
--                for (int i = 0; i < 16; i++)
-+                for (int i = 0; i < 16; ++i)
-                 {
-                     this.checkLight(15, i);
-                 }
-             }
-             else if (facing == EnumFacing.WEST)
-             {
--                for (int j = 0; j < 16; j++)
-+                for (int j = 0; j < 16; ++j)
-                 {
-                     this.checkLight(0, j);
-                 }
-             }
-             else if (facing == EnumFacing.SOUTH)
-             {
--                for (int k = 0; k < 16; k++)
-+                for (int k = 0; k < 16; ++k)
-                 {
-                     this.checkLight(k, 15);
-                 }
-             }
-             else if (facing == EnumFacing.NORTH)
-             {
--                for (int l = 0; l < 16; l++)
-+                for (int l = 0; l < 16; ++l)
-                 {
-                     this.checkLight(l, 0);
-                 }
-@@ -1360,11 +1384,9 @@
-         int i = this.getTopFilledSegment();
-         boolean flag = false;
-         boolean flag1 = false;
--        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(
--            (this.x << 4) + x, 0, (this.z << 4) + z
--        );
-+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos((this.x << 4) + x, 0, (this.z << 4) + z);
- 
--        for (int j = i + 16 - 1; j > this.world.getSeaLevel() || j > 0 && !flag1; j--)
-+        for (int j = i + 16 - 1; j > this.world.getSeaLevel() || j > 0 && !flag1; --j)
-         {
-             blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), j, blockpos$mutableblockpos.getZ());
-             int k = this.getBlockLightOpacity(blockpos$mutableblockpos);
-@@ -1384,11 +1406,11 @@
-             }
-         }
- 
--        for (int l = blockpos$mutableblockpos.getY(); l > 0; l--)
-+        for (int l = blockpos$mutableblockpos.getY(); l > 0; --l)
+@@ -1388,7 +1417,7 @@
          {
              blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), l, blockpos$mutableblockpos.getZ());
  
@@ -727,13 +336,7 @@
              {
                  this.world.checkLight(blockpos$mutableblockpos);
              }
-@@ -1422,11 +1444,12 @@
-     {
-         if (this.heightMap.length != newHeightMap.length)
-         {
--            LOGGER.warn("Could not set level chunk heightmap, array length is {} instead of {}", newHeightMap.length, this.heightMap.length);
-+            LOGGER.warn("Could not set level chunk heightmap, array length is {} instead of {}", Integer.valueOf(newHeightMap.length), Integer.valueOf(this.heightMap.length));
-         }
+@@ -1427,6 +1456,7 @@
          else
          {
              System.arraycopy(newHeightMap, 0, this.heightMap, 0, this.heightMap.length);
@@ -741,7 +344,7 @@
          }
      }
  
-@@ -1495,5 +1518,56 @@
+@@ -1495,5 +1525,56 @@
          IMMEDIATE,
          QUEUED,
          CHECK;

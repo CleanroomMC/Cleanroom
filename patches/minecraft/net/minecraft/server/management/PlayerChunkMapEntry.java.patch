@@ -1,14 +1,5 @@
 --- before/net/minecraft/server/management/PlayerChunkMapEntry.java
 +++ after/net/minecraft/server/management/PlayerChunkMapEntry.java
-@@ -23,7 +23,7 @@
- {
-     private static final Logger LOGGER = LogManager.getLogger();
-     private final PlayerChunkMap playerChunkMap;
--    private final List<EntityPlayerMP> players = Lists.newArrayList();
-+    private final List<EntityPlayerMP> players = Lists.<EntityPlayerMP>newArrayList();
-     private final ChunkPos pos;
-     private short[] changedBlocks = new short[64];
-     @Nullable
 @@ -32,12 +32,21 @@
      private int changedSectionFilter;
      private long lastUpdateInhabitedTime;
@@ -32,18 +23,7 @@
      }
  
      public ChunkPos getPos()
-@@ -49,9 +58,7 @@
-     {
-         if (this.players.contains(player))
-         {
--            LOGGER.debug(
--                "Failed to add player. {} already is in chunk {}, {}", player, this.pos.x, this.pos.z
--            );
-+            LOGGER.debug("Failed to add player. {} already is in chunk {}, {}", player, Integer.valueOf(this.pos.x), Integer.valueOf(this.pos.z));
-         }
-         else
-         {
-@@ -65,6 +72,8 @@
+@@ -65,6 +74,8 @@
              if (this.sentToPlayers)
              {
                  this.sendToPlayer(player);
@@ -52,7 +32,7 @@
              }
          }
      }
-@@ -73,6 +82,20 @@
+@@ -73,6 +84,20 @@
      {
          if (this.players.contains(player))
          {
@@ -73,7 +53,7 @@
              if (this.sentToPlayers)
              {
                  player.connection.sendPacket(new SPacketUnloadChunk(this.pos.x, this.pos.z));
-@@ -80,6 +103,8 @@
+@@ -80,6 +105,8 @@
  
              this.players.remove(player);
  
@@ -82,7 +62,7 @@
              if (this.players.isEmpty())
              {
                  this.playerChunkMap.removeEntry(this);
-@@ -89,6 +114,7 @@
+@@ -89,6 +116,7 @@
  
      public boolean providePlayerChunk(boolean canGenerate)
      {
@@ -90,27 +70,7 @@
          if (this.chunk != null)
          {
              return true;
-@@ -97,17 +123,11 @@
-         {
-             if (canGenerate)
-             {
--                this.chunk = this.playerChunkMap
--                                      .getWorldServer()
--                                      .getChunkProvider()
--                                      .provideChunk(this.pos.x, this.pos.z);
-+                this.chunk = this.playerChunkMap.getWorldServer().getChunkProvider().provideChunk(this.pos.x, this.pos.z);
-             }
-             else
-             {
--                this.chunk = this.playerChunkMap
--                                      .getWorldServer()
--                                      .getChunkProvider()
--                                      .loadChunk(this.pos.x, this.pos.z);
-+                this.chunk = this.playerChunkMap.getWorldServer().getChunkProvider().loadChunk(this.pos.x, this.pos.z);
-             }
- 
-             return this.chunk != null;
-@@ -133,12 +153,15 @@
+@@ -133,12 +161,15 @@
              this.changes = 0;
              this.changedSectionFilter = 0;
              this.sentToPlayers = true;
@@ -126,7 +86,7 @@
              }
  
              return true;
-@@ -177,18 +200,19 @@
+@@ -177,7 +208,7 @@
  
              this.changedSectionFilter |= 1 << (y >> 4);
  
@@ -135,30 +95,16 @@
              {
                  short short1 = (short)(x << 12 | z << 8 | y);
  
--                for (int i = 0; i < this.changes; i++)
-+                for (int i = 0; i < this.changes; ++i)
-                 {
-                     if (this.changedBlocks[i] == short1)
-                     {
-                         return;
+@@ -189,6 +220,8 @@
                      }
                  }
--
+ 
 +                if (this.changes == this.changedBlocks.length)
 +                    this.changedBlocks = java.util.Arrays.copyOf(this.changedBlocks, this.changedBlocks.length << 1);
                  this.changedBlocks[this.changes++] = short1;
              }
          }
-@@ -198,13 +222,14 @@
-     {
-         if (this.sentToPlayers)
-         {
--            for (int i = 0; i < this.players.size(); i++)
-+            for (int i = 0; i < this.players.size(); ++i)
-             {
--                this.players.get(i).connection.sendPacket(packetIn);
-+                (this.players.get(i)).connection.sendPacket(packetIn);
-             }
+@@ -205,6 +238,7 @@
          }
      }
  
@@ -166,7 +112,7 @@
      public void update()
      {
          if (this.sentToPlayers && this.chunk != null)
-@@ -218,28 +243,32 @@
+@@ -218,28 +252,33 @@
                      int k = (this.changedBlocks[0] >> 8 & 15) + this.pos.z * 16;
                      BlockPos blockpos = new BlockPos(i, j, k);
                      this.sendPacket(new SPacketBlockChange(this.playerChunkMap.getWorldServer(), blockpos));
@@ -187,11 +133,10 @@
                  else
                  {
                      this.sendPacket(new SPacketMultiBlockChange(this.changes, this.changedBlocks, this.chunk));
--
--                    for (int l = 0; l < this.changes; l++)
+ 
 +                //} Keep this in the else until we figure out a fix for mojang's derpitude on the data packet so we don't double send crap.
 +                //{// Forge: Send only the tile entities that are updated, Adding this brace lets us keep the indent and the patch small
-+                    for (int l = 0; l < this.changes; ++l)
+                     for (int l = 0; l < this.changes; l++)
                      {
                          int i1 = (this.changedBlocks[l] >> 12 & 15) + this.pos.x * 16;
                          int j1 = this.changedBlocks[l] & 255;
@@ -204,16 +149,7 @@
                          {
                              this.sendBlockEntity(this.playerChunkMap.getWorldServer().getTileEntity(blockpos1));
                          }
-@@ -279,7 +308,7 @@
-     {
-         int i = 0;
- 
--        for (int j = this.players.size(); i < j; i++)
-+        for (int j = this.players.size(); i < j; ++i)
-         {
-             EntityPlayerMP entityplayermp = this.players.get(i);
- 
-@@ -318,5 +347,10 @@
+@@ -318,5 +357,10 @@
          }
  
          return d0;

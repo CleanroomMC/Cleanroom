@@ -1,50 +1,6 @@
 --- before/net/minecraft/world/storage/SaveHandler.java
 +++ after/net/minecraft/world/storage/SaveHandler.java
-@@ -44,7 +44,7 @@
-         if (p_i46648_3_)
-         {
-             this.playersDirectory.mkdirs();
--            this.structureTemplateManager = new TemplateManager(new File(this.worldDirectory, "structures").toString(), dataFixerIn);
-+            this.structureTemplateManager = new TemplateManager((new File(this.worldDirectory, "structures")).toString(), dataFixerIn);
-         }
-         else
-         {
-@@ -77,13 +77,11 @@
-         }
-     }
- 
--    @Override
-     public File getWorldDirectory()
-     {
-         return this.worldDirectory;
-     }
- 
--    @Override
-     public void checkSessionLock() throws MinecraftException
-     {
-         try
-@@ -103,27 +101,25 @@
-                 datainputstream.close();
-             }
-         }
--        catch (IOException ioexception)
-+        catch (IOException var7)
-         {
-             throw new MinecraftException("Failed to check session lock, aborting");
-         }
-     }
- 
--    @Override
-     public IChunkLoader getChunkLoader(WorldProvider provider)
-     {
-         throw new RuntimeException("Old Chunk Storage is no longer supported.");
-     }
- 
-     @Nullable
--    @Override
-     public WorldInfo loadWorldInfo()
-     {
-         File file1 = new File(this.worldDirectory, "level.dat");
+@@ -123,7 +123,7 @@
  
          if (file1.exists())
          {
@@ -53,7 +9,7 @@
  
              if (worldinfo != null)
              {
-@@ -131,17 +127,19 @@
+@@ -131,8 +131,9 @@
              }
          }
  
@@ -63,10 +19,8 @@
 +        return file1.exists() ? SaveFormatOld.loadAndFix(file1, this.dataFixer, this) : null;
      }
  
--    @Override
-     public void saveWorldInfoWithPlayer(WorldInfo worldInformation, @Nullable NBTTagCompound tagCompound)
-     {
-         NBTTagCompound nbttagcompound = worldInformation.cloneNBTCompound(tagCompound);
+     @Override
+@@ -142,6 +143,8 @@
          NBTTagCompound nbttagcompound1 = new NBTTagCompound();
          nbttagcompound1.setTag("Data", nbttagcompound);
  
@@ -75,53 +29,15 @@
          try
          {
              File file1 = new File(this.worldDirectory, "level.dat_new");
-@@ -174,13 +172,11 @@
-         }
-     }
- 
--    @Override
-     public void saveWorldInfo(WorldInfo worldInformation)
-     {
--        this.saveWorldInfoWithPlayer(worldInformation, null);
-+        this.saveWorldInfoWithPlayer(worldInformation, (NBTTagCompound)null);
-     }
- 
--    @Override
-     public void writePlayerData(EntityPlayer player)
-     {
-         try
-@@ -196,15 +192,15 @@
+@@ -196,6 +199,7 @@
              }
  
              file1.renameTo(file2);
 +            net.minecraftforge.event.ForgeEventFactory.firePlayerSavingEvent(player, this.playersDirectory, player.getUniqueID().toString());
          }
--        catch (Exception exception)
-+        catch (Exception var5)
+         catch (Exception exception)
          {
--            LOGGER.warn("Failed to save player data for {}", player.getName());
-+            LOGGER.warn("Failed to save player data for {}", (Object)player.getName());
-         }
-     }
- 
-     @Nullable
--    @Override
-     public NBTTagCompound readPlayerData(EntityPlayer player)
-     {
-         NBTTagCompound nbttagcompound = null;
-@@ -218,9 +214,9 @@
-                 nbttagcompound = CompressedStreamTools.readCompressed(new FileInputStream(file1));
-             }
-         }
--        catch (Exception exception)
-+        catch (Exception var4)
-         {
--            LOGGER.warn("Failed to load player data for {}", player.getName());
-+            LOGGER.warn("Failed to load player data for {}", (Object)player.getName());
-         }
- 
-         if (nbttagcompound != null)
-@@ -228,16 +224,15 @@
+@@ -228,6 +232,7 @@
              player.readFromNBT(this.dataFixer.process(FixTypes.PLAYER, nbttagcompound));
          }
  
@@ -129,41 +45,7 @@
          return nbttagcompound;
      }
  
--    @Override
-     public IPlayerFileData getPlayerNBTManager()
-     {
-         return this;
-     }
- 
--    @Override
-     public String[] getAvailablePlayerDat()
-     {
-         String[] astring = this.playersDirectory.list();
-@@ -247,7 +242,7 @@
-             astring = new String[0];
-         }
- 
--        for (int i = 0; i < astring.length; i++)
-+        for (int i = 0; i < astring.length; ++i)
-         {
-             if (astring[i].endsWith(".dat"))
-             {
-@@ -258,20 +253,35 @@
-         return astring;
-     }
- 
--    @Override
-     public void flush()
-     {
-     }
- 
--    @Override
-     public File getMapFileFromName(String mapName)
-     {
-         return new File(this.mapDataDir, mapName + ".dat");
-     }
- 
--    @Override
+@@ -273,5 +278,23 @@
      public TemplateManager getStructureTemplateManager()
      {
          return this.structureTemplateManager;
@@ -173,7 +55,7 @@
 +    {
 +        try
 +        {
-+            File file1 = new File(this.playersDirectory, player.getUniqueID().toString() + ".dat");
++            File file1 = new File(this.playersDirectory, player.getUniqueID() + ".dat");
 +
 +            if (file1.exists() && file1.isFile())
 +            {

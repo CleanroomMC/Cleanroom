@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/loot/LootPool.java
 +++ after/net/minecraft/world/storage/loot/LootPool.java
-@@ -21,22 +21,24 @@
+@@ -21,17 +21,19 @@
  
  public class LootPool
  {
@@ -25,25 +25,7 @@
      }
  
      protected void createLootRoll(Collection<ItemStack> stacks, Random rand, LootContext context)
-     {
--        List<LootEntry> list = Lists.newArrayList();
-+        List<LootEntry> list = Lists.<LootEntry>newArrayList();
-         int i = 0;
- 
-         for (LootEntry lootentry : this.lootEntries)
-@@ -74,33 +76,83 @@
-     {
-         if (LootConditionManager.testAllConditions(this.poolConditions, rand, context))
-         {
--            int i = this.rolls.generateInt(rand)
--                    + MathHelper.floor(this.bonusRolls.generateFloat(rand) * context.getLuck());
-+            int i = this.rolls.generateInt(rand) + MathHelper.floor(this.bonusRolls.generateFloat(rand) * context.getLuck());
- 
--            for (int j = 0; j < i; j++)
-+            for (int j = 0; j < i; ++j)
-             {
-                 this.createLootRoll(stacks, rand, context);
-             }
+@@ -84,23 +86,76 @@
          }
      }
  
@@ -102,18 +84,14 @@
              public LootPool deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
              {
                  JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "loot pool");
--                LootEntry[] alootentry = JsonUtils.deserializeClass(jsonobject, "entries", p_deserialize_3_, LootEntry[].class);
--                LootCondition[] alootcondition = JsonUtils.deserializeClass(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class);
--                RandomValueRange randomvaluerange = JsonUtils.deserializeClass(jsonobject, "rolls", p_deserialize_3_, RandomValueRange.class);
--                RandomValueRange randomvaluerange1 = JsonUtils.deserializeClass(
--                                                         jsonobject, "bonus_rolls", new RandomValueRange(0.0F, 0.0F), p_deserialize_3_, RandomValueRange.class
--                                                     );
--                return new LootPool(alootentry, alootcondition, randomvaluerange, randomvaluerange1);
 +                String name = net.minecraftforge.common.ForgeHooks.readPoolName(jsonobject);
-+                LootEntry[] alootentry = (LootEntry[])JsonUtils.deserializeClass(jsonobject, "entries", p_deserialize_3_, LootEntry[].class);
-+                LootCondition[] alootcondition = (LootCondition[])JsonUtils.deserializeClass(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class);
-+                RandomValueRange randomvaluerange = (RandomValueRange)JsonUtils.deserializeClass(jsonobject, "rolls", p_deserialize_3_, RandomValueRange.class);
-+                RandomValueRange randomvaluerange1 = (RandomValueRange)JsonUtils.deserializeClass(jsonobject, "bonus_rolls", new RandomValueRange(0.0F, 0.0F), p_deserialize_3_, RandomValueRange.class);
+                 LootEntry[] alootentry = JsonUtils.deserializeClass(jsonobject, "entries", p_deserialize_3_, LootEntry[].class);
+                 LootCondition[] alootcondition = JsonUtils.deserializeClass(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class);
+                 RandomValueRange randomvaluerange = JsonUtils.deserializeClass(jsonobject, "rolls", p_deserialize_3_, RandomValueRange.class);
+                 RandomValueRange randomvaluerange1 = JsonUtils.deserializeClass(
+                                                          jsonobject, "bonus_rolls", new RandomValueRange(0.0F, 0.0F), p_deserialize_3_, RandomValueRange.class
+                                                      );
+-                return new LootPool(alootentry, alootcondition, randomvaluerange, randomvaluerange1);
 +                return new LootPool(alootentry, alootcondition, randomvaluerange, randomvaluerange1, name);
              }
  
@@ -125,7 +103,7 @@
                  jsonobject.add("entries", p_serialize_3_.serialize(p_serialize_1_.lootEntries));
                  jsonobject.add("rolls", p_serialize_3_.serialize(p_serialize_1_.rolls));
  
-@@ -109,7 +161,7 @@
+@@ -109,7 +164,7 @@
                      jsonobject.add("bonus_rolls", p_serialize_3_.serialize(p_serialize_1_.bonusRolls));
                  }
  

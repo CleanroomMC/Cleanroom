@@ -1,24 +1,9 @@
 --- before/net/minecraft/nbt/NBTSizeTracker.java
 +++ after/net/minecraft/nbt/NBTSizeTracker.java
-@@ -4,7 +4,6 @@
- {
-     public static final NBTSizeTracker INFINITE = new NBTSizeTracker(0L)
-     {
--        @Override
-         public void read(long bits)
-         {
+@@ -28,4 +28,34 @@
+             );
          }
-@@ -23,9 +22,37 @@
- 
-         if (this.read > this.max)
-         {
--            throw new RuntimeException(
--                "Tried to read NBT tag that was too big; tried to allocate: " + this.read + "bytes where max allowed: " + this.max
--            );
--        }
-+            throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.read + "bytes where max allowed: " + this.max);
-+        }
-+    }
+     }
 +
 +    /*
 +     * UTF8 is not a simple encoding system, each character can be either
@@ -48,5 +33,5 @@
 +            else                                utflen += 2;
 +        }
 +        tracker.read(8 * utflen);
-     }
++    }
  }

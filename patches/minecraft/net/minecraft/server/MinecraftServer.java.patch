@@ -1,31 +1,6 @@
 --- before/net/minecraft/server/MinecraftServer.java
 +++ after/net/minecraft/server/MinecraftServer.java
-@@ -33,6 +33,7 @@
- import java.util.concurrent.Callable;
- import java.util.concurrent.Executors;
- import java.util.concurrent.FutureTask;
-+import java.util.function.Supplier;
- import javax.annotation.Nullable;
- import javax.imageio.ImageIO;
- import net.minecraft.advancements.AdvancementManager;
-@@ -45,6 +46,7 @@
- import net.minecraft.crash.ICrashReportDetail;
- import net.minecraft.entity.Entity;
- import net.minecraft.entity.player.EntityPlayer;
-+import net.minecraft.entity.player.EntityPlayerMP;
- import net.minecraft.init.Bootstrap;
- import net.minecraft.network.NetworkSystem;
- import net.minecraft.network.ServerStatusResponse;
-@@ -93,7 +95,7 @@
-     private final ISaveFormat anvilConverterForAnvilFile;
-     private final Snooper usageSnooper = new Snooper("server", this, getCurrentTimeMillis());
-     private final File anvilFile;
--    private final List<ITickable> tickables = Lists.newArrayList();
-+    private final List<ITickable> tickables = Lists.<ITickable>newArrayList();
-     public final ICommandManager commandManager;
-     public final Profiler profiler = new Profiler();
-     private final NetworkSystem networkSystem;
-@@ -103,7 +105,7 @@
+@@ -103,7 +103,7 @@
      @SideOnly(Side.SERVER)
      private String hostname;
      private int serverPort = -1;
@@ -34,81 +9,38 @@
      private PlayerList playerList;
      private boolean serverRunning = true;
      private boolean serverStopped;
-@@ -121,7 +123,8 @@
+@@ -121,7 +121,8 @@
      private int buildLimit;
      private int maxPlayerIdleMinutes;
      public final long[] tickTimeArray = new long[100];
 -    public long[][] timeOfLastDimensionTick;
 +    //public long[][] timeOfLastDimensionTick;
-+    public java.util.Hashtable<Integer, long[]> worldTickTimes = new java.util.Hashtable<Integer, long[]>();
++    public java.util.Hashtable<Integer, long[]> worldTickTimes = new java.util.Hashtable<>();
      private KeyPair serverKeyPair;
      private String serverOwner;
      private String folderName;
-@@ -141,21 +144,13 @@
-     private final GameProfileRepository profileRepo;
-     private final PlayerProfileCache profileCache;
-     private long nanoTimeSinceStatusRefresh;
--    public final Queue < FutureTask<? >> futureTaskQueue = Queues.newArrayDeque();
-+    public final Queue < FutureTask<? >> futureTaskQueue = Queues. < FutureTask<? >> newArrayDeque();
-     private Thread serverThread;
-     protected long currentTime = getCurrentTimeMillis();
-     @SideOnly(Side.CLIENT)
-     private boolean worldIconSet;
- 
--    public MinecraftServer(
--        File anvilFileIn,
--        Proxy proxyIn,
--        DataFixer dataFixerIn,
--        YggdrasilAuthenticationService authServiceIn,
--        MinecraftSessionService sessionServiceIn,
--        GameProfileRepository profileRepoIn,
--        PlayerProfileCache profileCacheIn
--    )
-+    public MinecraftServer(File anvilFileIn, Proxy proxyIn, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn)
-     {
-         this.serverProxy = proxyIn;
-         this.authService = authServiceIn;
-@@ -184,31 +179,26 @@
+@@ -184,7 +185,7 @@
              this.setUserMessage("menu.convertingLevel");
              this.getActiveAnvilConverter().convertMapFormat(worldNameIn, new IProgressUpdate()
              {
 -                private long startTime = MinecraftServer.getCurrentTimeMillis();
--                @Override
 +                private long startTime = System.currentTimeMillis();
+                 @Override
                  public void displaySavingString(String message)
                  {
-                 }
--                @SideOnly(Side.CLIENT)
--                @Override
--                public void resetProgressAndMessage(String message)
--                {
--                }
--                @Override
+@@ -197,9 +198,9 @@
+                 @Override
                  public void setLoadingProgress(int progress)
                  {
 -                    if (MinecraftServer.getCurrentTimeMillis() - this.startTime >= 1000L)
 +                    if (System.currentTimeMillis() - this.startTime >= 1000L)
                      {
 -                        this.startTime = MinecraftServer.getCurrentTimeMillis();
--                        MinecraftServer.LOGGER.info("Converting... {}%", progress);
 +                        this.startTime = System.currentTimeMillis();
-+                        MinecraftServer.LOGGER.info("Converting... {}%", (int)progress);
+                         MinecraftServer.LOGGER.info("Converting... {}%", progress);
                      }
                  }
-                 @SideOnly(Side.CLIENT)
--                @Override
-+                public void resetProgressAndMessage(String message)
-+                {
-+                }
-+                @SideOnly(Side.CLIENT)
-                 public void setDoneWorking()
-                 {
-                 }
--                @Override
-                 public void displayLoadingString(String message)
-                 {
-                 }
-@@ -233,8 +223,6 @@
+@@ -233,8 +234,6 @@
      {
          this.convertMapIfNeeded(saveName);
          this.setUserMessage("menu.loadingLevel");
@@ -117,39 +49,15 @@
          ISaveHandler isavehandler = this.anvilConverterForAnvilFile.getSaveLoader(saveName, true);
          this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
          WorldInfo worldinfo = isavehandler.loadWorldInfo();
-@@ -265,7 +253,8 @@
+@@ -265,6 +264,7 @@
              worldsettings = new WorldSettings(worldinfo);
          }
  
--        for (int i = 0; i < this.worlds.length; i++)
 +        if (false) { //Forge Dead code, reimplemented below
-+        for (int i = 0; i < this.worlds.length; ++i)
+         for (int i = 0; i < this.worlds.length; i++)
          {
              int j = 0;
- 
-@@ -283,18 +272,18 @@
-             {
-                 if (this.isDemo())
-                 {
--                    this.worlds[i] = (WorldServer)new WorldServerDemo(this, isavehandler, worldinfo, j, this.profiler).init();
-+                    this.worlds[i] = (WorldServer)(new WorldServerDemo(this, isavehandler, worldinfo, j, this.profiler)).init();
-                 }
-                 else
-                 {
--                    this.worlds[i] = (WorldServer)new WorldServer(this, isavehandler, worldinfo, j, this.profiler).init();
-+                    this.worlds[i] = (WorldServer)(new WorldServer(this, isavehandler, worldinfo, j, this.profiler)).init();
-                 }
- 
-                 this.worlds[i].initialize(worldsettings);
-             }
-             else
-             {
--                this.worlds[i] = (WorldServer)new WorldServerMulti(this, isavehandler, j, this.worlds[0], this.profiler).init();
-+                this.worlds[i] = (WorldServer)(new WorldServerMulti(this, isavehandler, j, this.worlds[0], this.profiler)).init();
-             }
- 
-             this.worlds[i].addEventListener(new ServerWorldEventHandler(this, this.worlds[i]));
-@@ -304,8 +293,23 @@
+@@ -304,8 +304,23 @@
                  this.worlds[i].getWorldInfo().setGameType(this.getGameType());
              }
          }
@@ -175,7 +83,7 @@
          this.setDifficultyForAllWorlds(this.getDifficulty());
          this.initialWorldChunkLoad();
      }
-@@ -320,7 +324,7 @@
+@@ -320,7 +335,7 @@
          this.setUserMessage("menu.generatingTerrain");
          int j1 = 0;
          LOGGER.info("Preparing start region for level 0");
@@ -184,54 +92,7 @@
          BlockPos blockpos = worldserver.getSpawnPoint();
          long k1 = getCurrentTimeMillis();
  
-@@ -336,7 +340,7 @@
-                     k1 = j2;
-                 }
- 
--                i1++;
-+                ++i1;
-                 worldserver.getChunkProvider().provideChunk(blockpos.getX() + l1 >> 4, blockpos.getZ() + i2 >> 4);
-             }
-         }
-@@ -354,9 +358,9 @@
-             {
-                 this.setResourcePack("level://" + URLEncoder.encode(worldNameIn, StandardCharsets.UTF_8.toString()) + "/" + "resources.zip", "");
-             }
--            catch (UnsupportedEncodingException unsupportedencodingexception)
-+            catch (UnsupportedEncodingException var5)
-             {
--                LOGGER.warn("Something went wrong url encoding {}", worldNameIn);
-+                LOGGER.warn("Something went wrong url encoding {}", (Object)worldNameIn);
-             }
-         }
-     }
-@@ -379,7 +383,7 @@
-     {
-         this.currentTask = message;
-         this.percentDone = percent;
--        LOGGER.info("{}: {}%", message, percent);
-+        LOGGER.info("{}: {}%", message, Integer.valueOf(percent));
-     }
- 
-     protected void clearCurrentTask()
-@@ -396,14 +400,12 @@
-             {
-                 if (!isSilent)
-                 {
--                    LOGGER.info(
--                        "Saving chunks for level '{}'/{}", worldserver.getWorldInfo().getWorldName(), worldserver.provider.getDimensionType().getName()
--                    );
-+                    LOGGER.info("Saving chunks for level '{}'/{}", worldserver.getWorldInfo().getWorldName(), worldserver.provider.getDimensionType().getName());
-                 }
- 
-                 try
-                 {
--                    worldserver.saveAllChunks(true, null);
-+                    worldserver.saveAllChunks(true, (IProgressUpdate)null);
-                 }
-                 catch (MinecraftException minecraftexception)
-                 {
-@@ -447,27 +449,24 @@
+@@ -447,15 +462,24 @@
              {
                  if (worldserver1 != null)
                  {
@@ -251,31 +112,12 @@
          {
              this.usageSnooper.stopSnooper();
          }
--    }
--
--    @SideOnly(Side.SERVER)
--    public String getServerHostname()
--    {
--        return this.hostname;
--    }
--
--    @SideOnly(Side.SERVER)
--    public void setHostname(String host)
--    {
--        this.hostname = host;
 +
 +        CommandBase.setCommandListener(null); // Forge: fix MC-128561
      }
  
-     public boolean isServerRunning()
-@@ -480,13 +479,13 @@
-         this.serverRunning = false;
-     }
- 
--    @Override
-     public void run()
-     {
-         try
+     @SideOnly(Side.SERVER)
+@@ -487,6 +511,7 @@
          {
              if (this.init())
              {
@@ -283,18 +125,7 @@
                  this.currentTime = getCurrentTimeMillis();
                  long i = 0L;
                  this.statusResponse.setServerDescription(new TextComponentString(this.motd));
-@@ -500,9 +499,7 @@
- 
-                     if (j > 2000L && this.currentTime - this.timeOfLastWarning >= 15000L)
-                     {
--                        LOGGER.warn(
--                            "Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", j, j / 50L
--                        );
-+                        LOGGER.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
-                         j = 2000L;
-                         this.timeOfLastWarning = this.currentTime;
-                     }
-@@ -533,11 +530,19 @@
+@@ -533,12 +558,20 @@
                      Thread.sleep(Math.max(1L, 50L - i));
                      this.serverIsRunning = true;
                  }
@@ -303,34 +134,19 @@
              }
              else
              {
--                this.finalTick(null);
 +                net.minecraftforge.fml.common.FMLCommonHandler.instance().expectServerStopped(); // has to come before finalTick to avoid race conditions
-+                this.finalTick((CrashReport)null);
+                 this.finalTick(null);
              }
-+        }
+         }
 +        catch (net.minecraftforge.fml.common.StartupQuery.AbortedException e)
 +        {
 +            // ignore silently
 +            net.minecraftforge.fml.common.FMLCommonHandler.instance().expectServerStopped(); // has to come before finalTick to avoid race conditions
-         }
++        }
          catch (Throwable throwable1)
          {
-@@ -553,26 +558,24 @@
-                 crashreport = this.addServerInfoToCrashReport(new CrashReport("Exception in server tick loop", throwable1));
-             }
- 
--            File file1 = new File(
--                new File(this.getDataDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
--            );
-+            File file1 = new File(new File(this.getDataDirectory(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
- 
-             if (crashreport.saveToFile(file1))
-             {
--                LOGGER.error("This crash report has been saved to: {}", file1.getAbsolutePath());
-+                LOGGER.error("This crash report has been saved to: {}", (Object)file1.getAbsolutePath());
-             }
-             else
-             {
+             LOGGER.error("Encountered an unexpected exception", throwable1);
+@@ -566,13 +599,13 @@
                  LOGGER.error("We were unable to save this crash report to disk.");
              }
  
@@ -345,7 +161,7 @@
                  this.stopServer();
              }
              catch (Throwable throwable)
-@@ -581,6 +584,8 @@
+@@ -581,6 +614,8 @@
              }
              finally
              {
@@ -354,7 +170,7 @@
                  this.systemExitNow();
              }
          }
-@@ -607,6 +612,7 @@
+@@ -607,6 +642,7 @@
                  ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
                  ByteBuf bytebuf1 = Base64.encode(bytebuf);
                  response.setFavicon("data:image/png;base64," + bytebuf1.toString(StandardCharsets.UTF_8));
@@ -362,26 +178,15 @@
              }
              catch (Exception exception)
              {
-@@ -648,7 +654,8 @@
+@@ -648,6 +684,7 @@
      public void tick()
      {
          long i = System.nanoTime();
--        this.tickCounter++;
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreServerTick();
-+        ++this.tickCounter;
+         this.tickCounter++;
  
          if (this.startProfiling)
-         {
-@@ -667,13 +674,14 @@
-             GameProfile[] agameprofile = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
-             int j = MathHelper.getInt(this.random, 0, this.getCurrentPlayerCount() - agameprofile.length);
- 
--            for (int k = 0; k < agameprofile.length; k++)
-+            for (int k = 0; k < agameprofile.length; ++k)
-             {
--                agameprofile[k] = this.playerList.getPlayers().get(j + k).getGameProfile();
-+                agameprofile[k] = ((EntityPlayerMP)this.playerList.getPlayers().get(j + k)).getGameProfile();
-             }
+@@ -674,6 +711,7 @@
  
              Collections.shuffle(Arrays.asList(agameprofile));
              this.statusResponse.getPlayers().setPlayers(agameprofile);
@@ -389,7 +194,7 @@
          }
  
          if (this.tickCounter % 900 == 0)
-@@ -701,6 +709,7 @@
+@@ -701,6 +739,7 @@
  
          this.profiler.endSection();
          this.profiler.endSection();
@@ -397,7 +202,7 @@
      }
  
      public void updateTimeLightAndEntities()
-@@ -716,28 +725,31 @@
+@@ -716,28 +755,31 @@
          }
  
          this.profiler.endStartSection("levels");
@@ -414,12 +219,8 @@
 +            if (id == 0 || this.getAllowNether())
              {
 -                WorldServer worldserver = this.worlds[j];
--                this.profiler.func_194340_a(() -> worldserver.getWorldInfo().getWorldName());
 +                WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
-+                this.profiler.func_194340_a(() ->
-+                {
-+                    return worldserver.getWorldInfo().getWorldName();
-+                });
+                 this.profiler.func_194340_a(() -> worldserver.getWorldInfo().getWorldName());
  
                  if (this.tickCounter % 20 == 0)
                  {
@@ -428,8 +229,10 @@
 -                    .sendPacketToAllPlayersInDimension(
 -                        new SPacketTimeUpdate(worldserver.getTotalWorldTime(), worldserver.getWorldTime(), worldserver.getGameRules().getBoolean("doDaylightCycle")),
 -                        worldserver.provider.getDimensionType().getId()
--                    );
-+                    this.playerList.sendPacketToAllPlayersInDimension(new SPacketTimeUpdate(worldserver.getTotalWorldTime(), worldserver.getWorldTime(), worldserver.getGameRules().getBoolean("doDaylightCycle")), worldserver.provider.getDimension());
++                    this.playerList.sendPacketToAllPlayersInDimension(
++                        new SPacketTimeUpdate(worldserver.getTotalWorldTime(), worldserver.getWorldTime(),
++                            worldserver.getGameRules().getBoolean("doDaylightCycle")), worldserver.provider.getDimension()
+                     );
                      this.profiler.endSection();
                  }
  
@@ -438,7 +241,7 @@
  
                  try
                  {
-@@ -761,6 +773,7 @@
+@@ -761,6 +803,7 @@
                      throw new ReportedException(crashreport1);
                  }
  
@@ -446,7 +249,7 @@
                  this.profiler.endSection();
                  this.profiler.startSection("tracker");
                  worldserver.getEntityTracker().tick();
-@@ -768,9 +781,11 @@
+@@ -768,9 +811,11 @@
                  this.profiler.endSection();
              }
  
@@ -459,149 +262,25 @@
          this.profiler.endStartSection("connection");
          this.getNetworkSystem().networkTick();
          this.profiler.endStartSection("players");
-@@ -779,9 +794,9 @@
-         this.getFunctionManager().update();
-         this.profiler.endStartSection("tickables");
+@@ -801,6 +846,16 @@
+     @SideOnly(Side.SERVER)
+     public static void main(String[] p_main_0_)
+     {
++        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
++        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
++        ServerEula eula = new ServerEula(new File("eula.txt"));
++        if (!eula.hasAcceptedEULA())
++        {
++            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
++            eula.createEULAFile();
++            return;
++        }
++
+         Bootstrap.register();
  
--        for (int k = 0; k < this.tickables.size(); k++)
-+        for (int k = 0; k < this.tickables.size(); ++k)
-         {
--            this.tickables.get(k).update();
-+            ((ITickable)this.tickables.get(k)).update();
-         }
+         try
+@@ -921,7 +976,8 @@
  
-         this.profiler.endSection();
-@@ -792,136 +807,10 @@
-         return true;
-     }
- 
--    @SideOnly(Side.SERVER)
--    public void registerTickable(ITickable tickable)
--    {
--        this.tickables.add(tickable);
--    }
--
--    @SideOnly(Side.SERVER)
--    public static void main(String[] p_main_0_)
--    {
--        Bootstrap.register();
--
--        try
--        {
--            boolean flag = true;
--            String s = null;
--            String s1 = ".";
--            String s2 = null;
--            boolean flag1 = false;
--            boolean flag2 = false;
--            int i = -1;
--
--            for (int j = 0; j < p_main_0_.length; j++)
--            {
--                String s3 = p_main_0_[j];
--                String s4 = j == p_main_0_.length - 1 ? null : p_main_0_[j + 1];
--                boolean flag3 = false;
--
--                if ("nogui".equals(s3) || "--nogui".equals(s3))
--                {
--                    flag = false;
--                }
--                else if ("--port".equals(s3) && s4 != null)
--                {
--                    flag3 = true;
--
--                    try
--                    {
--                        i = Integer.parseInt(s4);
--                    }
--                    catch (NumberFormatException numberformatexception)
--                    {
--                    }
--                }
--                else if ("--singleplayer".equals(s3) && s4 != null)
--                {
--                    flag3 = true;
--                    s = s4;
--                }
--                else if ("--universe".equals(s3) && s4 != null)
--                {
--                    flag3 = true;
--                    s1 = s4;
--                }
--                else if ("--world".equals(s3) && s4 != null)
--                {
--                    flag3 = true;
--                    s2 = s4;
--                }
--                else if ("--demo".equals(s3))
--                {
--                    flag1 = true;
--                }
--                else if ("--bonusChest".equals(s3))
--                {
--                    flag2 = true;
--                }
--
--                if (flag3)
--                {
--                    j++;
--                }
--            }
--
--            YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
--            MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
--            GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
--            PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(s1, USER_CACHE_FILE.getName()));
--            final DedicatedServer dedicatedserver = new DedicatedServer(
--                new File(s1), DataFixesManager.createFixer(), yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache
--            );
--
--            if (s != null)
--            {
--                dedicatedserver.setServerOwner(s);
--            }
--
--            if (s2 != null)
--            {
--                dedicatedserver.setFolderName(s2);
--            }
--
--            if (i >= 0)
--            {
--                dedicatedserver.setServerPort(i);
--            }
--
--            if (flag1)
--            {
--                dedicatedserver.setDemo(true);
--            }
--
--            if (flag2)
--            {
--                dedicatedserver.canCreateBonusChest(true);
--            }
--
--            if (flag && !GraphicsEnvironment.isHeadless())
--            {
--                dedicatedserver.setGuiEnabled();
--            }
--
--            dedicatedserver.startServerThread();
--            Runtime.getRuntime().addShutdownHook(new Thread("Server Shutdown Thread")
--            {
--                @Override
--                public void run()
--                {
--                    dedicatedserver.stopServer();
--                }
--            });
--        }
--        catch (Exception exception)
--        {
--            LOGGER.fatal("Failed to start the minecraft server", (Throwable)exception);
--        }
--    }
--
      public void startServerThread()
      {
 -        this.serverThread = new Thread(this, "Server thread");
@@ -610,20 +289,7 @@
          this.serverThread.start();
      }
  
-@@ -930,12 +819,6 @@
-         return new File(this.getDataDirectory(), fileName);
-     }
- 
--    @SideOnly(Side.SERVER)
--    public void logInfo(String msg)
--    {
--        LOGGER.info(msg);
--    }
--
-     public void logWarning(String msg)
-     {
-         LOGGER.warn(msg);
-@@ -943,14 +826,13 @@
+@@ -943,14 +999,13 @@
  
      public WorldServer getWorld(int dimension)
      {
@@ -645,31 +311,8 @@
      }
  
      public String getMinecraftVersion()
-@@ -978,30 +860,9 @@
-         return this.playerList.getOnlinePlayerProfiles();
-     }
+@@ -1001,7 +1056,7 @@
  
--    @SideOnly(Side.SERVER)
--    public boolean isDebuggingEnabled()
--    {
--        return false;
--    }
--
--    @SideOnly(Side.SERVER)
--    public void logSevere(String msg)
--    {
--        LOGGER.error(msg);
--    }
--
--    @SideOnly(Side.SERVER)
--    public void logDebug(String msg)
--    {
--        if (this.isDebuggingEnabled())
--        {
--            LOGGER.info(msg);
--        }
--    }
--
      public String getServerModName()
      {
 -        return "vanilla";
@@ -677,295 +320,7 @@
      }
  
      public CrashReport addServerInfoToCrashReport(CrashReport report)
-@@ -1016,21 +877,13 @@
- 
-         if (this.playerList != null)
-         {
--            report.getCategory()
--            .addDetail(
--                "Player Count",
--                new ICrashReportDetail<String>()
-+            report.getCategory().addDetail("Player Count", new ICrashReportDetail<String>()
-             {
-                 public String call()
-                 {
--                    return MinecraftServer.this.playerList.getCurrentPlayerCount()
--                           + " / "
--                           + MinecraftServer.this.playerList.getMaxPlayers()
--                           + "; "
--                           + MinecraftServer.this.playerList.getPlayers();
-+                    return MinecraftServer.this.playerList.getCurrentPlayerCount() + " / " + MinecraftServer.this.playerList.getMaxPlayers() + "; " + MinecraftServer.this.playerList.getPlayers();
-                 }
--            }
--            );
-+            });
-         }
- 
-         return report;
-@@ -1038,7 +891,7 @@
- 
-     public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos, boolean hasTargetBlock)
-     {
--        List<String> list = Lists.newArrayList();
-+        List<String> list = Lists.<String>newArrayList();
-         boolean flag = input.startsWith("/");
- 
-         if (flag)
-@@ -1090,19 +943,16 @@
-         return this.anvilFile != null;
-     }
- 
--    @Override
-     public String getName()
-     {
-         return "Server";
-     }
- 
--    @Override
-     public void sendMessage(ITextComponent component)
-     {
-         LOGGER.info(component.getUnformattedText());
-     }
- 
--    @Override
-     public boolean canUseCommand(int permLevel, String commandName)
-     {
-         return true;
-@@ -1118,18 +968,6 @@
-         return this.serverKeyPair;
-     }
- 
--    @SideOnly(Side.SERVER)
--    public int getServerPort()
--    {
--        return this.serverPort;
--    }
--
--    @SideOnly(Side.SERVER)
--    public void setServerPort(int port)
--    {
--        this.serverPort = port;
--    }
--
-     public String getServerOwner()
-     {
-         return this.serverOwner;
-@@ -1174,24 +1012,24 @@
- 
-     public void setDifficultyForAllWorlds(EnumDifficulty difficulty)
-     {
--        for (WorldServer worldserver : this.worlds)
-+        for (WorldServer worldserver1 : this.worlds)
-         {
--            if (worldserver != null)
-+            if (worldserver1 != null)
-             {
--                if (worldserver.getWorldInfo().isHardcoreModeEnabled())
-+                if (worldserver1.getWorldInfo().isHardcoreModeEnabled())
-                 {
--                    worldserver.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
--                    worldserver.setAllowedSpawnTypes(true, true);
-+                    worldserver1.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
-+                    worldserver1.setAllowedSpawnTypes(true, true);
-                 }
-                 else if (this.isSinglePlayer())
-                 {
--                    worldserver.getWorldInfo().setDifficulty(difficulty);
--                    worldserver.setAllowedSpawnTypes(worldserver.getDifficulty() != EnumDifficulty.PEACEFUL, true);
-+                    worldserver1.getWorldInfo().setDifficulty(difficulty);
-+                    worldserver1.setAllowedSpawnTypes(worldserver1.getDifficulty() != EnumDifficulty.PEACEFUL, true);
-                 }
-                 else
-                 {
--                    worldserver.getWorldInfo().setDifficulty(difficulty);
--                    worldserver.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
-+                    worldserver1.getWorldInfo().setDifficulty(difficulty);
-+                    worldserver1.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
-                 }
-             }
-         }
-@@ -1238,58 +1076,55 @@
-         this.resourcePackHash = hash;
-     }
- 
--    @Override
-     public void addServerStatsToSnooper(Snooper playerSnooper)
-     {
--        playerSnooper.addClientStat("whitelist_enabled", false);
--        playerSnooper.addClientStat("whitelist_count", 0);
-+        playerSnooper.addClientStat("whitelist_enabled", Boolean.valueOf(false));
-+        playerSnooper.addClientStat("whitelist_count", Integer.valueOf(0));
- 
-         if (this.playerList != null)
-         {
--            playerSnooper.addClientStat("players_current", this.getCurrentPlayerCount());
--            playerSnooper.addClientStat("players_max", this.getMaxPlayers());
--            playerSnooper.addClientStat("players_seen", this.playerList.getAvailablePlayerDat().length);
-+            playerSnooper.addClientStat("players_current", Integer.valueOf(this.getCurrentPlayerCount()));
-+            playerSnooper.addClientStat("players_max", Integer.valueOf(this.getMaxPlayers()));
-+            playerSnooper.addClientStat("players_seen", Integer.valueOf(this.playerList.getAvailablePlayerDat().length));
-         }
- 
--        playerSnooper.addClientStat("uses_auth", this.onlineMode);
-+        playerSnooper.addClientStat("uses_auth", Boolean.valueOf(this.onlineMode));
-         playerSnooper.addClientStat("gui_state", this.getGuiEnabled() ? "enabled" : "disabled");
--        playerSnooper.addClientStat("run_time", (getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L);
--        playerSnooper.addClientStat("avg_tick_ms", (int)(MathHelper.average(this.tickTimeArray) * 1.0E-6));
--        int i = 0;
-+        playerSnooper.addClientStat("run_time", Long.valueOf((getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L));
-+        playerSnooper.addClientStat("avg_tick_ms", Integer.valueOf((int)(MathHelper.average(this.tickTimeArray) * 1.0E-6D)));
-+        int l = 0;
- 
-         if (this.worlds != null)
-         {
--            for (WorldServer worldserver : this.worlds)
-+            for (WorldServer worldserver1 : this.worlds)
-             {
--                if (worldserver != null)
-+                if (worldserver1 != null)
-                 {
--                    WorldInfo worldinfo = worldserver.getWorldInfo();
--                    playerSnooper.addClientStat("world[" + i + "][dimension]", worldserver.provider.getDimensionType().getId());
--                    playerSnooper.addClientStat("world[" + i + "][mode]", worldinfo.getGameType());
--                    playerSnooper.addClientStat("world[" + i + "][difficulty]", worldserver.getDifficulty());
--                    playerSnooper.addClientStat("world[" + i + "][hardcore]", worldinfo.isHardcoreModeEnabled());
--                    playerSnooper.addClientStat("world[" + i + "][generator_name]", worldinfo.getTerrainType().getName());
--                    playerSnooper.addClientStat("world[" + i + "][generator_version]", worldinfo.getTerrainType().getVersion());
--                    playerSnooper.addClientStat("world[" + i + "][height]", this.buildLimit);
--                    playerSnooper.addClientStat("world[" + i + "][chunks_loaded]", worldserver.getChunkProvider().getLoadedChunkCount());
--                    i++;
-+                    WorldInfo worldinfo = worldserver1.getWorldInfo();
-+                    playerSnooper.addClientStat("world[" + l + "][dimension]", Integer.valueOf(worldserver1.provider.getDimensionType().getId()));
-+                    playerSnooper.addClientStat("world[" + l + "][mode]", worldinfo.getGameType());
-+                    playerSnooper.addClientStat("world[" + l + "][difficulty]", worldserver1.getDifficulty());
-+                    playerSnooper.addClientStat("world[" + l + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
-+                    playerSnooper.addClientStat("world[" + l + "][generator_name]", worldinfo.getTerrainType().getName());
-+                    playerSnooper.addClientStat("world[" + l + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
-+                    playerSnooper.addClientStat("world[" + l + "][height]", Integer.valueOf(this.buildLimit));
-+                    playerSnooper.addClientStat("world[" + l + "][chunks_loaded]", Integer.valueOf(worldserver1.getChunkProvider().getLoadedChunkCount()));
-+                    ++l;
-                 }
-             }
-         }
- 
--        playerSnooper.addClientStat("worlds", i);
-+        playerSnooper.addClientStat("worlds", Integer.valueOf(l));
-     }
- 
--    @Override
-     public void addServerTypeToSnooper(Snooper playerSnooper)
-     {
--        playerSnooper.addStatToSnooper("singleplayer", this.isSinglePlayer());
-+        playerSnooper.addStatToSnooper("singleplayer", Boolean.valueOf(this.isSinglePlayer()));
-         playerSnooper.addStatToSnooper("server_brand", this.getServerModName());
-         playerSnooper.addStatToSnooper("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
--        playerSnooper.addStatToSnooper("dedicated", this.isDedicatedServer());
-+        playerSnooper.addStatToSnooper("dedicated", Boolean.valueOf(this.isDedicatedServer()));
-     }
- 
--    @Override
-     public boolean isSnooperEnabled()
-     {
-         return true;
-@@ -1312,12 +1147,6 @@
-         return this.preventProxyConnections;
-     }
- 
--    @SideOnly(Side.SERVER)
--    public void setPreventProxyConnections(boolean p_190517_1_)
--    {
--        this.preventProxyConnections = p_190517_1_;
--    }
--
-     public boolean getCanSpawnAnimals()
-     {
-         return this.canSpawnAnimals;
-@@ -1399,9 +1228,9 @@
- 
-     public void setGameType(GameType gameMode)
-     {
--        for (WorldServer worldserver : this.worlds)
-+        for (WorldServer worldserver1 : this.worlds)
-         {
--            worldserver.getWorldInfo().setGameType(gameMode);
-+            worldserver1.getWorldInfo().setGameType(gameMode);
-         }
-     }
- 
-@@ -1439,29 +1268,16 @@
-         return this.usageSnooper;
-     }
- 
--    @Override
-     public World getEntityWorld()
-     {
-         return this.worlds[0];
-     }
- 
--    @SideOnly(Side.SERVER)
--    public int getSpawnProtectionSize()
--    {
--        return 16;
--    }
--
-     public boolean isBlockProtected(World worldIn, BlockPos pos, EntityPlayer playerIn)
-     {
-         return false;
-     }
- 
--    @SideOnly(Side.SERVER)
--    public void setForceGamemode(boolean force)
--    {
--        this.isGamemodeForced = force;
--    }
--
-     public boolean getForceGamemode()
-     {
-         return this.isGamemodeForced;
-@@ -1515,11 +1331,11 @@
-     @Nullable
-     public Entity getEntityFromUuid(UUID uuid)
-     {
--        for (WorldServer worldserver : this.worlds)
-+        for (WorldServer worldserver1 : this.worlds)
-         {
--            if (worldserver != null)
-+            if (worldserver1 != null)
-             {
--                Entity entity = worldserver.getEntityFromUuid(uuid);
-+                Entity entity = worldserver1.getEntityFromUuid(uuid);
- 
-                 if (entity != null)
-                 {
-@@ -1531,13 +1347,11 @@
-         return null;
-     }
- 
--    @Override
-     public boolean sendCommandFeedback()
-     {
-         return this.worlds[0].getGameRules().getBoolean("sendCommandFeedback");
-     }
- 
--    @Override
-     public MinecraftServer getServer()
-     {
-         return this;
-@@ -1554,7 +1368,7 @@
- 
-         if (!this.isCallingFromMinecraftThread() && !this.isServerStopped())
-         {
--            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(callable);
-+            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.<V>create(callable);
- 
-             synchronized (this.futureTaskQueue)
-             {
-@@ -1566,23 +1380,21 @@
-         {
-             try
-             {
--                return Futures.immediateFuture(callable.call());
-+                return Futures.<V>immediateFuture(callable.call());
+@@ -1570,7 +1625,7 @@
              }
              catch (Exception exception)
              {
@@ -974,261 +329,10 @@
              }
          }
      }
- 
--    @Override
-     public ListenableFuture<Object> addScheduledTask(Runnable runnableToSchedule)
-     {
-         Validate.notNull(runnableToSchedule);
--        return this.callFromMainThread(Executors.callable(runnableToSchedule));
-+        return this.<Object>callFromMainThread(Executors.callable(runnableToSchedule));
-     }
- 
--    @Override
-     public boolean isCallingFromMinecraftThread()
-     {
-         return Thread.currentThread() == this.serverThread;
-@@ -1593,18 +1405,6 @@
-         return 256;
-     }
- 
--    @SideOnly(Side.SERVER)
--    public long getCurrentTime()
--    {
--        return this.currentTime;
--    }
--
--    @SideOnly(Side.SERVER)
--    public Thread getServerThread()
--    {
--        return this.serverThread;
--    }
--
-     public int getSpawnRadius(@Nullable WorldServer worldIn)
-     {
-         return worldIn != null ? worldIn.getGameRules().getInt("spawnRadius") : 10;
-@@ -1634,5 +1434,229 @@
+@@ -1634,5 +1689,10 @@
          {
              this.addScheduledTask(this::reload);
          }
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public String getServerHostname()
-+    {
-+        return this.hostname;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void setHostname(String host)
-+    {
-+        this.hostname = host;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void registerTickable(ITickable tickable)
-+    {
-+        this.tickables.add(tickable);
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public static void main(String[] p_main_0_)
-+    {
-+        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
-+        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
-+        ServerEula eula = new ServerEula(new File("eula.txt"));
-+        if (!eula.hasAcceptedEULA())
-+        {
-+            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
-+            eula.createEULAFile();
-+            return;
-+        }
-+
-+        Bootstrap.register();
-+
-+        try
-+        {
-+            boolean flag = true;
-+            String s = null;
-+            String s1 = ".";
-+            String s2 = null;
-+            boolean flag1 = false;
-+            boolean flag2 = false;
-+            int l = -1;
-+
-+            for (int i1 = 0; i1 < p_main_0_.length; ++i1)
-+            {
-+                String s3 = p_main_0_[i1];
-+                String s4 = i1 == p_main_0_.length - 1 ? null : p_main_0_[i1 + 1];
-+                boolean flag3 = false;
-+
-+                if (!"nogui".equals(s3) && !"--nogui".equals(s3))
-+                {
-+                    if ("--port".equals(s3) && s4 != null)
-+                    {
-+                        flag3 = true;
-+
-+                        try
-+                        {
-+                            l = Integer.parseInt(s4);
-+                        }
-+                        catch (NumberFormatException var13)
-+                        {
-+                            ;
-+                        }
-+                    }
-+                    else if ("--singleplayer".equals(s3) && s4 != null)
-+                    {
-+                        flag3 = true;
-+                        s = s4;
-+                    }
-+                    else if ("--universe".equals(s3) && s4 != null)
-+                    {
-+                        flag3 = true;
-+                        s1 = s4;
-+                    }
-+                    else if ("--world".equals(s3) && s4 != null)
-+                    {
-+                        flag3 = true;
-+                        s2 = s4;
-+                    }
-+                    else if ("--demo".equals(s3))
-+                    {
-+                        flag1 = true;
-+                    }
-+                    else if ("--bonusChest".equals(s3))
-+                    {
-+                        flag2 = true;
-+                    }
-+                }
-+                else
-+                {
-+                    flag = false;
-+                }
-+
-+                if (flag3)
-+                {
-+                    ++i1;
-+                }
-+            }
-+
-+            YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
-+            MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
-+            GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
-+            PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(s1, USER_CACHE_FILE.getName()));
-+            final DedicatedServer dedicatedserver = new DedicatedServer(new File(s1), DataFixesManager.createFixer(), yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache);
-+
-+            if (s != null)
-+            {
-+                dedicatedserver.setServerOwner(s);
-+            }
-+
-+            if (s2 != null)
-+            {
-+                dedicatedserver.setFolderName(s2);
-+            }
-+
-+            if (l >= 0)
-+            {
-+                dedicatedserver.setServerPort(l);
-+            }
-+
-+            if (flag1)
-+            {
-+                dedicatedserver.setDemo(true);
-+            }
-+
-+            if (flag2)
-+            {
-+                dedicatedserver.canCreateBonusChest(true);
-+            }
-+
-+            if (flag && !GraphicsEnvironment.isHeadless())
-+            {
-+                dedicatedserver.setGuiEnabled();
-+            }
-+
-+            dedicatedserver.startServerThread();
-+            Runtime.getRuntime().addShutdownHook(new Thread("Server Shutdown Thread")
-+            {
-+                public void run()
-+                {
-+                    dedicatedserver.stopServer();
-+                }
-+            });
-+        }
-+        catch (Exception exception)
-+        {
-+            LOGGER.fatal("Failed to start the minecraft server", (Throwable)exception);
-+        }
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void logInfo(String msg)
-+    {
-+        LOGGER.info(msg);
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public boolean isDebuggingEnabled()
-+    {
-+        return false;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void logSevere(String msg)
-+    {
-+        LOGGER.error(msg);
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void logDebug(String msg)
-+    {
-+        if (this.isDebuggingEnabled())
-+        {
-+            LOGGER.info(msg);
-+        }
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public int getServerPort()
-+    {
-+        return this.serverPort;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void setServerPort(int port)
-+    {
-+        this.serverPort = port;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void setPreventProxyConnections(boolean p_190517_1_)
-+    {
-+        this.preventProxyConnections = p_190517_1_;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public int getSpawnProtectionSize()
-+    {
-+        return 16;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public void setForceGamemode(boolean force)
-+    {
-+        this.isGamemodeForced = force;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public long getCurrentTime()
-+    {
-+        return this.currentTime;
-+    }
-+
-+    @SideOnly(Side.SERVER)
-+    public Thread getServerThread()
-+    {
-+        return this.serverThread;
 +    }
 +
 +    public DataFixer getDataFixer()

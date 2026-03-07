@@ -18,6 +18,6 @@
 +        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(e)) return false;
 +        id = e.getInstrument().ordinal();
 +        param = e.getVanillaNoteId();
-         float f = (float)Math.pow(2.0, (double)(param - 12) / 12.0);
+         float f = (float)Math.pow(2.0, (param - 12) / 12.0);
          worldIn.playSound(null, pos, this.getInstrument(id), SoundCategory.RECORDS, 3.0F, f);
          worldIn.spawnParticle(

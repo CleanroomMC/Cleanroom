@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/projectile/EntityLlamaSpit.java
 +++ after/net/minecraft/entity/projectile/EntityLlamaSpit.java
-@@ -89,7 +89,7 @@
+@@ -87,7 +87,7 @@
              raytraceresult = new RayTraceResult(entity);
          }
  

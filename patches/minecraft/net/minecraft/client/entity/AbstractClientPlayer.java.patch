@@ -8,7 +8,7 @@
 +        if (this.isHandActive() && this.getActiveItemStack().getItem() instanceof net.minecraft.item.ItemBow)
          {
              int i = this.getItemInUseMaxCount();
-             float f1 = (float)i / 20.0F;
+             float f1 = i / 20.0F;
 @@ -158,6 +158,6 @@
              f *= 1.0F - f1 * 0.15F;
          }

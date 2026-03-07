@@ -28,141 +28,23 @@
      }
  
      public void setBlocksInChunk(int x, int z, ChunkPrimer primer)
-@@ -66,41 +80,41 @@
-         int l = 3;
-         this.buffer = this.getHeights(this.buffer, x * 2, 0, z * 2, 3, 33, 3);
- 
--        for (int i1 = 0; i1 < 2; i1++)
-+        for (int i1 = 0; i1 < 2; ++i1)
-         {
--            for (int j1 = 0; j1 < 2; j1++)
-+            for (int j1 = 0; j1 < 2; ++j1)
-             {
--                for (int k1 = 0; k1 < 32; k1++)
-+                for (int k1 = 0; k1 < 32; ++k1)
-                 {
--                    double d0 = 0.25;
-+                    double d0 = 0.25D;
-                     double d1 = this.buffer[((i1 + 0) * 3 + j1 + 0) * 33 + k1 + 0];
-                     double d2 = this.buffer[((i1 + 0) * 3 + j1 + 1) * 33 + k1 + 0];
-                     double d3 = this.buffer[((i1 + 1) * 3 + j1 + 0) * 33 + k1 + 0];
-                     double d4 = this.buffer[((i1 + 1) * 3 + j1 + 1) * 33 + k1 + 0];
--                    double d5 = (this.buffer[((i1 + 0) * 3 + j1 + 0) * 33 + k1 + 1] - d1) * 0.25;
--                    double d6 = (this.buffer[((i1 + 0) * 3 + j1 + 1) * 33 + k1 + 1] - d2) * 0.25;
--                    double d7 = (this.buffer[((i1 + 1) * 3 + j1 + 0) * 33 + k1 + 1] - d3) * 0.25;
--                    double d8 = (this.buffer[((i1 + 1) * 3 + j1 + 1) * 33 + k1 + 1] - d4) * 0.25;
-+                    double d5 = (this.buffer[((i1 + 0) * 3 + j1 + 0) * 33 + k1 + 1] - d1) * 0.25D;
-+                    double d6 = (this.buffer[((i1 + 0) * 3 + j1 + 1) * 33 + k1 + 1] - d2) * 0.25D;
-+                    double d7 = (this.buffer[((i1 + 1) * 3 + j1 + 0) * 33 + k1 + 1] - d3) * 0.25D;
-+                    double d8 = (this.buffer[((i1 + 1) * 3 + j1 + 1) * 33 + k1 + 1] - d4) * 0.25D;
- 
--                    for (int l1 = 0; l1 < 4; l1++)
-+                    for (int l1 = 0; l1 < 4; ++l1)
-                     {
--                        double d9 = 0.125;
-+                        double d9 = 0.125D;
-                         double d10 = d1;
-                         double d11 = d2;
--                        double d12 = (d3 - d1) * 0.125;
--                        double d13 = (d4 - d2) * 0.125;
-+                        double d12 = (d3 - d1) * 0.125D;
-+                        double d13 = (d4 - d2) * 0.125D;
- 
--                        for (int i2 = 0; i2 < 8; i2++)
-+                        for (int i2 = 0; i2 < 8; ++i2)
-                         {
--                            double d14 = 0.125;
-+                            double d14 = 0.125D;
-                             double d15 = d10;
--                            double d16 = (d11 - d10) * 0.125;
-+                            double d16 = (d11 - d10) * 0.125D;
- 
--                            for (int j2 = 0; j2 < 8; j2++)
-+                            for (int j2 = 0; j2 < 8; ++j2)
-                             {
-                                 IBlockState iblockstate = AIR;
- 
--                                if (d15 > 0.0)
-+                                if (d15 > 0.0D)
-                                 {
-                                     iblockstate = END_STONE;
-                                 }
-@@ -128,16 +142,17 @@
+@@ -128,6 +142,7 @@
  
      public void buildSurfaces(ChunkPrimer primer)
      {
--        for (int i = 0; i < 16; i++)
 +        if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, this.chunkX, this.chunkZ, primer, this.world)) return;
-+        for (int i = 0; i < 16; ++i)
+         for (int i = 0; i < 16; i++)
          {
--            for (int j = 0; j < 16; j++)
-+            for (int j = 0; j < 16; ++j)
-             {
-                 int k = 1;
-                 int l = -1;
-                 IBlockState iblockstate = END_STONE;
-                 IBlockState iblockstate1 = END_STONE;
- 
--                for (int i1 = 127; i1 >= 0; i1--)
-+                for (int i1 = 127; i1 >= 0; --i1)
-                 {
-                     IBlockState iblockstate2 = primer.getBlockState(i, i1, j);
- 
-@@ -162,7 +177,7 @@
-                         }
-                         else if (l > 0)
-                         {
--                            l--;
-+                            --l;
-                             primer.setBlockState(i, i1, j, iblockstate1);
-                         }
-                     }
-@@ -171,9 +186,9 @@
-         }
-     }
- 
--    @Override
+             for (int j = 0; j < 16; j++)
+@@ -174,6 +189,7 @@
+     @Override
      public Chunk generateChunk(int x, int z)
      {
 +        this.chunkX = x; this.chunkZ = z;
-         this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
+         this.rand.setSeed(x * 341873128712L + z * 132897987541L);
          ChunkPrimer chunkprimer = new ChunkPrimer();
          this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
-@@ -188,7 +203,7 @@
-         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
-         byte[] abyte = chunk.getBiomeArray();
- 
--        for (int i = 0; i < abyte.length; i++)
-+        for (int i = 0; i < abyte.length; ++i)
-         {
-             abyte[i] = (byte)Biome.getIdForBiome(this.biomesForGeneration[i]);
-         }
-@@ -213,14 +228,14 @@
-             f2 = -100.0F;
-         }
- 
--        for (int i = -12; i <= 12; i++)
-+        for (int i = -12; i <= 12; ++i)
-         {
--            for (int j = -12; j <= 12; j++)
-+            for (int j = -12; j <= 12; ++j)
-             {
-                 long k = (long)(p_185960_1_ + i);
-                 long l = (long)(p_185960_2_ + j);
- 
--                if (k * k + l * l > 4096L && this.islandNoise.getValue((double)k, (double)l) < -0.9F)
-+                if (k * k + l * l > 4096L && this.islandNoise.getValue((double)k, (double)l) < -0.8999999761581421D)
-                 {
-                     float f3 = (MathHelper.abs((float)k) * 3439.0F + MathHelper.abs((float)l) * 147.0F) % 13.0F + 9.0F;
-                     f = (float)(p_185960_3_ - i * 2);
-@@ -250,50 +265,48 @@
- 
-     public boolean isIslandChunk(int p_185961_1_, int p_185961_2_)
-     {
--        return (long)p_185961_1_ * (long)p_185961_1_ + (long)p_185961_2_ * (long)p_185961_2_ > 4096L
--               && this.getIslandHeightValue(p_185961_1_, p_185961_2_, 1, 1) >= 0.0F;
-+        return (long)p_185961_1_ * (long)p_185961_1_ + (long)p_185961_2_ * (long)p_185961_2_ > 4096L && this.getIslandHeightValue(p_185961_1_, p_185961_2_, 1, 1) >= 0.0F;
-     }
+@@ -255,6 +271,10 @@
  
      private double[] getHeights(double[] p_185963_1_, int p_185963_2_, int p_185963_3_, int p_185963_4_, int p_185963_5_, int p_185963_6_, int p_185963_7_)
      {
@@ -173,100 +55,7 @@
          if (p_185963_1_ == null)
          {
              p_185963_1_ = new double[p_185963_5_ * p_185963_6_ * p_185963_7_];
-         }
- 
--        double d0 = 684.412;
--        double d1 = 684.412;
--        d0 *= 2.0;
--        this.pnr = this.perlinNoise1
--                              .generateNoiseOctaves(
--                                  this.pnr, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0 / 80.0, 4.277575000000001, d0 / 80.0
--                              );
--        this.ar = this.lperlinNoise1
--                              .generateNoiseOctaves(this.ar, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412, d0);
--        this.br = this.lperlinNoise2
--                              .generateNoiseOctaves(this.br, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412, d0);
-+        double d0 = 684.412D;
-+        double d1 = 684.412D;
-+        d0 = d0 * 2.0D;
-+        this.pnr = this.perlinNoise1.generateNoiseOctaves(this.pnr, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
-+        this.ar = this.lperlinNoise1.generateNoiseOctaves(this.ar, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
-+        this.br = this.lperlinNoise2.generateNoiseOctaves(this.br, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
-         int i = p_185963_2_ / 2;
-         int j = p_185963_4_ / 2;
-         int k = 0;
- 
--        for (int l = 0; l < p_185963_5_; l++)
-+        for (int l = 0; l < p_185963_5_; ++l)
-         {
--            for (int i1 = 0; i1 < p_185963_7_; i1++)
-+            for (int i1 = 0; i1 < p_185963_7_; ++i1)
-             {
-                 float f = this.getIslandHeightValue(i, j, l, i1);
- 
--                for (int j1 = 0; j1 < p_185963_6_; j1++)
-+                for (int j1 = 0; j1 < p_185963_6_; ++j1)
-                 {
--                    double d2 = this.ar[k] / 512.0;
--                    double d3 = this.br[k] / 512.0;
--                    double d5 = (this.pnr[k] / 10.0 + 1.0) / 2.0;
-+                    double d2 = this.ar[k] / 512.0D;
-+                    double d3 = this.br[k] / 512.0D;
-+                    double d5 = (this.pnr[k] / 10.0D + 1.0D) / 2.0D;
-                     double d4;
- 
--                    if (d5 < 0.0)
-+                    if (d5 < 0.0D)
-                     {
-                         d4 = d2;
-                     }
--                    else if (d5 > 1.0)
-+                    else if (d5 > 1.0D)
-                     {
-                         d4 = d3;
-                     }
-@@ -302,27 +315,27 @@
-                         d4 = d2 + (d3 - d2) * d5;
-                     }
- 
--                    d4 -= 8.0;
--                    d4 += (double)f;
-+                    d4 = d4 - 8.0D;
-+                    d4 = d4 + (double)f;
-                     int k1 = 2;
- 
-                     if (j1 > p_185963_6_ / 2 - k1)
-                     {
-                         double d6 = (double)((float)(j1 - (p_185963_6_ / 2 - k1)) / 64.0F);
--                        d6 = MathHelper.clamp(d6, 0.0, 1.0);
--                        d4 = d4 * (1.0 - d6) + -3000.0 * d6;
-+                        d6 = MathHelper.clamp(d6, 0.0D, 1.0D);
-+                        d4 = d4 * (1.0D - d6) + -3000.0D * d6;
-                     }
- 
--                    int b0 = 8;
-+                    k1 = 8;
- 
--                    if (j1 < b0)
-+                    if (j1 < k1)
-                     {
--                        double d7 = (double)((float)(b0 - j1) / ((float)b0 - 1.0F));
--                        d4 = d4 * (1.0 - d7) + -30.0 * d7;
-+                        double d7 = (double)((float)(k1 - j1) / ((float)k1 - 1.0F));
-+                        d4 = d4 * (1.0D - d7) + -30.0D * d7;
-                     }
- 
-                     p_185963_1_[k] = d4;
--                    k++;
-+                    ++k;
-                 }
-             }
-         }
-@@ -330,10 +343,10 @@
-         return p_185963_1_;
-     }
- 
--    @Override
+@@ -333,6 +353,7 @@
      public void populate(int x, int z)
      {
          BlockFalling.fallInstantly = true;
@@ -274,59 +63,7 @@
          BlockPos blockpos = new BlockPos(x * 16, 0, z * 16);
  
          if (this.mapFeaturesEnabled)
-@@ -350,21 +363,11 @@
- 
-             if (f < -20.0F && this.rand.nextInt(14) == 0)
-             {
--                this.endIslands
--                .generate(
--                    this.world,
--                    this.rand,
--                    blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8)
--                );
-+                this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
- 
-                 if (this.rand.nextInt(4) == 0)
-                 {
--                    this.endIslands
--                    .generate(
--                        this.world,
--                        this.rand,
--                        blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8)
--                    );
-+                    this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
-                 }
-             }
- 
-@@ -372,7 +375,7 @@
-             {
-                 int j = this.rand.nextInt(5);
- 
--                for (int k = 0; k < j; k++)
-+                for (int k = 0; k < j; ++k)
-                 {
-                     int l = this.rand.nextInt(16) + 8;
-                     int i1 = this.rand.nextInt(16) + 8;
-@@ -382,8 +385,7 @@
-                     {
-                         int k1 = j1 - 1;
- 
--                        if (this.world.isAirBlock(blockpos.add(l, k1 + 1, i1))
--                                && this.world.getBlockState(blockpos.add(l, k1, i1)).getBlock() == Blocks.END_STONE)
-+                        if (this.world.isAirBlock(blockpos.add(l, k1 + 1, i1)) && this.world.getBlockState(blockpos.add(l, k1, i1)).getBlock() == Blocks.END_STONE)
-                         {
-                             BlockChorusFlower.generatePlant(this.world, blockpos.add(l, k1 + 1, i1), this.rand, 8);
-                         }
-@@ -400,7 +402,7 @@
-                     {
-                         int k2 = j2 + 3 + this.rand.nextInt(7);
-                         BlockPos blockpos1 = blockpos.add(l1, k2, i2);
--                        new WorldGenEndGateway().generate(this.world, this.rand, blockpos1);
-+                        (new WorldGenEndGateway()).generate(this.world, this.rand, blockpos1);
-                         TileEntity tileentity = this.world.getTileEntity(blockpos1);
- 
-                         if (tileentity instanceof TileEntityEndGateway)
-@@ -413,35 +415,31 @@
+@@ -412,6 +433,7 @@
              }
          }
  
@@ -334,32 +71,3 @@
          BlockFalling.fallInstantly = false;
      }
  
--    @Override
-     public boolean generateStructures(Chunk chunkIn, int x, int z)
-     {
-         return false;
-     }
- 
--    @Override
-     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
-     {
-         return this.world.getBiome(pos).getSpawnableList(creatureType);
-     }
- 
-     @Nullable
--    @Override
-     public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored)
-     {
-         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.getNearestStructurePos(worldIn, position, findUnexplored) : null;
-     }
- 
--    @Override
-     public boolean isInsideStructure(World worldIn, String structureName, BlockPos pos)
-     {
-         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.isInsideStructure(pos) : false;
-     }
- 
--    @Override
-     public void recreateStructures(Chunk chunkIn, int x, int z)
-     {
-     }

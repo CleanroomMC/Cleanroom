@@ -1,6 +1,6 @@
 --- before/net/minecraft/nbt/NBTTagList.java
 +++ after/net/minecraft/nbt/NBTTagList.java
-@@ -9,13 +9,12 @@
+@@ -9,7 +9,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -8,112 +8,8 @@
 +public class NBTTagList extends NBTBase implements java.lang.Iterable<NBTBase>
  {
      private static final Logger LOGGER = LogManager.getLogger();
--    private List<NBTBase> tagList = Lists.newArrayList();
-+    private List<NBTBase> tagList = Lists.<NBTBase>newArrayList();
-     private byte tagType = 0;
- 
--    @Override
-     void write(DataOutput output) throws IOException
-     {
-         if (this.tagList.isEmpty())
-@@ -24,19 +23,18 @@
-         }
-         else
-         {
--            this.tagType = this.tagList.get(0).getId();
-+            this.tagType = ((NBTBase)this.tagList.get(0)).getId();
-         }
- 
-         output.writeByte(this.tagType);
-         output.writeInt(this.tagList.size());
- 
--        for (int i = 0; i < this.tagList.size(); i++)
-+        for (int i = 0; i < this.tagList.size(); ++i)
-         {
--            this.tagList.get(i).write(output);
-+            ((NBTBase)this.tagList.get(i)).write(output);
-         }
-     }
- 
--    @Override
-     void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
-     {
-         sizeTracker.read(296L);
-@@ -57,9 +55,9 @@
-             else
-             {
-                 sizeTracker.read(32L * (long)i);
--                this.tagList = Lists.newArrayListWithCapacity(i);
-+                this.tagList = Lists.<NBTBase>newArrayListWithCapacity(i);
- 
--                for (int j = 0; j < i; j++)
-+                for (int j = 0; j < i; ++j)
-                 {
-                     NBTBase nbtbase = NBTBase.create(this.tagType);
-                     nbtbase.read(input, depth + 1, sizeTracker);
-@@ -69,18 +67,16 @@
-         }
-     }
- 
--    @Override
-     public byte getId()
-     {
-         return 9;
-     }
- 
--    @Override
-     public String toString()
-     {
-         StringBuilder stringbuilder = new StringBuilder("[");
- 
--        for (int i = 0; i < this.tagList.size(); i++)
-+        for (int i = 0; i < this.tagList.size(); ++i)
-         {
-             if (i != 0)
-             {
-@@ -146,7 +142,6 @@
-         return this.tagList.remove(i);
-     }
- 
--    @Override
-     public boolean isEmpty()
-     {
-         return this.tagList.isEmpty();
-@@ -209,7 +204,7 @@
-             }
-         }
- 
--        return 0.0;
-+        return 0.0D;
-     }
- 
-     public float getFloatAt(int i)
-@@ -242,7 +237,7 @@
- 
-     public NBTBase get(int idx)
-     {
--        return (NBTBase)(idx >= 0 && idx < this.tagList.size() ? this.tagList.get(idx) : new NBTTagEnd());
-+        return (NBTBase)(idx >= 0 && idx < this.tagList.size() ? (NBTBase)this.tagList.get(idx) : new NBTTagEnd());
-     }
- 
-     public int tagCount()
-@@ -264,7 +259,6 @@
-         return nbttaglist;
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (!super.equals(p_equals_1_))
-@@ -278,7 +272,6 @@
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         return super.hashCode() ^ this.tagList.hashCode();
-@@ -288,4 +281,5 @@
+     private List<NBTBase> tagList = Lists.newArrayList();
+@@ -288,4 +288,5 @@
      {
          return this.tagType;
      }

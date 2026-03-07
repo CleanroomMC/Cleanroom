@@ -27,9 +27,9 @@
 +                float chance = iblockstate.getBlock() instanceof BlockSnow ? -1.0f : 1.0f;
 +                iblockstate.getBlock().dropBlockAsItemWithChance(worldIn, blockpos1, iblockstate, chance, 0);
                  worldIn.setBlockState(blockpos1, Blocks.AIR.getDefaultState(), 4);
-                 k--;
-                 aiblockstate[k] = iblockstate;
-@@ -495,6 +497,14 @@
+                 aiblockstate[--k] = iblockstate;
+             }
+@@ -493,6 +495,14 @@
      {
          return new BlockStateContainer(this, FACING, EXTENDED);
      }

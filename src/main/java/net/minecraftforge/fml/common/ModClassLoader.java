@@ -44,7 +44,7 @@ public class ModClassLoader extends URLClassLoader
 {
     private static final List<String> STANDARD_LIBRARIES = ImmutableList.of("jinput.jar", "lwjgl.jar", "lwjgl_util.jar", "rt.jar");
     private LaunchClassLoader mainClassLoader;
-    private List<File> sources;
+    private final List<File> sources;
 
     public ModClassLoader(ClassLoader parent) {
         super(new URL[0], null);
@@ -70,7 +70,7 @@ public class ModClassLoader extends URLClassLoader
     public File[] getParentSources() {
         try
         {
-            List<File> files=new ArrayList<File>();
+            List<File> files = new ArrayList<>();
             for(URL url : mainClassLoader.getSources())
             {
                 URI uri = url.toURI();
@@ -108,9 +108,6 @@ public class ModClassLoader extends URLClassLoader
             "patchy-",
             "text2speech-",
             "mixin-",
-            "launchwrapper-",
-            "asm-all-",
-            "akka-actor_2.11-",
             "config-",
             "scala-",
             "jopt-simple-",
@@ -118,15 +115,17 @@ public class ModClassLoader extends URLClassLoader
             "realms-",
             "httpclient-",
             "httpcore-",
+            "httpclient5-",
+            "httpcore5-",
             "vecmath-",
             "trove4j-",
-            "icu4j-core-mojang-",
+            "icu4j-",
             "codecjorbis-",
             "codecwav-",
             "libraryjavawound-",
             "librarylwjglopenal-",
             "soundsystem-",
-            "netty-all-",
+            "netty-",
             "guava-",
             "commons-lang3-",
             "commons-compress-",
@@ -139,9 +138,8 @@ public class ModClassLoader extends URLClassLoader
             "authlib-",
             "log4j-api-",
             "log4j-core-",
+            "log4j-slf4j-",
             "lwjgl-",
-            "lwjgl_util-",
-            "lwjgl3-",
             "twitch-",
             "jline-",
             "jna-",
@@ -149,7 +147,14 @@ public class ModClassLoader extends URLClassLoader
             "oshi-core-",
             "netty-",
             "libraryjavasound-",
-            "fastutil-"
+            "fastutil-",
+            "Reflect-",
+            "classgraph-",
+            "mixinextras-",
+            "jakarta.",
+            "jaxb-",
+            "javassist-",
+            "jspecify-",
         };
         for (String s : prefixes)
         {

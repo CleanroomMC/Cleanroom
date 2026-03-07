@@ -1,16 +1,7 @@
 --- before/net/minecraft/world/WorldProviderSurface.java
 +++ after/net/minecraft/world/WorldProviderSurface.java
-@@ -2,15 +2,13 @@
- 
- public class WorldProviderSurface extends WorldProvider
- {
--    @Override
-     public DimensionType getDimensionType()
-     {
-         return DimensionType.OVERWORLD;
-     }
- 
--    @Override
+@@ -11,6 +11,6 @@
+     @Override
      public boolean canDropChunk(int x, int z)
      {
 -        return !this.world.isSpawnChunk(x, z);

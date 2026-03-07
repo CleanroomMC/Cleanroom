@@ -18,9 +18,9 @@
 +                    if (itemarmor.hasOverlay(itemstack)) // Allow this for anything, not only cloth
 +                    {
                          int i = itemarmor.getColor(itemstack);
-                         float f = (float)(i >> 16 & 0xFF) / 255.0F;
-                         float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
-                         float f2 = (float)(i & 0xFF) / 255.0F;
+                         float f = (i >> 16 & 0xFF) / 255.0F;
+                         float f1 = (i >> 8 & 0xFF) / 255.0F;
+                         float f2 = (i & 0xFF) / 255.0F;
                          GlStateManager.color(this.colorR * f, this.colorG * f1, this.colorB * f2, this.alpha);
                          t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 -                        this.renderer.bindTexture(this.getArmorResource(itemarmor, flag, "overlay"));

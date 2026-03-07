@@ -20,13 +20,12 @@
 package net.minecraftforge.fml.common.registry;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import com.cleanroommc.hackery.ReflectionHackery;
+import net.lenni0451.reflect.Classes;
+import net.lenni0451.reflect.Fields;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.FMLLog;
-import zone.rong.imaginebreaker.ImagineBreaker;
 
 /**
  * Internal class used in tracking {@link GameRegistry.ItemStackHolder} references
@@ -63,7 +62,6 @@ class ItemStackHolderRef {
         }
     }
 
-    @SuppressWarnings("removal")
     public void apply()
     {
         ItemStack is;
@@ -77,8 +75,8 @@ class ItemStackHolderRef {
         }
         try
         {
-            ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
-            ReflectionHackery.unsafe.putObject(ReflectionHackery.unsafe.staticFieldBase(field), ReflectionHackery.unsafe.staticFieldOffset(field), is);
+            Classes.ensureInitialized(field.getDeclaringClass());
+            Fields.setObject(null, field, is);
             //field.set(null, is);
         }
         catch (Exception e)

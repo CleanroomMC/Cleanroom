@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/BossInfoServer.java
 +++ after/net/minecraft/world/BossInfoServer.java
-@@ -9,21 +9,20 @@
+@@ -9,8 +9,6 @@
  import net.minecraft.network.play.server.SPacketUpdateBossInfo;
  import net.minecraft.util.math.MathHelper;
  import net.minecraft.util.text.ITextComponent;
@@ -9,81 +9,19 @@
  
  public class BossInfoServer extends BossInfo
  {
--    private final Set<EntityPlayerMP> players = Sets.newHashSet();
--    private final Set<EntityPlayerMP> readOnlyPlayers = Collections.unmodifiableSet(this.players);
--    private boolean visible = true;
-+    private final Set<EntityPlayerMP> players = Sets.<EntityPlayerMP>newHashSet();
-+    private final Set<EntityPlayerMP> readOnlyPlayers;
-+    private boolean visible;
- 
-     public BossInfoServer(ITextComponent nameIn, BossInfo.Color colorIn, BossInfo.Overlay overlayIn)
-     {
-         super(MathHelper.getRandomUUID(), nameIn, colorIn, overlayIn);
-+        this.readOnlyPlayers = Collections.<EntityPlayerMP>unmodifiableSet(this.players);
-+        this.visible = true;
-     }
- 
--    @Override
-     public void setPercent(float percentIn)
-     {
-         if (percentIn != this.percent)
-@@ -33,8 +32,6 @@
+@@ -33,7 +31,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
--    @Override
+     @Override
      public void setColor(BossInfo.Color colorIn)
      {
-         if (colorIn != this.color)
-@@ -44,8 +41,6 @@
+@@ -44,7 +41,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
--    @Override
+     @Override
      public void setOverlay(BossInfo.Overlay overlayIn)
      {
-         if (overlayIn != this.overlay)
-@@ -55,7 +50,6 @@
-         }
-     }
- 
--    @Override
-     public BossInfo setDarkenSky(boolean darkenSkyIn)
-     {
-         if (darkenSkyIn != this.darkenSky)
-@@ -67,7 +61,6 @@
-         return this;
-     }
- 
--    @Override
-     public BossInfo setPlayEndBossMusic(boolean playEndBossMusicIn)
-     {
-         if (playEndBossMusicIn != this.playEndBossMusic)
-@@ -79,7 +72,6 @@
-         return this;
-     }
- 
--    @Override
-     public BossInfo setCreateFog(boolean createFogIn)
-     {
-         if (createFogIn != this.createFog)
-@@ -91,7 +83,6 @@
-         return this;
-     }
- 
--    @Override
-     public void setName(ITextComponent nameIn)
-     {
-         if (!Objects.equal(nameIn, this.name))
-@@ -138,8 +129,7 @@
- 
-             for (EntityPlayerMP entityplayermp : this.players)
-             {
--                entityplayermp.connection
--                .sendPacket(new SPacketUpdateBossInfo(visibleIn ? SPacketUpdateBossInfo.Operation.ADD : SPacketUpdateBossInfo.Operation.REMOVE, this));
-+                entityplayermp.connection.sendPacket(new SPacketUpdateBossInfo(visibleIn ? SPacketUpdateBossInfo.Operation.ADD : SPacketUpdateBossInfo.Operation.REMOVE, this));
-             }
-         }
-     }

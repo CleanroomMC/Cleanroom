@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/ItemRenderer.java
 +++ after/net/minecraft/client/renderer/ItemRenderer.java
-@@ -224,7 +224,7 @@
+@@ -222,7 +222,7 @@
          bufferbuilder.pos(135.0, -7.0, 0.0).tex(1.0, 0.0).endVertex();
          bufferbuilder.pos(-7.0, -7.0, 0.0).tex(0.0, 0.0).endVertex();
          tessellator.draw();
@@ -9,7 +9,7 @@
  
          if (mapdata != null)
          {
-@@ -320,7 +320,7 @@
+@@ -318,7 +318,7 @@
          {
              ItemStack itemstack = abstractclientplayer.getActiveItemStack();
  
@@ -18,7 +18,7 @@
              {
                  EnumHand enumhand1 = abstractclientplayer.getActiveHand();
                  flag = enumhand1 == EnumHand.MAIN_HAND;
-@@ -337,6 +337,7 @@
+@@ -335,6 +335,7 @@
          {
              float f3 = enumhand == EnumHand.MAIN_HAND ? f : 0.0F;
              float f5 = 1.0F - (this.prevEquippedProgressMainHand + (this.equippedProgressMainHand - this.prevEquippedProgressMainHand) * partialTicks);
@@ -26,7 +26,7 @@
              this.renderItemInFirstPerson(abstractclientplayer, partialTicks, f1, EnumHand.MAIN_HAND, f3, this.itemStackMainHand, f5);
          }
  
-@@ -344,6 +345,7 @@
+@@ -342,6 +343,7 @@
          {
              float f4 = enumhand == EnumHand.OFF_HAND ? f : 0.0F;
              float f6 = 1.0F - (this.prevEquippedProgressOffHand + (this.equippedProgressOffHand - this.prevEquippedProgressOffHand) * partialTicks);
@@ -34,7 +34,7 @@
              this.renderItemInFirstPerson(abstractclientplayer, partialTicks, f1, EnumHand.OFF_HAND, f4, this.itemStackOffHand, f6);
          }
  
-@@ -366,7 +368,7 @@
+@@ -364,7 +366,7 @@
                  this.renderArmFirstPerson(p_187457_7_, p_187457_5_, enumhandside);
              }
          }
@@ -43,7 +43,7 @@
          {
              if (flag && this.itemStackOffHand.isEmpty())
              {
-@@ -455,6 +457,7 @@
+@@ -453,6 +455,7 @@
          if (this.mc.player.isEntityInsideOpaqueBlock())
          {
              IBlockState iblockstate = this.mc.world.getBlockState(new BlockPos(this.mc.player));
@@ -51,7 +51,7 @@
              EntityPlayer entityplayer = this.mc.player;
  
              for (int i = 0; i < 8; i++)
-@@ -468,11 +471,13 @@
+@@ -466,11 +469,13 @@
                  if (iblockstate1.causesSuffocation())
                  {
                      iblockstate = iblockstate1;
@@ -65,7 +65,7 @@
                  this.renderSuffocationOverlay(this.mc.getBlockRendererDispatcher().getBlockModelShapes().getTexture(iblockstate));
              }
          }
-@@ -481,11 +486,13 @@
+@@ -479,11 +484,13 @@
          {
              if (this.mc.player.isInsideOfMaterial(Material.WATER))
              {
@@ -79,14 +79,14 @@
                  this.renderFireInFirstPerson();
              }
          }
-@@ -611,10 +618,17 @@
+@@ -609,10 +616,17 @@
          else
          {
              float f = entityplayersp.getCooledAttackStrength(1.0F);
 -            this.equippedProgressMainHand = this.equippedProgressMainHand
 -                                  + MathHelper.clamp((Objects.equals(this.itemStackMainHand, itemstack) ? f * f * f : 0.0F) - this.equippedProgressMainHand, -0.4F, 0.4F);
 -            this.equippedProgressOffHand = this.equippedProgressOffHand
--                                  + MathHelper.clamp((float)(Objects.equals(this.itemStackOffHand, itemstack1) ? 1 : 0) - this.equippedProgressOffHand, -0.4F, 0.4F);
+-                                  + MathHelper.clamp((Objects.equals(this.itemStackOffHand, itemstack1) ? 1 : 0) - this.equippedProgressOffHand, -0.4F, 0.4F);
 +
 +            boolean requipM = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.itemStackMainHand, itemstack, entityplayersp.inventory.currentItem);
 +            boolean requipO = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.itemStackOffHand, itemstack1, -1);
@@ -97,7 +97,7 @@
 +                this.itemStackOffHand = itemstack1;
 +
 +            this.equippedProgressMainHand += MathHelper.clamp((!requipM ? f * f * f : 0.0F) - this.equippedProgressMainHand, -0.4F, 0.4F);
-+            this.equippedProgressOffHand += MathHelper.clamp((float)(!requipO ? 1 : 0) - this.equippedProgressOffHand, -0.4F, 0.4F);
++            this.equippedProgressOffHand += MathHelper.clamp((!requipO ? 1 : 0) - this.equippedProgressOffHand, -0.4F, 0.4F);
          }
  
          if (this.equippedProgressMainHand < 0.1F)

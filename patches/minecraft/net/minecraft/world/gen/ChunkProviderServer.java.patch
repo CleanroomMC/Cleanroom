@@ -1,61 +1,14 @@
 --- before/net/minecraft/world/gen/ChunkProviderServer.java
 +++ after/net/minecraft/world/gen/ChunkProviderServer.java
-@@ -4,6 +4,7 @@
- import com.google.common.collect.Sets;
- import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
- import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-+import it.unimi.dsi.fastutil.objects.ObjectIterator;
- import java.io.IOException;
- import java.util.Collection;
- import java.util.Iterator;
-@@ -29,11 +30,12 @@
- public class ChunkProviderServer implements IChunkProvider
- {
-     private static final Logger LOGGER = LogManager.getLogger();
--    private final Set<Long> droppedChunks = Sets.newHashSet();
-+    private final Set<Long> droppedChunks = Sets.<Long>newHashSet();
-     public final IChunkGenerator chunkGenerator;
+@@ -34,6 +34,7 @@
      public final IChunkLoader chunkLoader;
--    public final Long2ObjectMap<Chunk> loadedChunks = new Long2ObjectOpenHashMap<>(8192);
-+    public final Long2ObjectMap<Chunk> loadedChunks = new Long2ObjectOpenHashMap<Chunk>(8192);
+     public final Long2ObjectMap<Chunk> loadedChunks = new Long2ObjectOpenHashMap<>(8192);
      public final WorldServer world;
 +    private final Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
  
      public ChunkProviderServer(WorldServer worldObjIn, IChunkLoader chunkLoaderIn, IChunkGenerator chunkGeneratorIn)
      {
-@@ -51,25 +53,27 @@
-     {
-         if (this.world.provider.canDropChunk(chunkIn.x, chunkIn.z))
-         {
--            this.droppedChunks.add(ChunkPos.asLong(chunkIn.x, chunkIn.z));
-+            this.droppedChunks.add(Long.valueOf(ChunkPos.asLong(chunkIn.x, chunkIn.z)));
-             chunkIn.unloadQueued = true;
-         }
-     }
- 
-     public void queueUnloadAll()
-     {
--        for (Chunk chunk : this.loadedChunks.values())
-+        ObjectIterator objectiterator = this.loadedChunks.values().iterator();
-+
-+        while (objectiterator.hasNext())
-         {
-+            Chunk chunk = (Chunk)objectiterator.next();
-             this.queueUnload(chunk);
-         }
-     }
- 
-     @Nullable
--    @Override
-     public Chunk getLoadedChunk(int x, int z)
-     {
-         long i = ChunkPos.asLong(x, z);
--        Chunk chunk = this.loadedChunks.get(i);
-+        Chunk chunk = (Chunk)this.loadedChunks.get(i);
- 
-         if (chunk != null)
-         {
-@@ -82,24 +86,50 @@
+@@ -82,20 +83,49 @@
      @Nullable
      public Chunk loadChunk(int x, int z)
      {
@@ -66,13 +19,13 @@
 +    public Chunk loadChunk(int x, int z, @Nullable Runnable runnable)
 +    {
          Chunk chunk = this.getLoadedChunk(x, z);
--
+ 
          if (chunk == null)
          {
 -            chunk = this.loadChunkFromFile(x, z);
--
--            if (chunk != null)
 +            long pos = ChunkPos.asLong(x, z);
+ 
+-            if (chunk != null)
 +            chunk = net.minecraftforge.common.ForgeChunkManager.fetchDormantChunk(pos, this.world);
 +            if (chunk != null || !(this.chunkLoader instanceof net.minecraft.world.chunk.storage.AnvilChunkLoader))
              {
@@ -107,47 +60,7 @@
          return chunk;
      }
  
--    @Override
-     public Chunk provideChunk(int x, int z)
-     {
-         Chunk chunk = this.loadChunk(x, z);
-@@ -117,7 +147,7 @@
-                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception generating new chunk");
-                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Chunk to be generated");
-                 crashreportcategory.addCrashSection("Location", String.format("%d,%d", x, z));
--                crashreportcategory.addCrashSection("Position hash", i);
-+                crashreportcategory.addCrashSection("Position hash", Long.valueOf(i));
-                 crashreportcategory.addCrashSection("Generator", this.chunkGenerator);
-                 throw new ReportedException(crashreport);
-             }
-@@ -186,7 +216,7 @@
-         int i = 0;
-         List<Chunk> list = Lists.newArrayList(this.loadedChunks.values());
- 
--        for (int j = 0; j < list.size(); j++)
-+        for (int j = 0; j < list.size(); ++j)
-         {
-             Chunk chunk = list.get(j);
- 
-@@ -199,8 +229,9 @@
-             {
-                 this.saveChunkData(chunk);
-                 chunk.setModified(false);
-+                ++i;
- 
--                if (++i == 24 && !all)
-+                if (i == 24 && !all)
-                 {
-                     return false;
-                 }
-@@ -215,31 +246,38 @@
-         this.chunkLoader.flush();
-     }
- 
--    @Override
-     public boolean tick()
-     {
-         if (!this.world.disableLevelSaving)
+@@ -222,6 +252,11 @@
          {
              if (!this.droppedChunks.isEmpty())
              {
@@ -159,11 +72,7 @@
                  Iterator<Long> iterator = this.droppedChunks.iterator();
  
                  for (int i = 0; i < 100 && iterator.hasNext(); iterator.remove())
-                 {
-                     Long olong = iterator.next();
--                    Chunk chunk = this.loadedChunks.get(olong);
-+                    Chunk chunk = (Chunk)this.loadedChunks.get(olong);
- 
+@@ -232,6 +267,7 @@
                      if (chunk != null && chunk.unloadQueued)
                      {
                          chunk.onUnload();
@@ -171,30 +80,12 @@
                          this.saveChunkData(chunk);
                          this.saveChunkExtraData(chunk);
                          this.loadedChunks.remove(olong);
--                        i++;
-+                        ++i;
+@@ -239,6 +275,8 @@
                      }
                  }
              }
- 
-+            if (this.loadedChunks.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.world.provider.getDimension());
 +
++            if (this.loadedChunks.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.world.provider.getDimension());
+ 
              this.chunkLoader.chunkTick();
          }
- 
-@@ -251,7 +289,6 @@
-         return !this.world.disableLevelSaving;
-     }
- 
--    @Override
-     public String makeString()
-     {
-         return "ServerChunkCache: " + this.loadedChunks.size() + " Drop: " + this.droppedChunks.size();
-@@ -283,7 +320,6 @@
-         return this.loadedChunks.containsKey(ChunkPos.asLong(x, z));
-     }
- 
--    @Override
-     public boolean isChunkGeneratedAt(int x, int z)
-     {
-         return this.loadedChunks.containsKey(ChunkPos.asLong(x, z)) || this.chunkLoader.isChunkGeneratedAt(x, z);

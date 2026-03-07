@@ -1,72 +1,28 @@
 --- before/net/minecraft/item/ItemBlockSpecial.java
 +++ after/net/minecraft/item/ItemBlockSpecial.java
-@@ -5,6 +5,7 @@
- import net.minecraft.block.BlockSnow;
- import net.minecraft.block.SoundType;
- import net.minecraft.block.state.IBlockState;
-+import net.minecraft.entity.Entity;
- import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.entity.player.EntityPlayerMP;
- import net.minecraft.init.Blocks;
-@@ -24,22 +25,12 @@
-         this.block = block;
-     }
+@@ -52,10 +52,10 @@
  
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         IBlockState iblockstate = worldIn.getBlockState(pos);
-         Block block = iblockstate.getBlock();
- 
--        if (block == Blocks.SNOW_LAYER && iblockstate.getValue(BlockSnow.LAYERS) < 1)
-+        if (block == Blocks.SNOW_LAYER && ((Integer)iblockstate.getValue(BlockSnow.LAYERS)).intValue() < 1)
-         {
-             facing = EnumFacing.UP;
-         }
-@@ -50,12 +41,9 @@
- 
-         ItemStack itemstack = player.getHeldItem(hand);
- 
--        if (!itemstack.isEmpty()
--                && player.canPlayerEdit(pos, facing, itemstack)
+         if (!itemstack.isEmpty()
+                 && player.canPlayerEdit(pos, facing, itemstack)
 -                && worldIn.mayPlace(this.block, pos, false, facing, null))
-+        if (!itemstack.isEmpty() && player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(this.block, pos, false, facing, player))
++                && worldIn.mayPlace(this.block, pos, false, facing, player))
          {
--            IBlockState iblockstate1 = this.block
+             IBlockState iblockstate1 = this.block
 -                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player);
-+            IBlockState iblockstate1 = this.block.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player, hand);
++                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player, hand);
  
              if (!worldIn.setBlockState(pos, iblockstate1, 11))
              {
-@@ -76,15 +64,8 @@
+@@ -76,7 +76,7 @@
                      }
                  }
  
 -                SoundType soundtype = this.block.getSoundType();
--                worldIn.playSound(
--                    player,
--                    pos,
--                    soundtype.getPlaceSound(),
--                    SoundCategory.BLOCKS,
--                    (soundtype.getVolume() + 1.0F) / 2.0F,
--                    soundtype.getPitch() * 0.8F
--                );
 +                SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
-+                worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                 itemstack.shrink(1);
-                 return EnumActionResult.SUCCESS;
-             }
-@@ -93,5 +74,15 @@
+                 worldIn.playSound(
+                     player,
+                     pos,
+@@ -93,5 +93,15 @@
          {
              return EnumActionResult.FAIL;
          }

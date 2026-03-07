@@ -1,22 +1,6 @@
 --- before/net/minecraft/server/dedicated/ServerHangWatchdog.java
 +++ after/net/minecraft/server/dedicated/ServerHangWatchdog.java
-@@ -29,7 +29,6 @@
-         this.maxTickTime = server.getMaxTickTime();
-     }
- 
--    @Override
-     public void run()
-     {
-         while (this.server.isServerRunning())
-@@ -40,14 +39,12 @@
- 
-             if (k > this.maxTickTime)
-             {
--                LOGGER.fatal(
--                    "A single server tick took {} seconds (should be max {})", String.format("%.2f", (float)k / 1000.0F), String.format("%.2f", 0.05F)
--                );
-+                LOGGER.fatal("A single server tick took {} seconds (should be max {})", String.format("%.2f", (float)k / 1000.0F), String.format("%.2f", 0.05F));
-                 LOGGER.fatal("Considering it to be crashed, server will forcibly shutdown.");
+@@ -47,7 +47,7 @@
                  ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
                  ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
                  StringBuilder stringbuilder = new StringBuilder();
@@ -25,37 +9,3 @@
  
                  for (ThreadInfo threadinfo : athreadinfo)
                  {
-@@ -56,7 +53,7 @@
-                         error.setStackTrace(threadinfo.getStackTrace());
-                     }
- 
--                    stringbuilder.append(threadinfo);
-+                    stringbuilder.append((Object)threadinfo);
-                     stringbuilder.append("\n");
-                 }
- 
-@@ -64,14 +61,11 @@
-                 this.server.addServerInfoToCrashReport(crashreport);
-                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Thread Dump");
-                 crashreportcategory.addCrashSection("Threads", stringbuilder);
--                File file1 = new File(
--                    new File(this.server.getDataDirectory(), "crash-reports"),
--                    "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
--                );
-+                File file1 = new File(new File(this.server.getDataDirectory(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
- 
-                 if (crashreport.saveToFile(file1))
-                 {
--                    LOGGER.error("This crash report has been saved to: {}", file1.getAbsolutePath());
-+                    LOGGER.error("This crash report has been saved to: {}", (Object)file1.getAbsolutePath());
-                 }
-                 else
-                 {
-@@ -98,7 +92,6 @@
-             Timer timer = new Timer();
-             timer.schedule(new TimerTask()
-             {
--                @Override
-                 public void run()
-                 {
-                     Runtime.getRuntime().halt(1);

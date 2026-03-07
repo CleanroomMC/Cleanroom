@@ -1,14 +1,6 @@
 --- before/net/minecraft/server/network/NetHandlerLoginServer.java
 +++ after/net/minecraft/server/network/NetHandlerLoginServer.java
-@@ -56,7 +56,6 @@
-         RANDOM.nextBytes(this.verifyToken);
-     }
- 
--    @Override
-     public void update()
-     {
-         if (this.currentLoginState == NetHandlerLoginServer.LoginState.READY_TO_ACCEPT)
-@@ -70,14 +69,14 @@
+@@ -70,7 +70,7 @@
              if (entityplayermp == null)
              {
                  this.currentLoginState = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
@@ -17,24 +9,7 @@
                  this.player = null;
              }
          }
- 
-         if (this.connectionTimer++ == 600)
-         {
--            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.slow_login"));
-+            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.slow_login", new Object[0]));
-         }
-     }
- 
-@@ -106,7 +105,7 @@
- 
-         if (s != null)
-         {
--            this.disconnect(new TextComponentTranslation(s));
-+            this.disconnect(new TextComponentTranslation(s, new Object[0]));
-         }
-         else
-         {
-@@ -133,12 +132,11 @@
+@@ -133,7 +133,7 @@
              }
              else
              {
@@ -43,105 +18,12 @@
              }
          }
      }
- 
--    @Override
-     public void onDisconnect(ITextComponent reason)
-     {
-         LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), reason.getUnformattedText());
-@@ -146,12 +144,9 @@
- 
-     public String getConnectionInfo()
-     {
--        return this.loginGameProfile != null
--               ? this.loginGameProfile + " (" + this.networkManager.getRemoteAddress() + ")"
--               : String.valueOf(this.networkManager.getRemoteAddress());
-+        return this.loginGameProfile != null ? this.loginGameProfile + " (" + this.networkManager.getRemoteAddress() + ")" : String.valueOf((Object)this.networkManager.getRemoteAddress());
-     }
- 
--    @Override
-     public void processLoginStart(CPacketLoginStart packetIn)
-     {
-         Validate.validState(this.currentLoginState == NetHandlerLoginServer.LoginState.HELLO, "Unexpected hello packet");
-@@ -168,7 +163,6 @@
-         }
-     }
- 
--    @Override
-     public void processEncryptionResponse(CPacketEncryptionResponse packetIn)
-     {
-         Validate.validState(this.currentLoginState == NetHandlerLoginServer.LoginState.KEY, "Unexpected key packet");
-@@ -183,31 +177,20 @@
+@@ -183,7 +183,7 @@
              this.secretKey = packetIn.getSecretKey(privatekey);
              this.currentLoginState = NetHandlerLoginServer.LoginState.AUTHENTICATING;
              this.networkManager.enableEncryption(this.secretKey);
 -            (new Thread("User Authenticator #" + AUTHENTICATOR_THREAD_ID.incrementAndGet())
 +            (new Thread(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER, "User Authenticator #" + AUTHENTICATOR_THREAD_ID.incrementAndGet())
              {
--                @Override
+                 @Override
                  public void run()
-                 {
-                     GameProfile gameprofile = NetHandlerLoginServer.this.loginGameProfile;
- 
-                     try
-                     {
--                        String s = new BigInteger(
--                            CryptManager.getServerIdHash(
--                                "", NetHandlerLoginServer.this.server.getKeyPair().getPublic(), NetHandlerLoginServer.this.secretKey
--                            )
--                        )
--                        .toString(16);
--                        NetHandlerLoginServer.this.loginGameProfile = NetHandlerLoginServer.this.server
--                                .getMinecraftSessionService()
--                                .hasJoinedServer(new GameProfile(null, gameprofile.getName()), s, this.getAddress());
-+                        String s = (new BigInteger(CryptManager.getServerIdHash("", NetHandlerLoginServer.this.server.getKeyPair().getPublic(), NetHandlerLoginServer.this.secretKey))).toString(16);
-+                        NetHandlerLoginServer.this.loginGameProfile = NetHandlerLoginServer.this.server.getMinecraftSessionService().hasJoinedServer(new GameProfile((UUID)null, gameprofile.getName()), s, this.getAddress());
- 
-                         if (NetHandlerLoginServer.this.loginGameProfile != null)
-                         {
--                            NetHandlerLoginServer.LOGGER
--                            .info(
--                                "UUID of player {} is {}", NetHandlerLoginServer.this.loginGameProfile.getName(), NetHandlerLoginServer.this.loginGameProfile.getId()
--                            );
-+                            NetHandlerLoginServer.LOGGER.info("UUID of player {} is {}", NetHandlerLoginServer.this.loginGameProfile.getName(), NetHandlerLoginServer.this.loginGameProfile.getId());
-                             NetHandlerLoginServer.this.currentLoginState = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
-                         }
-                         else if (NetHandlerLoginServer.this.server.isSinglePlayer())
-@@ -218,11 +201,11 @@
-                         }
-                         else
-                         {
--                            NetHandlerLoginServer.this.disconnect(new TextComponentTranslation("multiplayer.disconnect.unverified_username"));
--                            NetHandlerLoginServer.LOGGER.error("Username '{}' tried to join with an invalid session", gameprofile.getName());
-+                            NetHandlerLoginServer.this.disconnect(new TextComponentTranslation("multiplayer.disconnect.unverified_username", new Object[0]));
-+                            NetHandlerLoginServer.LOGGER.error("Username '{}' tried to join with an invalid session", (Object)gameprofile.getName());
-                         }
-                     }
--                    catch (AuthenticationUnavailableException authenticationunavailableexception)
-+                    catch (AuthenticationUnavailableException var3)
-                     {
-                         if (NetHandlerLoginServer.this.server.isSinglePlayer())
-                         {
-@@ -232,7 +215,7 @@
-                         }
-                         else
-                         {
--                            NetHandlerLoginServer.this.disconnect(new TextComponentTranslation("multiplayer.disconnect.authservers_down"));
-+                            NetHandlerLoginServer.this.disconnect(new TextComponentTranslation("multiplayer.disconnect.authservers_down", new Object[0]));
-                             NetHandlerLoginServer.LOGGER.error("Couldn't verify username because servers are unavailable");
-                         }
-                     }
-@@ -241,12 +224,9 @@
-                 private InetAddress getAddress()
-                 {
-                     SocketAddress socketaddress = NetHandlerLoginServer.this.networkManager.getRemoteAddress();
--                    return NetHandlerLoginServer.this.server.getPreventProxyConnections() && socketaddress instanceof InetSocketAddress
--                           ? ((InetSocketAddress)socketaddress).getAddress()
--                           : null;
-+                    return NetHandlerLoginServer.this.server.getPreventProxyConnections() && socketaddress instanceof InetSocketAddress ? ((InetSocketAddress)socketaddress).getAddress() : null;
-                 }
--            })
--            .start();
-+            }).start();
-         }
-     }
- 

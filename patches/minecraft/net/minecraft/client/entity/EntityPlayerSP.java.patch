@@ -26,8 +26,8 @@
      {
          if (this.noClip)
 @@ -487,30 +496,34 @@
-             double d0 = x - (double)blockpos.getX();
-             double d1 = z - (double)blockpos.getZ();
+             double d0 = x - blockpos.getX();
+             double d1 = z - blockpos.getZ();
  
 -            if (!this.isOpenBlockSpace(blockpos))
 +            int entHeight = Math.max((int)Math.ceil(this.height), 1);
@@ -99,24 +99,21 @@
          this.mc.getTutorial().handleMovement(this.movementInput);
  
          if (this.isHandActive() && !this.isRiding())
-@@ -912,6 +932,8 @@
+@@ -912,10 +932,13 @@
          }
  
          AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
 +        net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent event = new net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent(this, axisalignedbb);
 +        if(!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) { axisalignedbb = event.getEntityBoundingBox();
-         this.pushOutOfBlocks(
-             this.posX - (double)this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ + (double)this.width * 0.35
-         );
-@@ -924,6 +946,7 @@
-         this.pushOutOfBlocks(
-             this.posX + (double)this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ + (double)this.width * 0.35
-         );
+         this.pushOutOfBlocks(this.posX - this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ + this.width * 0.35);
+         this.pushOutOfBlocks(this.posX - this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ - this.width * 0.35);
+         this.pushOutOfBlocks(this.posX + this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ - this.width * 0.35);
+         this.pushOutOfBlocks(this.posX + this.width * 0.35, axisalignedbb.minY + 0.5, this.posZ + this.width * 0.35);
 +        }
-         boolean flag4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
+         boolean flag4 = this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
  
          if (this.onGround
-@@ -1252,5 +1275,18 @@
+@@ -1243,5 +1266,18 @@
                  }
              }
          }

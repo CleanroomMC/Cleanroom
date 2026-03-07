@@ -1,88 +1,15 @@
 --- before/net/minecraft/world/gen/ChunkGeneratorFlat.java
 +++ after/net/minecraft/world/gen/ChunkGeneratorFlat.java
-@@ -30,7 +30,7 @@
-     private final Random random;
-     private final IBlockState[] cachedBlockIDs = new IBlockState[256];
-     private final FlatGeneratorInfo flatWorldGenInfo;
--    private final Map<String, MapGenStructure> structureGenerators = new HashMap<>();
-+    private final Map<String, MapGenStructure> structureGenerators = new HashMap<String, MapGenStructure>();
-     private final boolean hasDecoration;
-     private final boolean hasDungeons;
-     private WorldGenLakes waterLakeGenerator;
-@@ -48,7 +48,7 @@
- 
-             if (map.containsKey("village"))
-             {
--                Map<String, String> map1 = map.get("village");
-+                Map<String, String> map1 = (Map)map.get("village");
- 
-                 if (!map1.containsKey("size"))
-                 {
-@@ -96,7 +96,7 @@
- 
-         for (FlatLayerInfo flatlayerinfo : this.flatWorldGenInfo.getFlatLayers())
-         {
--            for (int i = flatlayerinfo.getMinY(); i < flatlayerinfo.getMinY() + flatlayerinfo.getLayerCount(); i++)
-+            for (int i = flatlayerinfo.getMinY(); i < flatlayerinfo.getMinY() + flatlayerinfo.getLayerCount(); ++i)
-             {
-                 IBlockState iblockstate = flatlayerinfo.getLayerMaterial();
- 
-@@ -119,25 +119,22 @@
-         }
- 
-         worldIn.setSeaLevel(j);
--        this.hasDecoration = flag && this.flatWorldGenInfo.getBiome() != Biome.getIdForBiome(Biomes.VOID)
--                             ? false
--                             : this.flatWorldGenInfo.getWorldFeatures().containsKey("decoration");
-+        this.hasDecoration = flag && this.flatWorldGenInfo.getBiome() != Biome.getIdForBiome(Biomes.VOID) ? false : this.flatWorldGenInfo.getWorldFeatures().containsKey("decoration");
-     }
- 
--    @Override
-     public Chunk generateChunk(int x, int z)
-     {
-         ChunkPrimer chunkprimer = new ChunkPrimer();
- 
--        for (int i = 0; i < this.cachedBlockIDs.length; i++)
-+        for (int i = 0; i < this.cachedBlockIDs.length; ++i)
-         {
-             IBlockState iblockstate = this.cachedBlockIDs[i];
- 
-             if (iblockstate != null)
-             {
--                for (int j = 0; j < 16; j++)
-+                for (int j = 0; j < 16; ++j)
-                 {
--                    for (int k = 0; k < 16; k++)
-+                    for (int k = 0; k < 16; ++k)
-                     {
-                         chunkprimer.setBlockState(j, i, k, iblockstate);
-                     }
-@@ -151,10 +148,10 @@
-         }
- 
-         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
--        Biome[] abiome = this.world.getBiomeProvider().getBiomes(null, x * 16, z * 16, 16, 16);
-+        Biome[] abiome = this.world.getBiomeProvider().getBiomes((Biome[])null, x * 16, z * 16, 16, 16);
-         byte[] abyte = chunk.getBiomeArray();
- 
--        for (int l = 0; l < abyte.length; l++)
-+        for (int l = 0; l < abyte.length; ++l)
-         {
-             abyte[l] = (byte)Biome.getIdForBiome(abiome[l]);
-         }
-@@ -163,9 +160,9 @@
-         return chunk;
-     }
- 
--    @Override
+@@ -166,6 +166,7 @@
+     @Override
      public void populate(int x, int z)
      {
 +        net.minecraft.block.BlockFalling.fallInstantly = true;
          int i = x * 16;
          int j = z * 16;
          BlockPos blockpos = new BlockPos(i, 0, j);
-@@ -177,6 +174,8 @@
-         this.random.setSeed((long)x * k + (long)z * l ^ this.world.getSeed());
+@@ -177,6 +178,8 @@
+         this.random.setSeed(x * k + z * l ^ this.world.getSeed());
          ChunkPos chunkpos = new ChunkPos(x, z);
  
 +        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.world, this.random, x, z, flag);
@@ -90,46 +17,7 @@
          for (MapGenStructure mapgenstructure : this.structureGenerators.values())
          {
              boolean flag1 = mapgenstructure.generateStructure(this.world, this.random, chunkpos);
-@@ -189,19 +188,12 @@
- 
-         if (this.waterLakeGenerator != null && !flag && this.random.nextInt(4) == 0)
-         {
--            this.waterLakeGenerator
--            .generate(
--                this.world,
--                this.random,
--                blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8)
--            );
-+            this.waterLakeGenerator.generate(this.world, this.random, blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8));
-         }
- 
-         if (this.lavaLakeGenerator != null && !flag && this.random.nextInt(8) == 0)
-         {
--            BlockPos blockpos1 = blockpos.add(
--                                     this.random.nextInt(16) + 8, this.random.nextInt(this.random.nextInt(248) + 8), this.random.nextInt(16) + 8
--                                 );
-+            BlockPos blockpos1 = blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(this.random.nextInt(248) + 8), this.random.nextInt(16) + 8);
- 
-             if (blockpos1.getY() < this.world.getSeaLevel() || this.random.nextInt(10) == 0)
-             {
-@@ -211,14 +203,9 @@
- 
-         if (this.hasDungeons)
-         {
--            for (int i1 = 0; i1 < 8; i1++)
-+            for (int i1 = 0; i1 < 8; ++i1)
-             {
--                new WorldGenDungeons()
--                .generate(
--                    this.world,
--                    this.random,
--                    blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8)
--                );
-+                (new WorldGenDungeons()).generate(this.world, this.random, blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8));
-             }
-         }
- 
-@@ -226,15 +213,16 @@
+@@ -226,6 +229,9 @@
          {
              biome.decorate(this.world, this.random, blockpos);
          }
@@ -138,41 +26,4 @@
 +        net.minecraft.block.BlockFalling.fallInstantly = false;
      }
  
--    @Override
-     public boolean generateStructures(Chunk chunkIn, int x, int z)
-     {
-         return false;
-     }
- 
--    @Override
-     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
-     {
-         Biome biome = this.world.getBiome(pos);
-@@ -242,26 +230,23 @@
-     }
- 
-     @Nullable
--    @Override
-     public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored)
-     {
-         MapGenStructure mapgenstructure = this.structureGenerators.get(structureName);
-         return mapgenstructure != null ? mapgenstructure.getNearestStructurePos(worldIn, position, findUnexplored) : null;
-     }
- 
--    @Override
-     public boolean isInsideStructure(World worldIn, String structureName, BlockPos pos)
-     {
-         MapGenStructure mapgenstructure = this.structureGenerators.get(structureName);
-         return mapgenstructure != null ? mapgenstructure.isInsideStructure(pos) : false;
-     }
- 
--    @Override
-     public void recreateStructures(Chunk chunkIn, int x, int z)
-     {
-         for (MapGenStructure mapgenstructure : this.structureGenerators.values())
-         {
--            mapgenstructure.generate(this.world, x, z, null);
-+            mapgenstructure.generate(this.world, x, z, (ChunkPrimer)null);
-         }
-     }
- }
+     @Override

@@ -48,7 +48,7 @@
 +                f = underState.getBlock().getSlipperiness(underState, this.world, underPos, this) * 0.98F;
              }
  
-             this.motionX *= (double)f;
+             this.motionX *= f;
 @@ -180,7 +179,15 @@
                  }
              }

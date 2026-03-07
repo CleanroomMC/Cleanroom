@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
 +++ after/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
-@@ -34,27 +34,29 @@
+@@ -34,6 +34,8 @@
  
      public void set(int x, int y, int z, IBlockState state)
      {
@@ -9,55 +9,3 @@
          IBlockState iblockstate = this.get(x, y, z);
          Block block = iblockstate.getBlock();
          Block block1 = state.getBlock();
- 
-         if (block != Blocks.AIR)
-         {
--            this.blockRefCount--;
-+            --this.blockRefCount;
- 
-             if (block.getTickRandomly())
-             {
--                this.tickRefCount--;
-+                --this.tickRefCount;
-             }
-         }
- 
-         if (block1 != Blocks.AIR)
-         {
--            this.blockRefCount++;
-+            ++this.blockRefCount;
- 
-             if (block1.getTickRandomly())
-             {
--                this.tickRefCount++;
-+                ++this.tickRefCount;
-             }
-         }
- 
-@@ -101,21 +103,21 @@
-         this.blockRefCount = 0;
-         this.tickRefCount = 0;
- 
--        for (int i = 0; i < 16; i++)
-+        for (int i = 0; i < 16; ++i)
-         {
--            for (int j = 0; j < 16; j++)
-+            for (int j = 0; j < 16; ++j)
-             {
--                for (int k = 0; k < 16; k++)
-+                for (int k = 0; k < 16; ++k)
-                 {
-                     Block block = this.get(i, j, k).getBlock();
- 
-                     if (block != Blocks.AIR)
-                     {
--                        this.blockRefCount++;
-+                        ++this.blockRefCount;
- 
-                         if (block.getTickRandomly())
-                         {
--                            this.tickRefCount++;
-+                            ++this.tickRefCount;
-                         }
-                     }
-                 }

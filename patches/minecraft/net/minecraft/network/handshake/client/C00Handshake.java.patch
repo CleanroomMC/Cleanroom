@@ -8,20 +8,20 @@
  
      public C00Handshake()
      {
-@@ -28,20 +29,26 @@
+@@ -28,6 +29,12 @@
          this.requestedState = p_i47613_3_;
      }
  
--    @Override
 +    public C00Handshake(String address, int port, EnumConnectionState state, boolean addFMLMarker)
 +    {
 +        this(address, port, state);
 +        this.hasFMLMarker = addFMLMarker;
 +    }
 +
+     @Override
      public void readPacketData(PacketBuffer buf) throws IOException
      {
-         this.protocolVersion = buf.readVarInt();
+@@ -35,13 +42,15 @@
          this.ip = buf.readString(255);
          this.port = buf.readUnsignedShort();
          this.requestedState = EnumConnectionState.getById(buf.readVarInt());
@@ -29,7 +29,7 @@
 +        this.ip = this.ip.split("\0")[0];
      }
  
--    @Override
+     @Override
      public void writePacketData(PacketBuffer buf) throws IOException
      {
          buf.writeVarInt(this.protocolVersion);
@@ -38,7 +38,7 @@
          buf.writeShort(this.port);
          buf.writeVarInt(this.requestedState.getId());
      }
-@@ -59,5 +66,10 @@
+@@ -59,5 +68,10 @@
      public int getProtocolVersion()
      {
          return this.protocolVersion;

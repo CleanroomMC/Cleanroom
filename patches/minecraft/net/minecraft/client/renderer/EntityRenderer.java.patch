@@ -1,14 +1,6 @@
 --- before/net/minecraft/client/renderer/EntityRenderer.java
 +++ after/net/minecraft/client/renderer/EntityRenderer.java
-@@ -13,7 +13,6 @@
- import javax.annotation.Nullable;
- import javax.imageio.ImageIO;
- import net.minecraft.block.Block;
--import net.minecraft.block.BlockBed;
- import net.minecraft.block.material.Material;
- import net.minecraft.block.state.IBlockState;
- import net.minecraft.client.Minecraft;
-@@ -235,6 +234,7 @@
+@@ -235,6 +235,7 @@
              {
                  this.loadShader(new ResourceLocation("shaders/post/invert.json"));
              }
@@ -16,16 +8,16 @@
          }
      }
  
-@@ -315,7 +315,7 @@
+@@ -315,7 +316,7 @@
              this.mc.setRenderViewEntity(this.mc.player);
          }
  
 -        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity()));
 +        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1.0F))); // Forge: fix MC-51150
-         float f4 = (float)this.mc.gameSettings.renderDistanceChunks / 32.0F;
+         float f4 = this.mc.gameSettings.renderDistanceChunks / 32.0F;
          float f2 = f3 * (1.0F - f4) + f4;
          this.fogColor1 = this.fogColor1 + (f2 - this.fogColor1) * 0.1F;
-@@ -445,7 +445,7 @@
+@@ -445,7 +446,7 @@
  
                          if (d3 < d2 || d2 == 0.0)
                          {
@@ -34,7 +26,7 @@
                              {
                                  if (d2 == 0.0)
                                  {
-@@ -538,7 +538,7 @@
+@@ -538,7 +539,7 @@
                  f = f * 60.0F / 70.0F;
              }
  
@@ -43,7 +35,7 @@
          }
      }
  
-@@ -604,13 +604,7 @@
+@@ -604,13 +605,7 @@
              {
                  BlockPos blockpos = new BlockPos(entity);
                  IBlockState iblockstate = this.mc.world.getBlockState(blockpos);
@@ -52,13 +44,13 @@
 -                if (block == Blocks.BED)
 -                {
 -                    int j = iblockstate.getValue(BlockBed.FACING).getHorizontalIndex();
--                    GlStateManager.rotate((float)(j * 90), 0.0F, 1.0F, 0.0F);
+-                    GlStateManager.rotate(j * 90, 0.0F, 1.0F, 0.0F);
 -                }
 +                net.minecraftforge.client.ForgeHooksClient.orientBedCamera(this.mc.world, blockpos, iblockstate, entity);
  
                  GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
                  GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
-@@ -683,19 +677,20 @@
+@@ -680,19 +675,20 @@
  
          if (!this.mc.gameSettings.debugCamEnable)
          {
@@ -89,7 +81,7 @@
          }
  
          GlStateManager.translate(0.0F, -f, 0.0F);
-@@ -825,6 +820,7 @@
+@@ -819,6 +815,7 @@
              boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase
                             && ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping();
  
@@ -97,7 +89,7 @@
              if (this.mc.gameSettings.thirdPersonView == 0
                      && !flag
                      && !this.mc.gameSettings.hideGUI
-@@ -932,6 +928,15 @@
+@@ -926,6 +923,15 @@
                          f10 = 0.25F + f7 * 0.75F;
                      }
  
@@ -113,10 +105,10 @@
                      if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION))
                      {
                          float f15 = this.getNightVisionBrightness(this.mc.player, partialTicks);
-@@ -1108,7 +1113,17 @@
+@@ -1102,7 +1108,17 @@
                  j = Math.max(j, 60);
                  long k = System.nanoTime() - nanoTime;
-                 long l = Math.max((long)(1000000000 / j / 4) - k, 0L);
+                 long l = Math.max(1000000000 / j / 4 - k, 0L);
 -                this.renderWorld(partialTicks, System.nanoTime() + l);
 +
 +                if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnable()
@@ -132,7 +124,7 @@
  
                  if (this.mc.isSingleplayer() && this.timeWorldIcon < Minecraft.getSystemTime() - 1000L)
                  {
-@@ -1158,6 +1173,10 @@
+@@ -1152,6 +1168,10 @@
                  GlStateManager.loadIdentity();
                  this.setupOverlayRendering();
                  this.renderEndNanoTime = System.nanoTime();
@@ -143,7 +135,7 @@
              }
  
              if (this.mc.currentScreen != null)
-@@ -1166,7 +1185,7 @@
+@@ -1160,7 +1180,7 @@
  
                  try
                  {
@@ -152,7 +144,7 @@
                  }
                  catch (Throwable throwable)
                  {
-@@ -1275,7 +1294,7 @@
+@@ -1269,7 +1289,7 @@
  
                      if (this.mc.playerController.getCurrentGameType() == GameType.SPECTATOR)
                      {
@@ -161,7 +153,7 @@
                      }
                      else
                      {
-@@ -1323,6 +1342,17 @@
+@@ -1317,6 +1337,17 @@
  
      private void renderWorldPass(int pass, float partialTicks, long finishTimeNano)
      {
@@ -179,7 +171,7 @@
          RenderGlobal renderglobal = this.mc.renderGlobal;
          ParticleManager particlemanager = this.mc.effectRenderer;
          boolean flag = this.isDrawBlockOutline();
-@@ -1333,7 +1363,7 @@
+@@ -1327,7 +1358,7 @@
          GlStateManager.clear(16640);
          this.mc.profiler.endStartSection("camera");
          this.setupCameraTransform(partialTicks, pass);
@@ -188,7 +180,7 @@
          this.mc.profiler.endStartSection("frustum");
          ClippingHelperImpl.getInstance();
          this.mc.profiler.endStartSection("culling");
-@@ -1377,6 +1407,14 @@
+@@ -1368,6 +1399,14 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
@@ -203,17 +195,17 @@
          this.mc.profiler.endStartSection("prepareterrain");
          this.setupFog(0, partialTicks);
          this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-@@ -1396,7 +1434,9 @@
+@@ -1387,7 +1426,9 @@
          GlStateManager.disableAlpha();
-         renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, (double)partialTicks, pass, entity);
+         renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, partialTicks, pass, entity);
          GlStateManager.enableAlpha();
 +        this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, this.mc.gameSettings.mipmapLevels > 0); // FORGE: fix flickering leaves when mods mess up the blurMipmap settings
-         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT_MIPPED, (double)partialTicks, pass, entity);
+         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT_MIPPED, partialTicks, pass, entity);
 +        this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
-         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT, (double)partialTicks, pass, entity);
+         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT, partialTicks, pass, entity);
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
-@@ -1410,7 +1450,9 @@
+@@ -1401,7 +1442,9 @@
              GlStateManager.pushMatrix();
              RenderHelper.enableStandardItemLighting();
              this.mc.profiler.endStartSection("entities");
@@ -223,7 +215,7 @@
              RenderHelper.disableStandardItemLighting();
              this.disableLightmap();
          }
-@@ -1423,6 +1465,7 @@
+@@ -1414,6 +1457,7 @@
              EntityPlayer entityplayer = (EntityPlayer)entity;
              GlStateManager.disableAlpha();
              this.mc.profiler.endStartSection("outline");
@@ -231,7 +223,7 @@
              renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
              GlStateManager.enableAlpha();
          }
-@@ -1471,8 +1514,27 @@
+@@ -1462,8 +1506,27 @@
          GlStateManager.depthMask(false);
          this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
          GlStateManager.shadeModel(7425);
@@ -244,7 +236,7 @@
 +        }
 +
          this.mc.profiler.endStartSection("translucent");
-         renderglobal.renderBlockLayer(BlockRenderLayer.TRANSLUCENT, (double)partialTicks, pass, entity);
+         renderglobal.renderBlockLayer(BlockRenderLayer.TRANSLUCENT, partialTicks, pass, entity);
 +        if (!this.debugView) //Only render if render pass 0 happens as well.
 +        {
 +            RenderHelper.enableStandardItemLighting();
@@ -259,7 +251,7 @@
          GlStateManager.shadeModel(7424);
          GlStateManager.depthMask(true);
          GlStateManager.enableCull();
-@@ -1485,6 +1547,9 @@
+@@ -1476,6 +1539,9 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
@@ -269,7 +261,7 @@
          this.mc.profiler.endStartSection("hand");
  
          if (this.renderHand)
-@@ -1492,6 +1557,14 @@
+@@ -1483,6 +1549,14 @@
              GlStateManager.clear(256);
              this.renderHand(partialTicks, pass);
          }
@@ -284,7 +276,7 @@
      }
  
      private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass, double x, double y, double z)
-@@ -1635,6 +1708,13 @@
+@@ -1620,6 +1694,13 @@
  
      protected void renderRainSnow(float partialTicks)
      {
@@ -298,7 +290,7 @@
          float f = this.mc.world.getRainStrength(partialTicks);
  
          if (!(f <= 0.0F))
-@@ -1908,29 +1988,16 @@
+@@ -1893,29 +1974,16 @@
              this.fogColorGreen = (float)vec3d3.y;
              this.fogColorBlue = (float)vec3d3.z;
          }
@@ -308,7 +300,7 @@
 -
 -            if (entity instanceof EntityLivingBase)
 -            {
--                f12 = (float)EnchantmentHelper.getRespirationModifier((EntityLivingBase)entity) * 0.2F;
+-                f12 = EnchantmentHelper.getRespirationModifier((EntityLivingBase)entity) * 0.2F;
 -
 -                if (((EntityLivingBase)entity).isPotionActive(MobEffects.WATER_BREATHING))
 -                {
@@ -338,7 +330,7 @@
          }
  
          float f13 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * partialTicks;
-@@ -1989,6 +2056,9 @@
+@@ -1974,6 +2042,9 @@
                  f6 = 1.0F / this.fogColorBlue;
              }
  
@@ -348,7 +340,7 @@
              this.fogColorRed = this.fogColorRed * (1.0F - f15) + this.fogColorRed * f6 * f15;
              this.fogColorGreen = this.fogColorGreen * (1.0F - f15) + this.fogColorGreen * f6 * f15;
              this.fogColorBlue = this.fogColorBlue * (1.0F - f15) + this.fogColorBlue * f6 * f15;
-@@ -2004,6 +2074,13 @@
+@@ -1989,6 +2060,13 @@
              this.fogColorBlue = f7;
          }
  
@@ -362,7 +354,7 @@
          GlStateManager.clearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
      }
  
-@@ -2014,7 +2091,9 @@
+@@ -1999,7 +2077,9 @@
          GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
@@ -373,7 +365,7 @@
          if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(MobEffects.BLINDNESS))
          {
              float f1 = 5.0F;
-@@ -2100,6 +2179,7 @@
+@@ -2085,6 +2165,7 @@
                  GlStateManager.setFogStart(f * 0.05F);
                  GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
              }

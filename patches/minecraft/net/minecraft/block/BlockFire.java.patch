@@ -149,8 +149,8 @@
  
      @Override
 @@ -401,17 +407,17 @@
-                 (double)((float)pos.getY() + 0.5F),
-                 (double)((float)pos.getZ() + 0.5F),
+                 pos.getY() + 0.5F,
+                 pos.getZ() + 0.5F,
                  SoundEvents.BLOCK_FIRE_AMBIENT,
 -                SoundCategory.BLOCKS,
 +                SoundCategory.BLOCKS, 

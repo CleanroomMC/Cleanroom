@@ -1,28 +1,11 @@
 --- before/net/minecraft/world/gen/feature/WorldGenTallGrass.java
 +++ after/net/minecraft/world/gen/feature/WorldGenTallGrass.java
-@@ -17,22 +17,16 @@
-         this.tallGrassState = Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, p_i45629_1_);
-     }
- 
--    @Override
+@@ -21,7 +21,7 @@
      public boolean generate(World worldIn, Random rand, BlockPos position)
      {
--        for (IBlockState iblockstate = worldIn.getBlockState(position);
+         for (IBlockState iblockstate = worldIn.getBlockState(position);
 -                (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES) && position.getY() > 0;
--                iblockstate = worldIn.getBlockState(position)
--            )
-+        for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0; iblockstate = worldIn.getBlockState(position))
++                (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0;
+                 iblockstate = worldIn.getBlockState(position)
+             )
          {
-             position = position.down();
-         }
- 
--        for (int i = 0; i < 128; i++)
-+        for (int i = 0; i < 128; ++i)
-         {
--            BlockPos blockpos = position.add(
--                                    rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8)
--                                );
-+            BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
- 
-             if (worldIn.isAirBlock(blockpos) && Blocks.TALLGRASS.canBlockStay(worldIn, blockpos, this.tallGrassState))
-             {

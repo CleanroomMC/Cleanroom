@@ -12,166 +12,108 @@
  import net.minecraft.util.text.TextComponentString;
  import net.minecraft.util.text.TextFormatting;
  import net.minecraftforge.fml.relauncher.Side;
-@@ -21,90 +23,109 @@
-             ITextComponent textComponent, int maxTextLenght, FontRenderer fontRendererIn, boolean p_178908_3_, boolean forceTextColor
+@@ -22,19 +24,21 @@
          )
      {
--        int i = 0;
+         int i = 0;
 -        ITextComponent itextcomponent = new TextComponentString("");
-+        int accumlateWidth = 0;
          List<ITextComponent> list = Lists.newArrayList();
--        List<ITextComponent> list1 = Lists.newArrayList(textComponent);
--
--        for (int j = 0; j < list1.size(); j++)
--        {
--            ITextComponent itextcomponent1 = list1.get(j);
--            String s = itextcomponent1.getUnformattedComponentText();
--            boolean flag = false;
--
--            if (s.contains("\n"))
--            {
--                int k = s.indexOf(10);
--                String s1 = s.substring(k + 1);
--                s = s.substring(0, k + 1);
--                ITextComponent itextcomponent2 = new TextComponentString(s1);
--                itextcomponent2.setStyle(itextcomponent1.getStyle().createShallowCopy());
--                list1.add(j + 1, itextcomponent2);
--                flag = true;
 +        List<String> cache = Lists.newArrayList();
 +        List<Style> styleCache = Lists.newArrayList();
 +        List<Boolean> newLineCache = Lists.newArrayList();
-+        List<ITextComponent> originList = Lists.newArrayList(textComponent);
-+        int j;
-+        boolean wrapped;
-+        for (j = 0; j < originList.size(); ++j) {
-+            ITextComponent originLine = originList.get(j);
-+            String unformattedOriginLine = originLine.getUnformattedComponentText();
-+
-+            if (unformattedOriginLine.contains("\n")) {
-+                int k = unformattedOriginLine.indexOf('\n');
-+                String stringAfter = unformattedOriginLine.substring(k + 1);
-+                unformattedOriginLine = unformattedOriginLine.substring(0, k + 1);
-+                ITextComponent textAfterN = new TextComponentString(stringAfter);
-+                textAfterN.setStyle(originLine.getStyle().createShallowCopy());
-+                originList.add(j + 1, textAfterN);
-+                wrapped = true;
-+            } else {
-+                wrapped = false;
-             }
+         List<ITextComponent> list1 = Lists.newArrayList(textComponent);
  
--            String s4 = removeTextColorsIfConfigured(itextcomponent1.getStyle().getFormattingCode() + s, forceTextColor);
--            String s5 = s4.endsWith("\n") ? s4.substring(0, s4.length() - 1) : s4;
++        boolean flag;
+         for (int j = 0; j < list1.size(); j++)
+         {
+             ITextComponent itextcomponent1 = list1.get(j);
+             String s = itextcomponent1.getUnformattedComponentText();
+-            boolean flag = false;
+ 
+             if (s.contains("\n"))
+             {
+-                int k = s.indexOf(10);
++                int k = s.indexOf('\n');
+                 String s1 = s.substring(k + 1);
+                 s = s.substring(0, k + 1);
+                 ITextComponent itextcomponent2 = new TextComponentString(s1);
+@@ -42,27 +46,45 @@
+                 list1.add(j + 1, itextcomponent2);
+                 flag = true;
+             }
++            else
++            {
++                flag = false;
++            }
+ 
+             String s4 = removeTextColorsIfConfigured(itextcomponent1.getStyle().getFormattingCode() + s, forceTextColor);
+             String s5 = s4.endsWith("\n") ? s4.substring(0, s4.length() - 1) : s4;
 -            int i1 = fontRendererIn.getStringWidth(s5);
 -            TextComponentString textcomponentstring = new TextComponentString(s5);
 -            textcomponentstring.setStyle(itextcomponent1.getStyle().createShallowCopy());
-+            String rebuiltOriginLine = removeTextColorsIfConfigured(originLine.getStyle().getFormattingCode() + unformattedOriginLine, forceTextColor);
-+            String cleanedLine = rebuiltOriginLine.endsWith("\n") ? rebuiltOriginLine.substring(0, rebuiltOriginLine.length() - 1) : rebuiltOriginLine;
-+            cache.add(cleanedLine);
-+            styleCache.add(originLine.getStyle());
-+            newLineCache.add(wrapped);
++            cache.add(s5);
++            styleCache.add(itextcomponent1.getStyle());
++            newLineCache.add(flag);
 +        }
 +        BreakIteratorHolder.BREAK_ITERATOR.setText(String.join("\n", cache));
 +        int fed = 0;
-+        ITextComponent lineToAdd = new TextComponentString("");
-+        String cleanedLine;
++        ITextComponent itextcomponent = new TextComponentString("");
++        String s4;
 +        Style style;
-+        for (j = 0; j < cache.size(); j++) {
-+            cleanedLine = cache.get(j);
++        for (int j = 0; j < cache.size(); j++)
++        {
++            s4 = cache.get(j);
 +            style = styleCache.get(j);
-+            wrapped = newLineCache.get(j);
-+            int lineWidth = fontRendererIn.getStringWidth(cleanedLine);
-+            TextComponentString line = new TextComponentString(cleanedLine);
-+            line.setStyle(style.createShallowCopy());
++            flag = newLineCache.get(j);
++            int i1 = fontRendererIn.getStringWidth(s4);
++            TextComponentString textcomponentstring = new TextComponentString(s4);
++            textcomponentstring.setStyle(style.createShallowCopy());
  
--            if (i + i1 > maxTextLenght)
-+            if (accumlateWidth + lineWidth > maxTextLenght)
+             if (i + i1 > maxTextLenght)
              {
--                String s2 = fontRendererIn.trimStringToWidth(s4, maxTextLenght - i, false);
--                String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
--
+                 String s2 = fontRendererIn.trimStringToWidth(s4, maxTextLenght - i, false);
+                 String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
+ 
 -                if (s3 != null && !s3.isEmpty())
-+
-+                String firstHalf = fontRendererIn.trimStringToWidth(cleanedLine, maxTextLenght - accumlateWidth, false);
-+                String secondHalf = firstHalf.length() < cleanedLine.length() ? cleanedLine.substring(firstHalf.length()) : null;
-+
-+                if (secondHalf != null)
++                if (s3 != null)
                  {
 -                    int l = s2.lastIndexOf(32);
-+                    int l = BreakIteratorHolder.BREAK_ITERATOR.preceding(fed + firstHalf.length()) - fed;
++                    int l = BreakIteratorHolder.BREAK_ITERATOR.preceding(fed + s2.length()) - fed;
  
--                    if (l >= 0 && fontRendererIn.getStringWidth(s4.substring(0, l)) > 0)
-+                    if (l >= 0 && fontRendererIn.getStringWidth(cleanedLine.substring(0, l)) > 0)
+                     if (l >= 0 && fontRendererIn.getStringWidth(s4.substring(0, l)) > 0)
                      {
--                        s2 = s4.substring(0, l);
-+                        firstHalf = cleanedLine.substring(0, l);
+                         s2 = s4.substring(0, l);
  
 -                        if (p_178908_3_)
-+                        if (p_178908_3_ && cleanedLine.charAt(l) == ' ')
++                        if (p_178908_3_ && s4.charAt(l) == ' ')
                          {
                              l++;
                          }
- 
--                        s3 = s4.substring(l);
-+                        secondHalf = cleanedLine.substring(l);
-                     }
--                    else if (i > 0 && !s4.contains(" "))
-+                    else if (accumlateWidth > 0 && !cleanedLine.contains(" "))
-                     {
--                        s2 = "";
--                        s3 = s4;
-+                        firstHalf = "";
-+                        secondHalf = cleanedLine;
+@@ -75,14 +97,15 @@
+                         s3 = s4;
                      }
  
 -                    TextComponentString textcomponentstring1 = new TextComponentString(s3);
 -                    textcomponentstring1.setStyle(itextcomponent1.getStyle().createShallowCopy());
 -                    list1.add(j + 1, textcomponentstring1);
-+                    secondHalf = FontRenderer.getFormatFromString(firstHalf) + secondHalf; //Forge: Fix chat formatting not surviving line wrapping.
++                    s3 = FontRenderer.getFormatFromString(s2) + s3; //Forge: Fix chat formatting not surviving line wrapping.
 +
-+                    cache.set(j, secondHalf);
++                    cache.set(j, s3);
 +                    j--;
                  }
  
--                i1 = fontRendererIn.getStringWidth(s2);
--                textcomponentstring = new TextComponentString(s2);
+                 i1 = fontRendererIn.getStringWidth(s2);
+                 textcomponentstring = new TextComponentString(s2);
 -                textcomponentstring.setStyle(itextcomponent1.getStyle().createShallowCopy());
--                flag = true;
-+                lineWidth = fontRendererIn.getStringWidth(firstHalf);
-+                line = new TextComponentString(firstHalf);
-+                line.setStyle(style.createShallowCopy());
-+                wrapped = true;
++                textcomponentstring.setStyle(style.createShallowCopy());
+                 flag = true;
              }
  
--            if (i + i1 <= maxTextLenght)
-+
-+            if (accumlateWidth + lineWidth <= maxTextLenght)
+@@ -90,6 +113,7 @@
              {
--                i += i1;
--                itextcomponent.appendSibling(textcomponentstring);
-+                accumlateWidth += lineWidth;
-+                lineToAdd.appendSibling(line);
-+                fed += line.getText().length();
+                 i += i1;
+                 itextcomponent.appendSibling(textcomponentstring);
++                fed += textcomponentstring.getText().length();
              }
              else
              {
--                flag = true;
-+                wrapped = true;
-             }
- 
--            if (flag)
-+            if (wrapped)
-             {
--                list.add(itextcomponent);
--                i = 0;
--                itextcomponent = new TextComponentString("");
-+                list.add(lineToAdd);
-+                accumlateWidth = 0;
-+                lineToAdd = new TextComponentString("");
-             }
-         }
- 
--        list.add(itextcomponent);
-+        list.add(lineToAdd);
-         return list;
-     }
- }

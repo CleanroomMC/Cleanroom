@@ -1,48 +1,9 @@
 --- before/net/minecraft/tileentity/TileEntityLockable.java
 +++ after/net/minecraft/tileentity/TileEntityLockable.java
-@@ -11,14 +11,12 @@
- {
-     private LockCode code = LockCode.EMPTY_CODE;
- 
--    @Override
-     public void readFromNBT(NBTTagCompound compound)
+@@ -54,4 +54,27 @@
      {
-         super.readFromNBT(compound);
-         this.code = LockCode.fromNBT(compound);
+         return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName()));
      }
- 
--    @Override
-     public NBTTagCompound writeToNBT(NBTTagCompound compound)
-     {
-         super.writeToNBT(compound);
-@@ -31,27 +29,46 @@
-         return compound;
-     }
- 
--    @Override
-     public boolean isLocked()
-     {
-         return this.code != null && !this.code.isEmpty();
-     }
- 
--    @Override
-     public LockCode getLockCode()
-     {
-         return this.code;
-     }
- 
--    @Override
-     public void setLockCode(LockCode code)
-     {
-         this.code = code;
-     }
- 
--    @Override
-     public ITextComponent getDisplayName()
-     {
--        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName()));
-+        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
-+    }
 +
 +    private net.minecraftforge.items.IItemHandler itemHandler;
 +
@@ -65,5 +26,5 @@
 +    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing)
 +    {
 +        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-     }
++    }
  }

@@ -1,22 +1,6 @@
 --- before/net/minecraft/tileentity/TileEntityNote.java
 +++ after/net/minecraft/tileentity/TileEntityNote.java
-@@ -14,7 +14,6 @@
-     public byte note;
-     public boolean previousRedstoneState;
- 
--    @Override
-     public NBTTagCompound writeToNBT(NBTTagCompound compound)
-     {
-         super.writeToNBT(compound);
-@@ -23,7 +22,6 @@
-         return compound;
-     }
- 
--    @Override
-     public void readFromNBT(NBTTagCompound compound)
-     {
-         super.readFromNBT(compound);
-@@ -34,7 +32,9 @@
+@@ -34,7 +34,9 @@
  
      public void changePitch()
      {

@@ -1,43 +1,6 @@
 --- before/net/minecraft/inventory/SlotCrafting.java
 +++ after/net/minecraft/inventory/SlotCrafting.java
-@@ -20,42 +20,38 @@
-         this.craftMatrix = craftingInventory;
-     }
- 
--    @Override
-     public boolean isItemValid(ItemStack stack)
-     {
-         return false;
-     }
- 
--    @Override
-     public ItemStack decrStackSize(int amount)
-     {
-         if (this.getHasStack())
-         {
--            this.amountCrafted = this.amountCrafted + Math.min(amount, this.getStack().getCount());
-+            this.amountCrafted += Math.min(amount, this.getStack().getCount());
-         }
- 
-         return super.decrStackSize(amount);
-     }
- 
--    @Override
-     protected void onCrafting(ItemStack stack, int amount)
-     {
-         this.amountCrafted += amount;
-         this.onCrafting(stack);
-     }
- 
--    @Override
-     protected void onSwapCraft(int p_190900_1_)
-     {
-         this.amountCrafted += p_190900_1_;
-     }
- 
--    @Override
-     protected void onCrafting(ItemStack stack)
-     {
+@@ -56,6 +56,7 @@
          if (this.amountCrafted > 0)
          {
              stack.onCrafting(this.player.world, this.player, this.amountCrafted);
@@ -45,16 +8,7 @@
          }
  
          this.amountCrafted = 0;
-@@ -65,17 +61,18 @@
-         if (irecipe != null && !irecipe.isDynamic())
-         {
-             this.player.unlockRecipes(Lists.newArrayList(irecipe));
--            inventorycraftresult.setRecipeUsed(null);
-+            inventorycraftresult.setRecipeUsed((IRecipe)null);
-         }
-     }
- 
--    @Override
+@@ -73,7 +74,9 @@
      public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
      {
          this.onCrafting(stack);
@@ -62,8 +16,5 @@
          NonNullList<ItemStack> nonnulllist = CraftingManager.getRemainingItems(this.craftMatrix, thePlayer.world);
 +        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
  
--        for (int i = 0; i < nonnulllist.size(); i++)
-+        for (int i = 0; i < nonnulllist.size(); ++i)
+         for (int i = 0; i < nonnulllist.size(); i++)
          {
-             ItemStack itemstack = this.craftMatrix.getStackInSlot(i);
-             ItemStack itemstack1 = nonnulllist.get(i);
