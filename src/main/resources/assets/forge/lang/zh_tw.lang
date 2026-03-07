@@ -241,3 +241,11 @@ forge.container.enchant.limitedEnchantability=附魔能力限制
 attribute.name.generic.reachDistance=觸及半徑
 attribute.name.forge.swimSpeed=游泳速度
 
+item.burn_time=燃燒時間: %d遊戲刻 (%d秒)
+
+item.forge.advanced_shift_info=按住§eSHIFT§r以顯示更多資訊
+item.forge.advanced_ctrl_info=按住§9CTRL§r以顯示NBT清單
+item.forge.advanced_info=進階資訊:
+item.forge.nbt_list=NBT:
+item.forge.oredict=礦物詞典:
+item.forge.translation_key=程式碼名稱:

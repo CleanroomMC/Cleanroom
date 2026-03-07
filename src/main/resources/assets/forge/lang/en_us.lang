@@ -276,3 +276,12 @@ fml.button.open.file=Open %s
 forge.container.enchant.limitedEnchantability=Limited Enchantability
 attribute.name.generic.reachDistance=Reach Distance
 attribute.name.forge.swimSpeed=Swim Speed
+
+item.burn_time=Burn Time: %d ticks (%d seconds)
+
+item.forge.advanced_shift_info=Hold §eSHIFT§r to show advanced info
+item.forge.advanced_ctrl_info=Hold §9CTRL§r to show NBT list
+item.forge.advanced_info=Advanced Info:
+item.forge.nbt_list=NBT:
+item.forge.oredict=Ore Dictionaries:
+item.forge.translation_key=Unlocalized Name:
