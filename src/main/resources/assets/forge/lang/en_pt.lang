@@ -115,10 +115,10 @@ commands.forge.tracking.timingEntryNotSet=No data has been recorded yet, ye scal
 
 item.burn_time=Burn Time: %d ticks (%d seconds)
 
-item.forge.advanced_shift_info=Hold §eSHIFT§r to show advanced info
-item.forge.advanced_ctrl_info=Hold §9CTRL§r to show NBT list
-item.forge.advanced_info=Advanced Info:
-item.forge.nbt_list=NBT:
-item.forge.nbt_limited=(truncated to %d characters)
-item.forge.oredict=Ore Dictionaries:
-item.forge.translation_key=Unlocalized Name:
+item.forge.advanced_shift_info=Hold §eSHIFT§r t' spy extra fancy info, ye scallywag!
+item.forge.advanced_ctrl_info=Hold §9CTRL§r t' spy the NBT list, yarrr!
+item.forge.advanced_info=Secret Lore fer Clever Buccaneers:
+item.forge.nbt_list=NBT Booty:
+item.forge.nbt_limited=(trimmed t' %d glyphs, ye scurvy dog!)
+item.forge.oredict=Ore Dictionaries o' the realm:
+item.forge.translation_key=Unlocalized Name, matey:
