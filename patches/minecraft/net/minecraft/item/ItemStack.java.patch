@@ -275,7 +275,7 @@
 +            list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.burn_time", burnTime, burnTime / 20));
 +        }
 +
-+        int limit = net.minecraftforge.common.ForgeEarlyConfig.MAX_TOOLTIP_NBT_LIST_LENGTH;
++        int limit = net.minecraftforge.common.ForgeModContainer.maxTooltipNBTListLength;
 +        list.add(I18n.translateToLocal("item.forge.advanced_shift_info"));
 +        if (this.hasTagCompound() && limit > 0) list.add(I18n.translateToLocal("item.forge.advanced_ctrl_info"));
 +

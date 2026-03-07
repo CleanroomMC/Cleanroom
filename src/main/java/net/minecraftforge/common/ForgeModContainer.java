@@ -129,6 +129,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public static boolean logCascadingWorldGeneration = true; // see Chunk#logCascadingWorldGeneration()
     public static boolean fixVanillaCascading = false; // There are various places in vanilla that cause cascading worldgen. Enabling this WILL change where blocks are placed to prevent this.
                                                        // DO NOT contact Forge about worldgen not 'matching' vanilla if this flag is set.
+    public static int maxTooltipNBTListLength = 100;
 
     static final Logger log = LogManager.getLogger(ForgeVersion.MOD_ID);
 
@@ -384,6 +385,12 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                 "A list of modded gui classes considered as input method suitable.");
         inputMethodGuiWhiteList = prop.getStringList();
         prop.setLanguageKey("forge.configgui.inputMethodGuiWhiteList");
+        propOrder.add(prop.getName());
+
+        prop = config.get(Configuration.CATEGORY_CLIENT, "maxTooltipNBTListLength", 100,
+                "Maximum length (in characters) of NBT data (from NBTTagCompound#toString()) to display in tooltips (set to 0 to disable)");
+        maxTooltipNBTListLength = prop.getInt(100);
+        prop.setLanguageKey("forge.configgui.maxTooltipNBTListLength");
         propOrder.add(prop.getName());
 
         var categoryHudId = CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud";
