@@ -244,7 +244,7 @@ attribute.name.forge.swimSpeed=泳ぐ速度
 item.burn_time=燃焼時間: %d ticks (%d秒)
 
 item.forge.advanced_shift_info=§eSHIFT§rを押しながら詳細が表示されます
-item.forge.advanced_ctrl_info=§eSHIFT§rを押しながらNBTリストが表示されます
+item.forge.advanced_ctrl_info=§eCTRL§rを押しながらNBTリストが表示されます
 item.forge.advanced_info=詳細:
 item.forge.nbt_list=NBT:
 item.forge.nbt_limited=(%d文字に切り詰め)
