@@ -91,5 +91,6 @@ public class ForgeEarlyConfig {
         public boolean ENABLE_HRTF = false;
     }
 
-
+    @Config.Comment("Maximum number of items in an NBT list to display in tooltips (set to 0 to disable)")
+    public static int MAX_TOOLTIP_NBT_LIST_LENGTH = 100;
 }
