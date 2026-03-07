@@ -112,3 +112,13 @@ commands.forge.entity.list.spawner.none=No spawners found, blow the man down!
 
 commands.forge.tracking.timingEntrySet=%s - %s [%d, %d, %d]: %s, a fine entry!
 commands.forge.tracking.timingEntryNotSet=No data has been recorded yet, ye scallywag!
+
+item.burn_time=Burn Time: %d ticks (%d seconds)
+
+item.forge.advanced_shift_info=Hold §eSHIFT§r to show advanced info
+item.forge.advanced_ctrl_info=Hold §9CTRL§r to show NBT list
+item.forge.advanced_info=Advanced Info:
+item.forge.nbt_list=NBT:
+item.forge.nbt_limited=(truncated to %d characters)
+item.forge.oredict=Ore Dictionaries:
+item.forge.translation_key=Unlocalized Name:
