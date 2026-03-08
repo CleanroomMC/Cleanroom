@@ -90,6 +90,4 @@ public class ForgeEarlyConfig {
         @Config.Comment("Enable HRTF sound support")
         public boolean ENABLE_HRTF = false;
     }
-
-
 }

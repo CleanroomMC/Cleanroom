@@ -144,6 +144,8 @@ forge.configgui.logCascadingWorldGeneration=Log Cascading World Gen
 forge.configgui.logCascadingWorldGeneration.tooltip=Log cascading chunk generation issues during terrain population.
 forge.configgui.fixVanillaCascading=Fix Vanilla Cascading
 forge.configgui.fixVanillaCascading.tooltip=Fix various bugs in vanilla world gen that causes extra chunks to load. This WILL change your worldgen from vanilla. Do not report differences if this is enabled.
+forge.configgui.maxTooltipNBTListLength=Max NBT List Length
+forge.configgui.maxTooltipNBTListLength.tooltip=Maximum length (in characters) of NBT data (from NBTTagCompound#toString()) to display in tooltips (set to 0 to disable)
 
 fml.config.sample.basicDouble.tooltip=A double property with no defined bounds.
 fml.config.sample.basicDouble=Unbounded Double
@@ -276,3 +278,13 @@ fml.button.open.file=Open %s
 forge.container.enchant.limitedEnchantability=Limited Enchantability
 attribute.name.generic.reachDistance=Reach Distance
 attribute.name.forge.swimSpeed=Swim Speed
+
+item.burn_time=Burn Time: %d ticks (%d seconds)
+
+item.forge.advanced_shift_info=Hold §eSHIFT§r to show advanced info
+item.forge.advanced_ctrl_info=Hold §9CTRL§r to show NBT list
+item.forge.advanced_info=Advanced Info:
+item.forge.nbt_list=NBT:
+item.forge.nbt_limited=(truncated to %d characters)
+item.forge.oredict=Ore Dictionaries:
+item.forge.translation_key=Unlocalized Name:
