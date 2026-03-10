@@ -93,20 +93,17 @@ jobs:
       - name: Upload Universal Jar
         uses: actions/upload-artifact@v7
         with:
-          name: universal-jar-${{ env.CLEANROOM_VERSION }}.zip
           path: projects/cleanroom/build/libs/*-universal.jar
           archive: false
 
       - name: Upload Installer Jar
         uses: actions/upload-artifact@v7
         with:
-          name: installer-jar-${{ env.CLEANROOM_VERSION }}.zip
           path: projects/cleanroom/build/libs/*-installer.jar
           archive: false
 
       - name: Upload MMC pack zip
         uses: actions/upload-artifact@v7
         with:
-          name: mmc-pack-zip-${{ env.CLEANROOM_VERSION }}.zip
           path: projects/cleanroom/build/libs/*.zip
           archive: false

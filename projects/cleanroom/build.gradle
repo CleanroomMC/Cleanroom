@@ -295,7 +295,7 @@ dependencies {
 
     installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
 
-    installer 'com.github.oshi:oshi-core:6.9.2'
+    installer 'com.github.oshi:oshi-core:6.10.0'
     installer 'net.java.dev.jna:jna:5.18.1'
     installer 'net.java.dev.jna:jna-platform:5.18.1'
 
