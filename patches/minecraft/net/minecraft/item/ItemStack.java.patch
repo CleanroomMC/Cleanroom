@@ -270,11 +270,6 @@
              }
          }
  
-+        int burnTime = net.minecraft.tileentity.TileEntityFurnace.getItemBurnTime(this);
-+        if (burnTime > 0) {
-+            list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.burn_time", burnTime, burnTime / 20));
-+        }
-+
 +        int limit = net.minecraftforge.common.ForgeModContainer.maxTooltipNBTListLength;
 +        list.add(I18n.translateToLocal("item.forge.advanced_shift_info"));
 +        if (this.hasTagCompound() && limit > 0) list.add(I18n.translateToLocal("item.forge.advanced_ctrl_info"));
@@ -291,6 +286,11 @@
 +                for (int id : ids) {
 +                    list.add(pre + net.minecraftforge.oredict.OreDictionary.getOreName(id));
 +                }
++            }
++
++            int burnTime = net.minecraft.tileentity.TileEntityFurnace.getItemBurnTime(this);
++            if (burnTime > 0) {
++                list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.burn_time", burnTime, burnTime / 20));
 +            }
 +
 +            String baseName = this.getTranslationKey();
