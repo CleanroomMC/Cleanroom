@@ -3,7 +3,7 @@
 ## Features
 ### Implemented
 
-- 1.12.2 on Java 21
+- 1.12.2 on Java 25+ (21 on 0.4.x or lower)
 - *Latest* LWJGL3
 - A working *mod development template/kit*
 - Patches for loading incompatible mods
@@ -14,7 +14,6 @@
 ### Planning
 
 - CleanroomGradle to replace ForgeGradle
-- Classfile API
 - Actually useful APIs (See [here](https://github.com/orgs/CleanroomMC/projects/4/))
 - Optimized
 
@@ -23,10 +22,10 @@
 - Minecraft Coder Pack
 - CleanroomLoader (Continuation + Revamp of ForgeModLoader)
 - Cleanroom Minecraft (Continuation + Revamp of MinecraftForge)
-- Customized Mixin
+- Customized Mixin with improved bootstraps
+- [Foundation](https://github.com/kappa-maintainer/Foundation/), a LaunchWrapper replacement with better debug logging.
 - Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
-- [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue), a mod patches many incompatibilities.
-- Javassist
+- [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue), a mod patches many incompatible mods.
 - [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
 - [Forgelin-Continuous](https://www.curseforge.com/minecraft/mc-mods/forgelin-continuous) and [LibrarianLib-Continuous](https://www.curseforge.com/minecraft/mc-mods/librarianlib-continuous)
 
@@ -37,7 +36,7 @@
 - **WARNING:** Only MultiMC-based launchers are officially supported. This is because of the limit on removing vanilla libraries in other launchers.
 - **Remember to install [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue)!**
 - **And [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy)!**
-- If you were told to use **action builds** (aka bleeding edge), here: [Cleanroom](https://github.com/CleanroomMC/Cleanroom/actions), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
+- If you were told to use **action builds**, download them here: [Cleanroom](https://github.com/CleanroomMC/Cleanroom/actions), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
 - You need to log in your GitHub account to download action artifacts. 
 
 ## Cleanroom on Server
