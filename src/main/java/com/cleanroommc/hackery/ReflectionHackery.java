@@ -13,14 +13,15 @@ public final class ReflectionHackery {
 
     static {
         Field modifiers;
-        try {
-            modifiers = Field.class.getDeclaredField("modifiers"); // Try the standard way, this should always work with ImagineBreaker
-        } catch (ReflectiveOperationException e) {
+        modifiers = Fields.getDeclaredField(Field.class, "modifiers");
+        if (modifiers == null) {
             try {
-                modifiers = deepSearchForField(Field.class, field -> "modifiers".equals(field.getName()), false); // Reliable Fallback
+                modifiers = Field.class.getDeclaredField(
+                        "modifiers"); // Try the standard way, this should always work with ImagineBreaker
             } catch (ReflectiveOperationException ex) {
                 try {
-                    modifiers = Fields.getDeclaredField(Field.class, "modifiers");
+                    modifiers = deepSearchForField(
+                            Field.class, field -> "modifiers".equals(field.getName()), false); // Reliable Fallback
                 } catch (Exception exception) {
                     throw new RuntimeException(ex);
                 }
@@ -31,7 +32,8 @@ public final class ReflectionHackery {
     }
 
     // Sensitive fields such as "modifiers" are only query-able via the native getDeclaredFields0 call
-    public static @Nullable Field deepSearchForField(Class<?> clazz, Predicate<Field> search, boolean setAccessible) throws ReflectiveOperationException {
+    public static @Nullable Field deepSearchForField(Class<?> clazz, Predicate<Field> search, boolean setAccessible)
+            throws ReflectiveOperationException {
         Method getDeclaredFields0;
         if (System.getProperty("java.vendor").contains("IBM")) {
             getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFieldsImpl");
@@ -156,5 +158,4 @@ public final class ReflectionHackery {
         Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getDouble(owner, field);
     }
-
 }

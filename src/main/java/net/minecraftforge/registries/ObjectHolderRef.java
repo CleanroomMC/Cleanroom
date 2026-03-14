@@ -20,19 +20,16 @@
 package net.minecraftforge.registries;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import com.cleanroommc.hackery.ReflectionHackery;
-import sun.misc.Unsafe;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
-import zone.rong.imaginebreaker.ImagineBreaker;
 
 import javax.annotation.Nullable;
 
@@ -47,7 +44,6 @@ class ObjectHolderRef
     private boolean isValid;
     private ForgeRegistry<?> registry;
 
-    @SuppressWarnings("unchecked")
     ObjectHolderRef(Field field, ResourceLocation injectedObject, boolean extractFromExistingValues)
     {
         registry = getRegistryForType(field);
