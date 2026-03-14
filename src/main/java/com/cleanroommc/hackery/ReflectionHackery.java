@@ -1,12 +1,10 @@
 package com.cleanroommc.hackery;
 
+import net.lenni0451.reflect.Classes;
 import net.lenni0451.reflect.Fields;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-import zone.rong.imaginebreaker.ImagineBreaker;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.*;
-import java.net.URL;
 import java.util.function.Predicate;
 
 public final class ReflectionHackery {
@@ -21,7 +19,11 @@ public final class ReflectionHackery {
             try {
                 modifiers = deepSearchForField(Field.class, field -> "modifiers".equals(field.getName()), false); // Reliable Fallback
             } catch (ReflectiveOperationException ex) {
-                throw new RuntimeException(ex);
+                try {
+                    modifiers = Fields.getDeclaredField(Field.class, "modifiers");
+                } catch (Exception exception) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
         field$modifiers = modifiers;
@@ -62,111 +64,96 @@ public final class ReflectionHackery {
     }
 
     public static void stripFieldOfModifier(Field field, int modifierFlag) throws IllegalAccessException {
-        field$modifiers.setInt(field, field.getModifiers() & ~modifierFlag);
+        Fields.setInt(field, field$modifiers, field.getModifiers() & ~modifierFlag);
     }
 
-    public static URL[] getURL(ClassLoader loader) {
-        try{
-            Field UCP = LaunchClassLoader.class.getClassLoader().getClass().getSuperclass().getDeclaredField("ucp");
-            UCP.setAccessible(true);
-            Object urls = UCP.get(loader);
-            Class<?> urlClassPath = Class.forName("jdk.internal.loader.URLClassPath");
-            Method get = urlClassPath.getMethod("getURLs");
-            return (URL[]) get.invoke(urls);
-        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
-            return new URL[0];
-        }
-    }
-
-
-
-    public static void setField(Field field, Object owner, Object value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setField(Field field, Object owner, Object value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.set(owner, field, value);
     }
 
-    public static void setBooleanField(Field field, Object owner, boolean value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setBooleanField(Field field, Object owner, boolean value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setBoolean(owner, field, value);
     }
 
-    public static void setByteField(Field field, Object owner, byte value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setByteField(Field field, Object owner, byte value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setByte(owner, field, value);
     }
 
-    public static void setCharField(Field field, Object owner, char value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setCharField(Field field, Object owner, char value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setChar(owner, field, value);
     }
 
-    public static void setShortField(Field field, Object owner, short value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setShortField(Field field, Object owner, short value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setShort(owner, field, value);
     }
 
-    public static void setIntField(Field field, Object owner, int value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setIntField(Field field, Object owner, int value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setInt(owner, field, value);
     }
 
-    public static void setLongField(Field field, Object owner, long value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setLongField(Field field, Object owner, long value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setLong(owner, field, value);
     }
 
-    public static void setFloatField(Field field, Object owner, float value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setFloatField(Field field, Object owner, float value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setFloat(owner, field, value);
     }
 
-    public static void setDoubleField(Field field, Object owner, double value) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static void setDoubleField(Field field, Object owner, double value) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         Fields.setDouble(owner, field, value);
     }
 
-    public static Object getField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static Object getField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.get(owner, field);
     }
 
-    public static boolean getBooleanField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static boolean getBooleanField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getBoolean(owner, field);
     }
 
-    public static byte getByteField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static byte getByteField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getByte(owner, field);
     }
 
-    public static char getCharField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static char getCharField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getChar(owner, field);
     }
 
-    public static short getShortField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static short getShortField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getShort(owner, field);
     }
 
-    public static int getIntField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static int getIntField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getInt(owner, field);
     }
 
-    public static long getLongField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static long getLongField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getLong(owner, field);
     }
 
-    public static float getFloatField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static float getFloatField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getFloat(owner, field);
     }
 
-    public static double getDoubleField(Field field, Object owner) throws IllegalAccessException {
-        ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
+    public static double getDoubleField(Field field, Object owner) {
+        Classes.ensureInitialized(field.getDeclaringClass());
         return Fields.getDouble(owner, field);
     }
 
