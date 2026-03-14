@@ -148,7 +148,7 @@ class ObjectHolderRef
         {
             ReflectionHackery.setField(field, null, thing);
         }
-        catch (IllegalArgumentException | ReflectiveOperationException e)
+        catch (IllegalArgumentException e)
         {
             FMLLog.log.warn("Unable to set {} with value {} ({})", this.field, thing, this.injectedObject, e);
         }
