@@ -146,6 +146,8 @@ forge.configgui.fixVanillaCascading=Fix Vanilla Cascading
 forge.configgui.fixVanillaCascading.tooltip=Fix various bugs in vanilla world gen that causes extra chunks to load. This WILL change your worldgen from vanilla. Do not report differences if this is enabled.
 forge.configgui.maxTooltipNBTListLength=Max NBT List Length
 forge.configgui.maxTooltipNBTListLength.tooltip=Maximum length (in characters) of NBT data (from NBTTagCompound#toString()) to display in tooltips (set to 0 to disable)
+forge.configgui.displayAdvancedTooltips=Display Advanced Tooltip
+forge.configgui.displayAdvancedTooltips.tooltip=Display furnace burn time, oredicts, translation key and NBT list in tooltip.
 
 fml.config.sample.basicDouble.tooltip=A double property with no defined bounds.
 fml.config.sample.basicDouble=Unbounded Double

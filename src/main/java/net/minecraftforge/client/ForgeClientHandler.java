@@ -94,7 +94,7 @@ public class ForgeClientHandler
     @SubscribeEvent
     public static void appendAdvancedTooltip(ItemTooltipEvent event) {
 
-        if (!event.getFlags().isAdvanced()) {
+        if (!ForgeModContainer.displayAdvancedTooltips || !event.getFlags().isAdvanced()) {
             return;
         }
         List<String> list = event.getToolTip();
@@ -111,7 +111,7 @@ public class ForgeClientHandler
             list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.burn_time", burnTime, burnTime / 20));
         }
         
-        if (GuiScreen.isShiftKeyDown()) {
+        if (GuiScreen.isShiftKeyDown() && !stack.isEmpty()) {
             list.add(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + I18n.translateToLocal("item.forge.advanced_info"));
 
             int[] ids = OreDictionary.getOreIDs(stack);
@@ -129,7 +129,7 @@ public class ForgeClientHandler
             }
         }
 
-        if (GuiScreen.isCtrlKeyDown() && limit > 0) {
+        if (GuiScreen.isCtrlKeyDown() && limit > 0 && !stack.isEmpty()) {
             NBTTagCompound compound = stack.getTagCompound();
             if (compound != null && !compound.isEmpty()) {
                 list.add(head + I18n.translateToLocal("item.forge.nbt_list"));
