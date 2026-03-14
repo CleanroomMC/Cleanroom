@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -19,9 +18,9 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5.0.0
         with:
-          java-version: '25'
-          distribution: 'temurin'
-          
+          java-version: "25"
+          distribution: "temurin"
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
@@ -50,4 +49,4 @@ jobs:
         run: |
           curl -X POST "http://download.cleanroommc.com/api/webhook" \
             -H "Content-Type: application/json" \
-            -d "{\"secret\":\"${{ secrets.DOWNLOAD_UPDATE_TOKEN }}\",\"count\":10}"
+            -d "{\"secret\":\"${{ secrets.DOWNLOAD_UPDATE_TOKEN }}\",\"count\":10,\"token\":\"${{ secrets.DOWNLOAD_UPDATE_GITHUB_TOKEN }}\"}"
