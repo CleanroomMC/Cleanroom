@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/settings/GameSettings.java
 +++ after/net/minecraft/client/settings/GameSettings.java
-@@ -214,6 +214,7 @@
+@@ -69,6 +69,7 @@
+         }
+     };
+     public static final Splitter COLON_SPLITTER = Splitter.on(':');
++    @Deprecated
+     private static final String[] GUISCALES = new String[]
+         {
+             "options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"
+@@ -214,6 +215,7 @@
  
      public GameSettings(Minecraft mcIn, File mcDataDir)
      {
@@ -8,7 +16,7 @@
          this.mc = mcIn;
          this.optionsFile = new File(mcDataDir, "options.txt");
  
-@@ -232,6 +233,7 @@
+@@ -232,6 +234,7 @@
  
      public GameSettings()
      {
@@ -16,7 +24,7 @@
      }
  
      public static String getKeyDisplayString(int key)
-@@ -338,7 +340,7 @@
+@@ -338,7 +341,7 @@
                  this.mc.getTextureMapBlocks().setMipmapLevels(this.mipmapLevels);
                  this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                  this.mc.getTextureMapBlocks().setBlurMipmapDirect(false, this.mipmapLevels > 0);
@@ -25,7 +33,21 @@
              }
          }
  
-@@ -400,7 +402,7 @@
+@@ -368,7 +371,12 @@
+ 
+         if (settingsOption == GameSettings.Options.GUI_SCALE)
+         {
+-            this.guiScale = this.guiScale + value & 3;
++            int maxScale = 1;
++            while (this.mc.displayWidth / (maxScale + 1) >= 320 && this.mc.displayHeight / (maxScale + 1) >= 240)
++            {
++                maxScale++;
++            }
++            this.guiScale = (this.guiScale + value) % (maxScale + 1);
+         }
+ 
+         if (settingsOption == GameSettings.Options.PARTICLES)
+@@ -400,7 +408,7 @@
          if (settingsOption == GameSettings.Options.ANAGLYPH)
          {
              this.anaglyph = !this.anaglyph;
@@ -34,7 +56,16 @@
          }
  
          if (settingsOption == GameSettings.Options.GRAPHICS)
-@@ -767,6 +769,7 @@
+@@ -719,7 +727,7 @@
+         }
+         else if (settingOption == GameSettings.Options.GUI_SCALE)
+         {
+-            return s + getTranslation(GUISCALES, this.guiScale);
++            return s + (this.guiScale == 0 ? I18n.format("options.guiScale.auto") : this.guiScale);
+         }
+         else if (settingOption == GameSettings.Options.CHAT_VISIBILITY)
+         {
+@@ -767,6 +775,7 @@
  
      public void loadOptions()
      {
@@ -42,7 +73,7 @@
          try
          {
              if (!this.optionsFile.exists())
-@@ -775,7 +778,7 @@
+@@ -775,7 +784,7 @@
              }
  
              this.soundLevels.clear();
@@ -51,7 +82,7 @@
              NBTTagCompound nbttagcompound = new NBTTagCompound();
  
              for (String s : list)
-@@ -1111,7 +1114,12 @@
+@@ -1111,7 +1120,12 @@
                      {
                          if (s1.equals("key_" + keybinding.getKeyDescription()))
                          {
@@ -65,7 +96,7 @@
                          }
                      }
  
-@@ -1143,6 +1151,7 @@
+@@ -1143,6 +1157,7 @@
          {
              LOGGER.error("Failed to load options", (Throwable)exception2);
          }
@@ -73,7 +104,7 @@
      }
  
      private NBTTagCompound dataFix(NBTTagCompound p_189988_1_)
-@@ -1174,6 +1183,7 @@
+@@ -1174,6 +1189,7 @@
  
      public void saveOptions()
      {
@@ -81,7 +112,7 @@
          PrintWriter printwriter = null;
  
          try
-@@ -1248,7 +1258,8 @@
+@@ -1248,7 +1264,8 @@
  
              for (KeyBinding keybinding : this.keyBindings)
              {
@@ -91,7 +122,7 @@
              }
  
              for (SoundCategory soundcategory : SoundCategory.values())
-@@ -1485,4 +1496,35 @@
+@@ -1485,4 +1502,35 @@
              return value;
          }
      }
