@@ -395,7 +395,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         propOrder.add(prop.getName());
         
         prop = config.get(Configuration.CATEGORY_CLIENT, "displayAdvancedTooltips", false,
-            "Whether to displat advanced tooltips (will also disable NBT data in tooltips).)");
+            "Whether to disable advanced tooltips (will also disable NBT data in tooltips).)");
         displayAdvancedTooltips = prop.getBoolean();
         prop.setLanguageKey("forge.configgui.displayAdvancedTooltips");
         propOrder.add(prop.getName());
