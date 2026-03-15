@@ -8,3 +8,11 @@
          @Override
          public String getFormattingCode()
          {
+@@ -268,7 +267,6 @@
+         return this;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public String getFormattingCode()
+     {
+         if (this.isEmpty())
