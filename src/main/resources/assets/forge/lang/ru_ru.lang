@@ -203,7 +203,6 @@ forge.controlsgui.alt=ALT + %s
 fml.menu.mods=Моды
 fml.menu.mods.normal=Обычная
 fml.menu.mods.search=Поиск\:
-fml.menu.modoptions=Настройки модов...
 
 item.forge.bucketFilled.name=Ведро %s
 

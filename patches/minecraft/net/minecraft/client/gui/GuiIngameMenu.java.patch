@@ -1,18 +1,33 @@
 --- before/net/minecraft/client/gui/GuiIngameMenu.java
 +++ after/net/minecraft/client/gui/GuiIngameMenu.java
-@@ -30,9 +30,8 @@
+@@ -13,6 +13,7 @@
+ {
+     private int saveStep;
+     private int visibleTime;
++    private net.minecraftforge.client.gui.NotificationModUpdateScreen modUpdateNotification;
+ 
+     @Override
+     public void initGui()
+@@ -30,13 +31,13 @@
  
          this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + -16, I18n.format("menu.returnToGame")));
          this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.options")));
 -        GuiButton guibutton = this.addButton(
 -                                  new GuiButton(7, this.width / 2 + 2, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.shareToLan"))
 -                              );
-+        this.buttonList.add(new GuiButton(12, this.width / 2 + 2, this.height / 4 + 96 + i, 98, 20, I18n.format("fml.menu.modoptions")));
++        GuiButton modButton = this.addButton(new GuiButton(12, this.width / 2 + 2, this.height / 4 + 96 + i, 98, 20, I18n.format("fml.menu.mods")));
 +        GuiButton guibutton = this.addButton(new GuiButton(7, this.width / 2 - 100, this.height / 4 + 72 + -16, 200, 20, I18n.format("menu.shareToLan", new Object[0])));
          guibutton.enabled = this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic();
-         this.buttonList
-         .add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.advancements")));
-@@ -77,13 +76,19 @@
+-        this.buttonList
+-        .add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.advancements")));
++        this.buttonList.add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.advancements")));
+         this.buttonList.add(new GuiButton(6, this.width / 2 + 2, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.stats")));
++
++        this.modUpdateNotification = net.minecraftforge.client.gui.NotificationModUpdateScreen.init(this, modButton);
+     }
+ 
+     @Override
+@@ -77,13 +78,19 @@
                  this.mc.setIngameFocus();
                  break;
              case 5:
@@ -32,3 +47,10 @@
          }
      }
  
+@@ -100,5 +107,6 @@
+         this.drawDefaultBackground();
+         this.drawCenteredString(this.fontRenderer, I18n.format("menu.game"), this.width / 2, 40, 16777215);
+         super.drawScreen(mouseX, mouseY, partialTicks);
++        this.modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
+     }
+ }
