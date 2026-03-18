@@ -3,7 +3,7 @@
 ## Features
 ### Implemented
 
-- 1.12.2 on Java 25+ (21 on 0.4.x or lower)
+- 1.12.2 on Java 25+
 - *Latest* LWJGL3
 - A working *mod development template/kit*
 - Patches for loading incompatible mods
