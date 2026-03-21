@@ -90,4 +90,28 @@ public class ForgeEarlyConfig {
         @Config.Comment("Enable HRTF sound support")
         public boolean ENABLE_HRTF = false;
     }
+
+    public static ModernWindowsStyles MODERN_WINDOWS_STYLES = new ModernWindowsStyles();
+    public static class ModernWindowsStyles {
+        @Config.Comment("Enable immersive dark mode, it will follow windows theme settings")
+        public boolean USE_IMMERSIVE_DARK_MODE = true;
+        @Config.Comment("Backdrop type [0:auto 1:none 2:mica 3:acrylic 4:tabbed]")
+        public int SYSTEM_BACKDROP_TYPE;
+        @Config.Comment("Window corner type [0:default 1:do_not_round 2:round 3:round_small]")
+        public int WINDOW_CORNER;
+        @Config.Comment("Use default corner")
+        public boolean USE_DEFAULT_BORDER = true;
+        @Config.Comment("Hide window border")
+        public boolean HIDE_WINDOW_BORDER;
+        @Config.Comment("Window border color [RGB hex in int]")
+        public int BORDER_COLOR;
+        @Config.Comment("Use default caption color")
+        public boolean USE_DEFAULT_CAPTION = true;
+        @Config.Comment("Window caption color [RGB hex in int]")
+        public int CAPTION_COLOR;
+        @Config.Comment("Use default text color")
+        public boolean USE_DEFAULT_TEXT = true;
+        @Config.Comment("Window text color [RGB hex in int]")
+        public int TEXT_COLOR;
+    }
 }
