@@ -62,28 +62,7 @@
          this.resetStyles();
          int i;
  
-@@ -326,7 +327,7 @@
-         {
-             char c0 = text.charAt(i);
- 
--            if (c0 == 167 && i + 1 < text.length())
-+            if (c0 == 167 && i + 1 < text.length() && (isFormatColor(text.charAt(i + 1)) || isFormatSpecial(text.charAt(i + 1))))
-             {
-                 int i1 = "0123456789abcdefklmnor".indexOf(String.valueOf(text.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
- 
-@@ -338,11 +339,6 @@
-                     this.underlineStyle = false;
-                     this.italicStyle = false;
- 
--                    if (i1 < 0 || i1 > 15)
--                    {
--                        i1 = 15;
--                    }
--
-                     if (shadow)
-                     {
-                         i1 += 16;
-@@ -350,7 +346,7 @@
+@@ -350,7 +351,7 @@
  
                      int j1 = this.colorCode[i1];
                      this.textColor = j1;
@@ -92,7 +71,7 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,7 +375,7 @@
+@@ -379,7 +380,7 @@
                      this.strikethroughStyle = false;
                      this.underlineStyle = false;
                      this.italicStyle = false;
@@ -101,7 +80,7 @@
                  }
  
                  i++;
-@@ -409,7 +405,7 @@
+@@ -409,7 +410,7 @@
                      c0 = c1;
                  }
  
@@ -110,7 +89,7 @@
                  boolean flag = (c0 == 0 || j == -1 || this.unicodeFlag) && shadow;
  
                  if (flag)
-@@ -447,6 +443,15 @@
+@@ -447,6 +448,15 @@
  
                      f++;
                  }
@@ -126,7 +105,7 @@
  
                  if (this.strikethroughStyle)
                  {
-@@ -520,7 +525,7 @@
+@@ -520,7 +530,7 @@
              this.blue = (color >> 8 & 0xFF) / 255.0F;
              this.green = (color & 0xFF) / 255.0F;
              this.alpha = (color >> 24 & 0xFF) / 255.0F;
@@ -135,7 +114,7 @@
              this.posX = x;
              this.posY = y;
              this.renderStringAtPos(text, dropShadow);
-@@ -574,6 +579,7 @@
+@@ -574,6 +584,7 @@
  
      public int getCharWidth(char character)
      {
@@ -143,7 +122,7 @@
          if (character == 167)
          {
              return -1;
-@@ -672,7 +678,7 @@
+@@ -672,7 +683,7 @@
  
      private String trimStringNewline(String text)
      {
@@ -152,7 +131,7 @@
          {
              text = text.substring(0, text.length() - 1);
          }
-@@ -719,9 +725,91 @@
+@@ -719,9 +730,88 @@
  
      public List<String> listFormattedStringToWidth(String str, int wrapWidth)
      {
@@ -194,20 +173,17 @@
 +                    case '§':
 +                        if (++i < size) {
 +                            char next = sequence.charAt(i);
-+                            boolean isC = isFormatColor(next);
-+                            if (isC || isFormatSpecial(next)) {
-+                                if (next == 'l' || next == 'L') {
-+                                    bold = true;
-+                                } else if (next == 'r' || next == 'R') {
-+                                    bold = false;
-+                                    format.setLength(0);
-+                                } else if (isC) {
-+                                    bold = false;
-+                                }
-+                                format.append('§').append(next);
-+                                seg.append('§').append(next);
-+                                continue;
++                            if (next == 'l' || next == 'L') {
++                                bold = true;
++                            } else if (next == 'r' || next == 'R') {
++                                bold = false;
++                                format.setLength(0);
++                            } else if (isFormatColor(next)) {
++                                bold = false;
 +                            }
++                            format.append('§').append(next);
++                            seg.append('§').append(next);
++                            continue;
 +                        }
 +                    default:
 +                        int cWidth = getCharWidth(c);
@@ -245,7 +221,7 @@
      String wrapFormattedStringToWidth(String str, int wrapWidth)
      {
          int i = this.sizeStringToWidth(str, wrapWidth);
-@@ -740,6 +828,7 @@
+@@ -740,6 +830,7 @@
          }
      }
  
@@ -253,7 +229,7 @@
      private int sizeStringToWidth(String str, int wrapWidth)
      {
          int i = str.length();
-@@ -838,6 +927,26 @@
+@@ -838,6 +929,26 @@
      public boolean getBidiFlag()
      {
          return this.bidiFlag;
