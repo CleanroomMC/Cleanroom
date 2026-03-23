@@ -1,11 +1,28 @@
 --- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
 +++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
-@@ -75,6 +75,8 @@
+@@ -56,13 +56,14 @@
+ 
+                 if (s3 != null && !s3.isEmpty())
+                 {
+-                    int l = s2.lastIndexOf(32);
++                    com.cleanroommc.client.BreakIteratorHolder.BREAK_ITERATOR.setText(s4);
++                    int l = com.cleanroommc.client.BreakIteratorHolder.BREAK_ITERATOR.preceding(s2.length());
+ 
+                     if (l >= 0 && fontRendererIn.getStringWidth(s4.substring(0, l)) > 0)
+                     {
+                         s2 = s4.substring(0, l);
+ 
+-                        if (p_178908_3_)
++                        if (p_178908_3_ && s4.charAt(l) == ' ')
+                         {
+                             l++;
+                         }
+@@ -74,6 +75,8 @@
+                         s2 = "";
                          s3 = s4;
                      }
- 
-+                    s3 = FontRenderer.getFormatFromString(s2) + s3; //Forge: Fix chat formatting not surviving line wrapping.
 +
++                    s3 = FontRenderer.getFormatFromString(s2) + s3; //Forge: Fix chat formatting not surviving line wrapping.
+ 
                      TextComponentString textcomponentstring1 = new TextComponentString(s3);
                      textcomponentstring1.setStyle(itextcomponent1.getStyle().createShallowCopy());
-                     list1.add(j + 1, textcomponentstring1);
