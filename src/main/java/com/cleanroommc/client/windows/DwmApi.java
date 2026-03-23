@@ -1,6 +1,7 @@
 /// Copyright under MIT https://github.com/LemonCaramel/Mica
-package com.cleanroommc.client.mica;
+package com.cleanroommc.client.windows;
 
+import com.cleanroommc.client.windows.WindowsProperties;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -92,7 +93,7 @@ public interface DwmApi extends Library {
 
     static void updateDwm(final boolean fullscreen, final long window) {
         // Check build number
-        if (!Mica.checkCompatibility()) {
+        if (!WindowsProperties.checkCompatibility()) {
             return;
         }
 
@@ -107,7 +108,7 @@ public interface DwmApi extends Library {
         INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, new IntByReference(useImmersiveDarkMode ? BOOL_TRUE : BOOL_FALSE), INT_SIZE);
 
         // DWMWA_SYSTEMBACKDROP_TYPE
-        if (Mica.buildNumber >= Mica.BACKDROP_BUILD_NUM) {
+        if (WindowsProperties.buildNumber >= WindowsProperties.BACKDROP_BUILD_NUM) {
             final DWM_SYSTEMBACKDROP_TYPE systemBackdropType = DWM_SYSTEMBACKDROP_TYPE.fromInt(ForgeEarlyConfig.MODERN_WINDOWS_STYLES.SYSTEM_BACKDROP_TYPE);
             INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, new IntByReference(systemBackdropType.ordinal()), INT_SIZE);
         }
@@ -145,7 +146,7 @@ public interface DwmApi extends Library {
 
     static void disableWindowEffect(final HWND hwnd) {
         // ... DWMWA_USE_IMMERSIVE_DARK_MODE
-        if (Mica.buildNumber >= Mica.BACKDROP_BUILD_NUM) {
+        if (WindowsProperties.buildNumber >= WindowsProperties.BACKDROP_BUILD_NUM) {
             INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, new IntByReference(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_AUTO.ordinal()), INT_SIZE);
         }
         INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, new IntByReference(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DEFAULT.ordinal()), INT_SIZE);

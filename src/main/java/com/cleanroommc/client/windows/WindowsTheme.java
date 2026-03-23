@@ -1,4 +1,4 @@
-package com.cleanroommc.client.mica;
+package com.cleanroommc.client.windows;
 
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
