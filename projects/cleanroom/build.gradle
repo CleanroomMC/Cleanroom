@@ -762,7 +762,7 @@ universalJar {
     }
     doFirst {
         def classpath = new StringBuilder()
-        def artifacts = Util.getArtifacts(project, project.configurations.installer, false)
+        def artifacts = Util.getArtifacts(project.configurations.installer, false)
         artifacts.each { key, lib ->
             classpath.append("libraries/${lib.downloads.artifact.path} ")
         }
@@ -838,13 +838,14 @@ tasks.register('installerJar', Zip) {
 // TODO: MDK Task
 
 userdevConfig {
-    def artifacts = Util.getArtifacts(project, project.configurations.installer, true)
-    artifacts.each { key, lib ->
-        libraries.add(lib.name)
+    doFirst {
+        def artifacts = Util.getArtifacts(project.configurations.installer, true)
+        artifacts.each { key, lib ->
+            libraries.add(lib.name)
+        }
+        libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
+        universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
     }
-    libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
-    universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
-
     runs {
         client {
             main 'com.cleanroommc.boot.MainClient'

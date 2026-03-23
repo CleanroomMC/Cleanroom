@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.security.Permission;
 import java.util.Map;
 
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -56,7 +55,7 @@ public class ASMTransformerWrapper
     private static final LoadingCache<String, byte[]> wrapperCache = CacheBuilder.newBuilder()
         .maximumSize(30)
         .weakValues()
-        .build(new CacheLoader<String, byte[]>()
+        .build(new CacheLoader<>()
         {
             @Override
             public byte[] load(String file) throws Exception
@@ -128,13 +127,6 @@ public class ASMTransformerWrapper
         public InputStream getInputStream()
         {
             return new ByteArrayInputStream(wrapperCache.getUnchecked(file));
-        }
-
-        @Override
-        @Nullable
-        public Permission getPermission()
-        {
-            return null;
         }
     }
 
@@ -241,7 +233,7 @@ public class ASMTransformerWrapper
         {
             try
             {
-                this.parent = (IClassTransformer) Launch.classLoader.loadClass(getParentClass()).newInstance();
+                this.parent = (IClassTransformer) Launch.classLoader.loadClass(getParentClass()).getConstructor().newInstance();
             }
             catch(Exception e)
             {
