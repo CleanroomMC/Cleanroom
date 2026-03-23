@@ -987,10 +987,20 @@ public class ForgeHooksClient
         }
     }
     
-    public static void initializeWindowsTaskbarAPI(boolean isFullScreen) {
+    public static void setWindowStyle(boolean isFullScreen) {
         if (SystemUtils.IS_OS_WINDOWS) {
-            NtDll.getBuildNumber(Display.getWindow());
-            DwmApi.updateDwm(isFullScreen, Display.getWindow());
+            DwmApi.updateDwm(isFullScreen, WindowsProperties.handle);
+        }
+    }
+
+    public static void initializeWindowsInformation(){
+        if (SystemUtils.IS_OS_WINDOWS) {
+            NtDll.initializeWindowsInformation(Display.getWindow());
+        }
+    }
+
+    public static void initializeTaskbarAPI(){
+        if (SystemUtils.IS_OS_WINDOWS) {
             taskbarApi = TaskbarApi.create();
             taskbarApi.setProgressState(TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
         }

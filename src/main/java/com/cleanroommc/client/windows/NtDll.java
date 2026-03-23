@@ -1,7 +1,6 @@
 /// Copyright under MIT https://github.com/LemonCaramel/Mica
 package com.cleanroommc.client.windows;
 
-import com.cleanroommc.client.windows.WindowsProperties;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.ptr.IntByReference;
@@ -18,7 +17,7 @@ public interface NtDll extends Library {
             IntByReference BuildNumber
     );
 
-    static void getBuildNumber(long handle) {
+    static void initializeWindowsInformation(long handle) {
         // Get Windows Info
         final IntByReference majorVersion = new IntByReference();
         final IntByReference buildNumber = new IntByReference();
