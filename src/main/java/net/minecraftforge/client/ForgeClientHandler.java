@@ -20,12 +20,18 @@
 package net.minecraftforge.client;
 
 import com.cleanroommc.client.IMEHandler;
+import com.cleanroommc.client.windows.TaskbarApi;
+import com.cleanroommc.client.windows.WindowsProperties;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.WinDef;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -35,8 +41,10 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
+import org.lwjgl.glfw.GLFWNativeWin32;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +54,7 @@ import java.util.stream.Collectors;
 public class ForgeClientHandler
 {
     private static final Set<String> classList = Arrays.stream(ForgeModContainer.inputMethodGuiWhiteList).collect(Collectors.toSet());
+    private static boolean played = false;
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
     {
@@ -84,6 +93,17 @@ public class ForgeClientHandler
         }
 
         IMEHandler.setIME(canInput);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onGuiOpen(GuiOpenEvent event){
+        if (Util.getOSType().equals(Util.EnumOS.WINDOWS)){
+            if (event.getGui() instanceof GuiMainMenu && !played){
+                if (WindowsProperties.handle == Long.MIN_VALUE) return;
+                TaskbarApi.flashTaskbarUntilForeground(WindowsProperties.handle);
+                played = true;
+            }
+        }
     }
 
     private static boolean guiInWhiteList(GuiScreen gui) {
