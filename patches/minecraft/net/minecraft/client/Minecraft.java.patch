@@ -1,11 +1,6 @@
 --- before/net/minecraft/client/Minecraft.java
 +++ after/net/minecraft/client/Minecraft.java
-@@ -324,10 +324,12 @@
-     private final Tutorial tutorial;
-     long prevFrameTime = -1L;
-     private String debugProfilerName = "root";
-+    public com.cleanroommc.client.windows.TaskbarApi taskbarApi = null;
- 
+@@ -328,6 +328,7 @@
      public Minecraft(GameConfiguration gameConfig)
      {
          instance = this;
@@ -13,7 +8,7 @@
          this.gameDir = gameConfig.folderInfo.gameDir;
          this.fileAssets = gameConfig.folderInfo.assetsDir;
          this.fileResourcepacks = gameConfig.folderInfo.resourcePacksDir;
-@@ -340,7 +342,6 @@
+@@ -340,7 +341,6 @@
          this.sessionService = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString()).createMinecraftSessionService();
          this.session = gameConfig.userInfo.session;
          LOGGER.info("Setting user: {}", this.session.getUsername());
@@ -21,7 +16,7 @@
          this.isDemo = gameConfig.gameInfo.isDemo;
          this.displayWidth = gameConfig.displayInfo.width > 0 ? gameConfig.displayInfo.width : 1;
          this.displayHeight = gameConfig.displayInfo.height > 0 ? gameConfig.displayInfo.height : 1;
-@@ -460,10 +461,10 @@
+@@ -460,10 +460,10 @@
          this.resourceManager = new SimpleReloadableResourceManager(this.metadataSerializer);
          this.languageManager = new LanguageManager(this.metadataSerializer, this.gameSettings.language);
          this.resourceManager.registerReloadListener(this.languageManager);
@@ -34,7 +29,7 @@
          this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
          this.saveLoader = new AnvilSaveConverter(new File(this.gameDir, "saves"), this.dataFixer);
          this.soundHandler = new SoundHandler(this.resourceManager, this.gameSettings);
-@@ -483,6 +484,8 @@
+@@ -483,6 +483,8 @@
          this.resourceManager.registerReloadListener(new GrassColorReloadListener());
          this.resourceManager.registerReloadListener(new FoliageColorReloadListener());
          this.mouseHelper = new MouseHelper();
@@ -43,7 +38,7 @@
          this.checkGLError("Pre startup");
          GlStateManager.enableTexture2D();
          GlStateManager.shadeModel(7425);
-@@ -496,19 +499,24 @@
+@@ -496,19 +498,24 @@
          GlStateManager.loadIdentity();
          GlStateManager.matrixMode(5888);
          this.checkGLError("Startup");
@@ -68,16 +63,14 @@
          this.entityRenderer = new EntityRenderer(this, this.resourceManager);
          this.resourceManager.registerReloadListener(this.entityRenderer);
          this.blockRenderDispatcher = new BlockRendererDispatcher(this.modelManager.getBlockModelShapes(), this.blockColors);
-@@ -519,23 +527,30 @@
+@@ -519,23 +526,28 @@
          this.resourceManager.registerReloadListener(this.searchTreeManager);
          GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
          this.effectRenderer = new ParticleManager(this.world, this.renderEngine);
 +        net.minecraftforge.fml.client.SplashProgress.resume();
 +        net.minecraftforge.fml.common.ProgressManager.pop(bar);
 +        net.minecraftforge.fml.client.FMLClientHandler.instance().finishMinecraftLoading();
-+        if (this.taskbarApi != null) {
-+            this.taskbarApi.clearProgress(com.cleanroommc.client.windows.TaskbarApi.hwndFromGlfw(com.cleanroommc.client.windows.WindowsProperties.handle));
-+        }
++        net.minecraftforge.client.ForgeHooksClient.clearTaskbarProgress();
          this.checkGLError("Post startup");
 -        this.ingameGUI = new GuiIngame(this);
 +        this.ingameGUI = new net.minecraftforge.client.GuiIngameForge(this);
@@ -102,7 +95,7 @@
          if (this.gameSettings.fullScreen && !this.fullscreen)
          {
              this.toggleFullscreen();
-@@ -600,33 +615,18 @@
+@@ -600,34 +612,13 @@
          this.metadataSerializer.registerMetadataSectionType(new LanguageMetadataSectionSerializer(), LanguageMetadataSection.class);
      }
  
@@ -134,19 +127,15 @@
 -            }
 -
 -            Display.create();
+-        }
 +        Display.setTitle("Cleanroom");
 +
 +        Display.create((new PixelFormat()).withDepthBits(24));
-+
-+        if (net.minecraft.util.Util.getOSType().equals(Util.EnumOS.WINDOWS)) {
-+            com.cleanroommc.client.windows.NtDll.getBuildNumber(Display.getWindow());
-+            com.cleanroommc.client.windows.DwmApi.updateDwm(this.fullscreen, Display.getWindow());
-+            this.taskbarApi = com.cleanroommc.client.windows.TaskbarApi.create();
-+            this.taskbarApi.setProgressState(com.cleanroommc.client.windows.TaskbarApi.hwndFromGlfw(com.cleanroommc.client.windows.WindowsProperties.handle),com.cleanroommc.client.windows.TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
-         }
++        net.minecraftforge.client.ForgeHooksClient.initializeWindowsTaskbarAPI(fullscreen);
      }
  
-@@ -710,6 +710,7 @@
+     private void setInitialDisplayMode() throws LWJGLException
+@@ -710,6 +701,7 @@
  
      private void startTimerHackThread()
      {
@@ -154,7 +143,7 @@
          Thread thread = new Thread("Timer hack thread")
          {
              @Override
-@@ -728,6 +729,7 @@
+@@ -728,6 +720,7 @@
              }
          };
          thread.setDaemon(true);
@@ -162,7 +151,7 @@
          thread.start();
      }
  
-@@ -743,21 +745,23 @@
+@@ -743,21 +736,23 @@
          File file2 = new File(file1, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
          Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());
  
@@ -189,7 +178,7 @@
      }
  
      public boolean isUnicode()
-@@ -765,6 +769,7 @@
+@@ -765,6 +760,7 @@
          return this.languageManager.isCurrentLocaleUnicode() || this.gameSettings.forceUnicodeFont;
      }
  
@@ -197,7 +186,7 @@
      public void refreshResources()
      {
          List<IResourcePack> list = Lists.newArrayList(this.defaultResourcePacks);
-@@ -964,11 +969,6 @@
+@@ -964,11 +960,6 @@
  
      public void displayGuiScreen(@Nullable GuiScreen guiScreenIn)
      {
@@ -209,7 +198,7 @@
          if (guiScreenIn == null && this.world == null)
          {
              guiScreenIn = new GuiMainMenu();
-@@ -978,6 +978,17 @@
+@@ -978,6 +969,17 @@
              guiScreenIn = new GuiGameOver(null);
          }
  
@@ -227,7 +216,7 @@
          if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer)
          {
              this.gameSettings.showDebugInfo = false;
-@@ -1088,7 +1099,7 @@
+@@ -1088,7 +1090,7 @@
          long i1 = System.nanoTime() - l;
          this.checkGLError("Pre render");
          this.profiler.endStartSection("sound");
@@ -236,7 +225,7 @@
          this.profiler.endSection();
          this.profiler.startSection("render");
          GlStateManager.pushMatrix();
-@@ -1100,11 +1111,13 @@
+@@ -1100,11 +1102,13 @@
  
          if (!this.skipRenderWorld)
          {
@@ -250,7 +239,7 @@
          }
  
          this.profiler.endSection();
-@@ -1469,10 +1482,9 @@
+@@ -1469,10 +1473,9 @@
              {
                  BlockPos blockpos = this.objectMouseOver.getBlockPos();
  
@@ -263,7 +252,7 @@
                      this.player.swingArm(EnumHand.MAIN_HAND);
                  }
              }
-@@ -1506,7 +1518,7 @@
+@@ -1506,7 +1509,7 @@
                      case BLOCK:
                          BlockPos blockpos = this.objectMouseOver.getBlockPos();
  
@@ -272,7 +261,7 @@
                          {
                              this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                              break;
-@@ -1520,6 +1532,7 @@
+@@ -1520,6 +1523,7 @@
                          }
  
                          this.player.resetCooldown();
@@ -280,7 +269,7 @@
                  }
  
                  this.player.swingArm(EnumHand.MAIN_HAND);
-@@ -1594,6 +1607,7 @@
+@@ -1594,6 +1598,7 @@
                          }
                      }
  
@@ -288,7 +277,7 @@
                      if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS
                         )
                      {
-@@ -1607,6 +1621,10 @@
+@@ -1607,6 +1612,10 @@
  
      public void toggleFullscreen()
      {
@@ -299,7 +288,7 @@
          try
          {
              this.fullscreen = !this.fullscreen;
-@@ -1655,6 +1673,11 @@
+@@ -1655,6 +1664,11 @@
              }
  
              Display.setFullscreen(this.fullscreen);
@@ -311,7 +300,7 @@
              Display.setVSyncEnabled(this.gameSettings.enableVsync);
              this.updateDisplay();
          }
-@@ -1701,6 +1724,8 @@
+@@ -1701,6 +1715,8 @@
              this.rightClickDelayTimer--;
          }
  
@@ -320,7 +309,7 @@
          this.profiler.startSection("gui");
  
          if (!this.isGamePaused)
-@@ -1907,6 +1932,7 @@
+@@ -1907,6 +1923,7 @@
          }
  
          this.profiler.endSection();
@@ -328,7 +317,7 @@
          this.systemTime = getSystemTime();
      }
  
-@@ -2012,6 +2038,7 @@
+@@ -2012,6 +2029,7 @@
                      }
                  }
              }
@@ -336,7 +325,7 @@
          }
  
          this.processKeyBinds();
-@@ -2260,6 +2287,8 @@
+@@ -2260,6 +2278,8 @@
      {
          while (Mouse.next())
          {
@@ -345,7 +334,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
  
-@@ -2315,6 +2344,7 @@
+@@ -2315,6 +2335,7 @@
                      this.currentScreen.handleMouseInput();
                  }
              }
@@ -353,7 +342,7 @@
          }
      }
  
-@@ -2332,6 +2362,7 @@
+@@ -2332,6 +2353,7 @@
  
      public void launchIntegratedServer(String folderName, String worldName, @Nullable WorldSettings worldSettingsIn)
      {
@@ -361,7 +350,7 @@
          this.loadWorld(null);
          System.gc();
          ISaveHandler isavehandler = this.saveLoader.getSaveLoader(folderName, false);
-@@ -2378,6 +2409,12 @@
+@@ -2378,6 +2400,12 @@
  
          while (!this.integratedServer.serverIsInRunLoop())
          {
@@ -374,7 +363,7 @@
              String s = this.integratedServer.getUserMessage();
  
              if (s != null)
-@@ -2402,8 +2439,14 @@
+@@ -2402,8 +2430,14 @@
          SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
          NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
          networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, null));
@@ -391,7 +380,7 @@
          this.networkManager = networkmanager;
      }
  
-@@ -2414,6 +2457,8 @@
+@@ -2414,6 +2448,8 @@
  
      public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage)
      {
@@ -400,7 +389,7 @@
          if (worldClientIn == null)
          {
              NetHandlerPlayClient nethandlerplayclient = this.getConnection();
-@@ -2426,6 +2471,18 @@
+@@ -2426,6 +2462,18 @@
              if (this.integratedServer != null && this.integratedServer.isAnvilFileSet())
              {
                  this.integratedServer.initiateShutdown();
@@ -419,7 +408,7 @@
              }
  
              this.integratedServer = null;
-@@ -2449,6 +2506,7 @@
+@@ -2449,6 +2497,7 @@
              this.ingameGUI.resetPlayersOverlayFooterHeader();
              this.setServerData(null);
              this.integratedServerIsRunning = false;
@@ -427,7 +416,7 @@
          }
  
          this.soundHandler.stopSounds();
-@@ -2465,6 +2523,7 @@
+@@ -2465,6 +2514,7 @@
          }
  
          TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
@@ -435,7 +424,7 @@
  
          if (worldClientIn != null)
          {
-@@ -2526,6 +2585,7 @@
+@@ -2526,6 +2576,7 @@
                                   this.player == null ? new RecipeBook() : this.player.getRecipeBook()
                               );
          this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
@@ -443,7 +432,7 @@
          this.player.dimension = dimension;
          this.renderViewEntity = this.player;
          this.player.preparePlayerToSpawn();
-@@ -2573,159 +2633,8 @@
+@@ -2573,159 +2624,8 @@
      {
          if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS)
          {
@@ -605,7 +594,7 @@
          }
      }
  
-@@ -2773,7 +2682,14 @@
+@@ -2773,7 +2673,14 @@
          {
              public String call()
              {
@@ -621,7 +610,7 @@
              }
          });
          theCrash.getCategory().addDetail("GL Caps", new ICrashReportDetail<String>()
-@@ -2878,6 +2794,7 @@
+@@ -2878,6 +2785,7 @@
          return instance;
      }
  
@@ -629,7 +618,7 @@
      public ListenableFuture<Object> scheduleResourcesRefresh()
      {
          return this.addScheduledTask(new Runnable()
-@@ -3056,18 +2973,8 @@
+@@ -3056,18 +2964,8 @@
  
      public static int getGLMaximumTextureSize()
      {
@@ -650,7 +639,7 @@
      }
  
      @Override
-@@ -3200,6 +3107,9 @@
+@@ -3200,6 +3098,9 @@
          }
          else if (this.player != null)
          {
@@ -660,7 +649,7 @@
              if (this.player.world.provider instanceof WorldProviderHell)
              {
                  return MusicTicker.MusicType.NETHER;
-@@ -3231,11 +3141,11 @@
+@@ -3231,11 +3132,11 @@
              {
                  if (Keyboard.getEventKeyState())
                  {
@@ -674,7 +663,7 @@
                      {
                          this.ingameGUI
                          .getChatGUI()
-@@ -3253,6 +3163,7 @@
+@@ -3253,6 +3154,7 @@
                          }
                      }
                  }
@@ -682,7 +671,7 @@
              }
          }
      }
-@@ -3291,7 +3202,7 @@
+@@ -3291,7 +3193,7 @@
              }
              catch (Exception exception)
              {
@@ -691,7 +680,7 @@
              }
          }
          else
-@@ -3384,6 +3295,12 @@
+@@ -3384,6 +3286,12 @@
          return this.blockColors;
      }
  
@@ -704,7 +693,7 @@
      public boolean isReducedDebug()
      {
          return this.player != null && this.player.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
-@@ -3397,5 +3314,10 @@
+@@ -3397,5 +3305,10 @@
      public Tutorial getTutorial()
      {
          return this.tutorial;

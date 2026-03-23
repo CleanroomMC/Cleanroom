@@ -37,6 +37,10 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
+import com.cleanroommc.client.windows.DwmApi;
+import com.cleanroommc.client.windows.NtDll;
+import com.cleanroommc.client.windows.TaskbarApi;
+import com.cleanroommc.client.windows.WindowsProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -138,10 +142,12 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.async.ThreadNameCachingStrategy;
 import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -152,6 +158,8 @@ import com.google.common.collect.Maps;
 public class ForgeHooksClient
 {
     //private static final ResourceLocation ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+    
+    private static TaskbarApi taskbarApi;
 
     static TextureManager engine()
     {
@@ -977,5 +985,22 @@ public class ForgeHooksClient
         {
             FMLLog.log.error("Unable to invalidate log4j thread cache, thread fields in logs may be inaccurate", e);
         }
+    }
+    
+    public static void initializeWindowsTaskbarAPI(boolean isFullScreen) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            NtDll.getBuildNumber(Display.getWindow());
+            DwmApi.updateDwm(isFullScreen, Display.getWindow());
+            taskbarApi = TaskbarApi.create();
+            taskbarApi.setProgressState(TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
+        }
+    }
+    
+    public static void clearTaskbarProgress() {
+        taskbarApi.clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
+    }
+    
+    public static TaskbarApi getTaskbarApi() {
+        return taskbarApi;
     }
 }
