@@ -5,8 +5,8 @@
                  if (s3 != null && !s3.isEmpty())
                  {
 -                    int l = s2.lastIndexOf(32);
-+                    com.cleanroommc.client.BreakIteratorHolder.BREAK_ITERATOR.setText(s4);
-+                    int l = com.cleanroommc.client.BreakIteratorHolder.BREAK_ITERATOR.preceding(s2.length());
++                    com.cleanroommc.client.ICU4JInstances.BREAK_ITERATOR.setText(s4);
++                    int l = com.cleanroommc.client.ICU4JInstances.BREAK_ITERATOR.preceding(s2.length());
  
                      if (l >= 0 && fontRendererIn.getStringWidth(s4.substring(0, l)) > 0)
                      {

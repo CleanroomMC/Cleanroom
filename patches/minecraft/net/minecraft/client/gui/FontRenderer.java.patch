@@ -140,7 +140,7 @@
 +        {
 +            return java.util.Collections.singletonList("");
 +        }
-+        com.ibm.icu.segmenter.Segments segments = com.cleanroommc.client.SegmenterHolder.SEGMENTER.segment(str);
++        com.ibm.icu.segmenter.Segments segments = com.cleanroommc.client.ICU4JInstances.SEGMENTER.segment(str);
 +        List<String> list = new java.util.ArrayList<>();
 +        StringBuilder line = new StringBuilder();
 +        StringBuilder seg = new StringBuilder();
