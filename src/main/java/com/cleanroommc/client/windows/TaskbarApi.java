@@ -47,6 +47,12 @@ public final class TaskbarApi implements AutoCloseable {
     private static final int VTBL_SET_PROGRESS_VALUE = 9;
     private static final int VTBL_SET_PROGRESS_STATE = 10;
     private static final int VTBL_SET_OVERLAY_ICON = 18;
+    
+    private static TaskbarApi INSTANCE;
+    
+    public static TaskbarApi getInstance() {
+        return INSTANCE;
+    }
 
     public enum TBPFLAG {
         TBPF_NOPROGRESS(0x00000000),
@@ -85,6 +91,7 @@ public final class TaskbarApi implements AutoCloseable {
 
         TaskbarApi api = new TaskbarApi(ppv.getValue(), needCoUninitialize);
         api.hrInit(); // 必须先调用
+        INSTANCE = api;
         return api;
     }
 

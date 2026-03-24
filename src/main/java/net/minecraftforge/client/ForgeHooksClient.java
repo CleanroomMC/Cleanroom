@@ -158,8 +158,6 @@ import com.google.common.collect.Maps;
 public class ForgeHooksClient
 {
     //private static final ResourceLocation ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-    
-    private static TaskbarApi taskbarApi;
 
     static TextureManager engine()
     {
@@ -1001,16 +999,14 @@ public class ForgeHooksClient
 
     public static void initializeTaskbarAPI(){
         if (SystemUtils.IS_OS_WINDOWS) {
-            taskbarApi = TaskbarApi.create();
-            taskbarApi.setProgressState(TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
+            try (TaskbarApi taskbarApi = TaskbarApi.create()) {
+                taskbarApi.setProgressState(
+                        TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
+            }
         }
     }
     
     public static void clearTaskbarProgress() {
-        taskbarApi.clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
-    }
-    
-    public static TaskbarApi getTaskbarApi() {
-        return taskbarApi;
+        TaskbarApi.getInstance().clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
     }
 }
