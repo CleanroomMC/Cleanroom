@@ -660,7 +660,7 @@ tasks.register('launcherJson') {
                 ]
             ]
         ]
-        Util.getArtifacts(project, project.configurations.installer, false)
+        Util.getArtifacts(project.configurations.installer, false)
             .each { key, lib ->
                 json.libraries.add(lib)
             }

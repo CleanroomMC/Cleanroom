@@ -37,6 +37,10 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
+import com.cleanroommc.client.windows.DwmApi;
+import com.cleanroommc.client.windows.NtDll;
+import com.cleanroommc.client.windows.TaskbarApi;
+import com.cleanroommc.client.windows.WindowsProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -138,10 +142,12 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.async.ThreadNameCachingStrategy;
 import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -977,5 +983,30 @@ public class ForgeHooksClient
         {
             FMLLog.log.error("Unable to invalidate log4j thread cache, thread fields in logs may be inaccurate", e);
         }
+    }
+    
+    public static void setWindowStyle(boolean isFullScreen) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            DwmApi.updateDwm(isFullScreen, WindowsProperties.handle);
+        }
+    }
+
+    public static void initializeWindowsInformation(){
+        if (SystemUtils.IS_OS_WINDOWS) {
+            NtDll.initializeWindowsInformation(Display.getWindow());
+        }
+    }
+
+    public static void initializeTaskbarAPI(){
+        if (SystemUtils.IS_OS_WINDOWS) {
+            try (TaskbarApi taskbarApi = TaskbarApi.create()) {
+                taskbarApi.setProgressState(
+                        TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
+            }
+        }
+    }
+    
+    public static void clearTaskbarProgress() {
+        TaskbarApi.getInstance().clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
     }
 }
