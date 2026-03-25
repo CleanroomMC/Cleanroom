@@ -999,10 +999,21 @@ public class ForgeHooksClient
 
     public static void initializeTaskbarAPI(){
         if (SystemUtils.IS_OS_WINDOWS) {
-            try (TaskbarApi taskbarApi = TaskbarApi.create()) {
+            try {
+                TaskbarApi taskbarApi = TaskbarApi.create();
                 taskbarApi.setProgressState(
                         TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
+            } catch (Throwable t) {
+                TaskbarApi.clearInstance();
             }
+        }
+    }
+
+    public static void shutdownTaskbarAPI() {
+        TaskbarApi api = TaskbarApi.getInstance();
+        if (api != null) {
+            api.close();
+            TaskbarApi.clearInstance();
         }
     }
     

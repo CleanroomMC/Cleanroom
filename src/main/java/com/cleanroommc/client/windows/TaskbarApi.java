@@ -25,6 +25,7 @@ public final class TaskbarApi implements AutoCloseable {
 
     private final Pointer raw;
     private final boolean needCoUninitialize;
+    private boolean closed;
 
     private static final GUID CLSID_TASKBAR_LIST =
             new GUID("{56FDF344-FD6D-11d0-958A-006097C9A090}");
@@ -90,7 +91,7 @@ public final class TaskbarApi implements AutoCloseable {
         checkHR(hr, "CoCreateInstance(CLSID_TaskbarList, IID_ITaskbarList3)");
 
         TaskbarApi api = new TaskbarApi(ppv.getValue(), needCoUninitialize);
-        api.hrInit(); // 必须先调用
+        api.hrInit();
         INSTANCE = api;
         return api;
     }
@@ -141,6 +142,11 @@ public final class TaskbarApi implements AutoCloseable {
 
     @Override
     public void close() {
+        if (closed) {
+            return;
+        }
+        closed = true;
+
         try {
             release();
         } finally {
@@ -176,6 +182,14 @@ public final class TaskbarApi implements AutoCloseable {
         info.uCount = 0;
         info.dwTimeout = 0;
         return User32Ex.INSTANCE.FlashWindowEx(info);
+    }
+
+    public static void clearInstance() {
+        TaskbarApi old = INSTANCE;
+        INSTANCE = null;
+        if (old != null) {
+            old.close();
+        }
     }
 
     private HRESULT invokeHRESULT(int vtblIndex, Object... args) {
