@@ -1004,6 +1004,7 @@ public class ForgeHooksClient
                 taskbarApi.setProgressState(
                         TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
             } catch (Throwable t) {
+                FMLLog.log.error("Unable to initialize Taskbar API", t);
                 TaskbarApi.clearInstance();
             }
         }
@@ -1019,7 +1020,12 @@ public class ForgeHooksClient
     
     public static void clearTaskbarProgress() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            TaskbarApi.getInstance().clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
+            var taskbar = TaskbarApi.getInstance();
+            if (taskbar != null) {
+                taskbar.clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
+            } else {
+                FMLLog.log.error("Unable to clear taskbar progress, cannot invoke a null object.");
+            }
         }
     }
 }
