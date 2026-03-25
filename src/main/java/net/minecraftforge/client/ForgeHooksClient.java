@@ -1007,6 +1007,8 @@ public class ForgeHooksClient
     }
     
     public static void clearTaskbarProgress() {
-        TaskbarApi.getInstance().clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
+        if (SystemUtils.IS_OS_WINDOWS) {
+            TaskbarApi.getInstance().clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
+        }
     }
 }
