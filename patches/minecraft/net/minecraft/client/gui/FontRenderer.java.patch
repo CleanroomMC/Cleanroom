@@ -62,28 +62,7 @@
          this.resetStyles();
          int i;
  
-@@ -326,7 +327,7 @@
-         {
-             char c0 = text.charAt(i);
- 
--            if (c0 == 167 && i + 1 < text.length())
-+            if (c0 == 167 && i + 1 < text.length() && (isFormatColor(text.charAt(i + 1)) || isFormatSpecial(text.charAt(i + 1))))
-             {
-                 int i1 = "0123456789abcdefklmnor".indexOf(String.valueOf(text.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
- 
-@@ -338,11 +339,6 @@
-                     this.underlineStyle = false;
-                     this.italicStyle = false;
- 
--                    if (i1 < 0 || i1 > 15)
--                    {
--                        i1 = 15;
--                    }
--
-                     if (shadow)
-                     {
-                         i1 += 16;
-@@ -350,7 +346,7 @@
+@@ -350,7 +351,7 @@
  
                      int j1 = this.colorCode[i1];
                      this.textColor = j1;
@@ -92,7 +71,7 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,7 +375,7 @@
+@@ -379,7 +380,7 @@
                      this.strikethroughStyle = false;
                      this.underlineStyle = false;
                      this.italicStyle = false;
@@ -101,7 +80,7 @@
                  }
  
                  i++;
-@@ -409,7 +405,7 @@
+@@ -409,7 +410,7 @@
                      c0 = c1;
                  }
  
@@ -110,7 +89,7 @@
                  boolean flag = (c0 == 0 || j == -1 || this.unicodeFlag) && shadow;
  
                  if (flag)
-@@ -447,6 +443,15 @@
+@@ -447,6 +448,15 @@
  
                      f++;
                  }
@@ -126,7 +105,7 @@
  
                  if (this.strikethroughStyle)
                  {
-@@ -520,7 +525,7 @@
+@@ -520,7 +530,7 @@
              this.blue = (color >> 8 & 0xFF) / 255.0F;
              this.green = (color & 0xFF) / 255.0F;
              this.alpha = (color >> 24 & 0xFF) / 255.0F;
@@ -135,7 +114,7 @@
              this.posX = x;
              this.posY = y;
              this.renderStringAtPos(text, dropShadow);
-@@ -574,6 +579,7 @@
+@@ -574,6 +584,7 @@
  
      public int getCharWidth(char character)
      {
@@ -143,7 +122,7 @@
          if (character == 167)
          {
              return -1;
-@@ -672,7 +678,7 @@
+@@ -672,7 +683,7 @@
  
      private String trimStringNewline(String text)
      {
@@ -152,97 +131,89 @@
          {
              text = text.substring(0, text.length() - 1);
          }
-@@ -719,9 +725,96 @@
+@@ -719,9 +730,88 @@
  
      public List<String> listFormattedStringToWidth(String str, int wrapWidth)
      {
 -        return Arrays.asList(this.wrapFormattedStringToWidth(str, wrapWidth).split("\n"));
-+        if (str.isEmpty()){
++        if (str.isEmpty())
++        {
 +            return java.util.Collections.singletonList("");
 +        }
-+        com.cleanroommc.client.BreakIteratorHolder.BREAK_ITERATOR.setText(str);
++        com.ibm.icu.segmenter.Segments segments = com.cleanroommc.client.ICU4JInstances.SEGMENTER.segment(str);
 +        List<String> list = new java.util.ArrayList<>();
-+        int lineWidth = 0, fed = 0, icui, d, prevFormat = 0;
-+        StringBuilder format = new StringBuilder(); // For next line's format since it should use format of previous line
-+        int[] widths = new int[str.length()];
-+        String[] formats = new String[str.length()];
 +        StringBuilder line = new StringBuilder();
-+        String temp;
-+        char[] chars = str.toCharArray();
-+        char f;
-+        boolean bold = false;
-+        for (int i = 0; i < chars.length; i++) {
-+            char current = chars[i];
-+            switch (current) {
-+                case '\n':
-+                    list.add(line.toString());
-+                    fed = i + 1;
-+                    line.delete(0, line.length()).append(format);
-+                    prevFormat = format.length();
-+                    lineWidth = 0;
-+                    widths[0] = lineWidth;
-+                    formats[0] = format.toString();
-+                    continue;
-+                case '§':
-+                    if (i + 1 < chars.length) { // Prevent out of bound
-+                        f = chars[i + 1];
-+                        boolean isC = isFormatColor(f);
-+                        if (isC || isFormatSpecial(f)) {
-+                            if (f != 'l' && f != 'L') { // Check start of bold style
-+                                if (f == 'r' || f == 'R') { // Not Bold, check end of style
-+                                    bold = false;
-+                                    format.delete(0, format.length()); // Clear the format
-+                                } else if (isC) {
-+                                    bold = false;
-+                                }
-+                            } else {
++        StringBuilder seg = new StringBuilder();
++        StringBuilder format = new StringBuilder();
++        StringBuilder segFormat = new StringBuilder();
++        int formatSize = 0;
++        boolean bold  = false;
++        int lineWidth = 0;
++        int segmentWidth;
++        out:
++        for (java.util.Iterator<com.ibm.icu.segmenter.Segment> it = segments.segments().iterator(); it.hasNext(); ) {
++            com.ibm.icu.segmenter.Segment segment = it.next();
++            segmentWidth = 0;
++            int size = segment.limit - segment.start;
++            CharSequence sequence = segment.getSubSequence();
++            segFormat.setLength(0);
++            segFormat.append(format);
++            for (int i = 0; i < size; i++) {
++                char c = sequence.charAt(i);
++                switch (c) {
++                    case '\n':
++                        line.append(seg);
++                        seg.setLength(0);
++                        list.add(line.toString());
++                        line.setLength(0);
++                        line.append(format);
++                        formatSize = format.length();
++                        lineWidth = 0;
++                        continue out;
++                    case '§':
++                        if (++i < size) {
++                            char next = sequence.charAt(i);
++                            if (next == 'l' || next == 'L') {
 +                                bold = true;
++                            } else if (next == 'r' || next == 'R') {
++                                bold = false;
++                                format.setLength(0);
++                            } else if (isFormatColor(next)) {
++                                bold = false;
 +                            }
-+                            format.append('§').append(f); // Add to current format code
-+                            line.append('§').append(f);
-+                            widths[i - fed] = lineWidth;
-+                            widths[i - fed + 1] = lineWidth;
-+                            formats[i - fed] = format.toString();
-+                            formats[i - fed + 1] = format.toString();
-+                            i++;
++                            format.append('§').append(next);
++                            seg.append('§').append(next);
 +                            continue;
 +                        }
-+                    }
-+                default:
-+                    line.append(current);
-+                    lineWidth += getCharWidth(current);
-+                    if (bold) {
-+                        lineWidth++; // Bold style is one pixel wider
-+                    }
-+                    break;
-+            }
-+            widths[i - fed] = lineWidth;
-+            formats[i - fed] = format.toString();
-+            if (lineWidth > wrapWidth) {
-+                if (com.cleanroommc.client.BreakIteratorHolder.BREAK_ITERATOR.isBoundary(i)) {
-+                    icui = i;
-+                } else {
-+                    icui = com.cleanroommc.client.BreakIteratorHolder.BREAK_ITERATOR.preceding(i);
-+                }
-+                if (icui <= fed + 1 || i == icui) {
-+                    list.add(line.substring(0,line.length() - 1));
-+                    fed = i;
-+                    line.delete(0, line.length()).append(format).append(current);
-+                    prevFormat = format.length();
-+                    lineWidth = getCharWidth(current);
-+                } else {
-+                    d = icui - fed;
-+                    if (line.charAt(d + prevFormat - 2) == '§') d++;
-+                    list.add(line.substring(0, d + prevFormat));
-+                    temp = line.substring(d + prevFormat);
-+                    fed += d;
-+                    line.delete(0, line.length()).append(formats[d]).append(temp);
-+                    prevFormat = formats[d].length();
-+                    lineWidth = lineWidth - widths[d - 1];
++                    default:
++                        int cWidth = getCharWidth(c);
++                        if (bold) cWidth++;
++                        if (lineWidth + cWidth > wrapWidth) {
++                            if (line.length() == formatSize) {
++                                line.append(seg);
++                                seg.setLength(0);
++                                lineWidth = 0;
++                                segmentWidth = 0;
++                            } else {
++                                lineWidth = segmentWidth;
++                                format.setLength(0);
++                                format.append(segFormat);
++                            }
++                            list.add(line.toString());
++                            line.setLength(0);
++                            line.append(format);
++                            formatSize = format.length();
++                        }
++                        seg.append(c);
++                        lineWidth += cWidth;
++                        segmentWidth += cWidth;
 +                }
 +            }
 +        }
-+        list.add(line.toString());
++        line.append(seg);
++        if (!line.isEmpty()) {
++            list.add(line.toString());
++        }
 +        return list;
      }
  
@@ -250,7 +221,7 @@
      String wrapFormattedStringToWidth(String str, int wrapWidth)
      {
          int i = this.sizeStringToWidth(str, wrapWidth);
-@@ -740,6 +833,7 @@
+@@ -740,6 +830,7 @@
          }
      }
  
@@ -258,7 +229,7 @@
      private int sizeStringToWidth(String str, int wrapWidth)
      {
          int i = str.length();
-@@ -838,6 +932,26 @@
+@@ -838,6 +929,26 @@
      public boolean getBidiFlag()
      {
          return this.bidiFlag;
