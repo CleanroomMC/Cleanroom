@@ -49,6 +49,16 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+          useGitmojis: false
+          includeInvalidCommits: true
+          reverseOrder: true
+
       - name: Generate MMC Pack
         run: python main.py
         working-directory: ./script/MMC-Builder
@@ -68,10 +78,20 @@ jobs:
           rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev.jar
           rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev-temp.jar
 
-      - uses: ncipollo/release-action@v1.20.0
+      - uses: ncipollo/release-action@v1.21.0
         with:
           artifacts: "projects/cleanroom/build/libs/*"
-          generateReleaseNotes: true
+          makeLatest: true
+          allowUpdates: true
+          body: ${{ steps.changelog.outputs.changes }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit CHANGELOG.md
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          branch: main
+          commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
+          file_pattern: CHANGELOG.md
 
       - name: Trigger download server update
         run: |
