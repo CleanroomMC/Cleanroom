@@ -8,6 +8,7 @@ import com.cleanroommc.client.windows.WindowsProperties;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ProgressManager;
@@ -89,8 +90,12 @@ public class LoadingTracker {
 
         initialized = true;
 
-        setTaskbarState(TaskbarApi.TBPFLAG.TBPF_NORMAL);
-        updateTaskbar(0);
+        if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) {
+            setTaskbarState(TaskbarApi.TBPFLAG.TBPF_NORMAL);
+            updateTaskbar(0);
+        } else {
+            setTaskbarState(TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
+        }
     }
 
     public static void finish() {
@@ -224,7 +229,7 @@ public class LoadingTracker {
     }
 
     private static void updateTaskbar(int progress) {
-        if (!SystemUtils.IS_OS_WINDOWS) return;
+        if (!SystemUtils.IS_OS_WINDOWS || !ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) return;
         TaskbarApi api = TaskbarApi.getInstance();
         if (api == null || WindowsProperties.handle == Long.MIN_VALUE) return;
         try {

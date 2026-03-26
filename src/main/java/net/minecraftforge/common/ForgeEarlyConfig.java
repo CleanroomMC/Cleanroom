@@ -113,5 +113,7 @@ public class ForgeEarlyConfig {
         public boolean USE_DEFAULT_TEXT = true;
         @Config.Comment("Window text color [RGB hex in int]")
         public int TEXT_COLOR;
+        @Config.Comment("Use cleanroom embed loading progressbar handling")
+        public boolean UPDATE_WINDOWS_TASKBAR_PROGRESS = true;
     }
 }
