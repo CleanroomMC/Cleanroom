@@ -7,9 +7,9 @@ import com.cleanroommc.client.windows.TaskbarApi;
 import com.cleanroommc.client.windows.WindowsProperties;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 
@@ -19,25 +19,34 @@ public class LoadingTracker {
     private static final int MAX_PROGRESS = 10000;
 
     public enum Phase {
-        CONSTRUCTING       ("Constructing Mods"),
-        PREINIT            ("Pre-initializing Mods"),
-        RELOAD_BLOCKS      ("ModelLoader: blocks"),
-        RELOAD_ITEMS       ("ModelLoader: items"),
-        RELOAD_BAKING      ("ModelLoader: baking"),
-        RELOAD_TEXTURES    ("Texture stitching"),
-        RENDERING_SETUP    ("Rendering Setup"),
-        INIT               ("Initializing Mods"),
-        POSTINIT           ("Post-initializing Mods"),
-        AVAILABLE          ("Completing Load"),
-        FINISHING          ("Finishing");
+        CONSTRUCTING          ("Constructing Mods"),
+        LOADING_RESOURCES     ("Loading Resources"),
+        RELOADING             ("Reloading"),
+        PREINIT               ("Pre-initializing Mods"),
+        LOADING_RESOURCE      ("Loading Resource"),
+        LOADING_SOUNDS        ("Loading sounds"),
+        RENDERING_SETUP       ("Rendering Setup"),
+        RELOAD_BLOCKS         ("ModelLoader: blocks"),
+        RELOAD_ITEMS          ("ModelLoader: items"),
+        RELOAD_TEXTURES       ("Texture stitching"),
+        TEXTURE_CREATION      ("Texture creation"),
+        TEXTURE_MIPMAP_UPLOAD ("Texture mipmap and upload"),
+        RELOAD_BAKING         ("ModelLoader: baking"),
+        INIT                  ("Initializing Mods"),
+        POSTINIT              ("Post-initializing Mods"),
+        AVAILABLE             ("Completing Load"),
+        MOD_ID_MAPPING        ("ModIdMapping"),
+        FINISHING             ("Finishing");
 
         public final String displayName;
         Phase(String displayName) { this.displayName = displayName; }
     }
 
     private static final int[] DEFAULT_WEIGHTS = {
-            600, 800, 1200, 1500, 2000, 1500, 500, 800, 600, 300, 200
+            700, 250, 250, 900, 500, 150, 150, 1200, 1300, 400, 700, 900, 1600, 800, 600, 200, 150, 100
     };
+
+    private static final int TIMING_FILE_VERSION = 3;
 
     private static int[] phaseFrom;
     private static int[] phaseTo;
@@ -54,6 +63,8 @@ public class LoadingTracker {
         int phaseCount = Phase.values().length;
         phaseStartNano  = new long[phaseCount];
         phaseDurationMs = new long[phaseCount];
+        currentPhase = null;
+        lastProgress = 0;
 
         int[] weights = loadHistory();
         if (weights == null) {
@@ -100,6 +111,12 @@ public class LoadingTracker {
         if (!initialized) return;
 
         if (currentPhase != null) {
+            if (phase.ordinal() < currentPhase.ordinal()) {
+                return;
+            }
+            if (phase == currentPhase) {
+                return;
+            }
             endPhaseTimer(currentPhase);
         }
 
@@ -113,55 +130,66 @@ public class LoadingTracker {
         if (!initialized) return;
 
         Phase detectedPhase = null;
+        ProgressBar detectedBar = null;
         ProgressBar activeBar = null;
 
         Iterator<ProgressBar> iter = ProgressManager.barIterator();
-        List<String> titles = new ArrayList<>();
         while (iter.hasNext()) {
             ProgressBar bar = iter.next();
-            String title = bar.getTitle();
-            titles.add(title);
+            if (bar.getSteps() > 0) {
+                activeBar = bar;
+            }
 
-            Phase phase = matchReloadPhase(title, titles);
+            Phase phase = matchReloadPhase(bar.getTitle());
             if (phase != null) {
                 detectedPhase = phase;
-                activeBar = bar;
+                detectedBar = bar;
             }
         }
 
-        if (detectedPhase != null && activeBar != null) {
-            if (currentPhase != detectedPhase) {
-                beginPhase(detectedPhase);
+        if (detectedPhase != null && detectedBar != null) {
+            if (currentPhase == detectedPhase) {
+                updateProgress(detectedPhase, getSubProgress(detectedBar));
+                return;
             }
-            double sub = activeBar.getSteps() > 0
-                    ? (double) activeBar.getStep() / activeBar.getSteps()
-                    : 0.0;
-            updateProgress(detectedPhase, sub);
+
+            if (currentPhase == null || detectedPhase.ordinal() > currentPhase.ordinal()) {
+                beginPhase(detectedPhase);
+                updateProgress(detectedPhase, getSubProgress(detectedBar));
+            }
             return;
         }
 
-        if (currentPhase != null) {
-            iter = ProgressManager.barIterator();
-            while (iter.hasNext()) {
-                ProgressBar bar = iter.next();
-                if (bar.getSteps() > 1) {
-                    double sub = (double) bar.getStep() / bar.getSteps();
-                    updateProgress(currentPhase, sub);
-                    return;
-                }
-            }
+        if (currentPhase != null && activeBar != null) {
+            updateProgress(currentPhase, getSubProgress(activeBar));
         }
     }
 
-    private static Phase matchReloadPhase(String lastTitle, List<String> allTitles) {
-        switch (lastTitle) {
+    private static Phase matchReloadPhase(String title) {
+        switch (title) {
+            case "Construction":          return Phase.CONSTRUCTING;
+            case "Loading Resources":     return Phase.LOADING_RESOURCES;
+            case "Reloading":             return Phase.RELOADING;
+            case "PreInitialization":     return Phase.PREINIT;
+            case "Loading Resource":      return Phase.LOADING_RESOURCE;
+            case "Loading sounds":        return Phase.LOADING_SOUNDS;
+            case "Initialization":        return Phase.INIT;
+            case "PostInitialization":    return Phase.POSTINIT;
+            case "LoadComplete":          return Phase.AVAILABLE;
+            case "ModIdMapping":          return Phase.MOD_ID_MAPPING;
             case "ModelLoader: blocks":   return Phase.RELOAD_BLOCKS;
             case "ModelLoader: items":    return Phase.RELOAD_ITEMS;
             case "ModelLoader: baking":   return Phase.RELOAD_BAKING;
             case "Texture stitching":     return Phase.RELOAD_TEXTURES;
+            case "Texture creation":      return Phase.TEXTURE_CREATION;
+            case "Texture mipmap and upload": return Phase.TEXTURE_MIPMAP_UPLOAD;
             case "Rendering Setup":       return Phase.RENDERING_SETUP;
             default:                      return null;
         }
+    }
+
+    private static double getSubProgress(ProgressBar bar) {
+        return bar.getSteps() > 0 ? (double) bar.getStep() / bar.getSteps() : 0.0;
     }
 
     private static void updateProgress(Phase phase, double subProgress) {
@@ -169,7 +197,7 @@ public class LoadingTracker {
         int from = phaseFrom[idx];
         int to   = phaseTo[idx];
         int progress = from + (int)((to - from) * Math.min(1.0, Math.max(0.0, subProgress)));
-        
+
         if (progress > lastProgress) {
             lastProgress = progress;
             updateTaskbar(progress);
@@ -209,16 +237,20 @@ public class LoadingTracker {
 
     private static File getTimingFile() {
         File configDir = Loader.instance().getConfigDir();
-        return new File(configDir, TIMING_FILE_NAME);
+        if (configDir == null && Launch.minecraftHome != null) {
+            configDir = new File(Launch.minecraftHome, "config");
+        }
+        return configDir != null ? new File(configDir, TIMING_FILE_NAME) : null;
     }
 
     private static int[] loadHistory() {
         File file = getTimingFile();
+        if (file == null) return null;
         if (!file.isFile()) return null;
 
         try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
             int version = dis.readInt();
-            if (version != 1) return null;
+            if (version != TIMING_FILE_VERSION) return null;
 
             int count = dis.readInt();
             if (count != Phase.values().length) return null;
@@ -243,12 +275,13 @@ public class LoadingTracker {
         if (!hasData) return;
 
         File file = getTimingFile();
+        if (file == null) return;
         try {
             file.getParentFile().mkdirs();
         } catch (Throwable ignored) {}
 
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(file))) {
-            dos.writeInt(1); // version
+            dos.writeInt(TIMING_FILE_VERSION);
             dos.writeInt(Phase.values().length);
             for (long duration : phaseDurationMs) {
                 dos.writeInt(Math.max(1, (int) duration));
