@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.cleanroommc.client.LoadingTracker;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.MixinContainer;
 import com.cleanroommc.common.ConfigAnytimeContainer;
@@ -554,6 +555,7 @@ public class Loader
     {
         progressBar = ProgressManager.push("Loading", 7);
         progressBar.step("Constructing Mods");
+        LoadingTracker.beginPhase(LoadingTracker.Phase.CONSTRUCTING);
         initializeLoader();
         mods = Lists.newArrayList();
         namedMods = Maps.newHashMap();
@@ -612,6 +614,7 @@ public class Loader
             FMLLog.log.debug("No user mod signature data found");
         }
         progressBar.step("Initializing mods Phase 1");
+        LoadingTracker.beginPhase(LoadingTracker.Phase.PREINIT);
         modController.transition(LoaderState.PREINITIALIZATION, false);
     }
 
@@ -744,20 +747,24 @@ public class Loader
     public void initializeMods()
     {
         progressBar.step("Initializing mods Phase 2");
+        LoadingTracker.beginPhase(LoadingTracker.Phase.INIT);
         CraftingHelper.loadRecipes(false);
         // Mod controller should be in the initialization state here
         modController.distributeStateMessage(LoaderState.INITIALIZATION);
         progressBar.step("Initializing mods Phase 3");
+        LoadingTracker.beginPhase(LoadingTracker.Phase.POSTINIT);
         modController.transition(LoaderState.POSTINITIALIZATION, false);
         modController.distributeStateMessage(FMLInterModComms.IMCEvent.class);
         ItemStackHolderInjector.INSTANCE.inject();
         modController.distributeStateMessage(LoaderState.POSTINITIALIZATION);
         progressBar.step("Finishing up");
+        LoadingTracker.beginPhase(LoadingTracker.Phase.AVAILABLE);
         modController.transition(LoaderState.AVAILABLE, false);
         modController.distributeStateMessage(LoaderState.AVAILABLE);
         GameData.freezeData();
         FMLLog.log.info("Forge Mod Loader has successfully loaded {} mod{}", mods.size(), mods.size() == 1 ? "" : "s");
         progressBar.step("Completing Minecraft initialization");
+        LoadingTracker.beginPhase(LoadingTracker.Phase.FINISHING);
     }
 
     public ICrashCallable getCallableCrashInformation()

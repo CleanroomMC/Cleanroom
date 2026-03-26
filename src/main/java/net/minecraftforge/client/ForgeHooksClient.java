@@ -37,6 +37,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
+import com.cleanroommc.client.LoadingTracker;
 import com.cleanroommc.client.windows.DwmApi;
 import com.cleanroommc.client.windows.NtDll;
 import com.cleanroommc.client.windows.TaskbarApi;
@@ -1001,13 +1002,12 @@ public class ForgeHooksClient
         if (SystemUtils.IS_OS_WINDOWS) {
             try {
                 TaskbarApi taskbarApi = TaskbarApi.create();
-                taskbarApi.setProgressState(
-                        TaskbarApi.hwndFromGlfw(WindowsProperties.handle), TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
             } catch (Throwable t) {
                 FMLLog.log.error("Unable to initialize Taskbar API", t);
                 TaskbarApi.clearInstance();
             }
         }
+        LoadingTracker.init();
     }
 
     public static void shutdownTaskbarAPI() {
@@ -1019,6 +1019,7 @@ public class ForgeHooksClient
     }
     
     public static void clearTaskbarProgress() {
+        LoadingTracker.finish();
         if (SystemUtils.IS_OS_WINDOWS) {
             var taskbar = TaskbarApi.getInstance();
             if (taskbar != null) {
