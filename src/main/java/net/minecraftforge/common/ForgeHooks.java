@@ -46,13 +46,11 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.crash.CrashReport;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -195,7 +193,7 @@ public class ForgeHooks
     @Nonnull
     public static ItemStack getGrassSeed(Random rand, int fortune)
     {
-        if (seedList.size() == 0)
+        if (seedList.isEmpty())
         {
             return ItemStack.EMPTY; //Some bad mods hack in and empty our list, so lets not hard crash -.-
         }
@@ -670,7 +668,7 @@ public class ForgeHooks
         PlayerEvent.Visibility event = new PlayerEvent.Visibility(player);
         MinecraftForge.EVENT_BUS.post(event);
         double value = event.getVisibilityModifier() * xzDistance;
-        return value >= maxXZDistance ? maxXZDistance : value;
+        return Math.min(value, maxXZDistance);
     }
 
     public static boolean isLivingOnLadder(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityLivingBase entity)
@@ -778,7 +776,7 @@ public class ForgeHooks
 
             // Append the previous left overs.
             String part = string.substring(lastEnd, start);
-            if (part.length() > 0)
+            if (!part.isEmpty())
             {
                 if (ichat == null)
                     ichat = new TextComponentString(part);
@@ -827,7 +825,7 @@ public class ForgeHooks
         String end = string.substring(lastEnd);
         if (ichat == null)
             ichat = new TextComponentString(end);
-        else if (end.length() > 0)
+        else if (!end.isEmpty())
             ichat.appendText(string.substring(lastEnd));
         return ichat;
     }
@@ -934,7 +932,7 @@ public class ForgeHooks
             }
             else if (blockSnapshots.size() == 1)
             {
-                placeEvent = ForgeEventFactory.onPlayerBlockPlace(player, blockSnapshots.get(0), side, hand);
+                placeEvent = ForgeEventFactory.onPlayerBlockPlace(player, blockSnapshots.getFirst(), side, hand);
             }
 
             if (placeEvent != null && placeEvent.isCanceled())
@@ -1032,7 +1030,7 @@ public class ForgeHooks
         return ret;
     }
 
-    private static ThreadLocal<EntityPlayer> craftingPlayer = new ThreadLocal<EntityPlayer>();
+    private static final ThreadLocal<EntityPlayer> craftingPlayer = new ThreadLocal<>();
     public static void setCraftingPlayer(EntityPlayer player)
     {
         craftingPlayer.set(player);
@@ -1171,7 +1169,7 @@ public class ForgeHooks
         MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.LeftClickEmpty(player));
     }
 
-    private static ThreadLocal<Deque<LootTableContext>> lootContext = new ThreadLocal<Deque<LootTableContext>>();
+    private static final ThreadLocal<Deque<LootTableContext>> lootContext = new ThreadLocal<>();
     private static LootTableContext getLootTableContext()
     {
         LootTableContext ctx = lootContext.get().peek();
@@ -1221,7 +1219,7 @@ public class ForgeHooks
         public final boolean custom;
         public int poolCount = 0;
         public int entryCount = 0;
-        private HashSet<String> entryNames = Sets.newHashSet();
+        private final HashSet<String> entryNames = Sets.newHashSet();
 
         private LootTableContext(ResourceLocation name, boolean custom)
         {
@@ -1406,12 +1404,12 @@ public class ForgeHooks
                     }
                     catch (JsonParseException jsonparseexception)
                     {
-                        FMLLog.log.error("Parsing error loading built-in advancement " + key, (Throwable)jsonparseexception);
+                        FMLLog.log.error("Parsing error loading built-in advancement {}", key, jsonparseexception);
                         return false;
                     }
                     catch (IOException ioexception)
                     {
-                        FMLLog.log.error("Couldn't read advancement " + key + " from " + file, (Throwable)ioexception);
+                        FMLLog.log.error("Couldn't read advancement {} from {}", key, file, ioexception);
                         return false;
                     }
                     finally
@@ -1434,13 +1432,13 @@ public class ForgeHooks
         if (type == ConnectionType.VANILLA)
         {
             IForgeRegistry<IRecipe> vanilla = RegistryManager.VANILLA.getRegistry(IRecipe.class);
-            if (recipes.size() > 0)
-                recipes = recipes.stream().filter(e -> vanilla.containsValue(e)).collect(Collectors.toList());
-            if (display.size() > 0)
-                display = display.stream().filter(e -> vanilla.containsValue(e)).collect(Collectors.toList());
+            if (!recipes.isEmpty())
+                recipes = recipes.stream().filter(vanilla::containsValue).collect(Collectors.toList());
+            if (!display.isEmpty())
+                display = display.stream().filter(vanilla::containsValue).collect(Collectors.toList());
         }
 
-        if (recipes.size() > 0 || display.size() > 0)
+        if (!recipes.isEmpty() || !display.isEmpty())
             connection.sendPacket(new SPacketRecipeBook(state, recipes, display, isGuiOpen, isFilteringCraftable));
     }
 
