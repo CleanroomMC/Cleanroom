@@ -161,7 +161,7 @@
 +                && (!com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
 +                || com.cleanroommc.kirino.KirinoClientCore.isRenderUnsupported()))
 +        {
-+            if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_ENGINE.nextExpectedPhase() == com.cleanroommc.kirino.engine.FramePhase.PREPARE)
++            if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_ENGINE.isAfterFirstPrepare())
 +            {
 +                com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.PREPARE);
 +            }
