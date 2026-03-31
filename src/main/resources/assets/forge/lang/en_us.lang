@@ -277,6 +277,26 @@ fml.button.continue=Continue
 fml.button.open.mods.folder=Open Mods Folder
 fml.button.open.file=Open %s
 
+fml.game=Game
+fml.world=World
+fml.generate_structures.title=Generate Structures
+fml.bonus_chest.title=Bonus Chest
+fml.world_options=World Options...
+fml.world_options.title=World Options
+fml.game_rules.title=Game Rules
+fml.edit_game_rules=Edit Game Rules...
+fml.edit_game_rules.title=Edit Game Rules
+fml.game_rule_changes.title=Game Rule Changes
+fml.abandon_game_rule_changes=Are you sure you want to discard your pending game rule changes?
+fml.death_messages.title=Show death messages
+fml.mob_loot.title=Drop mob loot
+fml.destructive_mob_actions.title=Allow destructive mob actions
+fml.keep_inventory.title=Keep inventory after death
+fml.spectators_generate_terrain.title=Allow spectators to generate terrain
+fml.spawn_mobs.title=Spawn mobs
+fml.advance_time.title=Advance time of day
+fml.update_weather.title=Update weather
+
 forge.container.enchant.limitedEnchantability=Limited Enchantability
 attribute.name.generic.reachDistance=Reach Distance
 attribute.name.forge.swimSpeed=Swim Speed

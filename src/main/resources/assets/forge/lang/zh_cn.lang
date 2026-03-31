@@ -239,6 +239,26 @@ fml.button.continue=继续
 fml.button.open.mods.folder=打开Mods文件夹
 fml.button.open.file=打开%s
 
+fml.game=游戏
+fml.world=世界
+fml.generate_structures.title=生成结构
+fml.bonus_chest.title=奖励箱
+fml.world_options=世界选项...
+fml.world_options.title=世界选项
+fml.game_rules.title=游戏规则
+fml.edit_game_rules=编辑游戏规则...
+fml.edit_game_rules.title=编辑游戏规则
+fml.game_rule_changes.title=游戏规则更改
+fml.abandon_game_rule_changes=你确定要放弃未保存的游戏规则更改吗?
+fml.death_messages.title=显示死亡消息
+fml.mob_loot.title=生物战利品掉落
+fml.destructive_mob_actions.title=允许破坏性生物行为
+fml.keep_inventory.title=死亡后保留物品栏
+fml.spectators_generate_terrain.title=允许旁观者生成地形
+fml.spawn_mobs.title=生成生物
+fml.advance_time.title=游戏内时间流逝
+fml.update_weather.title=天气更替
+
 forge.container.enchant.limitedEnchantability=附魔能力限制
 attribute.name.generic.reachDistance=触及半径
 attribute.name.forge.swimSpeed=游泳速度
