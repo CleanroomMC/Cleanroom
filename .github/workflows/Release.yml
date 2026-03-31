@@ -58,6 +58,8 @@ jobs:
           useGitmojis: false
           includeInvalidCommits: true
           reverseOrder: true
+          excludeTypes: style,build,docs
+        continue-on-error: true
 
       - name: Generate MMC Pack
         run: python main.py
