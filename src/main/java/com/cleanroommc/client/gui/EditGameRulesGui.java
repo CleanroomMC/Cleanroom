@@ -49,12 +49,12 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
         var mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             var gameRules = mc.world.getGameRules();
-            for (int i = 0; i < RULE_KEYS.length; i++) {
+            for (int i = 0; i < 8; i++) {
                 ruleStates[i] = gameRules.getBoolean(RULE_KEYS[i]);
                 originalStates[i] = ruleStates[i];
             }
         } else {
-            for (int i = 0; i < RULE_KEYS.length; i++) {
+            for (int i = 0; i < 8; i++) {
                 ruleStates[i] = false;
                 originalStates[i] = false;
             }
@@ -63,18 +63,17 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
 
     @Override
     public void initGui() {
-        this.buttonList.add(new GuiButton(0, this.width / 2 - 154, this.height / 6 + 180, 150,
+        this.buttonList.add(new GuiButton(8, this.width / 2 - 154, this.height / 6 + 180, 150,
                 20, I18n.format("gui.done")));
-        this.buttonList.add(new GuiButton(1, this.width / 2 + 4, this.height / 6 + 180, 150,
+        this.buttonList.add(new GuiButton(9, this.width / 2 + 4, this.height / 6 + 180, 150,
                 20, I18n.format("gui.cancel")));
 
-        int lineHeight = 170 / (TITLES.length - 1);
-        for (int i = 0; i < TITLES.length; i++) {
+        int lineHeight = 170 / 7;
+        for (int i = 0; i < 8; i++) {
             int y = 30 + lineHeight * i;
-            int buttonId = 2 + i;
             int x = this.width / 2 + 63;
             var buttonText = ruleStates[i] ? I18n.format("gui.yes") : I18n.format("gui.no");
-            var btn = new GuiButton(buttonId, x, y - 6, 45, 20, buttonText);
+            var btn = new GuiButton(i, x, y - 6, 45, 20, buttonText);
             this.buttonList.add(btn);
         }
     }
@@ -86,32 +85,30 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
         }
 
         switch (button.id) {
-            case 0 -> {
+            case 8 -> {
                 applyChanges();
                 this.mc.displayGuiScreen(this.parent);
             }
-            case 1 -> onCancel();
+            case 9 -> onCancel();
             default -> {
-                int index = button.id - 2;
-                if (index >= 0 && index < ruleStates.length) {
-                    ruleStates[index] = !ruleStates[index];
-                    button.displayString = ruleStates[index] ? I18n.format("gui.yes") : I18n.format("gui.no");
-                    boolean anyChanged = false;
-                    for (int i = 0; i < ruleStates.length; i++) {
-                        if (ruleStates[i] != originalStates[i]) {
-                            anyChanged = true;
-                            break;
-                        }
+                int index = button.id;
+                ruleStates[index] = !ruleStates[index];
+                button.displayString = ruleStates[index] ? I18n.format("gui.yes") : I18n.format("gui.no");
+                boolean anyChanged = false;
+                for (int i = 0; i < 8; i++) {
+                    if (ruleStates[i] != originalStates[i]) {
+                        anyChanged = true;
+                        break;
                     }
-                    setChanged(anyChanged);
                 }
+                setChanged(anyChanged);
             }
         }
     }
 
     private void applyChanges() {
         var mc = Minecraft.getMinecraft();
-        for (int i = 0; i < RULE_KEYS.length; i++) {
+        for (int i = 0; i < 8; i++) {
             if (ruleStates[i] != originalStates[i]) {
                 var command = String.format("/gamerule %s %s", RULE_KEYS[i], ruleStates[i]);
                 mc.player.sendChatMessage(command);
@@ -149,10 +146,10 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRenderer, I18n.format("fml.edit_game_rules.title"), this.width / 2, 4, 0xFFFFFF);
 
-        int lineHeight = 170 / (TITLES.length - 1);
-        for (int i = 0; i < TITLES.length; i++) {
+        int lineHeight = 170 / 7;
+        for (int i = 0; i < 8; i++) {
             int y = 30 + lineHeight * i;
-            this.drawCenteredString(this.fontRenderer, I18n.format(TITLES[i]), this.width / 2 - 80, y, 0xFFFFFF);
+            this.drawCenteredString(this.fontRenderer, I18n.format(TITLES[i]), this.width / 2 - 65, y, 0xFFFFFF);
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
