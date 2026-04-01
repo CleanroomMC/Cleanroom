@@ -176,11 +176,10 @@
          }
      }
  
-@@ -382,12 +412,16 @@
-     private void showMoreWorldOptions(boolean toggle)
+@@ -383,11 +413,17 @@
      {
          this.inMoreWorldOptionsDisplay = toggle;
--
+ 
 +        this.btnWorld.visible = true;
 +        this.btnGame.visible = true;
 +        this.btnWorld.enabled = !toggle;
@@ -189,23 +188,22 @@
          {
              this.btnGameMode.visible = !this.inMoreWorldOptionsDisplay;
              this.btnGameMode.enabled = false;
--
+ 
 +            this.btnAllowCommands.visible = false;
 +            this.btnDifficulty.visible = false;
              if (this.savedGameMode == null)
              {
                  this.savedGameMode = this.gameMode;
-@@ -404,7 +438,8 @@
-         {
+@@ -405,6 +441,8 @@
              this.btnGameMode.visible = !this.inMoreWorldOptionsDisplay;
              this.btnGameMode.enabled = true;
--
+ 
 +            this.btnAllowCommands.visible = !this.inMoreWorldOptionsDisplay;
 +            this.btnDifficulty.visible = !this.inMoreWorldOptionsDisplay;
              if (this.savedGameMode != null)
              {
                  this.gameMode = this.savedGameMode;
-@@ -414,23 +449,14 @@
+@@ -414,23 +452,14 @@
              this.btnMapFeatures.visible = this.inMoreWorldOptionsDisplay && WorldType.WORLD_TYPES[this.selectedIndex] != WorldType.CUSTOMIZED;
              this.btnBonusItems.visible = this.inMoreWorldOptionsDisplay;
              this.btnMapType.visible = this.inMoreWorldOptionsDisplay;
@@ -231,7 +229,7 @@
          }
      }
  
-@@ -460,6 +486,23 @@
+@@ -460,6 +489,23 @@
      @Override
      protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
      {
@@ -255,7 +253,7 @@
          super.mouseClicked(mouseX, mouseY, mouseButton);
  
          if (this.inMoreWorldOptionsDisplay)
-@@ -476,16 +519,14 @@
+@@ -476,16 +522,14 @@
      public void drawScreen(int mouseX, int mouseY, float partialTicks)
      {
          this.drawDefaultBackground();
@@ -275,7 +273,7 @@
              }
  
              if (this.btnAllowCommands.visible)
-@@ -497,25 +538,12 @@
+@@ -497,25 +541,12 @@
  
              if (WorldType.WORLD_TYPES[this.selectedIndex].hasInfoNotice())
              {
@@ -302,7 +300,7 @@
          }
  
          super.drawScreen(mouseX, mouseY, partialTicks);
-@@ -523,6 +551,7 @@
+@@ -523,6 +554,7 @@
  
      public void recreateFromExistingWorld(WorldInfo original)
      {
