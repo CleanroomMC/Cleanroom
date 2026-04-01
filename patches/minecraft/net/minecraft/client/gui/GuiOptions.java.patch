@@ -1,37 +1,26 @@
 --- before/net/minecraft/client/gui/GuiOptions.java
 +++ after/net/minecraft/client/gui/GuiOptions.java
-@@ -64,28 +64,9 @@
-         if (this.mc.world != null)
+@@ -61,7 +61,7 @@
+             i++;
+         }
+ 
+-        if (this.mc.world != null)
++        if (this.mc.world != null && !this.mc.player.canUseCommand(2, "gamerule"))
          {
              EnumDifficulty enumdifficulty = this.mc.world.getDifficulty();
--            this.difficultyButton = new GuiButton(
--                108, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.getDifficultyText(enumdifficulty)
--            );
--            this.buttonList.add(this.difficultyButton);
--
--            if (this.mc.isSingleplayer() && !this.mc.world.getWorldInfo().isHardcoreModeEnabled())
--            {
--                this.difficultyButton.setWidth(this.difficultyButton.getButtonWidth() - 20);
--                this.lockButton = new GuiLockIconButton(
--                    109, this.difficultyButton.x + this.difficultyButton.getButtonWidth(), this.difficultyButton.y
--                );
--                this.buttonList.add(this.lockButton);
--                this.lockButton.setLocked(this.mc.world.getWorldInfo().isDifficultyLocked());
--                this.lockButton.enabled = !this.lockButton.isLocked();
--                this.difficultyButton.enabled = !this.lockButton.isLocked();
--            }
--            else
--            {
--                this.difficultyButton.enabled = false;
--            }
-+            this.buttonList.add(new GuiButton(107, this.width / 2 + 5, this.height / 6 - 12, 150, 20, I18n.format("fml.world_options")));
-         }
+             this.difficultyButton = new GuiButton(
+@@ -84,8 +84,8 @@
+             {
+                 this.difficultyButton.enabled = false;
+             }
+-        }
 -        else
++        } else if (this.mc.world != null && this.mc.player.canUseCommand(2, "gamerule")) this.buttonList.add(new GuiButton(107, this.width / 2 + 5, this.height / 6 - 12, 150, 20, I18n.format("fml.world_options")));
 +        else if (false) // removed realms button
          {
              this.buttonList
              .add(
-@@ -241,6 +222,11 @@
+@@ -241,6 +241,11 @@
              {
                  this.mc.gameSettings.saveOptions();
                  this.mc.displayGuiScreen(new GuiScreenOptionsSounds(this, this.settings));

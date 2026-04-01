@@ -33,10 +33,8 @@ public class WorldOptionsGui extends GuiScreen {
 
         this.buttonList.add(this.difficultyButton);
         this.buttonList.add(this.lockButton);
-        var editGameRulesButton = new GuiButton(2, this.width / 2 + 4, this.height / 3 - 22, 150,
-                20, I18n.format("fml.edit_game_rules"));
-        editGameRulesButton.enabled = this.mc.player.canUseCommand(2, "gamerule");
-        this.buttonList.add(editGameRulesButton);
+        this.buttonList.add(new GuiButton(2, this.width / 2 + 4, this.height / 3 - 22, 150,
+                20, I18n.format("fml.edit_game_rules")));
         this.buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height - 26, I18n.format("gui.done")));
     }
 
