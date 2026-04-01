@@ -81,7 +81,7 @@
          }
  
          this.btnMapType.displayString = I18n.format("selectWorld.mapType")
-@@ -173,6 +183,16 @@
+@@ -173,6 +183,13 @@
          {
              this.btnAllowCommands.displayString = this.btnAllowCommands.displayString + I18n.format("options.off");
          }
@@ -90,27 +90,23 @@
 +            this.btnDifficulty.displayString = I18n.format("options.difficulty") + ": " + I18n.format(net.minecraft.world.EnumDifficulty.HARD.getTranslationKey());
 +            this.btnDifficulty.enabled = false;
 +        }
-+        else
-+        {
-+            this.btnDifficulty.displayString = I18n.format("options.difficulty") + ": " + I18n.format(this.currentDifficulty.getTranslationKey());
-+            this.btnDifficulty.enabled = true;
-+        }
++        else this.btnDifficulty.displayString = I18n.format("options.difficulty") + ": " + I18n.format(this.currentDifficulty.getTranslationKey());
++        this.btnDifficulty.enabled = true;
      }
  
      public static String getUncollidingSaveDirName(ISaveFormat saveLoader, String name)
-@@ -240,8 +260,10 @@
+@@ -240,8 +257,9 @@
                      }
                  }
  
 +                WorldType.WORLD_TYPES[this.selectedIndex].onGUICreateWorldPress();
-+
                  WorldSettings worldsettings = new WorldSettings(
 -                    i, GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]
 +                    i, GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex], this.currentDifficulty
                  );
                  worldsettings.setGeneratorOptions(this.chunkProviderSettingsJson);
  
-@@ -257,9 +279,9 @@
+@@ -257,9 +275,9 @@
  
                  this.mc.launchIntegratedServer(this.saveDirName, this.worldNameField.getText().trim(), worldsettings);
              }
@@ -122,7 +118,7 @@
              }
              else if (button.id == 2)
              {
-@@ -273,6 +295,8 @@
+@@ -273,6 +291,8 @@
                      this.hardCoreMode = false;
                      this.gameMode = "hardcore";
                      this.hardCoreMode = true;
@@ -131,7 +127,7 @@
                      this.btnAllowCommands.enabled = false;
                      this.btnBonusItems.enabled = false;
                      this.updateDisplayState();
-@@ -286,6 +310,12 @@
+@@ -286,6 +306,12 @@
  
                      this.hardCoreMode = false;
                      this.gameMode = "creative";
@@ -144,7 +140,7 @@
                      this.updateDisplayState();
                      this.hardCoreMode = false;
                      this.btnAllowCommands.enabled = true;
-@@ -339,6 +369,7 @@
+@@ -339,6 +365,7 @@
                  this.chunkProviderSettingsJson = "";
                  this.updateDisplayState();
                  this.showMoreWorldOptions(this.inMoreWorldOptionsDisplay);
@@ -152,7 +148,7 @@
              }
              else if (button.id == 6)
              {
-@@ -348,15 +379,14 @@
+@@ -348,15 +375,14 @@
              }
              else if (button.id == 8)
              {
@@ -176,7 +172,7 @@
          }
      }
  
-@@ -383,11 +413,17 @@
+@@ -383,8 +409,14 @@
      {
          this.inMoreWorldOptionsDisplay = toggle;
  
@@ -186,15 +182,12 @@
 +        this.btnGame.enabled = toggle;
          if (WorldType.WORLD_TYPES[this.selectedIndex] == WorldType.DEBUG_ALL_BLOCK_STATES)
          {
++            this.btnAllowCommands.visible = false;
++            this.btnDifficulty.visible = false;
              this.btnGameMode.visible = !this.inMoreWorldOptionsDisplay;
              this.btnGameMode.enabled = false;
  
-+            this.btnAllowCommands.visible = false;
-+            this.btnDifficulty.visible = false;
-             if (this.savedGameMode == null)
-             {
-                 this.savedGameMode = this.gameMode;
-@@ -405,6 +441,8 @@
+@@ -405,6 +437,8 @@
              this.btnGameMode.visible = !this.inMoreWorldOptionsDisplay;
              this.btnGameMode.enabled = true;
  
@@ -203,7 +196,7 @@
              if (this.savedGameMode != null)
              {
                  this.gameMode = this.savedGameMode;
-@@ -414,23 +452,14 @@
+@@ -414,23 +448,14 @@
              this.btnMapFeatures.visible = this.inMoreWorldOptionsDisplay && WorldType.WORLD_TYPES[this.selectedIndex] != WorldType.CUSTOMIZED;
              this.btnBonusItems.visible = this.inMoreWorldOptionsDisplay;
              this.btnMapType.visible = this.inMoreWorldOptionsDisplay;
@@ -229,31 +222,22 @@
          }
      }
  
-@@ -460,6 +489,23 @@
+@@ -460,6 +485,14 @@
      @Override
      protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
      {
-+        if (this.btnMapType.mousePressed(this.mc, mouseX, mouseY)) {
-+            if (mouseButton == 1) {
-+
-+                do {
-+                    this.selectedIndex--;
-+
-+                    if (this.selectedIndex < 0) {
-+                        this.selectedIndex = WorldType.WORLD_TYPES.length - 1;
-+                    }
-+                } while (!this.canSelectCurWorldType());
-+
-+                this.chunkProviderSettingsJson = "";
-+                this.updateDisplayState();
-+                if (this.inMoreWorldOptionsDisplay) this.showMoreWorldOptions(true);
-+            }
++        if (this.btnMapType.mousePressed(this.mc, mouseX, mouseY) && mouseButton == 1) {
++            do {
++                this.selectedIndex = (this.selectedIndex - 1 + WorldType.WORLD_TYPES.length) % WorldType.WORLD_TYPES.length;
++            } while (!this.canSelectCurWorldType());
++            this.chunkProviderSettingsJson = "";
++            this.updateDisplayState();
++            if (this.inMoreWorldOptionsDisplay) this.showMoreWorldOptions(true);
 +        }
-+
          super.mouseClicked(mouseX, mouseY, mouseButton);
  
          if (this.inMoreWorldOptionsDisplay)
-@@ -476,16 +522,14 @@
+@@ -476,16 +509,14 @@
      public void drawScreen(int mouseX, int mouseY, float partialTicks)
      {
          this.drawDefaultBackground();
@@ -273,7 +257,7 @@
              }
  
              if (this.btnAllowCommands.visible)
-@@ -497,25 +541,12 @@
+@@ -497,25 +528,12 @@
  
              if (WorldType.WORLD_TYPES[this.selectedIndex].hasInfoNotice())
              {
@@ -300,7 +284,7 @@
          }
  
          super.drawScreen(mouseX, mouseY, partialTicks);
-@@ -523,6 +554,7 @@
+@@ -523,6 +541,7 @@
  
      public void recreateFromExistingWorld(WorldInfo original)
      {
