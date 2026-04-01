@@ -1,0 +1,29 @@
+--- before/net/minecraft/client/resources/ResourcePackListEntryDefault.java
++++ after/net/minecraft/client/resources/ResourcePackListEntryDefault.java
+@@ -24,4 +24,26 @@
+     {
+         return false;
+     }
++
++    @Override
++    protected boolean canMoveUp()
++    {
++        java.util.List<ResourcePackListEntry> list = this.resourcePacksGUI.getListContaining(this);
++        int i = list.indexOf(this);
++        return i > 0 && list.get(i - 1).showHoverOverlay();
++    }
++
++    @Override
++    protected boolean canMoveDown()
++    {
++        java.util.List<ResourcePackListEntry> list = this.resourcePacksGUI.getListContaining(this);
++        int i = list.indexOf(this);
++        return i >= 0 && i < list.size() - 1 && list.get(i + 1).showHoverOverlay();
++    }
++
++    @Override
++    protected boolean showHoverOverlay()
++    {
++        return true;
++    }
+ }
