@@ -39,7 +39,6 @@ public class RestrictionsGui extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (keyCode == 1) {
-            this.mc.gameSettings.saveOptions();
             this.mc.displayGuiScreen(this.parent);
         } else {
             super.keyTyped(typedChar, keyCode);
@@ -49,16 +48,9 @@ public class RestrictionsGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        var enumChatVisibility = this.mc.gameSettings.chatVisibility;
         this.drawCenteredString(this.fontRenderer, I18n.format("fml.restrictions.title"),
                 this.width / 2, 12, 0xFFFFFF);
-
-        if (enumChatVisibility != EnumChatVisibility.FULL) {
-            this.drawCenteredString(this.fontRenderer, I18n.format("fml.chat_restricted"),
-                    this.width / 2, 67, 0xFF0000);
-        }
-
-        this.drawChatStatus(enumChatVisibility);
+        this.drawChatStatus(this.mc.gameSettings.chatVisibility);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -75,6 +67,8 @@ public class RestrictionsGui extends GuiScreen {
                         this.width / 2, 94, 0x00FF00);
             }
             case SYSTEM -> {
+                this.drawCenteredString(this.fontRenderer, I18n.format("fml.chat_restricted"),
+                        this.width / 2, 67, 0xFF0000);
                 this.drawCenteredString(this.fontRenderer, I18n.format("fml.cannot_send_chat_messages"),
                         this.width / 2, 114, 0xFF0000);
                 this.drawCenteredString(this.fontRenderer, I18n.format("fml.send_commands"),
@@ -85,6 +79,8 @@ public class RestrictionsGui extends GuiScreen {
                         this.width / 2, 141, 0xFF0000);
             }
             case HIDDEN -> {
+                this.drawCenteredString(this.fontRenderer, I18n.format("fml.chat_restricted"),
+                        this.width / 2, 67, 0xFF0000);
                 this.drawCenteredString(this.fontRenderer, I18n.format("fml.cannot_send_chat_messages"),
                         this.width / 2, 114, 0xFF0000);
                 this.drawCenteredString(this.fontRenderer, I18n.format("fml.cannot_send_commands"),
