@@ -63,9 +63,9 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
 
     @Override
     public void initGui() {
-        this.buttonList.add(new GuiButton(8, this.width / 2 - 154, this.height / 6 + 180, 150,
+        this.buttonList.add(new GuiButton(8, this.width / 2 - 154, this.height - 26, 150,
                 20, I18n.format("gui.done")));
-        this.buttonList.add(new GuiButton(9, this.width / 2 + 4, this.height / 6 + 180, 150,
+        this.buttonList.add(new GuiButton(9, this.width / 2 + 4, this.height - 26, 150,
                 20, I18n.format("gui.cancel")));
 
         int lineHeight = 170 / 7;
@@ -144,7 +144,8 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRenderer, I18n.format("fml.edit_game_rules.title"), this.width / 2, 4, 0xFFFFFF);
+        this.drawCenteredString(this.fontRenderer, I18n.format("fml.edit_game_rules.title"),
+                this.width / 2, 4, 0xFFFFFF);
 
         int lineHeight = 170 / 7;
         for (int i = 0; i < 8; i++) {

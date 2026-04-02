@@ -35,7 +35,9 @@ public class WorldOptionsGui extends GuiScreen {
         this.buttonList.add(this.lockButton);
         this.buttonList.add(new GuiButton(2, this.width / 2 + 4, this.height / 3 - 22, 150,
                 20, I18n.format("fml.edit_game_rules")));
-        this.buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height - 26, I18n.format("gui.done")));
+        this.buttonList.add(new GuiButton(3, this.width / 2 - 154, this.height / 3 + 2, 150,
+                20, I18n.format("fml.restrictions")));
+        this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height - 26, I18n.format("gui.done")));
     }
 
     @Override
@@ -57,6 +59,10 @@ public class WorldOptionsGui extends GuiScreen {
                     this.mc.displayGuiScreen(new EditGameRulesGui(this));
                 }
                 case 3 -> {
+                    this.mc.gameSettings.saveOptions();
+                    this.mc.displayGuiScreen(new RestrictionsGui(this));
+                }
+                case 4 -> {
                     this.mc.gameSettings.saveOptions();
                     this.mc.displayGuiScreen(this.parent);
                 }
@@ -88,7 +94,8 @@ public class WorldOptionsGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRenderer, I18n.format("fml.world_options.title"), this.width / 2, 12, 0xFFFFFF);
+        this.drawCenteredString(this.fontRenderer, I18n.format("fml.world_options.title"),
+                this.width / 2, 12, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
