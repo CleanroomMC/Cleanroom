@@ -68,9 +68,8 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
         this.buttonList.add(new GuiButton(9, this.width / 2 + 4, this.height - 26, 150,
                 20, I18n.format("gui.cancel")));
 
-        int lineHeight = 170 / 7;
         for (int i = 0; i < 8; i++) {
-            int y = 30 + lineHeight * i;
+            int y = 30 + 24 * i;
             int x = this.width / 2 + 63;
             var buttonText = ruleStates[i] ? I18n.format("gui.yes") : I18n.format("gui.no");
             var btn = new GuiButton(i, x, y - 6, 45, 20, buttonText);
@@ -147,9 +146,8 @@ public class EditGameRulesGui extends GuiScreen implements GuiYesNoCallback {
         this.drawCenteredString(this.fontRenderer, I18n.format("fml.edit_game_rules.title"),
                 this.width / 2, 4, 0xFFFFFF);
 
-        int lineHeight = 170 / 7;
         for (int i = 0; i < 8; i++) {
-            int y = 30 + lineHeight * i;
+            int y = 30 + 24 * i;
             this.drawCenteredString(this.fontRenderer, I18n.format(TITLES[i]), this.width / 2 - 65, y, 0xFFFFFF);
         }
         super.drawScreen(mouseX, mouseY, partialTicks);

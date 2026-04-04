@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLockIconButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiYesNo;
+import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,21 +24,22 @@ public class WorldOptionsGui extends GuiScreen {
 
     @Override
     public void initGui() {
-        this.difficultyButton = new GuiButton(0, this.width / 2 - 154, this.height / 3 - 22,
-                130, 20, this.getDifficultyText(this.mc.world.getDifficulty()));
+        this.difficultyButton = new GuiButton(0, this.width / 2 - 154, this.height / 3 - 22, 130,
+                20, this.getDifficultyText(this.mc.world.getDifficulty()));
         this.lockButton = new GuiLockIconButton(1, this.width / 2 - 24, this.height / 3 - 22);
-
-        this.lockButton.setLocked(this.mc.world.getWorldInfo().isDifficultyLocked());
-        this.lockButton.enabled = !this.lockButton.isLocked();
-        this.difficultyButton.enabled = !this.lockButton.isLocked();
 
         this.buttonList.add(this.difficultyButton);
         this.buttonList.add(this.lockButton);
+
         this.buttonList.add(new GuiButton(2, this.width / 2 + 4, this.height / 3 - 22, 150,
                 20, I18n.format("fml.edit_game_rules")));
         this.buttonList.add(new GuiButton(3, this.width / 2 - 154, this.height / 3 + 2, 150,
                 20, I18n.format("fml.restrictions")));
         this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height - 26, I18n.format("gui.done")));
+
+        this.lockButton.setLocked(this.mc.world.getWorldInfo().isDifficultyLocked());
+        this.lockButton.enabled = !this.lockButton.isLocked();
+        this.difficultyButton.enabled = !this.lockButton.isLocked();
     }
 
     @Override
@@ -48,7 +50,7 @@ public class WorldOptionsGui extends GuiScreen {
                     this.mc.world.getWorldInfo().setDifficulty(EnumDifficulty.byId(this.mc.world.getDifficulty().getId() + 1));
                     this.difficultyButton.displayString = this.getDifficultyText(this.mc.world.getDifficulty());
                 }
-                case 1 -> this.mc.displayGuiScreen(new GuiYesNo(this,
+                case 1 -> this.mc.displayGuiScreen(new FixedGuiYesNo(this,
                         I18n.format("difficulty.lock.title"),
                         I18n.format("difficulty.lock.question",
                         I18n.format(this.mc.world.getWorldInfo().getDifficulty().getTranslationKey())),
@@ -94,12 +96,27 @@ public class WorldOptionsGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRenderer, I18n.format("fml.world_options.title"),
-                this.width / 2, 12, 0xFFFFFF);
+        this.drawCenteredString(this.fontRenderer, I18n.format("fml.world_options.title"), this.width / 2,
+                12, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     public String getDifficultyText(EnumDifficulty difficulty) {
         return I18n.format("options.difficulty") + ": " + I18n.format(difficulty.getTranslationKey());
+    }
+
+    private static class FixedGuiYesNo extends GuiYesNo {
+        public FixedGuiYesNo(GuiYesNoCallback parentScreenIn, String messageLine1In, String messageLine2In, int parentButtonClickedIdIn) {
+            super(parentScreenIn, messageLine1In, messageLine2In, parentButtonClickedIdIn);
+        }
+
+        @Override
+        public void keyTyped(char typedChar, int keyCode) throws IOException {
+            if (keyCode == 1) {
+                this.parentScreen.confirmClicked(false, this.parentButtonClickedId);
+            } else {
+                super.keyTyped(typedChar, keyCode);
+            }
+        }
     }
 }

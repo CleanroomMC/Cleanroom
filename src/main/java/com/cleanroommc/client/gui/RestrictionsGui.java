@@ -48,8 +48,8 @@ public class RestrictionsGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRenderer, I18n.format("fml.restrictions.title"),
-                this.width / 2, 12, 0xFFFFFF);
+        this.drawCenteredString(this.fontRenderer, I18n.format("fml.restrictions.title"), this.width / 2,
+                12, 0xFFFFFF);
         this.drawChatStatus(this.mc.gameSettings.chatVisibility);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
