@@ -1,6 +1,7 @@
 package com.cleanroommc.hackery;
 
 import com.cleanroommc.hackery.enums.EnumHackery;
+import net.lenni0451.reflect.Constructors;
 import net.minecraft.item.ItemStack;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,13 @@ public class EnumHackeryTest {
         CtorTestEnum(String string) { }
 
     }
+    
+    public enum VarargTestEnum {
+        ONE("one", "test1", "test2"),
+        TWO("two", "test3", "test4");
+        
+        VarargTestEnum(String one, String... varargs) {}
+    }
 
     public enum MassiveTestEnum {
         LEATHER("leather", 5, new int[]{1, 2, 3, 1}),
@@ -40,7 +48,7 @@ public class EnumHackeryTest {
         //Added by forge for custom Armor materials.
         public ItemStack repairMaterial = ItemStack.EMPTY;
 
-        private MassiveTestEnum(String nameIn, int maxDamageFactorIn, int[] damageReductionAmountArrayIn)
+        MassiveTestEnum(String nameIn, int maxDamageFactorIn, int[] damageReductionAmountArrayIn)
         {
             this.name = nameIn;
             this.maxDamageFactor = maxDamageFactorIn;
@@ -95,6 +103,28 @@ public class EnumHackeryTest {
         assertNotNull(MassiveTestEnum.CHAIN.repairMaterial);
         assertNotNull(obsidian.repairMaterial);
         assertEquals(obsidian.repairMaterial, MassiveTestEnum.valueOf("OBSIDIAN").repairMaterial);
-
     }
+
+    @Test
+    public void testAddEnumEntryWithVarargParameters() {
+        System.out.println("==============================");
+        Arrays.stream(Constructors.getDeclaredConstructors(VarargTestEnum.class)).forEach(System.out::println);
+        System.out.println("==============================");
+        VarargTestEnum[] oldValues = VarargTestEnum.values();
+        VarargTestEnum three = EnumHackery.addEnumEntry(VarargTestEnum.class, "THREE", new Class<?>[] { String.class, String[].class }, new Object[] { "three", new String[] { "test5", "test6" } });
+        VarargTestEnum four = EnumHackery.addEnumEntry(VarargTestEnum.class, "FOUR", new Class<?>[] { String.class, String[].class }, new Object[] { "four", new String[] { "test7", "test8", "test9" } });
+        VarargTestEnum[] newValues = VarargTestEnum.values();
+        assertNotNull(Enum.valueOf(VarargTestEnum.class, "THREE"));
+        assertEquals(Enum.valueOf(VarargTestEnum.class, "THREE"), three);
+        assertNotNull(Enum.valueOf(VarargTestEnum.class, "FOUR"));
+        assertEquals(Enum.valueOf(VarargTestEnum.class, "FOUR"), four);
+        assertNotNull(VarargTestEnum.valueOf("THREE"));
+        assertEquals(VarargTestEnum.valueOf("THREE"), three);
+        assertNotNull(VarargTestEnum.valueOf("FOUR"));
+        assertEquals(VarargTestEnum.valueOf("FOUR"), four);
+        assertNotEquals(oldValues, newValues);
+        assertEquals(2, newValues.length - oldValues.length);
+    }
+
+
 }
