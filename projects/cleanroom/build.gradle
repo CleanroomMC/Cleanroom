@@ -281,7 +281,7 @@ dependencies {
     installer 'net.lenni0451:Reflect:1.6.3'
     installer 'net.lenni0451.commons:unchecked:1.9.2'
     installer 'org.javassist:javassist:3.30.2-GA'
-    installer "zone.rong:imaginebreaker:2.1"
+    //installer "zone.rong:imaginebreaker:2.1"
 
     // Regular deps
     installer 'com.ibm.icu:icu4j:78.3'
