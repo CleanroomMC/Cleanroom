@@ -359,7 +359,9 @@ dependencies {
     installer 'com.sun.istack:istack-commons-runtime:4.2.0'
     installer 'org.glassfish.corba:glassfish-corba-omgapi:5.0.0'
     installer 'org.openjdk.nashorn:nashorn-core:15.7'
-    // installer 'ca.weblite:java-objc-bridge:1.2'
+
+    // Mac
+    installer 'ca.weblite:java-objc-bridge:1.2'
 
     // Kirino Engine
     installer 'org.joml:joml:1.10.8'
