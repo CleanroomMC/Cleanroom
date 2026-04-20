@@ -319,6 +319,7 @@ dependencies {
 
     installer 'com.google.code.findbugs:jsr305:3.0.2'
     installer 'org.jspecify:jspecify:1.0.0'
+    installer 'org.jetbrains:annotations:26.1.0'
 
     // Apache HTTP, 4 and 5
     installer 'org.apache.httpcomponents.core5:httpcore5:5.4.2'
