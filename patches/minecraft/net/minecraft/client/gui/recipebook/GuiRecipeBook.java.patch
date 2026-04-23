@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
 +++ after/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
+@@ -33,7 +33,7 @@
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiRecipeBook extends Gui implements IRecipeUpdateListener
 @@ -450,7 +450,7 @@
  
              languagemanager.setCurrentLanguage(language);

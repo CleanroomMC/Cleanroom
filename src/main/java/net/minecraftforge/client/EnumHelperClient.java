@@ -19,7 +19,7 @@
 
 package net.minecraftforge.client;
 
-import com.cleanroommc.hackery.enums.EnumHackery;
+import com.cleanroommc.cleanroom.hackery.enums.EnumHackery;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.Util.EnumOS;

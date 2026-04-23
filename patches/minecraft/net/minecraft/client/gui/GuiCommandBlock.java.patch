@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiCommandBlock.java
++++ after/net/minecraft/client/gui/GuiCommandBlock.java
+@@ -13,7 +13,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiCommandBlock extends GuiScreen implements ITabCompleter

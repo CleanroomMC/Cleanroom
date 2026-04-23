@@ -1,5 +1,16 @@
 --- before/net/minecraft/client/renderer/RenderGlobal.java
 +++ after/net/minecraft/client/renderer/RenderGlobal.java
+@@ -87,8 +87,8 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.util.vector.Vector3f;
+-import org.lwjgl.util.vector.Vector4f;
++import org.lwjglx.util.vector.Vector3f;
++import org.lwjglx.util.vector.Vector4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class RenderGlobal implements IWorldEventListener, IResourceManagerReloadListener
 @@ -560,8 +560,10 @@
  
      public void renderEntities(Entity renderViewEntity, ICamera camera, float partialTicks)

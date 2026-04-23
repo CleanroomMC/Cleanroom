@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiScreenCustomizePresets.java
++++ after/net/minecraft/client/gui/GuiScreenCustomizePresets.java
+@@ -12,7 +12,7 @@
+ import net.minecraft.world.gen.ChunkGeneratorSettings;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiScreenCustomizePresets extends GuiScreen

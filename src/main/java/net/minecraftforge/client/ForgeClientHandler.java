@@ -19,11 +19,9 @@
 
 package net.minecraftforge.client;
 
-import com.cleanroommc.client.IMEHandler;
-import com.cleanroommc.client.windows.TaskbarApi;
-import com.cleanroommc.client.windows.WindowsProperties;
-import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.WinDef;
+import com.cleanroommc.cleanroom.client.IMEHandler;
+import com.cleanroommc.cleanroom.client.windows.TaskbarApi;
+import com.cleanroommc.cleanroom.client.windows.WindowsProperties;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -44,7 +42,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
-import org.lwjgl.glfw.GLFWNativeWin32;
 
 import java.util.Arrays;
 import java.util.List;

@@ -123,7 +123,7 @@ patcher {
             client = true
             taskName 'cleanroomClient'
             ideaModule "${rootProject.name}.${project.name}.main"
-            main 'com.cleanroommc.boot.MainClient'
+            main 'com.cleanroommc.cleanroom.boot.MainClient'
             workingDirectory project.file('run')
 
             environment 'target', 'fmldevclient'
@@ -176,7 +176,7 @@ patcher {
             client false
             taskName 'cleanroomServer'
             ideaModule "${rootProject.name}.${project.name}.main"
-            main 'com.cleanroommc.boot.MainServer'
+            main 'com.cleanroommc.cleanroom.boot.MainServer'
             workingDirectory project.file('run')
 
             environment 'target', 'fmldevserver'
@@ -256,7 +256,6 @@ configurations {
 
 dependencies {
     // LWJGL
-    compileOnly "com.cleanroommc:lwjglx:1.0.0"
     installer "com.cleanroommc:lwjglxx:1.1.17"
     lwjglLibraries[0].each {
         installer "org.lwjgl:$it:$props.lwjgl_version"

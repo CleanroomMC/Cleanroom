@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiClickableScrolledSelectionListProxy.java
++++ after/net/minecraft/client/gui/GuiClickableScrolledSelectionListProxy.java
+@@ -5,7 +5,7 @@
+ import net.minecraft.realms.Tezzelator;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Mouse;
++import org.lwjglx.input.Mouse;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiClickableScrolledSelectionListProxy extends GuiSlot
