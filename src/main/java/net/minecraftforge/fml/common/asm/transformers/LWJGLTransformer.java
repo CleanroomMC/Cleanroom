@@ -17,8 +17,7 @@ public class LWJGLTransformer implements IClassTransformer {
     public byte[] transform(String s, String s1, byte[] bytes) {
         if (s1.startsWith("net.minecraft")
                 || s1.startsWith("com.cleanroommc.cleanroom")
-                || s1.startsWith("com.cleanroommc.kirino")
-                || s1.startsWith("org.lwjgl")) return bytes;
+                || s1.startsWith("com.cleanroommc.kirino")) return bytes;
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
         ClassVisitor cv = new LWJGLXClassRemapper(writer, INSTANCE);
