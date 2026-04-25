@@ -17,11 +17,6 @@ public class LWJGLTransformer implements IClassTransformer {
     private static final LWJGLXRemapper INSTANCE = new LWJGLXRemapper();
 
     @Override
-    public byte[] transform(String name, String remappedName, byte[] bytes) {
-        return bytes;
-    }
-
-    @Override
     public byte[] transform(String s, String s1, byte[] bytes, Package pkg, Manifest manifest) {
         if (s1.startsWith("net.minecraft.")
                 || s1.startsWith("com.cleanroommc.cleanroom.")
