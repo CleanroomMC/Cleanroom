@@ -276,7 +276,7 @@ dependencies {
     installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
     // Hacks
-    installer "top.outlands:foundation:0.20.1"
+    installer "top.outlands:foundation:0.20.2"
     installer 'net.lenni0451:Reflect:1.6.3'
     installer 'net.lenni0451.commons:unchecked:1.9.2'
     installer 'org.javassist:javassist:3.30.2-GA'
@@ -770,10 +770,11 @@ universalJar {
         }
         classpath += "minecraft_server.${props.minecraft_version}.jar"
         manifest.attributes([
-            'Timestamp'  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            'Main-Class' : 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
-            'Class-Path' : classpath.toString(),
-            'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+            'Timestamp'    : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            'Main-Class'   : 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
+            'Class-Path'   : classpath.toString(),
+            'Tweak-Class'  : 'net.minecraftforge.fml.common.launcher.FMLTweaker',
+            'Lwjgl3-Aware' : 'true'
         ])
         manifest.attributes([
             'Specification-Title'   : props.title,

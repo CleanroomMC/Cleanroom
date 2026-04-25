@@ -1,5 +1,6 @@
 package net.minecraftforge.fml.common.asm.transformers;
 
+import com.cleanroommc.cleanroom.client.Lwjgl3Aware;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
@@ -9,15 +10,26 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.Remapper;
 
+import java.util.jar.Manifest;
+
 public class LWJGLTransformer implements IClassTransformer {
 
     private static final LWJGLXRemapper INSTANCE = new LWJGLXRemapper();
 
     @Override
-    public byte[] transform(String s, String s1, byte[] bytes) {
-        if (s1.startsWith("net.minecraft")
-                || s1.startsWith("com.cleanroommc.cleanroom")
-                || s1.startsWith("com.cleanroommc.kirino")) return bytes;
+    public byte[] transform(String name, String remappedName, byte[] bytes) {
+        return bytes;
+    }
+
+    @Override
+    public byte[] transform(String s, String s1, byte[] bytes, Package pkg, Manifest manifest) {
+        if (s1.startsWith("net.minecraft.")
+                || s1.startsWith("com.cleanroommc.cleanroom.")
+                || s1.startsWith("com.cleanroommc.kirino.")) return bytes;
+        if (pkg.isAnnotationPresent(Lwjgl3Aware.class)) return bytes;
+        var attributes = manifest.getMainAttributes();
+        if (attributes.containsKey("Lwjgl3-Aware")
+                && attributes.getValue("Lwjgl3-Aware").equals("true")) return bytes;
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
         ClassVisitor cv = new LWJGLXClassRemapper(writer, INSTANCE);
