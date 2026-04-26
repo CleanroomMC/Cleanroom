@@ -19,35 +19,76 @@ import org.apache.commons.lang3.SystemUtils;
 public class LoadingTracker {
     private static final int MAX_PROGRESS = 10000;
 
-    public enum Phase {
-        CONSTRUCTING          ("Constructing Mods"),
-        LOADING_RESOURCES     ("Loading Resources"),
-        RELOADING             ("Reloading"),
-        PREINIT               ("Pre-initializing Mods"),
-        LOADING_RESOURCE      ("Loading Resource"),
-        LOADING_SOUNDS        ("Loading sounds"),
-        RENDERING_SETUP       ("Rendering Setup"),
-        RELOAD_BLOCKS         ("ModelLoader: blocks"),
-        RELOAD_ITEMS          ("ModelLoader: items"),
-        RELOAD_TEXTURES       ("Texture stitching"),
-        TEXTURE_CREATION      ("Texture creation"),
-        TEXTURE_MIPMAP_UPLOAD ("Texture mipmap and upload"),
-        RELOAD_BAKING         ("ModelLoader: baking"),
-        INIT                  ("Initializing Mods"),
-        POSTINIT              ("Post-initializing Mods"),
-        AVAILABLE             ("Completing Load"),
-        MOD_ID_MAPPING        ("ModIdMapping"),
-        FINISHING             ("Finishing");
+    public static final class Phase {
+        private static final List<Phase> REGISTRY = new ArrayList<>();
+        private static boolean frozen = false;
 
-        public final String displayName;
-        Phase(String displayName) { this.displayName = displayName; }
+        private final String name;
+        private final String displayName;
+        private final int defaultWeight;
+        private int index;
+
+        private Phase(String name, String displayName, int defaultWeight) {
+            this.name = name;
+            this.displayName = displayName;
+            this.defaultWeight = defaultWeight;
+        }
+
+        public String getName() { return name; }
+        public String getDisplayName() { return displayName; }
+        public int getDefaultWeight() { return defaultWeight; }
+        public int getIndex() { return index; }
+
+        public static final Phase CONSTRUCTING          = register("CONSTRUCTING",          "Constructing Mods",         700);
+        public static final Phase LOADING_RESOURCES     = register("LOADING_RESOURCES",     "Loading Resources",         250);
+        public static final Phase RELOADING             = register("RELOADING",             "Reloading",                 250);
+        public static final Phase PREINIT               = register("PREINIT",               "Pre-initializing Mods",     900);
+        public static final Phase LOADING_RESOURCE      = register("LOADING_RESOURCE",      "Loading Resource",          500);
+        public static final Phase LOADING_SOUNDS        = register("LOADING_SOUNDS",        "Loading sounds",            150);
+        public static final Phase RENDERING_SETUP       = register("RENDERING_SETUP",       "Rendering Setup",           150);
+        public static final Phase RELOAD_BLOCKS         = register("RELOAD_BLOCKS",         "ModelLoader: blocks",       1200);
+        public static final Phase RELOAD_ITEMS          = register("RELOAD_ITEMS",          "ModelLoader: items",        1300);
+        public static final Phase RELOAD_TEXTURES       = register("RELOAD_TEXTURES",       "Texture stitching",         400);
+        public static final Phase TEXTURE_CREATION      = register("TEXTURE_CREATION",      "Texture creation",          700);
+        public static final Phase TEXTURE_MIPMAP_UPLOAD = register("TEXTURE_MIPMAP_UPLOAD", "Texture mipmap and upload", 900);
+        public static final Phase RELOAD_BAKING         = register("RELOAD_BAKING",         "ModelLoader: baking",       1600);
+        public static final Phase INIT                  = register("INIT",                  "Initializing Mods",         800);
+        public static final Phase POSTINIT              = register("POSTINIT",              "Post-initializing Mods",    600);
+        public static final Phase AVAILABLE             = register("AVAILABLE",             "Completing Load",           200);
+        public static final Phase MOD_ID_MAPPING        = register("MOD_ID_MAPPING",        "ModIdMapping",              150);
+        public static final Phase FINISHING             = register("FINISHING",              "Finishing",                 100);
+
+        private static Phase register(String name, String displayName, int defaultWeight) {
+            Phase phase = new Phase(name, displayName, defaultWeight);
+            phase.index = REGISTRY.size();
+            REGISTRY.add(phase);
+            return phase;
+        }
+
+        public static Phase registerAfter(Phase after, String name, String displayName, int defaultWeight) {
+            if (frozen) throw new IllegalStateException("Cannot register phases after LoadingTracker.init()");
+            Phase phase = new Phase(name, displayName, defaultWeight);
+            int insertAt = after.index + 1;
+            REGISTRY.add(insertAt, phase);
+            for (int i = insertAt; i < REGISTRY.size(); i++) REGISTRY.get(i).index = i;
+            return phase;
+        }
+
+        public static Phase registerBefore(Phase before, String name, String displayName, int defaultWeight) {
+            if (frozen) throw new IllegalStateException("Cannot register phases after LoadingTracker.init()");
+            Phase phase = new Phase(name, displayName, defaultWeight);
+            int insertAt = before.index;
+            REGISTRY.add(insertAt, phase);
+            for (int i = insertAt; i < REGISTRY.size(); i++) REGISTRY.get(i).index = i;
+            return phase;
+        }
+
+        static List<Phase> getAll() { return Collections.unmodifiableList(REGISTRY); }
+        static int count() { return REGISTRY.size(); }
+        static void freeze() { frozen = true; }
     }
 
-    private static final int[] DEFAULT_WEIGHTS = {
-            700, 250, 250, 900, 500, 150, 150, 1200, 1300, 400, 700, 900, 1600, 800, 600, 200, 150, 100
-    };
-
-    private static final int TIMING_FILE_VERSION = 3;
+    private static final int TIMING_FILE_VERSION = 4;
 
     private static int[] phaseFrom;
     private static int[] phaseTo;
@@ -60,8 +101,30 @@ public class LoadingTracker {
 
     private static final String TIMING_FILE_NAME = "cleanroom_load_timings.dat";
 
+    private static final Map<String, Phase> TITLE_TO_PHASE = new HashMap<>();
+    static {
+        TITLE_TO_PHASE.put("Construction",              Phase.CONSTRUCTING);
+        TITLE_TO_PHASE.put("Loading Resources",         Phase.LOADING_RESOURCES);
+        TITLE_TO_PHASE.put("Reloading",                 Phase.RELOADING);
+        TITLE_TO_PHASE.put("PreInitialization",          Phase.PREINIT);
+        TITLE_TO_PHASE.put("Loading Resource",           Phase.LOADING_RESOURCE);
+        TITLE_TO_PHASE.put("Loading sounds",             Phase.LOADING_SOUNDS);
+        TITLE_TO_PHASE.put("Rendering Setup",            Phase.RENDERING_SETUP);
+        TITLE_TO_PHASE.put("ModelLoader: blocks",        Phase.RELOAD_BLOCKS);
+        TITLE_TO_PHASE.put("ModelLoader: items",         Phase.RELOAD_ITEMS);
+        TITLE_TO_PHASE.put("Texture stitching",          Phase.RELOAD_TEXTURES);
+        TITLE_TO_PHASE.put("Texture creation",           Phase.TEXTURE_CREATION);
+        TITLE_TO_PHASE.put("Texture mipmap and upload",  Phase.TEXTURE_MIPMAP_UPLOAD);
+        TITLE_TO_PHASE.put("ModelLoader: baking",        Phase.RELOAD_BAKING);
+        TITLE_TO_PHASE.put("Initialization",             Phase.INIT);
+        TITLE_TO_PHASE.put("PostInitialization",         Phase.POSTINIT);
+        TITLE_TO_PHASE.put("LoadComplete",               Phase.AVAILABLE);
+        TITLE_TO_PHASE.put("ModIdMapping",               Phase.MOD_ID_MAPPING);
+    }
+
     public static void init() {
-        int phaseCount = Phase.values().length;
+        Phase.freeze();
+        int phaseCount = Phase.count();
         phaseStartNano  = new long[phaseCount];
         phaseDurationMs = new long[phaseCount];
         currentPhase = null;
@@ -69,7 +132,10 @@ public class LoadingTracker {
 
         int[] weights = loadHistory();
         if (weights == null) {
-            weights = DEFAULT_WEIGHTS.clone();
+            weights = new int[phaseCount];
+            for (int i = 0; i < phaseCount; i++) {
+                weights[i] = Phase.getAll().get(i).getDefaultWeight();
+            }
         }
 
         phaseFrom = new int[phaseCount];
@@ -89,6 +155,12 @@ public class LoadingTracker {
         phaseTo[phaseCount - 1] = MAX_PROGRESS;
 
         initialized = true;
+
+        ProgressManager.setListener(new ProgressManager.Listener() {
+            @Override public void onPush(ProgressBar bar) { LoadingTracker.onBarPush(bar); }
+            @Override public void onStep(ProgressBar bar) { LoadingTracker.onBarStep(bar); }
+            @Override public void onPop(ProgressBar bar)  { LoadingTracker.onBarPop(bar); }
+        });
 
         if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) {
             setTaskbarState(TaskbarApi.TBPFLAG.TBPF_NORMAL);
@@ -110,86 +182,70 @@ public class LoadingTracker {
 
         initialized = false;
         currentPhase = null;
+        ProgressManager.setListener(null);
     }
 
     public static void beginPhase(Phase phase) {
         if (!initialized) return;
 
         if (currentPhase != null) {
-            if (phase.ordinal() < currentPhase.ordinal()) {
-                return;
-            }
-            if (phase == currentPhase) {
+            if (phase.getIndex() <= currentPhase.getIndex()) {
                 return;
             }
             endPhaseTimer(currentPhase);
         }
 
         currentPhase = phase;
-        phaseStartNano[phase.ordinal()] = System.nanoTime();
+        phaseStartNano[phase.getIndex()] = System.nanoTime();
 
         updateProgress(phase, 0.0);
     }
 
-    public static void tick() {
+    static void onBarPush(ProgressBar bar) {
         if (!initialized) return;
-
-        Phase detectedPhase = null;
-        ProgressBar detectedBar = null;
-        ProgressBar activeBar = null;
-
-        Iterator<ProgressBar> iter = ProgressManager.barIterator();
-        while (iter.hasNext()) {
-            ProgressBar bar = iter.next();
-            if (bar.getSteps() > 0) {
-                activeBar = bar;
-            }
-
-            Phase phase = matchReloadPhase(bar.getTitle());
-            if (phase != null) {
-                detectedPhase = phase;
-                detectedBar = bar;
-            }
-        }
-
-        if (detectedPhase != null && detectedBar != null) {
-            if (currentPhase == detectedPhase) {
-                updateProgress(detectedPhase, getSubProgress(detectedBar));
-                return;
-            }
-
-            if (currentPhase == null || detectedPhase.ordinal() > currentPhase.ordinal()) {
-                beginPhase(detectedPhase);
-                updateProgress(detectedPhase, getSubProgress(detectedBar));
-            }
-            return;
-        }
-
-        if (currentPhase != null && activeBar != null) {
-            updateProgress(currentPhase, getSubProgress(activeBar));
+        Phase phase = resolvePhase(bar);
+        if (phase != null) {
+            beginPhase(phase);
         }
     }
 
-    private static Phase matchReloadPhase(String title) {
-        switch (title) {
-            case "Construction":          return Phase.CONSTRUCTING;
-            case "Loading Resources":     return Phase.LOADING_RESOURCES;
-            case "Reloading":             return Phase.RELOADING;
-            case "PreInitialization":     return Phase.PREINIT;
-            case "Loading Resource":      return Phase.LOADING_RESOURCE;
-            case "Loading sounds":        return Phase.LOADING_SOUNDS;
-            case "Initialization":        return Phase.INIT;
-            case "PostInitialization":    return Phase.POSTINIT;
-            case "LoadComplete":          return Phase.AVAILABLE;
-            case "ModIdMapping":          return Phase.MOD_ID_MAPPING;
-            case "ModelLoader: blocks":   return Phase.RELOAD_BLOCKS;
-            case "ModelLoader: items":    return Phase.RELOAD_ITEMS;
-            case "ModelLoader: baking":   return Phase.RELOAD_BAKING;
-            case "Texture stitching":     return Phase.RELOAD_TEXTURES;
-            case "Texture creation":      return Phase.TEXTURE_CREATION;
-            case "Texture mipmap and upload": return Phase.TEXTURE_MIPMAP_UPLOAD;
-            case "Rendering Setup":       return Phase.RENDERING_SETUP;
-            default:                      return null;
+    static void onBarStep(ProgressBar bar) {
+        if (!initialized || currentPhase == null) return;
+        Phase phase = resolvePhase(bar);
+        if (phase != null && phase == currentPhase) {
+            updateProgress(currentPhase, getSubProgress(bar));
+        }
+    }
+
+    static void onBarPop(ProgressBar bar) {
+        if (!initialized || currentPhase == null) return;
+        Phase phase = resolvePhase(bar);
+        if (phase != null && phase == currentPhase) {
+            updateProgress(currentPhase, 1.0);
+        }
+    }
+
+    private static Phase resolvePhase(ProgressBar bar) {
+        Object tag = bar.getPhaseTag();
+        if (tag instanceof Phase) {
+            return (Phase) tag;
+        }
+        return TITLE_TO_PHASE.get(bar.getTitle());
+    }
+
+    /** @deprecated Event-driven callbacks replace polling. */
+    @Deprecated
+    public static void tick() {}
+
+    public static Phase phaseForEventDescription(String description) {
+        switch (description) {
+            case "Construction":       return Phase.CONSTRUCTING;
+            case "PreInitialization":  return Phase.PREINIT;
+            case "Initialization":     return Phase.INIT;
+            case "PostInitialization": return Phase.POSTINIT;
+            case "LoadComplete":       return Phase.AVAILABLE;
+            case "ModIdMapping":       return Phase.MOD_ID_MAPPING;
+            default:                   return null;
         }
     }
 
@@ -198,7 +254,7 @@ public class LoadingTracker {
     }
 
     private static void updateProgress(Phase phase, double subProgress) {
-        int idx = phase.ordinal();
+        int idx = phase.getIndex();
         int from = phaseFrom[idx];
         int to   = phaseTo[idx];
         int progress = from + (int)((to - from) * Math.min(1.0, Math.max(0.0, subProgress)));
@@ -210,7 +266,7 @@ public class LoadingTracker {
     }
 
     private static void endPhaseTimer(Phase phase) {
-        int idx = phase.ordinal();
+        int idx = phase.getIndex();
         if (phaseStartNano[idx] > 0) {
             phaseDurationMs[idx] = (System.nanoTime() - phaseStartNano[idx]) / 1_000_000L;
         }
@@ -258,12 +314,20 @@ public class LoadingTracker {
             if (version != TIMING_FILE_VERSION) return null;
 
             int count = dis.readInt();
-            if (count != Phase.values().length) return null;
-
-            int[] weights = new int[count];
+            Map<String, Integer> saved = new HashMap<>();
             for (int i = 0; i < count; i++) {
-                weights[i] = dis.readInt();
-                if (weights[i] <= 0) weights[i] = 1;
+                String name = dis.readUTF();
+                int weight = dis.readInt();
+                if (weight <= 0) weight = 1;
+                saved.put(name, weight);
+            }
+
+            List<Phase> phases = Phase.getAll();
+            int[] weights = new int[phases.size()];
+            for (int i = 0; i < phases.size(); i++) {
+                Phase p = phases.get(i);
+                Integer w = saved.get(p.getName());
+                weights[i] = (w != null && w > 0) ? w : p.getDefaultWeight();
             }
             return weights;
         } catch (IOException e) {
@@ -285,11 +349,13 @@ public class LoadingTracker {
             file.getParentFile().mkdirs();
         } catch (Throwable ignored) {}
 
+        List<Phase> phases = Phase.getAll();
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(file))) {
             dos.writeInt(TIMING_FILE_VERSION);
-            dos.writeInt(Phase.values().length);
-            for (long duration : phaseDurationMs) {
-                dos.writeInt(Math.max(1, (int) duration));
+            dos.writeInt(phases.size());
+            for (int i = 0; i < phases.size(); i++) {
+                dos.writeUTF(phases.get(i).getName());
+                dos.writeInt(Math.max(1, (int) phaseDurationMs[i]));
             }
         } catch (IOException e) {
             FMLLog.log.debug("LoadingTracker: Failed to save timing history", e);
