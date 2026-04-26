@@ -203,8 +203,13 @@ public class LoadingTracker {
 
     static void onBarPush(ProgressBar bar) {
         if (!initialized) return;
-        Phase phase = resolvePhase(bar);
-        if (phase != null) {
+        Object tag = bar.getPhaseTag();
+        if (tag instanceof Phase) {
+            beginPhase((Phase) tag);
+            return;
+        }
+        Phase phase = TITLE_TO_PHASE.get(bar.getTitle());
+        if (phase != null && currentPhase != null && phase.getIndex() > currentPhase.getIndex()) {
             beginPhase(phase);
         }
     }
@@ -212,7 +217,7 @@ public class LoadingTracker {
     static void onBarStep(ProgressBar bar) {
         if (!initialized || currentPhase == null) return;
         Phase phase = resolvePhase(bar);
-        if (phase != null && phase == currentPhase) {
+        if (phase == currentPhase) {
             updateProgress(currentPhase, getSubProgress(bar));
         }
     }
@@ -220,7 +225,7 @@ public class LoadingTracker {
     static void onBarPop(ProgressBar bar) {
         if (!initialized || currentPhase == null) return;
         Phase phase = resolvePhase(bar);
-        if (phase != null && phase == currentPhase) {
+        if (phase == currentPhase) {
             updateProgress(currentPhase, 1.0);
         }
     }
