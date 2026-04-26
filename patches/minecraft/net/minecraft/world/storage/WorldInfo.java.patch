@@ -20,7 +20,22 @@
              }
          }
      }
-@@ -367,6 +368,7 @@
+@@ -261,12 +262,13 @@
+     {
+         this.populateFromWorldSettings(settings);
+         this.levelName = name;
+-        this.difficulty = DEFAULT_DIFFICULTY;
++        this.difficulty = settings.getDifficulty();
+         this.initialized = false;
+     }
+ 
+     public void populateFromWorldSettings(WorldSettings settings)
+     {
++        this.difficulty = settings.getDifficulty();
+         this.randomSeed = settings.getSeed();
+         this.gameType = settings.getGameType();
+         this.mapFeaturesEnabled = settings.isMapFeaturesEnabled();
+@@ -367,6 +369,7 @@
          nbt.setDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
          nbt.setDouble("BorderWarningBlocks", this.borderWarningDistance);
          nbt.setDouble("BorderWarningTime", this.borderWarningTime);
@@ -28,7 +43,7 @@
  
          if (this.difficulty != null)
          {
-@@ -377,9 +379,10 @@
+@@ -377,9 +380,10 @@
          nbt.setTag("GameRules", this.gameRules.writeToNBT());
          NBTTagCompound nbttagcompound1 = new NBTTagCompound();
  
@@ -41,7 +56,7 @@
          }
  
          nbt.setTag("DimensionData", nbttagcompound1);
-@@ -709,6 +712,7 @@
+@@ -709,6 +713,7 @@
  
      public void setDifficulty(EnumDifficulty newDifficulty)
      {
@@ -49,7 +64,7 @@
          this.difficulty = newDifficulty;
      }
  
-@@ -832,16 +836,47 @@
+@@ -832,16 +837,47 @@
          }
          );
      }
