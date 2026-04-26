@@ -43,7 +43,6 @@ public class LoadingTracker {
         public static final Phase LOADING_RESOURCES     = register("LOADING_RESOURCES",     "Loading Resources",         250);
         public static final Phase RELOADING             = register("RELOADING",             "Reloading",                 250);
         public static final Phase PREINIT               = register("PREINIT",               "Pre-initializing Mods",     900);
-        public static final Phase LOADING_RESOURCE      = register("LOADING_RESOURCE",      "Loading Resource",          500);
         public static final Phase LOADING_SOUNDS        = register("LOADING_SOUNDS",        "Loading sounds",            150);
         public static final Phase RENDERING_SETUP       = register("RENDERING_SETUP",       "Rendering Setup",           150);
         public static final Phase RELOAD_BLOCKS         = register("RELOAD_BLOCKS",         "ModelLoader: blocks",       1200);
@@ -107,7 +106,6 @@ public class LoadingTracker {
         TITLE_TO_PHASE.put("Loading Resources",         Phase.LOADING_RESOURCES);
         TITLE_TO_PHASE.put("Reloading",                 Phase.RELOADING);
         TITLE_TO_PHASE.put("PreInitialization",          Phase.PREINIT);
-        TITLE_TO_PHASE.put("Loading Resource",           Phase.LOADING_RESOURCE);
         TITLE_TO_PHASE.put("Loading sounds",             Phase.LOADING_SOUNDS);
         TITLE_TO_PHASE.put("Rendering Setup",            Phase.RENDERING_SETUP);
         TITLE_TO_PHASE.put("ModelLoader: blocks",        Phase.RELOAD_BLOCKS);
@@ -148,6 +146,7 @@ public class LoadingTracker {
         for (int i = 0; i < phaseCount; i++) {
             phaseFrom[i] = cursor;
             int span = (int)(weights[i] * (long) MAX_PROGRESS / totalWeight);
+            if (span < 1) span = 1;
             cursor += span;
             phaseTo[i] = cursor;
         }
@@ -197,8 +196,6 @@ public class LoadingTracker {
 
         currentPhase = phase;
         phaseStartNano[phase.getIndex()] = System.nanoTime();
-        FMLLog.log.debug("LoadingTracker: beginPhase {} (index={}, range={}-{})", phase.getDisplayName(),
-                phase.getIndex(), phaseFrom[phase.getIndex()], phaseTo[phase.getIndex()]);
 
         updateProgress(phase, 0.0);
     }
@@ -212,8 +209,6 @@ public class LoadingTracker {
         }
         Phase phase = TITLE_TO_PHASE.get(bar.getTitle());
         if (phase != null && currentPhase != null && phase.getIndex() > currentPhase.getIndex()) {
-            FMLLog.log.debug("LoadingTracker: title fallback '{}' -> {} (index={})", bar.getTitle(),
-                    phase.getDisplayName(), phase.getIndex());
             beginPhase(phase);
         }
     }
@@ -222,8 +217,7 @@ public class LoadingTracker {
         if (!initialized || currentPhase == null) return;
         Phase phase = resolvePhase(bar);
         if (phase == currentPhase) {
-            double sub = getSubProgress(bar);
-            updateProgress(currentPhase, sub);
+            updateProgress(currentPhase, getSubProgress(bar));
         }
     }
 
