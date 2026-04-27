@@ -21,6 +21,7 @@ package net.minecraftforge.fml.common;
 
 import java.io.File;
 import java.security.cert.Certificate;
+import java.util.List;
 
 import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.versioning.VersionParser;
@@ -37,9 +38,17 @@ public class MinecraftDummyContainer extends DummyModContainer
     public MinecraftDummyContainer(String actualMCVersion)
     {
         super(new ModMetadata());
-        getMetadata().modId = "minecraft";
-        getMetadata().name = "Minecraft";
-        getMetadata().version = actualMCVersion;
+        ModMetadata meta = this.getMetadata();
+        meta.modId = "minecraft";
+        meta.name = "Minecraft";
+        meta.version = actualMCVersion;
+        // Description provided by minecraft.wiki (CC BY-NC-SA 3.0)
+        meta.description = "Minecraft is a 3D sandbox adventure game developed by Mojang Studios where players can interact with a fully customizable three-dimensional world made of blocks and entities. Its diverse gameplay options allow players to choose the way they play, creating countless possibilities.";
+        meta.authorList = List.of("Mojang AB");
+        meta.url = "https://www.minecraft.net";
+        meta.issueTrackerUrl = "https://bugs.mojang.com/browse/MC";
+        meta.license = "All Rights Reserved (https://www.minecraft.net/en-us/eula)";
+
         staticRange = VersionParser.parseRange("["+actualMCVersion+"]");
     }
 

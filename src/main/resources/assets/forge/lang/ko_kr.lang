@@ -203,7 +203,6 @@ forge.controlsgui.alt=알트 + %s
 fml.menu.mods=모드
 fml.menu.mods.normal=일반
 fml.menu.mods.search=검색:
-fml.menu.modoptions=모드 설정...
 
 item.forge.bucketFilled.name=%s 양동이
 
