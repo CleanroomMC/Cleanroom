@@ -1,4 +1,4 @@
-package com.cleanroommc.cleanroom.configanytime;
+package com.cleanroommc.configanytime;
 
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
