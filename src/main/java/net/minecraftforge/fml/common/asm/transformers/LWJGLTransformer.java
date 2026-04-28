@@ -17,11 +17,15 @@ public class LWJGLTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String s, String s1, byte[] bytes, Package pkg, Manifest manifest) {
-        if (s1.startsWith("net.minecraft.")) return bytes;
-        if (pkg.isAnnotationPresent(Lwjgl3Aware.class)) return bytes;
-        var attributes = manifest.getMainAttributes();
-        if (attributes.containsKey("Lwjgl3-Aware")
-                && attributes.getValue("Lwjgl3-Aware").equals("true")) return bytes;
+        if (s1.startsWith("net.minecraft.")
+            || s1.startsWith("com.cleanroommc.cleanroom.")
+            || s1.startsWith("com.cleanroommc.kirino.")) return bytes;
+        if (pkg != null && pkg.isAnnotationPresent(Lwjgl3Aware.class)) return bytes;
+        if (manifest != null) {
+            var attributes = manifest.getMainAttributes();
+            if (attributes.containsKey("Lwjgl3-Aware")
+                    && attributes.getValue("Lwjgl3-Aware").equals("true")) return bytes;
+        }
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
         ClassVisitor cv = new ClassRemapper(writer, INSTANCE);

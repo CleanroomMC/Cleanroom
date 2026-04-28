@@ -256,7 +256,7 @@ configurations {
 
 dependencies {
     // LWJGL
-    installer "com.cleanroommc:lwjglxx:1.1.17"
+    installer "com.cleanroommc:lwjglxx:1.1.18"
     lwjglLibraries[0].each {
         installer "org.lwjgl:$it:$props.lwjgl_version"
         runtimeOnly "org.lwjgl:$it::$lwjglArch"
