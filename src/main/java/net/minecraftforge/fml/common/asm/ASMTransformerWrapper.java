@@ -27,6 +27,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.Map;
+import java.util.jar.Manifest;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -242,11 +243,11 @@ public class ASMTransformerWrapper
         }
 
         @Override
-        public byte[] transform(String name, String transformedName, byte[] basicClass)
+        public byte[] transform(String name, String transformedName, byte[] basicClass, Package pkg, Manifest manifest)
         {
             try
             {
-                return parent.transform(name, transformedName, basicClass);
+                return parent.transform(name, transformedName, basicClass, pkg, manifest);
             }
             catch(Throwable e)
             {
