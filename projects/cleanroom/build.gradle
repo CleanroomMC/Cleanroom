@@ -95,7 +95,7 @@ ext {
     lwjglLibraries = [
         [
             'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
-            'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+            'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl-freetype', 'lwjgl'
         ],
 
         [
