@@ -52,7 +52,7 @@ public class LWJGLTransformer implements IClassTransformer {
 
         @Override
         public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
-            if (descriptor.equals(Type.getDescriptor(Mixin.class))) {
+            if (descriptor != null && descriptor.equals(Type.getDescriptor(Mixin.class))) {
                 INSTANCE.setIsMixin(true);
                 isMixin = true;
             }
