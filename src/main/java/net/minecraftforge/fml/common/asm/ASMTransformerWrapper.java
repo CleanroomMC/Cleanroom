@@ -34,6 +34,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
+import net.minecraftforge.fml.common.FMLLog;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -253,6 +254,7 @@ public class ASMTransformerWrapper
             }
             catch(Throwable e)
             {
+                FMLLog.log.error(e);
                 throw new TransformerException("Exception in class transformer " + parent + " from coremod " + getCoreMod(), e);
             }
         }
@@ -266,6 +268,7 @@ public class ASMTransformerWrapper
             }
             catch(Throwable e)
             {
+                FMLLog.log.error(e);
                 throw new TransformerException("Exception in class transformer " + parent + " from coremod " + getCoreMod(), e);
             }
         }
