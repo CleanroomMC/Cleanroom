@@ -1,8 +1,6 @@
 package net.minecraftforge.fml.common.asm.transformers;
 
-import com.cleanroommc.cleanroom.client.Lwjgl3Aware;
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.fml.common.FMLLog;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -28,11 +26,7 @@ public class LWJGLTransformer implements IClassTransformer {
     public byte[] transform(String s, String s1, byte[] bytes, Package pkg, Manifest manifest) {
         if (bytes == null) return null;
         if (s1.startsWith("net.minecraft.")
-            || s1.startsWith("net.minecraftforge.")
-            || s1.startsWith("com.cleanroommc.cleanroom.")
-            || s1.startsWith("com.cleanroommc.kirino.")
             || s1.startsWith("org.lwjgl.")) return bytes;
-        if (pkg != null && pkg.isAnnotationPresent(Lwjgl3Aware.class)) return bytes;
         if (manifest != null) {
             var attributes = manifest.getMainAttributes();
             if ("true".equals(attributes.getValue("Lwjgl3-Aware"))) return bytes;
