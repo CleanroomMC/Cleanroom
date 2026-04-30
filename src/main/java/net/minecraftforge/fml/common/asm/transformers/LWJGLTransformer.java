@@ -26,6 +26,7 @@ public class LWJGLTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String s, String s1, byte[] bytes, Package pkg, Manifest manifest) {
+        if (bytes == null) return null;
         if (s1.startsWith("net.minecraft.")
             || s1.startsWith("net.minecraftforge.")
             || s1.startsWith("com.cleanroommc.cleanroom.")

@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.jar.Manifest;
 
@@ -254,7 +255,6 @@ public class ASMTransformerWrapper
             }
             catch(Throwable e)
             {
-                FMLLog.log.error(e);
                 throw new TransformerException("Exception in class transformer " + parent + " from coremod " + getCoreMod(), e);
             }
         }
@@ -268,7 +268,6 @@ public class ASMTransformerWrapper
             }
             catch(Throwable e)
             {
-                FMLLog.log.error(e);
                 throw new TransformerException("Exception in class transformer " + parent + " from coremod " + getCoreMod(), e);
             }
         }
