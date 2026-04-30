@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.9-alpha] - 2026-04-30
+### New Features
+- [`4a76d2f`](https://github.com/CleanroomMC/Cleanroom/commit/4a76d2f5b9ad89d3a786a95d2b56f263b9df6716) - aggresive loading tracker *(PR [#553](https://github.com/CleanroomMC/Cleanroom/pull/553) by [@baka-gourd](https://github.com/baka-gourd))*
+
+### Other Changes
+- [`e238bed`](https://github.com/CleanroomMC/Cleanroom/commit/e238bed837942573424ab12c02210afdec32ef59) - Update mixin extra *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`266851d`](https://github.com/CleanroomMC/Cleanroom/commit/266851da7d04c77e7f4373d2b4300fd78be66de7) - Merge branch 'main' of github.com:CleanroomMC/Cleanroom *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`7be307d`](https://github.com/CleanroomMC/Cleanroom/commit/7be307dc2ad50c2f8bb1e91a1360d3728dd4aea6) - Uncomment objc bridge *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.8-alpha] - 2026-04-08
 ### Other Changes
 - [`2a723e2`](https://github.com/CleanroomMC/Cleanroom/commit/2a723e2d47b6607942c3f209de364e716dadb4c6) - Update foundation *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -24,3 +34,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.5.7-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.6-alpha...0.5.7-alpha
 [0.5.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.7-alpha...0.5.8-alpha
+[0.5.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.8-alpha...0.5.9-alpha
