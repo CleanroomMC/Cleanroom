@@ -1,0 +1,42 @@
+--- before/net/minecraft/world/WorldSettings.java
++++ after/net/minecraft/world/WorldSettings.java
+@@ -14,6 +14,7 @@
+     private boolean commandsAllowed;
+     private boolean bonusChestEnabled;
+     private String generatorOptions = "";
++    private EnumDifficulty difficulty = EnumDifficulty.NORMAL;
+ 
+     public WorldSettings(long seedIn, GameType gameType, boolean enableMapFeatures, boolean hardcoreMode, WorldType worldTypeIn)
+     {
+@@ -24,9 +25,19 @@
+         this.terrainType = worldTypeIn;
+     }
+ 
++    public WorldSettings(long seedIn, GameType gameType, boolean enableMapFeatures, boolean hardcoreMode, WorldType worldTypeIn, EnumDifficulty difficulty)
++    {
++        this.seed = seedIn;
++        this.gameType = gameType;
++        this.mapFeaturesEnabled = enableMapFeatures;
++        this.hardcoreEnabled = hardcoreMode;
++        this.terrainType = worldTypeIn;
++        this.difficulty = difficulty;
++    }
++
+     public WorldSettings(WorldInfo info)
+     {
+-        this(info.getSeed(), info.getGameType(), info.isMapFeaturesEnabled(), info.isHardcoreModeEnabled(), info.getTerrainType());
++        this(info.getSeed(), info.getGameType(), info.isMapFeaturesEnabled(), info.isHardcoreModeEnabled(), info.getTerrainType(), info.getDifficulty());
+     }
+ 
+     public WorldSettings enableBonusChest()
+@@ -91,5 +102,10 @@
+     public String getGeneratorOptions()
+     {
+         return this.generatorOptions;
++    }
++
++    public EnumDifficulty getDifficulty()
++    {
++        return this.difficulty;
+     }
+ }
