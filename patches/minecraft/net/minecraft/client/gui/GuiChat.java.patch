@@ -1,0 +1,173 @@
+--- before/net/minecraft/client/gui/GuiChat.java
++++ after/net/minecraft/client/gui/GuiChat.java
+@@ -2,6 +2,9 @@
+ 
+ import java.io.IOException;
+ import javax.annotation.Nullable;
++
++import com.cleanroommc.client.chat.suggestion.SuggestionList;
++import com.cleanroommc.client.chat.suggestion.SuggestionUpdater;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.util.ITabCompleter;
+ import net.minecraft.util.TabCompleter;
+@@ -26,6 +29,7 @@
+     private TabCompleter tabCompleter;
+     protected GuiTextField inputField;
+     private String defaultInputFieldText = "";
++    private SuggestionList suggestionList;
+ 
+     public GuiChat()
+     {
+@@ -48,6 +52,13 @@
+         this.inputField.setText(this.defaultInputFieldText);
+         this.inputField.setCanLoseFocus(false);
+         this.tabCompleter = new GuiChat.ChatTabCompleter(this.inputField);
++        this.suggestionList = new SuggestionList();
++        SuggestionUpdater updater = new SuggestionUpdater(this.suggestionList);
++        this.inputField.setGuiResponder(updater);
++        if (this.defaultInputFieldText != null)
++        {
++            updater.setEntryValue(0, this.defaultInputFieldText);
++        }
+     }
+ 
+     @Override
+@@ -70,6 +81,15 @@
+ 
+         if (keyCode == 15)
+         {
++            if (this.suggestionList.isVisible())
++            {
++                String selected = this.suggestionList.getSelected();
++                if (selected == null) {
++                    selected = this.suggestionList.getFirst();
++                }
++                this.suggestionList.applySuggestion(this.inputField, selected);
++                return;
++            }
+             this.tabCompleter.complete();
+         }
+         else
+@@ -79,10 +99,20 @@
+ 
+         if (keyCode == 1)
+         {
++            if (this.suggestionList.isVisible())
++            {
++                this.suggestionList.hide();
++            }
+             this.mc.displayGuiScreen(null);
+         }
+         else if (keyCode == 28 || keyCode == 156)
+         {
++            String selected = this.suggestionList.getSelected();
++            if (selected != null)
++            {
++                this.suggestionList.applySuggestion(this.inputField, selected);
++                return;
++            }
+             String s = this.inputField.getText().trim();
+ 
+             if (!s.isEmpty())
+@@ -94,10 +124,20 @@
+         }
+         else if (keyCode == 200)
+         {
++            if (this.suggestionList.isVisible())
++            {
++                this.suggestionList.selectPrev();
++                return;
++            }
+             this.getSentHistory(-1);
+         }
+         else if (keyCode == 208)
+         {
++            if (this.suggestionList.isVisible())
++            {
++                this.suggestionList.selectNext();
++                return;
++            }
+             this.getSentHistory(1);
+         }
+         else if (keyCode == 201)
+@@ -132,6 +172,13 @@
+                 i = -1;
+             }
+ 
++            int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
++            int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
++            if (this.suggestionList.isMouseOver(this.inputField.x, this.inputField.y, this.inputField.width, mouseX, mouseY))
++            {
++                this.suggestionList.scroll(i);
++                return;
++            }
+             if (!isShiftKeyDown())
+             {
+                 i *= 7;
+@@ -146,6 +193,12 @@
+     {
+         if (mouseButton == 0)
+         {
++            String clicked = this.suggestionList.mouseClicked(this.inputField.x, this.inputField.y, this.inputField.width, mouseX, mouseY);
++            if (clicked != null)
++            {
++                this.suggestionList.applySuggestion(this.inputField, clicked);
++                return;
++            }
+             ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
+ 
+             if (itextcomponent != null && this.handleComponentClick(itextcomponent))
+@@ -201,6 +254,7 @@
+     public void drawScreen(int mouseX, int mouseY, float partialTicks)
+     {
+         drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
++        this.suggestionList.drawGhostText(this.inputField, this.fontRenderer);
+         this.inputField.drawTextBox();
+         ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
+ 
+@@ -209,6 +263,7 @@
+             this.handleComponentHover(itextcomponent, mouseX, mouseY);
+         }
+ 
++        this.suggestionList.render(this.inputField.x, this.inputField.y, this.inputField.width, mouseX, mouseY);
+         super.drawScreen(mouseX, mouseY, partialTicks);
+     }
+ 
+@@ -222,6 +277,7 @@
+     public void setCompletions(String... newCompletions)
+     {
+         this.tabCompleter.setCompletions(newCompletions);
++        this.suggestionList.updateSuggestions(newCompletions);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -232,29 +288,6 @@
+             public ChatTabCompleter(GuiTextField p_i46749_1_)
+             {
+                 super(p_i46749_1_, false);
+-            }
+-
+-            @Override
+-            public void complete()
+-            {
+-                super.complete();
+-
+-                if (this.completions.size() > 1)
+-                {
+-                    StringBuilder stringbuilder = new StringBuilder();
+-
+-                    for (String s : this.completions)
+-                    {
+-                        if (stringbuilder.length() > 0)
+-                        {
+-                            stringbuilder.append(", ");
+-                        }
+-
+-                        stringbuilder.append(s);
+-                    }
+-
+-                    this.client.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new TextComponentString(stringbuilder.toString()), 1);
+-                }
+             }
+ 
+             @Nullable
