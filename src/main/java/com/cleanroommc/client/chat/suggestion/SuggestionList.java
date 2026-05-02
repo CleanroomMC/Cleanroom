@@ -11,8 +11,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @SideOnly(Side.CLIENT)
 public class SuggestionList {
@@ -20,11 +22,17 @@ public class SuggestionList {
     private static final int MAX_VISIBLE = 10;
     private static final int ENTRY_HEIGHT = 12;
     private static final int PADDING_X = 3;
+    private static final Set<String> knownCommands = new HashSet<>();
 
+    private final GuiTextField field;
     private List<String> suggestions = Collections.emptyList();
     private int selectedIndex = -1;
     private int scrollOffset = 0;
     private int cachedWidth = 0;
+    public SuggestionList(GuiTextField field) {
+        this.field = field;
+        knownCommands.addAll(ClientCommandHandler.instance.getCommands().keySet());
+    }
 
     public void setSuggestions(List<String> newSuggestions) {
         this.suggestions = newSuggestions;
@@ -52,7 +60,7 @@ public class SuggestionList {
     }
 
     public void selectNext() {
-        if (this.suggestions.isEmpty()) {
+        if (this.isInvisible()) {
             return;
         }
         this.selectedIndex = this.selectedIndex < this.suggestions.size() - 1 ? this.selectedIndex + 1 : -1;
@@ -116,10 +124,6 @@ public class SuggestionList {
             Gui.drawRect(barX, listY, barX + 2, listY + listHeight, 0xFF333333);
             Gui.drawRect(barX, thumbY, barX + 2, thumbY + thumbHeight, 0xFFAAAAAA);
         }
-//        int separatorY = listY + listHeight - 1;
-//        for (int x = inputX; x < inputX + listWidth; x++) {
-//            Gui.drawRect(x, separatorY, x + 1, separatorY + 1, (x - inputX) % 2 == 0 ? 0xFFFFFFFF : 0xFF000000);
-//        }
     }
 
     public void updateSuggestions(String... serverCompletions) {
@@ -127,11 +131,27 @@ public class SuggestionList {
         String[] clientComplete = ClientCommandHandler.instance.latestAutoComplete;
         if (clientComplete != null) {
             for (String s : clientComplete) {
-                if (!s.isEmpty()) list.add(s);
+                if (!s.isEmpty()) {
+                    list.add(s);
+                }
             }
         }
         for (String s : serverCompletions) {
-            if (!s.isEmpty() && !list.contains(s)) list.add(s);
+            if (!s.isEmpty() && !list.contains(s)) {
+                list.add(s);
+            }
+        }
+        String currentText = this.field.getText();
+        if (currentText.isEmpty() || (currentText.startsWith("/") && !currentText.contains(" "))) {
+            for (String s : list) {
+                String name = s.startsWith("/") ? s.substring(1) : s;
+                if (!name.isEmpty()) {
+                    knownCommands.add(name);
+                }
+            }
+        }
+        if (currentText.isEmpty()) {
+            return;
         }
         this.setSuggestions(list);
     }
@@ -170,6 +190,25 @@ public class SuggestionList {
             suffix = suffix.substring(0, suffix.length() - 1);
         }
         fontRenderer.drawString(suffix, ghostX, inputField.y, 0xFF808080);
+    }
+
+    public void drawCommandColor(GuiTextField inputField, FontRenderer fontRenderer) {
+        String text = inputField.getText();
+        if (!text.startsWith("/")) {
+            return;
+        }
+        int firstSpaceIdx = text.indexOf(' ');
+        String firstWord = firstSpaceIdx == -1 ? text : text.substring(0, firstSpaceIdx);
+        String cmdName = firstWord.substring(1);
+        if (cmdName.isEmpty()) {
+            return;
+        }
+        int scrollOffset = inputField.getLineScrollOffset();
+        if (scrollOffset >= firstWord.length()) {
+            return;
+        }
+        int color = knownCommands.contains(cmdName) ? 0x55FF55 : 0xFF5555;
+        fontRenderer.drawStringWithShadow(firstWord.substring(scrollOffset), inputField.x, inputField.y, color);
     }
 
     public boolean isMouseOver(int inputX, int inputY, int inputWidth, int mouseX, int mouseY) {

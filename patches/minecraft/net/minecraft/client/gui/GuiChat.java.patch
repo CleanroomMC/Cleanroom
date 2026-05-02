@@ -22,8 +22,8 @@
          this.inputField.setText(this.defaultInputFieldText);
          this.inputField.setCanLoseFocus(false);
          this.tabCompleter = new GuiChat.ChatTabCompleter(this.inputField);
-+        this.suggestionList = new SuggestionList();
-+        SuggestionUpdater updater = new SuggestionUpdater(this.suggestionList);
++        this.suggestionList = new SuggestionList(this.inputField);
++        SuggestionUpdater updater = new SuggestionUpdater(this.suggestionList, this.tabCompleter);
 +        this.inputField.setGuiResponder(updater);
 +        if (this.defaultInputFieldText != null)
 +        {
@@ -117,15 +117,17 @@
              ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
  
              if (itextcomponent != null && this.handleComponentClick(itextcomponent))
-@@ -201,6 +254,7 @@
+@@ -201,7 +254,9 @@
      public void drawScreen(int mouseX, int mouseY, float partialTicks)
      {
          drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
 +        this.suggestionList.drawGhostText(this.inputField, this.fontRenderer);
          this.inputField.drawTextBox();
++        this.suggestionList.drawCommandColor(this.inputField, this.fontRenderer);
          ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
  
-@@ -209,6 +263,7 @@
+         if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null)
+@@ -209,6 +264,7 @@
              this.handleComponentHover(itextcomponent, mouseX, mouseY);
          }
  
@@ -133,7 +135,7 @@
          super.drawScreen(mouseX, mouseY, partialTicks);
      }
  
-@@ -222,6 +277,7 @@
+@@ -222,6 +278,7 @@
      public void setCompletions(String... newCompletions)
      {
          this.tabCompleter.setCompletions(newCompletions);
@@ -141,7 +143,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -232,29 +288,6 @@
+@@ -232,29 +289,6 @@
              public ChatTabCompleter(GuiTextField p_i46749_1_)
              {
                  super(p_i46749_1_, false);

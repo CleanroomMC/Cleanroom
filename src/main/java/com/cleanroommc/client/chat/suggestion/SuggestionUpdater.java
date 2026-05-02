@@ -20,6 +20,10 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
     public SuggestionUpdater(SuggestionList suggestionList, TabCompleter tabCompleter) {
         this.suggestionList = suggestionList;
         this.tabCompleter = tabCompleter;
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.player != null) {
+            mc.player.connection.sendPacket(new CPacketTabComplete("/", null, false));
+        }
     }
 
     @Override
