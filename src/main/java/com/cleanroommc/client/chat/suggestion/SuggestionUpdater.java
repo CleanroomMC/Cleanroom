@@ -3,6 +3,7 @@ package com.cleanroommc.client.chat.suggestion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.network.play.client.CPacketTabComplete;
+import net.minecraft.util.TabCompleter;
 import net.minecraftforge.client.ClientCommandHandler;
 
 /**
@@ -12,11 +13,13 @@ import net.minecraftforge.client.ClientCommandHandler;
 public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
 
     private final SuggestionList suggestionList;
+    private final TabCompleter tabCompleter;
 
     private String lastText = "";
 
-    public SuggestionUpdater(SuggestionList suggestionList) {
+    public SuggestionUpdater(SuggestionList suggestionList, TabCompleter tabCompleter) {
         this.suggestionList = suggestionList;
+        this.tabCompleter = tabCompleter;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         // Client-side commands
         ClientCommandHandler.instance.autoComplete(value);
         // Server-side completions
-        mc.player.connection.sendPacket(new CPacketTabComplete(value, null, false));
+        mc.player.connection.sendPacket(new CPacketTabComplete(value, this.tabCompleter.getTargetBlockPos(), false));
     }
 
 }
