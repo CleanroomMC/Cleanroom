@@ -78,9 +78,7 @@ public class LWJGLTransformer implements IClassTransformer {
             }
 
             if (isMixin) {
-                if (typeName.contains("org/lwjgl/")) {
-                    return typeName.replace("org/lwjgl/", "org/lwjglx/");
-                }
+                return typeName.replace("org/lwjgl/", "org/lwjglx/");
             } else if (typeName.startsWith("org/lwjgl/")) {
                 return "org/lwjglx/" + typeName.substring(10);
             }
@@ -90,11 +88,19 @@ public class LWJGLTransformer implements IClassTransformer {
         
         @Override
         public Object mapValue(final Object value) {
-            if (isMixin && value instanceof String string) {
-                return string.replace("org/lwjgl/", "org/lwjglx/");
-            } else {
-                return super.mapValue(value);
+            if (value == null) {
+                return null;
             }
+            
+            if (value instanceof String str) {
+                if (isMixin) {
+                    return str.replace("org/lwjgl/", "org/lwjglx/");
+                } else if (str.startsWith("org/lwjgl/")) {
+                    return "org/lwjglx/" + str.substring(10);
+                }
+            }
+            
+            return value;
         }
         
         public void setIsMixin(boolean value) {
