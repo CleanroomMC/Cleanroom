@@ -1,8 +1,11 @@
 --- before/net/minecraft/client/renderer/block/model/ItemTransformVec3f.java
 +++ after/net/minecraft/client/renderer/block/model/ItemTransformVec3f.java
-@@ -13,9 +13,14 @@
+@@ -11,11 +11,16 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
- import org.lwjgl.util.vector.Vector3f;
+-import org.lwjgl.util.vector.Vector3f;
++import org.lwjglx.util.vector.Vector3f;
  
 +/*
 + * @deprecated use {@link net.minecraftforge.client.model.IModelState} and {@link net.minecraftforge.client.model.TRSRTransformation}

@@ -21,7 +21,7 @@ package net.minecraftforge.fml.common.registry;
 
 import java.lang.reflect.Field;
 
-import com.cleanroommc.hackery.ReflectionHackery;
+import com.cleanroommc.cleanroom.hackery.ReflectionHackery;
 import net.lenni0451.reflect.Classes;
 import net.lenni0451.reflect.Fields;
 import net.minecraft.item.ItemStack;

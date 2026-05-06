@@ -1,86 +1,108 @@
 package net.minecraftforge.fml.common.asm.transformers;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.Remapper;
-import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.mixin.Mixin;
 
-import java.io.IOException;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.jar.Manifest;
 
 public class LWJGLTransformer implements IClassTransformer {
+
     private static final LWJGLXRemapper INSTANCE = new LWJGLXRemapper();
+    
     @Override
-    public byte[] transform(String s, String s1, byte[] bytes) {
-        if (!s1.startsWith("org.lwjgl.")) {
-            return bytes;
-        }
-        String lwjglxName = s.replace("org.lwjgl.", "org.lwjglx.");
-        byte[] lwjglxBytes;
-        try {
-            lwjglxBytes = Launch.classLoader.testGetClassBytes(lwjglxName);
-        } catch (IOException e) {
-            return bytes;
-        }
-        if (lwjglxBytes == null) {
-            return bytes;
-        }
-        ClassReader lwjglxReader = new ClassReader(lwjglxBytes);
-        ClassWriter writer = new ClassWriter(0);
-        ClassVisitor classVisitor = new ClassRemapper(writer, INSTANCE);
-        lwjglxReader.accept(classVisitor, 0);
-        lwjglxBytes = writer.toByteArray();
-        if (bytes == null) {
-            return lwjglxBytes;
-        }
-
-        ClassNode lwjglNode = new ClassNode();
-        ClassReader lwjglReader = new ClassReader(bytes);
-        lwjglReader.accept(lwjglNode, 0);
-
-        lwjglxReader = new ClassReader(lwjglxBytes);
-        ClassNode lwjglxNode = new ClassNode();
-        lwjglxReader.accept(lwjglxNode, 0);
-        Set<String> methods = lwjglNode.methods.stream().map(m -> m.name + m.desc).collect(Collectors.toSet());
-        lwjglxNode.methods.forEach(m -> {
-            if (!methods.contains(m.name + m.desc)) {
-                lwjglNode.methods.add(m);
-            }
-        });
-        Set<String> fields = lwjglNode.fields.stream().map(f -> f.name + f.desc).collect(Collectors.toSet());
-        lwjglxNode.fields.forEach(f -> {
-            if (!fields.contains(f.name + f.desc)) {
-                lwjglNode.fields.add(f);
-            }
-        });
-        if (s1.equals("org.lwjgl.openal.AL")) {
-            lwjglNode.methods.removeIf(m -> m.name.equals("destroy"));
-            lwjglxNode.methods.stream().filter(m -> m.name.equals("destroy")).forEach(m -> lwjglNode.methods.add(m));
-        }
-        ClassWriter out = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        lwjglNode.accept(out);
-        return out.toByteArray();
+    public byte[] transform(String name, String remappedName, byte[] bytes) {
+        return transform(name, remappedName, bytes, null, null);
     }
 
-    static class LWJGLXRemapper extends Remapper {
+    @Override
+    public byte[] transform(String s, String s1, byte[] bytes, Package pkg, Manifest manifest) {
+        if (bytes == null) return null;
+        if (s1.startsWith("net.minecraft.")
+            || s1.startsWith("org.lwjgl.")) return bytes;
+        if (manifest != null) {
+            var attributes = manifest.getMainAttributes();
+            if ("true".equals(attributes.getValue("Lwjgl3-Aware"))) return bytes;
+        }
+        ClassReader reader = new ClassReader(bytes);
+        ClassWriter writer = new ClassWriter(0);
+        ClassVisitor cv = new ClassRemapperWithMixinHandle(writer, INSTANCE);
+        reader.accept(cv, 0);
+        return writer.toByteArray();
+    }
+    
+    private static class ClassRemapperWithMixinHandle extends ClassRemapper {
+        private boolean isMixin = false;
+
+        public ClassRemapperWithMixinHandle(ClassVisitor classVisitor, Remapper remapper) {
+            super(classVisitor, remapper);
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+            if (descriptor != null && descriptor.equals(Type.getDescriptor(Mixin.class))) {
+                INSTANCE.setIsMixin(true);
+                isMixin = true;
+            }
+            return super.visitAnnotation(descriptor, visible);
+        }
+
+        @Override
+        public void visitEnd() {
+            if (isMixin) {
+                INSTANCE.setIsMixin(false);
+            }
+            super.visitEnd();
+        }
+    }
+
+    private static class LWJGLXRemapper extends Remapper {
+        
+        private boolean isMixin;
+
+        public LWJGLXRemapper() {
+            super(Opcodes.ASM9);
+        }
 
         @Override
         public String map(String typeName) {
             if (typeName == null) {
                 return null;
             }
-            if (typeName.startsWith("org/lwjglx/")) {
-                return "org/lwjgl/" + typeName.substring(11);
+
+            if (isMixin) {
+                return typeName.replace("org/lwjgl/", "org/lwjglx/");
+            } else if (typeName.startsWith("org/lwjgl/")) {
+                return "org/lwjglx/" + typeName.substring(10);
             }
 
             return typeName;
         }
-
+        
+        @Override
+        public Object mapValue(final Object value) {
+            if (value == null) {
+                return null;
+            }
+            
+            if (value instanceof String str) {
+                if (isMixin) {
+                    return str.replace("org/lwjgl/", "org/lwjglx/");
+                }
+            }
+            
+            return super.mapValue(value);
+        }
+        
+        public void setIsMixin(boolean value) {
+            isMixin = value;
+        } 
     }
-
 }

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiScreenServerList.java
++++ after/net/minecraft/client/gui/GuiScreenServerList.java
+@@ -5,7 +5,7 @@
+ import net.minecraft.client.resources.I18n;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiScreenServerList extends GuiScreen

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/block/model/BlockPartRotation.java
++++ after/net/minecraft/client/renderer/block/model/BlockPartRotation.java
+@@ -3,7 +3,7 @@
+ import net.minecraft.util.EnumFacing;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.vector.Vector3f;
++import org.lwjglx.util.vector.Vector3f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class BlockPartRotation

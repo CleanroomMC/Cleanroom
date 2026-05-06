@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.cleanroommc.cleanroom.client.LoadingTracker;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -108,7 +109,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
-import org.lwjgl.util.vector.Vector3f;
+import org.lwjglx.util.vector.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -164,7 +165,7 @@ public final class ModelLoader extends ModelBakery
         HashMultimap<IModel, ModelResourceLocation> models = HashMultimap.create();
         Multimaps.invertFrom(Multimaps.forMap(stateModels), models);
 
-        ProgressBar bakeBar = ProgressManager.push("ModelLoader: baking", models.keySet().size(), false, com.cleanroommc.client.LoadingTracker.Phase.RELOAD_BAKING);
+        ProgressBar bakeBar = ProgressManager.push("ModelLoader: baking", models.keySet().size(), false, LoadingTracker.Phase.RELOAD_BAKING);
 
         for(IModel model : models.keySet())
         {
@@ -211,8 +212,8 @@ public final class ModelLoader extends ModelBakery
         List<Block> blocks = StreamSupport.stream(Block.REGISTRY.spliterator(), false)
                 .filter(block -> block.getRegistryName() != null)
                 .sorted(Comparator.comparing(b -> b.getRegistryName().toString()))
-                .collect(Collectors.toList());
-        ProgressBar blockBar = ProgressManager.push("ModelLoader: blocks", blocks.size(), false, com.cleanroommc.client.LoadingTracker.Phase.RELOAD_BLOCKS);
+                .toList();
+        ProgressBar blockBar = ProgressManager.push("ModelLoader: blocks", blocks.size(), false, LoadingTracker.Phase.RELOAD_BLOCKS);
 
         BlockStateMapper mapper = this.blockModelShapes.getBlockStateMapper();
 
@@ -280,9 +281,9 @@ public final class ModelLoader extends ModelBakery
         List<Item> items = StreamSupport.stream(Item.REGISTRY.spliterator(), false)
                 .filter(item -> item.getRegistryName() != null)
                 .sorted(Comparator.comparing(i -> i.getRegistryName().toString()))
-                .collect(Collectors.toList());
+                .toList();
 
-        ProgressBar itemBar = ProgressManager.push("ModelLoader: items", items.size(), false, com.cleanroommc.client.LoadingTracker.Phase.RELOAD_ITEMS);
+        ProgressBar itemBar = ProgressManager.push("ModelLoader: items", items.size(), false, LoadingTracker.Phase.RELOAD_ITEMS);
         for(Item item : items)
         {
             itemBar.step(item.getRegistryName().toString());
@@ -492,9 +493,8 @@ public final class ModelLoader extends ModelBakery
                 @Override
                 public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand)
                 {
-                    if(state instanceof IExtendedBlockState)
+                    if(state instanceof IExtendedBlockState exState)
                     {
-                        IExtendedBlockState exState = (IExtendedBlockState)state;
                         if(exState.getUnlistedNames().contains(Properties.AnimationProperty))
                         {
                             IModelState newState = exState.getValue(Properties.AnimationProperty);
@@ -675,7 +675,7 @@ public final class ModelLoader extends ModelBakery
                 builder.add(Pair.of(model, new ModelStateComposition(v.getState(), modelDefaultState)));
             }
 
-            if (models.size() == 0) //If all variants are missing, add one with the missing model and default rotation.
+            if (models.isEmpty()) //If all variants are missing, add one with the missing model and default rotation.
             {
                 // FIXME: log this?
                 IModel missing = ModelLoaderRegistry.getMissingModel();
@@ -716,7 +716,7 @@ public final class ModelLoader extends ModelBakery
             }
             if(variants.size() == 1)
             {
-                IModel model = models.get(0);
+                IModel model = models.getFirst();
                 return model.bake(MultiModelState.getPartState(state, model, 0), format, bakedTextureGetter);
             }
             WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
@@ -757,7 +757,7 @@ public final class ModelLoader extends ModelBakery
         }
     }
 
-    protected IModel getMissingModel()
+    IModel getMissingModel()
     {
         if (missingModel == null)
         {
@@ -961,9 +961,8 @@ public final class ModelLoader extends ModelBakery
         for(Map.Entry<ResourceLocation, Exception> entry : loadingExceptions.entrySet())
         {
             // ignoring pure ResourceLocation arguments, all things we care about pass ModelResourceLocation
-            if(entry.getKey() instanceof ModelResourceLocation)
+            if(entry.getKey() instanceof ModelResourceLocation location)
             {
-                ModelResourceLocation location = (ModelResourceLocation)entry.getKey();
                 IBakedModel model = modelRegistry.getObject(location);
                 if(model == null || model == missingModel || model instanceof FancyMissingModel.BakedModel)
                 {
@@ -1002,9 +1001,8 @@ public final class ModelLoader extends ModelBakery
                                 }
                             }
                         }
-                        if(entry.getValue() instanceof ItemLoadingException)
+                        if(entry.getValue() instanceof ItemLoadingException ex)
                         {
-                            ItemLoadingException ex = (ItemLoadingException)entry.getValue();
                             FMLLog.log.error("{}, normal location exception: ", errorMsg, ex.normalException);
                             FMLLog.log.error("{}, blockstate location exception: ", errorMsg, ex.blockstateException);
                         }
@@ -1236,8 +1234,7 @@ public final class ModelLoader extends ModelBakery
                 builder.putModel(selector.getPredicate(multipart.getStateContainer()), partModels.get(selector).bake(partModels.get(selector).getDefaultState(), format, bakedTextureGetter));
             }
 
-            IBakedModel bakedModel = builder.makeMultipartModel();
-            return bakedModel;
+            return builder.makeMultipartModel();
         }
 
         @Override

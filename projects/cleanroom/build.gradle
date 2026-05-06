@@ -95,7 +95,7 @@ ext {
     lwjglLibraries = [
         [
             'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
-            'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+            'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl-freetype', 'lwjgl'
         ],
 
         [
@@ -123,7 +123,7 @@ patcher {
             client = true
             taskName 'cleanroomClient'
             ideaModule "${rootProject.name}.${project.name}.main"
-            main 'com.cleanroommc.boot.MainClient'
+            main 'com.cleanroommc.cleanroom.boot.MainClient'
             workingDirectory project.file('run')
 
             environment 'target', 'fmldevclient'
@@ -176,7 +176,7 @@ patcher {
             client false
             taskName 'cleanroomServer'
             ideaModule "${rootProject.name}.${project.name}.main"
-            main 'com.cleanroommc.boot.MainServer'
+            main 'com.cleanroommc.cleanroom.boot.MainServer'
             workingDirectory project.file('run')
 
             environment 'target', 'fmldevserver'
@@ -256,8 +256,7 @@ configurations {
 
 dependencies {
     // LWJGL
-    compileOnly "com.cleanroommc:lwjglx:1.0.0"
-    installer "com.cleanroommc:lwjglxx:1.1.17"
+    installer "com.cleanroommc:lwjglxx:1.1.18"
     lwjglLibraries[0].each {
         installer "org.lwjgl:$it:$props.lwjgl_version"
         runtimeOnly "org.lwjgl:$it::$lwjglArch"
@@ -277,7 +276,7 @@ dependencies {
     installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
     // Hacks
-    installer "top.outlands:foundation:0.19.7"
+    installer "top.outlands:foundation:0.20.10"
     installer 'net.lenni0451:Reflect:1.6.3'
     installer 'net.lenni0451.commons:unchecked:1.9.2'
     installer 'org.javassist:javassist:3.30.2-GA'
@@ -368,7 +367,7 @@ dependencies {
     installer 'io.github.classgraph:classgraph:4.8.184'
 
     // Mixin
-    installer 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
+    installer 'com.cleanroommc:sponge-mixin:0.20.13+mixin.0.8.7'
     installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.4')
 
     testImplementation platform('org.junit:junit-bom:6.0.2')
@@ -771,10 +770,11 @@ universalJar {
         }
         classpath += "minecraft_server.${props.minecraft_version}.jar"
         manifest.attributes([
-            'Timestamp'  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            'Main-Class' : 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
-            'Class-Path' : classpath.toString(),
-            'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+            'Timestamp'    : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            'Main-Class'   : 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
+            'Class-Path'   : classpath.toString(),
+            'Tweak-Class'  : 'net.minecraftforge.fml.common.launcher.FMLTweaker',
+            'Lwjgl3-Aware' : 'true'
         ])
         manifest.attributes([
             'Specification-Title'   : props.title,

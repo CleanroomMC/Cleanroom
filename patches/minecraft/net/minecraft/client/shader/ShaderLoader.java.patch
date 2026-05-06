@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/shader/ShaderLoader.java
 +++ after/net/minecraft/client/shader/ShaderLoader.java
+@@ -15,7 +15,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.commons.io.IOUtils;
+ import org.apache.commons.lang3.StringUtils;
+-import org.lwjgl.BufferUtils;
++import org.lwjglx.BufferUtils;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ShaderLoader
 @@ -60,7 +60,8 @@
  
          if (shaderloader == null)

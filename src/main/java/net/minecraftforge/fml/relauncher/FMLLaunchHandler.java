@@ -23,8 +23,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.cleanroommc.common.CleanroomVersion;
-import net.minecraft.launchwrapper.Launch;
+import com.cleanroommc.cleanroom.common.CleanroomVersion;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;

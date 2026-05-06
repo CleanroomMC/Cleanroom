@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/shader/Shader.java
++++ after/net/minecraft/client/shader/Shader.java
+@@ -12,7 +12,7 @@
+ import net.minecraft.client.util.JsonException;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.vector.Matrix4f;
++import org.lwjglx.util.vector.Matrix4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class Shader

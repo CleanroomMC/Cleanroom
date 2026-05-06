@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/gui/GuiChat.java
++++ after/net/minecraft/client/gui/GuiChat.java
+@@ -14,8 +14,8 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Keyboard;
+-import org.lwjgl.input.Mouse;
++import org.lwjglx.input.Keyboard;
++import org.lwjglx.input.Mouse;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiChat extends GuiScreen implements ITabCompleter

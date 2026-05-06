@@ -31,7 +31,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjglx.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.cleanroommc.common;
+package com.cleanroommc.cleanroom.common;
 
 /**
  * Use methods to avoid final field references being fixed in bytecode

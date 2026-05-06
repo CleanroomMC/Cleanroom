@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
++++ after/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
+@@ -15,7 +15,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabCompleter
