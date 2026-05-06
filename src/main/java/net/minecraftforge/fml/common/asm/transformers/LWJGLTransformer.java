@@ -95,12 +95,10 @@ public class LWJGLTransformer implements IClassTransformer {
             if (value instanceof String str) {
                 if (isMixin) {
                     return str.replace("org/lwjgl/", "org/lwjglx/");
-                } else if (str.startsWith("org/lwjgl/")) {
-                    return "org/lwjglx/" + str.substring(10);
                 }
             }
             
-            return value;
+            return super.mapValue(value);
         }
         
         public void setIsMixin(boolean value) {
