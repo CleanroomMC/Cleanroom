@@ -26,36 +26,61 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.google.common.base.Joiner;
 
 /**
- * ProgressManager allows you to create loading bars 
- * that appear durning Mod Loading 
+ * ProgressManager allows you to create loading bars
+ * that appear durning Mod Loading
  */
 public class ProgressManager
 {
     private static final List<ProgressBar> bars = new CopyOnWriteArrayList<ProgressBar>();
-    
+
+    public interface Listener
+    {
+        void onPush(ProgressBar bar);
+        void onStep(ProgressBar bar);
+        void onPop(ProgressBar bar);
+    }
+
+    private static volatile Listener listener;
+
+    public static void setListener(Listener l)
+    {
+        listener = l;
+    }
+
     /**
-     * Create a progress bar with a title and number of steps   
+     * Create a progress bar with a title and number of steps
      *
      * @param title The title of the bar
-     * @param steps The ammout of steps 
+     * @param steps The ammout of steps
      */
     public static ProgressBar push(String title, int steps)
     {
         return push(title, steps, false);
     }
-    
+
     /**
      * Not a fully fleshed out API, may change in future MC versions.
      * However feel free to use and suggest additions.
      */
     public static ProgressBar push(String title, int steps, boolean timeEachStep)
     {
-        ProgressBar bar = new ProgressBar(title, steps);
+        return push(title, steps, timeEachStep, null);
+    }
+
+    /**
+     * Not a fully fleshed out API, may change in future MC versions.
+     * However feel free to use and suggest additions.
+     */
+    public static ProgressBar push(String title, int steps, boolean timeEachStep, Object phaseTag)
+    {
+        ProgressBar bar = new ProgressBar(title, steps, phaseTag);
         bars.add(bar);
         if (timeEachStep)
         {
             bar.timeEachStep();
         }
+        Listener l = listener;
+        if (l != null) l.onPush(bar);
         FMLCommonHandler.instance().processWindowMessages();
         return bar;
     }
@@ -71,6 +96,8 @@ public class ProgressManager
     {
         if(bar.getSteps() != bar.getStep()) throw new IllegalStateException("can't pop unfinished ProgressBar " + bar.getTitle());
         bars.remove(bar);
+        Listener l = listener;
+        if (l != null) l.onPop(bar);
         if (bar.getSteps() != 0)
         {
             long newTime = System.nanoTime();
@@ -110,11 +137,18 @@ public class ProgressManager
         private boolean timeEachStep = false;
         private long startTime = System.nanoTime();
         private long lastTime = startTime;
+        private final Object phaseTag;
 
         private ProgressBar(String title, int steps)
         {
+            this(title, steps, null);
+        }
+
+        private ProgressBar(String title, int steps, Object phaseTag)
+        {
             this.title = title;
             this.steps = steps;
+            this.phaseTag = phaseTag;
         }
 
         public void step(Class<?> classToName, String... extra)
@@ -124,8 +158,8 @@ public class ProgressManager
 
         /**
          * Move to the next step in a bar.
-         * 
-         * @param message The message to display inside a the bar 
+         *
+         * @param message The message to display inside a the bar
          */
         public void step(String message)
         {
@@ -138,6 +172,8 @@ public class ProgressManager
             }
             step++;
             this.message = FMLCommonHandler.instance().stripSpecialChars(message);
+            Listener l = listener;
+            if (l != null) l.onStep(this);
             FMLCommonHandler.instance().processWindowMessages();
         }
 
@@ -159,6 +195,11 @@ public class ProgressManager
         public String getMessage()
         {
             return message;
+        }
+
+        public Object getPhaseTag()
+        {
+            return phaseTag;
         }
 
         public void timeEachStep()
