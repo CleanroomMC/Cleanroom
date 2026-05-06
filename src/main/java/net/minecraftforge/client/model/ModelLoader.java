@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.cleanroommc.cleanroom.client.LoadingTracker;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -164,7 +165,7 @@ public final class ModelLoader extends ModelBakery
         HashMultimap<IModel, ModelResourceLocation> models = HashMultimap.create();
         Multimaps.invertFrom(Multimaps.forMap(stateModels), models);
 
-        ProgressBar bakeBar = ProgressManager.push("ModelLoader: baking", models.keySet().size(), false, com.cleanroommc.client.LoadingTracker.Phase.RELOAD_BAKING);
+        ProgressBar bakeBar = ProgressManager.push("ModelLoader: baking", models.keySet().size(), false, LoadingTracker.Phase.RELOAD_BAKING);
 
         for(IModel model : models.keySet())
         {
@@ -212,7 +213,7 @@ public final class ModelLoader extends ModelBakery
                 .filter(block -> block.getRegistryName() != null)
                 .sorted(Comparator.comparing(b -> b.getRegistryName().toString()))
                 .collect(Collectors.toList());
-        ProgressBar blockBar = ProgressManager.push("ModelLoader: blocks", blocks.size(), false, com.cleanroommc.client.LoadingTracker.Phase.RELOAD_BLOCKS);
+        ProgressBar blockBar = ProgressManager.push("ModelLoader: blocks", blocks.size(), false, LoadingTracker.Phase.RELOAD_BLOCKS);
 
         BlockStateMapper mapper = this.blockModelShapes.getBlockStateMapper();
 
@@ -282,7 +283,7 @@ public final class ModelLoader extends ModelBakery
                 .sorted(Comparator.comparing(i -> i.getRegistryName().toString()))
                 .collect(Collectors.toList());
 
-        ProgressBar itemBar = ProgressManager.push("ModelLoader: items", items.size(), false, com.cleanroommc.client.LoadingTracker.Phase.RELOAD_ITEMS);
+        ProgressBar itemBar = ProgressManager.push("ModelLoader: items", items.size(), false, LoadingTracker.Phase.RELOAD_ITEMS);
         for(Item item : items)
         {
             itemBar.step(item.getRegistryName().toString());
