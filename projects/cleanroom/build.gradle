@@ -256,6 +256,7 @@ configurations {
 
 dependencies {
     // LWJGL
+    compileOnly "com.cleanroommc:lwjglx:1.0.0"
     installer "com.cleanroommc:lwjglxx:1.1.17"
     lwjglLibraries[0].each {
         installer "org.lwjgl:$it:$props.lwjgl_version"
@@ -265,7 +266,6 @@ dependencies {
             lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$arch"
         }
     }
-    compileOnly "com.cleanroommc:lwjglx:1.0.0"
 
     // ASM
     installer "org.ow2.asm:asm:$props.asm_version"
