@@ -1,14 +1,17 @@
 --- before/net/minecraft/client/renderer/OpenGlHelper.java
 +++ after/net/minecraft/client/renderer/OpenGlHelper.java
-@@ -33,6 +33,7 @@
+@@ -31,8 +31,8 @@
+ import org.lwjgl.opengl.GL20;
+ import org.lwjgl.opengl.GL30;
  import org.lwjgl.opengl.GLContext;
- import oshi.SystemInfo;
- import oshi.hardware.Processor;
+-import oshi.SystemInfo;
+-import oshi.hardware.Processor;
++import oshi.ffm.SystemInfo;
 +import oshi.hardware.CentralProcessor;
  
  @SideOnly(Side.CLIENT)
  public class OpenGlHelper
-@@ -93,6 +94,10 @@
+@@ -93,6 +93,10 @@
      public static int GL_ARRAY_BUFFER;
      public static int GL_STATIC_DRAW;
  
@@ -19,7 +22,7 @@
      public static void initializeTextures()
      {
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
-@@ -296,8 +301,8 @@
+@@ -296,8 +300,8 @@
  
          try
          {
@@ -30,7 +33,7 @@
          }
          catch (Throwable throwable)
          {
-@@ -853,6 +858,12 @@
+@@ -853,6 +857,12 @@
          else
          {
              GL13.glMultiTexCoord2f(target, x, y);
