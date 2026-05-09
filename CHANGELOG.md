@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.10-alpha] - 2026-05-09
+### Bug Fixes
+- [`06824ad`](https://github.com/CleanroomMC/Cleanroom/commit/06824ad4e9761d60b52b2c25b3345d4947130a5c) - typesetting in FontRenderer *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.9-alpha] - 2026-04-30
 ### New Features
 - [`4a76d2f`](https://github.com/CleanroomMC/Cleanroom/commit/4a76d2f5b9ad89d3a786a95d2b56f263b9df6716) - aggresive loading tracker *(PR [#553](https://github.com/CleanroomMC/Cleanroom/pull/553) by [@baka-gourd](https://github.com/baka-gourd))*
@@ -35,3 +40,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.7-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.6-alpha...0.5.7-alpha
 [0.5.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.7-alpha...0.5.8-alpha
 [0.5.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.8-alpha...0.5.9-alpha
+[0.5.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.9-alpha...0.5.10-alpha
