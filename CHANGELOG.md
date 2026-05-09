@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.11-alpha] - 2026-05-09
+### Bug Fixes
+- [`ecdd87b`](https://github.com/CleanroomMC/Cleanroom/commit/ecdd87bd33e2eb870bc264dd0407c4533450051e) - oshi now divided into two packages *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Other Changes
+- [`3d5d7df`](https://github.com/CleanroomMC/Cleanroom/commit/3d5d7dfb4d6bfb7fb679702eaf18b2903d0b0419) - Merge branch 'main' of github.com:CleanroomMC/Cleanroom *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.10-alpha] - 2026-05-09
 ### Bug Fixes
 - [`06824ad`](https://github.com/CleanroomMC/Cleanroom/commit/06824ad4e9761d60b52b2c25b3345d4947130a5c) - typesetting in FontRenderer *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -41,3 +49,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.7-alpha...0.5.8-alpha
 [0.5.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.8-alpha...0.5.9-alpha
 [0.5.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.9-alpha...0.5.10-alpha
+[0.5.11-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.10-alpha...0.5.11-alpha
