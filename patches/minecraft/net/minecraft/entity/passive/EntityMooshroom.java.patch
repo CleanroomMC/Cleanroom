@@ -18,10 +18,12 @@
          {
              this.setDead();
              this.world
-@@ -103,8 +103,36 @@
+@@ -101,6 +101,35 @@
+     public EntityMooshroom createChild(EntityAgeable ageable)
+     {
          return new EntityMooshroom(this.world);
-     }
- 
++    }
++
 +    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, net.minecraft.util.math.BlockPos pos){ return getGrowingAge() >= 0; }
 +    @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, net.minecraft.util.math.BlockPos pos, int fortune)
@@ -49,10 +51,6 @@
 +
 +        this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0F, 1.0F);
 +        return ret;
-+    }
-+
+     }
+ 
      @Nullable
--    @Override
-     protected ResourceLocation getLootTable()
-     {
-         return LootTableList.ENTITIES_MUSHROOM_COW;
