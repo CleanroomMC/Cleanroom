@@ -131,7 +131,7 @@
          {
              text = text.substring(0, text.length() - 1);
          }
-@@ -719,9 +730,88 @@
+@@ -719,9 +730,87 @@
  
      public List<String> listFormattedStringToWidth(String str, int wrapWidth)
      {
@@ -143,10 +143,9 @@
 +        com.ibm.icu.segmenter.Segments segments = com.cleanroommc.cleanroom.client.ICU4JInstances.SEGMENTER.segment(str);
 +        List<String> list = new java.util.ArrayList<>();
 +        StringBuilder line = new StringBuilder();
-+        StringBuilder seg = new StringBuilder();
++        StringBuilder current = new StringBuilder();
 +        StringBuilder format = new StringBuilder();
 +        StringBuilder segFormat = new StringBuilder();
-+        int formatSize = 0;
 +        boolean bold  = false;
 +        int lineWidth = 0;
 +        int segmentWidth;
@@ -162,12 +161,11 @@
 +                char c = sequence.charAt(i);
 +                switch (c) {
 +                    case '\n':
-+                        line.append(seg);
-+                        seg.setLength(0);
++                        line.append(current);
++                        current.setLength(0);
 +                        list.add(line.toString());
 +                        line.setLength(0);
 +                        line.append(format);
-+                        formatSize = format.length();
 +                        lineWidth = 0;
 +                        continue out;
 +                    case '§':
@@ -182,35 +180,36 @@
 +                                bold = false;
 +                            }
 +                            format.append('§').append(next);
-+                            seg.append('§').append(next);
++                            current.append('§').append(next);
 +                            continue;
 +                        }
 +                    default:
 +                        int cWidth = getCharWidth(c);
 +                        if (bold) cWidth++;
 +                        if (lineWidth + cWidth > wrapWidth) {
-+                            if (line.length() == formatSize) {
-+                                line.append(seg);
-+                                seg.setLength(0);
++                            if (i >= current.length()) {
 +                                lineWidth = 0;
 +                                segmentWidth = 0;
-+                            } else {
-+                                lineWidth = segmentWidth;
++                                line.append(current);
 +                                format.setLength(0);
 +                                format.append(segFormat);
++                                current.setLength(0);
++                            } else {
++                                lineWidth = segmentWidth;
++                                line.append(current, 0, current.length() - i);
++                                current.delete(0, current.length() - i);
 +                            }
 +                            list.add(line.toString());
 +                            line.setLength(0);
 +                            line.append(format);
-+                            formatSize = format.length();
 +                        }
-+                        seg.append(c);
++                        current.append(c);
 +                        lineWidth += cWidth;
 +                        segmentWidth += cWidth;
 +                }
 +            }
 +        }
-+        line.append(seg);
++        line.append(current);
 +        if (!line.isEmpty()) {
 +            list.add(line.toString());
 +        }
@@ -221,7 +220,7 @@
      String wrapFormattedStringToWidth(String str, int wrapWidth)
      {
          int i = this.sizeStringToWidth(str, wrapWidth);
-@@ -740,6 +830,7 @@
+@@ -740,6 +829,7 @@
          }
      }
  
@@ -229,7 +228,7 @@
      private int sizeStringToWidth(String str, int wrapWidth)
      {
          int i = str.length();
-@@ -838,6 +929,26 @@
+@@ -838,6 +928,26 @@
      public boolean getBidiFlag()
      {
          return this.bidiFlag;
