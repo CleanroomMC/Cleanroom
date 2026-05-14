@@ -846,38 +846,40 @@ tasks.register('installerJar', Zip) {
 // TODO: MDK Task
 
 userdevConfig {
-    def artifacts = Util.getArtifacts(project.configurations.installer, true)
-    artifacts.each { key, lib ->
-        libraries.add(lib.name)
-    }
-    libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
-    universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
-    runs {
-        client {
-            main 'com.cleanroommc.boot.MainClient'
-
-            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
-            environment 'assetIndex', '{asset_index}'
-            environment 'assetDirectory', '{assets_root}'
-            environment 'nativesDirectory', '{natives}'
-            environment 'MC_VERSION', props.minecraft_version
-            environment 'MCP_MAPPINGS', '{mcp_mappings}'
-            environment 'MCP_TO_SRG', '{mcp_to_srg}'
-            environment 'FORGE_GROUP', project.group
-            environment 'FORGE_VERSION', props.last_forge_version
+    if (gradle.startParameter.taskNames.any { it == 'installerJar' || it == 'build' }) {
+        def artifacts = Util.getArtifacts(project.configurations.installer, true)
+        artifacts.each { key, lib ->
+            libraries.add(lib.name)
         }
+        libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
+        universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
+        runs {
+            client {
+                main 'com.cleanroommc.boot.MainClient'
 
-        server {
-            main 'com.cleanroommc.boot.MainServer'
+                environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+                environment 'assetIndex', '{asset_index}'
+                environment 'assetDirectory', '{assets_root}'
+                environment 'nativesDirectory', '{natives}'
+                environment 'MC_VERSION', props.minecraft_version
+                environment 'MCP_MAPPINGS', '{mcp_mappings}'
+                environment 'MCP_TO_SRG', '{mcp_to_srg}'
+                environment 'FORGE_GROUP', project.group
+                environment 'FORGE_VERSION', props.last_forge_version
+            }
 
-            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
-            environment 'MC_VERSION', props.minecraft_version
-            environment 'MCP_MAPPINGS', '{mcp_mappings}'
-            environment 'MCP_TO_SRG', '{mcp_to_srg}'
-            environment 'FORGE_GROUP', project.group
-            environment 'FORGE_VERSION', props.last_forge_version
+            server {
+                main 'com.cleanroommc.boot.MainServer'
+
+                environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+                environment 'MC_VERSION', props.minecraft_version
+                environment 'MCP_MAPPINGS', '{mcp_mappings}'
+                environment 'MCP_TO_SRG', '{mcp_to_srg}'
+                environment 'FORGE_GROUP', project.group
+                environment 'FORGE_VERSION', props.last_forge_version
+            }
         }
     }
 }
