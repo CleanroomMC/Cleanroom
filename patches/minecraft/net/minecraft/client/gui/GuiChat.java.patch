@@ -1,38 +1,29 @@
 --- before/net/minecraft/client/gui/GuiChat.java
 +++ after/net/minecraft/client/gui/GuiChat.java
-@@ -2,6 +2,9 @@
- 
- import java.io.IOException;
- import javax.annotation.Nullable;
-+
-+import com.cleanroommc.client.chat.suggestion.SuggestionList;
-+import com.cleanroommc.client.chat.suggestion.SuggestionUpdater;
- import net.minecraft.client.Minecraft;
- import net.minecraft.util.ITabCompleter;
- import net.minecraft.util.TabCompleter;
-@@ -26,6 +29,7 @@
+@@ -26,6 +26,8 @@
      private TabCompleter tabCompleter;
      protected GuiTextField inputField;
      private String defaultInputFieldText = "";
-+    private SuggestionList suggestionList;
++    private com.cleanroommc.client.chat.suggestion.SuggestionList suggestionList;
++    private com.cleanroommc.client.chat.suggestion.SuggestionUpdater suggestionUpdater;
  
      public GuiChat()
      {
-@@ -48,6 +52,13 @@
+@@ -48,6 +50,13 @@
          this.inputField.setText(this.defaultInputFieldText);
          this.inputField.setCanLoseFocus(false);
          this.tabCompleter = new GuiChat.ChatTabCompleter(this.inputField);
-+        this.suggestionList = new SuggestionList(this.inputField);
-+        SuggestionUpdater updater = new SuggestionUpdater(this.suggestionList, this.tabCompleter);
-+        this.inputField.setGuiResponder(updater);
++        this.suggestionList = new com.cleanroommc.client.chat.suggestion.SuggestionList(this.inputField);
++        this.suggestionUpdater = new com.cleanroommc.client.chat.suggestion.SuggestionUpdater(this.suggestionList, this.tabCompleter, this.inputField);
++        this.inputField.setGuiResponder(this.suggestionUpdater);
 +        if (this.defaultInputFieldText != null)
 +        {
-+            updater.setEntryValue(0, this.defaultInputFieldText);
++            this.suggestionUpdater.setEntryValue(0, this.defaultInputFieldText);
 +        }
      }
  
      @Override
-@@ -70,6 +81,15 @@
+@@ -70,6 +79,15 @@
  
          if (keyCode == 15)
          {
@@ -48,7 +39,7 @@
              this.tabCompleter.complete();
          }
          else
-@@ -79,10 +99,20 @@
+@@ -79,10 +97,20 @@
  
          if (keyCode == 1)
          {
@@ -69,7 +60,7 @@
              String s = this.inputField.getText().trim();
  
              if (!s.isEmpty())
-@@ -94,10 +124,20 @@
+@@ -94,10 +122,20 @@
          }
          else if (keyCode == 200)
          {
@@ -90,6 +81,15 @@
              this.getSentHistory(1);
          }
          else if (keyCode == 201)
+@@ -111,6 +149,8 @@
+         else
+         {
+             this.inputField.textboxKeyTyped(typedChar, keyCode);
++            // Cleanroom: cursor-move keys change the cursor without firing the GuiResponder - refresh here
++            this.suggestionUpdater.refresh();
+         }
+     }
+ 
 @@ -132,6 +172,13 @@
                  i = -1;
              }
@@ -117,7 +117,16 @@
              ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
  
              if (itextcomponent != null && this.handleComponentClick(itextcomponent))
-@@ -201,7 +254,9 @@
+@@ -155,6 +208,8 @@
+         }
+ 
+         this.inputField.mouseClicked(mouseX, mouseY, mouseButton);
++        // Cleanroom: click repositions the cursor without firing the GuiResponder - refresh to follow it
++        this.suggestionUpdater.refresh();
+         super.mouseClicked(mouseX, mouseY, mouseButton);
+     }
+ 
+@@ -201,7 +256,9 @@
      public void drawScreen(int mouseX, int mouseY, float partialTicks)
      {
          drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
@@ -127,7 +136,7 @@
          ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
  
          if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null)
-@@ -209,6 +264,7 @@
+@@ -209,6 +266,7 @@
              this.handleComponentHover(itextcomponent, mouseX, mouseY);
          }
  
@@ -135,7 +144,7 @@
          super.drawScreen(mouseX, mouseY, partialTicks);
      }
  
-@@ -222,6 +278,7 @@
+@@ -222,6 +280,7 @@
      public void setCompletions(String... newCompletions)
      {
          this.tabCompleter.setCompletions(newCompletions);
@@ -143,7 +152,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -232,29 +289,6 @@
+@@ -232,29 +291,6 @@
              public ChatTabCompleter(GuiTextField p_i46749_1_)
              {
                  super(p_i46749_1_, false);
