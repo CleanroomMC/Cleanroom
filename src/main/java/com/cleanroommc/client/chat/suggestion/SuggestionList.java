@@ -174,7 +174,7 @@ public class SuggestionList {
         int cursorPos = inputField.getCursorPosition();
         int wordStart = inputField.getNthWordFromPosWS(-1, cursorPos, false);
         String typedWord = inputField.getText().substring(wordStart, cursorPos);
-        if (!suggestion.toLowerCase(Locale.ROOT).startsWith(typedWord.toLowerCase(Locale.ROOT))) {
+        if (typedWord.isEmpty() || !suggestion.toLowerCase(Locale.ROOT).startsWith(typedWord.toLowerCase(Locale.ROOT))) {
             return;
         }
         String suffix = suggestion.substring(typedWord.length());
