@@ -6,6 +6,6 @@
  
 -            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
 +            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
-             this.world.newExplosion(null, this.posX, this.posY, this.posZ, (float)this.explosionPower, flag, flag);
+             this.world.newExplosion(null, this.posX, this.posY, this.posZ, this.explosionPower, flag, flag);
              this.setDead();
          }

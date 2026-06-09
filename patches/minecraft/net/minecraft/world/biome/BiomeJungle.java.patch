@@ -1,54 +1,6 @@
 --- before/net/minecraft/world/biome/BiomeJungle.java
 +++ after/net/minecraft/world/biome/BiomeJungle.java
-@@ -25,17 +25,9 @@
- public class BiomeJungle extends Biome
- {
-     private final boolean isEdge;
--    private static final IBlockState JUNGLE_LOG = Blocks.LOG
--                .getDefaultState()
--                .withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
--    private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES
--                .getDefaultState()
--                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE)
--                .withProperty(BlockLeaves.CHECK_DECAY, false);
--    private static final IBlockState OAK_LEAF = Blocks.LEAVES
--                .getDefaultState()
--                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK)
--                .withProperty(BlockLeaves.CHECK_DECAY, false);
-+    private static final IBlockState JUNGLE_LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
-+    private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-+    private static final IBlockState OAK_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
- 
-     public BiomeJungle(boolean isEdgeIn, Biome.BiomeProperties properties)
-     {
-@@ -63,7 +55,6 @@
-         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityChicken.class, 10, 4, 4));
-     }
- 
--    @Override
-     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
-     {
-         if (rand.nextInt(10) == 0)
-@@ -76,29 +67,29 @@
-         }
-         else
-         {
--            return (WorldGenAbstractTree)(!this.isEdge && rand.nextInt(3) == 0
--                                          ? new WorldGenMegaJungle(false, 10, 20, JUNGLE_LOG, JUNGLE_LEAF)
--                                          : new WorldGenTrees(false, 4 + rand.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true));
-+            return (WorldGenAbstractTree)(!this.isEdge && rand.nextInt(3) == 0 ? new WorldGenMegaJungle(false, 10, 20, JUNGLE_LOG, JUNGLE_LEAF) : new WorldGenTrees(false, 4 + rand.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true));
-         }
-     }
- 
--    @Override
-     public WorldGenerator getRandomWorldGenForGrass(Random rand)
-     {
-         return rand.nextInt(4) == 0 ? new WorldGenTallGrass(BlockTallGrass.EnumType.FERN) : new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
-     }
- 
--    @Override
-     public void decorate(World worldIn, Random rand, BlockPos pos)
-     {
+@@ -94,10 +94,14 @@
          super.decorate(worldIn, rand, pos);
          int i = rand.nextInt(16) + 8;
          int j = rand.nextInt(16) + 8;
@@ -61,9 +13,7 @@
 +        (new WorldGenMelon()).generate(worldIn, rand, pos.add(i, k, j));
          WorldGenVines worldgenvines = new WorldGenVines();
  
--        for (int j1 = 0; j1 < 50; j1++)
 +        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
-+        for (int j1 = 0; j1 < 50; ++j1)
+         for (int j1 = 0; j1 < 50; j1++)
          {
              k = rand.nextInt(16) + 8;
-             int l = 128;

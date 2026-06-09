@@ -1,69 +1,24 @@
 --- before/net/minecraft/item/ItemSnow.java
 +++ after/net/minecraft/item/ItemSnow.java
-@@ -23,17 +23,7 @@
-         this.setMaxDamage(0);
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         ItemStack itemstack = player.getHeldItem(hand);
- 
-@@ -52,26 +42,17 @@
- 
-             if (block == this.block)
-             {
--                int i = iblockstate.getValue(BlockSnow.LAYERS);
-+                int i = ((Integer)iblockstate.getValue(BlockSnow.LAYERS)).intValue();
- 
-                 if (i < 8)
-                 {
--                    IBlockState iblockstate1 = iblockstate.withProperty(BlockSnow.LAYERS, i + 1);
-+                    IBlockState iblockstate1 = iblockstate.withProperty(BlockSnow.LAYERS, Integer.valueOf(i + 1));
-                     AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, blockpos);
- 
--                    if (axisalignedbb != Block.NULL_AABB
--                            && worldIn.checkNoEntityCollision(axisalignedbb.offset(blockpos))
--                            && worldIn.setBlockState(blockpos, iblockstate1, 10))
-+                    if (axisalignedbb != Block.NULL_AABB && worldIn.checkNoEntityCollision(axisalignedbb.offset(blockpos)) && worldIn.setBlockState(blockpos, iblockstate1, 10))
+@@ -63,7 +63,7 @@
+                             && worldIn.checkNoEntityCollision(axisalignedbb.offset(blockpos))
+                             && worldIn.setBlockState(blockpos, iblockstate1, 10))
                      {
 -                        SoundType soundtype = this.block.getSoundType();
--                        worldIn.playSound(
--                            player,
--                            blockpos,
--                            soundtype.getPlaceSound(),
--                            SoundCategory.BLOCKS,
--                            (soundtype.getVolume() + 1.0F) / 2.0F,
--                            soundtype.getPitch() * 0.8F
--                        );
 +                        SoundType soundtype = this.block.getSoundType(iblockstate1, worldIn, pos, player);
-+                        worldIn.playSound(player, blockpos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
- 
-                         if (player instanceof EntityPlayerMP)
-                         {
-@@ -92,9 +73,14 @@
-         }
-     }
- 
--    @Override
+                         worldIn.playSound(
+                             player,
+                             blockpos,
+@@ -96,5 +96,12 @@
      public int getMetadata(int damage)
      {
          return damage;
 +    }
 +
++    @Override
 +    public boolean canPlaceBlockOnSide(World world, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack)
 +    {
 +        IBlockState state = world.getBlockState(pos);
-+        return (state.getBlock() != net.minecraft.init.Blocks.SNOW_LAYER || ((Integer)state.getValue(BlockSnow.LAYERS)) > 7) ? super.canPlaceBlockOnSide(world, pos, side, player, stack) : true;
++        return state.getBlock() == net.minecraft.init.Blocks.SNOW_LAYER && state.getValue(BlockSnow.LAYERS) <= 7 || super.canPlaceBlockOnSide(world, pos, side, player, stack);
      }
  }

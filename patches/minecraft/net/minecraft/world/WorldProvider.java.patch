@@ -1,15 +1,6 @@
 --- before/net/minecraft/world/WorldProvider.java
 +++ after/net/minecraft/world/WorldProvider.java
-@@ -45,7 +45,7 @@
-     {
-         float f = 0.0F;
- 
--        for (int i = 0; i <= 15; i++)
-+        for (int i = 0; i <= 15; ++i)
-         {
-             float f1 = 1.0F - (float)i / 15.0F;
-             this.lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * 1.0F + 0.0F;
-@@ -55,53 +55,26 @@
+@@ -55,45 +55,12 @@
      protected void init()
      {
          this.hasSkyLight = true;
@@ -57,83 +48,7 @@
      }
  
      public boolean canCoordinateBeSpawn(int x, int z)
-     {
-         BlockPos blockpos = new BlockPos(x, 0, z);
--        return this.world.getBiome(blockpos).ignorePlayerSpawnSuitability()
--               ? true
--               : this.world.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.GRASS;
-+
-+        if (this.world.getBiome(blockpos).ignorePlayerSpawnSuitability())
-+        {
-+            return true;
-+        }
-+        else
-+        {
-+            return this.world.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.GRASS;
-+        }
-     }
- 
-     public float calculateCelestialAngle(long worldTime, float partialTicks)
-@@ -111,16 +84,17 @@
- 
-         if (f < 0.0F)
-         {
--            f++;
-+            ++f;
-         }
- 
-         if (f > 1.0F)
-         {
--            f--;
-+            --f;
-         }
- 
--        float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0) / 2.0);
--        return f + (f1 - f) / 3.0F;
-+        float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0D) / 2.0D);
-+        f = f + (f1 - f) / 3.0F;
-+        return f;
-     }
- 
-     public int getMoonPhase(long worldTime)
-@@ -138,14 +112,14 @@
-     public float[] calcSunriseSunsetColors(float celestialAngle, float partialTicks)
-     {
-         float f = 0.4F;
--        float f1 = MathHelper.cos(celestialAngle * (float)(Math.PI * 2)) - 0.0F;
-+        float f1 = MathHelper.cos(celestialAngle * ((float)Math.PI * 2F)) - 0.0F;
-         float f2 = -0.0F;
- 
-         if (f1 >= -0.4F && f1 <= 0.4F)
-         {
-             float f3 = (f1 - -0.0F) / 0.4F * 0.5F + 0.5F;
--            float f4 = 1.0F - (1.0F - MathHelper.sin(f3 * (float) Math.PI)) * 0.99F;
--            f4 *= f4;
-+            float f4 = 1.0F - (1.0F - MathHelper.sin(f3 * (float)Math.PI)) * 0.99F;
-+            f4 = f4 * f4;
-             this.colorsSunriseSunset[0] = f3 * 0.3F + 0.7F;
-             this.colorsSunriseSunset[1] = f3 * f3 * 0.7F + 0.2F;
-             this.colorsSunriseSunset[2] = f3 * f3 * 0.0F + 0.2F;
-@@ -161,14 +135,14 @@
-     @SideOnly(Side.CLIENT)
-     public Vec3d getFogColor(float p_76562_1_, float p_76562_2_)
-     {
--        float f = MathHelper.cos(p_76562_1_ * (float)(Math.PI * 2)) * 2.0F + 0.5F;
-+        float f = MathHelper.cos(p_76562_1_ * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
-         f = MathHelper.clamp(f, 0.0F, 1.0F);
-         float f1 = 0.7529412F;
-         float f2 = 0.84705883F;
-         float f3 = 1.0F;
--        f1 *= f * 0.94F + 0.06F;
--        f2 *= f * 0.94F + 0.06F;
--        f3 *= f * 0.91F + 0.09F;
-+        f1 = f1 * (f * 0.94F + 0.06F);
-+        f2 = f2 * (f * 0.94F + 0.06F);
-+        f3 = f3 * (f * 0.91F + 0.09F);
-         return new Vec3d((double)f1, (double)f2, (double)f3);
-     }
- 
-@@ -180,7 +154,7 @@
+@@ -180,7 +147,7 @@
      @SideOnly(Side.CLIENT)
      public float getCloudHeight()
      {
@@ -142,7 +57,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -197,13 +171,13 @@
+@@ -197,13 +164,13 @@
  
      public int getAverageGroundLevel()
      {
@@ -158,7 +73,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -240,6 +214,371 @@
+@@ -240,6 +207,371 @@
      public WorldBorder createWorldBorder()
      {
          return new WorldBorder();

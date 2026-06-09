@@ -265,6 +265,7 @@ public class SplashProgress
                 while(!done)
                 {
                     framecount++;
+                    com.cleanroommc.client.LoadingTracker.tick();
                     ProgressBar first = null, penult = null, last = null;
                     Iterator<ProgressBar> i = ProgressManager.barIterator();
                     while(i.hasNext())

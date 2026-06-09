@@ -1,201 +1,19 @@
 --- before/net/minecraft/network/NetHandlerPlayServer.java
 +++ after/net/minecraft/network/NetHandlerPlayServer.java
-@@ -133,7 +133,7 @@
-     private long field_194404_h;
-     private int chatSpamThresholdCount;
-     private int itemDropThreshold;
--    private final IntHashMap<Short> pendingTransactions = new IntHashMap<>();
-+    private final IntHashMap<Short> pendingTransactions = new IntHashMap<Short>();
-     private double firstGoodX;
-     private double firstGoodY;
-     private double firstGoodZ;
-@@ -167,22 +167,20 @@
-         playerIn.connection = this;
-     }
- 
--    @Override
-     public void update()
-     {
-         this.captureCurrentPosition();
-         this.player.onUpdateEntity();
--        this.player
--        .setPositionAndRotation(this.firstGoodX, this.firstGoodY, this.firstGoodZ, this.player.rotationYaw, this.player.rotationPitch);
--        this.networkTickCount++;
-+        this.player.setPositionAndRotation(this.firstGoodX, this.firstGoodY, this.firstGoodZ, this.player.rotationYaw, this.player.rotationPitch);
-+        ++this.networkTickCount;
-         this.lastMovePacketCounter = this.movePacketCounter;
- 
-         if (this.floating)
-         {
-             if (++this.floatingTickCount > 80)
-             {
--                LOGGER.warn("{} was kicked for floating too long!", this.player.getName());
--                this.disconnect(new TextComponentTranslation("multiplayer.disconnect.flying"));
-+                LOGGER.warn("{} was kicked for floating too long!", (Object)this.player.getName());
-+                this.disconnect(new TextComponentTranslation("multiplayer.disconnect.flying", new Object[0]));
-                 return;
-             }
-         }
-@@ -207,8 +205,8 @@
-             {
-                 if (++this.vehicleFloatingTickCount > 80)
-                 {
--                    LOGGER.warn("{} was kicked for floating a vehicle too long!", this.player.getName());
--                    this.disconnect(new TextComponentTranslation("multiplayer.disconnect.flying"));
-+                    LOGGER.warn("{} was kicked for floating a vehicle too long!", (Object)this.player.getName());
-+                    this.disconnect(new TextComponentTranslation("multiplayer.disconnect.flying", new Object[0]));
-                     return;
-                 }
-             }
-@@ -232,7 +230,7 @@
-         {
-             if (this.field_194403_g)
-             {
--                this.disconnect(new TextComponentTranslation("disconnect.timeout"));
-+                this.disconnect(new TextComponentTranslation("disconnect.timeout", new Object[0]));
-             }
-             else
-             {
-@@ -247,19 +245,17 @@
- 
-         if (this.chatSpamThresholdCount > 0)
-         {
--            this.chatSpamThresholdCount--;
-+            --this.chatSpamThresholdCount;
-         }
- 
-         if (this.itemDropThreshold > 0)
-         {
--            this.itemDropThreshold--;
-+            --this.itemDropThreshold;
-         }
- 
--        if (this.player.getLastActiveTime() > 0L
--                && this.server.getMaxPlayerIdleMinutes() > 0
--                && MinecraftServer.getCurrentTimeMillis() - this.player.getLastActiveTime() > (long)(this.server.getMaxPlayerIdleMinutes() * 1000 * 60))
-+        if (this.player.getLastActiveTime() > 0L && this.server.getMaxPlayerIdleMinutes() > 0 && MinecraftServer.getCurrentTimeMillis() - this.player.getLastActiveTime() > (long)(this.server.getMaxPlayerIdleMinutes() * 1000 * 60))
-         {
--            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.idling"));
-+            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.idling", new Object[0]));
-         }
-     }
- 
-@@ -282,7 +278,6 @@
-     {
-         this.netManager.sendPacket(new SPacketDisconnect(textComponent), new GenericFutureListener < Future <? super Void >> ()
-         {
--            @Override
-             public void operationComplete(Future <? super Void > p_operationComplete_1_) throws Exception
-             {
-                 NetHandlerPlayServer.this.netManager.closeChannel(textComponent);
-@@ -291,7 +286,6 @@
-         this.netManager.disableAutoRead();
-         Futures.getUnchecked(this.server.addScheduledTask(new Runnable()
-         {
--            @Override
-             public void run()
-             {
-                 NetHandlerPlayServer.this.netManager.handleDisconnection();
-@@ -299,7 +293,6 @@
-         }));
-     }
- 
--    @Override
-     public void processInput(CPacketInput packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -308,34 +301,28 @@
- 
-     private static boolean isMovePlayerPacketInvalid(CPacketPlayer packetIn)
-     {
--        return Doubles.isFinite(packetIn.getX(0.0))
--               && Doubles.isFinite(packetIn.getY(0.0))
--               && Doubles.isFinite(packetIn.getZ(0.0))
--               && Floats.isFinite(packetIn.getPitch(0.0F))
--               && Floats.isFinite(packetIn.getYaw(0.0F))
--               ? Math.abs(packetIn.getX(0.0)) > 3.0E7
--               || Math.abs(packetIn.getY(0.0)) > 3.0E7
--               || Math.abs(packetIn.getZ(0.0)) > 3.0E7
--               : true;
-+        if (Doubles.isFinite(packetIn.getX(0.0D)) && Doubles.isFinite(packetIn.getY(0.0D)) && Doubles.isFinite(packetIn.getZ(0.0D)) && Floats.isFinite(packetIn.getPitch(0.0F)) && Floats.isFinite(packetIn.getYaw(0.0F)))
-+        {
-+            return Math.abs(packetIn.getX(0.0D)) > 3.0E7D || Math.abs(packetIn.getY(0.0D)) > 3.0E7D || Math.abs(packetIn.getZ(0.0D)) > 3.0E7D;
-+        }
-+        else
-+        {
-+            return true;
-+        }
-     }
- 
-     private static boolean isMoveVehiclePacketInvalid(CPacketVehicleMove packetIn)
-     {
--        return !Doubles.isFinite(packetIn.getX())
--               || !Doubles.isFinite(packetIn.getY())
--               || !Doubles.isFinite(packetIn.getZ())
--               || !Floats.isFinite(packetIn.getPitch())
--               || !Floats.isFinite(packetIn.getYaw());
-+        return !Doubles.isFinite(packetIn.getX()) || !Doubles.isFinite(packetIn.getY()) || !Doubles.isFinite(packetIn.getZ()) || !Floats.isFinite(packetIn.getPitch()) || !Floats.isFinite(packetIn.getYaw());
-     }
- 
--    @Override
-     public void processVehicleMove(CPacketVehicleMove packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
- 
-         if (isMoveVehiclePacketInvalid(packetIn))
-         {
--            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.invalid_vehicle_movement"));
-+            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.invalid_vehicle_movement", new Object[0]));
-         }
-         else
-         {
-@@ -358,52 +345,52 @@
-                 double d9 = entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ;
-                 double d10 = d6 * d6 + d7 * d7 + d8 * d8;
- 
--                if (d10 - d9 > 100.0 && (!this.server.isSinglePlayer() || !this.server.getServerOwner().equals(entity.getName())))
-+                if (d10 - d9 > 100.0D && (!this.server.isSinglePlayer() || !this.server.getServerOwner().equals(entity.getName())))
-                 {
--                    LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName(), this.player.getName(), d6, d7, d8);
-+                    LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName(), this.player.getName(), Double.valueOf(d6), Double.valueOf(d7), Double.valueOf(d8));
-                     this.netManager.sendPacket(new SPacketMoveVehicle(entity));
-                     return;
-                 }
- 
--                boolean flag = worldserver.getCollisionBoxes(entity, entity.getEntityBoundingBox().shrink(0.0625)).isEmpty();
-+                boolean flag = worldserver.getCollisionBoxes(entity, entity.getEntityBoundingBox().shrink(0.0625D)).isEmpty();
-                 d6 = d3 - this.lowestRiddenX1;
--                d7 = d4 - this.lowestRiddenY1 - 1.0E-6;
-+                d7 = d4 - this.lowestRiddenY1 - 1.0E-6D;
+@@ -370,6 +370,7 @@
+                 d7 = d4 - this.lowestRiddenY1 - 1.0E-6;
                  d8 = d5 - this.lowestRiddenZ1;
                  entity.move(MoverType.PLAYER, d6, d7, d8);
 +                double d11 = d7;
                  d6 = d3 - entity.posX;
                  d7 = d4 - entity.posY;
  
--                if (d7 > -0.5 || d7 < 0.5)
-+                if (d7 > -0.5D || d7 < 0.5D)
-                 {
--                    d7 = 0.0;
-+                    d7 = 0.0D;
-                 }
- 
-                 d8 = d5 - entity.posZ;
-                 d10 = d6 * d6 + d7 * d7 + d8 * d8;
-                 boolean flag1 = false;
- 
--                if (d10 > 0.0625)
-+                if (d10 > 0.0625D)
-                 {
-                     flag1 = true;
--                    LOGGER.warn("{} moved wrongly!", entity.getName());
-+                    LOGGER.warn("{} moved wrongly!", (Object)entity.getName());
+@@ -389,11 +390,13 @@
                  }
  
                  entity.setPositionAndRotation(d3, d4, d5, f, f1);
--                boolean flag2 = worldserver.getCollisionBoxes(entity, entity.getEntityBoundingBox().shrink(0.0625)).isEmpty();
 +                this.player.setPositionAndRotation(d3, d4, d5, this.player.rotationYaw, this.player.rotationPitch); // Forge - Resync player position on vehicle moving
-+                boolean flag2 = worldserver.getCollisionBoxes(entity, entity.getEntityBoundingBox().shrink(0.0625D)).isEmpty();
+                 boolean flag2 = worldserver.getCollisionBoxes(entity, entity.getEntityBoundingBox().shrink(0.0625)).isEmpty();
  
                  if (flag && (flag1 || !flag2))
                  {
@@ -204,180 +22,16 @@
                      this.netManager.sendPacket(new SPacketMoveVehicle(entity));
                      return;
                  }
- 
+@@ -401,7 +404,7 @@
                  this.server.getPlayerList().serverUpdateMovingPlayer(this.player);
--                this.player
--                .addMovementStat(this.player.posX - d0, this.player.posY - d1, this.player.posZ - d2);
+                 this.player
+                 .addMovementStat(this.player.posX - d0, this.player.posY - d1, this.player.posZ - d2);
 -                this.vehicleFloating = d7 >= -0.03125
--                                      && !this.server.isFlightAllowed()
--                                      && !worldserver.checkBlockCollision(entity.getEntityBoundingBox().grow(0.0625).expand(0.0, -0.55, 0.0));
-+                this.player.addMovementStat(this.player.posX - d0, this.player.posY - d1, this.player.posZ - d2);
-+                this.vehicleFloating = d11 >= -0.03125D && !this.server.isFlightAllowed() && !worldserver.checkBlockCollision(entity.getEntityBoundingBox().grow(0.0625D).expand(0.0D, -0.55D, 0.0D));
++                this.vehicleFloating = d11 >= -0.03125
+                                       && !this.server.isFlightAllowed()
+                                       && !worldserver.checkBlockCollision(entity.getEntityBoundingBox().grow(0.0625).expand(0.0, -0.55, 0.0));
                  this.lowestRiddenX1 = entity.posX;
-                 this.lowestRiddenY1 = entity.posY;
-                 this.lowestRiddenZ1 = entity.posZ;
-@@ -411,21 +398,13 @@
-         }
-     }
- 
--    @Override
-     public void processConfirmTeleport(CPacketConfirmTeleport packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
- 
-         if (packetIn.getTeleportId() == this.teleportId)
-         {
--            this.player
--            .setPositionAndRotation(
--                this.targetPos.x,
--                this.targetPos.y,
--                this.targetPos.z,
--                this.player.rotationYaw,
--                this.player.rotationPitch
--            );
-+            this.player.setPositionAndRotation(this.targetPos.x, this.targetPos.y, this.targetPos.z, this.player.rotationYaw, this.player.rotationPitch);
- 
-             if (this.player.isInvulnerableDimensionChange())
-             {
-@@ -439,7 +418,6 @@
-         }
-     }
- 
--    @Override
-     public void handleRecipeBookUpdate(CPacketRecipeInfo p_191984_1_)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(p_191984_1_, this, this.player.getServerWorld());
-@@ -455,7 +433,6 @@
-         }
-     }
- 
--    @Override
-     public void handleSeenAdvancements(CPacketSeenAdvancements p_194027_1_)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(p_194027_1_, this, this.player.getServerWorld());
-@@ -472,14 +449,13 @@
-         }
-     }
- 
--    @Override
-     public void processPlayer(CPacketPlayer packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
- 
-         if (isMovePlayerPacketInvalid(packetIn))
-         {
--            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.invalid_player_movement"));
-+            this.disconnect(new TextComponentTranslation("multiplayer.disconnect.invalid_player_movement", new Object[0]));
-         }
-         else
-         {
-@@ -497,13 +473,7 @@
-                     if (this.networkTickCount - this.lastPositionUpdate > 20)
-                     {
-                         this.lastPositionUpdate = this.networkTickCount;
--                        this.setPlayerLocation(
--                            this.targetPos.x,
--                            this.targetPos.y,
--                            this.targetPos.z,
--                            this.player.rotationYaw,
--                            this.player.rotationPitch
--                        );
-+                        this.setPlayerLocation(this.targetPos.x, this.targetPos.y, this.targetPos.z, this.player.rotationYaw, this.player.rotationPitch);
-                     }
-                 }
-                 else
-@@ -512,14 +482,7 @@
- 
-                     if (this.player.isRiding())
-                     {
--                        this.player
--                        .setPositionAndRotation(
--                            this.player.posX,
--                            this.player.posY,
--                            this.player.posZ,
--                            packetIn.getYaw(this.player.rotationYaw),
--                            packetIn.getPitch(this.player.rotationPitch)
--                        );
-+                        this.player.setPositionAndRotation(this.player.posX, this.player.posY, this.player.posZ, packetIn.getYaw(this.player.rotationYaw), packetIn.getPitch(this.player.rotationPitch));
-                         this.server.getPlayerList().serverUpdateMovingPlayer(this.player);
-                     }
-                     else
-@@ -536,99 +499,76 @@
-                         double d7 = d4 - this.firstGoodX;
-                         double d8 = d5 - this.firstGoodY;
-                         double d9 = d6 - this.firstGoodZ;
--                        double d10 = this.player.motionX * this.player.motionX
--                                     + this.player.motionY * this.player.motionY
--                                     + this.player.motionZ * this.player.motionZ;
-+                        double d10 = this.player.motionX * this.player.motionX + this.player.motionY * this.player.motionY + this.player.motionZ * this.player.motionZ;
-                         double d11 = d7 * d7 + d8 * d8 + d9 * d9;
- 
-                         if (this.player.isPlayerSleeping())
-                         {
--                            if (d11 > 1.0)
-+                            if (d11 > 1.0D)
-                             {
--                                this.setPlayerLocation(
--                                    this.player.posX,
--                                    this.player.posY,
--                                    this.player.posZ,
--                                    packetIn.getYaw(this.player.rotationYaw),
--                                    packetIn.getPitch(this.player.rotationPitch)
--                                );
-+                                this.setPlayerLocation(this.player.posX, this.player.posY, this.player.posZ, packetIn.getYaw(this.player.rotationYaw), packetIn.getPitch(this.player.rotationPitch));
-                             }
-                         }
-                         else
-                         {
--                            this.movePacketCounter++;
-+                            ++this.movePacketCounter;
-                             int i = this.movePacketCounter - this.lastMovePacketCounter;
- 
-                             if (i > 5)
-                             {
--                                LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.getName(), i);
-+                                LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.getName(), Integer.valueOf(i));
-                                 i = 1;
-                             }
- 
--                            if (!this.player.isInvulnerableDimensionChange()
--                                    && (
--                                        !this.player.getServerWorld().getGameRules().getBoolean("disableElytraMovementCheck")
--                                        || !this.player.isElytraFlying()
--                                    ))
-+                            if (!this.player.isInvulnerableDimensionChange() && (!this.player.getServerWorld().getGameRules().getBoolean("disableElytraMovementCheck") || !this.player.isElytraFlying()))
-                             {
-                                 float f2 = this.player.isElytraFlying() ? 300.0F : 100.0F;
- 
--                                if (d11 - d10 > (double)(f2 * (float)i)
--                                        && (!this.server.isSinglePlayer() || !this.server.getServerOwner().equals(this.player.getName())))
-+                                if (d11 - d10 > (double)(f2 * (float)i) && (!this.server.isSinglePlayer() || !this.server.getServerOwner().equals(this.player.getName())))
-                                 {
--                                    LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName(), d7, d8, d9);
--                                    this.setPlayerLocation(
--                                        this.player.posX,
--                                        this.player.posY,
--                                        this.player.posZ,
--                                        this.player.rotationYaw,
--                                        this.player.rotationPitch
--                                    );
-+                                    LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName(), Double.valueOf(d7), Double.valueOf(d8), Double.valueOf(d9));
-+                                    this.setPlayerLocation(this.player.posX, this.player.posY, this.player.posZ, this.player.rotationYaw, this.player.rotationPitch);
-                                     return;
-                                 }
-                             }
- 
--                            boolean flag2 = worldserver.getCollisionBoxes(this.player, this.player.getEntityBoundingBox().shrink(0.0625)).isEmpty();
-+                            boolean flag2 = worldserver.getCollisionBoxes(this.player, this.player.getEntityBoundingBox().shrink(0.0625D)).isEmpty();
-                             d7 = d4 - this.lastGoodX;
-                             d8 = d5 - this.lastGoodY;
-                             d9 = d6 - this.lastGoodZ;
- 
--                            if (this.player.onGround && !packetIn.isOnGround() && d8 > 0.0)
-+                            if (this.player.onGround && !packetIn.isOnGround() && d8 > 0.0D)
-                             {
-                                 this.player.jump();
-                             }
+@@ -600,6 +603,7 @@
  
                              this.player.move(MoverType.PLAYER, d7, d8, d9);
                              this.player.onGround = packetIn.isOnGround();
@@ -385,101 +39,17 @@
                              d7 = d4 - this.player.posX;
                              d8 = d5 - this.player.posY;
  
--                            if (d8 > -0.5 || d8 < 0.5)
-+                            if (d8 > -0.5D || d8 < 0.5D)
-                             {
--                                d8 = 0.0;
-+                                d8 = 0.0D;
-                             }
- 
-                             d9 = d6 - this.player.posZ;
-                             d11 = d7 * d7 + d8 * d8 + d9 * d9;
-                             boolean flag = false;
- 
--                            if (!this.player.isInvulnerableDimensionChange()
--                                    && d11 > 0.0625
--                                    && !this.player.isPlayerSleeping()
--                                    && !this.player.interactionManager.isCreative()
--                                    && this.player.interactionManager.getGameType() != GameType.SPECTATOR)
-+                            if (!this.player.isInvulnerableDimensionChange() && d11 > 0.0625D && !this.player.isPlayerSleeping() && !this.player.interactionManager.isCreative() && this.player.interactionManager.getGameType() != GameType.SPECTATOR)
-                             {
-                                 flag = true;
--                                LOGGER.warn("{} moved wrongly!", this.player.getName());
-+                                LOGGER.warn("{} moved wrongly!", (Object)this.player.getName());
-                             }
- 
-                             this.player.setPositionAndRotation(d4, d5, d6, f, f1);
--                            this.player
--                            .addMovementStat(this.player.posX - d0, this.player.posY - d1, this.player.posZ - d2);
-+                            this.player.addMovementStat(this.player.posX - d0, this.player.posY - d1, this.player.posZ - d2);
- 
-                             if (!this.player.noClip && !this.player.isPlayerSleeping())
-                             {
--                                boolean flag1 = worldserver.getCollisionBoxes(this.player, this.player.getEntityBoundingBox().shrink(0.0625)).isEmpty();
-+                                boolean flag1 = worldserver.getCollisionBoxes(this.player, this.player.getEntityBoundingBox().shrink(0.0625D)).isEmpty();
- 
-                                 if (flag2 && (flag || !flag1))
-                                 {
-@@ -637,14 +577,9 @@
+@@ -637,7 +641,7 @@
                                  }
                              }
  
 -                            this.floating = d8 >= -0.03125;
--                            this.floating = this.floating & (!this.server.isFlightAllowed() && !this.player.capabilities.allowFlying);
--                            this.floating = this.floating
--                                                  & (
--                                                      !this.player.isPotionActive(MobEffects.LEVITATION)
--                                                      && !this.player.isElytraFlying()
--                                                      && !worldserver.checkBlockCollision(this.player.getEntityBoundingBox().grow(0.0625).expand(0.0, -0.55, 0.0))
--                                                  );
-+                            this.floating = d12 >= -0.03125D;
-+                            this.floating &= !this.server.isFlightAllowed() && !this.player.capabilities.allowFlying;
-+                            this.floating &= !this.player.isPotionActive(MobEffects.LEVITATION) && !this.player.isElytraFlying() && !worldserver.checkBlockCollision(this.player.getEntityBoundingBox().grow(0.0625D).expand(0.0D, -0.55D, 0.0D));
-                             this.player.onGround = packetIn.isOnGround();
-                             this.server.getPlayerList().serverUpdateMovingPlayer(this.player);
-                             this.player.handleFalling(this.player.posY - d3, packetIn.isOnGround());
-@@ -663,13 +598,11 @@
-         this.setPlayerLocation(x, y, z, yaw, pitch, Collections.emptySet());
-     }
- 
--    public void setPlayerLocation(
--        double x, double y, double z, float yaw, float pitch, Set<SPacketPlayerPosLook.EnumFlags> relativeSet
--    )
-+    public void setPlayerLocation(double x, double y, double z, float yaw, float pitch, Set<SPacketPlayerPosLook.EnumFlags> relativeSet)
-     {
--        double d0 = relativeSet.contains(SPacketPlayerPosLook.EnumFlags.X) ? this.player.posX : 0.0;
--        double d1 = relativeSet.contains(SPacketPlayerPosLook.EnumFlags.Y) ? this.player.posY : 0.0;
--        double d2 = relativeSet.contains(SPacketPlayerPosLook.EnumFlags.Z) ? this.player.posZ : 0.0;
-+        double d0 = relativeSet.contains(SPacketPlayerPosLook.EnumFlags.X) ? this.player.posX : 0.0D;
-+        double d1 = relativeSet.contains(SPacketPlayerPosLook.EnumFlags.Y) ? this.player.posY : 0.0D;
-+        double d2 = relativeSet.contains(SPacketPlayerPosLook.EnumFlags.Z) ? this.player.posZ : 0.0D;
-         this.targetPos = new Vec3d(x + d0, y + d1, z + d2);
-         float f = yaw;
-         float f1 = pitch;
-@@ -691,12 +624,9 @@
- 
-         this.lastPositionUpdate = this.networkTickCount;
-         this.player.setPositionAndRotation(this.targetPos.x, this.targetPos.y, this.targetPos.z, f, f1);
--        this.player
--        .connection
--        .sendPacket(new SPacketPlayerPosLook(x, y, z, yaw, pitch, relativeSet, this.teleportId));
-+        this.player.connection.sendPacket(new SPacketPlayerPosLook(x, y, z, yaw, pitch, relativeSet, this.teleportId));
-     }
- 
--    @Override
-     public void processPlayerDigging(CPacketPlayerDigging packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -738,12 +668,15 @@
-             case START_DESTROY_BLOCK:
-             case ABORT_DESTROY_BLOCK:
-             case STOP_DESTROY_BLOCK:
--                double d0 = this.player.posX - ((double)blockpos.getX() + 0.5);
--                double d1 = this.player.posY - ((double)blockpos.getY() + 0.5) + 1.5;
--                double d2 = this.player.posZ - ((double)blockpos.getZ() + 0.5);
-+                double d0 = this.player.posX - ((double)blockpos.getX() + 0.5D);
-+                double d1 = this.player.posY - ((double)blockpos.getY() + 0.5D) + 1.5D;
-+                double d2 = this.player.posZ - ((double)blockpos.getZ() + 0.5D);
++                            this.floating = d12 >= -0.03125;
+                             this.floating = this.floating & (!this.server.isFlightAllowed() && !this.player.capabilities.allowFlying);
+                             this.floating = this.floating
+                                                   & (
+@@ -743,7 +747,10 @@
+                 double d2 = this.player.posZ - (blockpos.getZ() + 0.5);
                  double d3 = d0 * d0 + d1 * d1 + d2 * d2;
  
 -                if (d3 > 36.0)
@@ -490,72 +60,19 @@
                  {
                      return;
                  }
-@@ -789,7 +722,6 @@
-         }
-     }
- 
--    @Override
-     public void processTryUseItemOnBlock(CPacketPlayerTryUseItemOnBlock packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -800,34 +732,18 @@
-         EnumFacing enumfacing = packetIn.getDirection();
-         this.player.markPlayerActive();
- 
--        if (blockpos.getY() < this.server.getBuildLimit() - 1
--                || enumfacing != EnumFacing.UP && blockpos.getY() < this.server.getBuildLimit())
-+        if (blockpos.getY() < this.server.getBuildLimit() - 1 || enumfacing != EnumFacing.UP && blockpos.getY() < this.server.getBuildLimit())
+@@ -803,8 +810,10 @@
+         if (blockpos.getY() < this.server.getBuildLimit() - 1
+                 || enumfacing != EnumFacing.UP && blockpos.getY() < this.server.getBuildLimit())
          {
--            if (this.targetPos == null
--                    && this.player
--                    .getDistanceSq((double)blockpos.getX() + 0.5, (double)blockpos.getY() + 0.5, (double)blockpos.getZ() + 0.5)
--                    < 64.0
--                    && !this.server.isBlockProtected(worldserver, blockpos, this.player)
--                    && worldserver.getWorldBorder().contains(blockpos))
 +            double dist = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue() + 3;
 +            dist *= dist;
-+            if (this.targetPos == null && this.player.getDistanceSq((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.5D, (double)blockpos.getZ() + 0.5D) < dist && !this.server.isBlockProtected(worldserver, blockpos, this.player) && worldserver.getWorldBorder().contains(blockpos))
+             if (this.targetPos == null
+-                    && this.player.getDistanceSq(blockpos.getX() + 0.5, blockpos.getY() + 0.5, blockpos.getZ() + 0.5) < 64.0
++                    && this.player.getDistanceSq(blockpos.getX() + 0.5, blockpos.getY() + 0.5, blockpos.getZ() + 0.5) < dist
+                     && !this.server.isBlockProtected(worldserver, blockpos, this.player)
+                     && worldserver.getWorldBorder().contains(blockpos))
              {
--                this.player
--                .interactionManager
--                .processRightClickBlock(
--                    this.player,
--                    worldserver,
--                    itemstack,
--                    enumhand,
--                    blockpos,
--                    enumfacing,
--                    packetIn.getFacingX(),
--                    packetIn.getFacingY(),
--                    packetIn.getFacingZ()
--                );
-+                this.player.interactionManager.processRightClickBlock(this.player, worldserver, itemstack, enumhand, blockpos, enumfacing, packetIn.getFacingX(), packetIn.getFacingY(), packetIn.getFacingZ());
-             }
-         }
-         else
-         {
--            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", this.server.getBuildLimit());
-+            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", new Object[] {this.server.getBuildLimit()});
-             textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
-             this.player.connection.sendPacket(new SPacketChat(textcomponenttranslation, ChatType.GAME_INFO));
-         }
-@@ -836,7 +752,6 @@
-         this.player.connection.sendPacket(new SPacketBlockChange(worldserver, blockpos.offset(enumfacing)));
-     }
- 
--    @Override
-     public void processTryUseItem(CPacketPlayerTryUseItem packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -851,7 +766,6 @@
-         }
-     }
- 
--    @Override
-     public void handleSpectate(CPacketSpectate packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -882,19 +796,13 @@
+@@ -880,19 +889,20 @@
                  {
                      this.player.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
                  }
@@ -566,19 +83,21 @@
                      WorldServer worldserver1 = this.player.getServerWorld();
                      WorldServer worldserver2 = (WorldServer)entity.world;
                      this.player.dimension = entity.dimension;
--                    this.sendPacket(
--                        new SPacketRespawn(
--                            this.player.dimension,
+                     this.sendPacket(
+                         new SPacketRespawn(
+                             this.player.dimension,
 -                            worldserver1.getDifficulty(),
 -                            worldserver1.getWorldInfo().getTerrainType(),
--                            this.player.interactionManager.getGameType()
--                        )
++                            worldserver2.getDifficulty(),
++                            worldserver2.getWorldInfo().getTerrainType(),
+                             this.player.interactionManager.getGameType()
+                         )
 -                    );
-+                    this.sendPacket(new SPacketRespawn(this.player.dimension, worldserver2.getDifficulty(), worldserver2.getWorldInfo().getTerrainType(), this.player.interactionManager.getGameType())); // Forge: Use new dimensions information
++                    ); // Forge: Use new dimensions information
                      this.server.getPlayerList().updatePermissionLevel(this.player);
                      worldserver1.removeEntityDangerously(this.player);
                      this.player.isDead = false;
-@@ -913,17 +821,16 @@
+@@ -911,6 +921,7 @@
                      this.player.interactionManager.setWorld(worldserver2);
                      this.server.getPlayerList().updateTimeAndWeatherForPlayer(this.player, worldserver2);
                      this.server.getPlayerList().syncPlayerInventory(this.player);
@@ -586,75 +105,7 @@
                  }
              }
          }
-     }
- 
--    @Override
-     public void handleResourcePackStatus(CPacketResourcePackStatus packetIn)
-     {
-     }
- 
--    @Override
-     public void processSteerBoat(CPacketSteerBoat packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -935,12 +842,11 @@
-         }
-     }
- 
--    @Override
-     public void onDisconnect(ITextComponent reason)
-     {
-         LOGGER.info("{} lost connection: {}", this.player.getName(), reason.getUnformattedText());
-         this.server.refreshStatusNextTick();
--        TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("multiplayer.player.left", this.player.getDisplayName());
-+        TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("multiplayer.player.left", new Object[] {this.player.getDisplayName()});
-         textcomponenttranslation.getStyle().setColor(TextFormatting.YELLOW);
-         this.server.getPlayerList().sendMessage(textcomponenttranslation);
-         this.player.mountEntityAndWakeUp();
-@@ -990,7 +896,6 @@
-         }
-     }
- 
--    @Override
-     public void processHeldItemChange(CPacketHeldItemChange packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1002,18 +907,17 @@
-         }
-         else
-         {
--            LOGGER.warn("{} tried to set an invalid carried item", this.player.getName());
-+            LOGGER.warn("{} tried to set an invalid carried item", (Object)this.player.getName());
-         }
-     }
- 
--    @Override
-     public void processChatMessage(CPacketChatMessage packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
- 
-         if (this.player.getChatVisibility() == EntityPlayer.EnumChatVisibility.HIDDEN)
-         {
--            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("chat.cannotSend");
-+            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("chat.cannotSend", new Object[0]);
-             textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
-             this.sendPacket(new SPacketChat(textcomponenttranslation));
-         }
-@@ -1023,11 +927,11 @@
-             String s = packetIn.getMessage();
-             s = StringUtils.normalizeSpace(s);
- 
--            for (int i = 0; i < s.length(); i++)
-+            for (int i = 0; i < s.length(); ++i)
-             {
-                 if (!ChatAllowedCharacters.isAllowedCharacter(s.charAt(i)))
-                 {
--                    this.disconnect(new TextComponentTranslation("multiplayer.disconnect.illegal_characters"));
-+                    this.disconnect(new TextComponentTranslation("multiplayer.disconnect.illegal_characters", new Object[0]));
-                     return;
-                 }
-             }
-@@ -1038,7 +942,9 @@
+@@ -1036,7 +1047,9 @@
              }
              else
              {
@@ -665,66 +116,7 @@
                  this.server.getPlayerList().sendMessage(itextcomponent, false);
              }
  
-@@ -1046,7 +952,7 @@
- 
-             if (this.chatSpamThresholdCount > 200 && !this.server.getPlayerList().canSendCommands(this.player.getGameProfile()))
-             {
--                this.disconnect(new TextComponentTranslation("disconnect.spam"));
-+                this.disconnect(new TextComponentTranslation("disconnect.spam", new Object[0]));
-             }
-         }
-     }
-@@ -1056,7 +962,6 @@
-         this.server.getCommandManager().executeCommand(this.player, command);
-     }
- 
--    @Override
-     public void handleAnimation(CPacketAnimation packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1064,7 +969,6 @@
-         this.player.swingArm(packetIn.getHand());
-     }
- 
--    @Override
-     public void processEntityAction(CPacketEntityAction packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1126,10 +1030,7 @@
-                 break;
-             case START_FALL_FLYING:
- 
--                if (!this.player.onGround
--                        && this.player.motionY < 0.0
--                        && !this.player.isElytraFlying()
--                        && !this.player.isInWater())
-+                if (!this.player.onGround && this.player.motionY < 0.0D && !this.player.isElytraFlying() && !this.player.isInWater())
-                 {
-                     ItemStack itemstack = this.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
- 
-@@ -1149,7 +1050,6 @@
-         }
-     }
- 
--    @Override
-     public void processUseEntity(CPacketUseEntity packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1160,11 +1060,11 @@
-         if (entity != null)
-         {
-             boolean flag = this.player.canEntityBeSeen(entity);
--            double d0 = 36.0;
-+            double d0 = 36.0D;
- 
-             if (!flag)
-             {
--                d0 = 9.0;
-+                d0 = 9.0D;
-             }
- 
-             if (this.player.getDistanceSq(entity) < d0)
-@@ -1177,13 +1077,14 @@
+@@ -1175,6 +1188,7 @@
                  else if (packetIn.getAction() == CPacketUseEntity.Action.INTERACT_AT)
                  {
                      EnumHand enumhand1 = packetIn.getHand();
@@ -732,23 +124,7 @@
                      entity.applyPlayerInteraction(this.player, packetIn.getHitVec(), enumhand1);
                  }
                  else if (packetIn.getAction() == CPacketUseEntity.Action.ATTACK)
-                 {
-                     if (entity instanceof EntityItem || entity instanceof EntityXPOrb || entity instanceof EntityArrow || entity == this.player)
-                     {
--                        this.disconnect(new TextComponentTranslation("multiplayer.disconnect.invalid_entity_attacked"));
-+                        this.disconnect(new TextComponentTranslation("multiplayer.disconnect.invalid_entity_attacked", new Object[0]));
-                         this.server.logWarning("Player " + this.player.getName() + " tried to attack an invalid entity");
-                         return;
-                     }
-@@ -1194,7 +1095,6 @@
-         }
-     }
- 
--    @Override
-     public void processClientStatus(CPacketClientStatus packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1218,7 +1118,7 @@
+@@ -1216,7 +1230,7 @@
                          return;
                      }
  
@@ -757,389 +133,12 @@
  
                      if (this.server.isHardcore())
                      {
-@@ -1233,40 +1133,35 @@
-         }
-     }
- 
--    @Override
-     public void processCloseWindow(CPacketCloseWindow packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-         this.player.closeContainer();
-     }
- 
--    @Override
-     public void processClickWindow(CPacketClickWindow packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-         this.player.markPlayerActive();
- 
--        if (this.player.openContainer.windowId == packetIn.getWindowId()
--                && this.player.openContainer.getCanCraft(this.player))
-+        if (this.player.openContainer.windowId == packetIn.getWindowId() && this.player.openContainer.getCanCraft(this.player))
-         {
-             if (this.player.isSpectator())
-             {
--                NonNullList<ItemStack> nonnulllist = NonNullList.create();
-+                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>create();
- 
--                for (int i = 0; i < this.player.openContainer.inventorySlots.size(); i++)
-+                for (int i = 0; i < this.player.openContainer.inventorySlots.size(); ++i)
-                 {
--                    nonnulllist.add(this.player.openContainer.inventorySlots.get(i).getStack());
-+                    nonnulllist.add(((Slot)this.player.openContainer.inventorySlots.get(i)).getStack());
-                 }
- 
-                 this.player.sendAllContents(this.player.openContainer, nonnulllist);
-             }
-             else
-             {
--                ItemStack itemstack2 = this.player
--                                       .openContainer
--                                       .slotClick(packetIn.getSlotId(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
-+                ItemStack itemstack2 = this.player.openContainer.slotClick(packetIn.getSlotId(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
+@@ -1264,7 +1278,7 @@
+                                        .openContainer
+                                        .slotClick(packetIn.getSlotId(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
  
 -                if (ItemStack.areItemStacksEqual(packetIn.getClickedItem(), itemstack2))
 +                if (ItemStack.areItemStacksEqualUsingNBTShareTag(packetIn.getClickedItem(), itemstack2))
                  {
                      this.player.connection.sendPacket(new SPacketConfirmTransaction(packetIn.getWindowId(), packetIn.getActionNumber(), true));
                      this.player.isChangingQuantityOnly = true;
-@@ -1276,14 +1171,14 @@
-                 }
-                 else
-                 {
--                    this.pendingTransactions.addKey(this.player.openContainer.windowId, packetIn.getActionNumber());
-+                    this.pendingTransactions.addKey(this.player.openContainer.windowId, Short.valueOf(packetIn.getActionNumber()));
-                     this.player.connection.sendPacket(new SPacketConfirmTransaction(packetIn.getWindowId(), packetIn.getActionNumber(), false));
-                     this.player.openContainer.setCanCraft(this.player, false);
--                    NonNullList<ItemStack> nonnulllist1 = NonNullList.create();
-+                    NonNullList<ItemStack> nonnulllist1 = NonNullList.<ItemStack>create();
- 
--                    for (int j = 0; j < this.player.openContainer.inventorySlots.size(); j++)
-+                    for (int j = 0; j < this.player.openContainer.inventorySlots.size(); ++j)
-                     {
--                        ItemStack itemstack = this.player.openContainer.inventorySlots.get(j).getStack();
-+                        ItemStack itemstack = ((Slot)this.player.openContainer.inventorySlots.get(j)).getStack();
-                         ItemStack itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack;
-                         nonnulllist1.add(itemstack1);
-                     }
-@@ -1294,36 +1189,29 @@
-         }
-     }
- 
--    @Override
-     public void func_194308_a(CPacketPlaceRecipe p_194308_1_)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(p_194308_1_, this, this.player.getServerWorld());
-         this.player.markPlayerActive();
- 
--        if (!this.player.isSpectator()
--                && this.player.openContainer.windowId == p_194308_1_.func_194318_a()
--                && this.player.openContainer.getCanCraft(this.player))
-+        if (!this.player.isSpectator() && this.player.openContainer.windowId == p_194308_1_.func_194318_a() && this.player.openContainer.getCanCraft(this.player))
-         {
-             this.field_194309_H.func_194327_a(this.player, p_194308_1_.func_194317_b(), p_194308_1_.func_194319_c());
-         }
-     }
- 
--    @Override
-     public void processEnchantItem(CPacketEnchantItem packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-         this.player.markPlayerActive();
- 
--        if (this.player.openContainer.windowId == packetIn.getWindowId()
--                && this.player.openContainer.getCanCraft(this.player)
--                && !this.player.isSpectator())
-+        if (this.player.openContainer.windowId == packetIn.getWindowId() && this.player.openContainer.getCanCraft(this.player) && !this.player.isSpectator())
-         {
-             this.player.openContainer.enchantItem(this.player, packetIn.getButton());
-             this.player.openContainer.detectAndSendChanges();
-         }
-     }
- 
--    @Override
-     public void processCreativeInventoryAction(CPacketCreativeInventoryAction packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1382,23 +1270,17 @@
-         }
-     }
- 
--    @Override
-     public void processConfirmTransaction(CPacketConfirmTransaction packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-         Short oshort = this.pendingTransactions.lookup(this.player.openContainer.windowId);
- 
--        if (oshort != null
--                && packetIn.getUid() == oshort
--                && this.player.openContainer.windowId == packetIn.getWindowId()
--                && !this.player.openContainer.getCanCraft(this.player)
--                && !this.player.isSpectator())
-+        if (oshort != null && packetIn.getUid() == oshort.shortValue() && this.player.openContainer.windowId == packetIn.getWindowId() && !this.player.openContainer.getCanCraft(this.player) && !this.player.isSpectator())
-         {
-             this.player.openContainer.setCanCraft(this.player, true);
-         }
-     }
- 
--    @Override
-     public void processUpdateSign(CPacketUpdateSign packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1426,7 +1308,7 @@
- 
-             String[] astring = packetIn.getLines();
- 
--            for (int i = 0; i < astring.length; i++)
-+            for (int i = 0; i < astring.length; ++i)
-             {
-                 tileentitysign.signText[i] = new TextComponentString(TextFormatting.getTextWithoutFormattingCodes(astring[i]));
-             }
-@@ -1436,7 +1318,6 @@
-         }
-     }
- 
--    @Override
-     public void processKeepAlive(CPacketKeepAlive packetIn)
-     {
-         if (this.field_194403_g && packetIn.getKey() == this.field_194404_h)
-@@ -1447,7 +1328,7 @@
-         }
-         else if (!this.player.getName().equals(this.server.getServerOwner()))
-         {
--            this.disconnect(new TextComponentTranslation("disconnect.timeout"));
-+            this.disconnect(new TextComponentTranslation("disconnect.timeout", new Object[0]));
-         }
-     }
- 
-@@ -1456,36 +1337,31 @@
-         return System.nanoTime() / 1000000L;
-     }
- 
--    @Override
-     public void processPlayerAbilities(CPacketPlayerAbilities packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-         this.player.capabilities.isFlying = packetIn.isFlying() && this.player.capabilities.allowFlying;
-     }
- 
--    @Override
-     public void processTabComplete(CPacketTabComplete packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
--        List<String> list = Lists.newArrayList();
-+        List<String> list = Lists.<String>newArrayList();
- 
--        for (String s : this.server
--                .getTabCompletions(this.player, packetIn.getMessage(), packetIn.getTargetBlock(), packetIn.hasTargetBlock()))
-+        for (String s : this.server.getTabCompletions(this.player, packetIn.getMessage(), packetIn.getTargetBlock(), packetIn.hasTargetBlock()))
-         {
-             list.add(s);
-         }
- 
--        this.player.connection.sendPacket(new SPacketTabComplete(list.toArray(new String[list.size()])));
-+        this.player.connection.sendPacket(new SPacketTabComplete((String[])list.toArray(new String[list.size()])));
-     }
- 
--    @Override
-     public void processClientSettings(CPacketClientSettings packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-         this.player.handleClientSettings(packetIn);
-     }
- 
--    @Override
-     public void processCustomPayload(CPacketCustomPayload packetIn)
-     {
-         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
-@@ -1558,7 +1434,7 @@
-                     itemstack2.setTagInfo("title", new NBTTagString(itemstack3.getTagCompound().getString("title")));
-                     NBTTagList nbttaglist = itemstack3.getTagCompound().getTagList("pages", 8);
- 
--                    for (int i = 0; i < nbttaglist.tagCount(); i++)
-+                    for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                     {
-                         String s1 = nbttaglist.getStringTagAt(i);
-                         ITextComponent itextcomponent = new TextComponentString(s1);
-@@ -1596,13 +1472,13 @@
-         {
-             if (!this.server.isCommandBlockEnabled())
-             {
--                this.player.sendMessage(new TextComponentTranslation("advMode.notEnabled"));
-+                this.player.sendMessage(new TextComponentTranslation("advMode.notEnabled", new Object[0]));
-                 return;
-             }
- 
-             if (!this.player.canUseCommandBlock())
-             {
--                this.player.sendMessage(new TextComponentTranslation("advMode.notAllowed"));
-+                this.player.sendMessage(new TextComponentTranslation("advMode.notAllowed", new Object[0]));
-                 return;
-             }
- 
-@@ -1615,9 +1491,7 @@
- 
-                 if (l == 0)
-                 {
--                    TileEntity tileentity = this.player
--                                            .world
--                                            .getTileEntity(new BlockPos(packetbuffer2.readInt(), packetbuffer2.readInt(), packetbuffer2.readInt()));
-+                    TileEntity tileentity = this.player.world.getTileEntity(new BlockPos(packetbuffer2.readInt(), packetbuffer2.readInt(), packetbuffer2.readInt()));
- 
-                     if (tileentity instanceof TileEntityCommandBlock)
-                     {
-@@ -1644,11 +1518,11 @@
- 
-                     if (!flag2)
-                     {
--                        commandblockbaselogic1.setLastOutput(null);
-+                        commandblockbaselogic1.setLastOutput((ITextComponent)null);
-                     }
- 
-                     commandblockbaselogic1.updateCommand();
--                    this.player.sendMessage(new TextComponentTranslation("advMode.setCommand.success", s6));
-+                    this.player.sendMessage(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s6}));
-                 }
-             }
-             catch (Exception exception4)
-@@ -1660,13 +1534,13 @@
-         {
-             if (!this.server.isCommandBlockEnabled())
-             {
--                this.player.sendMessage(new TextComponentTranslation("advMode.notEnabled"));
-+                this.player.sendMessage(new TextComponentTranslation("advMode.notEnabled", new Object[0]));
-                 return;
-             }
- 
-             if (!this.player.canUseCommandBlock())
-             {
--                this.player.sendMessage(new TextComponentTranslation("advMode.notAllowed"));
-+                this.player.sendMessage(new TextComponentTranslation("advMode.notAllowed", new Object[0]));
-                 return;
-             }
- 
-@@ -1693,39 +1567,21 @@
- 
-                 if (commandblockbaselogic != null)
-                 {
--                    EnumFacing enumfacing = this.player.world.getBlockState(blockpos1).getValue(BlockCommandBlock.FACING);
-+                    EnumFacing enumfacing = (EnumFacing)this.player.world.getBlockState(blockpos1).getValue(BlockCommandBlock.FACING);
- 
-                     switch (tileentitycommandblock$mode)
-                     {
-                         case SEQUENCE:
-                             IBlockState iblockstate3 = Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
--                            this.player
--                            .world
--                            .setBlockState(
--                                blockpos1,
--                                iblockstate3.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, flag),
--                                2
--                            );
-+                            this.player.world.setBlockState(blockpos1, iblockstate3.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag)), 2);
-                             break;
-                         case AUTO:
-                             IBlockState iblockstate2 = Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
--                            this.player
--                            .world
--                            .setBlockState(
--                                blockpos1,
--                                iblockstate2.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, flag),
--                                2
--                            );
-+                            this.player.world.setBlockState(blockpos1, iblockstate2.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag)), 2);
-                             break;
-                         case REDSTONE:
-                             IBlockState iblockstate = Blocks.COMMAND_BLOCK.getDefaultState();
--                            this.player
--                            .world
--                            .setBlockState(
--                                blockpos1,
--                                iblockstate.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, flag),
--                                2
--                            );
-+                            this.player.world.setBlockState(blockpos1, iblockstate.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag)), 2);
-                     }
- 
-                     tileentity2.validate();
-@@ -1735,7 +1591,7 @@
- 
-                     if (!flag3)
-                     {
--                        commandblockbaselogic.setLastOutput(null);
-+                        commandblockbaselogic.setLastOutput((ITextComponent)null);
-                     }
- 
-                     tileentitycommandblock.setAuto(flag1);
-@@ -1743,7 +1599,7 @@
- 
-                     if (!net.minecraft.util.StringUtils.isNullOrEmpty(s7))
-                     {
--                        this.player.sendMessage(new TextComponentTranslation("advMode.setCommand.success", s7));
-+                        this.player.sendMessage(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s7}));
-                     }
-                 }
-             }
-@@ -1846,37 +1702,37 @@
-                     {
-                         if (tileentitystructure.save())
-                         {
--                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.save_success", s4), false);
-+                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.save_success", new Object[] {s4}), false);
-                         }
-                         else
-                         {
--                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.save_failure", s4), false);
-+                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.save_failure", new Object[] {s4}), false);
-                         }
-                     }
-                     else if (l1 == 3)
-                     {
-                         if (!tileentitystructure.isStructureLoadable())
-                         {
--                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.load_not_found", s4), false);
-+                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.load_not_found", new Object[] {s4}), false);
-                         }
-                         else if (tileentitystructure.load())
-                         {
--                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.load_success", s4), false);
-+                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.load_success", new Object[] {s4}), false);
-                         }
-                         else
-                         {
--                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.load_prepare", s4), false);
-+                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.load_prepare", new Object[] {s4}), false);
-                         }
-                     }
-                     else if (l1 == 4)
-                     {
-                         if (tileentitystructure.detectSize())
-                         {
--                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.size_success", s4), false);
-+                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.size_success", new Object[] {s4}), false);
-                         }
-                         else
-                         {
--                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.size_failure"), false);
-+                            this.player.sendStatusMessage(new TextComponentTranslation("structure_block.size_failure", new Object[0]), false);
-                         }
-                     }
- 
-@@ -1897,15 +1753,7 @@
-             {
-                 int j1 = packetbuffer6.readVarInt();
-                 this.player.inventory.pickItem(j1);
--                this.player
--                .connection
--                .sendPacket(
--                    new SPacketSetSlot(
--                        -2,
--                        this.player.inventory.currentItem,
--                        this.player.inventory.getStackInSlot(this.player.inventory.currentItem)
--                    )
--                );
-+                this.player.connection.sendPacket(new SPacketSetSlot(-2, this.player.inventory.currentItem, this.player.inventory.getStackInSlot(this.player.inventory.currentItem)));
-                 this.player.connection.sendPacket(new SPacketSetSlot(-2, j1, this.player.inventory.getStackInSlot(j1)));
-                 this.player.connection.sendPacket(new SPacketHeldItemChange(this.player.inventory.currentItem));
-             }

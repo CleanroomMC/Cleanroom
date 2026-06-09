@@ -1,62 +1,15 @@
 --- before/net/minecraft/world/gen/feature/WorldGenTaiga1.java
 +++ after/net/minecraft/world/gen/feature/WorldGenTaiga1.java
-@@ -14,20 +14,14 @@
- 
- public class WorldGenTaiga1 extends WorldGenAbstractTree
- {
--    private static final IBlockState TRUNK = Blocks.LOG
--                .getDefaultState()
--                .withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
--    private static final IBlockState LEAF = Blocks.LEAVES
--                .getDefaultState()
--                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE)
--                .withProperty(BlockLeaves.CHECK_DECAY, false);
-+    private static final IBlockState TRUNK = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
-+    private static final IBlockState LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
- 
-     public WorldGenTaiga1()
-     {
-         super(false);
-     }
- 
--    @Override
-     public boolean generate(World worldIn, Random rand, BlockPos position)
-     {
-         int i = rand.nextInt(5) + 7;
-@@ -39,7 +33,7 @@
-         {
-             boolean flag = true;
- 
--            for (int i1 = position.getY(); i1 <= position.getY() + 1 + i && flag; i1++)
-+            for (int i1 = position.getY(); i1 <= position.getY() + 1 + i && flag; ++i1)
-             {
-                 int j1 = 1;
- 
-@@ -54,15 +48,18 @@
- 
-                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
- 
--                for (int k1 = position.getX() - j1; k1 <= position.getX() + j1 && flag; k1++)
-+                for (int k1 = position.getX() - j1; k1 <= position.getX() + j1 && flag; ++k1)
-                 {
--                    for (int l1 = position.getZ() - j1; l1 <= position.getZ() + j1 && flag; l1++)
-+                    for (int l1 = position.getZ() - j1; l1 <= position.getZ() + j1 && flag; ++l1)
-                     {
--                        if (i1 < 0 || i1 >= 256)
-+                        if (i1 >= 0 && i1 < 256)
-                         {
--                            flag = false;
-+                            if (!this.isReplaceable(worldIn,blockpos$mutableblockpos.setPos(k1, i1, l1)))
-+                            {
-+                                flag = false;
-+                            }
-                         }
--                        else if (!this.canGrowInto(worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, i1, l1)).getBlock()))
-+                        else
+@@ -62,7 +62,7 @@
                          {
                              flag = false;
                          }
-@@ -76,28 +73,31 @@
+-                        else if (!this.canGrowInto(worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, i1, l1)).getBlock()))
++                        else if (!this.isReplaceable(worldIn,blockpos$mutableblockpos.setPos(k1, i1, l1)))
+                         {
+                             flag = false;
+                         }
+@@ -76,11 +76,13 @@
              }
              else
              {
@@ -72,19 +25,8 @@
 +                    state.getBlock().onPlantGrow(state, worldIn, down, position);
                      int k2 = 0;
  
--                    for (int l2 = position.getY() + i; l2 >= position.getY() + j; l2--)
-+                    for (int l2 = position.getY() + i; l2 >= position.getY() + j; --l2)
-                     {
--                        for (int j3 = position.getX() - k2; j3 <= position.getX() + k2; j3++)
-+                        for (int j3 = position.getX() - k2; j3 <= position.getX() + k2; ++j3)
-                         {
-                             int k3 = j3 - position.getX();
- 
--                            for (int i2 = position.getZ() - k2; i2 <= position.getZ() + k2; i2++)
-+                            for (int i2 = position.getZ() - k2; i2 <= position.getZ() + k2; ++i2)
-                             {
-                                 int j2 = i2 - position.getZ();
- 
+                     for (int l2 = position.getY() + i; l2 >= position.getY() + j; l2--)
+@@ -96,8 +98,9 @@
                                  if (Math.abs(k3) != k2 || Math.abs(j2) != k2 || k2 <= 0)
                                  {
                                      BlockPos blockpos = new BlockPos(j3, l2, i2);
@@ -95,22 +37,9 @@
                                      {
                                          this.setBlockAndNotifyAdequately(worldIn, blockpos, LEAF);
                                      }
-@@ -107,19 +107,20 @@
+@@ -117,9 +120,10 @@
  
-                         if (k2 >= 1 && l2 == position.getY() + j + 1)
-                         {
--                            k2--;
-+                            --k2;
-                         }
-                         else if (k2 < l)
-                         {
--                            k2++;
-+                            ++k2;
-                         }
-                     }
- 
--                    for (int i3 = 0; i3 < i - 1; i3++)
-+                    for (int i3 = 0; i3 < i - 1; ++i3)
+                     for (int i3 = 0; i3 < i - 1; i3++)
                      {
 -                        Material material = worldIn.getBlockState(position.up(i3)).getMaterial();
 +                        BlockPos upN = position.up(i3);

@@ -1,23 +1,5 @@
 --- before/net/minecraft/stats/RecipeBookServer.java
 +++ after/net/minecraft/stats/RecipeBookServer.java
-@@ -21,7 +21,7 @@
- 
-     public void add(List<IRecipe> recipesIn, EntityPlayerMP player)
-     {
--        List<IRecipe> list = Lists.newArrayList();
-+        List<IRecipe> list = Lists.<IRecipe>newArrayList();
- 
-         for (IRecipe irecipe : recipesIn)
-         {
-@@ -39,7 +39,7 @@
- 
-     public void remove(List<IRecipe> recipesIn, EntityPlayerMP player)
-     {
--        List<IRecipe> list = Lists.newArrayList();
-+        List<IRecipe> list = Lists.<IRecipe>newArrayList();
- 
-         for (IRecipe irecipe : recipesIn)
-         {
 @@ -55,8 +55,7 @@
  
      private void sendPacket(SPacketRecipeBook.State state, EntityPlayerMP player, List<IRecipe> recipesIn)
@@ -28,76 +10,6 @@
      }
  
      public NBTTagCompound write()
-@@ -68,7 +67,7 @@
- 
-         for (IRecipe irecipe : this.getRecipes())
-         {
--            nbttaglist.appendTag(new NBTTagString(CraftingManager.REGISTRY.getNameForObject(irecipe).toString()));
-+            nbttaglist.appendTag(new NBTTagString(((ResourceLocation)CraftingManager.REGISTRY.getNameForObject(irecipe)).toString()));
-         }
- 
-         nbttagcompound.setTag("recipes", nbttaglist);
-@@ -76,7 +75,7 @@
- 
-         for (IRecipe irecipe1 : this.getDisplayedRecipes())
-         {
--            nbttaglist1.appendTag(new NBTTagString(CraftingManager.REGISTRY.getNameForObject(irecipe1).toString()));
-+            nbttaglist1.appendTag(new NBTTagString(((ResourceLocation)CraftingManager.REGISTRY.getNameForObject(irecipe1)).toString()));
-         }
- 
-         nbttagcompound.setTag("toBeDisplayed", nbttaglist1);
-@@ -89,14 +88,14 @@
-         this.isFilteringCraftable = tag.getBoolean("isFilteringCraftable");
-         NBTTagList nbttaglist = tag.getTagList("recipes", 8);
- 
--        for (int i = 0; i < nbttaglist.tagCount(); i++)
-+        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-         {
-             ResourceLocation resourcelocation = new ResourceLocation(nbttaglist.getStringTagAt(i));
-             IRecipe irecipe = CraftingManager.getRecipe(resourcelocation);
- 
-             if (irecipe == null)
-             {
--                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation);
-+                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", (Object)resourcelocation);
-             }
-             else
-             {
-@@ -106,14 +105,14 @@
- 
-         NBTTagList nbttaglist1 = tag.getTagList("toBeDisplayed", 8);
- 
--        for (int j = 0; j < nbttaglist1.tagCount(); j++)
-+        for (int j = 0; j < nbttaglist1.tagCount(); ++j)
-         {
-             ResourceLocation resourcelocation1 = new ResourceLocation(nbttaglist1.getStringTagAt(j));
-             IRecipe irecipe1 = CraftingManager.getRecipe(resourcelocation1);
- 
-             if (irecipe1 == null)
-             {
--                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation1);
-+                LOGGER.info("Tried to load unrecognized recipe: {} removed now.", (Object)resourcelocation1);
-             }
-             else
-             {
-@@ -124,7 +123,7 @@
- 
-     private List<IRecipe> getRecipes()
-     {
--        List<IRecipe> list = Lists.newArrayList();
-+        List<IRecipe> list = Lists.<IRecipe>newArrayList();
- 
-         for (int i = this.recipes.nextSetBit(0); i >= 0; i = this.recipes.nextSetBit(i + 1))
-         {
-@@ -136,7 +135,7 @@
- 
-     private List<IRecipe> getDisplayedRecipes()
-     {
--        List<IRecipe> list = Lists.newArrayList();
-+        List<IRecipe> list = Lists.<IRecipe>newArrayList();
- 
-         for (int i = this.newRecipes.nextSetBit(0); i >= 0; i = this.newRecipes.nextSetBit(i + 1))
-         {
 @@ -148,9 +147,6 @@
  
      public void init(EntityPlayerMP player)

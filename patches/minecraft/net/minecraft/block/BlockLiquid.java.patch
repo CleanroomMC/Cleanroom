@@ -1,6 +1,6 @@
 --- before/net/minecraft/block/BlockLiquid.java
 +++ after/net/minecraft/block/BlockLiquid.java
-@@ -415,14 +415,14 @@
+@@ -409,14 +409,14 @@
  
                  if (integer == 0)
                  {
@@ -17,7 +17,7 @@
                      this.triggerMixEffects(worldIn, pos);
                      return true;
                  }
-@@ -514,8 +514,39 @@
+@@ -508,8 +508,39 @@
      }
  
      @Override

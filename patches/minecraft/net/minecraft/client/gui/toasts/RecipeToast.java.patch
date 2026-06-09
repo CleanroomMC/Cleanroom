@@ -1,13 +1,11 @@
 --- before/net/minecraft/client/gui/toasts/RecipeToast.java
 +++ after/net/minecraft/client/gui/toasts/RecipeToast.java
-@@ -46,8 +46,8 @@
+@@ -45,7 +45,7 @@
+             RenderHelper.enableGUIStandardItemLighting();
              toastGui.getMinecraft()
              .getRenderItem()
-             .renderItemAndEffectIntoGUI(
--                null, this.recipesOutputs.get((int)(delta / (5000L / (long)this.recipesOutputs.size()) % (long)this.recipesOutputs.size())), 8, 8
--            );
-+                null, this.recipesOutputs.get((int)(delta * (long)this.recipesOutputs.size() / 5000L % (long)this.recipesOutputs.size())), 8, 8
-+            ); //Forge: fix math so that it doesn't divide by 0 when there are more than 5000 recipes
+-            .renderItemAndEffectIntoGUI(null, this.recipesOutputs.get((int)(delta / (5000L / this.recipesOutputs.size()) % this.recipesOutputs.size())), 8, 8);
++            .renderItemAndEffectIntoGUI(null, this.recipesOutputs.get((int)(delta * this.recipesOutputs.size() / 5000L % this.recipesOutputs.size())), 8, 8); //Forge: fix math so that it doesn't divide by 0 when there are more than 5000 recipes
              return delta - this.firstDrawTime >= 5000L ? IToast.Visibility.HIDE : IToast.Visibility.SHOW;
          }
      }

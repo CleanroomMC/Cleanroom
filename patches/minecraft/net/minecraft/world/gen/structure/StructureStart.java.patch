@@ -1,14 +1,5 @@
 --- before/net/minecraft/world/gen/structure/StructureStart.java
 +++ after/net/minecraft/world/gen/structure/StructureStart.java
-@@ -11,7 +11,7 @@
- 
- public abstract class StructureStart
- {
--    protected List<StructureComponent> components = Lists.newLinkedList();
-+    protected List<StructureComponent> components = Lists.<StructureComponent>newLinkedList();
-     protected StructureBoundingBox boundingBox;
-     private int chunkPosX;
-     private int chunkPosZ;
 @@ -63,6 +63,10 @@
  
      public NBTTagCompound writeStructureComponentsToNBT(int chunkX, int chunkZ)
@@ -20,12 +11,9 @@
          NBTTagCompound nbttagcompound = new NBTTagCompound();
          nbttagcompound.setString("id", MapGenStructureIO.getStructureStartName(this));
          nbttagcompound.setInteger("ChunkX", chunkX);
-@@ -96,9 +100,10 @@
+@@ -98,7 +102,8 @@
  
-         NBTTagList nbttaglist = tagCompound.getTagList("Children", 10);
- 
--        for (int i = 0; i < nbttaglist.tagCount(); i++)
-+        for (int i = 0; i < nbttaglist.tagCount(); ++i)
+         for (int i = 0; i < nbttaglist.tagCount(); i++)
          {
 -            this.components.add(MapGenStructureIO.getStructureComponent(nbttaglist.getCompoundTagAt(i), worldIn));
 +            StructureComponent tmp = MapGenStructureIO.getStructureComponent(nbttaglist.getCompoundTagAt(i), worldIn);

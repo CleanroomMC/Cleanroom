@@ -1,64 +1,14 @@
 --- before/net/minecraft/item/crafting/FurnaceRecipes.java
 +++ after/net/minecraft/item/crafting/FurnaceRecipes.java
-@@ -15,8 +15,8 @@
- public class FurnaceRecipes
- {
-     private static final FurnaceRecipes SMELTING_BASE = new FurnaceRecipes();
--    private final Map<ItemStack, ItemStack> smeltingList = Maps.newHashMap();
--    private final Map<ItemStack, Float> experienceList = Maps.newHashMap();
-+    private final Map<ItemStack, ItemStack> smeltingList = Maps.<ItemStack, ItemStack>newHashMap();
-+    private final Map<ItemStack, Float> experienceList = Maps.<ItemStack, Float>newHashMap();
- 
-     public static FurnaceRecipes instance()
-     {
-@@ -35,11 +35,7 @@
-         this.addSmelting(Items.RABBIT, new ItemStack(Items.COOKED_RABBIT), 0.35F);
-         this.addSmelting(Items.MUTTON, new ItemStack(Items.COOKED_MUTTON), 0.35F);
-         this.addSmeltingRecipeForBlock(Blocks.COBBLESTONE, new ItemStack(Blocks.STONE), 0.1F);
--        this.addSmeltingRecipe(
--            new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.DEFAULT_META),
--            new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.CRACKED_META),
--            0.1F
--        );
-+        this.addSmeltingRecipe(new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.DEFAULT_META), new ItemStack(Blocks.STONEBRICK, 1, BlockStoneBrick.CRACKED_META), 0.1F);
-         this.addSmelting(Items.CLAY_BALL, new ItemStack(Items.BRICK), 0.3F);
-         this.addSmeltingRecipeForBlock(Blocks.CLAY, new ItemStack(Blocks.HARDENED_CLAY), 0.35F);
-         this.addSmeltingRecipeForBlock(Blocks.CACTUS, new ItemStack(Items.DYE, 1, EnumDyeColor.GREEN.getDyeDamage()), 0.2F);
-@@ -55,11 +51,7 @@
-         {
-             if (itemfishfood$fishtype.canCook())
-             {
--                this.addSmeltingRecipe(
--                    new ItemStack(Items.FISH, 1, itemfishfood$fishtype.getMetadata()),
--                    new ItemStack(Items.COOKED_FISH, 1, itemfishfood$fishtype.getMetadata()),
--                    0.35F
--                );
-+                this.addSmeltingRecipe(new ItemStack(Items.FISH, 1, itemfishfood$fishtype.getMetadata()), new ItemStack(Items.COOKED_FISH, 1, itemfishfood$fishtype.getMetadata()), 0.35F);
-             }
-         }
- 
-@@ -121,8 +113,9 @@
+@@ -121,6 +121,7 @@
  
      public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience)
      {
 +        if (getSmeltingResult(input) != ItemStack.EMPTY) { net.minecraftforge.fml.common.FMLLog.log.info("Ignored smelting recipe with conflicting input: {} = {}", input, stack); return; }
          this.smeltingList.put(input, stack);
--        this.experienceList.put(stack, experience);
-+        this.experienceList.put(stack, Float.valueOf(experience));
+         this.experienceList.put(stack, experience);
      }
- 
-     public ItemStack getSmeltingResult(ItemStack stack)
-@@ -140,8 +133,7 @@
- 
-     private boolean compareItemStacks(ItemStack stack1, ItemStack stack2)
-     {
--        return stack2.getItem() == stack1.getItem()
--               && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
-+        return stack2.getItem() == stack1.getItem() && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
-     }
- 
-     public Map<ItemStack, ItemStack> getSmeltingList()
-@@ -151,11 +143,14 @@
+@@ -151,6 +152,9 @@
  
      public float getSmeltingExperience(ItemStack stack)
      {
@@ -68,9 +18,3 @@
          for (Entry<ItemStack, Float> entry : this.experienceList.entrySet())
          {
              if (this.compareItemStacks(stack, entry.getKey()))
-             {
--                return entry.getValue();
-+                return ((Float)entry.getValue()).floatValue();
-             }
-         }
- 

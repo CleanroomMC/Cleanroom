@@ -1,10 +1,7 @@
 --- before/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
 +++ after/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
-@@ -21,15 +21,9 @@
-         this.lootingMultiplier = lootingMultiplierIn;
-     }
- 
--    @Override
+@@ -24,12 +24,7 @@
+     @Override
      public boolean testCondition(Random rand, LootContext context)
      {
 -        int i = 0;
@@ -15,16 +12,5 @@
 -        }
 +        int i = context.getLootingModifier();
  
-         return rand.nextFloat() < this.chance + (float)i * this.lootingMultiplier;
+         return rand.nextFloat() < this.chance + i * this.lootingMultiplier;
      }
-@@ -43,8 +37,8 @@
- 
-             public void serialize(JsonObject json, RandomChanceWithLooting value, JsonSerializationContext context)
-             {
--                json.addProperty("chance", value.chance);
--                json.addProperty("looting_multiplier", value.lootingMultiplier);
-+                json.addProperty("chance", Float.valueOf(value.chance));
-+                json.addProperty("looting_multiplier", Float.valueOf(value.lootingMultiplier));
-             }
- 
-             public RandomChanceWithLooting deserialize(JsonObject json, JsonDeserializationContext context)

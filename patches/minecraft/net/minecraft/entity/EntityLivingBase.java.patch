@@ -18,7 +18,7 @@
      @Override
 @@ -204,10 +206,11 @@
          {
-             float f = (float)MathHelper.ceil(this.fallDistance - 3.0F);
+             float f = MathHelper.ceil(this.fallDistance - 3.0F);
  
 -            if (state.getMaterial() != Material.AIR)
 +            if (!state.getBlock().isAir(state, world, pos))
@@ -147,7 +147,7 @@
 @@ -1186,7 +1203,10 @@
              vec3d1 = vec3d1.rotatePitch(-this.rotationPitch * (float)(Math.PI / 180.0));
              vec3d1 = vec3d1.rotateYaw(-this.rotationYaw * (float)(Math.PI / 180.0));
-             vec3d1 = vec3d1.add(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ);
+             vec3d1 = vec3d1.add(this.posX, this.posY + this.getEyeHeight(), this.posZ);
 -            this.world
 +            if (this.world instanceof WorldServer) //Forge: Fix MC-2518 spawnParticle is nooped on server, need to use server specific variant
 +                ((WorldServer)this.world).spawnParticle(EnumParticleTypes.ITEM_CRACK, vec3d1.x, vec3d1.y, vec3d1.z, 0,  vec3d.x, vec3d.y + 0.05, vec3d.z, 0.0, Item.getIdFromItem(stack.getItem()), stack.getMetadata());
@@ -238,7 +238,7 @@
 +        distance = ret[0]; damageMultiplier = ret[1];
          super.fall(distance, damageMultiplier);
          PotionEffect potioneffect = this.getActivePotionEffect(MobEffects.JUMP_BOOST);
-         float f = potioneffect == null ? 0.0F : (float)(potioneffect.getAmplifier() + 1);
+         float f = potioneffect == null ? 0.0F : potioneffect.getAmplifier() + 1;
 @@ -1357,7 +1392,7 @@
  
              if (iblockstate.getMaterial() != Material.AIR)

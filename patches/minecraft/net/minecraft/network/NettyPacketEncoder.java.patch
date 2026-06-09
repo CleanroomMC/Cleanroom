@@ -1,35 +1,6 @@
 --- before/net/minecraft/network/NettyPacketEncoder.java
 +++ after/net/minecraft/network/NettyPacketEncoder.java
-@@ -22,7 +22,7 @@
- 
-     protected void encode(ChannelHandlerContext p_encode_1_, Packet<?> p_encode_2_, ByteBuf p_encode_3_) throws IOException, Exception
-     {
--        EnumConnectionState enumconnectionstate = p_encode_1_.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get();
-+        EnumConnectionState enumconnectionstate = (EnumConnectionState)p_encode_1_.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get();
- 
-         if (enumconnectionstate == null)
-         {
-@@ -34,9 +34,7 @@
- 
-             if (LOGGER.isDebugEnabled())
-             {
--                LOGGER.debug(
--                    RECEIVED_PACKET_MARKER, "OUT: [{}:{}] {}", p_encode_1_.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get(), integer, p_encode_2_.getClass().getName()
--                );
-+                LOGGER.debug(RECEIVED_PACKET_MARKER, "OUT: [{}:{}] {}", p_encode_1_.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get(), integer, p_encode_2_.getClass().getName());
-             }
- 
-             if (integer == null)
-@@ -46,7 +44,7 @@
-             else
-             {
-                 PacketBuffer packetbuffer = new PacketBuffer(p_encode_3_);
--                packetbuffer.writeVarInt(integer);
-+                packetbuffer.writeVarInt(integer.intValue());
- 
-                 try
-                 {
-@@ -54,7 +52,7 @@
+@@ -54,7 +54,7 @@
                  }
                  catch (Throwable throwable)
                  {

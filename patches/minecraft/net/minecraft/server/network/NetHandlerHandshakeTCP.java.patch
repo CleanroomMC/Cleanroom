@@ -1,10 +1,7 @@
 --- before/net/minecraft/server/network/NetHandlerHandshakeTCP.java
 +++ after/net/minecraft/server/network/NetHandlerHandshakeTCP.java
-@@ -20,9 +20,10 @@
-         this.networkManager = netManager;
-     }
- 
--    @Override
+@@ -23,6 +23,8 @@
+     @Override
      public void processHandshake(C00Handshake packetIn)
      {
 +        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager)) return;
@@ -12,27 +9,3 @@
          switch (packetIn.getRequestedState())
          {
              case LOGIN:
-@@ -30,13 +31,13 @@
- 
-                 if (packetIn.getProtocolVersion() > 340)
-                 {
--                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", "1.12.2");
-+                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", new Object[] {"1.12.2"});
-                     this.networkManager.sendPacket(new SPacketDisconnect(itextcomponent));
-                     this.networkManager.closeChannel(itextcomponent);
-                 }
-                 else if (packetIn.getProtocolVersion() < 340)
-                 {
--                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", "1.12.2");
-+                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", new Object[] {"1.12.2"});
-                     this.networkManager.sendPacket(new SPacketDisconnect(itextcomponent1));
-                     this.networkManager.closeChannel(itextcomponent1);
-                 }
-@@ -55,7 +56,6 @@
-         }
-     }
- 
--    @Override
-     public void onDisconnect(ITextComponent reason)
-     {
-     }

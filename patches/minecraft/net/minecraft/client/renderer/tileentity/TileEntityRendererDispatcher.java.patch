@@ -19,14 +19,14 @@
              int i = this.world.getCombinedLight(tileentityIn.getPos(), 0);
              int j = i % 65536;
              int k = i / 65536;
-             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
              GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 +            }
              BlockPos blockpos = tileentityIn.getPos();
 +            if (this.world.isBlockLoaded(blockpos, false)) // Forge: fix MC-123363
              this.render(
                  tileentityIn,
-                 (double)blockpos.getX() - staticPlayerX,
+                 blockpos.getX() - staticPlayerX,
 @@ -158,6 +162,9 @@
          {
              try

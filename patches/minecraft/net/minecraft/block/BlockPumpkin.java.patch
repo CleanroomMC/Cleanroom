@@ -1,6 +1,6 @@
 --- before/net/minecraft/block/BlockPumpkin.java
 +++ after/net/minecraft/block/BlockPumpkin.java
-@@ -157,8 +157,8 @@
+@@ -153,8 +153,8 @@
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {

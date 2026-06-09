@@ -1,25 +1,6 @@
 --- before/net/minecraft/util/TabCompleter.java
 +++ after/net/minecraft/util/TabCompleter.java
-@@ -18,7 +18,7 @@
-     protected boolean didComplete;
-     protected boolean requestedCompletions;
-     protected int completionIdx;
--    protected List<String> completions = Lists.newArrayList();
-+    protected List<String> completions = Lists.<String>newArrayList();
- 
-     public TabCompleter(GuiTextField textFieldIn, boolean hasTargetBlockIn)
-     {
-@@ -31,8 +31,7 @@
-         if (this.didComplete)
-         {
-             this.textField.deleteFromCursor(0);
--            this.textField
--            .deleteFromCursor(this.textField.getNthWordFromPosWS(-1, this.textField.getCursorPosition(), false) - this.textField.getCursorPosition());
-+            this.textField.deleteFromCursor(this.textField.getNthWordFromPosWS(-1, this.textField.getCursorPosition(), false) - this.textField.getCursorPosition());
- 
-             if (this.completionIdx >= this.completions.size())
-             {
-@@ -56,13 +55,14 @@
+@@ -56,13 +56,14 @@
              this.textField.deleteFromCursor(i - this.textField.getCursorPosition());
          }
  
@@ -35,7 +16,7 @@
              Minecraft.getMinecraft().player.connection.sendPacket(new CPacketTabComplete(prefix, this.getTargetBlockPos(), this.hasTargetBlock));
              this.requestedCompletions = true;
          }
-@@ -78,6 +78,12 @@
+@@ -78,6 +79,12 @@
              this.didComplete = false;
              this.completions.clear();
  
@@ -48,7 +29,7 @@
              for (String s : newCompl)
              {
                  if (!s.isEmpty())
-@@ -88,12 +94,12 @@
+@@ -88,6 +95,7 @@
  
              String s1 = this.textField.getText().substring(this.textField.getNthWordFromPosWS(-1, this.textField.getCursorPosition(), false));
              String s2 = org.apache.commons.lang3.StringUtils.getCommonPrefix(newCompl);
@@ -56,10 +37,3 @@
  
              if (!s2.isEmpty() && !s1.equalsIgnoreCase(s2))
              {
-                 this.textField.deleteFromCursor(0);
--                this.textField
--                .deleteFromCursor(this.textField.getNthWordFromPosWS(-1, this.textField.getCursorPosition(), false) - this.textField.getCursorPosition());
-+                this.textField.deleteFromCursor(this.textField.getNthWordFromPosWS(-1, this.textField.getCursorPosition(), false) - this.textField.getCursorPosition());
-                 this.textField.writeText(s2);
-             }
-             else if (!this.completions.isEmpty())

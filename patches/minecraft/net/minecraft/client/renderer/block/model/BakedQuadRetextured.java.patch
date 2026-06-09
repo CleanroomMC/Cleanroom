@@ -17,16 +17,16 @@
          {
 -            int j = 7 * i;
 -            this.vertexData[j + 4] = Float.floatToRawIntBits(
--                                             this.texture.getInterpolatedU((double)this.sprite.getUnInterpolatedU(Float.intBitsToFloat(this.vertexData[j + 4])))
+-                                             this.texture.getInterpolatedU(this.sprite.getUnInterpolatedU(Float.intBitsToFloat(this.vertexData[j + 4])))
 +            int j = format.getIntegerSize() * i;
 +            int uvIndex = format.getUvOffsetById(0) / 4;
 +            this.vertexData[j + uvIndex] = Float.floatToRawIntBits(
-+                                             this.texture.getInterpolatedU((double)this.sprite.getUnInterpolatedU(Float.intBitsToFloat(this.vertexData[j + uvIndex])))
++                                             this.texture.getInterpolatedU(this.sprite.getUnInterpolatedU(Float.intBitsToFloat(this.vertexData[j + uvIndex])))
                                           );
 -            this.vertexData[j + 4 + 1] = Float.floatToRawIntBits(
--                                                 this.texture.getInterpolatedV((double)this.sprite.getUnInterpolatedV(Float.intBitsToFloat(this.vertexData[j + 4 + 1])))
+-                                                 this.texture.getInterpolatedV(this.sprite.getUnInterpolatedV(Float.intBitsToFloat(this.vertexData[j + 4 + 1])))
 +            this.vertexData[j + uvIndex + 1] = Float.floatToRawIntBits(
-+                                                 this.texture.getInterpolatedV((double)this.sprite.getUnInterpolatedV(Float.intBitsToFloat(this.vertexData[j + uvIndex + 1])))
++                                                 this.texture.getInterpolatedV(this.sprite.getUnInterpolatedV(Float.intBitsToFloat(this.vertexData[j + uvIndex + 1])))
                                               );
          }
 +    }

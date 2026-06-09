@@ -1,31 +1,6 @@
 --- before/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
 +++ after/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
-@@ -25,7 +25,6 @@
-         this.mushroomType = null;
-     }
- 
--    @Override
-     public boolean generate(World worldIn, Random rand, BlockPos position)
-     {
-         Block block = this.mushroomType;
-@@ -46,7 +45,7 @@
- 
-         if (position.getY() >= 1 && position.getY() + i + 1 < 256)
-         {
--            for (int j = position.getY(); j <= position.getY() + 1 + i; j++)
-+            for (int j = position.getY(); j <= position.getY() + 1 + i; ++j)
-             {
-                 int k = 3;
- 
-@@ -57,15 +56,15 @@
- 
-                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
- 
--                for (int l = position.getX() - k; l <= position.getX() + k && flag; l++)
-+                for (int l = position.getX() - k; l <= position.getX() + k && flag; ++l)
-                 {
--                    for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; i1++)
-+                    for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1)
+@@ -63,9 +63,9 @@
                      {
                          if (j >= 0 && j < 256)
                          {
@@ -37,53 +12,8 @@
                              {
                                  flag = false;
                              }
-@@ -99,13 +98,13 @@
-                         k2 = position.getY() + i - 3;
-                     }
- 
--                    for (int l2 = k2; l2 <= position.getY() + i; l2++)
-+                    for (int l2 = k2; l2 <= position.getY() + i; ++l2)
-                     {
-                         int j3 = 1;
- 
-                         if (l2 < position.getY() + i)
-                         {
--                            j3++;
-+                            ++j3;
-                         }
- 
-                         if (block == Blocks.BROWN_MUSHROOM_BLOCK)
-@@ -118,19 +117,19 @@
-                         int j1 = position.getZ() - j3;
-                         int k1 = position.getZ() + j3;
- 
--                        for (int l1 = k3; l1 <= l3; l1++)
-+                        for (int l1 = k3; l1 <= l3; ++l1)
-                         {
--                            for (int i2 = j1; i2 <= k1; i2++)
-+                            for (int i2 = j1; i2 <= k1; ++i2)
-                             {
-                                 int j2 = 5;
- 
-                                 if (l1 == k3)
-                                 {
--                                    j2--;
-+                                    --j2;
-                                 }
-                                 else if (l1 == l3)
-                                 {
--                                    j2++;
-+                                    ++j2;
-                                 }
- 
-                                 if (i2 == j1)
-@@ -197,33 +196,27 @@
-                                     blockhugemushroom$enumtype = BlockHugeMushroom.EnumType.ALL_INSIDE;
-                                 }
- 
--                                if (position.getY() >= position.getY() + i - 1
--                                        || blockhugemushroom$enumtype != BlockHugeMushroom.EnumType.ALL_INSIDE)
-+                                if (position.getY() >= position.getY() + i - 1 || blockhugemushroom$enumtype != BlockHugeMushroom.EnumType.ALL_INSIDE)
+@@ -201,8 +201,9 @@
+                                         || blockhugemushroom$enumtype != BlockHugeMushroom.EnumType.ALL_INSIDE)
                                  {
                                      BlockPos blockpos = new BlockPos(l1, l2, i2);
 +                                    IBlockState state = worldIn.getBlockState(blockpos);
@@ -91,30 +21,14 @@
 -                                    if (!worldIn.getBlockState(blockpos).isFullBlock())
 +                                    if (state.getBlock().canBeReplacedByLeaves(state, worldIn, blockpos))
                                      {
--                                        this.setBlockAndNotifyAdequately(
--                                            worldIn, blockpos, block.getDefaultState().withProperty(BlockHugeMushroom.VARIANT, blockhugemushroom$enumtype)
--                                        );
-+                                        this.setBlockAndNotifyAdequately(worldIn, blockpos, block.getDefaultState().withProperty(BlockHugeMushroom.VARIANT, blockhugemushroom$enumtype));
-                                     }
-                                 }
-                             }
-                         }
-                     }
- 
--                    for (int i3 = 0; i3 < i; i3++)
-+                    for (int i3 = 0; i3 < i; ++i3)
+                                         this.setBlockAndNotifyAdequately(
+                                             worldIn, blockpos, block.getDefaultState().withProperty(BlockHugeMushroom.VARIANT, blockhugemushroom$enumtype)
+@@ -217,7 +218,7 @@
                      {
                          IBlockState iblockstate = worldIn.getBlockState(position.up(i3));
  
 -                        if (!iblockstate.isFullBlock())
 +                        if (iblockstate.getBlock().canBeReplacedByLeaves(iblockstate, worldIn, position.up(i3)))
                          {
--                            this.setBlockAndNotifyAdequately(
--                                worldIn,
--                                position.up(i3),
--                                block.getDefaultState().withProperty(BlockHugeMushroom.VARIANT, BlockHugeMushroom.EnumType.STEM)
--                            );
-+                            this.setBlockAndNotifyAdequately(worldIn, position.up(i3), block.getDefaultState().withProperty(BlockHugeMushroom.VARIANT, BlockHugeMushroom.EnumType.STEM));
-                         }
-                     }
- 
+                             this.setBlockAndNotifyAdequately(
+                                 worldIn,

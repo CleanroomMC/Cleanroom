@@ -1,139 +1,20 @@
 --- before/net/minecraft/item/ItemSlab.java
 +++ after/net/minecraft/item/ItemSlab.java
-@@ -32,29 +32,17 @@
-         this.setHasSubtypes(true);
-     }
- 
--    @Override
-     public int getMetadata(int damage)
-     {
-         return damage;
-     }
- 
--    @Override
-     public String getTranslationKey(ItemStack stack)
-     {
-         return this.singleSlab.getTranslationKey(stack.getMetadata());
-     }
- 
--    @Override
--    public EnumActionResult onItemUse(
--        EntityPlayer player,
--        World worldIn,
--        BlockPos pos,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         ItemStack itemstack = player.getHeldItem(hand);
- 
-@@ -66,31 +54,18 @@
-             if (iblockstate.getBlock() == this.singleSlab)
-             {
-                 IProperty<?> iproperty = this.singleSlab.getVariantProperty();
--                Comparable<?> comparable1 = iblockstate.getValue((IProperty<?>)iproperty);
--                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = iblockstate.getValue(BlockSlab.HALF);
-+                Comparable<?> comparable1 = iblockstate.getValue(iproperty);
-+                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = (BlockSlab.EnumBlockHalf)iblockstate.getValue(BlockSlab.HALF);
- 
--                if ((
--                            facing == EnumFacing.UP && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.BOTTOM
--                            || facing == EnumFacing.DOWN && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.TOP
--                        )
--                        && comparable1 == comparable)
-+                if ((facing == EnumFacing.UP && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.BOTTOM || facing == EnumFacing.DOWN && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.TOP) && comparable1 == comparable)
-                 {
-                     IBlockState iblockstate1 = this.makeState(iproperty, comparable1);
-                     AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
- 
--                    if (axisalignedbb != Block.NULL_AABB
--                            && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
--                            && worldIn.setBlockState(pos, iblockstate1, 11))
-+                    if (axisalignedbb != Block.NULL_AABB && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos)) && worldIn.setBlockState(pos, iblockstate1, 11))
+@@ -82,7 +82,7 @@
+                             && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
+                             && worldIn.setBlockState(pos, iblockstate1, 11))
                      {
 -                        SoundType soundtype = this.doubleSlab.getSoundType();
--                        worldIn.playSound(
--                            player,
--                            pos,
--                            soundtype.getPlaceSound(),
--                            SoundCategory.BLOCKS,
--                            (soundtype.getVolume() + 1.0F) / 2.0F,
--                            soundtype.getPitch() * 0.8F
--                        );
 +                        SoundType soundtype = this.doubleSlab.getSoundType(iblockstate1, worldIn, pos, player);
-+                        worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                         itemstack.shrink(1);
- 
-                         if (player instanceof EntityPlayerMP)
-@@ -103,9 +78,7 @@
-                 }
-             }
- 
--            return this.tryPlace(player, itemstack, worldIn, pos.offset(facing), comparable)
--                   ? EnumActionResult.SUCCESS
--                   : super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-+            return this.tryPlace(player, itemstack, worldIn, pos.offset(facing), comparable) ? EnumActionResult.SUCCESS : super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-         }
-         else
-         {
-@@ -114,9 +87,9 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack)
-     {
-+        BlockPos blockpos = pos;
-         IProperty<?> iproperty = this.singleSlab.getVariantProperty();
-         Comparable<?> comparable = this.singleSlab.getTypeForItem(stack);
-         IBlockState iblockstate = worldIn.getBlockState(pos);
-@@ -131,11 +104,9 @@
-             }
-         }
- 
--        BlockPos blockpos = pos.offset(side);
--        IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
--        return iblockstate1.getBlock() == this.singleSlab && comparable == iblockstate1.getValue(iproperty)
--               ? true
--               : super.canPlaceBlockOnSide(worldIn, pos, side, player, stack);
-+        pos = pos.offset(side);
-+        IBlockState iblockstate1 = worldIn.getBlockState(pos);
-+        return iblockstate1.getBlock() == this.singleSlab && comparable == iblockstate1.getValue(iproperty) ? true : super.canPlaceBlockOnSide(worldIn, blockpos, side, player, stack);
-     }
- 
-     private boolean tryPlace(EntityPlayer player, ItemStack stack, World worldIn, BlockPos pos, Object itemSlabType)
-@@ -144,26 +115,17 @@
- 
-         if (iblockstate.getBlock() == this.singleSlab)
-         {
--            Comparable<?> comparable = iblockstate.getValue((IProperty<?>)this.singleSlab.getVariantProperty());
-+            Comparable<?> comparable = iblockstate.getValue(this.singleSlab.getVariantProperty());
- 
-             if (comparable == itemSlabType)
-             {
-                 IBlockState iblockstate1 = this.makeState(this.singleSlab.getVariantProperty(), comparable);
-                 AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
- 
--                if (axisalignedbb != Block.NULL_AABB
--                        && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
--                        && worldIn.setBlockState(pos, iblockstate1, 11))
-+                if (axisalignedbb != Block.NULL_AABB && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos)) && worldIn.setBlockState(pos, iblockstate1, 11))
+                         worldIn.playSound(
+                             player,
+                             pos,
+@@ -155,7 +155,7 @@
+                         && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
+                         && worldIn.setBlockState(pos, iblockstate1, 11))
                  {
 -                    SoundType soundtype = this.doubleSlab.getSoundType();
--                    worldIn.playSound(
--                        player,
--                        pos,
--                        soundtype.getPlaceSound(),
--                        SoundCategory.BLOCKS,
--                        (soundtype.getVolume() + 1.0F) / 2.0F,
--                        soundtype.getPitch() * 0.8F
--                    );
 +                    SoundType soundtype = this.doubleSlab.getSoundType(iblockstate1, worldIn, pos, player);
-+                    worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                     stack.shrink(1);
-                 }
- 
+                     worldIn.playSound(
+                         player,
+                         pos,

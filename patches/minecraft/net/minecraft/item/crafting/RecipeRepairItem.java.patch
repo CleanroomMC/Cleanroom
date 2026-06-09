@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipeRepairItem.java
 +++ after/net/minecraft/item/crafting/RecipeRepairItem.java
-@@ -7,17 +7,14 @@
+@@ -7,10 +7,8 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -10,65 +10,32 @@
 -public class RecipeRepairItem implements IRecipe
 +public class RecipeRepairItem extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
  {
--    @Override
+     @Override
      public boolean matches(InventoryCrafting inv, World worldIn)
-     {
--        List<ItemStack> list = Lists.newArrayList();
-+        List<ItemStack> list = Lists.<ItemStack>newArrayList();
- 
--        for (int i = 0; i < inv.getSizeInventory(); i++)
-+        for (int i = 0; i < inv.getSizeInventory(); ++i)
-         {
-             ItemStack itemstack = inv.getStackInSlot(i);
- 
-@@ -29,10 +26,7 @@
-                 {
-                     ItemStack itemstack1 = list.get(0);
- 
--                    if (itemstack.getItem() != itemstack1.getItem()
--                            || itemstack1.getCount() != 1
--                            || itemstack.getCount() != 1
+@@ -32,7 +30,7 @@
+                     if (itemstack.getItem() != itemstack1.getItem()
+                             || itemstack1.getCount() != 1
+                             || itemstack.getCount() != 1
 -                            || !itemstack1.getItem().isDamageable())
-+                    if (itemstack.getItem() != itemstack1.getItem() || itemstack1.getCount() != 1 || itemstack.getCount() != 1 || !itemstack1.getItem().isRepairable())
++                            || !itemstack1.getItem().isRepairable())
                      {
                          return false;
                      }
-@@ -43,12 +37,11 @@
-         return list.size() == 2;
-     }
- 
--    @Override
-     public ItemStack getCraftingResult(InventoryCrafting inv)
-     {
--        List<ItemStack> list = Lists.newArrayList();
-+        List<ItemStack> list = Lists.<ItemStack>newArrayList();
- 
--        for (int i = 0; i < inv.getSizeInventory(); i++)
-+        for (int i = 0; i < inv.getSizeInventory(); ++i)
-         {
-             ItemStack itemstack = inv.getStackInSlot(i);
- 
-@@ -60,10 +53,7 @@
-                 {
-                     ItemStack itemstack1 = list.get(0);
- 
--                    if (itemstack.getItem() != itemstack1.getItem()
--                            || itemstack1.getCount() != 1
--                            || itemstack.getCount() != 1
+@@ -63,7 +61,7 @@
+                     if (itemstack.getItem() != itemstack1.getItem()
+                             || itemstack1.getCount() != 1
+                             || itemstack.getCount() != 1
 -                            || !itemstack1.getItem().isDamageable())
-+                    if (itemstack.getItem() != itemstack1.getItem() || itemstack1.getCount() != 1 || itemstack.getCount() != 1 || !itemstack1.getItem().isRepairable())
++                            || !itemstack1.getItem().isRepairable())
                      {
                          return ItemStack.EMPTY;
                      }
-@@ -76,16 +66,13 @@
-             ItemStack itemstack2 = list.get(0);
-             ItemStack itemstack3 = list.get(1);
- 
--            if (itemstack2.getItem() == itemstack3.getItem()
--                    && itemstack2.getCount() == 1
--                    && itemstack3.getCount() == 1
+@@ -79,13 +77,13 @@
+             if (itemstack2.getItem() == itemstack3.getItem()
+                     && itemstack2.getCount() == 1
+                     && itemstack3.getCount() == 1
 -                    && itemstack2.getItem().isDamageable())
-+            if (itemstack2.getItem() == itemstack3.getItem() && itemstack2.getCount() == 1 && itemstack3.getCount() == 1 && itemstack2.getItem().isRepairable())
++                    && itemstack2.getItem().isRepairable())
              {
 -                Item item = itemstack2.getItem();
 -                int j = item.getMaxDamage() - itemstack2.getItemDamage();
@@ -83,24 +50,8 @@
  
                  if (i1 < 0)
                  {
-@@ -99,38 +86,29 @@
-         return ItemStack.EMPTY;
-     }
- 
--    @Override
-     public ItemStack getRecipeOutput()
-     {
-         return ItemStack.EMPTY;
-     }
- 
--    @Override
-     public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-     {
--        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
-+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
- 
--        for (int i = 0; i < nonnulllist.size(); i++)
-+        for (int i = 0; i < nonnulllist.size(); ++i)
+@@ -113,11 +111,7 @@
+         for (int i = 0; i < nonnulllist.size(); i++)
          {
              ItemStack itemstack = inv.getStackInSlot(i);
 -
@@ -112,16 +63,11 @@
          }
  
          return nonnulllist;
-     }
- 
--    @Override
-     public boolean isDynamic()
-     {
+@@ -129,7 +123,6 @@
          return true;
      }
  
 -    @SideOnly(Side.CLIENT)
--    @Override
+     @Override
      public boolean canFit(int width, int height)
      {
-         return width * height >= 2;

@@ -1,14 +1,6 @@
 --- before/net/minecraft/world/gen/feature/WorldGenLiquids.java
 +++ after/net/minecraft/world/gen/feature/WorldGenLiquids.java
-@@ -17,7 +17,6 @@
-         this.block = blockIn;
-     }
- 
--    @Override
-     public boolean generate(World worldIn, Random rand, BlockPos position)
-     {
-         if (worldIn.getBlockState(position.up()).getBlock() != Blocks.STONE)
-@@ -32,7 +31,7 @@
+@@ -32,7 +32,7 @@
          {
              IBlockState iblockstate = worldIn.getBlockState(position);
  
@@ -17,56 +9,3 @@
              {
                  return false;
              }
-@@ -42,44 +41,44 @@
- 
-                 if (worldIn.getBlockState(position.west()).getBlock() == Blocks.STONE)
-                 {
--                    i++;
-+                    ++i;
-                 }
- 
-                 if (worldIn.getBlockState(position.east()).getBlock() == Blocks.STONE)
-                 {
--                    i++;
-+                    ++i;
-                 }
- 
-                 if (worldIn.getBlockState(position.north()).getBlock() == Blocks.STONE)
-                 {
--                    i++;
-+                    ++i;
-                 }
- 
-                 if (worldIn.getBlockState(position.south()).getBlock() == Blocks.STONE)
-                 {
--                    i++;
-+                    ++i;
-                 }
- 
-                 int j = 0;
- 
-                 if (worldIn.isAirBlock(position.west()))
-                 {
--                    j++;
-+                    ++j;
-                 }
- 
-                 if (worldIn.isAirBlock(position.east()))
-                 {
--                    j++;
-+                    ++j;
-                 }
- 
-                 if (worldIn.isAirBlock(position.north()))
-                 {
--                    j++;
-+                    ++j;
-                 }
- 
-                 if (worldIn.isAirBlock(position.south()))
-                 {
--                    j++;
-+                    ++j;
-                 }
- 
-                 if (i == 3 && j == 1)

@@ -28,7 +28,7 @@
 +            com.google.common.collect.ImmutableList<net.minecraftforge.common.BiomeManager.BiomeEntry> biomesToAdd = net.minecraftforge.common.BiomeManager.getBiomes(type);
 +            int idx = type.ordinal();
 +
-+            if (biomes[idx] == null) biomes[idx] = new java.util.ArrayList<net.minecraftforge.common.BiomeManager.BiomeEntry>();
++            if (biomes[idx] == null) biomes[idx] = new java.util.ArrayList<>();
 +            if (biomesToAdd != null) biomes[idx].addAll(biomesToAdd);
 +        }
 +
@@ -54,31 +54,7 @@
              this.settings = null;
          }
          else
-@@ -38,20 +48,19 @@
-         }
-     }
- 
--    @Override
-     public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight)
-     {
-         int[] aint = this.parent.getInts(areaX, areaY, areaWidth, areaHeight);
-         int[] aint1 = IntCache.getIntCache(areaWidth * areaHeight);
- 
--        for (int i = 0; i < areaHeight; i++)
-+        for (int i = 0; i < areaHeight; ++i)
-         {
--            for (int j = 0; j < areaWidth; j++)
-+            for (int j = 0; j < areaWidth; ++j)
-             {
-                 this.initChunkSeed((long)(j + areaX), (long)(i + areaY));
-                 int k = aint[j + i * areaWidth];
-                 int l = (k & 3840) >> 8;
--                k &= -3841;
-+                k = k & -3841;
- 
-                 if (this.settings != null && this.settings.fixedBiome >= 0)
-                 {
-@@ -80,7 +89,7 @@
+@@ -80,7 +90,7 @@
                      }
                      else
                      {
@@ -87,7 +63,7 @@
                      }
                  }
                  else if (k == 2)
-@@ -91,7 +100,7 @@
+@@ -91,7 +101,7 @@
                      }
                      else
                      {
@@ -96,7 +72,7 @@
                      }
                  }
                  else if (k == 3)
-@@ -102,12 +111,12 @@
+@@ -102,12 +112,12 @@
                      }
                      else
                      {
@@ -111,7 +87,7 @@
                  }
                  else
                  {
-@@ -117,5 +126,13 @@
+@@ -117,5 +127,13 @@
          }
  
          return aint1;

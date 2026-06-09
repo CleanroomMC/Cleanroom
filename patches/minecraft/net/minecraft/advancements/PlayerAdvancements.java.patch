@@ -1,6 +1,6 @@
 --- before/net/minecraft/advancements/PlayerAdvancements.java
 +++ after/net/minecraft/advancements/PlayerAdvancements.java
-@@ -199,6 +199,9 @@
+@@ -197,6 +197,9 @@
  
      public boolean grantCriterion(Advancement p_192750_1_, String p_192750_2_)
      {
@@ -10,7 +10,7 @@
          boolean flag = false;
          AdvancementProgress advancementprogress = this.getProgress(p_192750_1_);
          boolean flag1 = advancementprogress.isDone();
-@@ -227,6 +230,8 @@
+@@ -225,6 +228,8 @@
                          )
                      );
                  }

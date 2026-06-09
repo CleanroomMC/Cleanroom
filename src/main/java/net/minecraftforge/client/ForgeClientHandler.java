@@ -20,25 +20,41 @@
 package net.minecraftforge.client;
 
 import com.cleanroommc.client.IMEHandler;
+import com.cleanroommc.client.windows.TaskbarApi;
+import com.cleanroommc.client.windows.WindowsProperties;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.WinDef;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.gui.inventory.GuiEditSign;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
+import org.lwjgl.glfw.GLFWNativeWin32;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ForgeClientHandler
 {
     private static final Set<String> classList = Arrays.stream(ForgeModContainer.inputMethodGuiWhiteList).collect(Collectors.toSet());
+    private static boolean played = false;
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
     {
@@ -79,8 +95,76 @@ public class ForgeClientHandler
         IMEHandler.setIME(canInput);
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onGuiOpen(GuiOpenEvent event){
+        if (Util.getOSType().equals(Util.EnumOS.WINDOWS)){
+            if (event.getGui() instanceof GuiMainMenu && !played){
+                if (WindowsProperties.handle == Long.MIN_VALUE) return;
+                TaskbarApi.flashTaskbarUntilForeground(WindowsProperties.handle);
+                played = true;
+            }
+        }
+    }
+
     private static boolean guiInWhiteList(GuiScreen gui) {
         String current = gui.getClass().getName();
         return classList.contains(current);
+    }
+    
+    @SubscribeEvent
+    public static void appendAdvancedTooltip(ItemTooltipEvent event) {
+
+        if (!ForgeModContainer.displayAdvancedTooltips || !event.getFlags().isAdvanced()) {
+            return;
+        }
+        List<String> list = event.getToolTip();
+        ItemStack stack = event.getItemStack();
+        
+        int limit = ForgeModContainer.maxTooltipNBTListLength;
+        list.add(I18n.translateToLocal("item.forge.advanced_shift_info"));
+        if (stack.hasTagCompound() && limit > 0) list.add(I18n.translateToLocal("item.forge.advanced_ctrl_info"));
+        String pre = TextFormatting.DARK_GRAY + "     ";
+        String head = TextFormatting.GRAY + "  -";
+        
+        int burnTime = net.minecraft.tileentity.TileEntityFurnace.getItemBurnTime(stack);
+        if (burnTime > 0) {
+            list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.burn_time", burnTime, burnTime / 20));
+        }
+        
+        if (GuiScreen.isShiftKeyDown() && !stack.isEmpty()) {
+            list.add(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + I18n.translateToLocal("item.forge.advanced_info"));
+
+            int[] ids = OreDictionary.getOreIDs(stack);
+            if (ids.length > 0) {
+                list.add(head + I18n.translateToLocal("item.forge.oredict"));
+                for (int id : ids) {
+                    list.add(pre + OreDictionary.getOreName(id));
+                }
+            }
+
+            String baseName = stack.getTranslationKey();
+            if (!baseName.equals("item.null")) {
+                list.add(head + I18n.translateToLocal("item.forge.translation_key"));
+                list.add(pre + baseName);
+            }
+        }
+
+        if (GuiScreen.isCtrlKeyDown() && limit > 0 && !stack.isEmpty()) {
+            NBTTagCompound compound = stack.getTagCompound();
+            if (compound != null && !compound.isEmpty()) {
+                list.add(head + I18n.translateToLocal("item.forge.nbt_list"));
+
+                String compoundStr = compound.toString();
+                int compoundStrLength = compoundStr.length();
+                String compoundDisplay;
+
+                if (compoundStrLength > limit) {
+                    compoundDisplay = compoundStr.substring(0, limit) + TextFormatting.GRAY + " " + I18n.translateToLocalFormatted("item.forge.nbt_limited", limit);
+                } else {
+                    compoundDisplay = compoundStr;
+                }
+                list.add(pre + compoundDisplay);
+            }
+        }
     }
 }

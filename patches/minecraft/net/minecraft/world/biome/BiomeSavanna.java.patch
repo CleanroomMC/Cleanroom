@@ -1,31 +1,10 @@
 --- before/net/minecraft/world/biome/BiomeSavanna.java
 +++ after/net/minecraft/world/biome/BiomeSavanna.java
-@@ -30,18 +30,17 @@
-         this.decorator.grassPerChunk = 20;
-     }
- 
--    @Override
-     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
-     {
-         return (WorldGenAbstractTree)(rand.nextInt(5) > 0 ? SAVANNA_TREE : TREE_FEATURE);
-     }
- 
--    @Override
-     public void decorate(World worldIn, Random rand, BlockPos pos)
+@@ -41,6 +41,7 @@
      {
          DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.GRASS);
  
--        for (int i = 0; i < 7; i++)
 +        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
-+        for (int i = 0; i < 7; ++i)
+         for (int i = 0; i < 7; i++)
          {
              int j = rand.nextInt(16) + 8;
-             int k = rand.nextInt(16) + 8;
-@@ -52,7 +51,6 @@
-         super.decorate(worldIn, rand, pos);
-     }
- 
--    @Override
-     public Class <? extends Biome > getBiomeClass()
-     {
-         return BiomeSavanna.class;

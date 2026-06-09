@@ -1,27 +1,6 @@
 --- before/net/minecraft/world/biome/BiomeHills.java
 +++ after/net/minecraft/world/biome/BiomeHills.java
-@@ -14,9 +14,7 @@
- 
- public class BiomeHills extends Biome
- {
--    private final WorldGenerator silverfishSpawner = new WorldGenMinable(
--        Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.STONE), 9
--    );
-+    private final WorldGenerator silverfishSpawner = new WorldGenMinable(Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.STONE), 9);
-     private final WorldGenTaiga2 spruceGenerator = new WorldGenTaiga2(false);
-     private final BiomeHills.Type type;
- 
-@@ -33,52 +31,42 @@
-         this.type = p_i46710_1_;
-     }
- 
--    @Override
-     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
-     {
-         return (WorldGenAbstractTree)(rand.nextInt(3) > 0 ? this.spruceGenerator : super.getRandomTreeFeature(rand));
-     }
- 
--    @Override
+@@ -43,28 +43,21 @@
      public void decorate(World worldIn, Random rand, BlockPos pos)
      {
          super.decorate(worldIn, rand, pos);
@@ -39,15 +18,13 @@
 -                worldIn.setBlockState(blockpos, Blocks.EMERALD_ORE.getDefaultState(), 2);
 -            }
 -        }
--
--        for (int j1 = 0; j1 < 7; j1++)
 +
 +        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Pre(worldIn, rand, pos));
 +        WorldGenerator emeralds = new EmeraldGenerator();
 +        if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, rand, emeralds, pos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.EMERALD))
 +            emeralds.generate(worldIn, rand, pos);
-+
-+        for (int j1 = 0; j1 < 7; ++j1)
+ 
+         for (int j1 = 0; j1 < 7; j1++)
          {
              int k1 = rand.nextInt(16);
              int l1 = rand.nextInt(64);
@@ -58,24 +35,8 @@
 +        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Post(worldIn, rand, pos));
      }
  
--    @Override
-     public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
-     {
-         this.topBlock = Blocks.GRASS.getDefaultState();
-         this.fillerBlock = Blocks.DIRT.getDefaultState();
- 
--        if ((noiseVal < -1.0 || noiseVal > 2.0) && this.type == BiomeHills.Type.MUTATED)
-+        if ((noiseVal < -1.0D || noiseVal > 2.0D) && this.type == BiomeHills.Type.MUTATED)
-         {
-             this.topBlock = Blocks.GRAVEL.getDefaultState();
-             this.fillerBlock = Blocks.GRAVEL.getDefaultState();
-         }
--        else if (noiseVal > 1.0 && this.type != BiomeHills.Type.EXTRA_TREES)
-+        else if (noiseVal > 1.0D && this.type != BiomeHills.Type.EXTRA_TREES)
-         {
-             this.topBlock = Blocks.STONE.getDefaultState();
-             this.fillerBlock = Blocks.STONE.getDefaultState();
-@@ -92,5 +80,26 @@
+     @Override
+@@ -92,5 +85,26 @@
          NORMAL,
          EXTRA_TREES,
          MUTATED;

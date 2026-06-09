@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/boss/EntityDragon.java
 +++ after/net/minecraft/entity/boss/EntityDragon.java
-@@ -588,18 +588,14 @@
+@@ -565,18 +565,14 @@
                      IBlockState iblockstate = this.world.getBlockState(blockpos);
                      Block block = iblockstate.getBlock();
  

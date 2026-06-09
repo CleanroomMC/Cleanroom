@@ -17,55 +17,23 @@
      public static void safeWrite(NBTTagCompound compound, File fileIn) throws IOException
      {
          File file1 = new File(fileIn.getAbsolutePath() + "_tmp");
-@@ -81,47 +78,6 @@
+@@ -81,7 +78,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
--    public static void write(NBTTagCompound compound, File fileIn) throws IOException
--    {
--        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
--
--        try
--        {
--            write(compound, dataoutputstream);
--        }
--        finally
--        {
--            dataoutputstream.close();
--        }
--    }
--
--    @Nullable
--    @SideOnly(Side.CLIENT)
--    public static NBTTagCompound read(File fileIn) throws IOException
--    {
--        if (!fileIn.exists())
--        {
--            return null;
--        }
--        else
--        {
--            DataInputStream datainputstream = new DataInputStream(new FileInputStream(fileIn));
--            NBTTagCompound nbttagcompound;
--
--            try
--            {
--                nbttagcompound = read(datainputstream, NBTSizeTracker.INFINITE);
--            }
--            finally
--            {
--                datainputstream.close();
--            }
--
--            return nbttagcompound;
--        }
--    }
--
-     public static NBTTagCompound read(DataInputStream inputStream) throws IOException
+     public static void write(NBTTagCompound compound, File fileIn) throws IOException
      {
-         return read(inputStream, NBTSizeTracker.INFINITE);
-@@ -160,6 +116,7 @@
+         DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
+@@ -97,7 +93,6 @@
+     }
+ 
+     @Nullable
+-    @SideOnly(Side.CLIENT)
+     public static NBTTagCompound read(File fileIn) throws IOException
+     {
+         if (!fileIn.exists())
+@@ -160,6 +155,7 @@
      private static NBTBase read(DataInput input, int depth, NBTSizeTracker accounter) throws IOException
      {
          byte b0 = input.readByte();
@@ -73,7 +41,7 @@
  
          if (b0 == 0)
          {
-@@ -167,7 +124,8 @@
+@@ -167,7 +163,8 @@
          }
          else
          {
@@ -83,53 +51,3 @@
              NBTBase nbtbase = NBTBase.create(b0);
  
              try
-@@ -179,9 +137,48 @@
-             {
-                 CrashReport crashreport = CrashReport.makeCrashReport(ioexception, "Loading NBT data");
-                 CrashReportCategory crashreportcategory = crashreport.makeCategory("NBT Tag");
--                crashreportcategory.addCrashSection("Tag type", b0);
-+                crashreportcategory.addCrashSection("Tag type", Byte.valueOf(b0));
-                 throw new ReportedException(crashreport);
-             }
-+        }
-+    }
-+
-+    public static void write(NBTTagCompound compound, File fileIn) throws IOException
-+    {
-+        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
-+
-+        try
-+        {
-+            write(compound, dataoutputstream);
-+        }
-+        finally
-+        {
-+            dataoutputstream.close();
-+        }
-+    }
-+
-+    @Nullable
-+    public static NBTTagCompound read(File fileIn) throws IOException
-+    {
-+        if (!fileIn.exists())
-+        {
-+            return null;
-+        }
-+        else
-+        {
-+            DataInputStream datainputstream = new DataInputStream(new FileInputStream(fileIn));
-+            NBTTagCompound nbttagcompound;
-+
-+            try
-+            {
-+                nbttagcompound = read(datainputstream, NBTSizeTracker.INFINITE);
-+            }
-+            finally
-+            {
-+                datainputstream.close();
-+            }
-+
-+            return nbttagcompound;
-         }
-     }
- }

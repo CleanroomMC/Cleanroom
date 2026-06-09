@@ -2,6 +2,7 @@ package com.cleanroommc.gradle.helpers.tasks
 
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
+import org.gradle.api.artifacts.Configuration
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -47,7 +48,7 @@ class Util {
 		return ret
 	}
 	
-	static def getArtifacts(project, config, classifiers) {
+	static def getArtifacts(Configuration config, boolean classifiers) {
 		def ret = [:]
 		config.resolvedConfiguration.resolvedArtifacts.each {
 			def art = [
@@ -212,7 +213,7 @@ class Util {
 		def dep = project.dependencies.create(artifact)
 		cfg.dependencies.add(dep)
 		def files = cfg.resolve()
-		return getArtifacts(project, cfg, true)
+		return getArtifacts(cfg, true)
 	}
 	
 	private static boolean checkExists(String url) {

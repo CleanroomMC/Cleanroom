@@ -1,6 +1,6 @@
 --- before/net/minecraft/creativetab/CreativeTabs.java
 +++ after/net/minecraft/creativetab/CreativeTabs.java
-@@ -163,8 +163,22 @@
+@@ -157,8 +157,22 @@
      private EnumEnchantmentType[] enchantmentTypes = new EnumEnchantmentType[0];
      private ItemStack icon;
  
@@ -23,7 +23,7 @@
          this.index = index;
          this.tabLabel = label;
          this.icon = ItemStack.EMPTY;
-@@ -242,12 +256,20 @@
+@@ -236,12 +250,20 @@
      @SideOnly(Side.CLIENT)
      public int getColumn()
      {
@@ -44,7 +44,7 @@
          return this.index < 6;
      }
  
-@@ -291,5 +313,51 @@
+@@ -285,5 +307,51 @@
          {
              item.getSubItems(this, p_78018_1_);
          }

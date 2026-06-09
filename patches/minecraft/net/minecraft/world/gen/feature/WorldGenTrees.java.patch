@@ -1,60 +1,29 @@
 --- before/net/minecraft/world/gen/feature/WorldGenTrees.java
 +++ after/net/minecraft/world/gen/feature/WorldGenTrees.java
-@@ -19,10 +19,7 @@
- public class WorldGenTrees extends WorldGenAbstractTree
- {
-     private static final IBlockState DEFAULT_TRUNK = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK);
--    private static final IBlockState DEFAULT_LEAF = Blocks.LEAVES
--                .getDefaultState()
--                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK)
--                .withProperty(BlockLeaves.CHECK_DECAY, false);
-+    private static final IBlockState DEFAULT_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-     private final int minTreeHeight;
-     private final boolean vinesGrow;
-     private final IBlockState metaWood;
-@@ -42,15 +39,14 @@
-         this.vinesGrow = growVines;
-     }
- 
--    @Override
-     public boolean generate(World worldIn, Random rand, BlockPos position)
-     {
+@@ -48,7 +48,7 @@
          int i = rand.nextInt(3) + this.minTreeHeight;
          boolean flag = true;
  
 -        if (position.getY() >= 1 && position.getY() + i + 1 <= 256)
 +        if (position.getY() >= 1 && position.getY() + i + 1 <= worldIn.getHeight())
          {
--            for (int j = position.getY(); j <= position.getY() + 1 + i; j++)
-+            for (int j = position.getY(); j <= position.getY() + 1 + i; ++j)
+             for (int j = position.getY(); j <= position.getY() + 1 + i; j++)
              {
-                 int k = 1;
- 
-@@ -66,15 +62,18 @@
- 
-                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
- 
--                for (int l = position.getX() - k; l <= position.getX() + k && flag; l++)
-+                for (int l = position.getX() - k; l <= position.getX() + k && flag; ++l)
+@@ -70,11 +70,11 @@
                  {
--                    for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; i1++)
-+                    for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1)
+                     for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; i1++)
                      {
 -                        if (j < 0 || j >= 256)
-+                        if (j >= 0 && j < worldIn.getHeight())
-                         {
--                            flag = false;
-+                            if (!this.isReplaceable(worldIn,blockpos$mutableblockpos.setPos(l, j, i1)))
-+                            {
-+                                flag = false;
-+                            }
-                         }
--                        else if (!this.canGrowInto(worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, j, i1)).getBlock()))
-+                        else
++                        if (j < 0 || j >= worldIn.getHeight())
                          {
                              flag = false;
                          }
-@@ -88,34 +87,33 @@
+-                        else if (!this.canGrowInto(worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, j, i1)).getBlock()))
++                        else if (!this.isReplaceable(worldIn,blockpos$mutableblockpos.setPos(l, j, i1)))
+                         {
+                             flag = false;
+                         }
+@@ -88,12 +88,12 @@
              }
              else
              {
@@ -63,29 +32,15 @@
  
 -                if ((block == Blocks.GRASS || block == Blocks.DIRT || block == Blocks.FARMLAND)
 -                        && position.getY() < 256 - i - 1)
-+                if (state.getBlock().canSustainPlant(state, worldIn, position.down(), net.minecraft.util.EnumFacing.UP, (net.minecraft.block.BlockSapling)Blocks.SAPLING) && position.getY() < worldIn.getHeight() - i - 1)
++                if (state.getBlock().canSustainPlant(state, worldIn, position.down(), net.minecraft.util.EnumFacing.UP, (net.minecraft.block.BlockSapling)Blocks.SAPLING)
++                        && position.getY() < worldIn.getHeight() - i - 1)
                  {
 -                    this.setDirtAt(worldIn, position.down());
 +                    state.getBlock().onPlantGrow(state, worldIn, position.down(), position);
                      int k2 = 3;
                      int l2 = 0;
  
--                    for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; i3++)
-+                    for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3)
-                     {
-                         int i4 = i3 - (position.getY() + i);
-                         int j1 = 1 - i4 / 2;
- 
--                        for (int k1 = position.getX() - j1; k1 <= position.getX() + j1; k1++)
-+                        for (int k1 = position.getX() - j1; k1 <= position.getX() + j1; ++k1)
-                         {
-                             int l1 = k1 - position.getX();
- 
--                            for (int i2 = position.getZ() - j1; i2 <= position.getZ() + j1; i2++)
-+                            for (int i2 = position.getZ() - j1; i2 <= position.getZ() + j1; ++i2)
-                             {
-                                 int j2 = i2 - position.getZ();
- 
+@@ -113,9 +113,9 @@
                                  if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0)
                                  {
                                      BlockPos blockpos = new BlockPos(k1, i3, i2);
@@ -97,12 +52,9 @@
                                      {
                                          this.setBlockAndNotifyAdequately(worldIn, blockpos, this.metaLeaves);
                                      }
-@@ -124,11 +122,12 @@
-                         }
-                     }
+@@ -126,9 +126,10 @@
  
--                    for (int j3 = 0; j3 < i; j3++)
-+                    for (int j3 = 0; j3 < i; ++j3)
+                     for (int j3 = 0; j3 < i; j3++)
                      {
 -                        Material material1 = worldIn.getBlockState(position.up(j3)).getMaterial();
 +                        BlockPos upN = position.up(j3);
@@ -113,22 +65,7 @@
                          {
                              this.setBlockAndNotifyAdequately(worldIn, position.up(j3), this.metaWood);
  
-@@ -159,41 +158,42 @@
- 
-                     if (this.vinesGrow)
-                     {
--                        for (int k3 = position.getY() - 3 + i; k3 <= position.getY() + i; k3++)
-+                        for (int k3 = position.getY() - 3 + i; k3 <= position.getY() + i; ++k3)
-                         {
-                             int j4 = k3 - (position.getY() + i);
-                             int k4 = 2 - j4 / 2;
-                             BlockPos.MutableBlockPos blockpos$mutableblockpos1 = new BlockPos.MutableBlockPos();
- 
--                            for (int l4 = position.getX() - k4; l4 <= position.getX() + k4; l4++)
-+                            for (int l4 = position.getX() - k4; l4 <= position.getX() + k4; ++l4)
-                             {
--                                for (int i5 = position.getZ() - k4; i5 <= position.getZ() + k4; i5++)
-+                                for (int i5 = position.getZ() - k4; i5 <= position.getZ() + k4; ++i5)
+@@ -171,29 +172,30 @@
                                  {
                                      blockpos$mutableblockpos1.setPos(l4, k3, i5);
  
@@ -164,48 +101,7 @@
                                          {
                                              this.addHangingVine(worldIn, blockpos1, BlockVine.NORTH);
                                          }
-@@ -204,19 +204,14 @@
- 
-                         if (rand.nextInt(5) == 0 && i > 5)
-                         {
--                            for (int l3 = 0; l3 < 2; l3++)
-+                            for (int l3 = 0; l3 < 2; ++l3)
-                             {
-                                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
-                                 {
-                                     if (rand.nextInt(4 - l3) == 0)
-                                     {
-                                         EnumFacing enumfacing1 = enumfacing.getOpposite();
--                                        this.placeCocoa(
--                                            worldIn,
--                                            rand.nextInt(3),
--                                            position.add(enumfacing1.getXOffset(), i - 5 + l3, enumfacing1.getZOffset()),
--                                            enumfacing
--                                        );
-+                                        this.placeCocoa(worldIn, rand.nextInt(3), position.add(enumfacing1.getXOffset(), i - 5 + l3, enumfacing1.getZOffset()), enumfacing);
-                                     }
-                                 }
-                             }
-@@ -239,16 +234,12 @@
- 
-     private void placeCocoa(World worldIn, int p_181652_2_, BlockPos pos, EnumFacing side)
-     {
--        this.setBlockAndNotifyAdequately(
--            worldIn,
--            pos,
--            Blocks.COCOA.getDefaultState().withProperty(BlockCocoa.AGE, p_181652_2_).withProperty(BlockCocoa.FACING, side)
--        );
-+        this.setBlockAndNotifyAdequately(worldIn, pos, Blocks.COCOA.getDefaultState().withProperty(BlockCocoa.AGE, Integer.valueOf(p_181652_2_)).withProperty(BlockCocoa.FACING, side));
-     }
- 
-     private void addVine(World worldIn, BlockPos pos, PropertyBool prop)
-     {
--        this.setBlockAndNotifyAdequately(worldIn, pos, Blocks.VINE.getDefaultState().withProperty(prop, true));
-+        this.setBlockAndNotifyAdequately(worldIn, pos, Blocks.VINE.getDefaultState().withProperty(prop, Boolean.valueOf(true)));
-     }
- 
-     private void addHangingVine(World worldIn, BlockPos pos, PropertyBool prop)
-@@ -256,7 +247,7 @@
+@@ -256,7 +258,7 @@
          this.addVine(worldIn, pos, prop);
          int i = 4;
  

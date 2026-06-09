@@ -11,7 +11,7 @@
 +        if (false && worldIn.provider.hasSkyLight() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE)
          {
              int i = Math.max(0, server.getSpawnRadius(worldIn));
-             int j = MathHelper.floor(worldIn.getWorldBorder().getClosestDistance((double)blockpos.getX(), (double)blockpos.getZ()));
+             int j = MathHelper.floor(worldIn.getWorldBorder().getClosestDistance(blockpos.getX(), blockpos.getZ()));
 @@ -333,7 +333,7 @@
  
          this.openContainer.detectAndSendChanges();

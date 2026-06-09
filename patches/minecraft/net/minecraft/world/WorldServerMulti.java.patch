@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/WorldServerMulti.java
 +++ after/net/minecraft/world/WorldServerMulti.java
-@@ -11,57 +11,51 @@
+@@ -11,12 +11,13 @@
  public class WorldServerMulti extends WorldServer
  {
      private final WorldServer delegate;
@@ -13,38 +13,9 @@
 -        delegate.getWorldBorder().addListener(new IBorderListener()
 +        this.borderListener = new IBorderListener()
          {
--            @Override
+             @Override
              public void onSizeChanged(WorldBorder border, double newSize)
-             {
-                 WorldServerMulti.this.getWorldBorder().setTransition(newSize);
-             }
--            @Override
-             public void onTransitionStarted(WorldBorder border, double oldSize, double newSize, long time)
-             {
-                 WorldServerMulti.this.getWorldBorder().setTransition(oldSize, newSize, time);
-             }
--            @Override
-             public void onCenterChanged(WorldBorder border, double x, double z)
-             {
-                 WorldServerMulti.this.getWorldBorder().setCenter(x, z);
-             }
--            @Override
-             public void onWarningTimeChanged(WorldBorder border, int newTime)
-             {
-                 WorldServerMulti.this.getWorldBorder().setWarningTime(newTime);
-             }
--            @Override
-             public void onWarningDistanceChanged(WorldBorder border, int newDistance)
-             {
-                 WorldServerMulti.this.getWorldBorder().setWarningDistance(newDistance);
-             }
--            @Override
-             public void onDamageAmountChanged(WorldBorder border, double newAmount)
-             {
-                 WorldServerMulti.this.getWorldBorder().setDamageAmount(newAmount);
-             }
--            @Override
-             public void onDamageBufferChanged(WorldBorder border, double newSize)
+@@ -53,12 +54,14 @@
              {
                  WorldServerMulti.this.getWorldBorder().setDamageBuffer(newSize);
              }
@@ -53,17 +24,14 @@
 +        this.delegate.getWorldBorder().addListener(this.borderListener);
      }
  
--    @Override
+     @Override
      protected void saveLevel() throws MinecraftException
      {
 +        this.perWorldStorage.saveAllData();
      }
  
--    @Override
-     public World init()
-     {
-         this.mapStorage = this.delegate.getMapStorage();
-@@ -69,12 +63,12 @@
+     @Override
+@@ -69,12 +72,12 @@
          this.lootTable = this.delegate.getLootTableManager();
          this.advancementManager = this.delegate.getAdvancementManager();
          String s = VillageCollection.fileNameForProvider(this.provider);
@@ -78,7 +46,7 @@
          }
          else
          {
-@@ -82,7 +76,16 @@
+@@ -82,7 +85,16 @@
              this.villageCollection.setWorldsForAll(this);
          }
  

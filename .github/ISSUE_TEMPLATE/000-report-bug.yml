@@ -14,8 +14,8 @@ body:
     id: version
     attributes:
       label: Cleanroom Version
-      description: "What version of the Cleanroom are you using?"
-      placeholder: "Example: 0.2.4-alpha"
+      description: "What version of the Cleanroom are you using? (You need 25+ on 0.5.x and later)"
+      placeholder: "Example: 0.5.4-alpha"
     validations:
       required: true
   - type: dropdown
@@ -30,7 +30,8 @@ body:
         - Java 23
         - Java 24
         - Java 25
-        - Java 26 (Early Access)
+        - Java 26
+        - Java 27 (Early Access)
         - Other (Please Specify)
     validations:
       required: true

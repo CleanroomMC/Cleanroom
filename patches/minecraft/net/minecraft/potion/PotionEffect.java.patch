@@ -29,49 +29,7 @@
          return this.potion;
      }
  
-@@ -135,7 +143,6 @@
-         return this.potion.getName();
-     }
- 
--    @Override
-     public String toString()
-     {
-         String s;
-@@ -162,7 +169,6 @@
-         return s;
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (this == p_equals_1_)
-@@ -176,22 +182,18 @@
-         else
-         {
-             PotionEffect potioneffect = (PotionEffect)p_equals_1_;
--            return this.duration == potioneffect.duration
--                   && this.amplifier == potioneffect.amplifier
--                   && this.isSplashPotion == potioneffect.isSplashPotion
--                   && this.isAmbient == potioneffect.isAmbient
--                   && this.potion.equals(potioneffect.potion);
-+            return this.duration == potioneffect.duration && this.amplifier == potioneffect.amplifier && this.isSplashPotion == potioneffect.isSplashPotion && this.isAmbient == potioneffect.isAmbient && this.potion.equals(potioneffect.potion);
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         int i = this.potion.hashCode();
-         i = 31 * i + this.duration;
-         i = 31 * i + this.amplifier;
-         i = 31 * i + (this.isSplashPotion ? 1 : 0);
--        return 31 * i + (this.isAmbient ? 1 : 0);
-+        i = 31 * i + (this.isAmbient ? 1 : 0);
-+        return i;
-     }
- 
-     public NBTTagCompound writeCustomPotionEffectToNBT(NBTTagCompound nbt)
-@@ -201,12 +203,13 @@
+@@ -201,12 +209,13 @@
          nbt.setInteger("Duration", this.getDuration());
          nbt.setBoolean("Ambient", this.getIsAmbient());
          nbt.setBoolean("ShowParticles", this.doesShowParticles());
@@ -86,7 +44,7 @@
          Potion potion = Potion.getPotionById(i);
  
          if (potion == null)
-@@ -225,7 +228,7 @@
+@@ -225,7 +234,7 @@
                  flag1 = nbt.getBoolean("ShowParticles");
              }
  
@@ -95,36 +53,18 @@
          }
      }
  
-@@ -235,24 +238,96 @@
-         this.isPotionDurationMax = maxDuration;
-     }
- 
--    @SideOnly(Side.CLIENT)
--    public boolean getIsPotionDurationMax()
--    {
--        return this.isPotionDurationMax;
--    }
--
-     public int compareTo(PotionEffect p_compareTo_1_)
-     {
-         int i = 32147;
--        return (this.getDuration() <= 32147 || p_compareTo_1_.getDuration() <= 32147) && (!this.getIsAmbient() || !p_compareTo_1_.getIsAmbient())
--               ? ComparisonChain.start()
--               .compare(this.getIsAmbient(), p_compareTo_1_.getIsAmbient())
--               .compare(this.getDuration(), p_compareTo_1_.getDuration())
+@@ -248,11 +257,92 @@
+                ? ComparisonChain.start()
+                .compare(this.getIsAmbient(), p_compareTo_1_.getIsAmbient())
+                .compare(this.getDuration(), p_compareTo_1_.getDuration())
 -               .compare(this.getPotion().getLiquidColor(), p_compareTo_1_.getPotion().getLiquidColor())
--               .result()
--               : ComparisonChain.start()
--               .compare(this.getIsAmbient(), p_compareTo_1_.getIsAmbient())
++               .compare(this.getPotion().getGuiSortColor(this), p_compareTo_1_.getPotion().getGuiSortColor(p_compareTo_1_))
+                .result()
+                : ComparisonChain.start()
+                .compare(this.getIsAmbient(), p_compareTo_1_.getIsAmbient())
 -               .compare(this.getPotion().getLiquidColor(), p_compareTo_1_.getPotion().getLiquidColor())
--               .result();
-+        return (this.getDuration() <= 32147 || p_compareTo_1_.getDuration() <= 32147) && (!this.getIsAmbient() || !p_compareTo_1_.getIsAmbient()) ? ComparisonChain.start().compare(Boolean.valueOf(this.getIsAmbient()), Boolean.valueOf(p_compareTo_1_.getIsAmbient())).compare(this.getDuration(), p_compareTo_1_.getDuration()).compare(this.getPotion().getGuiSortColor(this), p_compareTo_1_.getPotion().getGuiSortColor(p_compareTo_1_)).result() : ComparisonChain.start().compare(Boolean.valueOf(this.getIsAmbient()), Boolean.valueOf(p_compareTo_1_.getIsAmbient())).compare(this.getPotion().getGuiSortColor(this), p_compareTo_1_.getPotion().getGuiSortColor(p_compareTo_1_)).result();
-+    }
-+
-+    @SideOnly(Side.CLIENT)
-+    public boolean getIsPotionDurationMax()
-+    {
-+        return this.isPotionDurationMax;
++               .compare(this.getPotion().getGuiSortColor(this), p_compareTo_1_.getPotion().getGuiSortColor(p_compareTo_1_))
+                .result();
 +    }
 +
 +    /* ======================================== FORGE START =====================================*/

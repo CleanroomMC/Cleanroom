@@ -1,17 +1,7 @@
 --- before/net/minecraft/world/storage/WorldInfo.java
 +++ after/net/minecraft/world/storage/WorldInfo.java
-@@ -56,15 +56,16 @@
-     private boolean difficultyLocked;
-     private double borderCenterX;
-     private double borderCenterZ;
--    private double borderSize = 6.0E7;
-+    private double borderSize = 6.0E7D;
-     private long borderSizeLerpTime;
-     private double borderSizeLerpTarget;
--    private double borderSafeZone = 5.0;
--    private double borderDamagePerBlock = 0.2;
-+    private double borderSafeZone = 5.0D;
-+    private double borderDamagePerBlock = 0.2D;
+@@ -63,8 +63,9 @@
+     private double borderDamagePerBlock = 0.2;
      private int borderWarningDistance = 5;
      private int borderWarningTime = 15;
 -    private final Map<DimensionType, NBTTagCompound> dimensionData = Maps.newEnumMap(DimensionType.class);
@@ -21,15 +11,7 @@
  
      protected WorldInfo()
      {
-@@ -74,7 +75,6 @@
-     {
-         fixer.registerWalker(FixTypes.LEVEL, new IDataWalker()
-         {
--            @Override
-             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
-             {
-                 if (compound.hasKey("Player", 10))
-@@ -252,7 +252,7 @@
+@@ -252,7 +253,7 @@
  
              for (String s : nbttagcompound1.getKeySet())
              {
@@ -38,15 +20,15 @@
              }
          }
      }
-@@ -367,6 +367,7 @@
+@@ -367,6 +368,7 @@
          nbt.setDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
-         nbt.setDouble("BorderWarningBlocks", (double)this.borderWarningDistance);
-         nbt.setDouble("BorderWarningTime", (double)this.borderWarningTime);
+         nbt.setDouble("BorderWarningBlocks", this.borderWarningDistance);
+         nbt.setDouble("BorderWarningTime", this.borderWarningTime);
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
  
          if (this.difficulty != null)
          {
-@@ -377,9 +378,10 @@
+@@ -377,9 +379,10 @@
          nbt.setTag("GameRules", this.gameRules.writeToNBT());
          NBTTagCompound nbttagcompound1 = new NBTTagCompound();
  
@@ -59,31 +41,7 @@
          }
  
          nbt.setTag("DimensionData", nbttagcompound1);
-@@ -443,17 +445,17 @@
-         this.spawnY = y;
-     }
- 
--    @SideOnly(Side.CLIENT)
--    public void setSpawnZ(int z)
--    {
--        this.spawnZ = z;
--    }
--
-     public void setWorldTotalTime(long time)
-     {
-         this.totalTime = time;
-     }
- 
-+    @SideOnly(Side.CLIENT)
-+    public void setSpawnZ(int z)
-+    {
-+        this.spawnZ = z;
-+    }
-+
-     public void setWorldTime(long time)
-     {
-         this.worldTime = time;
-@@ -709,6 +711,7 @@
+@@ -709,6 +712,7 @@
  
      public void setDifficulty(EnumDifficulty newDifficulty)
      {
@@ -91,94 +49,11 @@
          this.difficulty = newDifficulty;
      }
  
-@@ -731,22 +734,13 @@
-                 return String.valueOf(WorldInfo.this.getSeed());
-             }
-         });
--        category.addDetail(
--            "Level generator",
--            new ICrashReportDetail<String>()
-+        category.addDetail("Level generator", new ICrashReportDetail<String>()
-         {
-             public String call() throws Exception
-             {
--                return String.format(
--                           "ID %02d - %s, ver %d. Features enabled: %b",
--                           WorldInfo.this.terrainType.getId(),
--                           WorldInfo.this.terrainType.getName(),
--                           WorldInfo.this.terrainType.getVersion(),
--                           WorldInfo.this.mapFeaturesEnabled
--                       );
-+                return String.format("ID %02d - %s, ver %d. Features enabled: %b", WorldInfo.this.terrainType.getId(), WorldInfo.this.terrainType.getName(), WorldInfo.this.terrainType.getVersion(), WorldInfo.this.mapFeaturesEnabled);
-             }
--        }
--        );
-+        });
-         category.addDetail("Level generator options", new ICrashReportDetail<String>()
-         {
-             public String call() throws Exception
-@@ -792,56 +786,70 @@
-                             s = "Anvil";
-                     }
-                 }
--                catch (Throwable throwable)
-+                catch (Throwable var3)
-                 {
-+                    ;
-                 }
- 
-                 return String.format("0x%05X - %s", WorldInfo.this.saveVersion, s);
-             }
-         });
--        category.addDetail(
--            "Level weather",
--            new ICrashReportDetail<String>()
--        {
--            public String call() throws Exception
--            {
--                return String.format(
--                           "Rain time: %d (now: %b), thunder time: %d (now: %b)",
--                           WorldInfo.this.rainTime,
--                           WorldInfo.this.raining,
--                           WorldInfo.this.thunderTime,
--                           WorldInfo.this.thundering
--                       );
--            }
--        }
--        );
--        category.addDetail(
--            "Level game mode",
--            new ICrashReportDetail<String>()
--        {
--            public String call() throws Exception
--            {
--                return String.format(
--                           "Game mode: %s (ID %d). Hardcore: %b. Cheats: %b",
--                           WorldInfo.this.gameType.getName(),
--                           WorldInfo.this.gameType.getID(),
--                           WorldInfo.this.hardcore,
--                           WorldInfo.this.allowCommands
--                       );
--            }
--        }
--        );
--    }
+@@ -832,16 +836,47 @@
+         }
+         );
+     }
 -
-+        category.addDetail("Level weather", new ICrashReportDetail<String>()
-+        {
-+            public String call() throws Exception
-+            {
-+                return String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", WorldInfo.this.rainTime, WorldInfo.this.raining, WorldInfo.this.thunderTime, WorldInfo.this.thundering);
-+            }
-+        });
-+        category.addDetail("Level game mode", new ICrashReportDetail<String>()
-+        {
-+            public String call() throws Exception
-+            {
-+                return String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", WorldInfo.this.gameType.getName(), WorldInfo.this.gameType.getID(), WorldInfo.this.hardcore, WorldInfo.this.allowCommands);
-+            }
-+        });
-+    }
 +    /**
 +     * Allow access to additional mod specific world based properties
 +     * Used by FML to store mod list associated with a world, and maybe an id map

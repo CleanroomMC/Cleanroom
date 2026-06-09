@@ -1,36 +1,11 @@
 --- before/net/minecraft/world/gen/feature/WorldGenGlowStone2.java
 +++ after/net/minecraft/world/gen/feature/WorldGenGlowStone2.java
-@@ -9,7 +9,6 @@
- 
- public class WorldGenGlowStone2 extends WorldGenerator
- {
--    @Override
-     public boolean generate(World worldIn, Random rand, BlockPos position)
-     {
-         if (!worldIn.isAirBlock(position))
-@@ -24,13 +23,11 @@
-         {
-             worldIn.setBlockState(position, Blocks.GLOWSTONE.getDefaultState(), 2);
- 
--            for (int i = 0; i < 1500; i++)
-+            for (int i = 0; i < 1500; ++i)
-             {
--                BlockPos blockpos = position.add(
--                                        rand.nextInt(8) - rand.nextInt(8), -rand.nextInt(12), rand.nextInt(8) - rand.nextInt(8)
--                                    );
-+                BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), -rand.nextInt(12), rand.nextInt(8) - rand.nextInt(8));
+@@ -30,7 +30,7 @@
+                                         rand.nextInt(8) - rand.nextInt(8), -rand.nextInt(12), rand.nextInt(8) - rand.nextInt(8)
+                                     );
  
 -                if (worldIn.getBlockState(blockpos).getMaterial() == Material.AIR)
 +                if (worldIn.isAirBlock(blockpos))
                  {
                      int j = 0;
  
-@@ -38,7 +35,7 @@
-                     {
-                         if (worldIn.getBlockState(blockpos.offset(enumfacing)).getBlock() == Blocks.GLOWSTONE)
-                         {
--                            j++;
-+                            ++j;
-                         }
- 
-                         if (j > 1)

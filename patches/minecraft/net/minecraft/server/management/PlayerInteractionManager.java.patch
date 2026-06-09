@@ -1,26 +1,6 @@
 --- before/net/minecraft/server/management/PlayerInteractionManager.java
 +++ after/net/minecraft/server/management/PlayerInteractionManager.java
-@@ -50,10 +50,7 @@
-         this.gameType = type;
-         type.configurePlayerCapabilities(this.player.capabilities);
-         this.player.sendPlayerAbilities();
--        this.player
--        .server
--        .getPlayerList()
--        .sendPacketToAllPlayers(new SPacketPlayerListItem(SPacketPlayerListItem.Action.UPDATE_GAME_MODE, this.player));
-+        this.player.server.getPlayerList().sendPacketToAllPlayers(new SPacketPlayerListItem(SPacketPlayerListItem.Action.UPDATE_GAME_MODE, new EntityPlayerMP[] {this.player}));
-         this.world.updateAllPlayersSleepingFlag();
-     }
- 
-@@ -84,14 +81,14 @@
- 
-     public void updateBlockRemoving()
-     {
--        this.curblockDamage++;
-+        ++this.curblockDamage;
- 
-         if (this.receivedFinishDiggingPacket)
-         {
+@@ -91,7 +91,7 @@
              int i = this.curblockDamage - this.initialBlockDamage;
              IBlockState iblockstate = this.world.getBlockState(this.delayedDestroyPos);
  
@@ -29,7 +9,7 @@
              {
                  this.receivedFinishDiggingPacket = false;
              }
-@@ -117,7 +114,7 @@
+@@ -117,7 +117,7 @@
          {
              IBlockState iblockstate1 = this.world.getBlockState(this.destroyPos);
  
@@ -38,16 +18,16 @@
              {
                  this.world.sendBlockBreakProgress(this.player.getEntityId(), this.destroyPos, -1);
                  this.durabilityRemainingOnBlock = -1;
-@@ -126,7 +123,7 @@
+@@ -126,7 +126,7 @@
              else
              {
                  int k = this.curblockDamage - this.initialDamage;
--                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.player, this.player.world, this.delayedDestroyPos) * (float)(k + 1);
-+                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.player, this.player.world, this.destroyPos) * (float)(k + 1); // Forge: Fix network break progress using wrong position
+-                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.player, this.player.world, this.delayedDestroyPos) * (k + 1);
++                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.player, this.player.world, this.destroyPos) * (k + 1); // Forge: Fix network break progress using wrong position
                  int l = (int)(f1 * 10.0F);
  
                  if (l != this.durabilityRemainingOnBlock)
-@@ -140,9 +137,19 @@
+@@ -140,6 +140,16 @@
  
      public void onBlockClicked(BlockPos pos, EnumFacing side)
      {
@@ -63,12 +43,8 @@
 +
          if (this.isCreative())
          {
--            if (!this.world.extinguishFire(null, pos, side))
-+            if (!this.world.extinguishFire((EntityPlayer)null, pos, side))
-             {
-                 this.tryHarvestBlock(pos);
-             }
-@@ -175,17 +182,36 @@
+             if (!this.world.extinguishFire(null, pos, side))
+@@ -175,17 +185,36 @@
                  }
              }
  
@@ -83,7 +59,7 @@
 +                if (event.getUseBlock() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
 +                {
 +                    block.onBlockClicked(this.world, pos, this.player);
-+                    this.world.extinguishFire((EntityPlayer)null, pos, side);
++                    this.world.extinguishFire(null, pos, side);
 +                }
 +                else
 +                {
@@ -109,16 +85,19 @@
              {
                  this.tryHarvestBlock(pos);
              }
-@@ -207,7 +233,7 @@
+@@ -207,9 +236,9 @@
              int i = this.curblockDamage - this.initialDamage;
              IBlockState iblockstate = this.world.getBlockState(pos);
  
 -            if (iblockstate.getMaterial() != Material.AIR)
 +            if (!iblockstate.getBlock().isAir(iblockstate, world, pos))
              {
-                 float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, pos) * (float)(i + 1);
+-                float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, pos) * (i + 1);
++                float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, pos) * (float)(i + 1);
  
-@@ -236,9 +262,13 @@
+                 if (f >= 0.7F)
+                 {
+@@ -236,9 +265,13 @@
  
      private boolean removeBlock(BlockPos pos)
      {
@@ -134,7 +113,7 @@
  
          if (flag)
          {
-@@ -250,9 +280,8 @@
+@@ -250,9 +283,8 @@
  
      public boolean tryHarvestBlock(BlockPos pos)
      {
@@ -146,7 +125,7 @@
          {
              return false;
          }
-@@ -269,53 +298,41 @@
+@@ -269,53 +301,41 @@
              }
              else
              {
@@ -212,7 +191,7 @@
                  return flag1;
              }
          }
-@@ -333,8 +350,11 @@
+@@ -333,8 +353,11 @@
          }
          else
          {
@@ -224,7 +203,7 @@
              ActionResult<ItemStack> actionresult = stack.useItemRightClick(worldIn, player, hand);
              ItemStack itemstack = actionresult.getResult();
  
-@@ -362,6 +382,7 @@
+@@ -362,6 +385,7 @@
  
                  if (itemstack.isEmpty())
                  {
@@ -232,26 +211,7 @@
                      player.setHeldItem(hand, ItemStack.EMPTY);
                  }
  
-@@ -375,17 +396,7 @@
-         }
-     }
- 
--    public EnumActionResult processRightClickBlock(
--        EntityPlayer player,
--        World worldIn,
--        ItemStack stack,
--        EnumHand hand,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         if (this.gameType == GameType.SPECTATOR)
-         {
-@@ -417,14 +428,27 @@
+@@ -417,14 +441,27 @@
          }
          else
          {
@@ -284,7 +244,7 @@
                  }
              }
  
-@@ -452,16 +476,22 @@
+@@ -452,16 +489,22 @@
                  {
                      int j = stack.getMetadata();
                      int i = stack.getCount();
@@ -311,7 +271,7 @@
                  }
              }
          }
-@@ -470,5 +500,17 @@
+@@ -470,5 +513,17 @@
      public void setWorld(WorldServer serverWorld)
      {
          this.world = serverWorld;

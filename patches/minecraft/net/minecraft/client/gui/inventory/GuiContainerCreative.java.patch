@@ -229,7 +229,7 @@
          this.searchField.drawTextBox();
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 @@ -737,6 +824,14 @@
-             this.drawTexturedModalRect(i, j + (int)((float)(k - j - 17) * this.currentScroll), 232 + (this.needsScrollBars() ? 0 : 12), 0, 12, 15);
+             this.drawTexturedModalRect(i, j + (int)((k - j - 17) * this.currentScroll), 232 + (this.needsScrollBars() ? 0 : 12), 0, 12, 15);
          }
  
 +        if (creativetabs == null || creativetabs.getTabPage() != tabPage)

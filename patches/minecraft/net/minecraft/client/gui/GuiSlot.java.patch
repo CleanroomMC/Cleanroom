@@ -8,20 +8,20 @@
 -            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 -            float f = 32.0F;
 -            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
--            bufferbuilder.pos((double)this.left, (double)this.bottom, 0.0)
--            .tex((double)((float)this.left / 32.0F), (double)((float)(this.bottom + (int)this.amountScrolled) / 32.0F))
+-            bufferbuilder.pos(this.left, this.bottom, 0.0)
+-            .tex(this.left / 32.0F, (this.bottom + (int)this.amountScrolled) / 32.0F)
 -            .color(32, 32, 32, 255)
 -            .endVertex();
--            bufferbuilder.pos((double)this.right, (double)this.bottom, 0.0)
--            .tex((double)((float)this.right / 32.0F), (double)((float)(this.bottom + (int)this.amountScrolled) / 32.0F))
+-            bufferbuilder.pos(this.right, this.bottom, 0.0)
+-            .tex(this.right / 32.0F, (this.bottom + (int)this.amountScrolled) / 32.0F)
 -            .color(32, 32, 32, 255)
 -            .endVertex();
--            bufferbuilder.pos((double)this.right, (double)this.top, 0.0)
--            .tex((double)((float)this.right / 32.0F), (double)((float)(this.top + (int)this.amountScrolled) / 32.0F))
+-            bufferbuilder.pos(this.right, this.top, 0.0)
+-            .tex(this.right / 32.0F, (this.top + (int)this.amountScrolled) / 32.0F)
 -            .color(32, 32, 32, 255)
 -            .endVertex();
--            bufferbuilder.pos((double)this.left, (double)this.top, 0.0)
--            .tex((double)((float)this.left / 32.0F), (double)((float)(this.top + (int)this.amountScrolled) / 32.0F))
+-            bufferbuilder.pos(this.left, this.top, 0.0)
+-            .tex(this.left / 32.0F, (this.top + (int)this.amountScrolled) / 32.0F)
 -            .color(32, 32, 32, 255)
 -            .endVertex();
 -            tessellator.draw();
@@ -30,7 +30,7 @@
              int k = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
              int l = this.top + 4 - (int)this.amountScrolled;
  
-@@ -517,5 +498,31 @@
+@@ -491,5 +472,31 @@
      public int getSlotHeight()
      {
          return this.slotHeight;

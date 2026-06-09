@@ -1,14 +1,6 @@
 --- before/net/minecraft/item/crafting/CraftingManager.java
 +++ after/net/minecraft/item/crafting/CraftingManager.java
-@@ -6,6 +6,7 @@
- import com.google.gson.JsonParseException;
- import com.google.gson.JsonSyntaxException;
- import java.io.BufferedReader;
-+import java.io.Closeable;
- import java.io.IOException;
- import java.io.Reader;
- import java.net.URI;
-@@ -35,7 +36,7 @@
+@@ -35,7 +35,7 @@
  {
      private static final Logger LOGGER = LogManager.getLogger();
      private static int nextAvailableId;
@@ -17,111 +9,7 @@
  
      public static boolean init()
      {
-@@ -54,7 +55,7 @@
-             register("shulkerboxcoloring", new ShulkerBoxRecipes.ShulkerBoxColoring());
-             return parseJsonRecipes();
-         }
--        catch (Throwable throwable)
-+        catch (Throwable var1)
-         {
-             return false;
-         }
-@@ -63,18 +64,14 @@
-     private static boolean parseJsonRecipes()
-     {
-         FileSystem filesystem = null;
--        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-+        Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-+        boolean flag1;
- 
-         try
-         {
-             URL url = CraftingManager.class.getResource("/assets/.mcassetsroot");
- 
--            if (url == null)
--            {
--                LOGGER.error("Couldn't find .mcassetsroot");
--                return false;
--            }
--            else
-+            if (url != null)
-             {
-                 URI uri = url.toURI();
-                 Path path;
-@@ -88,7 +85,8 @@
-                     if (!"jar".equals(uri.getScheme()))
-                     {
-                         LOGGER.error("Unsupported scheme " + uri + " trying to list all recipes");
--                        return false;
-+                        boolean flag2 = false;
-+                        return flag2;
-                     }
- 
-                     filesystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
-@@ -110,18 +108,25 @@
- 
-                         try
-                         {
--                            bufferedreader = Files.newBufferedReader(path1);
--                            register(s, parseRecipeJson(JsonUtils.fromJson(gson, bufferedreader, JsonObject.class)));
--                        }
--                        catch (JsonParseException jsonparseexception)
--                        {
--                            LOGGER.error("Parsing error loading recipe " + resourcelocation, (Throwable)jsonparseexception);
--                            return false;
--                        }
--                        catch (IOException ioexception)
--                        {
--                            LOGGER.error("Couldn't read recipe " + resourcelocation + " from " + path1, (Throwable)ioexception);
--                            return false;
-+                            boolean flag;
-+
-+                            try
-+                            {
-+                                bufferedreader = Files.newBufferedReader(path1);
-+                                register(s, parseRecipeJson((JsonObject)JsonUtils.fromJson(gson, bufferedreader, JsonObject.class)));
-+                            }
-+                            catch (JsonParseException jsonparseexception)
-+                            {
-+                                LOGGER.error("Parsing error loading recipe " + resourcelocation, (Throwable)jsonparseexception);
-+                                flag = false;
-+                                return flag;
-+                            }
-+                            catch (IOException ioexception)
-+                            {
-+                                LOGGER.error("Couldn't read recipe " + resourcelocation + " from " + path1, (Throwable)ioexception);
-+                                flag = false;
-+                                return flag;
-+                            }
-                         }
-                         finally
-                         {
-@@ -132,16 +137,22 @@
- 
-                 return true;
-             }
-+
-+            LOGGER.error("Couldn't find .mcassetsroot");
-+            flag1 = false;
-         }
-         catch (IOException | URISyntaxException urisyntaxexception)
-         {
-             LOGGER.error("Couldn't get a list of all recipe files", (Throwable)urisyntaxexception);
--            return false;
-+            flag1 = false;
-+            return flag1;
-         }
-         finally
-         {
--            IOUtils.closeQuietly(filesystem);
-+            IOUtils.closeQuietly((Closeable)filesystem);
-         }
-+
-+        return flag1;
-     }
- 
-     private static IRecipe parseRecipeJson(JsonObject json)
-@@ -162,12 +173,14 @@
+@@ -162,12 +162,14 @@
          }
      }
  
@@ -138,19 +26,7 @@
      {
          if (REGISTRY.containsKey(name))
          {
-@@ -216,9 +229,9 @@
-             }
-         }
- 
--        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(craftMatrix.getSizeInventory(), ItemStack.EMPTY);
-+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(craftMatrix.getSizeInventory(), ItemStack.EMPTY);
- 
--        for (int i = 0; i < nonnulllist.size(); i++)
-+        for (int i = 0; i < nonnulllist.size(); ++i)
-         {
-             nonnulllist.set(i, craftMatrix.getStackInSlot(i));
-         }
-@@ -232,11 +245,13 @@
+@@ -232,11 +234,13 @@
          return REGISTRY.getObject(name);
      }
  

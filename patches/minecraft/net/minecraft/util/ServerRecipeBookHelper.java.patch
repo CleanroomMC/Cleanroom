@@ -1,14 +1,6 @@
 --- before/net/minecraft/util/ServerRecipeBookHelper.java
 +++ after/net/minecraft/util/ServerRecipeBookHelper.java
-@@ -2,6 +2,7 @@
- 
- import it.unimi.dsi.fastutil.ints.IntArrayList;
- import it.unimi.dsi.fastutil.ints.IntList;
-+import it.unimi.dsi.fastutil.ints.IntListIterator;
- import java.util.Iterator;
- import java.util.List;
- import javax.annotation.Nullable;
-@@ -54,6 +55,11 @@
+@@ -54,6 +54,11 @@
                  this.field_194335_f = ((ContainerPlayer)container).craftResult;
                  this.field_194336_g = ((ContainerPlayer)container).craftMatrix;
              }
@@ -20,72 +12,7 @@
  
              if (this.field_194335_f != null && this.field_194336_g != null)
              {
-@@ -63,7 +69,7 @@
-                     p_194327_1_.inventory.fillStackedContents(this.field_194331_b, false);
-                     this.field_194336_g.fillStackedContents(this.field_194331_b);
- 
--                    if (this.field_194331_b.canCraft(p_194327_2_, null))
-+                    if (this.field_194331_b.canCraft(p_194327_2_, (IntList)null))
-                     {
-                         this.func_194329_b();
-                     }
-@@ -83,7 +89,7 @@
-     {
-         InventoryPlayer inventoryplayer = this.field_194332_c.inventory;
- 
--        for (int i = 0; i < this.field_194336_g.getSizeInventory(); i++)
-+        for (int i = 0; i < this.field_194336_g.getSizeInventory(); ++i)
-         {
-             ItemStack itemstack = this.field_194336_g.getStackInSlot(i);
- 
-@@ -113,13 +119,13 @@
-     private void func_194329_b()
-     {
-         boolean flag = this.field_194333_d.matches(this.field_194336_g, this.field_194332_c.world);
--        int i = this.field_194331_b.getBiggestCraftableStack(this.field_194333_d, null);
-+        int i = this.field_194331_b.getBiggestCraftableStack(this.field_194333_d, (IntList)null);
- 
-         if (flag)
-         {
-             boolean flag1 = true;
- 
--            for (int j = 0; j < this.field_194336_g.getSizeInventory(); j++)
-+            for (int j = 0; j < this.field_194336_g.getSizeInventory(); ++j)
-             {
-                 ItemStack itemstack = this.field_194336_g.getStackInSlot(j);
- 
-@@ -141,9 +147,11 @@
-         if (this.field_194331_b.canCraft(this.field_194333_d, intlist, i1))
-         {
-             int j1 = i1;
-+            IntListIterator intlistiterator = intlist.iterator();
- 
--            for (int k : intlist)
-+            while (intlistiterator.hasNext())
-             {
-+                int k = ((Integer)intlistiterator.next()).intValue();
-                 int l = RecipeItemHelper.unpack(k).getMaxStackSize();
- 
-                 if (l < j1)
-@@ -172,7 +180,7 @@
-         {
-             i = 64;
- 
--            for (int j = 0; j < this.field_194336_g.getSizeInventory(); j++)
-+            for (int j = 0; j < this.field_194336_g.getSizeInventory(); ++j)
-             {
-                 ItemStack itemstack = this.field_194336_g.getStackInSlot(j);
- 
-@@ -184,7 +192,7 @@
- 
-             if (i < 64)
-             {
--                i++;
-+                ++i;
-             }
-         }
- 
-@@ -196,19 +204,19 @@
+@@ -196,11 +201,11 @@
          int i = this.field_194336_g.getWidth();
          int j = this.field_194336_g.getHeight();
  
@@ -101,47 +28,3 @@
          }
  
          int j1 = 1;
-         Iterator<Integer> iterator = p_194323_2_.iterator();
- 
--        for (int k = 0; k < this.field_194336_g.getWidth() && j != k; k++)
-+        for (int k = 0; k < this.field_194336_g.getWidth() && j != k; ++k)
-         {
--            for (int l = 0; l < this.field_194336_g.getHeight(); l++)
-+            for (int l = 0; l < this.field_194336_g.getHeight(); ++l)
-             {
-                 if (i == l || !iterator.hasNext())
-                 {
-@@ -217,20 +225,20 @@
-                 }
- 
-                 Slot slot = this.field_194337_h.get(j1);
--                ItemStack itemstack = RecipeItemHelper.unpack(iterator.next());
-+                ItemStack itemstack = RecipeItemHelper.unpack(((Integer)iterator.next()).intValue());
- 
-                 if (itemstack.isEmpty())
-                 {
--                    j1++;
-+                    ++j1;
-                 }
-                 else
-                 {
--                    for (int i1 = 0; i1 < p_194323_1_; i1++)
-+                    for (int i1 = 0; i1 < p_194323_1_; ++i1)
-                     {
-                         this.func_194325_a(slot, itemstack);
-                     }
- 
--                    j1++;
-+                    ++j1;
-                 }
-             }
- 
-@@ -279,7 +287,7 @@
-     {
-         InventoryPlayer inventoryplayer = this.field_194332_c.inventory;
- 
--        for (int i = 0; i < this.field_194336_g.getSizeInventory(); i++)
-+        for (int i = 0; i < this.field_194336_g.getSizeInventory(); ++i)
-         {
-             ItemStack itemstack = this.field_194336_g.getStackInSlot(i);
- 

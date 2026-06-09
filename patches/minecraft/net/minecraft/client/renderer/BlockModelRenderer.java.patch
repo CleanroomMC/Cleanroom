@@ -25,9 +25,9 @@
              {
                  int k = this.blockColors.colorMultiplier(stateIn, blockAccessIn, posIn, bakedquad.getTintIndex());
 @@ -308,10 +316,25 @@
-                 float f = (float)(k >> 16 & 0xFF) / 255.0F;
-                 float f1 = (float)(k >> 8 & 0xFF) / 255.0F;
-                 float f2 = (float)(k & 0xFF) / 255.0F;
+                 float f = (k >> 16 & 0xFF) / 255.0F;
+                 float f1 = (k >> 8 & 0xFF) / 255.0F;
+                 float f2 = (k & 0xFF) / 255.0F;
 +                if(bakedquad.shouldApplyDiffuseLighting())
 +                {
 +                    float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(bakedquad.getFace());

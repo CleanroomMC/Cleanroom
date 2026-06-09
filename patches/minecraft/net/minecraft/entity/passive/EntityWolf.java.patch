@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/passive/EntityWolf.java
 +++ after/net/minecraft/entity/passive/EntityWolf.java
-@@ -468,7 +468,7 @@
+@@ -466,7 +466,7 @@
  
              if (!this.world.isRemote)
              {
