@@ -7,7 +7,19 @@
  import com.google.common.base.Predicate;
  import com.google.common.base.Predicates;
  import net.minecraft.client.Minecraft;
-@@ -631,6 +632,7 @@
+@@ -603,6 +604,11 @@
+         return this.cursorPosition;
+     }
+ 
++    public int getLineScrollOffset()
++    {
++        return this.lineScrollOffset;
++    }
++
+     public boolean getEnableBackgroundDrawing()
+     {
+         return this.enableBackgroundDrawing;
+@@ -631,6 +637,7 @@
          }
  
          this.isFocused = isFocusedIn;
