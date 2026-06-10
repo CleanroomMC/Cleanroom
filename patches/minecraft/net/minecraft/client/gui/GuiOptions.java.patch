@@ -1,11 +1,33 @@
 --- before/net/minecraft/client/gui/GuiOptions.java
 +++ after/net/minecraft/client/gui/GuiOptions.java
-@@ -85,7 +85,7 @@
+@@ -61,7 +61,7 @@
+             i++;
+         }
+ 
+-        if (this.mc.world != null)
++        if (this.mc.world != null && !this.mc.player.canUseCommand(2, "gamerule"))
+         {
+             EnumDifficulty enumdifficulty = this.mc.world.getDifficulty();
+             this.difficultyButton = new GuiButton(
+@@ -85,7 +85,8 @@
                  this.difficultyButton.enabled = false;
              }
          }
 -        else
++        else if (this.mc.world != null && this.mc.player.canUseCommand(2, "gamerule")) this.buttonList.add(new GuiButton(107, this.width / 2 + 5, this.height / 6 - 12, 150, 20, I18n.format("fml.world_options")));
 +        else if (false) // removed realms button
          {
              this.buttonList
              .add(
+@@ -241,6 +242,11 @@
+             {
+                 this.mc.gameSettings.saveOptions();
+                 this.mc.displayGuiScreen(new GuiScreenOptionsSounds(this, this.settings));
++            }
++            if (button.id == 107)
++            {
++                this.mc.gameSettings.saveOptions();
++                this.mc.displayGuiScreen(new com.cleanroommc.client.gui.WorldOptionsGui(this));
+             }
+         }
+     }
