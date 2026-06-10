@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.14-alpha] - 2026-06-10
+### Bug Fixes
+- [`43bcf47`](https://github.com/CleanroomMC/Cleanroom/commit/43bcf475eb350be2ea6b9b8e10153d8ecbabe29e) - userdev jar is broken *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.13-alpha] - 2026-06-10
 ### Bug Fixes
 - [`8843e7b`](https://github.com/CleanroomMC/Cleanroom/commit/8843e7b991f3ce08a555d116469fe51fdcc08ec0) - Can't discover in-dev mod when multi-langs *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -62,3 +67,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.11-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.10-alpha...0.5.11-alpha
 [0.5.12-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.11-alpha...0.5.12-alpha
 [0.5.13-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.12-alpha...0.5.13-alpha
+[0.5.14-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.13-alpha...0.5.14-alpha
