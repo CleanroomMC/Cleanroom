@@ -851,7 +851,7 @@ tasks.register('installerJar', Zip) {
 // TODO: MDK Task
 
 userdevConfig {
-    if (gradle.startParameter.taskNames.any { it == 'installerJar' || it == 'build' }) {
+    if (gradle.startParameter.taskNames.any { it == 'installerJar' || it == 'build' || it == 'publish' || 'it' == 'userdevJar'}) {
         def artifacts = Util.getArtifacts(project.configurations.installer, true)
         artifacts.each { key, lib ->
             libraries.add(lib.name)
