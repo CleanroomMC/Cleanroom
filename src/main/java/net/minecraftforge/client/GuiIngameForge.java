@@ -59,7 +59,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjglx.opengl.GL11;
 
 /**
  * a REPLACEMENT of {@link net.minecraft.client.gui.GuiIngame}, there should be no need of using the original {@code GuiIngame}

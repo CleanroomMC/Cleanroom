@@ -1,0 +1,19 @@
+--- before/net/minecraft/client/renderer/GlStateManager.java
++++ after/net/minecraft/client/renderer/GlStateManager.java
+@@ -7,11 +7,11 @@
+ import javax.annotation.Nullable;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.BufferUtils;
+-import org.lwjgl.opengl.GL11;
+-import org.lwjgl.opengl.GL14;
+-import org.lwjgl.opengl.GLContext;
+-import org.lwjgl.util.vector.Quaternion;
++import org.lwjglx.BufferUtils;
++import org.lwjglx.opengl.GL11;
++import org.lwjglx.opengl.GL14;
++import org.lwjglx.opengl.GLContext;
++import org.lwjglx.util.vector.Quaternion;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GlStateManager

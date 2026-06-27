@@ -19,7 +19,7 @@
 
 package net.minecraftforge.common;
 
-import com.cleanroommc.common.CleanroomVersion;
+import com.cleanroommc.cleanroom.common.CleanroomVersion;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.common.Loader;
@@ -30,8 +30,6 @@ import net.minecraftforge.fml.common.eventhandler.EventBus;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.logging.log4j.Level;
 
 import com.google.common.collect.Lists;
 

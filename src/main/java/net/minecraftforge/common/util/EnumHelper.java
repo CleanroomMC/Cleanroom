@@ -23,7 +23,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-import com.cleanroommc.hackery.enums.EnumHackery;
+import com.cleanroommc.cleanroom.hackery.enums.EnumHackery;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 

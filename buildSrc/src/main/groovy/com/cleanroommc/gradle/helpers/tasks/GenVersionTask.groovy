@@ -14,7 +14,7 @@ abstract class GenVersionTask extends DefaultTask {
     @InputFile
     final File template = new File("${getProject().rootProject.projectDir}/templates/CleanroomVersion.java")
     @OutputFile
-    final File versionClass = new File("${getProject().rootProject.projectDir}/src/main/java/com/cleanroommc/common/CleanroomVersion.java")
+    final File versionClass = new File("${getProject().rootProject.projectDir}/src/main/java/com/cleanroommc/cleanroom/common/CleanroomVersion.java")
     @TaskAction
     void action() {
         versionClass.withWriter { def writer ->

@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/shader/ShaderUniform.java
++++ after/net/minecraft/client/shader/ShaderUniform.java
+@@ -8,8 +8,8 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.BufferUtils;
+-import org.lwjgl.util.vector.Matrix4f;
++import org.lwjglx.BufferUtils;
++import org.lwjglx.util.vector.Matrix4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ShaderUniform

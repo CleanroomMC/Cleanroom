@@ -38,7 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
-import com.cleanroommc.common.CleanroomVersion;
+import com.cleanroommc.cleanroom.common.CleanroomVersion;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.item.EntityItem;
@@ -124,7 +124,7 @@ public class FMLCommonHandler
         registerCrashCallable(new ICrashCallable() {
             @Override
             public String call() {
-                return com.cleanroommc.common.CleanroomVersion.BUILD_VERSION;
+                return CleanroomVersion.BUILD_VERSION;
             }
 
             @Override
