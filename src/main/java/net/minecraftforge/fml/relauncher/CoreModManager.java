@@ -184,6 +184,7 @@ public class CoreModManager {
 
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
     {
+        try {
         CoreModManager.mcDir = mcDir;
         CoreModManager.tweaker = tweaker;
 
@@ -270,6 +271,9 @@ public class CoreModManager {
             loadCoreMod(classLoader, coreModClassName, null);
         }
         discoverCoreMods(mcDir, classLoader);
+        } finally {
+            com.cleanroommc.common.PatchModPresentChecker.performCheck();
+        }
     }
 
     private static void findDerpMods(LaunchClassLoader classLoader, File modDir, File modDirVer)

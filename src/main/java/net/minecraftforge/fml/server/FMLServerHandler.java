@@ -99,6 +99,21 @@ public class FMLServerHandler implements IFMLSidedHandler
         server = minecraftServer;
         KirinoCommonCore.configEvent();
         Loader.instance().loadMods(injectedModContainers);
+
+        if (!com.cleanroommc.common.PatchModPresentChecker.isPatchModPresent()
+                && com.cleanroommc.common.PatchModPresentChecker.hasUserMods())
+        {
+            String text = "WARNING: Essential coremods missing!\n\n"
+                + "The following coremods were not found:\n"
+                + com.cleanroommc.common.PatchModPresentChecker.getMissingModsMessage()
+                + "\nCleanroom may crash or malfunction without them.\n\n"
+                + "Run the command /fml confirm to proceed, or /fml cancel to abort.";
+            if (!StartupQuery.confirm(text))
+            {
+                StartupQuery.abort();
+            }
+        }
+
         Loader.instance().preinitializeMods();
         KirinoServerCore.init();
     }

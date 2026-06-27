@@ -251,6 +251,23 @@ public class FMLClientHandler implements IFMLSidedHandler
             client.refreshResources();
         }
 
+        if (!hasError() && !com.cleanroommc.common.PatchModPresentChecker.isPatchModPresent()
+                && com.cleanroommc.common.PatchModPresentChecker.hasUserMods())
+        {
+            String warning = "WARNING: Essential coremods missing!\n\n"
+                + "The following coremods were not found:\n"
+                + com.cleanroommc.common.PatchModPresentChecker.getMissingModsMessage()
+                + "\nCleanroom may crash or malfunction without them.";
+
+            String prompt = "\nPress any key to continue, ESC to exit.";
+
+            if (!SplashProgress.confirm(warning, prompt))
+            {
+                SplashProgress.finish();
+                System.exit(0);
+            }
+        }
+
         try
         {
             Loader.instance().preinitializeMods();
