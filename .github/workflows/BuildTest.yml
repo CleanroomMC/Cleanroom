@@ -67,22 +67,6 @@ jobs:
       - name: Get version
         run: echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
 
-      - name: setup python
-        uses: actions/setup-python@v6.1.0
-        with:
-          python-version: '3.13'
-
-      - name: Generate MMC Pack
-        run: python main.py
-        working-directory: ./script/MMC-Builder
-        env:
-          PATH_TO_EXIST_INSTALLER: ../../projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-installer.jar
-          BRANCH: ${{ steps.branch-names.outputs.current_branch }}
-          VERSION: ${{ env.CLEANROOM_VERSION }}
-
-      - name: Copy MMC Pack
-        run: cp script/MMC-Builder/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
-
       - name: Upload Universal Jar
         uses: actions/upload-artifact@v7
         with:

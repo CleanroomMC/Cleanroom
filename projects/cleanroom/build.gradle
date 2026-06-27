@@ -1,6 +1,8 @@
 import com.cleanroommc.gradle.helpers.ProjectConstants
 import com.cleanroommc.gradle.helpers.tasks.GenVersionTask
+import com.cleanroommc.gradle.helpers.tasks.CreateMMCPackTask
 import com.cleanroommc.gradle.helpers.tasks.Util
+import com.palantir.gradle.gitversion.VersionDetails
 import groovy.json.JsonBuilder
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
@@ -826,6 +828,32 @@ tasks.register('installerJar', Zip) {
     }
 }
 
+def versionDetailsClosure = rootProject.extensions.extraProperties.get('versionDetails')
+def details = ((Closure<VersionDetails>) versionDetailsClosure).call()
+
+tasks.register('createMMCPack', CreateMMCPackTask) {
+    dependsOn launcherJson, universalJar
+    group = 'build'
+    description = 'Creates a MultiMC/Prism instance package for Cleanroom'
+
+    versionJson = launcherJson.output
+    templateDir = rootProject.layout.projectDirectory.dir('mmcpack-template')
+    universalJarFile = universalJar.archiveFile
+    cleanroomVersion = rootProject.version.toString()
+    isRelease = !rootProject.version.toString().contains('+')
+
+    def verStr = rootProject.version.toString()
+    def isRel = !verStr.contains('+')
+    def isCI = verStr.contains('.run.')
+    def suffix = ''
+    if (!isRel && !isCI) {
+        suffix = details.isCleanTag ? '-local' : '-dirty-local'
+    }
+    outputZip = layout.buildDirectory.file("libs/cleanroom-${verStr}${suffix}.zip")
+}
+
+publish.dependsOn createMMCPack
+
 // TODO: Signing
 /*
 [universalJar, installerJar].each { t ->
@@ -851,40 +879,39 @@ tasks.register('installerJar', Zip) {
 // TODO: MDK Task
 
 userdevConfig {
-    if (gradle.startParameter.taskNames.any { it == 'installerJar' || it == 'build' || it == 'publish' || 'it' == 'userdevJar'}) {
+    //noinspection GroovyAssignabilityCheck
+    libraries.addAll(project.provider {
         def artifacts = Util.getArtifacts(project.configurations.installer, true)
-        artifacts.each { key, lib ->
-            libraries.add(lib.name)
+        artifacts.values().collect { it.name }
+    })
+    libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
+    universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
+    runs {
+        client {
+            main 'com.cleanroommc.boot.MainClient'
+
+            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+            environment 'assetIndex', '{asset_index}'
+            environment 'assetDirectory', '{assets_root}'
+            environment 'nativesDirectory', '{natives}'
+            environment 'MC_VERSION', props.minecraft_version
+            environment 'MCP_MAPPINGS', '{mcp_mappings}'
+            environment 'MCP_TO_SRG', '{mcp_to_srg}'
+            environment 'FORGE_GROUP', project.group
+            environment 'FORGE_VERSION', props.last_forge_version
         }
-        libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
-        universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
-        runs {
-            client {
-                main 'com.cleanroommc.boot.MainClient'
 
-                environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
-                environment 'assetIndex', '{asset_index}'
-                environment 'assetDirectory', '{assets_root}'
-                environment 'nativesDirectory', '{natives}'
-                environment 'MC_VERSION', props.minecraft_version
-                environment 'MCP_MAPPINGS', '{mcp_mappings}'
-                environment 'MCP_TO_SRG', '{mcp_to_srg}'
-                environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.last_forge_version
-            }
+        server {
+            main 'com.cleanroommc.boot.MainServer'
 
-            server {
-                main 'com.cleanroommc.boot.MainServer'
-
-                environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
-                environment 'MC_VERSION', props.minecraft_version
-                environment 'MCP_MAPPINGS', '{mcp_mappings}'
-                environment 'MCP_TO_SRG', '{mcp_to_srg}'
-                environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.last_forge_version
-            }
+            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+            environment 'MC_VERSION', props.minecraft_version
+            environment 'MCP_MAPPINGS', '{mcp_mappings}'
+            environment 'MCP_TO_SRG', '{mcp_to_srg}'
+            environment 'FORGE_GROUP', project.group
+            environment 'FORGE_VERSION', props.last_forge_version
         }
     }
 }
@@ -968,7 +995,7 @@ if (project.hasProperty('UPDATE_MAPPINGS')) {
 }
 
 tasks.named("assemble") {
-    dependsOn(universalJar, installerJar)
+    dependsOn(universalJar, installerJar, createMMCPack)
 }
 
 
@@ -993,7 +1020,7 @@ publishing {
             artifact universalJar
             artifact sourcesJar
             artifact installerJar
-            artifact new File(rootProject.rootDir, "./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${version}.zip")
+            artifact createMMCPack.outputZip
         }
     }
 }
