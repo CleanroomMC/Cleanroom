@@ -3,8 +3,6 @@ package com.cleanroommc.common;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
 
 public class PatchModPresentChecker {
 
@@ -53,18 +51,19 @@ public class PatchModPresentChecker {
         return scalarPresent;
     }
 
-    public static boolean hasUserMods() {
-        return Loader.instance().getActiveModList().stream()
-            .map(ModContainer::getModId)
-            .anyMatch(id -> !id.equals("minecraft") && !id.equals("mcp")
-                && !id.equals("fml") && !id.equals("cleanroom")
-                && !id.equals("mixinbooter") && !id.equals("configanytime"));
-    }
-
-    public static String getMissingModsMessage() {
-        StringBuilder sb = new StringBuilder();
-        if (!fuguePresent) sb.append("  - Fugue (").append(FUGUE_COREMOD_CLASS).append(")\n");
-        if (!scalarPresent) sb.append("  - Scalar (").append(SCALAR_COREMOD_CLASS).append(")\n");
-        return sb.toString();
+    public static String getWarningMessage() {
+        if (!checkPerformed) performCheck();
+        if (fuguePresent && scalarPresent) return "";
+        String missing;
+        if (!fuguePresent && !scalarPresent)
+            missing = "Fugue and Scalar not installed";
+        else if (!fuguePresent)
+            missing = "Fugue not installed";
+        else
+            missing = "Scalar not installed";
+        return "WARNING\n"
+            + missing + "\n"
+            + "Your modpack may crash without these mods.\n"
+            + "To disable this warning, edit config/forge_early.cfg";
     }
 }

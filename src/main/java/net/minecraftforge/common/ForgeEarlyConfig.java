@@ -67,6 +67,8 @@ public class ForgeEarlyConfig {
     @Config.Comment({
         "Disable the Fugue/Scalar coremod presence check at startup.",
         "When enabled, the patch mod check is skipped and always returns true.",
+        "When disabled, checks whether Fugue (https://www.curseforge.com/minecraft/mc-mods/fugue)",
+        "and Scalar (https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) are present.",
         "Only disable this if you know what you are doing!"
     })
     public static boolean DISABLE_PATCH_MOD_CHECK = false;

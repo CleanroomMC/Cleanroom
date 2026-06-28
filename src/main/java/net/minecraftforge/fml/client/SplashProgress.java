@@ -296,10 +296,8 @@ public class SplashProgress
                         float right = 320 + (float)w / 2;
                         float top = 240 - (float)h / 2;
                         float bottom = 240 + (float)h / 2;
-                        int texW = dirtBackground.getWidth();
-                        int texH = dirtBackground.getHeight();
-                        float us = (float)w / texW;
-                        float vs = (float)h / texH;
+                        float us = (float)w / 64f;
+                        float vs = (float)h / 64f;
                         glBegin(GL_QUADS);
                             glColor4f(0.25f, 0.25f, 0.25f, 1.0f);
                             glTexCoord2f(0, 0);     glVertex2f(left, top);
@@ -310,11 +308,11 @@ public class SplashProgress
                         glColor4f(1, 1, 1, 1);
                         glDisable(GL_TEXTURE_2D);
 
-                        // Upper section: dynamic warning text (white)
+                        // Warning section: dynamic text (top, white)
                         String[] warnLines = warningWarning.split("\n");
-                        float warnY = 240 + warnLines.length * 10f;
+                        float warnY = 180f;
                         for (String line : warnLines) {
-                            if (line.isEmpty()) { warnY -= 20; continue; }
+                            if (line.isEmpty()) { warnY += 20; continue; }
                             glPushMatrix();
                             int lw = fontRenderer.getStringWidth(line);
                             glTranslatef(320 - lw, warnY, 0);
@@ -323,16 +321,16 @@ public class SplashProgress
                             fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
                             glDisable(GL_TEXTURE_2D);
                             glPopMatrix();
-                            warnY -= 20;
+                            warnY += 20;
                         }
 
                         // Gap between sections
-                        warnY -= 10;
+                        warnY += 10;
 
-                        // Lower section: fixed prompt text (white)
+                        // Prompt section: fixed text (bottom, white)
                         String[] promptLines = warningPrompt.split("\n");
                         for (String line : promptLines) {
-                            if (line.isEmpty()) { warnY -= 20; continue; }
+                            if (line.isEmpty()) { warnY += 20; continue; }
                             glPushMatrix();
                             int lw = fontRenderer.getStringWidth(line);
                             glTranslatef(320 - lw, warnY, 0);
@@ -341,7 +339,7 @@ public class SplashProgress
                             fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
                             glDisable(GL_TEXTURE_2D);
                             glPopMatrix();
-                            warnY -= 20;
+                            warnY += 20;
                         }
 
                         // Keyboard polling

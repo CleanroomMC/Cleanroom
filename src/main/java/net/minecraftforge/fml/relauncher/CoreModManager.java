@@ -56,6 +56,7 @@ public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name FORCELOADASMOD = new Attributes.Name("ForceLoadAsMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
+    private static boolean hasNonCrlMods;
     private static final Set<String> loadedPlugins = new HashSet<>();
     private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "net.minecraftforge.fml.relauncher.MixinBooterPlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
@@ -425,6 +426,8 @@ public class CoreModManager {
                 }
                 List<String> modTypes = mfAttributes.containsKey(MODTYPE) ? Arrays.asList(mfAttributes.getValue(MODTYPE).split(",")) : ImmutableList.of("FML");
 
+                if (modTypes.contains("FML")) hasNonCrlMods = true;
+
                 if (!modTypes.contains("FML") && !modTypes.contains("CRL"))
                 {
                     FMLLog.log.debug("Adding {} to the list of things to skip. It is not an FML mod, it has types {}", coreMod.getName(), modTypes);
@@ -736,6 +739,10 @@ public class CoreModManager {
             if (closeable != null)
                 closeable.close();
         } catch (final IOException ioe){}
+    }
+
+    public static boolean hasNonCrlMods() {
+        return hasNonCrlMods;
     }
 
 }

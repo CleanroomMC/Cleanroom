@@ -218,6 +218,20 @@ public class FMLClientHandler implements IFMLSidedHandler
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
+
+        if (!com.cleanroommc.common.PatchModPresentChecker.isPatchModPresent()
+                && net.minecraftforge.fml.relauncher.CoreModManager.hasNonCrlMods())
+        {
+            String warning = com.cleanroommc.common.PatchModPresentChecker.getWarningMessage();
+            String prompt = "Press any key to continue, ESC to exit.";
+
+            if (!SplashProgress.confirm(warning, prompt))
+            {
+                SplashProgress.finish();
+                System.exit(0);
+            }
+        }
+
         this.resourcePackList = resourcePackList;
         this.metaSerializer = metaSerializer;
         this.resourcePackMap = Maps.newHashMap();
@@ -249,23 +263,6 @@ public class FMLClientHandler implements IFMLSidedHandler
         finally
         {
             client.refreshResources();
-        }
-
-        if (!hasError() && !com.cleanroommc.common.PatchModPresentChecker.isPatchModPresent()
-                && com.cleanroommc.common.PatchModPresentChecker.hasUserMods())
-        {
-            String warning = "WARNING: Essential coremods missing!\n\n"
-                + "The following coremods were not found:\n"
-                + com.cleanroommc.common.PatchModPresentChecker.getMissingModsMessage()
-                + "\nCleanroom may crash or malfunction without them.";
-
-            String prompt = "\nPress any key to continue, ESC to exit.";
-
-            if (!SplashProgress.confirm(warning, prompt))
-            {
-                SplashProgress.finish();
-                System.exit(0);
-            }
         }
 
         try
