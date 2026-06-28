@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/shader/ShaderGroup.java
 +++ after/net/minecraft/client/shader/ShaderGroup.java
+@@ -23,7 +23,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.commons.io.IOUtils;
+-import org.lwjgl.util.vector.Matrix4f;
++import org.lwjglx.util.vector.Matrix4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ShaderGroup
 @@ -55,13 +55,12 @@
  
      public void parseGroup(TextureManager p_152765_1_, ResourceLocation p_152765_2_) throws JsonException, IOException, JsonSyntaxException

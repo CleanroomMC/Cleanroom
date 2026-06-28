@@ -1,5 +1,18 @@
 --- before/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ after/net/minecraft/client/renderer/block/model/FaceBakery.java
+@@ -8,9 +8,9 @@
+ import net.minecraft.util.math.Vec3i;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.vector.Matrix4f;
+-import org.lwjgl.util.vector.Vector3f;
+-import org.lwjgl.util.vector.Vector4f;
++import org.lwjglx.util.vector.Matrix4f;
++import org.lwjglx.util.vector.Vector3f;
++import org.lwjglx.util.vector.Vector4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class FaceBakery
 @@ -63,15 +63,40 @@
          boolean shade
      )

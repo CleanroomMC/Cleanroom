@@ -13,6 +13,6 @@
 /logs/
 build/
 version.txt
-src/main/java/com/cleanroommc/common/CleanroomVersion.java
+src/main/java/com/cleanroommc/cleanroom/common/CleanroomVersion.java
 
 !/.idea/icon.svg

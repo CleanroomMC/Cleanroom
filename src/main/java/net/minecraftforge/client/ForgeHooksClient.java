@@ -37,11 +37,11 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
-import com.cleanroommc.client.LoadingTracker;
-import com.cleanroommc.client.windows.DwmApi;
-import com.cleanroommc.client.windows.NtDll;
-import com.cleanroommc.client.windows.TaskbarApi;
-import com.cleanroommc.client.windows.WindowsProperties;
+import com.cleanroommc.cleanroom.client.LoadingTracker;
+import com.cleanroommc.cleanroom.client.windows.DwmApi;
+import com.cleanroommc.cleanroom.client.windows.NtDll;
+import com.cleanroommc.cleanroom.client.windows.TaskbarApi;
+import com.cleanroommc.cleanroom.client.windows.WindowsProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -147,10 +147,10 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.async.ThreadNameCachingStrategy;
 import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjglx.BufferUtils;
+import org.lwjglx.opengl.Display;
+import org.lwjglx.opengl.GL11;
+import org.lwjglx.opengl.GL20;
 
 import java.util.function.Predicate;
 
@@ -531,7 +531,7 @@ public class ForgeHooksClient
         }
     }
 
-    public static void transform(org.lwjgl.util.vector.Vector3f vec, Matrix4f m)
+    public static void transform(org.lwjglx.util.vector.Vector3f vec, Matrix4f m)
     {
         Vector4f tmp = new Vector4f(vec.x, vec.y, vec.z, 1f);
         m.transform(tmp);

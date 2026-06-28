@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common;
 
+import com.cleanroommc.cleanroom.client.LoadingTracker;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.*;
@@ -289,7 +290,7 @@ public class LoadController
         {
             modObjectList = buildModObjectList();
         }
-        ProgressBar bar = ProgressManager.push(stateEvent.description(), activeModList.size(), true, com.cleanroommc.client.LoadingTracker.phaseForEventDescription(stateEvent.description()));
+        ProgressBar bar = ProgressManager.push(stateEvent.description(), activeModList.size(), true, LoadingTracker.phaseForEventDescription(stateEvent.description()));
         for (ModContainer mc : activeModList)
         {
             bar.step(mc.getName());

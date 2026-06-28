@@ -62,10 +62,10 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.versioning.ComparableVersion;
 import static net.minecraft.util.text.TextFormatting.*;
 
-import org.lwjgl.input.Mouse;
+import org.lwjglx.input.Mouse;
 
 import com.google.common.base.Strings;
-import org.lwjgl.opengl.GL11;
+import org.lwjglx.opengl.GL11;
 
 /**
  * @author cpw

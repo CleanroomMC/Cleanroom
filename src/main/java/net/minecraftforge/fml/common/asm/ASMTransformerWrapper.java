@@ -23,15 +23,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.jar.Manifest;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
+import net.minecraftforge.fml.common.FMLLog;
+import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
@@ -58,8 +63,7 @@ public class ASMTransformerWrapper
         .build(new CacheLoader<>()
         {
             @Override
-            public byte[] load(String file) throws Exception
-            {
+            public byte @NonNull [] load(@NonNull String file) {
                 return makeWrapper(file);
             }
         });
@@ -240,13 +244,27 @@ public class ASMTransformerWrapper
                 throw new RuntimeException(e);
             }
         }
-
+        
         @Override
         public byte[] transform(String name, String transformedName, byte[] basicClass)
         {
+
             try
             {
                 return parent.transform(name, transformedName, basicClass);
+            }
+            catch(Throwable e)
+            {
+                throw new TransformerException("Exception in class transformer " + parent + " from coremod " + getCoreMod(), e);
+            }
+        }
+
+        @Override
+        public byte[] transform(String name, String transformedName, byte[] basicClass, Package pkg, Manifest manifest)
+        {
+            try
+            {
+                return parent.transform(name, transformedName, basicClass, pkg, manifest);
             }
             catch(Throwable e)
             {

@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/inventory/GuiContainer.java
 +++ after/net/minecraft/client/gui/inventory/GuiContainer.java
+@@ -20,7 +20,7 @@
+ import net.minecraft.util.text.TextFormatting;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public abstract class GuiContainer extends GuiScreen
 @@ -118,6 +118,7 @@
          RenderHelper.disableStandardItemLighting();
          this.drawGuiContainerForegroundLayer(mouseX, mouseY);
