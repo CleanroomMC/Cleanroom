@@ -4,6 +4,7 @@ import com.cleanroommc.gradle.helpers.tasks.CreateMMCPackTask
 import com.cleanroommc.gradle.helpers.tasks.Util
 import com.palantir.gradle.gitversion.VersionDetails
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.ExtractInheritance
@@ -618,8 +619,30 @@ tasks.register('checkSAS') {
     }
 }
 
+tasks.register('resolveInstallerArtifacts') {
+    inputs.files(project.configurations.installer)
+    inputs.files(project.configurations.lwjglNatives)
+    inputs.files(project.configurations.testCompile)
+
+    ext.outputFile = file('build/installerArtifacts.json')
+    outputs.file(outputFile)
+
+    doLast {
+        def result = [
+            artifacts    : Util.getArtifacts(project.configurations.installer, true),
+            lwjglNatives : Util.getLWJGLNatives(
+                project.configurations.lwjglNatives,
+                project.configurations.testCompile,
+                lwjglLibraries[0],
+                lwjglLibraries[1]
+            )
+        ]
+        outputFile.text = new JsonBuilder(result).toPrettyString()
+    }
+}
+
 tasks.register('launcherJson') {
-    dependsOn universalJar
+    dependsOn universalJar, resolveInstallerArtifacts
     inputs.file {
         universalJar.archiveFile
     }
@@ -635,6 +658,7 @@ tasks.register('launcherJson') {
         id = "${project.name}-${project.version}"
     }
     inputs.file vanilla
+    inputs.file resolveInstallerArtifacts.outputFile
     outputs.file output
     doLast {
 //        def json_vanilla = vanilla.json()
@@ -675,14 +699,33 @@ tasks.register('launcherJson') {
                 ]
             ]
         ]
-        Util.getArtifacts(project.configurations.installer, false)
-            .each { key, lib ->
+
+        def cache = new JsonSlurper().parse(resolveInstallerArtifacts.outputFile)
+        cache.artifacts.each { key, lib ->
+            def nameParts = (lib.name as String).split(':')
+            if (nameParts.length >= 4) {
+                def rawClassifier = nameParts[3].contains('@') ? nameParts[3].split('@')[0] : nameParts[3]
+                def mergedVersion = "${nameParts[2]}-${rawClassifier}"
+                def mergedName = "${nameParts[0]}:${nameParts[1]}:${mergedVersion}"
+                json.libraries.add([
+                    name     : mergedName,
+                    downloads: [
+                        artifact: [
+                            path: lib.downloads.artifact.path,
+                            url : lib.downloads.artifact.url,
+                            sha1: lib.downloads.artifact.sha1,
+                            size: lib.downloads.artifact.size
+                        ]
+                    ]
+                ])
+            } else {
                 json.libraries.add(lib)
             }
-        Util.getLWJGLNatives(project.configurations.lwjglNatives, project.configurations.testCompile, lwjglLibraries[0], lwjglLibraries[1])
-            .each { key, lib ->
-                json.libraries.add(lib)
-            }
+        }
+        cache.lwjglNatives.each { key, lib ->
+            json.libraries.add(lib)
+        }
+
         output.text = new JsonBuilder(json).toPrettyString()
     }
 }
@@ -879,10 +922,11 @@ publish.dependsOn createMMCPack
 // TODO: MDK Task
 
 userdevConfig {
+    dependsOn resolveInstallerArtifacts
     //noinspection GroovyAssignabilityCheck
     libraries.addAll(project.provider {
-        def artifacts = Util.getArtifacts(project.configurations.installer, true)
-        artifacts.values().collect { it.name }
+        def cache = new JsonSlurper().parse(resolveInstallerArtifacts.outputFile)
+        cache.artifacts.values().collect { it.name }
     })
     libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
     universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
