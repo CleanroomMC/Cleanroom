@@ -185,7 +185,7 @@ fml.config.sample.title=这只是配置界面的示例，不会保存修改结�
 fml.configgui.applyGlobally=应用到全局
 fml.configgui.confirmRestartMessage=我知道了
 fml.configgui.gameRestartRequired=有一个或多个设置需要重新启动 Minecraft 才能生效。
-fml.configgui.gameRestartTitle=需要重新启动Minecraft
+fml.configgui.gameRestartTitle=需要重新启动 Minecraft
 fml.configgui.sampletext=示例文本
 fml.configgui.tooltip.addNewEntryAbove=在上面添加新条目
 fml.configgui.tooltip.applyGlobally=在全局应用撤消更改或重置为默认值。
@@ -205,7 +205,6 @@ forge.controlsgui.alt=ALT + %s
 fml.menu.mods=模组
 fml.menu.mods.normal=普通
 fml.menu.mods.search=搜索：
-fml.menu.modoptions=模组设置
 
 item.forge.bucketFilled.name=%s桶
 
