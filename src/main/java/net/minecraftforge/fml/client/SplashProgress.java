@@ -76,6 +76,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.Drawable;
 import org.lwjgl.opengl.SharedDrawable;
 import org.lwjgl.util.glu.GLU;
+import org.lwjgl.input.Keyboard;
 
 /**
  * Not a fully fleshed out API, may change in future MC versions.
@@ -100,6 +101,11 @@ public class SplashProgress
     private static Texture fontTexture;
     private static Texture logoTexture;
     private static Texture forgeTexture;
+    private static Texture dirtBackground;
+
+    private static volatile String warningWarning;
+    private static volatile String warningPrompt;
+    private static volatile Boolean warningResult;
 
     private static Properties config;
 
@@ -259,6 +265,7 @@ public class SplashProgress
                 fontTexture = new Texture(fontLoc, null);
                 logoTexture = new Texture(logoLoc, null, false);
                 forgeTexture = new Texture(forgeLoc, forgeFallbackLoc);
+                dirtBackground = new Texture(new ResourceLocation("textures/gui/options_background.png"), null, false);
                 glEnable(GL_TEXTURE_2D);
                 fontRenderer = new SplashFontRenderer();
                 glDisable(GL_TEXTURE_2D);
@@ -266,6 +273,88 @@ public class SplashProgress
                 {
                     framecount++;
                     com.cleanroommc.client.LoadingTracker.tick();
+
+                    if (warningWarning != null && warningPrompt != null)
+                    {
+                        // Warning confirmation screen
+                        int w = Display.getWidth();
+                        int h = Display.getHeight();
+                        glClear(GL_COLOR_BUFFER_BIT);
+                        glViewport(0, 0, w, h);
+                        glMatrixMode(GL_PROJECTION);
+                        glLoadIdentity();
+                        glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
+                        glMatrixMode(GL_MODELVIEW);
+                        glLoadIdentity();
+
+                        // Dirt background (same as GuiDupesFound)
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                        dirtBackground.bind();
+                        glEnable(GL_TEXTURE_2D);
+                        float left = 320 - (float)w / 2;
+                        float right = 320 + (float)w / 2;
+                        float top = 240 - (float)h / 2;
+                        float bottom = 240 + (float)h / 2;
+                        float us = (float)w / 64f;
+                        float vs = (float)h / 64f;
+                        glBegin(GL_QUADS);
+                            glColor4f(0.25f, 0.25f, 0.25f, 1.0f);
+                            glTexCoord2f(0, 0);     glVertex2f(left, top);
+                            glTexCoord2f(us, 0);    glVertex2f(right, top);
+                            glTexCoord2f(us, vs);   glVertex2f(right, bottom);
+                            glTexCoord2f(0, vs);    glVertex2f(left, bottom);
+                        glEnd();
+                        glColor4f(1, 1, 1, 1);
+                        glDisable(GL_TEXTURE_2D);
+
+                        // Warning section: dynamic text (top, white)
+                        String[] warnLines = warningWarning.split("\n");
+                        float warnY = 180f;
+                        for (String line : warnLines) {
+                            if (line.isEmpty()) { warnY += 20; continue; }
+                            glPushMatrix();
+                            int lw = fontRenderer.getStringWidth(line);
+                            glTranslatef(320 - lw, warnY, 0);
+                            glScalef(2, 2, 1);
+                            glEnable(GL_TEXTURE_2D);
+                            fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
+                            glDisable(GL_TEXTURE_2D);
+                            glPopMatrix();
+                            warnY += 20;
+                        }
+
+                        // Gap between sections
+                        warnY += 10;
+
+                        // Prompt section: fixed text (bottom, white)
+                        String[] promptLines = warningPrompt.split("\n");
+                        for (String line : promptLines) {
+                            if (line.isEmpty()) { warnY += 20; continue; }
+                            glPushMatrix();
+                            int lw = fontRenderer.getStringWidth(line);
+                            glTranslatef(320 - lw, warnY, 0);
+                            glScalef(2, 2, 1);
+                            glEnable(GL_TEXTURE_2D);
+                            fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
+                            glDisable(GL_TEXTURE_2D);
+                            glPopMatrix();
+                            warnY += 20;
+                        }
+
+                        // Keyboard polling
+                        while (Keyboard.next()) {
+                            if (Keyboard.getEventKeyState()) {
+                                if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE)
+                                    warningResult = false;
+                                else
+                                    warningResult = true;
+                            }
+                        }
+
+                    }
+                    else
+                    {
                     ProgressBar first = null, penult = null, last = null;
                     Iterator<ProgressBar> i = ProgressManager.barIterator();
                     while(i.hasNext())
@@ -364,6 +453,7 @@ public class SplashProgress
                     glVertex2f(fw, -fh);
                     glEnd();
                     glDisable(GL_TEXTURE_2D);
+                    }
 
                     // We use mutex to indicate safely to the main thread that we're taking the display global lock
                     // So the main thread can skip processing messages while we're updating.
@@ -739,6 +829,28 @@ public class SplashProgress
         {
             return new FileResourcePack(file);
         }
+    }
+
+    public static boolean confirm(String warning, String prompt) {
+        if (!enabled) {
+            FMLLog.log.warn("Splash screen disabled, logging warning:\n{}", warning);
+            return false;
+        }
+        warningWarning = warning;
+        warningPrompt = prompt;
+        warningResult = null;
+
+        while (warningResult == null) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                return false;
+            }
+        }
+
+        warningWarning = null;
+        warningPrompt = null;
+        return warningResult;
     }
 
     private static final IntBuffer buf = BufferUtils.createIntBuffer(4 * 1024 * 1024);

@@ -64,6 +64,15 @@ public class ForgeEarlyConfig {
     @Config.Comment("MAC OS & Wayland - Specifies whether the framebuffer should be resized based on content scale changes.")
     public static boolean COCOA_RETINA_FRAMEBUFFER = true;
 
+    @Config.Comment({
+        "Disable the Fugue/Scalar coremod presence check at startup.",
+        "When enabled, the patch mod check is skipped and always returns true.",
+        "When disabled, checks whether Fugue (https://www.curseforge.com/minecraft/mc-mods/fugue)",
+        "and Scalar (https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) are present.",
+        "Only disable this if you know what you are doing!"
+    })
+    public static boolean DISABLE_PATCH_MOD_CHECK = false;
+
     public static boolean CUSTOM_BUILT_IN_MOD_VERSION = false;
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
     public static String MIXIN_BOOTER_VERSION = "10.7";
