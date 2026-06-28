@@ -19,7 +19,7 @@ public class PatchModPresentChecker {
             scalarPresent = true;
             return;
         }
-        
+
         if (checkPerformed) return;
         checkPerformed = true;
 
