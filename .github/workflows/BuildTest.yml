@@ -56,7 +56,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Setup Forge env
-        run: ./gradlew setup -Prun_number=${{ github.run_number }} --info --stacktrace
+        run: ./gradlew setup -Prun_number=${{ github.run_number }}
         
       - name: Stop Gradle daemon
         run: ./gradlew --stop
