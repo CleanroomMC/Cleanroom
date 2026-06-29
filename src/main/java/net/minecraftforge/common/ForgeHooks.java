@@ -166,9 +166,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-import org.spongepowered.asm.mixin.transformer.ClassInfo;
-import org.spongepowered.asm.mixin.transformer.MixinInfo;
 
 public class ForgeHooks
 {
