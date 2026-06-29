@@ -62,7 +62,7 @@ public class ForgeEarlyConfig {
     @Config.Comment("MAC OS-only - identifier used to save and restore the window position and size")
     public static String COCOA_FRAME_NAME = "minecraft";
     @Config.Comment("MAC OS & Wayland - Specifies whether the framebuffer should be resized based on content scale changes.")
-    public static boolean COCOA_RETINA_FRAMEBUFFER = true;
+    public static boolean GLFW_SCALE_FRAMEBUFFER = true;
 
     @Config.Comment({
         "Disable the Fugue/Scalar coremod presence check at startup.",
