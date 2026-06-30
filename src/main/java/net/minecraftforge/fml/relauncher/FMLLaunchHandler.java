@@ -23,8 +23,8 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.CleanroomVersion;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -144,6 +144,6 @@ public class FMLLaunchHandler
 
     public static boolean isDeobfuscatedEnvironment()
     {
-        return CoreModManager.deobfuscatedEnvironment;
+        return CleanroomEnvironment.isDev();
     }
 }

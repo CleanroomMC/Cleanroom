@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common.launcher;
 
+import com.cleanroommc.common.CleanroomEnvironment;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
@@ -26,9 +27,9 @@ import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 
-import org.spongepowered.asm.launch.GlobalProperties;
 import org.spongepowered.asm.launch.MixinBootstrap;
 
 import java.io.File;
@@ -37,7 +38,6 @@ import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,7 +50,7 @@ public class FMLTweaker implements ITweaker {
 
     public FMLTweaker()
     {
-        Launch.blackboard.put("fml.side", "client");
+        this.setSide();
         if (System.getProperty("java.net.preferIPv4Stack") == null)
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
@@ -60,6 +60,7 @@ public class FMLTweaker implements ITweaker {
         LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");
         MixinExtrasBootstrap.init();
     }
+
     @SuppressWarnings("unchecked")
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile)
@@ -196,5 +197,10 @@ public class FMLTweaker implements ITweaker {
         @SuppressWarnings("unchecked")
         List<String> tweakClasses = (List<String>) Launch.blackboard.get("TweakClasses");
         tweakClasses.add(tweakClassName);
+    }
+
+    public void setSide()
+    {
+        CleanroomEnvironment.setSide(Side.CLIENT);
     }
 }

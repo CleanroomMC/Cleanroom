@@ -33,7 +33,7 @@ public final class Context {
      * @return the current mod loader
      */
     public ModLoader modLoader() {
-        return ModLoader.FORGE;
+        return ModLoader.CLEANROOM;
     }
 
     /**
