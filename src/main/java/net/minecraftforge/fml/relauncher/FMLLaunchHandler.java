@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.CleanroomVersion;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -66,6 +67,13 @@ public class FMLLaunchHandler
         this.classLoader = launchLoader;
         this.tweaker = tweaker;
         this.minecraftHome = tweaker.getGameDir();
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.launch.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.service.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.mixin.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.logging.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.util.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.lib.");
+        this.classLoader.addTransformerExclusion("org.objectweb.asm.");
         this.classLoader.addTransformerExclusion("com.cleanroommc.loader.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.relauncher.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.classloading.");
