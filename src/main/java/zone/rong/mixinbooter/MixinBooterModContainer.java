@@ -1,24 +1,26 @@
-package com.cleanroommc.common;
+package zone.rong.mixinbooter;
 
 import com.google.common.eventbus.EventBus;
-import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 
-public final class MixinContainer extends DummyModContainer{
-    public MixinContainer() {
+public class MixinBooterModContainer extends DummyModContainer {
+
+    public MixinBooterModContainer() {
         super(new ModMetadata());
-        ModMetadata meta = this.getMetadata();
-        meta.modId = "mixinbooter";
-        meta.name = "MixinBooter";
+        ModMetadata meta = getMetadata();
+        meta.modId = Tags.MOD_ID;
+        meta.name = Tags.MOD_NAME;
         meta.description = "A Mixin library and loader.";
-        meta.version = ForgeEarlyConfig.CUSTOM_BUILT_IN_MOD_VERSION ? ForgeEarlyConfig.MIXIN_BOOTER_VERSION : "10.7";
+        meta.version = Tags.VERSION;
         meta.authorList.add("Rongmario");
     }
 
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
+        bus.register(this);
         return true;
     }
+
 }

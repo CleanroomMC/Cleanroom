@@ -20,6 +20,7 @@
 package net.minecraftforge.fml.common.launcher;
 
 import com.cleanroommc.common.CleanroomEnvironment;
+import com.cleanroommc.util.CleanroomLog;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
@@ -55,9 +56,9 @@ public class FMLTweaker implements ITweaker {
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
-        LogManager.getLogger("FML.TWEAK").info("Initializing Mixins...");
+        CleanroomLog.get().info("Initializing CleanMix...");
         MixinBootstrap.init();
-        LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");
+        CleanroomLog.get().info("Initializing MixinExtras...");
         MixinExtrasBootstrap.init();
     }
 
