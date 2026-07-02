@@ -32,6 +32,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -79,6 +80,7 @@ import static net.minecraftforge.common.ForgeModContainer.VERSION_CHECK_CAT;
  * The GUI structure is this:
  *      Base Screen
  *          - General Settings (from forge.cfg)
+ *          - Client Settings (from forge.cfg)
  *          - Chunk Loader Settings (from forgeChunkLoading.cfg)
  *              - Defaults (these elements are listed directly on this screen)
  *              - Mod Overrides
@@ -86,6 +88,8 @@ import static net.minecraftforge.common.ForgeModContainer.VERSION_CHECK_CAT;
  *                  - Mod1
  *                  - Mod2
  *                  - etc.
+ *          - Version Check Settings (from forge.cfg)
+ *          - Early Config (from forge_early.cfg)
  *
  * Other things to check out:
  *      ForgeModContainer.syncConfig()
@@ -122,6 +126,7 @@ public class ForgeGuiFactory implements IModGuiFactory
             list.add(new DummyCategoryElement("forgeClientCfg", "forge.configgui.ctgy.forgeClientConfig", ClientEntry.class));
             list.add(new DummyCategoryElement("forgeChunkLoadingCfg", "forge.configgui.ctgy.forgeChunkLoadingConfig", ChunkLoaderEntry.class));
             list.add(new DummyCategoryElement("forgeVersionCheckCfg", "forge.configgui.ctgy.VersionCheckConfig", VersionCheckEntry.class));
+            list.add(new DummyCategoryElement("forgeEarlyCfg", "forge.configgui.ctgy.forgeEarlyConfig", EarlyConfigEntry.class));
             return list;
         }
 
@@ -246,6 +251,25 @@ public class ForgeGuiFactory implements IModGuiFactory
                         list,
                         this.owningScreen.modID, VERSION_CHECK_CAT, true, true,
                         GuiConfig.getAbridgedConfigPath(ForgeModContainer.getConfig().toString()));
+            }
+        }
+
+        public static class EarlyConfigEntry extends CategoryEntry
+        {
+            public EarlyConfigEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
+            {
+                super(owningScreen, owningEntryList, prop);
+            }
+
+            @Override
+            protected GuiScreen buildChildScreen()
+            {
+                return new GuiConfig(this.owningScreen,
+                        ConfigElement.from(ForgeEarlyConfig.class).getChildElements(),
+                        this.owningScreen.modID, "forge_early",
+                        this.configElement.requiresWorldRestart() || this.owningScreen.allRequireWorldRestart,
+                        this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
+                        GuiConfig.getAbridgedConfigPath("config/forge_early.cfg"));
             }
         }
 

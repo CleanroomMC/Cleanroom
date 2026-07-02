@@ -500,6 +500,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                     FMLCommonHandler.instance().reloadRenderers();
                 }
             }
+            case "forge_early" -> ConfigManager.sync(ForgeEarlyConfig.class);
             default -> syncConfig(false);
         }
     }

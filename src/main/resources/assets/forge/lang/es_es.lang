@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=Sustitución de mods
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Permite definir ajustes específicos a cada mod, de forma que ignore los valores preestablecidos. Un valor de cero en cualquiera de los campos prohíbe al mod modificar la carga de chunks.
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Añadir nueva sustitución de mod
 forge.configgui.ctgy.VersionCheckConfig=Ajustes de comprobación de versiones
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=Editar los ajustes contenidos en forge_early.cfg, incluyendo OpenGL, ventana, entrada y opciones de inicio.
+forge.configgui.ctgy.forgeEarlyConfig=Configuración temprana
 
 forge.configgui.biomeSkyBlendRange.tooltip=Controla el rango de la transición entre los colores del cielo de cada bioma.
 forge.configgui.biomeSkyBlendRange=Rango de transición entre cielos de biomas
