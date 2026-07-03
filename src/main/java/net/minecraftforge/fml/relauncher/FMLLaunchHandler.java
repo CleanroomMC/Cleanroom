@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.CleanroomVersion;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -37,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
 public class FMLLaunchHandler
 {
     private static FMLLaunchHandler INSTANCE;
-    static Side side;
+    static Side side = CleanroomEnvironment.side();
     private LaunchClassLoader classLoader;
     private FMLTweaker tweaker;
     private File minecraftHome;
@@ -88,13 +87,11 @@ public class FMLLaunchHandler
 
     private void setupClient()
     {
-        side = Side.CLIENT;
         setupHome();
     }
 
     private void setupServer()
     {
-        side = Side.SERVER;
         setupHome();
     }
 

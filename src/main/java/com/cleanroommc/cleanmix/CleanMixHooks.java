@@ -1,5 +1,6 @@
 package com.cleanroommc.cleanmix;
 
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import org.spongepowered.asm.logging.ILogger;
 import org.spongepowered.asm.mixin.Mixins;
@@ -95,9 +96,7 @@ public class CleanMixHooks {
         for (ILateMixinLoader lateLoader : lateLoaders) {
             try {
                 for (String mixinConfig : lateLoader.getMixinConfigs()) {
-                    // TODO
-                    Context context = new Context(mixinConfig, Collections.emptyList());
-                    // Context context = new Context(mixinConfig, ModDiscoverer.getPresentMods());
+                    Context context = new Context(mixinConfig, CleanroomModDiscoverer.instance().presentMods());
                     if (lateLoader.shouldMixinConfigQueue(context)) {
                         logger.info("Adding [{}] mixin configuration.", mixinConfig);
                         Mixins.addConfiguration(mixinConfig);

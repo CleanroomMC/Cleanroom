@@ -38,10 +38,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.cleanroommc.client.LoadingTracker;
-import com.cleanroommc.common.CleanroomContainer;
-import com.cleanroommc.common.MixinContainer;
-import com.cleanroommc.common.ConfigAnytimeContainer;
-import com.cleanroommc.kirino.KirinoCommonCore;
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
+import com.cleanroommc.discovery.IdentifiedMods;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -50,11 +48,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ModContainer.Disableable;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
-import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.discovery.ContainerType;
-import net.minecraftforge.fml.common.discovery.ModCandidate;
-import net.minecraftforge.fml.common.discovery.ModDiscoverer;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadEvent;
 import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
@@ -66,9 +60,7 @@ import net.minecraftforge.fml.common.toposort.ModSortingException.SortingExcepti
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DependencyParser;
 import net.minecraftforge.fml.common.versioning.VersionParser;
-import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.ObjectHolderRegistry;
 
@@ -181,7 +173,7 @@ public class Loader
     private static List<String> injectedContainers;
     private ImmutableMap<String, String> fmlBrandingProperties;
     private File forcedModFile;
-    private ModDiscoverer discoverer;
+    private CleanroomModDiscoverer discoverer;
     private ProgressBar progressBar;
 
     public static Loader instance()
@@ -367,70 +359,6 @@ public class Loader
      * Finally, if they are successfully loaded as classes, they are then added
      * to the available mod list.
      */
-    private ModDiscoverer identifyMods(List<String> additionalContainers)
-    {
-        injectedContainers.addAll(additionalContainers);
-        FMLLog.log.debug("Building injected Mod Containers {}", injectedContainers);
-        mods.add(minecraft);
-        // Add in the MCP mod container
-        mods.add(new InjectedModContainer(mcp,new File("minecraft.jar")));
-        mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
-        mods.add(new InjectedModContainer(new MixinContainer(), FMLSanityChecker.fmlLocation));
-        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
-        KirinoCommonCore.identifyMods(mods);
-
-        for (String cont : injectedContainers)
-        {
-            ModContainer mc;
-            try
-            {
-                mc = (ModContainer) Class.forName(cont,true, modClassLoader).getConstructor().newInstance();
-            }
-            catch (Exception e)
-            {
-                FMLLog.log.error("A problem occurred instantiating the injected mod container {}", cont, e);
-                throw new LoaderException(e);
-            }
-            mods.add(new InjectedModContainer(mc,mc.getSource()));
-        }
-        ModDiscoverer discoverer = new ModDiscoverer();
-
-        //if (!FMLForgePlugin.RUNTIME_DEOBF) //Only descover mods in the classpath if we're in the dev env.
-        {                                  //TODO: Move this to GradleStart? And add a specific mod canidate for Forge itself.
-            FMLLog.log.debug("Attempting to load mods contained in the minecraft jar file and associated classes");
-            discoverer.findClasspathMods(modClassLoader);
-            FMLLog.log.debug("Minecraft jar mods loaded successfully");
-        }
-
-        List<File> candidates = LibraryManager.getCandidates();
-        //Do we want to sort the full list after resolving artifacts?
-        //TODO: Add dependency gathering?
-
-        for (File mod : candidates)
-        {
-            // skip loaded coremods
-            if (CoreModManager.getIgnoredMods().contains(mod.getName()))
-            {
-                FMLLog.log.trace("Skipping already parsed coremod or tweaker {}", mod.getName());
-            }
-            else if(mod.isDirectory())
-            {
-                FMLLog.log.trace("Skipping directory {}", mod.getName());
-            } 
-            else
-            {
-                FMLLog.log.debug("Found a candidate zip or jar file {}", mod.getName());
-                discoverer.addCandidate(new ModCandidate(mod, mod, ContainerType.JAR));
-            }
-        }
-
-        mods.addAll(discoverer.identifyMods());
-        identifyDuplicates(mods);
-        namedMods = Maps.uniqueIndex(mods, ModContainer::getModId);
-        FMLLog.log.info("Forge Mod Loader has identified {} mod{} to load", mods.size(), mods.size() != 1 ? "s" : "");
-        return discoverer;
-    }
-
     private static int compareModId(ModContainer o1, ModContainer o2){
             return o1.getModId().compareTo(o2.getModId());
     }
@@ -546,8 +474,8 @@ public class Loader
     }
 
     /**
-     * Called from the hook to start mod loading. We trigger the
-     * {@link #identifyMods(List)} and Constructing, Preinitalization, and Initalization phases here. Finally,
+     * Called from the hook to start mod loading. We trigger discovery and
+     * Constructing, Preinitalization, and Initalization phases here. Finally,
      * the mod list is frozen completely and is consider immutable from then on.
      * @param injectedModContainers containers to inject
      */
@@ -561,15 +489,22 @@ public class Loader
         namedMods = Maps.newHashMap();
         modController = new LoadController(this);
         modController.transition(LoaderState.LOADING, false);
-        discoverer = identifyMods(injectedModContainers);
-        ModAPIManager.INSTANCE.manageAPI(modClassLoader, discoverer);
+        injectedContainers.addAll(injectedModContainers);
+        discoverer = CleanroomModDiscoverer.instance();
+        discoverer.addBuiltInModContainers(mods, minecraft, mcp);
+        IdentifiedMods identifiedMods = discoverer.identifyMods(modClassLoader, injectedContainers, mods);
+        mods = identifiedMods.mods();
+        identifyDuplicates(mods);
+        namedMods = Maps.uniqueIndex(mods, ModContainer::getModId);
+        FMLLog.log.info("Forge Mod Loader has identified {} mod{} to load", mods.size(), mods.size() != 1 ? "s" : "");
+        ModAPIManager.INSTANCE.manageAPI(modClassLoader, discoverer.getASMTable());
         disableRequestedMods();
         modController.distributeStateMessage(FMLLoadEvent.class);
         sortModList();
         ModAPIManager.INSTANCE.cleanupAPIContainers(modController.getActiveModList());
         ModAPIManager.INSTANCE.cleanupAPIContainers(mods);
         mods = ImmutableList.copyOf(mods);
-        for (File nonMod : discoverer.getNonModLibs())
+        for (File nonMod : identifiedMods.nonModLibs())
         {
             if (nonMod.isFile())
             {
