@@ -6,7 +6,7 @@ import java.util.jar.Attributes;
 
 public record DiscoveredMod(
         File file,
-        Attributes manifestAttributes,
+        Attributes attributes,
         List<String> modIds,
         String modType,
         boolean hasMixinManifestAttributes,

@@ -266,7 +266,7 @@ public final class CleanroomModDiscoverer {
         String fmlCorePlugin;
         boolean containNonMods;
         try {
-            attributes = discoveredMod.manifestAttributes();
+            attributes = discoveredMod.attributes();
             if (attributes == null) {
                 return;
             }
