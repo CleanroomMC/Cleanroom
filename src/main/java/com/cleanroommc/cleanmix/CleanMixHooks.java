@@ -16,8 +16,6 @@ import java.util.*;
 
 public class CleanMixHooks {
 
-    private static final String NAME = "CleanMix";
-
     public static String addMixinMetadataToCrashReport(Throwable throwable) {
         Map<String, ClassInfo> classes = new LinkedHashMap<>();
         while (throwable != null) {
@@ -61,7 +59,7 @@ public class CleanMixHooks {
     }
 
     public static void loadMixinBooterLateMixins(ASMDataTable data) {
-        ILogger logger = MixinService.getService().getLogger(NAME);
+        ILogger logger = MixinService.getService().getLogger("CleanMix");
 
         // Gather ILateMixinLoaders
         Set<ASMDataTable.ASMData> interfaceData = data.getAll(ILateMixinLoader.class.getName().replace('.', '/'));

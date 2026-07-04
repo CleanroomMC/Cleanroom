@@ -1,5 +1,6 @@
 package com.cleanroommc.discovery;
 
+import com.cleanroommc.cleanmix.CleanMixModContainer;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.ConfigAnytimeContainer;
 import com.cleanroommc.kirino.KirinoCommonCore;
@@ -47,7 +48,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
@@ -449,6 +449,7 @@ public final class CleanroomModDiscoverer {
         mods.add(new InjectedModContainer(mcp, new File("minecraft.jar")));
         // Cleanroom
         mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
+        mods.add(new InjectedModContainer(new CleanMixModContainer(), CleanMixModContainer.location()));
         // Included Mods
         mods.add(new InjectedModContainer(new MixinBooterModContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
