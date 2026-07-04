@@ -339,7 +339,9 @@ public final class CleanroomModDiscoverer {
             return;
         }
 
-        CoreModManager.loadCoreModFromDiscoveredJar(classLoader, fmlCorePlugin, coreMod);
+        if (fmlCorePlugin != null) {
+            CoreModManager.loadCoreModFromDiscoveredJar(classLoader, fmlCorePlugin, coreMod);
+        }
     }
 
     private static void addContainedDepsToClasspath(LaunchClassLoader classLoader, Attributes attributes, File containedDepsDir) throws MalformedURLException {
