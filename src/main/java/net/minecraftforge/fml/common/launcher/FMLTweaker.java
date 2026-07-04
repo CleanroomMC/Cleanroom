@@ -30,7 +30,6 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
-
 import org.spongepowered.asm.launch.MixinBootstrap;
 
 import java.io.File;
@@ -56,10 +55,6 @@ public class FMLTweaker implements ITweaker {
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
-        CleanroomLog.get().info("Initializing CleanMix...");
-        MixinBootstrap.init();
-        CleanroomLog.get().info("Initializing MixinExtras...");
-        MixinExtrasBootstrap.init();
     }
 
     @SuppressWarnings("unchecked")
@@ -147,6 +142,11 @@ public class FMLTweaker implements ITweaker {
             LogManager.getLogger("FML.TWEAK").error("Missing URI information for FML tweak");
             throw new RuntimeException(e);
         }
+
+        CleanroomLog.get().info("Initializing CleanMix...");
+        MixinBootstrap.init();
+        CleanroomLog.get().info("Initializing MixinExtras...");
+        MixinExtrasBootstrap.init();
     }
 
     @Override
