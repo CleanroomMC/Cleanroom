@@ -548,34 +548,6 @@ public final class CleanroomModDiscoverer {
         }
     }
 
-    private static void addDevClasspathCandidates(List<File> devPaths, List<ModCandidate> modCandidates) {
-        Map<String, List<File>> pathsBySourceSet = new HashMap<>();
-        for (File path : devPaths) {
-            if (path.equals(FMLForgePlugin.forgeLocation)) {
-                continue;
-            }
-            pathsBySourceSet.computeIfAbsent(path.getName(), key -> new ArrayList<>()).add(path);
-        }
-        for (List<File> paths : pathsBySourceSet.values()) {
-            List<File> classDirs = new ArrayList<>();
-            File resourcesDir = null;
-            for (File path : paths) {
-                String type = path.getParentFile().getName();
-                if ("resources".equals(type)) {
-                    resourcesDir = path;
-                } else {
-                    classDirs.add(path);
-                }
-            }
-            if (resourcesDir == null) {
-                continue;
-            }
-            for (File classDir : classDirs) {
-                CleanroomLog.get().debug("Adding path {} and {} as developing mod", classDir, resourcesDir);
-                addCandidate(modCandidates, new ModCandidate(classDir, resourcesDir));
-            }
-        }
-    }
     private static boolean isArchive(File file) {
         if (!file.isFile()) {
             return false;
@@ -595,7 +567,7 @@ public final class CleanroomModDiscoverer {
         }
         try {
             Manifest manifest = jarFile.getManifest();
-            return manifest.getMainAttributes();
+            return manifest == null ? null : manifest.getMainAttributes();
         } catch (IOException e) {
             CleanroomLog.get().error("Error reading manifest from {}.", file.getAbsolutePath(), e);
         }
