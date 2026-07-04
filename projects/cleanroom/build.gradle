@@ -265,6 +265,8 @@ dependencies {
             lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$arch"
         }
     }
+    installer "org.lwjgl:lwjgl-opencl:$props.lwjgl_version" // OpenCL does not have natives
+    runtimeOnly "org.lwjgl:lwjgl-opencl"
 
     // ASM
     installer "org.ow2.asm:asm:$props.asm_version"
