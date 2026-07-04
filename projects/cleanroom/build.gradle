@@ -381,7 +381,7 @@ dependencies {
     installer 'io.github.classgraph:classgraph:4.8.184'
 
     // Mixin
-    installer 'com.cleanroommc:cleanmix:0.2.11'
+    installer "com.cleanroommc:cleanmix:$props.cleanmix_version"
     installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.4')
 
     testImplementation platform('org.junit:junit-bom:6.1.0')
