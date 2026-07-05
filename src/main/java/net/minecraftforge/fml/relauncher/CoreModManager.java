@@ -173,7 +173,6 @@ public class CoreModManager {
 
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
     {
-        try {
         CoreModManager.mcDir = mcDir;
         CoreModManager.tweaker = tweaker;
 
