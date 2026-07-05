@@ -69,12 +69,18 @@ public final class CleanroomModDiscoverer {
 
     private final ASMDataTable asmDataTable = new ASMDataTable();
 
+    private boolean hasForgeMods;
+
     private CleanroomModDiscoverer() {
         this.discover();
     }
 
     public static CleanroomModDiscoverer instance() {
         return INSTANCE;
+    }
+
+    public boolean hasForgeMods() {
+        return hasForgeMods;
     }
 
     private void discover() {
@@ -164,6 +170,10 @@ public final class CleanroomModDiscoverer {
                 coremod,
                 tweaker);
         discoveredFiles.put(absolute, info);
+
+        if (!hasForgeMods && ManifestAttributes.FORGEMODTYPE.equals(info.modType())) {
+            hasForgeMods = true;
+        }
     }
 
     public boolean isModPresent(String modId) {
