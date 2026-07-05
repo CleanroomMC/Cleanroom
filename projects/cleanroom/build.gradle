@@ -260,7 +260,7 @@ configurations {
 dependencies {
     // LWJGL
     compileOnly "com.cleanroommc:lwjglx:1.0.0"
-    installer "com.cleanroommc:lwjglxx:1.1.19"
+    installer "com.cleanroommc:lwjglxx:1.1.21"
     lwjglLibraries[0].each {
         if (it == 'lwjgl') {
             installer "org.lwjgl:$it:$props.lwjgl_version:unsafe"
@@ -285,7 +285,7 @@ dependencies {
     installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
     // Hacks
-    installer "top.outlands:foundation:0.19.7"
+    installer "top.outlands:foundation:0.19.8"
     installer 'net.lenni0451:Reflect:1.6.3'
     installer 'net.lenni0451.commons:unchecked:1.9.2'
     installer 'org.javassist:javassist:3.30.2-GA'
@@ -304,10 +304,10 @@ dependencies {
 
     installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
 
-    installer 'com.github.oshi:oshi-core-ffm:7.3.0'
-    installer 'com.github.oshi:oshi-common:7.3.0'
-    installer 'net.java.dev.jna:jna:5.19.0'
-    installer 'net.java.dev.jna:jna-platform:5.19.0'
+    installer 'com.github.oshi:oshi-core-ffm:7.3.2'
+    installer 'com.github.oshi:oshi-common:7.3.2'
+    installer 'net.java.dev.jna:jna:5.19.1'
+    installer 'net.java.dev.jna:jna-platform:5.19.1'
 
     installer 'it.unimi.dsi:fastutil:8.5.18'
 
@@ -319,7 +319,7 @@ dependencies {
     installer 'org.apache.commons:commons-compress:1.28.0'
     installer 'commons-codec:commons-codec:1.22.0'
     installer 'commons-io:commons-io:2.22.0'
-    installer 'commons-logging:commons-logging:1.3.6'
+    installer 'commons-logging:commons-logging:1.4.0'
     installer 'org.apache.maven:maven-artifact:3.9.16'
     installer 'org.apache.commons:commons-text:1.15.0' // Some old classes in lang3 moved to here, wtf
     
@@ -330,8 +330,8 @@ dependencies {
     installer 'org.jspecify:jspecify:1.0.0'
 
     // Apache HTTP, 4 and 5
-    installer 'org.apache.httpcomponents.core5:httpcore5:5.4.2'
-    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.2'
+    installer 'org.apache.httpcomponents.core5:httpcore5:5.4.3'
+    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
     installer 'org.apache.httpcomponents.client5:httpclient5:5.6.1'
 
     installer 'org.apache.httpcomponents:httpclient:4.5.14'
@@ -354,10 +354,10 @@ dependencies {
     installer "io.netty:netty-resolver-dns:$props.netty_version"
 
     // Jakarta (javax in Java 8)
-    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
+    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.3'
     installer 'jakarta.activation:jakarta.activation-api:2.1.4'
     installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
-    installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.4'
+    installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.5'
     installer 'jakarta.inject:jakarta.inject-api:2.0.1'
 
     // Logging
@@ -367,8 +367,8 @@ dependencies {
     installer 'org.slf4j:slf4j-api:2.0.18'
 
     // Scripts
-    installer 'org.glassfish.jaxb:jaxb-runtime:4.0.8'
-    installer 'org.glassfish.jaxb:jaxb-core:4.0.8'
+    installer 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
+    installer 'org.glassfish.jaxb:jaxb-core:4.0.9'
     installer 'com.sun.istack:istack-commons-runtime:4.2.0'
     installer 'org.glassfish.corba:glassfish-corba-omgapi:5.0.2'
     installer 'org.openjdk.nashorn:nashorn-core:15.7'

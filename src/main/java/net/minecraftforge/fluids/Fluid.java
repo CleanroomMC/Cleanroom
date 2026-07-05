@@ -178,8 +178,7 @@ public class Fluid
     @Deprecated
     public Fluid setUnlocalizedName(String unlocalizedName)
     {
-        this.unlocalizedName = unlocalizedName;
-        return this;
+        return setTranslationKey(unlocalizedName);
     }
 
     public Fluid setTranslationKey(String translationKey)
@@ -328,7 +327,7 @@ public class Fluid
      */
     public String getLocalizedName(FluidStack stack)
     {
-        String s = this.getUnlocalizedName();
+        String s = this.getTranslationKey();
         return s == null ? "" : I18n.translateToLocal(s);
     }
 
@@ -343,7 +342,7 @@ public class Fluid
 
     public String getTranslationKey(FluidStack stack)
     {
-        return this.getUnlocalizedName();
+        return getUnlocalizedName(stack);
     }
 
     /**
@@ -357,7 +356,7 @@ public class Fluid
 
     public String getTranslationKey()
     {
-        return "fluid." + this.unlocalizedName;
+        return getUnlocalizedName();
     }
 
     /* Default Accessors */

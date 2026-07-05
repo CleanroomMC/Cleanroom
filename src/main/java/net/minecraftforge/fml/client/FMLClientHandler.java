@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.common.PatchModPresentChecker;
 import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import net.minecraft.client.Minecraft;
@@ -114,6 +115,7 @@ import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.toposort.ModSortingException;
+import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.GameData;
 
@@ -218,6 +220,20 @@ public class FMLClientHandler implements IFMLSidedHandler
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
+
+        if (PatchModPresentChecker.isNotPresent()
+                && CoreModManager.hasNonCrlMods())
+        {
+            String warning = PatchModPresentChecker.getWarningMessage();
+            String prompt = "Press any key to continue, ESC to exit.";
+
+            if (!SplashProgress.confirm(warning, prompt))
+            {
+                SplashProgress.finish();
+                System.exit(0);
+            }
+        }
+
         this.resourcePackList = resourcePackList;
         this.metaSerializer = metaSerializer;
         this.resourcePackMap = Maps.newHashMap();
