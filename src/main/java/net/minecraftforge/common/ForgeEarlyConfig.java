@@ -59,10 +59,19 @@ public class ForgeEarlyConfig {
     @Config.Comment("Linux-only - change the X11 class name, which is used by your window manager to identify the running application")
     public static String X11_CLASS_NAME = "minecraft";
 
-    @Config.Comment("OSX-only - identifier used to save and restore the window position and size")
+    @Config.Comment("MAC OS-only - identifier used to save and restore the window position and size")
     public static String COCOA_FRAME_NAME = "minecraft";
-    @Config.Comment("OSX-only - Specifies whether to use full resolution framebuffers on Retina displays")
-    public static boolean COCOA_RETINA_FRAMEBUFFER = false;
+    @Config.Comment("MAC OS & Wayland - Specifies whether the framebuffer should be resized based on content scale changes.")
+    public static boolean GLFW_SCALE_FRAMEBUFFER = true;
+
+    @Config.Comment({
+        "Disable the Fugue/Scalar coremod presence check at startup.",
+        "When enabled, the patch mod check is skipped and always returns true.",
+        "When disabled, checks whether Fugue (https://www.curseforge.com/minecraft/mc-mods/fugue)",
+        "and Scalar (https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) are present.",
+        "Only disable this if you know what you are doing!"
+    })
+    public static boolean DISABLE_PATCH_MOD_CHECK = false;
 
     public static boolean CUSTOM_BUILT_IN_MOD_VERSION = false;
     public static String CONFIG_ANY_TIME_VERSION = "3.0";

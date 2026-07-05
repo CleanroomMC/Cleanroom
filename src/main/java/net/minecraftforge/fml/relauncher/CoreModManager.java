@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.relauncher;
 
+import com.cleanroommc.common.PatchModPresentChecker;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
@@ -56,6 +57,7 @@ public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name FORCELOADASMOD = new Attributes.Name("ForceLoadAsMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
+    private static boolean hasNonCrlMods;
     private static final Set<String> loadedPlugins = new HashSet<>();
     private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "net.minecraftforge.fml.relauncher.MixinBooterPlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
@@ -184,6 +186,7 @@ public class CoreModManager {
 
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
     {
+        try {
         CoreModManager.mcDir = mcDir;
         CoreModManager.tweaker = tweaker;
 
@@ -270,6 +273,9 @@ public class CoreModManager {
             loadCoreMod(classLoader, coreModClassName, null);
         }
         discoverCoreMods(mcDir, classLoader);
+        } finally {
+            PatchModPresentChecker.performCheck();
+        }
     }
 
     private static void findDerpMods(LaunchClassLoader classLoader, File modDir, File modDirVer)
@@ -420,6 +426,8 @@ public class CoreModManager {
                     }
                 }
                 List<String> modTypes = mfAttributes.containsKey(MODTYPE) ? Arrays.asList(mfAttributes.getValue(MODTYPE).split(",")) : ImmutableList.of("FML");
+
+                if (modTypes.contains("FML")) hasNonCrlMods = true;
 
                 if (!modTypes.contains("FML") && !modTypes.contains("CRL"))
                 {
@@ -731,7 +739,11 @@ public class CoreModManager {
         try {
             if (closeable != null)
                 closeable.close();
-        } catch (final IOException ioe){}
+        } catch (final IOException _){}
+    }
+
+    public static boolean hasNonCrlMods() {
+        return hasNonCrlMods;
     }
 
 }

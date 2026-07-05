@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod Overrides, yarrr!
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Allows ye to define mod-specific settings that will override the defaults, arrr! A value of zero in either entry effectively disables any chunkloading capabilities fer that mod.
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Add New Mod Override, hoist the sails!
 forge.configgui.ctgy.VersionCheckConfig=Version Check Settings, ye salty sea dog!
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=Edit the settings in forge_early.cfg, includin' OpenGL, windows, input, and startup, savvy?
+forge.configgui.ctgy.forgeEarlyConfig=Early Config, before the tides rise!
 
 forge.configgui.biomeSkyBlendRange.tooltip=Control the range of sky blending fer colored skies in biomes, savvy?
 forge.configgui.biomeSkyBlendRange=Biome Sky Blend Range, ho ho!

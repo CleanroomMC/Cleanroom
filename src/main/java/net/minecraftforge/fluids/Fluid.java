@@ -175,9 +175,16 @@ public class Fluid
         this.overlay = overlay;
     }
 
+    @Deprecated
     public Fluid setUnlocalizedName(String unlocalizedName)
     {
         this.unlocalizedName = unlocalizedName;
+        return this;
+    }
+
+    public Fluid setTranslationKey(String translationKey)
+    {
+        this.unlocalizedName = translationKey;
         return this;
     }
 
@@ -328,7 +335,13 @@ public class Fluid
     /**
      * A FluidStack sensitive version of getUnlocalizedName
      */
+    @Deprecated
     public String getUnlocalizedName(FluidStack stack)
+    {
+        return this.getUnlocalizedName();
+    }
+
+    public String getTranslationKey(FluidStack stack)
     {
         return this.getUnlocalizedName();
     }
@@ -336,7 +349,13 @@ public class Fluid
     /**
      * Returns the unlocalized name of this fluid.
      */
+    @Deprecated
     public String getUnlocalizedName()
+    {
+        return "fluid." + this.unlocalizedName;
+    }
+
+    public String getTranslationKey()
     {
         return "fluid." + this.unlocalizedName;
     }

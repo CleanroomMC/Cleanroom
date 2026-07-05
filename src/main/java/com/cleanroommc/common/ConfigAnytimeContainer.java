@@ -5,6 +5,8 @@ import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 
 public class ConfigAnytimeContainer extends DummyModContainer {
     public ConfigAnytimeContainer() {
@@ -21,5 +23,10 @@ public class ConfigAnytimeContainer extends DummyModContainer {
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
         return true;
+    }
+
+    @Override
+    public ArtifactVersion getProcessedVersion() {
+        return new DefaultArtifactVersion("configanytime", true);
     }
 }

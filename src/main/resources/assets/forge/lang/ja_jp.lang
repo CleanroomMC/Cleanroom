@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod の上書き
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=デフォルトを上書きする Mod 固有の設定を定義できます。いずれかの項目に 0 の値を設定すると、その Mod のチャンク読み込み機能を無効にします。
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Mod の上書きを追加
 forge.configgui.ctgy.VersionCheckConfig=バージョンチェック設定
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=OpenGL、ウィンドウ、入力、起動オプションを含む forge_early.cfg の設定を編集します。
+forge.configgui.ctgy.forgeEarlyConfig=早期設定
 
 forge.configgui.biomeSkyBlendRange.tooltip=バイオームでの色のついた空の混合範囲。
 forge.configgui.biomeSkyBlendRange=バイオームの空の混合範囲

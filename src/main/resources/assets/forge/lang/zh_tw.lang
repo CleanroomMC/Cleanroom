@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=模組覆蓋設定
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=允許你定義模組指定覆蓋預設值的設定。若值為零將停用該模組的區塊載入。
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ 新增模組覆蓋設定
 forge.configgui.ctgy.VersionCheckConfig=版本檢查設定
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=編輯 forge_early.cfg 中的設定，包括 OpenGL、視窗、輸入及啟動選項。
+forge.configgui.ctgy.forgeEarlyConfig=早期配置
 
 forge.configgui.biomeSkyBlendRange.tooltip=調整生態域內天空顏色的混合範圍。
 forge.configgui.biomeSkyBlendRange=生態域天空混合範圍

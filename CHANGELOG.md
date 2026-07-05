@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.15-alpha] - 2026-06-29
+### New Features
+- [`b5abee9`](https://github.com/CleanroomMC/Cleanroom/commit/b5abee957b17fa405f99217ff9303ce60387bde1) - Warn users if Fugue or Scalar not installed *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`e545c03`](https://github.com/CleanroomMC/Cleanroom/commit/e545c037760efb34ed029834262348749810ce52) - Warn if Fugue or Scalar not installed *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Bug Fixes
+- [`8789256`](https://github.com/CleanroomMC/Cleanroom/commit/87892564cb7763f3e512d450ed2ed5c5bf914eb7) - Not wrans right after coremod *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Chores
+- [`c7f8e4c`](https://github.com/CleanroomMC/Cleanroom/commit/c7f8e4c206495c342b087a49103161507d628750) - Improve warning *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`6c09515`](https://github.com/CleanroomMC/Cleanroom/commit/6c09515e472be5583e418a614ac8874001b2ff3b) - update early config about framebuffer *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`e4aa30a`](https://github.com/CleanroomMC/Cleanroom/commit/e4aa30a8dcad341825ab4de90b03e3acf70f9dde) - Correct colon in zh_cn.lang *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`ddefbb7`](https://github.com/CleanroomMC/Cleanroom/commit/ddefbb72171261f5c7bb725cfc1d702e092c033a) - Fluid method names that fit latest mcp *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.5.14-alpha] - 2026-06-10
+### Bug Fixes
+- [`43bcf47`](https://github.com/CleanroomMC/Cleanroom/commit/43bcf475eb350be2ea6b9b8e10153d8ecbabe29e) - userdev jar is broken *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.5.13-alpha] - 2026-06-10
+### Bug Fixes
+- [`8843e7b`](https://github.com/CleanroomMC/Cleanroom/commit/8843e7b991f3ce08a555d116469fe51fdcc08ec0) - Can't discover in-dev mod when multi-langs *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.12-alpha] - 2026-05-09
 ### Bug Fixes
 - [`0058f2f`](https://github.com/CleanroomMC/Cleanroom/commit/0058f2fb9092c6909ca5409da1ca88dd11059f92) - lwjglxx and OpenGlHelper not using new oshi path *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -56,3 +81,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.9-alpha...0.5.10-alpha
 [0.5.11-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.10-alpha...0.5.11-alpha
 [0.5.12-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.11-alpha...0.5.12-alpha
+[0.5.13-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.12-alpha...0.5.13-alpha
+[0.5.14-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.13-alpha...0.5.14-alpha
+[0.5.15-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.14-alpha...0.5.15-alpha
