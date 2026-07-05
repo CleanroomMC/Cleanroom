@@ -1,17 +1,15 @@
-package com.cleanroommc.catalogue.client;
+package com.cleanroommc.catalogue.client.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
- * <h1>Experimental</h1>
  * Author: MrCrayfish
  */
 public interface IModData {
@@ -62,32 +60,41 @@ public interface IModData {
     String getParentModName();
 
     @Nullable
-    Update getUpdate();
-
-    @Nullable
     IResourcePack getResourcePack();
 
-    @NotNull
     Set<String> getDependencies(); //TODO lazily
 
-    @NotNull
     Set<String> getChildMods();
 
     boolean hasConfig();
 
     void openConfigScreen(Minecraft minecraft, GuiScreen parent);
 
-    void drawUpdateIcon(Minecraft minecraft, Update update, int x, int y);
+    @Nullable
+    CheckResult getCheckResult();
+
+    void drawCheckIcon(Minecraft minecraft, CheckResult result, int x, int y);
 
     @Nullable
-    String getUpdateText(Update update);
+    String getCheckText(CheckResult result);
 
-    record Update(boolean animated, String url, int texOffset, ResourceLocation textures, boolean updatable,
-                  String latestFound, String homepage) {
+    /**
+     * @param updatable   Whether the mod is outdated and the icon is clickable.
+     * @param latestFound Latest version found in json.
+     * @param url         URL to download page.
+     */
+    record CheckResult(
+            boolean updatable,
+            boolean animated,
+            int texOffset,
+            ResourceLocation textures,
+            @Nullable String latestFound,
+            @Nullable String url
+    ) {
     }
 
     enum Type {
-        DEFAULT(TextFormatting.RESET),
+        DEFAULT(TextFormatting.WHITE),
         LIBRARY(TextFormatting.DARK_GRAY),
         CHILD(TextFormatting.AQUA);
 

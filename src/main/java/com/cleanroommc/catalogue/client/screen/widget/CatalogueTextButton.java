@@ -1,69 +1,60 @@
 package com.cleanroommc.catalogue.client.screen.widget;
 
-import com.cleanroommc.catalogue.Utils;
-import com.cleanroommc.catalogue.client.ClientHelper;
+import com.cleanroommc.catalogue.CatalogueConstants;
+import com.cleanroommc.catalogue.client.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class CatalogueTextButton extends GuiButton {
-    protected static final WidgetSprites SPRITES = new WidgetSprites(Utils.withDefaultNamespace("widget/button"), Utils.withDefaultNamespace("widget/button_disabled"), Utils.withDefaultNamespace("widget/button_highlighted"));
+    private static final ResourceLocation BUTTON = CatalogueConstants.resource("textures/gui/sprites/widget/button.png");
+    private static final ResourceLocation BUTTON_DISABLED = CatalogueConstants.resource("textures/gui/sprites/widget/button_disabled.png");
+    private static final ResourceLocation BUTTON_HIGHLIGHTED = CatalogueConstants.resource("textures/gui/sprites/widget/button_highlighted.png");
+    private static final RenderUtils.NineSlice BUTTON_SLICE = new RenderUtils.NineSlice(200, 20, 3);
+    private final @Nullable Consumer<CatalogueTextButton> onPress;
 
-    public CatalogueTextButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText) {
-        super(buttonId, x, y, widthIn, heightIn, buttonText);
+    public CatalogueTextButton(int x, int y, int width, int height, String text, @Nullable Consumer<CatalogueTextButton> onPress) {
+        super(-1, x, y, width, height, text);
+        this.onPress = onPress;
     }
 
-    public void drawButton(@NotNull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        if (!this.visible) return;
-        this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+    public void onClick() {
+        if (this.onPress != null) this.onPress.accept(this);
+    }
 
+    @Override
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        if (!this.visible) return;
+        this.hovered = RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
+        this.renderBackground(mc, mouseX, mouseY, partialTicks);
+        this.mouseDragged(mc, mouseX, mouseY);
+        this.renderContents(mc, mouseX, mouseY, partialTicks);
+    }
+
+    @SuppressWarnings("unused")
+    protected void renderBackground(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        mc.getTextureManager().bindTexture(SPRITES.get(this.enabled, this.hovered));
-        ClientHelper.blitNineSlicedSprite(new ClientHelper.NineSlice(200, 20, 3), this.x, this.y, this.width, this.height);
-
-        this.mouseDragged(mc, mouseX, mouseY);
-        this.renderString(mc.fontRenderer, this.getFGColor());
+        mc.getTextureManager().bindTexture(this.enabled ? (this.hovered ? BUTTON_HIGHLIGHTED : BUTTON) : BUTTON_DISABLED);
+        RenderUtils.blitNineSlicedSprite(BUTTON_SLICE, this.x, this.y, this.width, this.height);
     }
 
-    public void renderString(FontRenderer font, int color) {
-        this.renderScrollingString(font, 2, color);
+    @SuppressWarnings("unused")
+    protected void renderContents(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        this.renderScrollingString(mc.fontRenderer, 2, this.getFGColor());
     }
 
-    protected void renderScrollingString(FontRenderer font, int width, int color) {
-        int i = this.x + width;
-        int j = this.x + this.width - width;
-        this.renderScrollingString(font, this.displayString, i, this.y, j, this.y + this.height, color);
-    }
-
-    public void renderScrollingString(FontRenderer font, String text, int minX, int minY, int maxX, int maxY, int color) {
-        this.renderScrollingString(font, text, (minX + maxX) / 2, minX, minY, maxX, maxY, color);
-    }
-
-    public void renderScrollingString(FontRenderer font, String text, int centerX, int minX, int minY, int maxX, int maxY, int color) {
-        int i = font.getStringWidth(text);
-        int j = (minY + maxY - 9) / 2 + 1;
-        int k = maxX - minX;
-        if (i > k) {
-            int l = i - k;
-            double d0 = (double) System.currentTimeMillis() / (double) 1000.0F;
-            double d1 = Math.max((double) l * (double) 0.5F, 3.0F);
-            double d2 = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * d0 / d1)) / (double) 2.0F + (double) 0.5F;
-            double d3 = Utils.lerp(d2, 0.0F, l);
-            ClientHelper.scissor(minX, minY, maxX - minX, maxY - minY);
-            this.drawString(font, text, minX - (int) d3, j, color);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        } else {
-            int i1 = MathHelper.clamp(centerX, minX + i / 2, maxX - i / 2);
-            this.drawCenteredString(font, text, i1, j, color);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
+    @SuppressWarnings("SameParameterValue")
+    protected void renderScrollingString(FontRenderer font, int xBorder, int color) {
+        int boxLeft = this.x + xBorder;
+        int boxRight = this.x + this.width - xBorder;
+        RenderUtils.drawScrollingString(font, this.displayString, boxLeft, this.y, boxRight, this.y + this.height, color, true);
     }
 
     protected int getFGColor() {

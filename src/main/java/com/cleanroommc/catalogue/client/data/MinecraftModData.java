@@ -1,17 +1,17 @@
-package com.cleanroommc.catalogue.client.screen;
+package com.cleanroommc.catalogue.client.data;
 
-import com.cleanroommc.catalogue.client.IModData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IResourcePack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
 
-/// @author MrCrayfish
+/**
+ * Author: MrCrayfish
+ */
 public class MinecraftModData implements IModData {
     @Override
     public Type getType() {
@@ -38,7 +38,6 @@ public class MinecraftModData implements IModData {
         return this.getVersion();
     }
 
-    @Nullable
     @Override
     public String getDescription() {
         // Description provided by minecraft.wiki (CC BY-NC-SA 3.0)
@@ -113,7 +112,7 @@ public class MinecraftModData implements IModData {
 
     @Nullable
     @Override
-    public Update getUpdate() {
+    public CheckResult getCheckResult() {
         return null;
     }
 
@@ -123,13 +122,11 @@ public class MinecraftModData implements IModData {
         return null;
     }
 
-    @NotNull
     @Override
     public Set<String> getDependencies() {
         return Collections.emptySet();
     }
 
-    @NotNull
     @Override
     public Set<String> getChildMods() {
         return Collections.emptySet();
@@ -146,12 +143,12 @@ public class MinecraftModData implements IModData {
     }
 
     @Override
-    public void drawUpdateIcon(Minecraft minecraft, Update update, int x, int y) {
+    public void drawCheckIcon(Minecraft minecraft, CheckResult result, int x, int y) {
     }
 
     @Nullable
     @Override
-    public String getUpdateText(Update update) {
+    public String getCheckText(CheckResult result) {
         return null;
     }
 }

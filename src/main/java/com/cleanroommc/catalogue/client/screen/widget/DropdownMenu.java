@@ -1,12 +1,8 @@
 package com.cleanroommc.catalogue.client.screen.widget;
 
 import com.cleanroommc.catalogue.CatalogueConstants;
-import com.cleanroommc.catalogue.Utils;
-import com.cleanroommc.catalogue.client.ClientHelper;
+import com.cleanroommc.catalogue.client.RenderUtils;
 import com.cleanroommc.catalogue.client.screen.DropdownMenuHandler;
-import com.cleanroommc.catalogue.client.screen.layout.BorderedLinearLayout;
-import com.cleanroommc.catalogue.client.screen.layout.LayoutElement;
-import com.cleanroommc.catalogue.client.screen.layout.ScreenRectangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
@@ -18,26 +14,24 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /// @author MrCrayfish
-public class DropdownMenu extends Gui implements LayoutElement {
+public class DropdownMenu extends Gui {
+    private static final int BORDER = 1;
+    private static final int SPACING = 1;
+
     private final DropdownMenuHandler handler;
-    private final BorderedLinearLayout layout = (BorderedLinearLayout)
-            BorderedLinearLayout.vertical().border(1).spacing(1);
     private final List<MenuItem> items = new ArrayList<>();
     private Alignment alignment = Alignment.BELOW_LEFT;
     private @Nullable DropdownMenu parent;
     private @Nullable DropdownMenu subMenu;
 
-    public boolean active;
-    public boolean visible;
+    private boolean visible;
 
     private int x;
     private int y;
@@ -45,10 +39,8 @@ public class DropdownMenu extends Gui implements LayoutElement {
     private int height;
 
     private DropdownMenu(DropdownMenuHandler handler) {
-        super();
         this.handler = handler;
         this.visible = false;
-        this.active = true;
     }
 
     private void setAlignment(Alignment alignment) {
@@ -56,23 +48,23 @@ public class DropdownMenu extends Gui implements LayoutElement {
     }
 
     public void toggle(int mouseX, int mouseY) {
-        this.toggle(new ScreenRectangle(mouseX, mouseY, 0, 0));
+        this.toggle(new Anchor(mouseX, mouseY, 0, 0));
     }
 
     public void toggle(GuiButton widget) {
-        this.toggle(new ScreenRectangle(widget.x, widget.y, widget.width, widget.height));
+        this.toggle(new Anchor(widget.x, widget.y, widget.width, widget.height));
     }
 
-    public void toggle(ScreenRectangle rect) {
+    private void toggle(Anchor anchor) {
         if (!this.visible) {
-            this.show(rect);
+            this.show(anchor);
         } else {
             this.hide();
         }
     }
 
-    private void show(ScreenRectangle rect) {
-        this.updatePosition(rect);
+    private void show(Anchor anchor) {
+        this.updatePosition(anchor);
         this.items.forEach(child -> child.visible = true);
         this.visible = true;
         if (this.parent == null) {
@@ -91,17 +83,25 @@ public class DropdownMenu extends Gui implements LayoutElement {
         this.visible = false;
     }
 
-    private void updatePosition(ScreenRectangle rect) {
-        this.layout.arrangeElements();
-        this.width = this.layout.getWidth();
-        this.height = this.layout.getHeight();
-        this.alignment.aligner.accept(this, rect);
-        this.layout.setX(this.getX());
-        this.layout.setY(this.getY());
+    private void updatePosition(Anchor anchor) {
+        int contentWidth = this.items.stream().mapToInt(item -> item.width).max().orElse(0);
+        int contentHeight = this.items.stream().mapToInt(item -> item.height).sum() + Math.max(0, this.items.size() - 1) * SPACING;
+        this.width = contentWidth + BORDER * 2;
+        this.height = contentHeight + BORDER * 2;
+        this.alignment.aligner.accept(this, anchor);
+        this.layoutItems();
     }
 
-    public void addItem(MenuItem item) {
-        this.layout.addChild(item);
+    private void layoutItems() {
+        int itemY = this.y + BORDER;
+        for (MenuItem item : this.items) {
+            item.x = this.x + BORDER;
+            item.y = itemY;
+            itemY += item.height + SPACING;
+        }
+    }
+
+    private void addItem(MenuItem item) {
         this.items.add(item);
         item.visible = false;
     }
@@ -111,61 +111,47 @@ public class DropdownMenu extends Gui implements LayoutElement {
     }
 
     public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
-        GlStateManager.pushMatrix();
         final ScaledResolution sr = new ScaledResolution(minecraft);
         drawRect(0, 0, sr.getScaledWidth(), sr.getScaledHeight(), 0x50000000);
-        drawRect(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xAA000000);
+        drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xAA000000);
         this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
         if (this.subMenu != null) {
             this.subMenu.drawScreen(minecraft, mouseX, mouseY, deltaTick);
         }
-        GlStateManager.popMatrix();
     }
 
     public boolean mousePressed(Minecraft minecraft, int mouseX, int mouseY) {
-        if (!this.active || !this.visible) return false;
+        if (!this.visible) return false;
 
-        AtomicBoolean clicked = new AtomicBoolean();
-        this.layout.visitWidgets(widget -> {
-            if (widget instanceof MenuItem item && item.mousePressed(minecraft, mouseX, mouseY)) {
-                clicked.set(true);
+        for (MenuItem item : this.items) {
+            if (item.mousePressed(minecraft, mouseX, mouseY)) {
+                return true;
             }
-        });
-        if (this.subMenu != null && this.subMenu.mousePressed(minecraft, mouseX, mouseY)) {
-            clicked.set(true);
         }
-        return clicked.get();
+        return this.subMenu != null && this.subMenu.mousePressed(minecraft, mouseX, mouseY);
     }
 
-    @Override
-    public void visitWidgets(Consumer<LayoutElement> consumer) {
-        this.layout.visitWidgets(consumer);
-    }
+    private static class MenuItem extends Gui {
+        private static final ResourceLocation TEXTURE = CatalogueConstants.resource("textures/gui/sprites/dropdown/item.png");
+        private static final ResourceLocation HIGHLIGHTED_TEXTURE = CatalogueConstants.resource("textures/gui/sprites/dropdown/item_highlighted.png");
+        private static final RenderUtils.NineSlice MENU_ITEM_SLICE = new RenderUtils.NineSlice(12, 12, 2);
 
-    public static class MenuItem extends Gui implements LayoutElement {
-        static final WidgetSprites SPRITES = new WidgetSprites(
-                Utils.withDefaultNamespace("dropdown/item"),
-                Utils.withDefaultNamespace("dropdown/item_highlighted")
-        );
         protected final DropdownMenu parent;
-        private final Runnable onClick;
+        private final @Nullable Runnable onClick;
 
-        private int width;
-        private int height;
-        private int x;
-        private int y;
-        public String label;
-        public boolean enabled;
-        public boolean visible;
+        protected int width;
+        protected int height;
+        protected int x;
+        protected int y;
+        protected final String label;
+        private boolean visible;
         protected boolean hovered;
 
-        public MenuItem(DropdownMenu menu, String label, Runnable onClick) {
-            super();
+        private MenuItem(DropdownMenu menu, String label, @Nullable Runnable onClick) {
             this.x = 0;
             this.y = 0;
             this.width = 100;
             this.height = 20;
-            this.enabled = true;
             this.visible = true;
             this.label = label;
             this.parent = menu;
@@ -176,24 +162,23 @@ public class DropdownMenu extends Gui implements LayoutElement {
             return false;
         }
 
-        public void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
+        protected void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
             if (!this.visible) return;
-            this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.getWidth() && mouseY < this.getY() + this.height;
+            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            minecraft.getTextureManager().bindTexture(SPRITES.get(this.enabled, this.hovered || this.selected()));
-            ClientHelper.blitNineSlicedSprite(new ClientHelper.NineSlice(12, 12, 2), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+            minecraft.getTextureManager().bindTexture(this.hovered || this.selected() ? HIGHLIGHTED_TEXTURE : TEXTURE);
+            RenderUtils.blitNineSlicedSprite(MENU_ITEM_SLICE, this.x, this.y, this.width, this.height);
 
             FontRenderer font = minecraft.fontRenderer;
-            int offset = (this.getHeight() - font.FONT_HEIGHT) / 2 + 1;
-            this.drawString(font, this.label, this.getX() + offset, this.getY() + offset, 0xFFFFFFFF);
+            int offset = (this.height - font.FONT_HEIGHT) / 2 + 1;
+            this.drawString(font, this.label, this.x + offset, this.y + offset, 0xFFFFFFFF);
         }
 
-        public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-            if (this.enabled && this.visible && this.hovered) {
+        private boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+            if (this.visible && this.hovered) {
                 this.onClick(mouseX, mouseY);
                 this.playPressSound(mc.getSoundHandler());
                 return true;
@@ -201,8 +186,8 @@ public class DropdownMenu extends Gui implements LayoutElement {
             return false;
         }
 
-        public void onClick(int mouseX, int mouseY) {
-            this.onClick.run();
+        protected void onClick(int mouseX, int mouseY) {
+            if (this.onClick != null) this.onClick.run();
             this.parent.deepClose();
         }
 
@@ -213,65 +198,8 @@ public class DropdownMenu extends Gui implements LayoutElement {
             return labelOffset + labelWidth + labelOffset;
         }
 
-        public boolean isMouseOver() {
-            return this.hovered;
-        }
-
-        public void playPressSound(SoundHandler soundHandlerIn) {
-            soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-        }
-
-        @Override
-        public void setX(int pX) {
-            this.x = pX;
-        }
-
-        @Override
-        public void setY(int pY) {
-            this.y = pY;
-        }
-
-        @Override
-        public int getX() {
-            return this.x;
-        }
-
-        @Override
-        public int getY() {
-            return this.y;
-        }
-
-        @Override
-        public int getWidth() {
-            return this.width;
-        }
-
-        @Override
-        public int getHeight() {
-            return this.height;
-        }
-
-        public void setWidth(int width) {
-            this.width = width;
-        }
-
-        public void setHeight(int height) {
-            this.height = height;
-        }
-
-        public void setSize(int width, int height) {
-            this.setWidth(width);
-            this.setHeight(height);
-        }
-
-        @Override
-        public void setPosition(int pX, int pY) {
-            LayoutElement.super.setPosition(pX, pY);
-        }
-
-        @Override
-        public void visitWidgets(Consumer<LayoutElement> pConsumer) {
-            pConsumer.accept(this);
+        private void playPressSound(SoundHandler handler) {
+            handler.playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }
     }
 
@@ -281,28 +209,26 @@ public class DropdownMenu extends Gui implements LayoutElement {
         private final MutableBoolean holder;
         private final Function<Boolean, Boolean> callback;
 
-        public CheckboxMenuItem(DropdownMenu menu, String label, MutableBoolean holder, Function<Boolean, Boolean> callback) {
-            super(menu, label, () -> {
-            });
+        private CheckboxMenuItem(DropdownMenu menu, String label, MutableBoolean holder, Function<Boolean, Boolean> callback) {
+            super(menu, label, null);
             this.holder = holder;
             this.callback = callback;
         }
 
         @Override
-        public void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
+        protected void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
             super.drawWidget(minecraft, mouseX, mouseY, deltaTick);
-            int offset = (this.getHeight() - 14) / 2;
+            int offset = (this.height - 14) / 2;
             minecraft.getTextureManager().bindTexture(TEXTURE);
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            drawModalRectWithCustomSizedTexture(this.getX() + this.getWidth() - 14 - offset, this.getY() + offset, this.hovered ? 14 : 0, this.holder.get() ? 14 : 0, 14, 14, 64, 64);
+            drawModalRectWithCustomSizedTexture(this.x + this.width - 14 - offset, this.y + offset, this.hovered ? 14 : 0, this.holder.get() ? 14 : 0, 14, 14, 64, 64);
         }
 
         @Override
-        public void onClick(int mouseX, int mouseY) {
+        protected void onClick(int mouseX, int mouseY) {
             boolean newValue = !this.holder.get();
             this.holder.setValue(newValue);
             if (this.callback.apply(newValue)) {
@@ -313,9 +239,9 @@ public class DropdownMenu extends Gui implements LayoutElement {
         @Override
         protected int calculateWidth() {
             FontRenderer font = Minecraft.getMinecraft().fontRenderer;
-            int labelOffset = (this.getHeight() - font.FONT_HEIGHT) / 2 + 1;
+            int labelOffset = (this.height - font.FONT_HEIGHT) / 2 + 1;
             int labelWidth = font.getStringWidth(this.label);
-            int checkboxOffset = (this.getHeight() - 14) / 2;
+            int checkboxOffset = (this.height - 14) / 2;
             return labelOffset + labelWidth + labelOffset + 14 + checkboxOffset;
         }
     }
@@ -323,27 +249,21 @@ public class DropdownMenu extends Gui implements LayoutElement {
     private static class DropdownItem extends MenuItem {
         private final DropdownMenu subMenu;
 
-        public DropdownItem(DropdownMenu menu, DropdownMenu subMenu, String label) {
-            super(menu, label, () -> {
-            });
+        private DropdownItem(DropdownMenu menu, DropdownMenu subMenu, String label) {
+            super(menu, label, null);
             this.subMenu = subMenu;
         }
 
         @Override
-        public void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
+        protected void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
             super.drawWidget(minecraft, mouseX, mouseY, deltaTick);
             FontRenderer font = minecraft.fontRenderer;
-            int top = this.getY() + (this.getHeight() - font.FONT_HEIGHT) / 2 + 1;
-            this.drawString(font, ">", this.getX() + this.getWidth() - 10, top, 0xFFFFFFFF);
+            int top = this.y + (this.height - font.FONT_HEIGHT) / 2 + 1;
+            this.drawString(font, ">", this.x + this.width - 10, top, 0xFFFFFFFF);
         }
 
         @Override
-        public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-            return super.mousePressed(mc, mouseX, mouseY) || this.subMenu.mousePressed(mc, mouseX, mouseY);
-        }
-
-        @Override
-        public void onClick(int mouseX, int mouseY) {
+        protected void onClick(int mouseX, int mouseY) {
             if (this.parent.subMenu != null) {
                 this.parent.subMenu.hide();
                 if (this.parent.subMenu == this.subMenu) {
@@ -352,13 +272,7 @@ public class DropdownMenu extends Gui implements LayoutElement {
                 }
             }
             this.parent.subMenu = this.subMenu;
-            this.subMenu.show(this.getRectangle());
-        }
-
-        @Override
-        public void visitWidgets(Consumer<LayoutElement> consumer) {
-            consumer.accept(this);
-            this.subMenu.visitWidgets(consumer);
+            this.subMenu.show(Anchor.of(this));
         }
 
         @Override
@@ -369,7 +283,7 @@ public class DropdownMenu extends Gui implements LayoutElement {
         @Override
         protected int calculateWidth() {
             FontRenderer font = Minecraft.getMinecraft().fontRenderer;
-            int labelOffset = (this.getHeight() - font.FONT_HEIGHT) / 2 + 1;
+            int labelOffset = (this.height - font.FONT_HEIGHT) / 2 + 1;
             int labelWidth = font.getStringWidth(this.label);
             int arrowWidth = font.getStringWidth(">");
             return labelOffset + labelWidth + labelOffset + arrowWidth + labelOffset;
@@ -377,35 +291,34 @@ public class DropdownMenu extends Gui implements LayoutElement {
     }
 
     private interface MenuAligner {
-        void accept(DropdownMenu menu, ScreenRectangle rectangle);
+        void accept(DropdownMenu menu, Anchor anchor);
     }
 
     public enum Alignment {
         ABOVE_LEFT((menu, rectangle) -> {
-            menu.setX(rectangle.left());
-            menu.setY(rectangle.top() - menu.getHeight());
+            menu.x = rectangle.left();
+            menu.y = rectangle.top() - menu.height;
         }),
         ABOVE_RIGHT((menu, rectangle) -> {
-            menu.setX(rectangle.right() - menu.getWidth());
-            menu.setY(rectangle.top() - menu.getHeight());
+            menu.x = rectangle.right() - menu.width;
+            menu.y = rectangle.top() - menu.height;
         }),
         BELOW_LEFT((menu, rectangle) -> {
-            menu.setX(rectangle.left() - 1);
-            menu.setY(rectangle.bottom());
+            menu.x = rectangle.left() - 1;
+            menu.y = rectangle.bottom();
         }),
         BELOW_RIGHT((menu, rectangle) -> {
-            menu.setX(rectangle.right() - menu.getWidth() + 1);
-            menu.setY(rectangle.bottom());
+            menu.x = rectangle.right() - menu.width + 1;
+            menu.y = rectangle.bottom();
         }),
         END_TOP((menu, rectangle) -> {
-            menu.setX(rectangle.right());
-            menu.setY(rectangle.top() - 1);
+            menu.x = rectangle.right();
+            menu.y = rectangle.top() - 1;
         }),
         END_BOTTOM((menu, rectangle) -> {
-            menu.setX(rectangle.right());
-            menu.setY(rectangle.bottom() - menu.getHeight() + 1);
+            menu.x = rectangle.right();
+            menu.y = rectangle.bottom() - menu.height + 1;
         });
-
 
         private final MenuAligner aligner;
 
@@ -415,19 +328,31 @@ public class DropdownMenu extends Gui implements LayoutElement {
 
     }
 
+    private record Anchor(int left, int top, int width, int height) {
+        private static Anchor of(MenuItem item) {
+            return new Anchor(item.x, item.y, item.width, item.height);
+        }
+
+        private int right() {
+            return this.left + this.width;
+        }
+
+        private int bottom() {
+            return this.top + this.height;
+        }
+    }
+
     public static Builder builder(DropdownMenuHandler handler) {
         return new Builder(handler);
     }
 
     public static class Builder {
-        private final DropdownMenuHandler handler;
         private final DropdownMenu base;
         private final List<MenuItem> items = new ArrayList<>();
         private int minItemWidth = 0;
         private int minItemHeight = 20;
 
         private Builder(DropdownMenuHandler handler) {
-            this.handler = handler;
             this.base = new DropdownMenu(handler);
         }
 
@@ -462,40 +387,11 @@ public class DropdownMenu extends Gui implements LayoutElement {
         public DropdownMenu build() {
             int maxWidth = this.items.stream().mapToInt(MenuItem::calculateWidth).max().orElse(100);
             this.items.forEach(widget -> {
-                widget.setSize(Math.max(maxWidth, this.minItemWidth), this.minItemHeight);
+                widget.width = Math.max(maxWidth, this.minItemWidth);
+                widget.height = this.minItemHeight;
                 this.base.addItem(widget);
             });
             return this.base;
         }
-    }
-
-    @Override
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    @Override
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public int getX() {
-        return this.x;
-    }
-
-    @Override
-    public int getY() {
-        return this.y;
-    }
-
-    @Override
-    public int getWidth() {
-        return this.width;
-    }
-
-    @Override
-    public int getHeight() {
-        return this.height;
     }
 }

@@ -2,7 +2,7 @@ package com.cleanroommc.common;
 
 import com.cleanroommc.catalogue.CatalogueConfig;
 import com.cleanroommc.catalogue.CatalogueConstants;
-import com.cleanroommc.catalogue.client.ClientHandler;
+import com.cleanroommc.catalogue.client.ClientEventHandler;
 import com.google.common.eventbus.EventBus;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
@@ -27,8 +27,7 @@ public class CatalogueContainer extends DummyModContainer {
         meta.iconFile = "/assets/catalogue/icon.png";
         meta.backgroundFile = "/assets/catalogue/background.png";
         ConfigManager.register(CatalogueConfig.class);
-        MinecraftForge.EVENT_BUS.register(CatalogueConfig.class);
-        MinecraftForge.EVENT_BUS.register(ClientHandler.class);
+        MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
     }
 
     @Override

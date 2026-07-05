@@ -2,15 +2,15 @@ package com.cleanroommc.catalogue.client.screen.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.gui.GuiListExtended;
 
-import java.util.Objects;
+import javax.annotation.Nullable;
 
-public class CatalogueListSelection<E extends CatalogueListExtended.IListEntry> extends CatalogueListExtended<E> {
+public class CatalogueListSelection<E extends GuiListExtended.IGuiListEntry> extends CatalogueListExtended<E> {
     private @Nullable E selected;
 
-    public CatalogueListSelection(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn) {
-        super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
+    public CatalogueListSelection(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {
+        super(mc, width, height, top, bottom, slotHeight);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class CatalogueListSelection<E extends CatalogueListExtended.IListEntry> 
 
     @Override
     protected boolean isSelected(int slotIndex) {
-        return Objects.equals(this.getSelected(), this.getListEntry(slotIndex));
+        return this.getSelected() == this.getListEntry(slotIndex);
     }
 
     @Nullable
