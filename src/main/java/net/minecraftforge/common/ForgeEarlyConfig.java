@@ -1,6 +1,7 @@
 package net.minecraftforge.common;
 
 import net.minecraftforge.common.config.Config;
+import zone.rong.mixinbooter.Tags;
 
 @Config(modid = ForgeVersion.MOD_ID, name = ForgeVersion.MOD_ID + "_early")
 public class ForgeEarlyConfig {
@@ -66,7 +67,7 @@ public class ForgeEarlyConfig {
 
     public static boolean CUSTOM_BUILT_IN_MOD_VERSION = false;
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
-    public static String MIXIN_BOOTER_VERSION = "11.1";
+    public static String MIXIN_BOOTER_VERSION = Tags.VERSION;
 
     @Config.Comment("""
             Mods in this list have one or more of the problems list below:
