@@ -64,6 +64,10 @@ public final class CleanroomModDiscoverer {
     private static final String COREMOD_CONTAINS_FML_MOD = "FMLCorePluginContainsFMLMod";
     private static final String FML_CORE_PLUGIN = "FMLCorePlugin";
 
+    public static CleanroomModDiscoverer instance() {
+        return INSTANCE;
+    }
+
     private final Gson gson = new GsonBuilder().setLenient().create();
     private final SetMultimap<String, File> modIdToFiles = HashMultimap.create();
     private final SetMultimap<File, String> fileToModIds = LinkedHashMultimap.create();
@@ -77,12 +81,111 @@ public final class CleanroomModDiscoverer {
         this.discover();
     }
 
-    public static CleanroomModDiscoverer instance() {
-        return INSTANCE;
-    }
-
     public boolean hasForgeMods() {
         return hasForgeMods;
+    }
+
+    public boolean isModPresent(String modId) {
+        return modIdToFiles.containsKey(modId);
+    }
+
+    public Set<String> presentMods() {
+        return Collections.unmodifiableSet(modIdToFiles.keySet());
+    }
+
+    public Set<File> modSources(String modId) {
+        return Collections.unmodifiableSet(modIdToFiles.get(modId));
+    }
+
+    public String modFromSource(File source) {
+        Set<String> ids = modsFromSource(source);
+        return ids.isEmpty() ? null : ids.iterator().next();
+    }
+
+    public Set<String> modsFromSource(File source) {
+        return Collections.unmodifiableSet(fileToModIds.get(source.getAbsoluteFile()));
+    }
+
+    public ASMDataTable getASMTable() {
+        return asmDataTable;
+    }
+
+    public void discoverMixinMods() {
+        for (DiscoveredMod mod : discoveredFiles.values()) {
+            if (!mod.hasMixinManifestAttributes()) {
+                continue;
+            }
+            if (mod.coremod() != null) {
+                try {
+                    Launch.classLoader.addURL(mod.file().toURI().toURL());
+                } catch (MalformedURLException e) {
+                    CleanroomLog.get().error("Failed to manually load {} as a mixin mod {}.", mod.file().getName(), e);
+                }
+            }
+            CleanroomLog.get().debug("Submitting mixin container for {}", mod.file().getName());
+            MixinBootstrap.getPlatform().addContainer(new ContainerHandleURI(mod.file().toURI()));
+        }
+    }
+
+    public void discoverCoreMods(File minecraftDirectory, LaunchClassLoader classLoader, FMLTweaker tweaker) {
+        File modsDir = setupCoreModDir(minecraftDirectory);
+        findDerpMods(modsDir);
+
+        CleanroomLog.get().debug("Discovering coremods");
+        Set<String> mixinConfigs = new LinkedHashSet<>();
+        File containedDepsDir = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
+        for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
+            File coreMod = discoveredMod.file();
+            if (coreMod.isDirectory()) {
+                CleanroomLog.get().debug("Ignoring folder {} in coremod searching", coreMod);
+                continue;
+            }
+            discoverCoreMod(classLoader, tweaker, discoveredMod, containedDepsDir, mixinConfigs);
+        }
+    }
+
+    public IdentifiedMods identifyMods(ModClassLoader modClassLoader, List<String> injectedContainers, List<ModContainer> builtInMods) {
+        List<ModCandidate> modCandidates = new ArrayList<>();
+        List<File> nonModLibs = new ArrayList<>();
+
+        List<ModContainer> mods = new ArrayList<>(builtInMods);
+        CleanroomLog.get().debug("Building injected Mod Containers {}", injectedContainers);
+        for (String containerClass : injectedContainers) {
+            ModContainer modContainer;
+            try {
+                modContainer = (ModContainer) Class.forName(containerClass, true, modClassLoader).getConstructor().newInstance();
+            } catch (Exception e) {
+                CleanroomLog.get().error("A problem occurred instantiating the injected mod container {}", containerClass, e);
+                throw new LoaderException(e);
+            }
+            mods.add(new InjectedModContainer(modContainer, modContainer.getSource()));
+        }
+
+        applyForceLoadAsMod();
+        rescueDroppedCoremods();
+
+        CleanroomLog.get().debug("Attempting to load mods contained in the minecraft jar file and associated classes");
+        addClasspathCandidates(modClassLoader, modCandidates);
+        CleanroomLog.get().debug("Minecraft jar mods loaded successfully");
+        addLibraryCandidates(modCandidates);
+
+        mods.addAll(exploreModCandidates(modCandidates, nonModLibs));
+        return new IdentifiedMods(mods, nonModLibs);
+    }
+
+    public void addBuiltInModContainers(List<ModContainer> mods, ModContainer minecraft, ModContainer mcp) {
+        // Minecraft
+        mods.add(minecraft);
+        // Minecraft Coder Pack
+        mods.add(new InjectedModContainer(mcp, new File("minecraft.jar")));
+        // Cleanroom
+        mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
+        mods.add(new InjectedModContainer(new CleanMixModContainer(), CleanMixModContainer.location()));
+        // Included Mods
+        mods.add(new InjectedModContainer(new MixinBooterModContainer(), FMLSanityChecker.fmlLocation));
+        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
+        // Kirino
+        KirinoCommonCore.identifyMods(mods);
     }
 
     private void discover() {
@@ -178,105 +281,6 @@ public final class CleanroomModDiscoverer {
         }
     }
 
-    public boolean isModPresent(String modId) {
-        return modIdToFiles.containsKey(modId);
-    }
-
-    public Set<String> presentMods() {
-        return Collections.unmodifiableSet(modIdToFiles.keySet());
-    }
-
-    public Set<File> modSources(String modId) {
-        return Collections.unmodifiableSet(modIdToFiles.get(modId));
-    }
-
-    public String modFromSource(File source) {
-        Set<String> ids = modsFromSource(source);
-        return ids.isEmpty() ? null : ids.iterator().next();
-    }
-
-    public Set<String> modsFromSource(File source) {
-        return Collections.unmodifiableSet(fileToModIds.get(source.getAbsoluteFile()));
-    }
-
-    public void discoverMixinMods() {
-        for (DiscoveredMod mod : discoveredFiles.values()) {
-            if (!mod.hasMixinManifestAttributes()) {
-                continue;
-            }
-            if (mod.coremod() != null) {
-                try {
-                    Launch.classLoader.addURL(mod.file().toURI().toURL());
-                } catch (MalformedURLException e) {
-                    CleanroomLog.get().error("Failed to manually load {} as a mixin mod {}.", mod.file().getName(), e);
-                }
-            }
-            CleanroomLog.get().debug("Submitting mixin container for {}", mod.file().getName());
-            MixinBootstrap.getPlatform().addContainer(new ContainerHandleURI(mod.file().toURI()));
-        }
-    }
-
-    public void applyForceLoadAsMod() {
-        List<String> ignored = CoreModManager.getIgnoredMods();
-        List<String> reparseable = CoreModManager.getReparseableCoremods();
-        for (DiscoveredMod file : discoveredFiles.values()) {
-            if (!file.forceLoadAsMod()) {
-                continue;
-            }
-            String name = file.file().getName();
-            ignored.remove(name);
-            if (file.forceReparseable() && !reparseable.contains(name)) {
-                reparseable.add(name);
-            }
-        }
-    }
-
-    public void rescueDroppedCoremods() {
-        Map<String, File> coremods = new LinkedHashMap<>();
-        for (DiscoveredMod file : discoveredFiles.values()) {
-            File jar = file.file();
-            String coremod = file.coremod();
-            if (coremod == null || file.tweaker() == null || coremods.containsKey(coremod)) {
-                continue;
-            }
-            try {
-                Launch.classLoader.addURL(jar.toURI().toURL());
-                coremods.put(coremod, jar);
-            } catch (MalformedURLException e) {
-                CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, jar.getName(), e);
-            }
-        }
-        for (Map.Entry<String, File> entry : coremods.entrySet()) {
-            String coremod = entry.getKey();
-            File jar = entry.getValue();
-            if (CoreModManager.isCoreModLoaded(coremod)) {
-                continue;
-            }
-            if (CoreModManager.loadCoreModFromDiscoveredJar(Launch.classLoader, coremod, jar)) {
-                CleanroomLog.get().warn("{} declares both a TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.", jar.getName(), coremod);
-            } else {
-                CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, jar.getName());
-            }
-        }
-    }
-
-    public void discoverCoreMods(File minecraftDirectory, LaunchClassLoader classLoader, FMLTweaker tweaker) {
-        File modsDir = setupCoreModDir(minecraftDirectory);
-        findDerpMods(modsDir);
-
-        CleanroomLog.get().debug("Discovering coremods");
-        Set<String> mixinConfigs = new LinkedHashSet<>();
-        File containedDepsDir = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
-        for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
-            File coreMod = discoveredMod.file();
-            if (coreMod.isDirectory()) {
-                CleanroomLog.get().debug("Ignoring folder {} in coremod searching", coreMod);
-                continue;
-            }
-            discoverCoreMod(classLoader, tweaker, discoveredMod, containedDepsDir, mixinConfigs);
-        }
-    }
-
     private void discoverCoreMod(LaunchClassLoader classLoader, FMLTweaker tweaker, DiscoveredMod discoveredMod, File containedDepsDir, Set<String> mixinConfigs) {
         File coreMod = discoveredMod.file();
         CleanroomLog.get().debug("Examining for coremod candidacy {}", coreMod.getName());
@@ -363,6 +367,50 @@ public final class CleanroomModDiscoverer {
         }
     }
 
+    private void applyForceLoadAsMod() {
+        List<String> ignored = CoreModManager.getIgnoredMods();
+        List<String> reparseable = CoreModManager.getReparseableCoremods();
+        for (DiscoveredMod file : discoveredFiles.values()) {
+            if (!file.forceLoadAsMod()) {
+                continue;
+            }
+            String name = file.file().getName();
+            ignored.remove(name);
+            if (file.forceReparseable() && !reparseable.contains(name)) {
+                reparseable.add(name);
+            }
+        }
+    }
+
+    private void rescueDroppedCoremods() {
+        Map<String, File> coremods = new LinkedHashMap<>();
+        for (DiscoveredMod file : discoveredFiles.values()) {
+            File jar = file.file();
+            String coremod = file.coremod();
+            if (coremod == null || file.tweaker() == null || coremods.containsKey(coremod)) {
+                continue;
+            }
+            try {
+                Launch.classLoader.addURL(jar.toURI().toURL());
+                coremods.put(coremod, jar);
+            } catch (MalformedURLException e) {
+                CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, jar.getName(), e);
+            }
+        }
+        for (Map.Entry<String, File> entry : coremods.entrySet()) {
+            String coremod = entry.getKey();
+            File jar = entry.getValue();
+            if (CoreModManager.isCoreModLoaded(coremod)) {
+                continue;
+            }
+            if (CoreModManager.loadCoreModFromDiscoveredJar(Launch.classLoader, coremod, jar)) {
+                CleanroomLog.get().warn("{} declares both a TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.", jar.getName(), coremod);
+            } else {
+                CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, jar.getName());
+            }
+        }
+    }
+
     private static void addContainedDepsToClasspath(LaunchClassLoader classLoader, Attributes attributes, File containedDepsDir) throws MalformedURLException {
         String containedDeps = attributes.getValue(LibraryManager.MODCONTAINSDEPS);
         if (containedDeps == null || containedDeps.isEmpty()) {
@@ -429,51 +477,6 @@ public final class CleanroomModDiscoverer {
             }
             throw new RuntimeException("Cleanroom detected extracted mod jars! Check the logs for more information!");
         }
-    }
-
-    public IdentifiedMods identifyMods(ModClassLoader modClassLoader, List<String> injectedContainers, List<ModContainer> builtInMods) {
-        List<ModCandidate> modCandidates = new ArrayList<>();
-        List<File> nonModLibs = new ArrayList<>();
-
-        List<ModContainer> mods = new ArrayList<>(builtInMods);
-        CleanroomLog.get().debug("Building injected Mod Containers {}", injectedContainers);
-        for (String containerClass : injectedContainers) {
-            ModContainer modContainer;
-            try {
-                modContainer = (ModContainer) Class.forName(containerClass, true, modClassLoader).getConstructor().newInstance();
-            } catch (Exception e) {
-                CleanroomLog.get().error("A problem occurred instantiating the injected mod container {}", containerClass, e);
-                throw new LoaderException(e);
-            }
-            mods.add(new InjectedModContainer(modContainer, modContainer.getSource()));
-        }
-
-        CleanroomLog.get().debug("Attempting to load mods contained in the minecraft jar file and associated classes");
-        addClasspathCandidates(modClassLoader, modCandidates);
-        CleanroomLog.get().debug("Minecraft jar mods loaded successfully");
-        addLibraryCandidates(modCandidates);
-
-        mods.addAll(exploreModCandidates(modCandidates, nonModLibs));
-        return new IdentifiedMods(mods, nonModLibs);
-    }
-
-    public ASMDataTable getASMTable() {
-        return asmDataTable;
-    }
-
-    public void addBuiltInModContainers(List<ModContainer> mods, ModContainer minecraft, ModContainer mcp) {
-        // Minecraft
-        mods.add(minecraft);
-        // Minecraft Coder Pack
-        mods.add(new InjectedModContainer(mcp, new File("minecraft.jar")));
-        // Cleanroom
-        mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
-        mods.add(new InjectedModContainer(new CleanMixModContainer(), CleanMixModContainer.location()));
-        // Included Mods
-        mods.add(new InjectedModContainer(new MixinBooterModContainer(), FMLSanityChecker.fmlLocation));
-        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
-        // Kirino
-        KirinoCommonCore.identifyMods(mods);
     }
 
 
