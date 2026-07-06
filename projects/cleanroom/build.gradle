@@ -258,7 +258,6 @@ configurations {
 }
 
 dependencies {
-    compileOnly "org.jetbrains:annotations:26.1.0"
     // LWJGL
     compileOnly "com.cleanroommc:lwjglx:1.0.0"
     installer "com.cleanroommc:lwjglxx:1.1.21"
