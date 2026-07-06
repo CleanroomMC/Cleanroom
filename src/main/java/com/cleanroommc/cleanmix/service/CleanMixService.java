@@ -1,6 +1,7 @@
 package com.cleanroommc.cleanmix.service;
 
 import com.cleanroommc.cleanmix.CleanMixModContainer;
+import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.google.common.base.Strings;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -29,6 +30,11 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
     @Override
     public String getName() {
         return "CleanMix";
+    }
+
+    @Override
+    public String getSideName() {
+        return CleanroomEnvironment.side().name();
     }
 
     @Override
