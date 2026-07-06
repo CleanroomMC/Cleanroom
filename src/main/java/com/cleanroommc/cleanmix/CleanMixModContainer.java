@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +20,16 @@ public class CleanMixModContainer extends DummyModContainer {
 
     public static File location() {
         try {
-            URL url = Mixin.class.getProtectionDomain().getCodeSource().getLocation();
-            return new File(url.toURI()).getAbsoluteFile();
-        } catch (Exception e) {
-            return FMLSanityChecker.fmlLocation;
-        }
+            String resource = Mixin.class.getName().replace('.', '/') + ".class";
+            URL url = Mixin.class.getClassLoader().getResource(resource);
+            String path = url.getPath();
+            int index = path.indexOf('!');
+            if (index != -1) {
+                path = path.substring(0, index);
+            }
+            return new File(new URI(path)).getAbsoluteFile();
+        } catch (Exception ignore) { }
+        return FMLSanityChecker.fmlLocation;
     }
 
     public CleanMixModContainer() {
