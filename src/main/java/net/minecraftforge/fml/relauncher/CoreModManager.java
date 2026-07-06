@@ -42,6 +42,7 @@ import java.net.MalformedURLException;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.function.ToIntFunction;
+import java.util.jar.JarFile;
 
 public class CoreModManager {
     private static final Set<String> loadedPlugins = new HashSet<>();
@@ -246,6 +247,11 @@ public class CoreModManager {
         CleanroomModDiscoverer.instance().discoverCoreMods(mcDir, classLoader, tweaker);
         // Mixin Mods
         CleanroomModDiscoverer.instance().discoverMixinMods();
+    }
+
+    // Some mods call this reflectively
+    private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) throws MalformedURLException {
+        injectDiscoveredCascadingTweaker(coreMod, cascadedTweaker, classLoader, tweaker, sortingOrder);
     }
 
     public static List<String> getIgnoredMods()
