@@ -342,16 +342,6 @@ public class SplashProgress
                             warnY += 20;
                         }
 
-                        // Keyboard polling
-                        while (Keyboard.next()) {
-                            if (Keyboard.getEventKeyState()) {
-                                if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE)
-                                    warningResult = false;
-                                else
-                                    warningResult = true;
-                            }
-                        }
-
                     }
                     else
                     {
@@ -834,23 +824,47 @@ public class SplashProgress
     public static boolean confirm(String warning, String prompt) {
         if (!enabled) {
             FMLLog.log.warn("Splash screen disabled, logging warning:\n{}", warning);
-            return false;
+            return true;
         }
         warningWarning = warning;
         warningPrompt = prompt;
         warningResult = null;
 
-        while (warningResult == null) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                return false;
+        try {
+            long deadline = System.currentTimeMillis() + 300_000L;
+            while (warningResult == null) {
+                if (thread != null && (thread.getState() == Thread.State.TERMINATED || threadError != null)) {
+                    FMLLog.log.error("Splash thread died during warning, auto-confirming", threadError);
+                    return true;
+                }
+                if (System.currentTimeMillis() > deadline) {
+                    FMLLog.log.warn("Warning confirmation timed out after 5 min, auto-confirming");
+                    return true;
+                }
+                if (mutex.tryAcquire()) {
+                    try {
+                        Display.processMessages();
+                        while (Keyboard.next()) {
+                            if (Keyboard.getEventKeyState()) {
+                                warningResult = (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE);
+                            }
+                        }
+                    } finally {
+                        mutex.release();
+                    }
+                }
+                try {
+                    Thread.sleep(25);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return true;
+                }
             }
+            return warningResult;
+        } finally {
+            warningWarning = null;
+            warningPrompt = null;
         }
-
-        warningWarning = null;
-        warningPrompt = null;
-        return warningResult;
     }
 
     private static final IntBuffer buf = BufferUtils.createIntBuffer(4 * 1024 * 1024);
