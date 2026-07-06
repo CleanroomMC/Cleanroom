@@ -3,7 +3,10 @@ package com.cleanroommc.cleanmix.service;
 import com.cleanroommc.cleanmix.CleanMixModContainer;
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.google.common.base.Strings;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import net.minecraftforge.fml.common.launcher.FMLTweaker;
+import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
 import org.spongepowered.asm.launch.platform.container.IContainerHandle;
 import org.spongepowered.asm.mixin.MixinEnvironment;
@@ -16,9 +19,8 @@ import org.spongepowered.asm.service.mojang.AbstractMixinServiceLaunchWrapper;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
 
@@ -58,13 +60,13 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
         return new ContainerHandleURI(CleanMixModContainer.location().toURI());
     }
 
+    /**
+     * @see CoreModManager#handleLaunch(File, LaunchClassLoader, FMLTweaker)
+     * @see CleanroomModDiscoverer#discoverMixinMods() 
+     */
     @Override
     public Collection<IContainerHandle> getMixinContainers() {
-        List<IContainerHandle> containers = new ArrayList<>();
-        for (File jar : CleanroomModDiscoverer.instance().manifestMixinJars()) {
-            containers.add(new ContainerHandleURI(jar.toURI()));
-        }
-        return containers;
+        return Collections.emptyList();
     }
 
     @Override

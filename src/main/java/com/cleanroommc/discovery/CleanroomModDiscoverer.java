@@ -29,6 +29,8 @@ import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.commons.io.IOUtils;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
 import org.spongepowered.asm.util.Constants.ManifestAttributes;
 import zone.rong.mixinbooter.MixinBooterModContainer;
 
@@ -197,14 +199,21 @@ public final class CleanroomModDiscoverer {
         return Collections.unmodifiableSet(fileToModIds.get(source.getAbsoluteFile()));
     }
 
-    public Set<File> manifestMixinJars() {
-        Set<File> jars = new LinkedHashSet<>();
-        for (DiscoveredMod file : discoveredFiles.values()) {
-            if (file.hasMixinManifestAttributes()) {
-                jars.add(file.file());
+    public void discoverMixinMods() {
+        for (DiscoveredMod mod : discoveredFiles.values()) {
+            if (!mod.hasMixinManifestAttributes()) {
+                continue;
             }
+            if (mod.coremod() != null) {
+                try {
+                    Launch.classLoader.addURL(mod.file().toURI().toURL());
+                } catch (MalformedURLException e) {
+                    CleanroomLog.get().error("Failed to manually load {} as a mixin mod {}.", mod.file().getName(), e);
+                }
+            }
+            CleanroomLog.get().debug("Submitting mixin container for {}", mod.file().getName());
+            MixinBootstrap.getPlatform().addContainer(new ContainerHandleURI(mod.file().toURI()));
         }
-        return jars;
     }
 
     public void applyForceLoadAsMod() {

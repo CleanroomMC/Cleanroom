@@ -19,7 +19,6 @@
 
 package net.minecraftforge.fml.relauncher;
 
-import com.cleanroommc.common.PatchModPresentChecker;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
@@ -243,7 +242,10 @@ public class CoreModManager {
             FMLLog.log.info("Found a command line coremod : {}", coreModClassName);
             loadCoreMod(classLoader, coreModClassName, null);
         }
+        // Coremods
         CleanroomModDiscoverer.instance().discoverCoreMods(mcDir, classLoader, tweaker);
+        // Mixin Mods
+        CleanroomModDiscoverer.instance().discoverMixinMods();
     }
 
     public static List<String> getIgnoredMods()
