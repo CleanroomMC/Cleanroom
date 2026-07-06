@@ -124,5 +124,7 @@ public class ForgeEarlyConfig {
         public int TEXT_COLOR;
         @Config.Comment("Use cleanroom embed loading progressbar handling")
         public boolean UPDATE_WINDOWS_TASKBAR_PROGRESS = true;
+        @Config.Comment("Disable flash after loaded")
+        public boolean DISABLE_FLASH_AFTER_LOADED = false;
     }
 }

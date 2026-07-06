@@ -22,8 +22,6 @@ package net.minecraftforge.client;
 import com.cleanroommc.client.IMEHandler;
 import com.cleanroommc.client.windows.TaskbarApi;
 import com.cleanroommc.client.windows.WindowsProperties;
-import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.WinDef;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -38,13 +36,13 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
-import org.lwjgl.glfw.GLFWNativeWin32;
 
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +98,9 @@ public class ForgeClientHandler
         if (Util.getOSType().equals(Util.EnumOS.WINDOWS)){
             if (event.getGui() instanceof GuiMainMenu && !played){
                 if (WindowsProperties.handle == Long.MIN_VALUE) return;
-                TaskbarApi.flashTaskbarUntilForeground(WindowsProperties.handle);
+                if (!ForgeEarlyConfig.MODERN_WINDOWS_STYLES.DISABLE_FLASH_AFTER_LOADED){
+                    TaskbarApi.flashTaskbarUntilForeground(WindowsProperties.handle);
+                }
                 played = true;
             }
         }
