@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.relauncher;
 
+import com.cleanroommc.cleanmix.CleanMixHooks;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
@@ -66,7 +67,7 @@ public class CoreModManager {
         }
     }
 
-    private static class FMLPluginWrapper implements ITweaker {
+    public static final class FMLPluginWrapper implements ITweaker {
         public final String name;
         public final IFMLLoadingPlugin coreModInstance;
         public final List<String> predepends;
@@ -245,6 +246,8 @@ public class CoreModManager {
         }
         // Coremods
         CleanroomModDiscoverer.instance().discoverCoreMods(mcDir, classLoader, tweaker);
+        // Early Mixin Loading
+        CleanMixHooks.loadMixinBooterEarlyMixins(loadPlugins);
         // Mixin Mods
         CleanroomModDiscoverer.instance().discoverMixinMods();
     }
