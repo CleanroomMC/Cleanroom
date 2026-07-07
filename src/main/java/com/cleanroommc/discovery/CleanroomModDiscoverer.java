@@ -2,6 +2,7 @@ package com.cleanroommc.discovery;
 
 import com.cleanroommc.cleanmix.CleanMixModContainer;
 import com.cleanroommc.common.CleanroomContainer;
+import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.ConfigAnytimeContainer;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import com.cleanroommc.util.CleanroomLog;
@@ -26,7 +27,6 @@ import net.minecraftforge.fml.common.discovery.ModCandidate;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 import net.minecraftforge.fml.relauncher.CoreModManager;
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.commons.io.IOUtils;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -161,9 +161,6 @@ public final class CleanroomModDiscoverer {
             mods.add(new InjectedModContainer(modContainer, modContainer.getSource()));
         }
 
-        applyForceLoadAsMod();
-        rescueDroppedCoremods();
-
         CleanroomLog.get().debug("Attempting to load mods contained in the minecraft jar file and associated classes");
         addClasspathCandidates(modClassLoader, modCandidates);
         CleanroomLog.get().debug("Minecraft jar mods loaded successfully");
@@ -186,6 +183,27 @@ public final class CleanroomModDiscoverer {
         mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
         // Kirino
         KirinoCommonCore.identifyMods(mods);
+    }
+
+    public void rescueDroppedCoremods() {
+        for (DiscoveredMod discovered : discoveredFiles.values()) {
+            if (!discovered.forceLoadAsMod() || discovered.tweaker() == null) {
+                continue;
+            }
+            String coremod = discovered.coremod();
+            if (coremod == null || CoreModManager.isCoreModLoaded(coremod)) {
+                continue;
+            }
+            if (CoreModManager.loadCoreModFromDiscoveredJar(Launch.classLoader, coremod, discovered.file())) {
+                CleanroomLog.get().warn("{} declares both a TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.", discovered.file().getName(), coremod);
+            } else {
+                CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, discovered.file().getName());
+            }
+            if (discovered.coreModContainsMod()) {
+                CoreModManager.getReparseableCoremods().add(discovered.file().getName());
+                CleanroomLog.get().warn("Added {} back to reparseable collection, ready to be identified as a mod.", discovered.file().getName());
+            }
+        }
     }
 
     private void discover() {
@@ -231,7 +249,7 @@ public final class CleanroomModDiscoverer {
         Attributes attributes = null;
         List<String> modIds = List.of();
         String modType = ManifestAttributes.FORGEMODTYPE;
-        boolean hasMixinManifestAttributes = false, forceLoadAsMod = false, forceReparseable = false;
+        boolean hasMixinManifestAttributes = false, forceLoadAsMod = false, coreModContainsMod = false;
         String coremod = null, tweaker = null;
 
         try (JarFile jarFile = new JarFile(absolute)) {
@@ -243,7 +261,7 @@ public final class CleanroomModDiscoverer {
                 }
                 hasMixinManifestAttributes = attributes.getValue(MIXIN_CONFIGS) != null || attributes.getValue(MIXIN_CONNECTOR) != null;
                 forceLoadAsMod = "true".equalsIgnoreCase(attributes.getValue(FORCE_LOAD_AS_MOD));
-                forceReparseable = forceLoadAsMod && attributes.getValue(COREMOD_CONTAINS_FML_MOD) != null;
+                coreModContainsMod = attributes.getValue(COREMOD_CONTAINS_FML_MOD) != null;
                 coremod = attributes.getValue(FML_CORE_PLUGIN);
                 tweaker = attributes.getValue(TWEAK_CLASS);
                 if ("optifine.OptiFineForgeTweaker".equals(tweaker)) {
@@ -271,7 +289,7 @@ public final class CleanroomModDiscoverer {
                 modType,
                 hasMixinManifestAttributes,
                 forceLoadAsMod,
-                forceReparseable,
+                coreModContainsMod,
                 coremod,
                 tweaker);
         discoveredFiles.put(absolute, info);
@@ -282,8 +300,8 @@ public final class CleanroomModDiscoverer {
     }
 
     private void discoverCoreMod(LaunchClassLoader classLoader, FMLTweaker tweaker, DiscoveredMod discoveredMod, File containedDepsDir, Set<String> mixinConfigs) {
-        File coreMod = discoveredMod.file();
-        CleanroomLog.get().debug("Examining for coremod candidacy {}", coreMod.getName());
+        File file = discoveredMod.file();
+        CleanroomLog.get().debug("Examining for coremod candidacy {}", file.getName());
         JarFile jar = null;
         Attributes attributes;
         String fmlCorePlugin;
@@ -295,15 +313,15 @@ public final class CleanroomModDiscoverer {
             }
 
             String modSide = attributes.getValue(LibraryManager.MODSIDE);
-            if (modSide != null && !"BOTH".equals(modSide) && !FMLLaunchHandler.side().name().equals(modSide)) {
-                CleanroomLog.get().debug("Mod {} has ModSide meta-inf value {}, and we're {} It will be ignored", coreMod.getName(), modSide, FMLLaunchHandler.side().name());
-                CoreModManager.getIgnoredMods().add(coreMod.getName());
+            if (modSide != null && !"BOTH".equals(modSide) && !modSide.equals(CleanroomEnvironment.side().name())) {
+                CleanroomLog.get().debug("Skipping {}, as we're on {} side and the mod is on {} side", file.getName(), CleanroomEnvironment.side(), modSide);
+                CoreModManager.getIgnoredMods().add(file.getName());
                 return;
             }
 
             String accessTransformers = attributes.getValue(ModAccessTransformer.FMLAT);
             if (accessTransformers != null && !accessTransformers.isEmpty()) {
-                jar = new JarFile(coreMod);
+                jar = new JarFile(file);
                 ModAccessTransformer.addJar(jar, accessTransformers);
             }
 
@@ -312,27 +330,31 @@ public final class CleanroomModDiscoverer {
                 if (containNonMods) {
                     addContainedDepsToClasspath(classLoader, attributes, containedDepsDir);
                 }
-                CleanroomLog.get().info("Cascading tweaker {} from {}", discoveredMod.tweaker(), coreMod.getName());
+                CleanroomLog.get().info("Cascading tweaker {} from {}", discoveredMod.tweaker(), file.getName());
                 Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(attributes.getValue("TweakOrder")));
-                CoreModManager.injectDiscoveredCascadingTweaker(coreMod, discoveredMod.tweaker(), classLoader, tweaker, sortOrder == null ? 0 : sortOrder);
-                CoreModManager.getIgnoredMods().add(coreMod.getName());
+                CoreModManager.injectDiscoveredCascadingTweaker(file, discoveredMod.tweaker(), classLoader, tweaker, sortOrder == null ? 0 : sortOrder);
+                CoreModManager.getIgnoredMods().add(file.getName());
+                return;
             }
 
             String modType = discoveredMod.modType();
             if (!ManifestAttributes.FORGEMODTYPE.equals(modType) && !ManifestAttributes.CLEANROOMMODTYPE.equals(modType)) {
-                CleanroomLog.get().warn("Adding {} to the list of things to skip. It is not an FML or Cleanroom mod, it is of type: {}", coreMod.getName(), modType);
-                CoreModManager.getIgnoredMods().add(coreMod.getName());
+                CleanroomLog.get().warn("Adding {} to the list of things to skip. It is not an FML or Cleanroom mod, it is of type: {}", file.getName(), modType);
+                CoreModManager.getIgnoredMods().add(file.getName());
                 return;
             }
 
             fmlCorePlugin = discoveredMod.coremod();
+            if (fmlCorePlugin == null) {
+                return;
+            }
             if (isCorePluginBlacklisted(fmlCorePlugin)) {
-                CoreModManager.getIgnoredMods().add(coreMod.getName());
-                CleanroomLog.get().warn("The mod with loading plugin {} is in blacklist and won't be loaded. Check forge_early.cfg for more info.", fmlCorePlugin);
+                CoreModManager.getIgnoredMods().add(file.getName());
+                CleanroomLog.get().warn("Loading plugin {} for mod {} is in the forge_early.cfg blacklist and won't be loaded.", fmlCorePlugin, file.getName());
                 return;
             }
         } catch (IOException ioe) {
-            CleanroomLog.get().error("Unable to read the jar file {} - ignoring", coreMod.getName(), ioe);
+            CleanroomLog.get().error("Unable to read the jar file {} - ignoring", file.getName(), ioe);
             return;
         } finally {
             try {
@@ -347,68 +369,21 @@ public final class CleanroomModDiscoverer {
                 addContainedDepsToClasspath(classLoader, attributes, containedDepsDir);
             }
 
-            classLoader.addURL(coreMod.toURI().toURL());
+            classLoader.addURL(file.toURI().toURL());
 
-            if (!(attributes.containsKey(new Attributes.Name(COREMOD_CONTAINS_FML_MOD)) || attributes.containsKey(new Attributes.Name(FORCE_LOAD_AS_MOD)))) {
-                CleanroomLog.get().trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
-                CoreModManager.getIgnoredMods().add(coreMod.getName());
+            if (!discoveredMod.coreModContainsMod() && !discoveredMod.forceLoadAsMod()) {
+                CleanroomLog.get().trace("Adding {} to the list of known coremods, it will not be examined again", file.getName());
+                CoreModManager.getIgnoredMods().add(file.getName());
             } else {
-                CleanroomLog.get().info("Found FMLCorePluginContainsFMLMod marker in {}.", coreMod.getName());
-                CoreModManager.getReparseableCoremods().add(coreMod.getName());
-                CoreModManager.getIgnoredMods().remove(coreMod.getName());
+                CleanroomLog.get().debug("Found FMLCorePluginContainsFMLMod marker in {}.", file.getName());
+                CoreModManager.getReparseableCoremods().add(file.getName());
             }
         } catch (MalformedURLException e) {
-            CleanroomLog.get().error("Unable to convert file {} into a URL, weird", coreMod.getName(), e);
+            CleanroomLog.get().error("Unable to convert file {} into a URL, weird", file.getName(), e);
             return;
         }
 
-        if (fmlCorePlugin != null) {
-            CoreModManager.loadCoreModFromDiscoveredJar(classLoader, fmlCorePlugin, coreMod);
-        }
-    }
-
-    private void applyForceLoadAsMod() {
-        List<String> ignored = CoreModManager.getIgnoredMods();
-        List<String> reparseable = CoreModManager.getReparseableCoremods();
-        for (DiscoveredMod file : discoveredFiles.values()) {
-            if (!file.forceLoadAsMod()) {
-                continue;
-            }
-            String name = file.file().getName();
-            ignored.remove(name);
-            if (file.forceReparseable() && !reparseable.contains(name)) {
-                reparseable.add(name);
-            }
-        }
-    }
-
-    private void rescueDroppedCoremods() {
-        Map<String, File> coremods = new LinkedHashMap<>();
-        for (DiscoveredMod file : discoveredFiles.values()) {
-            File jar = file.file();
-            String coremod = file.coremod();
-            if (coremod == null || file.tweaker() == null || coremods.containsKey(coremod)) {
-                continue;
-            }
-            try {
-                Launch.classLoader.addURL(jar.toURI().toURL());
-                coremods.put(coremod, jar);
-            } catch (MalformedURLException e) {
-                CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, jar.getName(), e);
-            }
-        }
-        for (Map.Entry<String, File> entry : coremods.entrySet()) {
-            String coremod = entry.getKey();
-            File jar = entry.getValue();
-            if (CoreModManager.isCoreModLoaded(coremod)) {
-                continue;
-            }
-            if (CoreModManager.loadCoreModFromDiscoveredJar(Launch.classLoader, coremod, jar)) {
-                CleanroomLog.get().warn("{} declares both a TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.", jar.getName(), coremod);
-            } else {
-                CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, jar.getName());
-            }
-        }
+        CoreModManager.loadCoreModFromDiscoveredJar(classLoader, fmlCorePlugin, file);
     }
 
     private static void addContainedDepsToClasspath(LaunchClassLoader classLoader, Attributes attributes, File containedDepsDir) throws MalformedURLException {
@@ -497,7 +472,7 @@ public final class CleanroomModDiscoverer {
         return modList;
     }
 
-    private static void addCandidate(List<ModCandidate> modCandidates, ModCandidate candidate) {
+    private void addCandidate(List<ModCandidate> modCandidates, ModCandidate candidate) {
         for (ModCandidate existing : modCandidates) {
             if (existing.getModContainer().equals(candidate.getModContainer())) {
                 CleanroomLog.get().trace("  Skipping already in list {}", candidate.getModContainer());
@@ -507,7 +482,7 @@ public final class CleanroomModDiscoverer {
         modCandidates.add(candidate);
     }
 
-    private static void addClasspathCandidates(ModClassLoader modClassLoader, List<ModCandidate> modCandidates) {
+    private void addClasspathCandidates(ModClassLoader modClassLoader, List<ModCandidate> modCandidates) {
         Set<String> knownLibraries = new HashSet<>();
         knownLibraries.addAll(modClassLoader.getDefaultLibraries());
         knownLibraries.addAll(CoreModManager.getIgnoredMods());
@@ -560,7 +535,8 @@ public final class CleanroomModDiscoverer {
     private void addLibraryCandidates(List<ModCandidate> modCandidates) {
         for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
             File mod = discoveredMod.file();
-            if (CoreModManager.getIgnoredMods().contains(mod.getName())) {
+            if (CoreModManager.getIgnoredMods().contains(mod.getName()) &&
+                    !CoreModManager.getReparseableCoremods().contains(mod.getName())) {
                 CleanroomLog.get().trace("Skipping already parsed coremod or tweaker {}", mod.getName());
             } else if (mod.isDirectory()) {
                 CleanroomLog.get().trace("Skipping directory {}", mod.getName());

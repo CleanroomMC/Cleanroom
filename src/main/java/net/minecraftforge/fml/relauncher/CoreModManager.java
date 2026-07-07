@@ -246,8 +246,6 @@ public class CoreModManager {
         }
         // Coremods
         CleanroomModDiscoverer.instance().discoverCoreMods(mcDir, classLoader, tweaker);
-        // Early Mixin Loading
-        CleanMixHooks.loadMixinBooterEarlyMixins(loadPlugins);
         // Mixin Mods
         CleanroomModDiscoverer.instance().discoverMixinMods();
     }
@@ -422,6 +420,11 @@ public class CoreModManager {
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Add the sorting tweaker first- it'll appear twice in the list
         tweakers.addFirst(fmlInjectionAndSortingTweaker);
+        // Load rescued (ForceLoadAsMod) coremods
+        CleanroomModDiscoverer.instance().rescueDroppedCoremods();
+        // Early Mixin Loaders Instantiation
+        CleanMixHooks.loadMixinBooterEarlyMixins(loadPlugins);
+        // Add loadPlugins (including rescued coremods)
         tweakers.addAll(loadPlugins);
     }
 
