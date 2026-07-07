@@ -185,25 +185,6 @@ public class LoadController
     @Subscribe
     public void propogateStateMessage(FMLEvent stateEvent)
     {
-        if (stateEvent instanceof FMLConstructionEvent)
-        {
-            FMLConstructionEvent constructionEvent = (FMLConstructionEvent) stateEvent;
-            // Add mods into the delegated ModClassLoader
-            ModClassLoader mcl = constructionEvent.getModClassLoader();
-            for (ModContainer container : this.loader.getActiveModList()) {
-                try
-                {
-                    mcl.addFile(container.getSource());
-                }
-                catch (MalformedURLException e)
-                {
-                    FormattedMessage message = new FormattedMessage("{} Failed to add file to classloader: {}", container.getModId(), container.getSource());
-                    throw new LoaderException(message.getFormattedMessage(), e);
-                }
-            }
-            // Load late mixins
-            CleanMixHooks.loadMixinBooterLateMixins(constructionEvent.getASMHarvestedData());
-        }
         if (stateEvent instanceof FMLPreInitializationEvent)
         {
             modObjectList = buildModObjectList();

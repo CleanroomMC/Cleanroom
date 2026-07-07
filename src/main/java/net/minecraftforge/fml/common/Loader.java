@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.cleanroommc.cleanmix.CleanMixHooks;
 import com.cleanroommc.client.LoadingTracker;
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.cleanroommc.discovery.IdentifiedMods;
@@ -92,6 +93,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.logging.log4j.message.FormattedMessage;
 
 import javax.annotation.Nullable;
 
@@ -497,7 +499,8 @@ public class Loader
         identifyDuplicates(mods);
         namedMods = Maps.uniqueIndex(mods, ModContainer::getModId);
         FMLLog.log.info("Forge Mod Loader has identified {} mod{} to load", mods.size(), mods.size() != 1 ? "s" : "");
-        ModAPIManager.INSTANCE.manageAPI(modClassLoader, discoverer.getASMTable());
+        ASMDataTable asmDataTable = discoverer.getASMTable();
+        ModAPIManager.INSTANCE.manageAPI(modClassLoader, asmDataTable);
         disableRequestedMods();
         modController.distributeStateMessage(FMLLoadEvent.class);
         sortModList();
@@ -519,11 +522,24 @@ public class Loader
                 }
             }
         }
+        for (ModContainer container : this.getActiveModList())
+        {
+            try
+            {
+                modClassLoader.addFile(container.getSource());
+            }
+            catch (MalformedURLException e)
+            {
+                FormattedMessage message = new FormattedMessage("{} Failed to add file to classloader: {}", container.getModId(), container.getSource());
+                throw new LoaderException(message.getFormattedMessage(), e);
+            }
+        }
 
-        ConfigManager.loadData(discoverer.getASMTable());
+        ConfigManager.loadData(asmDataTable);
+        CleanMixHooks.loadMixinBooterLateMixins(asmDataTable);
 
         modController.transition(LoaderState.CONSTRUCTING, false);
-        modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, discoverer.getASMTable(), reverseDependencies);
+        modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, asmDataTable, reverseDependencies);
 
         FMLLog.log.debug("Mod signature data");
         FMLLog.log.debug(" \tValid Signatures:");
