@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.extensibility.IRemapper;
 import org.spongepowered.asm.obfuscation.mapping.mcp.Srg2McpRemapper;
 import org.spongepowered.asm.obfuscation.mapping.remap.CleanroomRemapper;
 import org.spongepowered.asm.service.mojang.AbstractMixinServiceLaunchWrapper;
+import org.spongepowered.asm.service.mojang.MixinAuditFile;
 
 import java.io.File;
 import java.net.URI;
@@ -73,6 +74,11 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
     @Override
     public Collection<IContainerHandle> getMixinContainers() {
         return Collections.emptyList();
+    }
+
+    @Override
+    protected MixinAuditFile createAuditLog() {
+        return new MixinAuditFile("cleanmix.log", "cleanmix.auditTrail");
     }
 
     @Override
