@@ -20,6 +20,7 @@ import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 import net.minecraftforge.fml.common.asm.transformers.ModAccessTransformer;
+import net.minecraftforge.fml.common.discovery.ModDiscoverer;
 import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ContainerType;
@@ -53,7 +54,7 @@ import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
-public final class CleanroomModDiscoverer {
+public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private static final CleanroomModDiscoverer INSTANCE = new CleanroomModDiscoverer();
 
@@ -74,6 +75,7 @@ public final class CleanroomModDiscoverer {
     private final Map<File, DiscoveredMod> discoveredFiles = new LinkedHashMap<>();
 
     private final ASMDataTable asmDataTable = new ASMDataTable();
+    private List<File> nonModLibs = List.of();
 
     private boolean hasForgeMods;
 
@@ -106,8 +108,14 @@ public final class CleanroomModDiscoverer {
         return Collections.unmodifiableSet(fileToModIds.get(source.getAbsoluteFile()));
     }
 
+    @Override
     public ASMDataTable getASMTable() {
         return asmDataTable;
+    }
+
+    @Override
+    public List<File> getNonModLibs() {
+        return nonModLibs;
     }
 
     public void discoverMixinMods() {
@@ -167,6 +175,7 @@ public final class CleanroomModDiscoverer {
         addLibraryCandidates(modCandidates);
 
         mods.addAll(exploreModCandidates(modCandidates, nonModLibs));
+        this.nonModLibs = List.copyOf(nonModLibs);
         return new IdentifiedMods(mods, nonModLibs);
     }
 
@@ -333,6 +342,9 @@ public final class CleanroomModDiscoverer {
                 CleanroomLog.get().info("Cascading tweaker {} from {}", discoveredMod.tweaker(), file.getName());
                 Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(attributes.getValue("TweakOrder")));
                 CoreModManager.injectDiscoveredCascadingTweaker(file, discoveredMod.tweaker(), classLoader, tweaker, sortOrder == null ? 0 : sortOrder);
+                if (discoveredMod.forceLoadAsMod() || discoveredMod.coreModContainsMod()) {
+                    CoreModManager.getReparseableCoremods().add(file.getName());
+                }
                 CoreModManager.getIgnoredMods().add(file.getName());
                 return;
             }
