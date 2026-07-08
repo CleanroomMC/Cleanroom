@@ -10,7 +10,7 @@ public record DiscoveredMod(
         List<String> modIds,
         String modType,
         boolean hasMixinManifestAttributes,
-        boolean forceLoadAsMod,
+        boolean mixinTweakerForceMod,
         boolean coreModContainsMod,
         String coremod,
         String tweaker) {

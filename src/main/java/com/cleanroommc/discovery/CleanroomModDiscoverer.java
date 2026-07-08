@@ -61,6 +61,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private static final String TWEAK_CLASS = ManifestAttributes.TWEAKER;
     private static final String MIXIN_CONFIGS = ManifestAttributes.MIXINCONFIGS;
     private static final String MIXIN_CONNECTOR = ManifestAttributes.MIXINCONNECTOR;
+    private static final String MIXIN_TWEAKER = "org.spongepowered.asm.launch.MixinTweaker";
     private static final String FORCE_LOAD_AS_MOD = "ForceLoadAsMod";
     private static final String COREMOD_CONTAINS_FML_MOD = "FMLCorePluginContainsFMLMod";
     private static final String FML_CORE_PLUGIN = "FMLCorePlugin";
@@ -196,7 +197,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     public void rescueDroppedCoremods() {
         for (DiscoveredMod discovered : discoveredFiles.values()) {
-            if (!discovered.forceLoadAsMod() || discovered.tweaker() == null) {
+            if (!discovered.mixinTweakerForceMod()) {
                 continue;
             }
             String coremod = discovered.coremod();
@@ -204,7 +205,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 continue;
             }
             if (CoreModManager.loadCoreModFromDiscoveredJar(Launch.classLoader, coremod, discovered.file())) {
-                CleanroomLog.get().warn("{} declares both a TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.", discovered.file().getName(), coremod);
+                CleanroomLog.get().warn("{} declares both a MixinTweaker TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.", discovered.file().getName(), coremod);
             } else {
                 CleanroomLog.get().error("Failed to manually load coremod {} from {}.", coremod, discovered.file().getName());
             }
@@ -258,8 +259,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         Attributes attributes = null;
         List<String> modIds = List.of();
         String modType = ManifestAttributes.FORGEMODTYPE;
-        boolean hasMixinManifestAttributes = false, forceLoadAsMod = false, coreModContainsMod = false;
         String coremod = null, tweaker = null;
+        boolean hasMixinManifestAttributes = false, mixinTweakerForceMod = false, coreModContainsMod = false;
 
         try (JarFile jarFile = new JarFile(absolute)) {
             attributes = readManifestAttributes(absolute, jarFile);
@@ -268,11 +269,11 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 if (Strings.isNullOrEmpty(modType)) {
                     modType = ManifestAttributes.FORGEMODTYPE;
                 }
-                hasMixinManifestAttributes = attributes.getValue(MIXIN_CONFIGS) != null || attributes.getValue(MIXIN_CONNECTOR) != null;
-                forceLoadAsMod = "true".equalsIgnoreCase(attributes.getValue(FORCE_LOAD_AS_MOD));
-                coreModContainsMod = attributes.getValue(COREMOD_CONTAINS_FML_MOD) != null;
                 coremod = attributes.getValue(FML_CORE_PLUGIN);
                 tweaker = attributes.getValue(TWEAK_CLASS);
+                hasMixinManifestAttributes = attributes.getValue(MIXIN_CONFIGS) != null || attributes.getValue(MIXIN_CONNECTOR) != null;
+                mixinTweakerForceMod = "true".equalsIgnoreCase(attributes.getValue(FORCE_LOAD_AS_MOD)) && MIXIN_TWEAKER.equals(tweaker);
+                coreModContainsMod = attributes.getValue(COREMOD_CONTAINS_FML_MOD) != null;
                 if ("optifine.OptiFineForgeTweaker".equals(tweaker)) {
                     modIds = List.of("optifine");
                 }
@@ -297,7 +298,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 modIds,
                 modType,
                 hasMixinManifestAttributes,
-                forceLoadAsMod,
+                mixinTweakerForceMod,
                 coreModContainsMod,
                 coremod,
                 tweaker);
@@ -342,7 +343,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 CleanroomLog.get().info("Cascading tweaker {} from {}", discoveredMod.tweaker(), file.getName());
                 Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(attributes.getValue("TweakOrder")));
                 CoreModManager.injectDiscoveredCascadingTweaker(file, discoveredMod.tweaker(), classLoader, tweaker, sortOrder == null ? 0 : sortOrder);
-                if (discoveredMod.forceLoadAsMod() || discoveredMod.coreModContainsMod()) {
+                if (discoveredMod.mixinTweakerForceMod() || discoveredMod.coreModContainsMod()) {
                     CoreModManager.getReparseableCoremods().add(file.getName());
                 }
                 CoreModManager.getIgnoredMods().add(file.getName());
@@ -383,7 +384,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
             classLoader.addURL(file.toURI().toURL());
 
-            if (!discoveredMod.coreModContainsMod() && !discoveredMod.forceLoadAsMod()) {
+            if (!discoveredMod.coreModContainsMod() && !discoveredMod.mixinTweakerForceMod()) {
                 CleanroomLog.get().trace("Adding {} to the list of known coremods, it will not be examined again", file.getName());
                 CoreModManager.getIgnoredMods().add(file.getName());
             } else {
