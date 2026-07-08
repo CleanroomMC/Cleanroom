@@ -124,7 +124,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (!mod.hasMixinManifestAttributes()) {
                 continue;
             }
-            if (mod.coremod() != null) {
+            if (mod.coremod() == null) {
                 try {
                     Launch.classLoader.addURL(mod.file().toURI().toURL());
                 } catch (MalformedURLException e) {
