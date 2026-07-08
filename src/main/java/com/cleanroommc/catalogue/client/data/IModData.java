@@ -9,9 +9,9 @@ import net.minecraft.util.text.TextFormatting;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-/**
- * Author: MrCrayfish
- */
+/// <h1>Experimental</h1>
+///
+/// @author MrCrayfish
 public interface IModData {
     Type getType();
 

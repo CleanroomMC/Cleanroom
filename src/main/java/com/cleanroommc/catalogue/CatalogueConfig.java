@@ -44,4 +44,12 @@ public final class CatalogueConfig {
             "mcp",
             "cleanroom"
     };
+
+    @Config.RequiresMcRestart
+    @Config.Comment({
+            "The list of mod ids that should always use the default item icon.",
+            "They will not have random-picked item icons to avoid crashes."
+    })
+    @Config.LangKey("catalogue.config.force_default_icon_list")
+    public static String[] forceDefaultIconList = new String[]{};
 }

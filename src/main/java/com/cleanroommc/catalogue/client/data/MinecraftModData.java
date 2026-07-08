@@ -9,9 +9,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * Author: MrCrayfish
- */
+/// @author MrCrayfish
 public class MinecraftModData implements IModData {
     @Override
     public Type getType() {

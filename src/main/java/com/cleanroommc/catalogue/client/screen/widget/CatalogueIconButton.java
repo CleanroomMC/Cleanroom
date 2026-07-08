@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 /// @author MrCrayfish
 public class CatalogueIconButton extends CatalogueTextButton {
-    public static final ResourceLocation TEXTURE = CatalogueConstants.resource("textures/gui/icons.png");
+    public static final ResourceLocation ICON_TEXTURE = CatalogueConstants.resource("textures/gui/icons.png");
     private final int u, v;
 
     public CatalogueIconButton(int x, int y, int u, int v, @Nullable Consumer<CatalogueTextButton> onPress) {
@@ -39,7 +39,7 @@ public class CatalogueIconButton extends CatalogueTextButton {
         int iconX = this.x + (this.width - contentWidth) / 2;
         int iconY = this.y + (this.height - 10) / 2;
 
-        mc.getTextureManager().bindTexture(TEXTURE);
+        mc.getTextureManager().bindTexture(ICON_TEXTURE);
         float brightness = this.enabled ? 1.0F : 0.5F;
         GlStateManager.color(brightness, brightness, brightness, 1.0F);
         drawModalRectWithCustomSizedTexture(iconX, iconY, this.u, this.v, 10, 10, 64, 64);

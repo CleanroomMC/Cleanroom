@@ -78,7 +78,7 @@ public class CleanroomModData implements IModData {
     @Override
     public String getItemIcon() {
         if (this.metadata != null && !this.metadata.iconItem.isBlank()) return this.metadata.iconItem;
-        Map<String,String> props = this.info.getCustomModProperties();
+        Map<String, String> props = this.info.getCustomModProperties();
         return props != null ? props.get("iconItem") : null;
     }
 
@@ -86,7 +86,7 @@ public class CleanroomModData implements IModData {
     @Override
     public String getImageIcon() {
         if (this.metadata != null && !this.metadata.iconFile.isBlank()) return this.metadata.iconFile;
-        Map<String,String> props = this.info.getCustomModProperties();
+        Map<String, String> props = this.info.getCustomModProperties();
         return props != null ? props.get("iconFile") : null;
     }
 
@@ -94,7 +94,7 @@ public class CleanroomModData implements IModData {
     @Override
     public String getLicense() {
         if (this.metadata != null && !this.metadata.license.isBlank()) return this.metadata.license;
-        Map<String,String> props = this.info.getCustomModProperties();
+        Map<String, String> props = this.info.getCustomModProperties();
         return props != null ? props.get("license") : null;
     }
 
@@ -120,7 +120,7 @@ public class CleanroomModData implements IModData {
     @Override
     public String getIssueTracker() {
         if (this.metadata != null && !this.metadata.issueTrackerUrl.isBlank()) return this.metadata.issueTrackerUrl;
-        Map<String,String> props = this.info.getCustomModProperties();
+        Map<String, String> props = this.info.getCustomModProperties();
         return props != null ? props.get("issueTrackerUrl") : null;
     }
 
@@ -134,7 +134,7 @@ public class CleanroomModData implements IModData {
     @Override
     public String getBackground() {
         if (this.metadata != null && !this.metadata.backgroundFile.isBlank()) return this.metadata.backgroundFile;
-        Map<String,String> props = this.info.getCustomModProperties();
+        Map<String, String> props = this.info.getCustomModProperties();
         return props != null ? props.get("backgroundFile") : null;
     }
 
@@ -173,7 +173,7 @@ public class CleanroomModData implements IModData {
             if (factory == null) return;
             minecraft.displayGuiScreen(factory.createConfigGui(parent));
         } catch (Exception e) {
-            CatalogueConstants.LOG.error("There was a critical issue trying to build the config GUI for {}", this.getModId(), e);
+            CatalogueConstants.LOG.error("Failed to build config GUI for mod '{}'", this.getModId(), e);
         }
     }
 
@@ -242,10 +242,9 @@ public class CleanroomModData implements IModData {
     }
 
     private static Set<String> analyzeDependencies(ModContainer source) {
-        List<? extends ArtifactVersion> versions = source.getDependencies();
-        return versions.stream()
+        return source.getDependencies().stream()
                 .map(ArtifactVersion::getLabel)
-                .filter(modid -> !IGNORED_DEPENDENCIES.contains(modid))
+                .filter(modId -> !IGNORED_DEPENDENCIES.contains(modId))
                 .collect(Collectors.toUnmodifiableSet());
     }
 

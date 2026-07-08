@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.client.resources.ResourcePackFileNotFoundException;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -21,7 +22,7 @@ public enum ImageType {
         @Override
         protected boolean validate(IModData data, BufferedImage image) {
             if (image.getWidth() != image.getHeight()) {
-                CatalogueConstants.LOG.error("Invalid icon image for mod '{}': image must be a square", data.getModId());
+                CatalogueConstants.LOG.warn("Invalid icon image for mod '{}': image must be a square", data.getModId());
                 return false;
             }
             return true;
@@ -54,12 +55,16 @@ public enum ImageType {
         try {
             BufferedImage image = this.readImage(data, resource);
             if (image == null) {
-                CatalogueConstants.LOG.error("Unable to locate the {} image resource '{}' for mod '{}'", this.type, resource, data.getModId());
+                CatalogueConstants.LOG.warn("Failed to locate {} image resource '{}' for mod '{}'", this.type, resource, data.getModId());
                 return Optional.empty();
             }
             return this.validate(data, image) ? Optional.of(this.registerTexture(data, image)) : Optional.empty();
+        } catch (ResourcePackFileNotFoundException e) {
+            // Remove stack trace if getPackImage errored
+            CatalogueConstants.LOG.warn("Failed to locate {} image {} for mod '{}'", this.type, e.getMessage(), data.getModId());
+            return Optional.empty();
         } catch (IOException e) {
-            CatalogueConstants.LOG.error("An error occurred when loading the {} image resource '{}' for mod '{}'", this.type, resource, data.getModId(), e);
+            CatalogueConstants.LOG.warn("Failed to load {} image resource '{}' for mod '{}'", this.type, resource, data.getModId(), e);
             return Optional.empty();
         }
     }

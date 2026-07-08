@@ -50,3 +50,5 @@ catalogue.config.library_list=Library List
 catalogue.config.library_list.tooltip=The list of library mods' mod ids.\nThey will have grey names in the mod list.
 catalogue.config.ignored_dependencies_list=Ignored Dependencies List
 catalogue.config.ignored_dependencies_list.tooltip=The list of ignored dependencies' mod ids.\nThey will not be displayed when searching for dependencies/dependants.
+catalogue.config.force_default_icon_list=Force Default Icon List
+catalogue.config.force_default_icon_list.tooltip=The list of mod ids that should always use the default item icon.\nThey will not have random-picked item icons to avoid crashes.

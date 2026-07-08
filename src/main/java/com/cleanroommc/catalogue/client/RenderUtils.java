@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 /// @author MrCrayfish
 public final class RenderUtils {
+    private static final float[] DEFAULT_COVER_FADE_ALPHA_LEVELS = {1.0F, 0.0F};
     private static final double PERIOD_PER_SCROLLED_PIXEL = 0.5D;
     private static final double MIN_SCROLL_PERIOD = 3.0D;
 
@@ -38,10 +39,14 @@ public final class RenderUtils {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
-    public static void drawCoverFade(Minecraft minecraft, ImageInfo image, int x, int y, int width, int height, float zLevel) {
+    /**
+     * Draws a cover-cropped texture with alpha levels distributed evenly from top to bottom.
+     */
+    public static void drawCoverFade(Minecraft mc, ImageInfo image, int x, int y, int width, int height, float zLevel, float... alphaLevels) {
         if (width <= 0 || height <= 0 || image.width() <= 0 || image.height() <= 0) return;
+        float[] levels = alphaLevels != null && alphaLevels.length >= 2 ? alphaLevels : DEFAULT_COVER_FADE_ALPHA_LEVELS;
 
-        minecraft.getTextureManager().bindTexture(image.resource());
+        mc.getTextureManager().bindTexture(image.resource());
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 
@@ -73,10 +78,22 @@ public final class RenderUtils {
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buffer = tess.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(x, y + height, zLevel).tex(u0, v1).color(1.0F, 1.0F, 1.0F, 0.0F).endVertex();
-        buffer.pos(x + width, y + height, zLevel).tex(u1, v1).color(1.0F, 1.0F, 1.0F, 0.0F).endVertex();
-        buffer.pos(x + width, y, zLevel).tex(u1, v0).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-        buffer.pos(x, y, zLevel).tex(u0, v0).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+        int segments = levels.length - 1;
+        for (int i = 0; i < segments; i++) {
+            double topProgress = i / (double) segments;
+            double bottomProgress = (i + 1) / (double) segments;
+            double topY = y + height * topProgress;
+            double bottomY = y + height * bottomProgress;
+            double topV = v0 + (v1 - v0) * topProgress;
+            double bottomV = v0 + (v1 - v0) * bottomProgress;
+            float topAlpha = MathHelper.clamp(levels[i], 0.0F, 1.0F);
+            float bottomAlpha = MathHelper.clamp(levels[i + 1], 0.0F, 1.0F);
+
+            buffer.pos(x, bottomY, zLevel).tex(u0, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
+            buffer.pos(x + width, bottomY, zLevel).tex(u1, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
+            buffer.pos(x + width, topY, zLevel).tex(u1, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
+            buffer.pos(x, topY, zLevel).tex(u0, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
+        }
         tess.draw();
 
         GlStateManager.shadeModel(GL11.GL_FLAT);

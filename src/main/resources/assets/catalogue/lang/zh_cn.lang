@@ -50,3 +50,5 @@ catalogue.config.library_list=库列表
 catalogue.config.library_list.tooltip=库模组的Mod ID列表。\n它们会在模组列表中显示灰色名字。
 catalogue.config.ignored_dependencies_list=忽略前置列表
 catalogue.config.ignored_dependencies_list.tooltip=忽略的前置模组的Mod ID列表。\n它们不会在搜索前置/依赖模组时显示。
+catalogue.config.force_default_icon_list=强制默认图标列表
+catalogue.config.force_default_icon_list.tooltip=总使用默认物品图标的模组的Mod ID列表。\n它们不会有随机选取的物品图标，以避免崩溃。

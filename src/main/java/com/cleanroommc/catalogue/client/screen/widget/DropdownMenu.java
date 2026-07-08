@@ -9,7 +9,6 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
@@ -83,6 +82,13 @@ public class DropdownMenu extends Gui {
         this.visible = false;
     }
 
+    private void hideSubMenu() {
+        if (this.subMenu != null) {
+            this.subMenu.hide();
+            this.subMenu = null;
+        }
+    }
+
     private void updatePosition(Anchor anchor) {
         int contentWidth = this.items.stream().mapToInt(item -> item.width).max().orElse(0);
         int contentHeight = this.items.stream().mapToInt(item -> item.height).sum() + Math.max(0, this.items.size() - 1) * SPACING;
@@ -111,8 +117,6 @@ public class DropdownMenu extends Gui {
     }
 
     public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
-        final ScaledResolution sr = new ScaledResolution(minecraft);
-        drawRect(0, 0, sr.getScaledWidth(), sr.getScaledHeight(), 0x50000000);
         drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xAA000000);
         this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
         if (this.subMenu != null) {
@@ -120,15 +124,17 @@ public class DropdownMenu extends Gui {
         }
     }
 
-    public boolean mousePressed(Minecraft minecraft, int mouseX, int mouseY) {
+    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
         if (!this.visible) return false;
 
         for (MenuItem item : this.items) {
-            if (item.mousePressed(minecraft, mouseX, mouseY)) {
+            if (item.mousePressed(mouseX, mouseY)) {
+                item.playPressSound(mc.getSoundHandler());
+                item.onClick(mouseX, mouseY);
                 return true;
             }
         }
-        return this.subMenu != null && this.subMenu.mousePressed(minecraft, mouseX, mouseY);
+        return this.subMenu != null && this.subMenu.mousePressed(mc, mouseX, mouseY);
     }
 
     private static class MenuItem extends Gui {
@@ -164,7 +170,7 @@ public class DropdownMenu extends Gui {
 
         protected void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
             if (!this.visible) return;
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            this.hovered = RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
@@ -177,13 +183,8 @@ public class DropdownMenu extends Gui {
             this.drawString(font, this.label, this.x + offset, this.y + offset, 0xFFFFFFFF);
         }
 
-        private boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-            if (this.visible && this.hovered) {
-                this.onClick(mouseX, mouseY);
-                this.playPressSound(mc.getSoundHandler());
-                return true;
-            }
-            return false;
+        private boolean mousePressed(int mouseX, int mouseY) {
+            return this.visible && RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
         }
 
         protected void onClick(int mouseX, int mouseY) {
@@ -204,11 +205,14 @@ public class DropdownMenu extends Gui {
     }
 
     private static class CheckboxMenuItem extends MenuItem {
-        private static final ResourceLocation TEXTURE = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/checkbox.png");
+        private static final ResourceLocation TEXTURE = CatalogueConstants.resource("textures/gui/checkbox.png");
 
         private final MutableBoolean holder;
         private final Function<Boolean, Boolean> callback;
 
+        /**
+         * @param callback {@code true} will close the menu.
+         */
         private CheckboxMenuItem(DropdownMenu menu, String label, MutableBoolean holder, Function<Boolean, Boolean> callback) {
             super(menu, label, null);
             this.holder = holder;
@@ -233,6 +237,8 @@ public class DropdownMenu extends Gui {
             this.holder.setValue(newValue);
             if (this.callback.apply(newValue)) {
                 this.parent.deepClose();
+            } else {
+                this.parent.hideSubMenu();
             }
         }
 
@@ -264,13 +270,12 @@ public class DropdownMenu extends Gui {
 
         @Override
         protected void onClick(int mouseX, int mouseY) {
-            if (this.parent.subMenu != null) {
-                this.parent.subMenu.hide();
-                if (this.parent.subMenu == this.subMenu) {
-                    this.parent.subMenu = null;
-                    return;
-                }
+            if (this.parent.subMenu == this.subMenu) {
+                this.parent.hideSubMenu();
+                return;
             }
+
+            this.parent.hideSubMenu();
             this.parent.subMenu = this.subMenu;
             this.subMenu.show(Anchor.of(this));
         }

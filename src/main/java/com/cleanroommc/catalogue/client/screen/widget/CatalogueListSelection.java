@@ -3,6 +3,7 @@ package com.cleanroommc.catalogue.client.screen.widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiListExtended;
+import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nullable;
 
@@ -61,6 +62,7 @@ public class CatalogueListSelection<E extends GuiListExtended.IGuiListEntry> ext
         top -= 2;
         bottom += 2;
         Gui.drawRect(left, top, right, bottom, 0xFF808080);
-        Gui.drawRect(left + 1, top + 1, right - 1, bottom - 1, -16777216);
+        Gui.drawRect(left + 1, top + 1, right - 1, bottom - 1, 0xFF000000);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 }
