@@ -114,6 +114,7 @@ public class FMLSanityChecker implements IFMLCallHook
             {
                 String mcPath = codeSource.getLocation().getPath().substring(5);
                 mcPath = mcPath.substring(0, mcPath.lastIndexOf('!'));
+                mcPath = mcPath.replace("+", "%2B");
                 mcPath = URLDecoder.decode(mcPath, StandardCharsets.UTF_8);
                 mcJarFile = new JarFile(mcPath,true);
                 mcJarFile.getManifest();

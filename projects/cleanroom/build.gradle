@@ -81,13 +81,10 @@ repositories {
     mavenCentral()
     maven {
         name = 'Cleanroom Maven'
-        url = 'https://maven.cleanroommc.com/'
+        url = 'https://repo.cleanroommc.com/releases/'
     }
     maven {
-        url = "https://repo.cleanroommc.com/snapshots"
-    }
-    maven {
-        url = "https://maven.outlands.top/releases/"
+        url = "https://maven.arcseekers.com/releases/"
     }
 }
 
@@ -648,30 +645,48 @@ tasks.register('launcherJson') {
     }
     ext {
         output = file('build/version.json')
-        vanilla = project(':mcp').file('build/mcp/downloadJson/version.json')
+        mmcVanilla = rootProject.file('mmcpack-template/patches/net.minecraft.json')
         timestamp = Util.iso8601Now()
         comment = [
             'Please do not automate the download and installation of Cleanroom.',
             'Our efforts are supported by ads from the download page.'
             // TODO: Donation Page? (Was LexManos')
         ]
-        id = "${project.name}-${project.version}"
+        id = "1.12.2-Cleanroom-${project.version}"
     }
-    inputs.file vanilla
+    inputs.file mmcVanilla
     inputs.file resolveInstallerArtifacts.outputFile
     outputs.file output
     doLast {
-//        def json_vanilla = vanilla.json()
+        def json_vanilla = mmcVanilla.json()
         def json = [
-            _comment_         : comment,
-            id                : id,
-            time              : timestamp,
-            releaseTime       : timestamp,
-            type              : 'release',
-            mainClass         : 'top.outlands.foundation.boot.Foundation',
-            inheritsFrom      : props.minecraft_version,
-            logging           : {},
-            minecraftArguments: [
+            _comment_              : comment,
+            id                     : id,
+            time                   : timestamp,
+            releaseTime            : timestamp,
+            type                   : 'release',
+            mainClass              : 'top.outlands.foundation.boot.Foundation',
+            assetIndex             : json_vanilla.assetIndex,
+            assets                 : json_vanilla.assetIndex.id,
+            downloads              : [
+                client: [
+                    url : 'https://piston-data.mojang.com/v1/objects/0f275bc1547d01fa5f56ba34bdc87d981ee12daf/client.jar',
+                    sha1: '0f275bc1547d01fa5f56ba34bdc87d981ee12daf',
+                    size: 10180113
+                ],
+                server: [
+                    url : 'https://piston-data.mojang.com/v1/objects/886945bfb2b978778c3a0288fd7fab09d315b25f/server.jar',
+                    sha1: '886945bfb2b978778c3a0288fd7fab09d315b25f',
+                    size: 30222121
+                ]
+            ],
+            javaVersion            : [
+                component   : 'java-runtime-epsilon',
+                majorVersion: 25
+            ],
+            complianceLevel        : 1,
+            minimumLauncherVersion : 18,
+            minecraftArguments     : [
                 '--username', '${auth_player_name}',
                 '--version', '${version_name}',
                 '--gameDir', '${game_directory}',
@@ -683,22 +698,20 @@ tasks.register('launcherJson') {
                 '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker',
                 '--versionType', 'Forge'
             ].join(' '),
-            libraries         : [
-                [
-                    // Package our universal jar as the 'main' jar Mojang's launcher loads. It will in turn load Forge's regular jars itself.
-                    name     : "${project.group}:${project.name}:${project.version}",
-                    downloads: [
-                        artifact: [
-                            path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
-                            // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                            url : '',
-                            sha1: Util.sha1(universalJar.archiveFile.get().asFile),
-                            size: universalJar.archiveFile.get().asFile.length()
-                        ]
-                    ]
+            libraries              : new ArrayList(json_vanilla.libraries)
+        ]
+
+        json.libraries.add([
+            name     : "${project.group}:${project.name}:${project.version}",
+            downloads: [
+                artifact: [
+                    path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
+                    url : "https://repo.cleanroommc.com/releases/com/cleanroommc/cleanroom/${project.version}/cleanroom-${project.version}.jar",
+                    sha1: Util.sha1(universalJar.archiveFile.get().asFile),
+                    size: universalJar.archiveFile.get().asFile.length()
                 ]
             ]
-        ]
+        ])
 
         def cache = new JsonSlurper().parse(resolveInstallerArtifacts.outputFile)
         cache.artifacts.each { key, lib ->
@@ -758,14 +771,14 @@ tasks.register('installerJson') {
         def json = [
             _comment_ : launcherJson.comment,
             spec      : 0,
-            profile   : project.name,
+            profile   : rootProject.name,
             version   : launcherJson.id,
             icon      : 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
             json      : '/version.json',
             path      : "${project.group}:${project.name}:${project.version}",
             logo      : '/big_logo.png',
             minecraft : props.minecraft_version,
-            welcome   : "Welcome to the simple ${project.name.capitalize()} installer.",
+            welcome   : 'installer.welcome.message',
             data      : [] as Map,
             processors: []
         ]
@@ -845,7 +858,7 @@ universalJar {
 }
 
 tasks.register('downloadInstaller', DownloadMavenArtifact) {
-    artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
+    artifact = 'com.cleanroommc:installer:2.0.+:shrunk'
     changing = true
 }
 
