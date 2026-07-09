@@ -706,7 +706,7 @@ tasks.register('launcherJson') {
             downloads: [
                 artifact: [
                     path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
-                    url : "https://repo.cleanroommc.com/releases/com/cleanroommc/cleanroom/${project.version}/cleanroom-${project.version}.jar",
+                    url : '',
                     sha1: Util.sha1(universalJar.archiveFile.get().asFile),
                     size: universalJar.archiveFile.get().asFile.length()
                 ]
