@@ -7,7 +7,6 @@ import org.jspecify.annotations.NonNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL;
 import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CLCapabilities;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -16,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 
 public class ComputeSetup {
     public static void initOpenCL(Logger LOGGER) {
+        Compute.LOGGER = LOGGER;
+        LOGGER.info("Initializing OpenCL");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             CL.create();
             IntBuffer numPlatforms = stack.mallocInt(1);
@@ -36,10 +37,10 @@ public class ComputeSetup {
             }
             Platform platform = platformSort.first();
             LOGGER.info("Selected OpenCL platform: {}", platform.name);
-            ComputeCapabilities.PLATFORM_CAPABILITIES = CL.createPlatformCapabilities(platform.pointer);
+            Compute.PLATFORM_CAPABILITIES = CL.createPlatformCapabilities(platform.pointer);
             PointerBuffer device = stack.mallocPointer(1);
             CL10.clGetDeviceIDs(platform.pointer, CL10.CL_DEVICE_TYPE_DEFAULT, device, new int[]{1});
-            ComputeCapabilities.DEVICE_CAPABILITIES = CL.createDeviceCapabilities(device.get(0), ComputeCapabilities.PLATFORM_CAPABILITIES);
+            Compute.DEVICE_CAPABILITIES = CL.createDeviceCapabilities(device.get(0), Compute.PLATFORM_CAPABILITIES);
             //attributeSize.free();
             //platforms.free();
             Runtime.getRuntime().addShutdownHook(new Thread(CL::destroy));
