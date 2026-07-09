@@ -4,20 +4,28 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opencl.CLCapabilities;
 
 public class Compute {
-    static CLCapabilities PLATFORM_CAPABILITIES,
+
+    private static Compute INSTANCE;
+
+    public final CLCapabilities PLATFORM_CAPABILITIES,
             DEVICE_CAPABILITIES;
 
-    static Logger LOGGER;
+    public final Logger LOGGER;
 
-    public static CLCapabilities getPlatformCapabilities() {
-        return PLATFORM_CAPABILITIES;
+    private final long context;
+
+    private Compute(Logger log, CLCapabilities platform, CLCapabilities device, long context) {
+        this.LOGGER = log;
+        this.PLATFORM_CAPABILITIES = platform;
+        this.DEVICE_CAPABILITIES = device;
+        this.context = context;
     }
 
-    public static CLCapabilities getDeviceCapabilities() {
-        return DEVICE_CAPABILITIES;
+    public static Compute instance() {
+        return INSTANCE;
     }
 
-    public static Logger getLogger() {
-        return LOGGER;
+    static void init(Logger log, CLCapabilities platform, CLCapabilities device, long context) {
+        INSTANCE = new Compute(log, platform, device, context);
     }
 }
