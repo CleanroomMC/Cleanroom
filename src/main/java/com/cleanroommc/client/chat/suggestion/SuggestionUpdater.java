@@ -7,6 +7,8 @@ import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.TabCompleter;
 import net.minecraftforge.client.ClientCommandHandler;
 
+import java.util.List;
+
 /**
  * GuiResponder for the {@link net.minecraft.client.gui.GuiTextField} in {@link net.minecraft.client.gui.GuiChat}
  * so that text changes fires a server tab-complete request, populating the {@link SuggestionList}
@@ -70,6 +72,21 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         ClientCommandHandler.instance.autoComplete(prefix);
         // Server-side completions
         mc.player.connection.sendPacket(new CPacketTabComplete(prefix, this.tabCompleter.getTargetBlockPos(), false));
+    }
+
+    /**
+     * Entrypoint for the async server tab-complete reply.
+     * Known root commands always runs, but the dropdown is only populated
+     * when the reply still matches what the user has typed.
+     * Stale replies are is dropped so the suggestions list isn't outdated.
+     */
+    public void onServerCompletions(String... completions) {
+        List<String> suggestions = this.suggestionList.buildSuggestions(completions);
+        String currentPrefix = this.field.getText().substring(0, this.field.getCursorPosition());
+        if (!currentPrefix.equals(this.lastRequest)) {
+            return;
+        }
+        this.suggestionList.showSuggestions(suggestions);
     }
 
 }
