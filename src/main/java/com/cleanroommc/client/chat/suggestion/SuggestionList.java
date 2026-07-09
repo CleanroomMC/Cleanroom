@@ -4,11 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,13 +26,24 @@ public class SuggestionList {
     private static final int PADDING_X = 3;
     private static final Set<String> knownCommands = new HashSet<>();
 
+    // Tracks the connection the knownCommands were learned on. Different connection means a different server
+    private static WeakReference<NetHandlerPlayClient> lastConnection = new WeakReference<>(null);
+
     private final GuiTextField field;
+
     private List<String> suggestions = Collections.emptyList();
     private int selectedIndex = -1;
     private int scrollOffset = 0;
     private int cachedWidth = 0;
+
     public SuggestionList(GuiTextField field) {
         this.field = field;
+        NetHandlerPlayClient connection = Minecraft.getMinecraft().player != null ? Minecraft.getMinecraft().player.connection : null;
+        if (connection != lastConnection.get()) {
+            // Server changed since the last chat, needs refreshing
+            knownCommands.clear();
+            lastConnection = new WeakReference<>(connection);
+        }
         knownCommands.addAll(ClientCommandHandler.instance.getCommands().keySet());
     }
 
@@ -126,7 +139,14 @@ public class SuggestionList {
         }
     }
 
-    public void updateSuggestions(String... serverCompletions) {
+    /**
+     * Merge the client-side and server completions to include root command names into {@link #knownCommands}.
+     * This runs unconditionally, even for responses that will be dropped as stale.
+     * The initial "/" request can still populate knownCommands.
+     *
+     * @return the list to display, or an empty list when there is nothing to show.
+     */
+    public List<String> buildSuggestions(String... serverCompletions) {
         List<String> list = new ArrayList<>();
         String[] clientComplete = ClientCommandHandler.instance.latestAutoComplete;
         if (clientComplete != null) {
@@ -151,13 +171,27 @@ public class SuggestionList {
             }
         }
         if (currentText.isEmpty()) {
-            return;
+            return Collections.emptyList();
         }
+        return list;
+    }
+
+    public void showSuggestions(List<String> list) {
         this.setSuggestions(list);
     }
 
     public void applySuggestion(GuiTextField inputField, String suggestion) {
-        int wordStart = inputField.getNthWordFromPosWS(-1, inputField.getCursorPosition(), false);
+        int cursor = inputField.getCursorPosition();
+        String text = inputField.getText();
+        // Delete the tail of the current word that sits after the cursor so the whole token is replaced, not just its prefix
+        int wordEnd = cursor;
+        while (wordEnd < text.length() && text.charAt(wordEnd) != ' ') {
+            wordEnd++;
+        }
+        if (wordEnd > cursor) {
+            inputField.deleteFromCursor(wordEnd - cursor);
+        }
+        int wordStart = inputField.getNthWordFromPosWS(-1, cursor, false);
         inputField.deleteFromCursor(wordStart - inputField.getCursorPosition());
         inputField.writeText(TextFormatting.getTextWithoutFormattingCodes(suggestion));
         this.hide();
@@ -181,7 +215,12 @@ public class SuggestionList {
         if (suffix.isEmpty()) {
             return;
         }
-        int ghostX = inputField.x + fontRenderer.getStringWidth(inputField.getText().substring(0, cursorPos));
+        // The field renders text starting at lineScrollOffset, so measure the ghost's x from there (mirrors drawCommandColor)
+        int lineScrollOffset = inputField.getLineScrollOffset();
+        if (cursorPos < lineScrollOffset) {
+            return;
+        }
+        int ghostX = inputField.x + fontRenderer.getStringWidth(inputField.getText().substring(lineScrollOffset, cursorPos));
         int fieldRight = inputField.x + inputField.width;
         if (ghostX >= fieldRight) {
             return;
