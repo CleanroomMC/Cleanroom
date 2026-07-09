@@ -60,6 +60,12 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         }
         // Complete the token the cursor sits in, not the trailing token of the full text
         String prefix = text.substring(0, this.field.getCursorPosition());
+        // Only auto-suggest for commands
+        if (!text.startsWith("/")) {
+            this.lastRequest = prefix;
+            this.suggestionList.hide();
+            return;
+        }
         if (prefix.equals(this.lastRequest)) {
             return;
         }
