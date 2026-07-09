@@ -15,9 +15,6 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class ComputeSetup {
-    private static CLCapabilities PLATFORM_CAPABILITIES,
-            DEVICE_CAPABILITIES;
-
     public static void initOpenCL(Logger LOGGER) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             CL.create();
@@ -39,10 +36,10 @@ public class ComputeSetup {
             }
             Platform platform = platformSort.first();
             LOGGER.info("Selected OpenCL platform: {}", platform.name);
-            PLATFORM_CAPABILITIES = CL.createPlatformCapabilities(platform.pointer);
+            ComputeCapabilities.PLATFORM_CAPABILITIES = CL.createPlatformCapabilities(platform.pointer);
             PointerBuffer device = stack.mallocPointer(1);
             CL10.clGetDeviceIDs(platform.pointer, CL10.CL_DEVICE_TYPE_DEFAULT, device, new int[]{1});
-            DEVICE_CAPABILITIES = CL.createDeviceCapabilities(device.get(0), PLATFORM_CAPABILITIES);
+            ComputeCapabilities.DEVICE_CAPABILITIES = CL.createDeviceCapabilities(device.get(0), ComputeCapabilities.PLATFORM_CAPABILITIES);
             //attributeSize.free();
             //platforms.free();
             Runtime.getRuntime().addShutdownHook(new Thread(CL::destroy));
@@ -55,14 +52,6 @@ public class ComputeSetup {
         ByteBuffer info = stack.malloc((int) attributeSize.get(0));
         CL10.clGetPlatformInfo(platform, attribute, info, attributeSize);
         return StandardCharsets.US_ASCII.decode(info).toString();
-    }
-
-    public static CLCapabilities getPlatformCapabilities() {
-        return PLATFORM_CAPABILITIES;
-    }
-
-    public static CLCapabilities getDeviceCapabilities() {
-        return DEVICE_CAPABILITIES;
     }
 
     private record Platform(long pointer, String name, int versionMajor, int versionMinor, boolean cuda) implements Comparable<Platform> {
