@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.17-alpha] - 2026-07-09
+### Bug Fixes
+- [`a436b61`](https://github.com/CleanroomMC/Cleanroom/commit/a436b61ad97099497ac8ebda48819bb66d833d86) - installer can't install server *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.16-alpha] - 2026-07-09
 ### New Features
 - [`db96747`](https://github.com/CleanroomMC/Cleanroom/commit/db967479f558d66f3121259b82056a6a044b3258) - New installer and client.json compat w/ official launcher *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -99,3 +104,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.14-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.13-alpha...0.5.14-alpha
 [0.5.15-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.14-alpha...0.5.15-alpha
 [0.5.16-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.15-alpha...0.5.16-alpha
+[0.5.17-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.16-alpha...0.5.17-alpha
