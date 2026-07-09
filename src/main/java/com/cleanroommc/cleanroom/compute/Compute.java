@@ -12,7 +12,7 @@ public class Compute {
 
     public final Logger LOGGER;
 
-    private final long context;
+    public final long context;
 
     private Compute(Logger log, CLCapabilities platform, CLCapabilities device, long context) {
         this.LOGGER = log;
