@@ -1,6 +1,7 @@
 package com.cleanroommc.client.chat.suggestion;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.network.play.client.CPacketTabComplete;
@@ -10,7 +11,7 @@ import net.minecraftforge.client.ClientCommandHandler;
 import java.util.List;
 
 /**
- * GuiResponder for the {@link net.minecraft.client.gui.GuiTextField} in {@link net.minecraft.client.gui.GuiChat}
+ * GuiResponder for the {@link GuiTextField} in {@link GuiChat}
  * so that text changes fires a server tab-complete request, populating the {@link SuggestionList}
  */
 public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
@@ -18,15 +19,17 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
     private final SuggestionList suggestionList;
     private final TabCompleter tabCompleter;
     private final GuiTextField field;
+    private final boolean commandBlockMode;
 
     private String lastRequest = "";
 
-    public SuggestionUpdater(SuggestionList suggestionList, TabCompleter tabCompleter, GuiTextField field) {
+    public SuggestionUpdater(SuggestionList suggestionList, TabCompleter tabCompleter, GuiTextField field, boolean commandBlockMode) {
         this.suggestionList = suggestionList;
         this.tabCompleter = tabCompleter;
         this.field = field;
+        this.commandBlockMode = commandBlockMode;
         Minecraft mc = Minecraft.getMinecraft();
-        if (mc.player != null) {
+        if (mc.player != null && mc.player.connection != null) {
             mc.player.connection.sendPacket(new CPacketTabComplete("/", null, false));
         }
     }
@@ -60,8 +63,8 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         }
         // Complete the token the cursor sits in, not the trailing token of the full text
         String prefix = text.substring(0, this.field.getCursorPosition());
-        // Only auto-suggest for commands
-        if (!text.startsWith("/")) {
+        // In chat, only auto-suggest for commands, but command blocks suggest for any text
+        if (!this.commandBlockMode && !text.startsWith("/")) {
             this.lastRequest = prefix;
             this.suggestionList.hide();
             return;
@@ -76,8 +79,8 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         }
         // Client-side commands
         ClientCommandHandler.instance.autoComplete(prefix);
-        // Server-side completions
-        mc.player.connection.sendPacket(new CPacketTabComplete(prefix, this.tabCompleter.getTargetBlockPos(), false));
+        // Server-side completions (command-block GUIs flag a target block, mirroring vanilla's TabCompleter)
+        mc.player.connection.sendPacket(new CPacketTabComplete(prefix, this.tabCompleter.getTargetBlockPos(), this.commandBlockMode));
     }
 
     /**

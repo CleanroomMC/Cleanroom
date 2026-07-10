@@ -30,14 +30,17 @@ public class SuggestionList {
     private static WeakReference<NetHandlerPlayClient> lastConnection = new WeakReference<>(null);
 
     private final GuiTextField field;
+    // When true, commands are auto-suggested and colored with or without a leading "/" (command-block GUIs)
+    private final boolean commandBlockMode;
 
     private List<String> suggestions = Collections.emptyList();
     private int selectedIndex = -1;
     private int scrollOffset = 0;
     private int cachedWidth = 0;
 
-    public SuggestionList(GuiTextField field) {
+    public SuggestionList(GuiTextField field, boolean commandBlockMode) {
         this.field = field;
+        this.commandBlockMode = commandBlockMode;
         NetHandlerPlayClient connection = Minecraft.getMinecraft().player != null ? Minecraft.getMinecraft().player.connection : null;
         if (connection != lastConnection.get()) {
             // Server changed since the last chat, needs refreshing
