@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.TabCompleter;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
     private final boolean commandBlockMode;
 
     private String lastRequest = "";
+    private int pendingReplies = 0;
 
     public SuggestionUpdater(SuggestionList suggestionList, TabCompleter tabCompleter, GuiTextField field, boolean commandBlockMode) {
         this.suggestionList = suggestionList;
@@ -31,6 +33,7 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.player != null && mc.player.connection != null) {
             mc.player.connection.sendPacket(new CPacketTabComplete("/", null, false));
+            this.pendingReplies++;
         }
     }
 
@@ -81,6 +84,7 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         ClientCommandHandler.instance.autoComplete(prefix);
         // Server-side completions (command-block GUIs flag a target block, mirroring vanilla's TabCompleter)
         mc.player.connection.sendPacket(new CPacketTabComplete(prefix, this.tabCompleter.getTargetBlockPos(), this.commandBlockMode));
+        this.pendingReplies++;
     }
 
     /**
@@ -91,11 +95,39 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
      */
     public void onServerCompletions(String... completions) {
         List<String> suggestions = this.suggestionList.buildSuggestions(completions);
+        if (this.pendingReplies > 0) {
+            this.pendingReplies--;
+            // A newer request is still awaiting its reply
+            if (this.pendingReplies > 0) {
+                return;
+            }
+        }
         String currentPrefix = this.field.getText().substring(0, this.field.getCursorPosition());
-        if (!currentPrefix.equals(this.lastRequest)) {
+        // An empty prefix means a hide-branch of refresh() ran
+        // A late reply must not resurrect the dropdown
+        if (currentPrefix.isEmpty() || !currentPrefix.equals(this.lastRequest)) {
             return;
         }
-        this.suggestionList.showSuggestions(suggestions);
+        if (!this.commandBlockMode && !this.field.getText().startsWith("/")) {
+            return;
+        }
+        // A lone suggestion identical to the word already typed completes nothing, don't pop up over it
+        if (suggestions.size() == 1 && this.currentWord().equalsIgnoreCase(TextFormatting.getTextWithoutFormattingCodes(suggestions.getFirst()))) {
+            this.suggestionList.hide();
+            return;
+        }
+        this.suggestionList.setSuggestions(suggestions);
+    }
+
+    private String currentWord() {
+        String text = this.field.getText();
+        int cursor = this.field.getCursorPosition();
+        int wordStart = this.field.getNthWordFromPosWS(-1, cursor, false);
+        int wordEnd = cursor;
+        while (wordEnd < text.length() && text.charAt(wordEnd) != ' ') {
+            wordEnd++;
+        }
+        return text.substring(wordStart, wordEnd);
     }
 
 }

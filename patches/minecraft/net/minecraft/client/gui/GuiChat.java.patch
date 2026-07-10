@@ -147,16 +147,18 @@
          super.drawScreen(mouseX, mouseY, partialTicks);
      }
  
-@@ -222,6 +283,8 @@
+@@ -222,6 +283,10 @@
      public void setCompletions(String... newCompletions)
      {
          this.tabCompleter.setCompletions(newCompletions);
++        // Cleanroom: one reply consumes the Tab request, or every auto-suggest reply would keep mutating the field
++        this.tabCompleter.resetRequested();
 +        // Cleanroom: route through the updater so stale async replies can be validated against the current prefix
 +        this.suggestionUpdater.onServerCompletions(newCompletions);
      }
  
      @SideOnly(Side.CLIENT)
-@@ -232,29 +295,6 @@
+@@ -232,29 +297,6 @@
              public ChatTabCompleter(GuiTextField p_i46749_1_)
              {
                  super(p_i46749_1_, false);
