@@ -29,6 +29,14 @@ public class SuggestionList {
     // Tracks the connection the knownCommands were learned on. Different connection means a different server
     private static WeakReference<NetHandlerPlayClient> lastConnection = new WeakReference<>(null);
 
+    private static int textOriginX(GuiTextField f) {
+        return f.getEnableBackgroundDrawing() ? f.x + 4 : f.x;
+    }
+
+    private static int textOriginY(GuiTextField f) {
+        return f.getEnableBackgroundDrawing() ? f.y + (f.height - 8) / 2 : f.y;
+    }
+
     private final GuiTextField field;
     // When true, commands are auto-suggested and colored with or without a leading "/" (command-block GUIs)
     private final boolean commandBlockMode;
@@ -91,18 +99,6 @@ public class SuggestionList {
         this.clampScroll();
     }
 
-    private void clampScroll() {
-        if (this.selectedIndex == -1) {
-            this.scrollOffset = 0;
-            return;
-        }
-        if (this.selectedIndex < this.scrollOffset) {
-            this.scrollOffset = this.selectedIndex;
-        } else if (this.selectedIndex >= this.scrollOffset + MAX_VISIBLE) {
-            this.scrollOffset = this.selectedIndex - MAX_VISIBLE + 1;
-        }
-    }
-
     public String getSelected() {
         if (this.isVisible() && this.selectedIndex >= 0 && this.selectedIndex < this.suggestions.size()) {
             return this.suggestions.get(this.selectedIndex);
@@ -114,30 +110,29 @@ public class SuggestionList {
         return this.suggestions.isEmpty() ? null : this.suggestions.getFirst();
     }
 
-    public void render(int inputX, int inputY, int inputWidth, int mouseX, int mouseY) {
+    public void render(int mouseX, int mouseY) {
         if (this.isInvisible()) {
             return;
         }
         Minecraft mc = Minecraft.getMinecraft();
-        int visibleCount = Math.min(MAX_VISIBLE, this.suggestions.size());
-        int listHeight = visibleCount * ENTRY_HEIGHT;
-        int listY = inputY - listHeight - 2;  // bottom flush with the top of the input background rect
-        int listWidth = Math.min(cachedWidth, inputWidth);
-        Gui.drawRect(inputX, listY, inputX + listWidth, listY + listHeight, 0xC0000000);
-        for (int i = 0; i < visibleCount; i++) {
+        Geometry g = this.computeGeometry();
+        Gui.drawRect(g.x, g.topY, g.x + g.width, g.topY + g.height, 0xC0000000);
+        for (int i = 0; i < g.visibleCount; i++) {
             int idx = i + this.scrollOffset;
             String text = this.suggestions.get(idx);
-            int entryY = listY + i * ENTRY_HEIGHT;
+            // Flip the visual row so index 0 (window start) sits in the bottom row, nearest the input
+            int entryY = g.topY + (g.visibleCount - 1 - i) * ENTRY_HEIGHT;
             boolean selected = idx == selectedIndex;
-            boolean hovered = mouseX >= inputX && mouseX < inputX + listWidth && mouseY >= entryY && mouseY < entryY + ENTRY_HEIGHT;
-            mc.fontRenderer.drawStringWithShadow(text, inputX + PADDING_X, entryY + 2, (selected || hovered) ? 0xFFFF55 : 0xFFFFFF);
+            boolean hovered = mouseX >= g.x && mouseX < g.x + g.width && mouseY >= entryY && mouseY < entryY + ENTRY_HEIGHT;
+            mc.fontRenderer.drawStringWithShadow(text, g.x + PADDING_X, entryY + 2, (selected || hovered) ? 0xFFFF55 : 0xFFFFFF);
         }
         if (this.suggestions.size() > MAX_VISIBLE) {
-            int barX = inputX + listWidth;
-            int thumbHeight = Math.max(ENTRY_HEIGHT, listHeight * MAX_VISIBLE / this.suggestions.size());
+            int barX = g.x + g.width;
+            int thumbHeight = Math.max(ENTRY_HEIGHT, g.height * MAX_VISIBLE / this.suggestions.size());
             int maxScroll = this.suggestions.size() - MAX_VISIBLE;
-            int thumbY = listY + this.scrollOffset * (listHeight - thumbHeight) / maxScroll;
-            Gui.drawRect(barX, listY, barX + 2, listY + listHeight, 0xFF333333);
+            // scrollOffset grows upward with the list, so the thumb travels from the bottom up
+            int thumbY = g.topY + g.height - thumbHeight - this.scrollOffset * (g.height - thumbHeight) / maxScroll;
+            Gui.drawRect(barX, g.topY, barX + 2, g.topY + g.height, 0xFF333333);
             Gui.drawRect(barX, thumbY, barX + 2, thumbY + thumbHeight, 0xFFAAAAAA);
         }
     }
@@ -176,11 +171,8 @@ public class SuggestionList {
         if (currentText.isEmpty()) {
             return Collections.emptyList();
         }
+        list.sort(String.CASE_INSENSITIVE_ORDER);
         return list;
-    }
-
-    public void showSuggestions(List<String> list) {
-        this.setSuggestions(list);
     }
 
     public void applySuggestion(GuiTextField inputField, String suggestion) {
@@ -223,25 +215,25 @@ public class SuggestionList {
         if (cursorPos < lineScrollOffset) {
             return;
         }
-        int ghostX = inputField.x + fontRenderer.getStringWidth(inputField.getText().substring(lineScrollOffset, cursorPos));
-        int fieldRight = inputField.x + inputField.width;
+        int ghostX = textOriginX(inputField) + fontRenderer.getStringWidth(inputField.getText().substring(lineScrollOffset, cursorPos));
+        int fieldRight = textOriginX(inputField) + inputField.getWidth();
         if (ghostX >= fieldRight) {
             return;
         }
         while (suffix.length() > 1 && ghostX + fontRenderer.getStringWidth(suffix) > fieldRight) {
             suffix = suffix.substring(0, suffix.length() - 1);
         }
-        fontRenderer.drawString(suffix, ghostX, inputField.y, 0xFF808080);
+        fontRenderer.drawString(suffix, ghostX, textOriginY(inputField), 0xFF808080);
     }
 
     public void drawCommandColor(GuiTextField inputField, FontRenderer fontRenderer) {
         String text = inputField.getText();
-        if (!text.startsWith("/")) {
+        if (text.isEmpty() || (!this.commandBlockMode && !text.startsWith("/"))) {
             return;
         }
         int firstSpaceIdx = text.indexOf(' ');
         String firstWord = firstSpaceIdx == -1 ? text : text.substring(0, firstSpaceIdx);
-        String cmdName = firstWord.substring(1);
+        String cmdName = firstWord.startsWith("/") ? firstWord.substring(1) : firstWord;
         if (cmdName.isEmpty()) {
             return;
         }
@@ -250,18 +242,15 @@ public class SuggestionList {
             return;
         }
         int color = knownCommands.contains(cmdName) ? 0x55FF55 : 0xFF5555;
-        fontRenderer.drawStringWithShadow(firstWord.substring(scrollOffset), inputField.x, inputField.y, color);
+        fontRenderer.drawStringWithShadow(firstWord.substring(scrollOffset), textOriginX(inputField), textOriginY(inputField), color);
     }
 
-    public boolean isMouseOver(int inputX, int inputY, int inputWidth, int mouseX, int mouseY) {
+    public boolean isMouseOver(int mouseX, int mouseY) {
         if (!this.isVisible()) {
             return false;
         }
-        int visibleCount = Math.min(MAX_VISIBLE, this.suggestions.size());
-        int listHeight = visibleCount * ENTRY_HEIGHT;
-        int listY = inputY - listHeight - 2;
-        int listWidth = Math.min(this.cachedWidth, inputWidth);
-        return mouseX >= inputX && mouseX < inputX + listWidth && mouseY >= listY && mouseY < listY + listHeight;
+        Geometry g = this.computeGeometry();
+        return mouseX >= g.x && mouseX < g.x + g.width && mouseY >= g.topY && mouseY < g.topY + g.height;
     }
 
     public void scroll(int wheelDelta) {
@@ -269,27 +258,68 @@ public class SuggestionList {
             return;
         }
         int maxOffset = this.suggestions.size() - MAX_VISIBLE;
-        this.scrollOffset = Math.clamp(this.scrollOffset + (wheelDelta > 0 ? -1 : 1), 0, maxOffset);
+        // List grows upward, so wheel up reveals the higher-index rows above
+        this.scrollOffset = Math.clamp(this.scrollOffset + (wheelDelta > 0 ? 1 : -1), 0, maxOffset);
     }
 
-    public String mouseClicked(int inputX, int inputY, int inputWidth, int mouseX, int mouseY) {
+    public String mouseClicked(int mouseX, int mouseY) {
         if (!this.isVisible()) {
             return null;
         }
-        int visibleCount = Math.min(MAX_VISIBLE, this.suggestions.size());
-        int listHeight = visibleCount * ENTRY_HEIGHT;
-        int listY = inputY - listHeight - 2;
-        int listWidth = Math.min(this.cachedWidth, inputWidth);
-        if (mouseX < inputX || mouseX >= inputX + listWidth || mouseY < listY || mouseY >= listY + listHeight) {
+        Geometry g = this.computeGeometry();
+        if (mouseX < g.x || mouseX >= g.x + g.width || mouseY < g.topY || mouseY >= g.topY + g.height) {
             return null;
         }
-        for (int i = 0; i < visibleCount; i++) {
-            int entryY = listY + i * ENTRY_HEIGHT;
+        for (int i = 0; i < g.visibleCount; i++) {
+            int entryY = g.topY + (g.visibleCount - 1 - i) * ENTRY_HEIGHT;
             if (mouseY >= entryY && mouseY < entryY + ENTRY_HEIGHT) {
-                return this.suggestions.get(i + scrollOffset);
+                return this.suggestions.get(i + this.scrollOffset);
             }
         }
         return null;
     }
+
+    private void clampScroll() {
+        if (this.selectedIndex == -1) {
+            this.scrollOffset = 0;
+            return;
+        }
+        if (this.selectedIndex < this.scrollOffset) {
+            this.scrollOffset = this.selectedIndex;
+        } else if (this.selectedIndex >= this.scrollOffset + MAX_VISIBLE) {
+            this.scrollOffset = this.selectedIndex - MAX_VISIBLE + 1;
+        }
+    }
+
+    private Geometry computeGeometry() {
+        int visibleCount = Math.min(MAX_VISIBLE, this.suggestions.size());
+        int height = visibleCount * ENTRY_HEIGHT;
+        // Grows upward from just above the input
+        int topY = this.field.y - height - 2;
+        int width = Math.min(this.cachedWidth, this.field.width);
+        // Anchor the left edge at the screen-x of the token being completed, not the field's left edge
+        String text = this.field.getText();
+        int cursorPos = this.field.getCursorPosition();
+        int wordStart = this.field.getNthWordFromPosWS(-1, cursorPos, false);
+        int lineScrollOffset = this.field.getLineScrollOffset();
+        int start = Math.min(Math.max(wordStart, lineScrollOffset), text.length());
+        // Shift left by the internal padding so the entry text (drawn at x + PADDING_X) lines up with the token itself
+        int x = textOriginX(this.field) + Minecraft.getMinecraft().fontRenderer.getStringWidth(text.substring(lineScrollOffset, start)) - PADDING_X;
+        // Clamp so the box never overflows the right edge of the input, shifting left as needed
+        int fieldRight = this.field.x + this.field.width;
+        if (x + width > fieldRight) {
+            x = fieldRight - width;
+        }
+        if (x < this.field.x) {
+            x = this.field.x;
+        }
+        return new Geometry(x, topY, width, height, visibleCount);
+    }
+
+    /**
+     * Geometry of the dropdown box.
+     * {@code x}/{@code topY} is the top-left corner. Index 0 renders in the bottom row and the list grows upward.
+     */
+    private record Geometry(int x, int topY, int width, int height, int visibleCount) { }
 
 }
