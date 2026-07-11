@@ -321,7 +321,6 @@ public class TerminalConsoleAppender extends AbstractAppender
                 }
 
                 currentTerminal.writer().flush();
-                return;
             }
             catch (IllegalStateException ignored)
             {
@@ -329,10 +328,13 @@ public class TerminalConsoleAppender extends AbstractAppender
                 // keeps logging during shutdown) before this log event was dispatched.
                 // Fall back to the saved standard output instead of failing the appender
                 // with "Terminal has been closed".
+                stdout.print(text);
             }
         }
-
-        stdout.print(text);
+        else
+        {
+            stdout.print(text);
+        }
     }
 
     /**
