@@ -1,6 +1,18 @@
 --- before/net/minecraft/inventory/SlotFurnaceOutput.java
 +++ after/net/minecraft/inventory/SlotFurnaceOutput.java
-@@ -94,5 +94,6 @@
+@@ -57,7 +57,10 @@
+         if (!this.player.world.isRemote)
+         {
+             int i = this.removeCount;
+-            float f = FurnaceRecipes.instance().getSmeltingExperience(stack);
++            float f = 0.0F;
++            if (this.inventory instanceof net.minecraftforge.items.IFurnace) {
++                f = ((net.minecraftforge.items.IFurnace) this.inventory).extractExp();
++            }
+ 
+             if (f == 0.0F)
+             {
+@@ -94,5 +97,6 @@
          }
  
          this.removeCount = 0;

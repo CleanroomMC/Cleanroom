@@ -1,0 +1,25 @@
+--- before/net/minecraft/block/BlockFurnace.java
++++ after/net/minecraft/block/BlockFurnace.java
+@@ -246,6 +246,22 @@
+             {
+                 InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityFurnace)tileentity);
+                 worldIn.updateComparatorOutputLevel(pos, this);
++                if (!worldIn.isRemote)
++                {
++                    float exp = ((net.minecraftforge.items.IFurnace) tileentity).extractExp();
++                    int i = net.minecraft.util.math.MathHelper.floor(exp);
++                    float decimal = exp - i;
++
++                    if (decimal > 0.0F && worldIn.rand.nextFloat() < decimal)
++                    {
++                        i++;
++                    }
++
++                    if (i > 0)
++                    {
++                        worldIn.spawnEntity(new net.minecraft.entity.item.EntityXPOrb(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, i));
++                    }
++                }
+             }
+         }
+ 

@@ -1,20 +1,60 @@
 --- before/net/minecraft/item/crafting/FurnaceRecipes.java
 +++ after/net/minecraft/item/crafting/FurnaceRecipes.java
-@@ -121,6 +121,7 @@
+@@ -111,31 +111,22 @@
+ 
+     public void addSmeltingRecipeForBlock(Block input, ItemStack stack, float experience)
+     {
+-        this.addSmelting(Item.getItemFromBlock(input), stack, experience);
++        net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
+     }
+ 
+     public void addSmelting(Item input, ItemStack stack, float experience)
+     {
+-        this.addSmeltingRecipe(new ItemStack(input, 1, 32767), stack, experience);
++        net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
+     }
  
      public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience)
      {
-+        if (getSmeltingResult(input) != ItemStack.EMPTY) { net.minecraftforge.fml.common.FMLLog.log.info("Ignored smelting recipe with conflicting input: {} = {}", input, stack); return; }
-         this.smeltingList.put(input, stack);
-         this.experienceList.put(stack, experience);
+-        this.smeltingList.put(input, stack);
+-        this.experienceList.put(stack, experience);
++        net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
      }
-@@ -151,6 +152,9 @@
+ 
+     public ItemStack getSmeltingResult(ItemStack stack)
+     {
+-        for (Entry<ItemStack, ItemStack> entry : this.smeltingList.entrySet())
+-        {
+-            if (this.compareItemStacks(stack, entry.getKey()))
+-            {
+-                return entry.getValue();
+-            }
+-        }
+-
+-        return ItemStack.EMPTY;
++        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getOutput(stack);
+     }
+ 
+     private boolean compareItemStacks(ItemStack stack1, ItemStack stack2)
+@@ -146,19 +137,11 @@
+ 
+     public Map<ItemStack, ItemStack> getSmeltingList()
+     {
+-        return this.smeltingList;
++        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getInputToOutputMap();
+     }
  
      public float getSmeltingExperience(ItemStack stack)
      {
-+        float ret = stack.getItem().getSmeltingExperience(stack);
-+        if (ret != -1) return ret;
-+
-         for (Entry<ItemStack, Float> entry : this.experienceList.entrySet())
-         {
-             if (this.compareItemStacks(stack, entry.getKey()))
+-        for (Entry<ItemStack, Float> entry : this.experienceList.entrySet())
+-        {
+-            if (this.compareItemStacks(stack, entry.getKey()))
+-            {
+-                return entry.getValue();
+-            }
+-        }
+-
+-        return 0.0F;
++        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getExperience(stack);
+     }
+ }
