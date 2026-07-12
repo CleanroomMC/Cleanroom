@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -15,6 +16,7 @@ import net.minecraftforge.fml.common.FMLLog;
 public class FurnaceRecipeManager {
     private static final FurnaceRecipeManager INSTANCE = new FurnaceRecipeManager();
     private final Map<Item, RecipeBucket> recipeMap = new HashMap<>();
+    private final Object2FloatOpenHashMap<ItemKey> experienceMap = new Object2FloatOpenHashMap<>();
 
     private FurnaceRecipeManager() {}
 
@@ -65,6 +67,7 @@ public class FurnaceRecipeManager {
         RecipeBucket bucket = recipeMap.computeIfAbsent(input.getItem(), _ -> new RecipeBucket());
         SmeltingRecipe recipe = new SmeltingRecipe(output, cookTime, experience);
         int metadata = input.getMetadata();
+        experienceMap.put(ItemKey.of(output), experience);
 
         if (metadata == Short.MAX_VALUE) {
             bucket.wildcard = recipe;
@@ -100,7 +103,32 @@ public class FurnaceRecipeManager {
 
     public float getExperience(ItemStack input) {
         SmeltingRecipe recipe = getRecipe(input);
-        return recipe != null ? recipe.experience() : 0;
+        if (recipe == null) {
+            return 0;
+        }
+
+        ItemStack output = recipe.output();
+        float itemExp = output.getItem().getSmeltingExperience(output);
+        if (itemExp >= 0) {
+            return itemExp;
+        }
+        return recipe.experience();
+    }
+
+    /**
+     * @deprecated Use {@link #getExperience(ItemStack)}
+     */
+    @Deprecated
+    public float getExperienceFromOutput(ItemStack output) {
+        if (output == null || output.isEmpty()) {
+            return 0;
+        }
+
+        float itemExp = output.getItem().getSmeltingExperience(output);
+        if (itemExp != -1) {
+            return itemExp;
+        }
+        return experienceMap.getOrDefault(ItemKey.of(output), 0);
     }
 
     public Map<ItemStack, ItemStack> getInputToOutputMap() {
@@ -127,5 +155,11 @@ public class FurnaceRecipeManager {
     private static class RecipeBucket {
         final Int2ObjectMap<SmeltingRecipe> specific = new Int2ObjectOpenHashMap<>();
         SmeltingRecipe wildcard;
+    }
+
+    private record ItemKey(Item item, int metadata) {
+        public static ItemKey of(ItemStack stack) {
+            return new ItemKey(stack.getItem(), stack.getMetadata());
+        }
     }
 }

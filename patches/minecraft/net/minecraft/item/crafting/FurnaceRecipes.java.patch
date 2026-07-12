@@ -55,6 +55,6 @@
 -        }
 -
 -        return 0.0F;
-+        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getExperience(stack);
++        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getExperienceFromOutput(stack);
      }
  }
