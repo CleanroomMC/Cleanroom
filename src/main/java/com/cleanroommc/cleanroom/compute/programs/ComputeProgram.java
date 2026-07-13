@@ -19,11 +19,13 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
 import org.lwjgl.system.MemoryStack;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
+import java.util.List;
 
 public class ComputeProgram {
     private final transient ResourceLocation resourceLocation;
@@ -53,9 +55,22 @@ public class ComputeProgram {
         IntBuffer err_code = stack.mallocInt(1);
         String src = MinecraftResourceUtils.readText(new ResourceLocation(resourceLocation.getNamespace(),
                 "compute/" + resourceLocation.getPath() + ".cl"), MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
-        if (cache.contains(resourceLocation)) {
+        if (compiledProgramBinary != null && cache.contains(resourceLocation)) {
             if (cache.compare(resourceLocation, src)) {
-                // TODO: read binary from cache
+                PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
+                devices.put(Compute.instance().devices);
+                IntBuffer status = stack.callocInt(compiledProgramBinary.length);
+                IntBuffer err = stack.callocInt(1);
+                ByteBuffer[] binaries = new ByteBuffer[compiledProgramBinary.length];
+                for (int i = 0; i < binaries.length; i++) {
+                    binaries[i] = stack.bytes(compiledProgramBinary[i]);
+                    binaries[i].rewind();
+                }
+                devices.rewind();
+                programHandle = CL10.clCreateProgramWithBinary(Compute.instance().context, devices, binaries, status, err);
+                switch (err.get(0)) {
+                    case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
+                }
                 return;
             }
         }
