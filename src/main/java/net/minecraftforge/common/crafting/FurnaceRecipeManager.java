@@ -167,7 +167,7 @@ public class FurnaceRecipeManager {
         }
 
         public ItemStack toStack() {
-            return new ItemStack(item, metadata);
+            return new ItemStack(item, 1, metadata);
         }
     }
 }
