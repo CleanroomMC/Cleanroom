@@ -23,14 +23,16 @@ public class Compute {
     public final Logger LOGGER;
 
     public final long context;
+    public final long[] devices;
     public final Map<ResourceLocation, Long> libraries = new Object2ObjectAVLTreeMap<>();
     public final Map<ResourceLocation, ComputeProgram> programs = new Object2ObjectAVLTreeMap<>();
 
-    private Compute(Logger log, CLCapabilities platform, CLCapabilities device, long context) {
+    private Compute(Logger log, CLCapabilities platform, CLCapabilities device, long context, long... devices) {
         this.LOGGER = log;
         this.PLATFORM_CAPABILITIES = platform;
         this.DEVICE_CAPABILITIES = device;
         this.context = context;
+        this.devices = devices;
     }
 
     public static Compute instance() {
@@ -54,10 +56,10 @@ public class Compute {
         return program;
     }
 
-    static void init(Logger log, CLCapabilities platform, CLCapabilities device, long context) {
+    static void init(Logger log, CLCapabilities platform, CLCapabilities device, long context, long... devices) {
         if (INSTANCE != null) {
             throw new ConstructorInvocationException("Second attempt at invoking singleton constructor. ");
         }
-        INSTANCE = new Compute(log, platform, device, context);
+        INSTANCE = new Compute(log, platform, device, context, devices);
     }
 }

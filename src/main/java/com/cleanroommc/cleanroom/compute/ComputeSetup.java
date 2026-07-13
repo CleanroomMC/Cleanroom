@@ -67,7 +67,11 @@ public class ComputeSetup {
                     case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL context.");
                 }
             }
-            Compute.init(LOGGER, platformCapabilities, CL.createDeviceCapabilities(devices.get(0), platformCapabilities), ctx);
+            Compute.init(
+                    LOGGER,
+                    platformCapabilities, CL.createDeviceCapabilities(devices.get(0), platformCapabilities),
+                    ctx, devices.getLongBuffer(0,devices.capacity()).array()
+            );
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 CL10.clReleaseContext(ctx);
                 CL.destroy();
