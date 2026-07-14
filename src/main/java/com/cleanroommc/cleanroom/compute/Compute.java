@@ -2,6 +2,7 @@ package com.cleanroommc.cleanroom.compute;
 
 import com.cleanroommc.cleanroom.compute.cmd.CommandQueueDispatch;
 import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
+import com.cleanroommc.cleanroom.compute.programs.ProgramCacheIntegrityTable;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
@@ -33,6 +34,8 @@ public class Compute {
     public final Map<ResourceLocation, ComputeProgram> programs = new Object2ObjectAVLTreeMap<>();
     public final CommandQueueDispatch queueDispatch = new CommandQueueDispatch();
 
+    private final ProgramCacheIntegrityTable programCacheIntegrityTable = new ProgramCacheIntegrityTable();
+
     private Compute(MemoryStack stack, Logger log, CLCapabilities platformCapabilities, CLCapabilities deviceCapabilities, long context, long... devices) {
         this.LOGGER = log;
         this.PLATFORM_CAPABILITIES = platformCapabilities;
@@ -54,6 +57,18 @@ public class Compute {
 
     public static Compute instance() {
         return INSTANCE;
+    }
+
+    public void registerProgram(ResourceLocation location) {
+        programs.put(location, new ComputeProgram(location));
+    }
+
+    void compilePrograms() {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            for (ComputeProgram program : programs.values()) {
+                program.compile(programCacheIntegrityTable, stack);
+            }
+        }
     }
 
     public long getOrCreateLibrary(ResourceLocation rl, MemoryStack stack) {
