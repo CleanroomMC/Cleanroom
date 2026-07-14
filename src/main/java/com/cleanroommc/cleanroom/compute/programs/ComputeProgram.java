@@ -23,7 +23,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.IntBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 
@@ -55,7 +57,7 @@ public class ComputeProgram {
         IntBuffer err_code = stack.mallocInt(1);
         String src = MinecraftResourceUtils.readText(new ResourceLocation(resourceLocation.getNamespace(),
                 "compute/" + resourceLocation.getPath() + ".cl"), MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
-        if (compiledProgramBinary != null && cache.contains(resourceLocation)) {
+        /*if (compiledProgramBinary != null && cache.contains(resourceLocation)) {
             if (cache.compare(resourceLocation, src)) {
                 PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
                 devices.put(Compute.instance().devices);
@@ -64,16 +66,16 @@ public class ComputeProgram {
                 ByteBuffer[] binaries = new ByteBuffer[compiledProgramBinary.length];
                 for (int i = 0; i < binaries.length; i++) {
                     binaries[i] = stack.bytes(compiledProgramBinary[i]);
-                    binaries[i].rewind();
+                    binaries[i].flip();
                 }
-                devices.rewind();
+                devices.flip();
                 programHandle = CL10.clCreateProgramWithBinary(Compute.instance().context, devices, binaries, status, err);
                 switch (err.get(0)) {
                     case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
                 }
                 return;
             }
-        }
+        }*/
         long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
         switch(err_code.get(0)) {
             case CL10.CL_INVALID_VALUE -> throw new NullPointerException(String.format("Source code of %s is null. ", resourceLocation));
@@ -81,25 +83,25 @@ public class ComputeProgram {
         }
         programHandle = program;
         Set<ResourceLocation> dependencies = getHeadersFromFile(src, resourceLocation);
-        List<PointerBuffer> pathList = new ObjectArrayList<>();
+        @SuppressWarnings("unused")
+        List<ByteBuffer> pathList = new ObjectArrayList<>(); // This exists so that the buffers don't expire since MemoryStack auto-manages memory
         PointerBuffer paths = stack.mallocPointer(dependencies.size());
         PointerBuffer libraryHandles = stack.mallocPointer(dependencies.size());
         for (ResourceLocation rl : dependencies) {
             String fname = String.format("%s/%s", rl.getNamespace(), rl.getPath());
-            PointerBuffer buf = stack.mallocPointer(fname.length());
-            buf.getByteBuffer(0, fname.length()).put(fname.getBytes());
+            ByteBuffer buf = stack.UTF8(fname);
             pathList.add(buf);
-            paths.putAddressOf(buf);
+            paths.put(buf);
             libraryHandles.put(Compute.instance().getOrCreateLibrary(rl, stack));
         }
         PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
         devices.put(Compute.instance().devices);
-        devices.rewind();
-        paths.rewind();
-        libraryHandles.rewind();
+        devices.flip();
+        paths.flip();
+        libraryHandles.flip();
         switch (CL12.clCompileProgram(program, devices, "", libraryHandles, paths, null, 0)) {
             case CL12.CL_COMPILER_NOT_AVAILABLE -> throw new CompilationError("Compiler unavailable.");
-            case CL12.CL_COMPILE_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to compile program %s.", resourceLocation));
+            case CL12.CL_COMPILE_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to compile program %s. \nBuild Logs:\n%s", resourceLocation, combineStrings(getBuildLog(stack), "\n\t")));
             case CL10.CL_INVALID_OPERATION -> throw new Error("Invalid Operation. Program either has no source, already has kernel objects attached or has been compiled during program creation.");
             case CL10.CL_INVALID_PROGRAM -> throw new RuntimeException("Invalid program.");
             case CL10.CL_INVALID_DEVICE -> throw new RuntimeException("Invalid device.");
@@ -107,14 +109,19 @@ public class ComputeProgram {
             case CL12.CL_INVALID_COMPILER_OPTIONS -> throw new CompilationError("Invalid compiler options");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
         }
+        for (String log : getBuildLog(stack)) {
+            Compute.instance().LOGGER.info(log);
+        }
+        /*
         PointerBuffer binaryCount = stack.mallocPointer(1);
         CL10.clGetProgramInfo(program, CL10.CL_PROGRAM_BINARY_SIZES, (ByteBuffer) null, binaryCount);
         IntBuffer binarySizes = stack.mallocInt((int) binaryCount.get(0)); // Hopefully no one creates a 2 GB OpenCL program
         CL10.clGetProgramInfo(program, CL10.CL_PROGRAM_BINARY_SIZES, binarySizes, binaryCount);
         compiledProgramBinary = new byte[binarySizes.get(0)][];
         List<PointerBuffer> binaryList = new ObjectArrayList<>();
-        PointerBuffer binaries = stack.mallocPointer((int) binaryCount.get(0));
-        for (int i = 0; i < binaryCount.get(0); i++) {
+        int tmp = Math.toIntExact(binaryCount.get(0));
+        PointerBuffer binaries = stack.mallocPointer(tmp);
+        for (int i = 0; i < tmp; i++) {
             PointerBuffer buf = stack.mallocPointer(binarySizes.get(i));
             binaryList.add(buf);
             binaries.putAddressOf(buf);
@@ -124,6 +131,35 @@ public class ComputeProgram {
             compiledProgramBinary[i] = binaryList.get(i).getByteBuffer(0, binarySizes.get(i)).array();
         }
         // TODO: Save to cache
+        */
+    }
+
+    private List<String> getBuildLog(MemoryStack stack) {
+        List<String> logs = new ObjectArrayList<>();
+        PointerBuffer len = stack.mallocPointer(1);
+        for (long device : Compute.instance().devices) {
+            CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
+            ByteBuffer data = stack.malloc((int) len.get(0));
+            len.rewind();
+            CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, data, len);
+            data.rewind();
+            StringBuilder builder = new StringBuilder();
+            CharBuffer dataDecoded = StandardCharsets.US_ASCII.decode(data);
+            while (dataDecoded.hasRemaining()) {
+                builder.append(dataDecoded.get());
+            }
+            logs.add(builder.toString());
+        }
+        return logs;
+    }
+
+    private String combineStrings(List<String> strings, String delimiter) {
+        StringBuilder builder = new StringBuilder();
+        for (String string : strings) {
+            builder.append(string);
+            builder.append(delimiter);
+        }
+        return builder.toString();
     }
 
     public static @NonNull Set<ResourceLocation> getHeadersFromFile(@NonNull String source, ResourceLocation program) {

@@ -64,8 +64,8 @@ public class Compute {
     }
 
     void compilePrograms() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            for (ComputeProgram program : programs.values()) {
+        for (ComputeProgram program : programs.values()) {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
                 program.compile(programCacheIntegrityTable, stack);
             }
         }
