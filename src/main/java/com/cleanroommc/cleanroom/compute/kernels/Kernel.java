@@ -26,7 +26,16 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
         return kernel;
     }
 
-    public void invoke(Map<String, PointerBuffer> arguments) {
+    public void invoke(long commandQueue, Map<String, PointerBuffer> arguments) {
+        int length = -1;
+        for (var argument : arguments.entrySet()) {
+            if (length == -1) {
+                length = argument.getValue().capacity();
+            } else if (length != argument.getValue().capacity()) {
+                throw new KernelError(String.format("Kernel Invocation Error: buffer %s is of a different size from the other arguments", argument.getKey()));
+            }
+            argument.getValue().rewind();
+        }
         // TODO: Kernel invocation
     }
 }
