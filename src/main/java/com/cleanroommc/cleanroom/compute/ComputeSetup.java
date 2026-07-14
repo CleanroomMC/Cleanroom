@@ -47,11 +47,13 @@ public class ComputeSetup {
                 IntBuffer deviceCount = stack.mallocInt(1);
                 CL10.clGetDeviceIDs(platform.pointer, CL10.CL_DEVICE_TYPE_GPU, null, deviceCount);
                 devices = stack.mallocPointer(deviceCount.get(0));
+                deviceCount.rewind();
                 CL10.clGetDeviceIDs(platform.pointer, CL10.CL_DEVICE_TYPE_GPU, devices, deviceCount);
             } else {
                 devices = stack.mallocPointer(1);
                 CL10.clGetDeviceIDs(platform.pointer, CL10.CL_DEVICE_TYPE_DEFAULT, devices, new int[]{1});
             }
+            devices.rewind();
             LOGGER.info("Creating OpenCL Context");
             IntBuffer erret = stack.mallocInt(1);
             PointerBuffer properties = stack.mallocPointer(3);
@@ -67,11 +69,15 @@ public class ComputeSetup {
                     case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL context.");
                 }
             }
+            long[] deviceArray = new long[devices.capacity()];
+            for (int i = 0; i < deviceArray.length; i++) {
+                deviceArray[i] = devices.get(i);
+            }
             Compute.init(
                     stack,
                     LOGGER,
                     platformCapabilities, CL.createDeviceCapabilities(devices.get(0), platformCapabilities),
-                    ctx, devices.getLongBuffer(0,devices.capacity()).array()
+                    ctx, deviceArray
             );
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 CL10.clReleaseContext(ctx);
