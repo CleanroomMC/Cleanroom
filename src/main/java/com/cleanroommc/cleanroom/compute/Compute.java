@@ -1,5 +1,6 @@
 package com.cleanroommc.cleanroom.compute;
 
+import com.cleanroommc.cleanroom.compute.cmd.CommandQueueDispatch;
 import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
@@ -26,6 +27,7 @@ public class Compute {
     public final long[] devices;
     public final Map<ResourceLocation, Long> libraries = new Object2ObjectAVLTreeMap<>();
     public final Map<ResourceLocation, ComputeProgram> programs = new Object2ObjectAVLTreeMap<>();
+    public final CommandQueueDispatch queueDispatch = new CommandQueueDispatch();
 
     private Compute(Logger log, CLCapabilities platform, CLCapabilities device, long context, long... devices) {
         this.LOGGER = log;
