@@ -68,6 +68,7 @@ public class ComputeSetup {
                 }
             }
             Compute.init(
+                    stack,
                     LOGGER,
                     platformCapabilities, CL.createDeviceCapabilities(devices.get(0), platformCapabilities),
                     ctx, devices.getLongBuffer(0,devices.capacity()).array()
