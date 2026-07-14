@@ -1,10 +1,15 @@
 package com.cleanroommc.cleanroom.compute.kernels;
 
+import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.KernelError;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
+import org.lwjgl.system.MemoryStack;
 
 import java.util.Map;
 
@@ -13,7 +18,7 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
         this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments));
     }
 
-    private static long createKernel(long program, KernelMetadata meta) {
+    private static long createKernel(long program, @NonNull KernelMetadata meta) {
         int[] err_codes = new int[1];
         long kernel = CL10.clCreateKernel(program, meta.kernelName, err_codes);
         switch(err_codes[0]) {
@@ -26,16 +31,80 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
         return kernel;
     }
 
-    public void invoke(long commandQueue, Map<String, PointerBuffer> arguments) {
+    public long invoke(MemoryStack stack, long commandQueue, long device,
+                       final @NonNull PointerBuffer[] arguments,
+                       final long @Nullable [] workGroupOffsets,
+                       final long @Nullable [] workGroupSizes,
+                       final long... dependencies) {
+        int dim;
         int length = -1;
-        for (var argument : arguments.entrySet()) {
+        for (int i = 0 ; i < arguments.length; i++) {
             if (length == -1) {
-                length = argument.getValue().capacity();
-            } else if (length != argument.getValue().capacity()) {
-                throw new KernelError(String.format("Kernel Invocation Error: buffer %s is of a different size from the other arguments", argument.getKey()));
+                length = arguments[i].capacity();
+            } else if (length != arguments[i].capacity()) {
+                throw new KernelError(String.format("Kernel Invocation Error: buffer %d is of a different size from the other arguments", i));
             }
-            argument.getValue().rewind();
+            arguments[i].rewind();
+            CL10.clSetKernelArg(kernel, i, arguments[i]);
         }
-        // TODO: Kernel invocation
+        PointerBuffer offsets = null, sizes, local;
+        if (workGroupSizes != null && workGroupOffsets != null) {
+            Preconditions.checkArgument(workGroupSizes.length == workGroupOffsets.length);
+            dim = workGroupSizes.length;
+        } else {
+            dim = 1;
+        }
+        long[] deviceSizes = Compute.instance().getDeviceItemSizes(device);
+        offsets = stack.mallocPointer(dim);
+        sizes = stack.mallocPointer(dim);
+        local = stack.mallocPointer(dim);
+        if (workGroupSizes != null) {
+            Preconditions.checkArgument(workGroupSizes.length < 3);
+            sizes.put(workGroupSizes);
+            for (int i = 0; i < workGroupSizes.length; i++) {
+                local.put(gcd(workGroupSizes[i], deviceSizes[i]));
+            }
+        } else {
+            sizes.put(length);
+            local.put(gcd(length, deviceSizes[0]));
+        }
+        if (workGroupOffsets != null) {
+            Preconditions.checkArgument(workGroupOffsets.length < 3);
+        } else {
+            for (int i = 0; i < dim; i++) {
+                offsets.put(0);
+            }
+        }
+        offsets.rewind();
+        sizes.rewind();
+        local.rewind();
+        PointerBuffer eventWaitList = null;
+        if (dependencies.length > 0) {
+            eventWaitList = stack.mallocPointer(dependencies.length);
+            eventWaitList.put(dependencies);
+            eventWaitList.rewind();
+        }
+        PointerBuffer event = stack.mallocPointer(1);
+        switch (CL10.clEnqueueNDRangeKernel(commandQueue, kernel,
+                dim, offsets, sizes, local,
+                eventWaitList, event)) {
+            case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
+            case CL10.CL_INVALID_WORK_DIMENSION -> throw new KernelError(String.format("Invalid work dimension %d", dim));
+            case CL10.CL_INVALID_GLOBAL_WORK_SIZE -> throw new KernelError("Work group size is invalid.");
+            case CL10.CL_INVALID_GLOBAL_OFFSET -> throw new KernelError("Invalid offset");
+            case CL10.CL_INVALID_WORK_GROUP_SIZE -> throw new KernelError("Local group size is not divisible by global group size.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
+        }
+        return event.get(0);
+    }
+
+    private static long gcd(long a, long b){
+        long tmp;
+        while(b != 0){
+            tmp = a % b;
+            a = b;
+            b = tmp;
+        }
+        return a;
     }
 }
