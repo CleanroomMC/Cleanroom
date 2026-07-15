@@ -85,7 +85,6 @@ public class ComputeProgram {
             case CL10.CL_INVALID_VALUE -> throw new NullPointerException(String.format("Source code of %s is null. ", resourceLocation));
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
         }
-        programHandle = program;
         Set<ResourceLocation> dependencies = getHeadersFromFile(src, resourceLocation);
         @SuppressWarnings("unused")
         List<ByteBuffer> pathList = new ObjectArrayList<>(); // This exists so that the buffers don't expire since MemoryStack auto-manages memory
@@ -105,15 +104,29 @@ public class ComputeProgram {
         libraryHandles.flip();
         switch (CL12.clCompileProgram(program, devices, "", libraryHandles, paths, null, 0)) {
             case CL12.CL_COMPILER_NOT_AVAILABLE -> throw new CompilationError("Compiler unavailable.");
-            case CL12.CL_COMPILE_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to compile program %s. \nBuild Logs:\n%s", resourceLocation, combineStrings(getBuildLog(stack), "\n\t")));
+            case CL12.CL_COMPILE_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to compile program %s. \nBuild Logs:\n%s", resourceLocation, combineStrings(getBuildLog(stack, program), "\n\t")));
             case CL10.CL_INVALID_OPERATION -> throw new Error("Invalid Operation. Program either has no source, already has kernel objects attached or has been compiled during program creation.");
             case CL10.CL_INVALID_PROGRAM -> throw new RuntimeException("Invalid program.");
             case CL10.CL_INVALID_DEVICE -> throw new RuntimeException("Invalid device.");
             case CL10.CL_INVALID_VALUE -> throw new RuntimeException("Invalid value.");
             case CL12.CL_INVALID_COMPILER_OPTIONS -> throw new CompilationError("Invalid compiler options");
-            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to compile OpenCL program.");
         }
-        for (String log : getBuildLog(stack)) {
+        for (String log : getBuildLog(stack, program)) {
+            Compute.instance().LOGGER.info(log);
+        }
+        err_code.rewind();
+        programHandle = CL12.clLinkProgram(Compute.instance().context, devices, "", program, null, 0, err_code);
+        switch(err_code.get(0)) {
+            case CL10.CL_INVALID_PROGRAM -> throw new CompilationError(String.format("Program %s is invalid and therefore can't be linked.", resourceLocation));
+            case CL10.CL_INVALID_DEVICE -> throw new RuntimeException(String.format("A device unrelated to the context has been provided to the linker for program %s.", resourceLocation));
+            case CL12.CL_INVALID_LINKER_OPTIONS -> throw new CompilationError(String.format(String.format("Linker options for program %s are invalid.", resourceLocation)));
+            case CL10.CL_INVALID_OPERATION -> throw new CompilationError(String.format("Program %s hasn't finished building yet.", resourceLocation));
+            case CL12.CL_LINKER_NOT_AVAILABLE -> throw new RuntimeException("Linker is unavailable");
+            case CL12.CL_LINK_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to link program %s. \nBuild Logs:\n\t%s", resourceLocation, combineStrings(getBuildLog(stack, programHandle), "\t\n")));
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to link OpenCL program.");
+        }
+        for (String log : getBuildLog(stack, program)) {
             Compute.instance().LOGGER.info(log);
         }
         /*
@@ -150,15 +163,15 @@ public class ComputeProgram {
         return kernels.get(name);
     }
 
-    private List<String> getBuildLog(MemoryStack stack) {
+    private List<String> getBuildLog(MemoryStack stack, long program) {
         List<String> logs = new ObjectArrayList<>();
         try (MemoryStack substack = stack.push()) {
             PointerBuffer len = stack.mallocPointer(1);
             for (long device : Compute.instance().devices) {
-                CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
+                CL10.clGetProgramBuildInfo(program, device, CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
                 ByteBuffer data = stack.malloc((int) len.get(0));
                 len.rewind();
-                CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, data, len);
+                CL10.clGetProgramBuildInfo(program, device, CL10.CL_PROGRAM_BUILD_LOG, data, len);
                 data.rewind();
                 StringBuilder builder = new StringBuilder();
                 CharBuffer dataDecoded = StandardCharsets.US_ASCII.decode(data);
