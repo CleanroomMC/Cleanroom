@@ -17,7 +17,8 @@ public final class CommandQueueDispatch implements Closeable {
 
     public CommandQueue dispatch(@NonNull String name) {
         Preconditions.checkNotNull(name);
-        CommandQueue queue = commandQueues.put(name, new CommandQueue(Compute.instance().devices[currDevice]));
+        CommandQueue queue = new CommandQueue(Compute.instance().devices[currDevice]);
+        commandQueues.put(name, queue);
         currDevice++;
         currDevice %= Compute.instance().devices.length;
         return queue;
