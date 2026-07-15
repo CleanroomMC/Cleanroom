@@ -129,6 +129,7 @@ public class ComputeProgram {
         for (String log : getBuildLog(stack, program)) {
             Compute.instance().LOGGER.info(log);
         }
+        CL10.clReleaseProgram(program);
         /*
         PointerBuffer binaryCount = stack.mallocPointer(1);
         CL10.clGetProgramInfo(program, CL10.CL_PROGRAM_BINARY_SIZES, (ByteBuffer) null, binaryCount);
