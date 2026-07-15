@@ -1,5 +1,6 @@
 package com.cleanroommc.cleanroom.compute;
 
+import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
 import com.cleanroommc.cleanroom.compute.errors.HeaderParsingError;
 import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.lwjgl.system.Configuration;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,5 +69,16 @@ public class ComputeAPITest {
     public void compileTest() {
         assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("forge", "program")));
         assertDoesNotThrow(() -> Compute.instance().compilePrograms());
+    }
+
+    @Test
+    public void commandQueueTest() {
+        assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("forge", "program")));
+        assertDoesNotThrow(() -> Compute.instance().compilePrograms());
+        AtomicReference<CommandQueue> tmp = new AtomicReference<>();
+        assertDoesNotThrow(() -> tmp.set(Compute.instance().queueDispatch.dispatch("queue")));
+        CommandQueue queue = tmp.get();
+        assertNotNull(queue);
+        assertDoesNotThrow(queue::close);
     }
 }
