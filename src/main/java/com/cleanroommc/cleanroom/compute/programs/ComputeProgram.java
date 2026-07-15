@@ -6,6 +6,7 @@ import com.cleanroommc.cleanroom.compute.errors.HeaderParsingError;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.cleanroommc.cleanroom.compute.kernels.KernelMetadata;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -140,6 +141,13 @@ public class ComputeProgram {
             mapBuilder.put(kernel.getKey(), new Kernel(programHandle, kernel.getValue()));
         }
         kernels = mapBuilder.build();
+    }
+
+    public Kernel kernel(@NonNull String name) {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkArgument(kernels.containsKey(name),
+                "Program has no kernel named \"%s\"", name);
+        return kernels.get(name);
     }
 
     private List<String> getBuildLog(MemoryStack stack) {
