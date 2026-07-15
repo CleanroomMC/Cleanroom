@@ -22,7 +22,7 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
         int[] err_codes = new int[1];
         long kernel = CL10.clCreateKernel(program, meta.kernelName, err_codes);
         switch(err_codes[0]) {
-            case CL10.CL_INVALID_PROGRAM, CL10.CL_INVALID_PROGRAM_EXECUTABLE -> throw new CompilationError(String.format("Program fro kernel %s has not been compiled properly.", meta.kernelName));
+            case CL10.CL_INVALID_PROGRAM, CL10.CL_INVALID_PROGRAM_EXECUTABLE -> throw new CompilationError(String.format("Program for kernel %s has not been compiled properly.", meta.kernelName));
             case CL10.CL_INVALID_KERNEL_NAME -> throw new KernelError(String.format("Program does not contain kernel %s.", meta.kernelName));
             case CL10.CL_INVALID_KERNEL_DEFINITION -> throw new KernelError(String.format("Kernel %s has different definitions on different devices.", meta.kernelName));
             case CL10.CL_INVALID_VALUE -> throw new NullPointerException("Kernel name is null for program.");
