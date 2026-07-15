@@ -136,19 +136,21 @@ public class ComputeProgram {
 
     private List<String> getBuildLog(MemoryStack stack) {
         List<String> logs = new ObjectArrayList<>();
-        PointerBuffer len = stack.mallocPointer(1);
-        for (long device : Compute.instance().devices) {
-            CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
-            ByteBuffer data = stack.malloc((int) len.get(0));
-            len.rewind();
-            CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, data, len);
-            data.rewind();
-            StringBuilder builder = new StringBuilder();
-            CharBuffer dataDecoded = StandardCharsets.US_ASCII.decode(data);
-            while (dataDecoded.hasRemaining()) {
-                builder.append(dataDecoded.get());
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer len = stack.mallocPointer(1);
+            for (long device : Compute.instance().devices) {
+                CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
+                ByteBuffer data = stack.malloc((int) len.get(0));
+                len.rewind();
+                CL10.clGetProgramBuildInfo(programHandle, device, CL10.CL_PROGRAM_BUILD_LOG, data, len);
+                data.rewind();
+                StringBuilder builder = new StringBuilder();
+                CharBuffer dataDecoded = StandardCharsets.US_ASCII.decode(data);
+                while (dataDecoded.hasRemaining()) {
+                    builder.append(dataDecoded.get());
+                }
+                logs.add(builder.toString());
             }
-            logs.add(builder.toString());
         }
         return logs;
     }
