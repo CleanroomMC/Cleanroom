@@ -3,8 +3,10 @@ package com.cleanroommc.cleanroom.compute.programs;
 import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.HeaderParsingError;
+import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.cleanroommc.cleanroom.compute.kernels.KernelMetadata;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -34,6 +36,7 @@ public class ComputeProgram {
     private final transient ProgramMetadata metadata;
     private byte @Nullable [] @NonNull [] compiledProgramBinary;
     private transient long programHandle;
+    private transient Map<String, Kernel> kernels;
 
     public ComputeProgram(ResourceLocation resourceLocation) {
         this.resourceLocation = resourceLocation;
@@ -132,6 +135,11 @@ public class ComputeProgram {
         }
         // TODO: Save to cache
         */
+        ImmutableMap.Builder<String, Kernel> mapBuilder = new ImmutableMap.Builder<>();
+        for (Map.Entry<String, KernelMetadata> kernel : metadata.kernels.entrySet()) {
+            mapBuilder.put(kernel.getKey(), new Kernel(programHandle, kernel.getValue()));
+        }
+        kernels = mapBuilder.build();
     }
 
     private List<String> getBuildLog(MemoryStack stack) {
