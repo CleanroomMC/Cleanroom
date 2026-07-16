@@ -12,10 +12,4 @@ interface ProjectConstants {
         '--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED',
         '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
     ]
-
-    Map<String, Object> PATCHER_POST_PROCESSOR = [
-        tool: 'net.minecraftforge:mcpcleanup:2.3.2:fatjar',
-        repo: 'https://maven.minecraftforge.net/',
-        args: ['--input', '{input}', '--output', '{output}']
-    ]
 }
