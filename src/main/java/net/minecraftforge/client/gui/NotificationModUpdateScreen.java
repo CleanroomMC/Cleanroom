@@ -91,10 +91,10 @@ public class NotificationModUpdateScreen extends GuiScreen
         GlStateManager.popMatrix();
     }
 
-    public static NotificationModUpdateScreen init(GuiMainMenu guiMainMenu, GuiButton modButton)
+    public static NotificationModUpdateScreen init(GuiScreen guiScreen, GuiButton modButton)
     {
         NotificationModUpdateScreen notificationModUpdateScreen = new NotificationModUpdateScreen(modButton);
-        notificationModUpdateScreen.setGuiSize(guiMainMenu.width, guiMainMenu.height);
+        notificationModUpdateScreen.setGuiSize(guiScreen.width, guiScreen.height);
         notificationModUpdateScreen.initGui();
         return notificationModUpdateScreen;
     }
