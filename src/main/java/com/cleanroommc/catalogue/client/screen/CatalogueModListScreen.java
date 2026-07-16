@@ -1328,46 +1328,51 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             return this.mods.contains(modId);
         }
 
-        private void init() {
+        private boolean init() {
+            if (this.file != null) {
+                return true;
+            }
             try {
                 Path configDir = PlatformUtils.getConfigDirectory();
-                Path file = configDir.resolve("catalogue_favourites.txt");
-                if (!Files.exists(file)) {
-                    Files.createFile(file);
-                }
-                this.file = file;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                Files.createDirectories(configDir);
+                this.file = configDir.resolve("catalogue_favourites.txt");
+                return true;
+            } catch (IOException | SecurityException e) {
+                CatalogueConstants.LOG.warn("Failed to initialize Catalogue favourites file", e);
+                return false;
             }
         }
 
         private void load() {
+            this.mods.clear();
+            if (!this.init()) {
+                return;
+            }
             try {
-                this.init();
-                this.mods.clear();
                 Predicate<String> modIdRegex = MOD_ID_PATTERN.asMatchPredicate();
-                Files.readAllLines(this.file).forEach(s -> {
-                    if (modIdRegex.test(s) && Loader.isModLoaded(s)) {
-                        this.mods.add(s);
-                    }
-                });
+                if (Files.exists(this.file)) {
+                    Files.readAllLines(this.file).forEach(s -> {
+                        if (modIdRegex.test(s) && Loader.isModLoaded(s)) {
+                            this.mods.add(s);
+                        }
+                    });
+                }
                 // Save immediately to remove invalid lines
                 this.needsSave = true;
                 this.save();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException | SecurityException e) {
+                CatalogueConstants.LOG.warn("Failed to load Catalogue favourites", e);
             }
         }
 
         private void save() {
-            if (!this.needsSave) return;
+            if (!this.needsSave || !this.init()) return;
 
             try {
-                this.needsSave = false;
-                this.init();
                 Files.write(this.file, this.mods, StandardCharsets.UTF_8, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                this.needsSave = false;
+            } catch (IOException | SecurityException e) {
+                CatalogueConstants.LOG.warn("Failed to save Catalogue favourites", e);
             }
         }
     }
