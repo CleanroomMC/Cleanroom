@@ -1,10 +1,18 @@
-rootProject.name = 'Cleanroom'
+pluginManagement {
+    repositories {
+        maven {
+            name = 'CleanroomMC'
+            url = 'https://repo.cleanroommc.com/releases'
+        }
+        // MinecraftForge hosts CleanroomGradle's transitive plugin deps (srgutils + renamer-gradle).
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        gradlePluginPortal()
+    }
+}
 
-include ':mcp'
-include ':minecraft'
-include ':cleanroom'
-
-project(":mcp").projectDir = file("projects/mcp")
-project(":minecraft").projectDir = file("projects/minecraft")
-project(":cleanroom").projectDir = file("projects/cleanroom")
-
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
