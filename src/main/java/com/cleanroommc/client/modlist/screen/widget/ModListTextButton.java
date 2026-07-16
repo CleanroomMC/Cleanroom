@@ -1,7 +1,7 @@
-package com.cleanroommc.catalogue.client.screen.widget;
+package com.cleanroommc.client.modlist.screen.widget;
 
-import com.cleanroommc.catalogue.CatalogueConstants;
-import com.cleanroommc.catalogue.client.RenderUtils;
+import com.cleanroommc.client.modlist.ModListConstants;
+import com.cleanroommc.client.modlist.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -11,14 +11,14 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public class CatalogueTextButton extends GuiButton {
-    private static final ResourceLocation BUTTON = CatalogueConstants.resource("textures/gui/sprites/widget/button.png");
-    private static final ResourceLocation BUTTON_DISABLED = CatalogueConstants.resource("textures/gui/sprites/widget/button_disabled.png");
-    private static final ResourceLocation BUTTON_HIGHLIGHTED = CatalogueConstants.resource("textures/gui/sprites/widget/button_highlighted.png");
+public class ModListTextButton extends GuiButton {
+    private static final ResourceLocation BUTTON = ModListConstants.resource("textures/gui/sprites/widget/button.png");
+    private static final ResourceLocation BUTTON_DISABLED = ModListConstants.resource("textures/gui/sprites/widget/button_disabled.png");
+    private static final ResourceLocation BUTTON_HIGHLIGHTED = ModListConstants.resource("textures/gui/sprites/widget/button_highlighted.png");
     private static final RenderUtils.NineSlice BUTTON_SLICE = new RenderUtils.NineSlice(200, 20, 3);
-    private final @Nullable Consumer<CatalogueTextButton> onPress;
+    private final @Nullable Consumer<ModListTextButton> onPress;
 
-    public CatalogueTextButton(int x, int y, int width, int height, String text, @Nullable Consumer<CatalogueTextButton> onPress) {
+    public ModListTextButton(int x, int y, int width, int height, String text, @Nullable Consumer<ModListTextButton> onPress) {
         super(-1, x, y, width, height, text);
         this.onPress = onPress;
     }

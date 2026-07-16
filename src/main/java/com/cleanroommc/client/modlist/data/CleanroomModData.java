@@ -1,7 +1,7 @@
-package com.cleanroommc.catalogue.client.data;
+package com.cleanroommc.client.modlist.data;
 
-import com.cleanroommc.catalogue.CatalogueConfig;
-import com.cleanroommc.catalogue.CatalogueConstants;
+import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.ModListConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,11 +21,10 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/// @author MrCrayfish
 public class CleanroomModData implements IModData {
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation("forge", "textures/gui/version_check_icons.png");
-    private static final List<String> LIB_MODS = Arrays.asList(CatalogueConfig.libraryList);
-    private static final List<String> IGNORED_DEPENDENCIES = Arrays.asList(CatalogueConfig.ignoredDependenciesList);
+    private static final List<String> LIB_MODS = Arrays.asList(ModListConfig.libraryList);
+    private static final List<String> IGNORED_DEPENDENCIES = Arrays.asList(ModListConfig.ignoredDependenciesList);
 
     private final ModContainer info;
     private final @Nullable ModMetadata metadata;
@@ -173,7 +172,7 @@ public class CleanroomModData implements IModData {
             if (factory == null) return;
             minecraft.displayGuiScreen(factory.createConfigGui(parent));
         } catch (Exception e) {
-            CatalogueConstants.LOG.error("Failed to build config GUI for mod '{}'", this.getModId(), e);
+            ModListConstants.LOG.error("Failed to build config GUI for mod '{}'", this.getModId(), e);
         }
     }
 

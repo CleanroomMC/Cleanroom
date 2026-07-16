@@ -1,8 +1,7 @@
-package com.cleanroommc.catalogue.client;
+package com.cleanroommc.client.modlist;
 
 import net.minecraft.util.ResourceLocation;
 
-/// @author MrCrayfish
 public record ImageInfo(ResourceLocation resource, int width, int height, Runnable unregister) {
     public static final Runnable EMPTY_UNREGISTER = () -> {
     };

@@ -1,4 +1,4 @@
-package com.cleanroommc.catalogue.client.screen.widget;
+package com.cleanroommc.client.modlist.screen.widget;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class CatalogueTextField extends GuiTextField {
+public class ModListTextField extends GuiTextField {
     private String suggestion = "";
     private String hint = "";
     @Nullable
@@ -20,11 +20,11 @@ public class CatalogueTextField extends GuiTextField {
     /**
      * @param id Used in {@link net.minecraft.client.gui.GuiPageButtonList.GuiResponder#setEntryValue(int, String)}.
      */
-    public CatalogueTextField(int id, FontRenderer font, int x, int y, int width, int height) {
+    public ModListTextField(int id, FontRenderer font, int x, int y, int width, int height) {
         super(id, font, x, y, width, height);
     }
 
-    public CatalogueTextField(FontRenderer font, int x, int y, int width, int height) {
+    public ModListTextField(FontRenderer font, int x, int y, int width, int height) {
         this(-1, font, x, y, width, height);
     }
 

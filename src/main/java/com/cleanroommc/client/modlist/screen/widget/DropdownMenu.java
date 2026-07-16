@@ -1,8 +1,8 @@
-package com.cleanroommc.catalogue.client.screen.widget;
+package com.cleanroommc.client.modlist.screen.widget;
 
-import com.cleanroommc.catalogue.CatalogueConstants;
-import com.cleanroommc.catalogue.client.RenderUtils;
-import com.cleanroommc.catalogue.client.screen.DropdownMenuHandler;
+import com.cleanroommc.client.modlist.ModListConstants;
+import com.cleanroommc.client.modlist.RenderUtils;
+import com.cleanroommc.client.modlist.screen.DropdownMenuHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/// @author MrCrayfish
 public class DropdownMenu extends Gui {
     private static final int BORDER = 1;
     private static final int SPACING = 1;
@@ -138,8 +137,8 @@ public class DropdownMenu extends Gui {
     }
 
     private static class MenuItem extends Gui {
-        private static final ResourceLocation TEXTURE = CatalogueConstants.resource("textures/gui/sprites/dropdown/item.png");
-        private static final ResourceLocation HIGHLIGHTED_TEXTURE = CatalogueConstants.resource("textures/gui/sprites/dropdown/item_highlighted.png");
+        private static final ResourceLocation TEXTURE = ModListConstants.resource("textures/gui/sprites/dropdown/item.png");
+        private static final ResourceLocation HIGHLIGHTED_TEXTURE = ModListConstants.resource("textures/gui/sprites/dropdown/item_highlighted.png");
         private static final RenderUtils.NineSlice MENU_ITEM_SLICE = new RenderUtils.NineSlice(12, 12, 2);
 
         protected final DropdownMenu parent;
@@ -205,7 +204,7 @@ public class DropdownMenu extends Gui {
     }
 
     private static class CheckboxMenuItem extends MenuItem {
-        private static final ResourceLocation TEXTURE = CatalogueConstants.resource("textures/gui/checkbox.png");
+        private static final ResourceLocation TEXTURE = ModListConstants.resource("textures/gui/checkbox.png");
 
         private final MutableBoolean holder;
         private final Function<Boolean, Boolean> callback;

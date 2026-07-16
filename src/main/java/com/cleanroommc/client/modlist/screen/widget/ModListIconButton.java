@@ -1,6 +1,6 @@
-package com.cleanroommc.catalogue.client.screen.widget;
+package com.cleanroommc.client.modlist.screen.widget;
 
-import com.cleanroommc.catalogue.CatalogueConstants;
+import com.cleanroommc.client.modlist.ModListConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,24 +9,23 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-/// @author MrCrayfish
-public class CatalogueIconButton extends CatalogueTextButton {
-    public static final ResourceLocation ICON_TEXTURE = CatalogueConstants.resource("textures/gui/icons.png");
+public class ModListIconButton extends ModListTextButton {
+    public static final ResourceLocation ICON_TEXTURE = ModListConstants.resource("textures/gui/icons.png");
     private final int u, v;
 
-    public CatalogueIconButton(int x, int y, int u, int v, @Nullable Consumer<CatalogueTextButton> onPress) {
+    public ModListIconButton(int x, int y, int u, int v, @Nullable Consumer<ModListTextButton> onPress) {
         this(x, y, u, v, 20, "", onPress);
     }
 
-    public CatalogueIconButton(int x, int y, int u, int v, int width, int height, @Nullable Consumer<CatalogueTextButton> onPress) {
+    public ModListIconButton(int x, int y, int u, int v, int width, int height, @Nullable Consumer<ModListTextButton> onPress) {
         this(x, y, u, v, width, height, "", onPress);
     }
 
-    public CatalogueIconButton(int x, int y, int u, int v, int width, String label, @Nullable Consumer<CatalogueTextButton> onPress) {
+    public ModListIconButton(int x, int y, int u, int v, int width, String label, @Nullable Consumer<ModListTextButton> onPress) {
         this(x, y, u, v, width, 20, label, onPress);
     }
 
-    public CatalogueIconButton(int x, int y, int u, int v, int width, int height, String label, @Nullable Consumer<CatalogueTextButton> onPress) {
+    public ModListIconButton(int x, int y, int u, int v, int width, int height, String label, @Nullable Consumer<ModListTextButton> onPress) {
         super(x, y, width, height, label, onPress);
         this.u = u;
         this.v = v;

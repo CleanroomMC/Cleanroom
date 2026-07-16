@@ -41,7 +41,6 @@ import com.cleanroommc.client.LoadingTracker;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.MixinContainer;
 import com.cleanroommc.common.ConfigAnytimeContainer;
-import com.cleanroommc.common.CatalogueContainer;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
@@ -378,7 +377,6 @@ public class Loader
         mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new MixinContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
-        mods.add(new InjectedModContainer(new CatalogueContainer(), FMLSanityChecker.fmlLocation));
         KirinoCommonCore.identifyMods(mods);
 
         for (String cont : injectedContainers)

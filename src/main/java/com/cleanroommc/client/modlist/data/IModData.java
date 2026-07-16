@@ -1,4 +1,4 @@
-package com.cleanroommc.catalogue.client.data;
+package com.cleanroommc.client.modlist.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -11,7 +11,6 @@ import java.util.Set;
 
 /// <h1>Experimental</h1>
 ///
-/// @author MrCrayfish
 public interface IModData {
     Type getType();
 

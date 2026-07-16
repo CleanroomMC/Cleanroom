@@ -1,7 +1,7 @@
-package com.cleanroommc.catalogue.client;
+package com.cleanroommc.client.modlist;
 
-import com.cleanroommc.catalogue.CatalogueConstants;
-import com.cleanroommc.catalogue.client.data.IModData;
+import com.cleanroommc.client.modlist.ModListConstants;
+import com.cleanroommc.client.modlist.data.IModData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -22,7 +22,7 @@ public enum ImageType {
         @Override
         protected boolean validate(IModData data, BufferedImage image) {
             if (image.getWidth() != image.getHeight()) {
-                CatalogueConstants.LOG.warn("Invalid icon image for mod '{}': image must be a square", data.getModId());
+                ModListConstants.LOG.warn("Invalid icon image for mod '{}': image must be a square", data.getModId());
                 return false;
             }
             return true;
@@ -55,16 +55,16 @@ public enum ImageType {
         try {
             BufferedImage image = this.readImage(data, resource);
             if (image == null) {
-                CatalogueConstants.LOG.warn("Failed to locate {} image resource '{}' for mod '{}'", this.type, resource, data.getModId());
+                ModListConstants.LOG.warn("Failed to locate {} image resource '{}' for mod '{}'", this.type, resource, data.getModId());
                 return Optional.empty();
             }
             return this.validate(data, image) ? Optional.of(this.registerTexture(data, image)) : Optional.empty();
         } catch (ResourcePackFileNotFoundException e) {
             // Remove stack trace if getPackImage errored
-            CatalogueConstants.LOG.warn("Failed to locate {} image {} for mod '{}'", this.type, e.getMessage(), data.getModId());
+            ModListConstants.LOG.warn("Failed to locate {} image {} for mod '{}'", this.type, e.getMessage(), data.getModId());
             return Optional.empty();
         } catch (IOException e) {
-            CatalogueConstants.LOG.warn("Failed to load {} image resource '{}' for mod '{}'", this.type, resource, data.getModId(), e);
+            ModListConstants.LOG.warn("Failed to load {} image resource '{}' for mod '{}'", this.type, resource, data.getModId(), e);
             return Optional.empty();
         }
     }
@@ -82,7 +82,7 @@ public enum ImageType {
     }
 
     private ImageInfo registerTexture(IModData data, BufferedImage image) {
-        ResourceLocation id = CatalogueConstants.resource("%s/%s".formatted(this.type, data.getModId()));
+        ResourceLocation id = ModListConstants.resource("%s/%s".formatted(this.type, data.getModId()));
         final TextureManager manager = Minecraft.getMinecraft().getTextureManager();
         manager.loadTexture(id, new DynamicTexture(image));
         return new ImageInfo(id, image.getWidth(), image.getHeight(), () -> manager.deleteTexture(id));

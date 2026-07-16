@@ -1,4 +1,4 @@
-package com.cleanroommc.catalogue.client.screen.widget;
+package com.cleanroommc.client.modlist.screen.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -7,10 +7,10 @@ import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nullable;
 
-public class CatalogueListSelection<E extends GuiListExtended.IGuiListEntry> extends CatalogueListExtended<E> {
+public class ModListSelection<E extends GuiListExtended.IGuiListEntry> extends ModListExtended<E> {
     private @Nullable E selected;
 
-    public CatalogueListSelection(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {
+    public ModListSelection(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {
         super(mc, width, height, top, bottom, slotHeight);
     }
 

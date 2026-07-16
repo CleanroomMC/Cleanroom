@@ -1,4 +1,4 @@
-package com.cleanroommc.catalogue.client;
+package com.cleanroommc.client.modlist;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
-/// @author MrCrayfish
 public final class RenderUtils {
     private static final float[] DEFAULT_COVER_FADE_ALPHA_LEVELS = {1.0F, 0.0F};
     private static final double PERIOD_PER_SCROLLED_PIXEL = 0.5D;

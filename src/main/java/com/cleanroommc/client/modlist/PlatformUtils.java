@@ -1,9 +1,9 @@
-package com.cleanroommc.catalogue.client;
+package com.cleanroommc.client.modlist;
 
-import com.cleanroommc.catalogue.CatalogueConstants;
-import com.cleanroommc.catalogue.client.data.CleanroomModData;
-import com.cleanroommc.catalogue.client.data.IModData;
-import com.cleanroommc.catalogue.client.data.OptiFineModData;
+import com.cleanroommc.client.modlist.ModListConstants;
+import com.cleanroommc.client.modlist.data.CleanroomModData;
+import com.cleanroommc.client.modlist.data.IModData;
+import com.cleanroommc.client.modlist.data.OptiFineModData;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Loader;
@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/// @author MrCrayfish
 public final class PlatformUtils {
     private PlatformUtils() {
     }
@@ -70,7 +69,7 @@ public final class PlatformUtils {
             Object object = oclass.getMethod("getDesktop", new Class[0]).invoke(null);
             oclass.getMethod("open", File.class).invoke(object, file);
         } catch (Exception e) {
-            CatalogueConstants.LOG.error("Failed to open '{}' ", file.getAbsolutePath(), e);
+            ModListConstants.LOG.error("Failed to open '{}' ", file.getAbsolutePath(), e);
         }
     }
 

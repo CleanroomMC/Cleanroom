@@ -1,12 +1,12 @@
-package com.cleanroommc.catalogue;
+package com.cleanroommc.client.modlist;
 
 import net.minecraftforge.common.config.Config;
 
-@Config(modid = CatalogueConstants.MOD_ID)
-public final class CatalogueConfig {
+@Config(modid = ModListConstants.OWNER_MOD_ID, name = "catalogue")
+public final class ModListConfig {
     @Config.Comment({
-            "Whether enable Catalogue.",
-            "Setting it false will stop Catalogue redirecting Forge's mod list calls."
+            "Whether to enable the mod list.",
+            "Disabling it stops Cleanroom from redirecting Forge's mod list calls."
     })
     @Config.LangKey("catalogue.config.enable")
     public static boolean enable = true;

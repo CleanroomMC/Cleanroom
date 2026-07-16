@@ -1,6 +1,6 @@
-package com.cleanroommc.catalogue.client.screen.widget;
+package com.cleanroommc.client.modlist.screen.widget;
 
-import com.cleanroommc.catalogue.client.RenderUtils;
+import com.cleanroommc.client.modlist.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CatalogueListExtended<E extends GuiListExtended.IGuiListEntry> extends GuiListExtended {
+public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends GuiListExtended {
     protected boolean scrollBarVisible;
     private boolean scrolling;
 
-    public CatalogueListExtended(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {
+    public ModListExtended(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {
         super(mc, width, height, top, bottom, slotHeight);
     }
 

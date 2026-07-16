@@ -1,4 +1,4 @@
-package com.cleanroommc.catalogue.client.data;
+package com.cleanroommc.client.modlist.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOptions;
@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
 
-/// @author MrCrayfish
 public class MinecraftModData implements IModData {
     @Override
     public Type getType() {
