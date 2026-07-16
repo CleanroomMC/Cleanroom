@@ -8,7 +8,7 @@
  
      @Override
      public void initGui()
-@@ -30,13 +31,13 @@
+@@ -30,13 +31,15 @@
  
          this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + -16, I18n.format("menu.returnToGame")));
          this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.options")));
@@ -23,11 +23,13 @@
 +        this.buttonList.add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.advancements")));
          this.buttonList.add(new GuiButton(6, this.width / 2 + 2, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.stats")));
 +
-+        this.modUpdateNotification = net.minecraftforge.client.gui.NotificationModUpdateScreen.init(this, modButton);
++        this.modUpdateNotification = new net.minecraftforge.client.gui.NotificationModUpdateScreen(modButton);
++        this.modUpdateNotification.setGuiSize(this.width, this.height);
++        this.modUpdateNotification.initGui();
      }
  
      @Override
-@@ -77,13 +78,19 @@
+@@ -77,13 +80,19 @@
                  this.mc.setIngameFocus();
                  break;
              case 5:
@@ -47,7 +49,7 @@
          }
      }
  
-@@ -100,5 +107,6 @@
+@@ -100,5 +109,6 @@
          this.drawDefaultBackground();
          this.drawCenteredString(this.fontRenderer, I18n.format("menu.game"), this.width / 2, 40, 16777215);
          super.drawScreen(mouseX, mouseY, partialTicks);
