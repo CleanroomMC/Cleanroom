@@ -8,7 +8,7 @@ public final class ModListConfig {
             "Whether to enable the mod list.",
             "Disabling it stops Cleanroom from redirecting Forge's mod list calls."
     })
-    @Config.LangKey("catalogue.config.enable")
+    @Config.LangKey("cleanroom.config.enable")
     public static boolean enable = true;
 
     @Config.RequiresMcRestart
@@ -16,7 +16,7 @@ public final class ModListConfig {
             "The list of library mods' mod ids.",
             "They will have grey names in the mod list."
     })
-    @Config.LangKey("catalogue.config.library_list")
+    @Config.LangKey("cleanroom.config.library_list")
     public static String[] libraryList = new String[]{
             "forge",
             "FML",
@@ -36,7 +36,7 @@ public final class ModListConfig {
             "The list of ignored dependencies' mod ids.",
             "They will not be displayed when searching for dependencies/dependants."
     })
-    @Config.LangKey("catalogue.config.ignored_dependencies_list")
+    @Config.LangKey("cleanroom.config.ignored_dependencies_list")
     public static String[] ignoredDependenciesList = new String[]{
             "minecraft",
             "forge",
@@ -50,6 +50,6 @@ public final class ModListConfig {
             "The list of mod ids that should always use the default item icon.",
             "They will not have random-picked item icons to avoid crashes."
     })
-    @Config.LangKey("catalogue.config.force_default_icon_list")
+    @Config.LangKey("cleanroom.config.force_default_icon_list")
     public static String[] forceDefaultIconList = new String[]{};
 }
