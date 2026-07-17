@@ -31,6 +31,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 
@@ -42,9 +47,13 @@ public class ConfigurationTest {
 
     @BeforeClass
     public static void setupClass()
+            throws Exception
     {
         Loader.instance();
         Bootstrap.register();
+        Field minecraftHome = net.minecraftforge.fml.relauncher.FMLInjectionData.class.getDeclaredField("minecraftHome");
+        minecraftHome.setAccessible(true);
+        minecraftHome.set(null, new File("."));
     }
 
     @Before
@@ -94,5 +103,61 @@ public class ConfigurationTest {
         assertEquals("The property's value changed", "true", backgroundProperty.getString());
         assertEquals("The property's type was changed", Property.Type.BOOLEAN, backgroundProperty.getType());
         assertEquals("The property's comment was changed", "enabled property comment", backgroundProperty.getComment());
+    }
+
+    @Test
+    public void testStringListMultilineRoundTrip() throws Exception
+    {
+        File file = File.createTempFile("cleanroom-config", ".cfg");
+        file.deleteOnExit();
+        String source = "defaults {\n"
+                + "    S:values <\n"
+                + "        first line\\\n"
+                + "        second line\n"
+                + "        ordinary\n"
+                + "        \\>\n"
+                + "        literal " + "\\" + ">\n"
+                + "        literal " + "\\\\" + ">\n"
+                + "        \\\\>\n"
+                + "     >\n"
+                + "}\n";
+        Files.write(file.toPath(), source.getBytes(StandardCharsets.UTF_8));
+
+        Configuration loaded = new Configuration(file);
+        assertArrayEquals(new String[] {
+                "first line\nsecond line",
+                "ordinary",
+                ">",
+                "literal \\>",
+                "literal \\\\>",
+                "\\>"
+        }, loaded.getCategory("defaults").get("values").getStringList());
+
+        loaded.save();
+        String saved = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        assertTrue(saved.contains("first line\\"));
+
+        Configuration reloaded = new Configuration(file);
+        assertArrayEquals(loaded.getCategory("defaults").get("values").getStringList(),
+                reloaded.getCategory("defaults").get("values").getStringList());
+    }
+
+    @Test
+    public void testStringListMultilinePreservesTrailingNewlineAndBackslashes() throws Exception
+    {
+        File file = File.createTempFile("cleanroom-config", ".cfg");
+        file.deleteOnExit();
+        Configuration written = new Configuration(file);
+        Property values = new Property("values", new String[] {
+                "ends with slash " + "\\" + "\nnext",
+                "ends with slash " + "\\",
+                "ends with two slashes " + "\\\\",
+                "ends with newline\n"
+        }, Property.Type.STRING);
+        written.getCategory("defaults").put(values.getName(), values);
+        written.save();
+
+        Configuration reloaded = new Configuration(file);
+        assertArrayEquals(values.getStringList(), reloaded.getCategory("defaults").get("values").getStringList());
     }
 }

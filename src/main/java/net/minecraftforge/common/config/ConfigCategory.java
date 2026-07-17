@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -44,8 +45,8 @@ public class ConfigCategory implements Map<String, Property>
     private String name;
     private String comment;
     private String languagekey;
-    private ArrayList<ConfigCategory> children = new ArrayList<ConfigCategory>();
-    private Map<String, Property> properties = new TreeMap<String, Property>();
+    private ArrayList<ConfigCategory> children = new ArrayList<>();
+    private Map<String, Property> properties = new TreeMap<>();
     @SuppressWarnings("unused")
     private int propNumber = 0;
     public final ConfigCategory parent;
@@ -74,9 +75,8 @@ public class ConfigCategory implements Map<String, Property>
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof ConfigCategory)
+        if (obj instanceof ConfigCategory cat)
         {
-            ConfigCategory cat = (ConfigCategory)obj;
             return name.equals(cat.name) && children.equals(cat.children);
         }
 
@@ -234,10 +234,7 @@ public class ConfigCategory implements Map<String, Property>
 
     public List<String> getPropertyOrder()
     {
-        if (this.propertyOrder != null)
-            return ImmutableList.copyOf(this.propertyOrder);
-        else
-            return ImmutableList.copyOf(properties.keySet());
+        return ImmutableList.copyOf(Objects.requireNonNullElseGet(this.propertyOrder, () -> properties.keySet()));
     }
 
     public boolean containsKey(String key)
@@ -257,9 +254,8 @@ public class ConfigCategory implements Map<String, Property>
 
     private void write(BufferedWriter out, boolean new_line, String... data) throws IOException
     {
-        for (int x = 0; x < data.length; x++)
-        {
-            out.write(data[x]);
+        for (String datum : data) {
+            out.write(datum);
         }
         if (new_line) out.write(NEW_LINE);
     }
@@ -327,9 +323,12 @@ public class ConfigCategory implements Map<String, Property>
 
                 write(out, pad1, String.valueOf(type), ":", propName, " <");
 
-                for (String line : prop.getStringList())
+                for (String value : prop.getStringList())
                 {
-                    write(out, pad2, line);
+                    if (prop.getType() == Property.Type.STRING)
+                        writeStringListValue(out, pad2, value);
+                    else
+                        write(out, pad2, value);
                 }
 
                 write(out, pad1, " >");
@@ -347,7 +346,7 @@ public class ConfigCategory implements Map<String, Property>
             prop.resetChangedState();
         }
 
-        if (children.size() > 0)
+        if (!children.isEmpty())
             out.newLine();
 
         for (ConfigCategory child : children)
@@ -358,13 +357,62 @@ public class ConfigCategory implements Map<String, Property>
         write(out, pad0, "}", NEW_LINE);
     }
 
+    private void writeStringListValue(BufferedWriter out, String indent, String value) throws IOException
+    {
+        String normalized = value.replace("\r\n", "\n").replace('\r', '\n');
+        String[] lines = normalized.split("\n", -1);
+
+        for (int i = 0; i < lines.length; i++)
+        {
+            String line = lines[i];
+            boolean continued = i < lines.length - 1;
+            String encoded = encodeStringListLine(line, continued);
+            write(out, indent, encoded);
+        }
+    }
+
+    private String encodeStringListLine(String line, boolean continued)
+    {
+        int slashes = 0;
+        for (int i = line.length() - 1; i >= 0 && line.charAt(i) == '\\'; i--)
+            slashes++;
+
+        if (slashes > 0)
+        {
+            line = line.substring(0, line.length() - slashes) + repeat('\\', slashes * 2);
+        }
+
+        if (isEscapedListEnd(line))
+            line = "\\" + line;
+
+        if (continued)
+            line += "\\";
+        return line;
+    }
+
+    private boolean isEscapedListEnd(String line)
+    {
+        int greaterThan = line.length() - 1;
+        if (greaterThan < 0 || line.charAt(greaterThan) != '>')
+            return false;
+
+        for (int i = 0; i < greaterThan; i++)
+            if (line.charAt(i) != '\\')
+                return false;
+        return true;
+    }
+
+    private String repeat(char value, int count)
+    {
+        StringBuilder result = new StringBuilder(count);
+        result.repeat(String.valueOf(value), Math.max(0, count));
+        return result.toString();
+    }
+
     private String getIndent(int indent)
     {
-        StringBuilder buf = new StringBuilder("");
-        for (int x = 0; x < indent; x++)
-        {
-            buf.append("    ");
-        }
+        StringBuilder buf = new StringBuilder();
+        buf.repeat("    ", Math.max(0, indent));
         return buf.toString();
     }
 

@@ -74,15 +74,15 @@ public class Configuration
     public static final String NEW_LINE;
     public static final String COMMENT_SEPARATOR = "##########################################################################################################";
     private static final String CONFIG_VERSION_MARKER = "~CONFIG_VERSION";
-    private static final Pattern CONFIG_START = Pattern.compile("START: \"([^\\\"]+)\"");
-    private static final Pattern CONFIG_END = Pattern.compile("END: \"([^\\\"]+)\"");
+    private static final Pattern CONFIG_START = Pattern.compile("START: \"([^\"]+)\"");
+    private static final Pattern CONFIG_END = Pattern.compile("END: \"([^\"]+)\"");
     public static final CharMatcher allowedProperties = CharMatcher.javaLetterOrDigit().or(CharMatcher.anyOf(ALLOWED_CHARS));
     private static Configuration PARENT = null;
 
     File file;
 
-    private Map<String, ConfigCategory> categories = new TreeMap<String, ConfigCategory>();
-    private Map<String, Configuration> children = new TreeMap<String, Configuration>();
+    private Map<String, ConfigCategory> categories = new TreeMap<>();
+    private Map<String, Configuration> children = new TreeMap<>();
 
     private boolean caseSensitiveCustomCategories;
     public String defaultEncoding = DEFAULT_ENCODING;
@@ -94,7 +94,7 @@ public class Configuration
 
     static
     {
-        NEW_LINE = System.getProperty("line.separator");
+        NEW_LINE = System.lineSeparator();
     }
 
     public Configuration(){}
@@ -860,6 +860,7 @@ public class Configuration
                 ConfigCategory currentCat = null;
                 Property.Type type = null;
                 ArrayList<String> tmpList = null;
+                StringBuilder listValue = null;
                 int lineNum = 0;
                 String name = null;
                 loadedConfigVersion = null;
@@ -873,7 +874,40 @@ public class Configuration
                     {
                         if (lineNum == 1)
                             loadedConfigVersion = definedConfigVersion;
+                        if (tmpList != null)
+                            throw new RuntimeException(String.format("Unterminated list property '%s:%d'", fileName, lineNum - 1));
                         break;
+                    }
+
+                    if (tmpList != null && type == STRING)
+                    {
+                        String listLine = line.trim();
+                        boolean continued = hasListContinuation(listLine);
+
+                        if (listValue == null && listLine.equals(">"))
+                        {
+                            currentCat.put(name, new Property(name, tmpList.toArray(new String[0]), type));
+                            name = null;
+                            tmpList = null;
+                            type = null;
+                            continue;
+                        }
+
+                        String valuePart = removeListContinuation(listLine, continued);
+                        if (listValue == null)
+                            listValue = new StringBuilder();
+                        listValue.append(decodeListValue(valuePart));
+
+                        if (continued)
+                        {
+                            listValue.append('\n');
+                        }
+                        else
+                        {
+                            tmpList.add(listValue.toString());
+                            listValue = null;
+                        }
+                        continue;
                     }
 
                     Matcher start = CONFIG_START.matcher(line);
@@ -1075,6 +1109,48 @@ public class Configuration
         }
 
         resetChangedState();
+    }
+
+    private static boolean hasListContinuation(String line)
+    {
+        int slashes = 0;
+        for (int i = line.length() - 1; i >= 0 && line.charAt(i) == '\\'; i--)
+            slashes++;
+        return (slashes & 1) == 1;
+    }
+
+    private static String removeListContinuation(String line, boolean continued)
+    {
+        if (continued)
+            line = line.substring(0, line.length() - 1);
+
+        int slashes = 0;
+        for (int i = line.length() - 1; i >= 0 && line.charAt(i) == '\\'; i--)
+            slashes++;
+
+        if ((slashes & 1) == 0)
+            return line.substring(0, line.length() - slashes) + repeat('\\', slashes / 2);
+        return line;
+    }
+
+    private static String decodeListValue(String value)
+    {
+        int greaterThan = value.length() - 1;
+        if (greaterThan < 1 || value.charAt(greaterThan) != '>')
+            return value;
+
+        for (int i = 0; i < greaterThan; i++)
+            if (value.charAt(i) != '\\')
+                return value;
+
+        return value.substring(1);
+    }
+
+    private static String repeat(char value, int count)
+    {
+        StringBuilder result = new StringBuilder(count);
+        result.repeat(String.valueOf(value), Math.max(0, count));
+        return result.toString();
     }
 
     public void save()
