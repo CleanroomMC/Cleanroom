@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.17-alpha] - 2026-07-09
+### Bug Fixes
+- [`a436b61`](https://github.com/CleanroomMC/Cleanroom/commit/a436b61ad97099497ac8ebda48819bb66d833d86) - installer can't install server *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.5.16-alpha] - 2026-07-09
+### New Features
+- [`db96747`](https://github.com/CleanroomMC/Cleanroom/commit/db967479f558d66f3121259b82056a6a044b3258) - New installer and client.json compat w/ official launcher *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`0fff847`](https://github.com/CleanroomMC/Cleanroom/commit/0fff847600fcca3a3fd5d1a95e9aa57230233000) - allow flash can be disabled *(commit by [@baka-gourd](https://github.com/baka-gourd))*
+- [`83ea6a4`](https://github.com/CleanroomMC/Cleanroom/commit/83ea6a4b820d732f5aa6fde122a03a74002fa1c4) - early config now available in mod config menu *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Bug Fixes
+- [`c0e60dc`](https://github.com/CleanroomMC/Cleanroom/commit/c0e60dcebd3960fb871a147779d82ed78bbdf591) - fugue warning sometimes hang the game after pressed any key *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`b027c41`](https://github.com/CleanroomMC/Cleanroom/commit/b027c41715dedad0f5d7e407aafbaa2478cd1bef) - ignore relation of all built-in mods *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Chores
+- [`0d9caab`](https://github.com/CleanroomMC/Cleanroom/commit/0d9caab6d5547d86feb397872e1b39328fdcfd37) - actually call translationkey funcs in Fluid *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.15-alpha] - 2026-06-29
 ### New Features
 - [`b5abee9`](https://github.com/CleanroomMC/Cleanroom/commit/b5abee957b17fa405f99217ff9303ce60387bde1) - Warn users if Fugue or Scalar not installed *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -84,3 +103,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.13-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.12-alpha...0.5.13-alpha
 [0.5.14-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.13-alpha...0.5.14-alpha
 [0.5.15-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.14-alpha...0.5.15-alpha
+[0.5.16-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.15-alpha...0.5.16-alpha
+[0.5.17-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.16-alpha...0.5.17-alpha
