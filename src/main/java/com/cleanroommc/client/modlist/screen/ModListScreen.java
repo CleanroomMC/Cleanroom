@@ -9,8 +9,6 @@ import com.cleanroommc.client.modlist.RenderUtils;
 import com.cleanroommc.client.modlist.data.IModData;
 import com.cleanroommc.client.modlist.data.MinecraftModData;
 import com.cleanroommc.client.modlist.screen.widget.*;
-import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -30,8 +28,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -45,83 +41,87 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("CodeBlock2Expr")
 public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
+
     private static final Favourites FAVOURITES = new Favourites();
-    private static final Comparator<ModListEntry> SORT_ALPHABETICALLY = Comparator.comparing(o -> o.getData().getDisplayName());
-    private static final Comparator<ModListEntry> SORT_ALPHABETICALLY_REVERSED = SORT_ALPHABETICALLY.reversed();
-    private static final Comparator<ModListEntry> SORT_FAVOURITES_FIRST = Comparator.comparing(ModListEntry::getData, Comparator.comparing(data -> FAVOURITES.has(data.getModId()))).reversed().thenComparing(SORT_ALPHABETICALLY);
-    private static final MutableObject<String> OPTION_QUERY = new MutableObject<>("");
-    private static final MutableBoolean OPTION_HIDE_LIBRARIES = new MutableBoolean(true);
-    private static final MutableBoolean OPTION_HIDE_CHILD_MODS = new MutableBoolean(true);
-    private static final MutableBoolean OPTION_CONFIGS_ONLY = new MutableBoolean(false);
-    private static final MutableBoolean OPTION_UPDATES_ONLY = new MutableBoolean(false);
-    private static final MutableBoolean OPTION_FAVOURITES_ONLY = new MutableBoolean(false);
-    private static final MutableObject<Comparator<ModListEntry>> OPTION_SORT = new MutableObject<>(SORT_ALPHABETICALLY);
     private static final ResourceLocation MISSING_BANNER = ModListConstants.resource("textures/gui/missing_banner.png");
     private static final ResourceLocation MISSING_BACKGROUND = ModListConstants.resource("textures/gui/missing_background.png");
     private static final ResourceLocation MINECRAFT_LOGO = ModListConstants.resource("textures/gui/minecraft.png");
     private static final ImageInfo MISSING_BANNER_INFO = new ImageInfo(MISSING_BANNER, 120, 120);
     private static final ImageInfo MISSING_BACKGROUND_INFO = new ImageInfo(MISSING_BACKGROUND, 512, 256);
-    private static final Map<String, ImageInfo> BANNER_CACHE = new HashMap<>();
-    private static final Map<String, ImageInfo> IMAGE_ICON_CACHE = new HashMap<>();
-    private static final Map<String, ImageInfo> ICON_BANNER_CACHE = new HashMap<>();
-    private static final Map<String, ItemStack> ITEM_ICON_CACHE = new HashMap<>();
-    private static final Map<String, IModData> CACHED_MODS = new HashMap<>();
-    private static final List<String> FORCE_DEFAULT_ICON_MODS = Arrays.asList(ModListConfig.forceDefaultIconList);
-    private static final Supplier<Pair<Integer, Integer>> COUNTS = Suppliers.memoize(() -> {
-        int[] counts = new int[2];
-        CACHED_MODS.forEach((_, data) -> {
-            if (data.getType() == IModData.Type.CHILD) return;
-            counts[data.getType() == IModData.Type.LIBRARY ? 1 : 0]++;
-        });
-        return Pair.of(counts[0], counts[1]);
-    });
-    private static final Map<String, SearchFilter> SEARCH_FILTERS = ImmutableMap.<String, SearchFilter>builder()
-            .put("dependencies", new SearchFilter((query, data) -> {
-                IModData target = CACHED_MODS.get(query.toLowerCase(Locale.ENGLISH));
-                return target != null && target.getDependencies().contains(data.getModId());
-            }))
-            .put("dependents", new SearchFilter((query, data) -> {
-                return data.getDependencies().stream().anyMatch(query::equalsIgnoreCase);
-            }))
-            .put("childmods", new SearchFilter((query, data) -> {
-                IModData target = CACHED_MODS.get(query.toLowerCase(Locale.ENGLISH));
-                return target != null && target.getChildMods().contains(data.getModId());
-            }))
-            .put("parentmod", new SearchFilter((query, data) -> {
-                return data.getChildMods().stream().anyMatch(query::equalsIgnoreCase);
-            })).build();
+    private static final Comparator<ModListEntry> SORT_ALPHABETICALLY = Comparator.comparing(o -> o.getData().getDisplayName());
+    private static final Comparator<ModListEntry> SORT_ALPHABETICALLY_REVERSED = SORT_ALPHABETICALLY.reversed();
+    private static final Comparator<ModListEntry> SORT_FAVOURITES_FIRST = Comparator.comparing(ModListEntry::getData,
+            Comparator.comparing(data -> FAVOURITES.has(data.getModId())))
+            .reversed()
+            .thenComparing(SORT_ALPHABETICALLY);
+    private static final MutableBoolean OPTION_HIDE_LIBRARIES = new MutableBoolean(true);
+    private static final MutableBoolean OPTION_HIDE_CHILD_MODS = new MutableBoolean(true);
+    private static final MutableBoolean OPTION_CONFIGS_ONLY = new MutableBoolean(false);
+    private static final MutableBoolean OPTION_UPDATES_ONLY = new MutableBoolean(false);
+    private static final MutableBoolean OPTION_FAVOURITES_ONLY = new MutableBoolean(false);
+    private static final Map<String, ModData> CACHED_MODS = new HashMap<>();
     private static final TextFormatting SEARCH_FILTER_KEY = TextFormatting.GOLD;
     private static final TextFormatting SEARCH_FILTER_VALUE = TextFormatting.WHITE;
+    private static final Map<String, SearchFilter> SEARCH_FILTERS = Map.of(
+            "dependencies", new SearchFilter((query, data) -> {
+                ModData target = CACHED_MODS.get(query.toLowerCase(Locale.ENGLISH));
+                return target != null && target.modData.getDependencies().contains(data.getModId());
+            }),
+            "dependents", new SearchFilter((query, data) -> {
+                return data.getDependencies().stream().anyMatch(query::equalsIgnoreCase);
+            }),
+            "childmods", new SearchFilter((query, data) -> {
+                ModData target = CACHED_MODS.get(query.toLowerCase(Locale.ENGLISH));
+                return target != null && target.modData.getChildMods().contains(data.getModId());
+            }),
+            "parentmod", new SearchFilter((query, data) -> {
+                return data.getChildMods().stream().anyMatch(query::equalsIgnoreCase);
+            }));
+
     private static @Nullable ImageInfo cachedBackground;
+    private static Comparator<ModListEntry> optionSort = SORT_ALPHABETICALLY;
+    private static String optionQuery = "";
+    private static int totalMods, totalLibraries;
     private static boolean loaded = false;
 
     private final GuiScreen parentScreen;
+
     private ModListTextField searchTextField;
     private ModList modList;
     private StringList descriptionList;
     private IModData selectedModData;
-    private ModListIconButton optionsButton;
-    private ModListIconButton modFolderButton;
-    private ModListIconButton configButton;
-    private ModListIconButton websiteButton;
-    private ModListIconButton issueButton;
+    private ModListIconButton optionsButton, modFolderButton, configButton, websiteButton, issueButton;
     private @Nullable DropdownMenu menu;
-
     private @Nullable List<String> activeTooltip;
     private int tooltipYOffset;
 
     public ModListScreen(GuiScreen parent) {
         this.parentScreen = parent;
         if (!loaded) {
-            PlatformUtils.getAllModData().forEach(data -> CACHED_MODS.put(data.getModId().toLowerCase(Locale.ENGLISH), data));
-            CACHED_MODS.put("minecraft", new MinecraftModData()); // Override minecraft
-            BANNER_CACHE.put("minecraft", new ImageInfo(MINECRAFT_LOGO, 1024, 256));
+            PlatformUtils.getAllModData().forEach(data -> CACHED_MODS.put(data.getModId(), new ModData(data)));
+            // Override minecraft
+            ModData minecraft = new ModData(new MinecraftModData());
+            minecraft.banner = new ImageInfo(MINECRAFT_LOGO, 1024, 256);
+            minecraft.bannerLoaded = true;
+            minecraft.itemIcon = new ItemStack(Blocks.GRASS);
+            CACHED_MODS.put("minecraft", minecraft);
+            // Override Forge
+            ModData forge = CACHED_MODS.get("forge");
+            forge.itemIcon = new ItemStack(Blocks.ANVIL);
             FAVOURITES.load();
+            totalMods = (int) CACHED_MODS.values().stream()
+                    .map(data -> data.modData.getType())
+                    .filter(type -> type != IModData.Type.CHILD)
+                    .filter(type -> type != IModData.Type.LIBRARY)
+                    .count();
+            totalLibraries = (int) CACHED_MODS.values().stream()
+                    .map(data -> data.modData.getType())
+                    .filter(type -> type == IModData.Type.LIBRARY)
+                    .count();
             loaded = true;
         }
     }
@@ -149,10 +149,10 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         };
         this.searchTextField.setFormatter(this::formatQuery);
         this.searchTextField.setMaxStringLength(128);
-        this.searchTextField.setText(OPTION_QUERY.get());
+        this.searchTextField.setText(optionQuery);
         this.searchTextField.setResponder(s -> {
-            if (!OPTION_QUERY.get().equals(s)) {
-                OPTION_QUERY.setValue(s);
+            if (!optionQuery.equals(s)) {
+                optionQuery = s;
                 this.modList.filterAndUpdateList();
             }
         });
@@ -209,8 +209,10 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         // Init Cleanroom icon for the header
-        IModData cleanroomData = CACHED_MODS.get(ModListConstants.OWNER_MOD_ID);
-        if (cleanroomData != null) this.loadAndCacheIcon(cleanroomData);
+        ModData cleanroomData = CACHED_MODS.get(ModListConstants.OWNER_MOD_ID);
+        if (cleanroomData != null) {
+            this.loadAndCacheIcon(cleanroomData);
+        }
     }
 
     private DropdownMenu buildMenu() {
@@ -236,15 +238,15 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                         .setMinItemSize(60, 16)
                         .setAlignment(DropdownMenu.Alignment.END_TOP)
                         .addItem(I18n.format("cleanroom.gui.sort.alphabetically"), () -> {
-                            OPTION_SORT.setValue(SORT_ALPHABETICALLY);
+                            optionSort = SORT_ALPHABETICALLY;
                             this.modList.filterAndUpdateList();
                         })
                         .addItem(I18n.format("cleanroom.gui.sort.alphabetically_reverse"), () -> {
-                            OPTION_SORT.setValue(SORT_ALPHABETICALLY_REVERSED);
+                            optionSort = SORT_ALPHABETICALLY_REVERSED;
                             this.modList.filterAndUpdateList();
                         })
                         .addItem(I18n.format("cleanroom.gui.sort.favourites_first"), () -> {
-                            OPTION_SORT.setValue(SORT_FAVOURITES_FIRST);
+                            optionSort = SORT_FAVOURITES_FIRST;
                             this.modList.filterAndUpdateList();
                         }))
                 .addCheckbox(I18n.format("cleanroom.gui.hide_libraries"), OPTION_HIDE_LIBRARIES, _ -> {
@@ -288,7 +290,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Cleanroom icon
-        ImageInfo iconInfo = IMAGE_ICON_CACHE.get(ModListConstants.OWNER_MOD_ID);
+        ModData cleanroomData = CACHED_MODS.get(ModListConstants.OWNER_MOD_ID);
+        ImageInfo iconInfo = cleanroomData != null ? cleanroomData.icon : null;
         if (iconInfo != null) {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -298,7 +301,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         // Advanced search icon
-        if (OPTION_QUERY.get().startsWith("@")) {
+        if (optionQuery.startsWith("@")) {
             int iconX = this.searchTextField.x + this.searchTextField.width - 15;
             int iconY = this.searchTextField.y + (this.searchTextField.height - 10) / 2;
             GlStateManager.enableBlend();
@@ -418,10 +421,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         this.searchTextField.drawTextBox();
 
         String modsLabel = TextFormatting.BOLD + I18n.format("cleanroom.gui.mod_list");
-        Pair<Integer, Integer> counts = COUNTS.get();
-        int modCount = counts.getLeft();
-        int libCount = counts.getRight();
-        String countLabel = TextFormatting.GRAY + "(" + (modCount + libCount) + ")";
+        String countLabel = TextFormatting.GRAY + "(" + (totalMods + totalLibraries) + ")";
         String title = modsLabel + " " + countLabel;
         int titleWidth = this.fontRenderer.getStringWidth(title);
         int titleLeft = this.modList.left + (this.modList.width - titleWidth) / 2;
@@ -429,9 +429,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         int countLabelWidth = this.fontRenderer.getStringWidth(countLabel);
         if (RenderUtils.isMouseWithin(titleLeft + titleWidth - countLabelWidth, 10, countLabelWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
-            List<String> lines = Arrays.asList(
-                    I18n.format("cleanroom.gui.mod_count", modCount),
-                    I18n.format("cleanroom.gui.library_count", libCount)
+            List<String> lines = List.of(
+                    I18n.format("cleanroom.gui.mod_count", totalMods),
+                    I18n.format("cleanroom.gui.library_count", totalLibraries)
             );
             this.setActiveTooltip(lines);
             this.tooltipYOffset = 10;
@@ -440,18 +440,15 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
     private class ModList extends ModListSelection<ModListEntry> {
         private static final Predicate<IModData> SEARCH_PREDICATE = data -> {
-            String query = OPTION_QUERY.get();
+            String query = optionQuery;
             if (query.startsWith("@")) {
                 return performSearchFilter(query, data);
             }
-            return data.getDisplayName()
-                    .toLowerCase(Locale.ENGLISH)
-                    .contains(query.toLowerCase(Locale.ENGLISH));
+            return data.getDisplayName().toLowerCase(Locale.ENGLISH).contains(query.toLowerCase(Locale.ENGLISH));
         };
         private static final Predicate<IModData> FILTER_PREDICATE = data -> {
             // We ignore filters when using special query
-            String query = OPTION_QUERY.get();
-            if (query.startsWith("@")) {
+            if (optionQuery.startsWith("@")) {
                 return true;
             }
             if (OPTION_CONFIGS_ONLY.booleanValue() && !data.hasConfig()) {
@@ -491,10 +488,10 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         public void filterAndUpdateList() {
             List<ModListEntry> entries = CACHED_MODS.values().stream()
-                    .filter(SEARCH_PREDICATE)
-                    .filter(FILTER_PREDICATE)
+                    .filter(data -> SEARCH_PREDICATE.test(data.modData))
+                    .filter(data -> FILTER_PREDICATE.test(data.modData))
                     .map(data -> new ModListEntry(data, this))
-                    .sorted(OPTION_SORT.get())
+                    .sorted(optionSort)
                     .collect(Collectors.toList());
             this.replaceEntries(entries);
             if (ModListScreen.this.selectedModData != null) {
@@ -557,12 +554,11 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     }
 
     private String formatQuery(String partial, int displayPos) {
-        String query = OPTION_QUERY.get();
-        if (!query.startsWith("@")) {
+        if (!optionQuery.startsWith("@")) {
             return partial;
         }
 
-        int split = query.indexOf(":");
+        int split = optionQuery.indexOf(":");
         if (split == -1) {
             return SEARCH_FILTER_KEY + partial + TextFormatting.RESET;
         }
@@ -585,14 +581,16 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     }
 
     private class ModListEntry implements ModListExtended.IListEntry {
+        private final ModData cachedData;
         private final IModData data;
         private final ModList list;
         private final PinnedButton button;
         private ItemStack icon;
         private boolean hovered;
 
-        public ModListEntry(@Nonnull IModData data, ModList list) {
-            this.data = data;
+        public ModListEntry(@Nonnull ModData cachedData, ModList list) {
+            this.cachedData = cachedData;
+            this.data = cachedData.modData;
             this.list = list;
             this.button = new PinnedButton();
             this.icon = this.getItemIcon();
@@ -631,10 +629,10 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         private void drawIcon(int top, int left) {
-            ModListScreen.this.loadAndCacheIcon(this.data);
+            ModListScreen.this.loadAndCacheIcon(this.cachedData);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-            ImageInfo iconInfo = IMAGE_ICON_CACHE.get(this.data.getModId());
+            ImageInfo iconInfo = this.cachedData.icon;
             if (iconInfo != null) {
                 GlStateManager.enableBlend();
                 GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -662,7 +660,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                         this.icon.toString(), this.data.getModId(), e
                 );
                 ItemStack grass = new ItemStack(Blocks.GRASS);
-                ITEM_ICON_CACHE.put(this.data.getModId(), grass);
+                this.cachedData.itemIcon = grass;
                 this.icon = grass;
             }
 
@@ -678,25 +676,18 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Nonnull
         private ItemStack getItemIcon() {
-            if (ITEM_ICON_CACHE.containsKey(this.data.getModId())) {
-                return ITEM_ICON_CACHE.get(this.data.getModId());
+            ItemStack icon = this.cachedData.itemIcon;
+            if (icon != null) {
+                return icon;
             }
+            // Default is grass
+            ItemStack defaultIcon = new ItemStack(Blocks.GRASS);
 
-            ItemStack grass = new ItemStack(Blocks.GRASS);
-
-            // Put grass as default item icon
-            ITEM_ICON_CACHE.put(this.data.getModId(), grass);
-
-            if (FORCE_DEFAULT_ICON_MODS.contains(this.data.getModId())) return grass;
-
-            // Minecraft is a grass block
-            if (this.data.getModId().equals("minecraft")) return grass;
-
-            // Special case for Forge to set item icon to anvil
-            if (this.data.getModId().equals("forge")) {
-                ItemStack anvil = new ItemStack(Blocks.ANVIL);
-                ITEM_ICON_CACHE.put("forge", anvil);
-                return anvil;
+            for (String forcedDefaultIcon : ModListConfig.forceDefaultIconList) {
+                if (forcedDefaultIcon.equals(this.data.getModId())) {
+                    this.cachedData.itemIcon = defaultIcon;
+                    return defaultIcon;
+                }
             }
 
             // Gets the raw item icon resource string
@@ -709,7 +700,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                     if (item != null) {
                         int meta = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
                         ItemStack itemStack = new ItemStack(item, 1, meta);
-                        ITEM_ICON_CACHE.put(this.data.getModId(), itemStack);
+                        this.cachedData.itemIcon = itemStack;
                         return itemStack;
                     }
                 } catch (Exception e) {
@@ -718,7 +709,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
 
             // If the mod has a creative tab, the mod list will attempt to use the tab's icon
-            Optional<ItemStack> optional = Arrays.stream(CreativeTabs.CREATIVE_TAB_ARRAY)
+            icon = Arrays.stream(CreativeTabs.CREATIVE_TAB_ARRAY)
                     .filter(Objects::nonNull)
                     .map(tab -> {
                         try {
@@ -733,29 +724,21 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                         ResourceLocation resource = tabItem.getItem().getRegistryName();
                         return resource != null && resource.getNamespace().equals(this.data.getModId());
                     })
-                    .findFirst();
-
-            // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
-            if (optional.isEmpty()) {
-                optional = ForgeRegistries.ITEMS.getValuesCollection().stream()
-                        .filter(Objects::nonNull)
-                        .filter(item -> {
-                            ResourceLocation resource = item.getRegistryName();
-                            return resource != null && resource.getNamespace().equals(this.data.getModId());
-                        })
-                        .map(ItemStack::new)
-                        .findFirst();
-            }
-
-            if (optional.isPresent()) {
-                ItemStack item = optional.get();
-                if (!item.isEmpty()) {
-                    ITEM_ICON_CACHE.put(this.data.getModId(), item);
-                    return item;
-                }
-            }
-
-            return grass;
+                    .findFirst()
+                    // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
+                    .orElseGet(() -> {
+                        return ForgeRegistries.ITEMS.getValuesCollection().stream()
+                                .filter(Objects::nonNull)
+                                .filter(item -> {
+                                    ResourceLocation resource = item.getRegistryName();
+                                    return resource != null && resource.getNamespace().equals(this.data.getModId());
+                                })
+                                .map(ItemStack::new)
+                                .findFirst()
+                                .orElse(defaultIcon);
+                    });
+            this.cachedData.itemIcon = icon;
+            return icon;
         }
 
         private String getFormattedModName(boolean favouriteIconVisible) {
@@ -1050,61 +1033,63 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     }
 
     private ImageInfo getBanner(String modId) {
+        ModData data = CACHED_MODS.get(modId);
+        if (data == null) return MISSING_BANNER_INFO;
+
         // Try getting the banner for the mod
-        ImageInfo bannerInfo = BANNER_CACHE.get(modId);
-        if (bannerInfo != null) return bannerInfo;
+        if (data.banner != null) return data.banner;
 
         // Try using the icon image for the banner
-        ImageInfo iconInfo = IMAGE_ICON_CACHE.get(modId);
-        if (iconInfo != null) {
-            return ICON_BANNER_CACHE.computeIfAbsent(modId, _ -> {
+        if (data.icon != null) {
+            if (data.iconBanner == null) {
                 // Hack to make icon fill max banner height
-                int expandedWidth = iconInfo.width() * 10;
-                int expandedHeight = iconInfo.height() * 10;
-                return new ImageInfo(iconInfo.resource(), expandedWidth, expandedHeight);
-            });
+                int expandedWidth = data.icon.width() * 10;
+                int expandedHeight = data.icon.height() * 10;
+                data.iconBanner = new ImageInfo(data.icon.resource(), expandedWidth, expandedHeight);
+            }
+            return data.iconBanner;
         }
 
         // Fallback and just use missing banner
         return MISSING_BANNER_INFO;
     }
 
-    private void loadAndCacheLogo(@Nonnull IModData data) {
-        if (BANNER_CACHE.containsKey(data.getModId())) return;
+    private void loadAndCacheLogo(@Nonnull ModData data) {
+        if (data.bannerLoaded) return;
 
         // Fills an empty logo as logo may not be present
-        BANNER_CACHE.put(data.getModId(), null);
+        data.bannerLoaded = true;
 
         // Load the banner resource if present
-        ImageType.BANNER.load(data).ifPresent(info -> {
-            BANNER_CACHE.put(data.getModId(), info);
-            ICON_BANNER_CACHE.remove(data.getModId());
+        ImageType.BANNER.load(data.modData).ifPresent(info -> {
+            data.banner = info;
+            data.iconBanner = null;
         });
     }
 
-    private void loadAndCacheIcon(@Nonnull IModData data) {
-        if (IMAGE_ICON_CACHE.containsKey(data.getModId())) return;
+    private void loadAndCacheIcon(@Nonnull ModData data) {
+        if (data.iconLoaded) return;
 
         // Fills an empty icon as icon may not be present
-        IMAGE_ICON_CACHE.put(data.getModId(), null);
+        data.iconLoaded = true;
 
         // Load the icon branding
-        ImageType.ICON.load(data).ifPresentOrElse(info -> {
-            IMAGE_ICON_CACHE.put(data.getModId(), info);
+        ImageType.ICON.load(data.modData).ifPresentOrElse(info -> {
+            data.icon = info;
         }, () -> {
             // If no icon, try and use the loaded banner if a square
-            ImageInfo bannerInfo = BANNER_CACHE.get(data.getModId());
-            if (bannerInfo != null) {
-                if (bannerInfo.width() == bannerInfo.height()) {
-                    IMAGE_ICON_CACHE.put(data.getModId(), bannerInfo);
+            if (data.banner != null) {
+                if (data.banner.width() == data.banner.height()) {
+                    data.icon = data.banner;
                 }
             } else {
                 // Otherwise temporarily load the banner, use if square, otherwise free the resource
-                ImageType.BANNER.load(data).ifPresent(info -> {
+                ImageType.BANNER.load(data.modData).ifPresent(info -> {
                     if (info.width() == info.height()) {
-                        IMAGE_ICON_CACHE.put(data.getModId(), info);
-                        BANNER_CACHE.put(data.getModId(), info); // Saves loading later
-                        ICON_BANNER_CACHE.remove(data.getModId());
+                        data.icon = info;
+                        data.banner = info; // Saves loading later
+                        data.bannerLoaded = true;
+                        data.iconBanner = null;
                     } else {
                         info.unregister().run();
                     }
@@ -1192,7 +1177,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
      */
     private void setSelectedModData(IModData data) {
         this.selectedModData = data;
-        this.loadAndCacheLogo(data);
+        ModData cachedData = CACHED_MODS.get(data.getModId());
+        if (cachedData != null) this.loadAndCacheLogo(cachedData);
         this.reloadBackground(data);
         this.configButton.visible = true;
         this.websiteButton.visible = true;
@@ -1251,7 +1237,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 this.searchTextField.setSuggestion("");
             }
         } else {
-            Optional<IModData> optional = CACHED_MODS.values().stream().filter(data -> {
+            Optional<IModData> optional = CACHED_MODS.values().stream().map(data -> data.modData).filter(data -> {
                 return ModList.FILTER_PREDICATE.test(data) && data.getDisplayName().toLowerCase(Locale.ENGLISH).startsWith(value.toLowerCase(Locale.ENGLISH));
             }).min(Comparator.comparing(IModData::getDisplayName));
             if (optional.isPresent()) {
@@ -1275,8 +1261,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         this.handleComponentClick(new TextComponentString("").setStyle(style));
     }
 
-    private record SearchFilter(BiPredicate<String, IModData> predicate) {
-    }
+    private record SearchFilter(BiPredicate<String, IModData> predicate) { }
 
     private static class Favourites {
         private final Set<String> mods = new HashSet<>();
@@ -1349,4 +1334,17 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
         
     }
+
+    private static class ModData {
+        private final IModData modData;
+
+        private ImageInfo banner, icon, iconBanner;
+        private ItemStack itemIcon;
+        private boolean bannerLoaded, iconLoaded;
+
+        private ModData(IModData modData) {
+            this.modData = modData;
+        }
+    }
+
 }
