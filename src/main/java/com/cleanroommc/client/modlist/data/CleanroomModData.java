@@ -76,25 +76,19 @@ public class CleanroomModData implements IModData {
     @Nullable
     @Override
     public String getItemIcon() {
-        if (this.metadata != null && !this.metadata.iconItem.isBlank()) return this.metadata.iconItem;
-        Map<String, String> props = this.info.getCustomModProperties();
-        return props != null ? props.get("iconItem") : null;
+        return this.getProperty("iconItem");
     }
 
     @Nullable
     @Override
     public String getImageIcon() {
-        if (this.metadata != null && !this.metadata.iconFile.isBlank()) return this.metadata.iconFile;
-        Map<String, String> props = this.info.getCustomModProperties();
-        return props != null ? props.get("iconFile") : null;
+        return this.getProperty("iconFile");
     }
 
     @Nullable
     @Override
     public String getLicense() {
-        if (this.metadata != null && !this.metadata.license.isBlank()) return this.metadata.license;
-        Map<String, String> props = this.info.getCustomModProperties();
-        return props != null ? props.get("license") : null;
+        return this.getProperty("license");
     }
 
     @Nullable
@@ -118,9 +112,7 @@ public class CleanroomModData implements IModData {
     @Nullable
     @Override
     public String getIssueTracker() {
-        if (this.metadata != null && !this.metadata.issueTrackerUrl.isBlank()) return this.metadata.issueTrackerUrl;
-        Map<String, String> props = this.info.getCustomModProperties();
-        return props != null ? props.get("issueTrackerUrl") : null;
+        return this.getProperty("issueTrackerUrl");
     }
 
     @Nullable
@@ -132,9 +124,7 @@ public class CleanroomModData implements IModData {
     @Nullable
     @Override
     public String getBackground() {
-        if (this.metadata != null && !this.metadata.backgroundFile.isBlank()) return this.metadata.backgroundFile;
-        Map<String, String> props = this.info.getCustomModProperties();
-        return props != null ? props.get("backgroundFile") : null;
+        return this.getProperty("backgroundFile");
     }
 
     @Nullable
@@ -228,6 +218,18 @@ public class CleanroomModData implements IModData {
     @Override
     public IResourcePack getResourcePack() {
         return FMLClientHandler.instance().getResourcePackFor(this.getModId());
+    }
+
+    @Nullable
+    private String getProperty(String key) {
+        if (this.metadata != null) {
+            String value = this.metadata.modProperties.get(key);
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        Map<String, String> properties = this.info.getCustomModProperties();
+        return properties != null ? properties.get(key) : null;
     }
 
     private Type analyzeType(ModContainer info) {

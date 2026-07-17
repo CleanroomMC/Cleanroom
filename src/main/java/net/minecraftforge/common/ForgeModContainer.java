@@ -157,8 +157,8 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                 Forge, a broad compatibility API.
                 """;
         meta.url             = "https://minecraftforge.net/";
-        meta.issueTrackerUrl = "https://minecraftforge.net/";
-        meta.license         = "LGPL v2.1";
+        meta.modProperties.put("issueTrackerUrl", "https://minecraftforge.net/");
+        meta.modProperties.put("license", "LGPL v2.1");
         meta.screenshots     = new String[0];
         meta.logoFile        = "/forge_logo.png";
         try {
