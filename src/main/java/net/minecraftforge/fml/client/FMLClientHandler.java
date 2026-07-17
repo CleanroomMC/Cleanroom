@@ -35,6 +35,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.ModListEventHandler;
+import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.common.PatchModPresentChecker;
 import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
@@ -220,6 +223,8 @@ public class FMLClientHandler implements IFMLSidedHandler
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
+        ConfigManager.register(ModListConfig.class);
+        MinecraftForge.EVENT_BUS.register(ModListEventHandler.class);
 
         if (PatchModPresentChecker.isNotPresent()
                 && CoreModManager.hasNonCrlMods())
@@ -784,7 +789,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public void showInGameModOptions(GuiIngameMenu guiIngameMenu)
     {
-        showGuiScreen(new GuiModList(guiIngameMenu));
+        showGuiScreen(ModListConfig.enable ? new ModListScreen(guiIngameMenu) : new GuiModList(guiIngameMenu));
     }
 
     public IModGuiFactory getGuiFactoryFor(ModContainer selectedMod)
