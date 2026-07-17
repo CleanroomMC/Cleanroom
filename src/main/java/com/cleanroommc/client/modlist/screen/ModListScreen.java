@@ -158,9 +158,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
         });
 
-        this.modList = new ModList(150, ModListScreen.this.height,
+        this.modList = new ModList(160, ModListScreen.this.height,
                 46, ModListScreen.this.height - 35);
-        this.modList.setSlotXBoundsFromLeft(10);
 
         this.addButton(new ModListTextButton(
                 10, this.modList.bottom + 8, 127, 20,
@@ -514,13 +513,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        protected int getListLeft() {
-            return 0;
-        }
-
-        @Override
         public int getListWidth() {
-            return this.width - (this.scrollBarVisible ? 6 : 0);
+            return this.width - 16;
         }
 
         @Override
@@ -1004,22 +998,12 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Override
         protected int getScrollBarX() {
-            return this.width - 7;
-        }
-
-        @Override
-        protected int getListLeft() {
-            return 8;
+            return this.left + this.width - 7;
         }
 
         @Override
         public int getListWidth() {
-            return this.width - 16;
-        }
-
-        @Override
-        protected int getRowTop(int slotIndex) {
-            return super.getRowTop(slotIndex) + 4;
+            return this.width - 12;
         }
 
         @Override
@@ -1037,7 +1021,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Override
         public void drawEntry(int index, int left, int top, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean hovered, float partialTicks) {
-            ModListScreen.this.drawString(ModListScreen.this.fontRenderer, this.line, left, top, 0xFFFFFF);
+            ModListScreen.this.drawString(ModListScreen.this.fontRenderer, this.line, left, top + 4, 0xFFFFFF);
         }
     }
 
