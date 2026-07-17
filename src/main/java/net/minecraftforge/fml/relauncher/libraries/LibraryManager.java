@@ -111,8 +111,9 @@ public class LibraryManager
                 }
             }
         }
-        
-        
+
+        candidates = null;
+
     }
 
     private static File findLibraryFolder(File minecraftHome)

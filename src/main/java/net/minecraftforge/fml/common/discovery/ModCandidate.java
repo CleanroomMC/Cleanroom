@@ -47,7 +47,7 @@ public class ModCandidate
         this(classPathRoot, modContainer, sourceType, false, false);
     }
 
-    protected ModCandidate(File classPathRoot, File resourcePathRoot)
+    public ModCandidate(File classPathRoot, File resourcePathRoot)
     {
         this.classPathRoot = classPathRoot;
         this.resourcePathRoot = resourcePathRoot;

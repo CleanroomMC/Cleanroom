@@ -544,15 +544,6 @@ public class FMLModContainer implements ModContainer
     public void constructMod(FMLConstructionEvent event)
     {
         ModClassLoader modClassLoader = event.getModClassLoader();
-        try
-        {
-            modClassLoader.addFile(source);
-        }
-        catch (MalformedURLException e)
-        {
-            FormattedMessage message = new FormattedMessage("{} Failed to add file to classloader: {}", getModId(), source);
-            throw new LoaderException(message.getFormattedMessage(), e);
-        }
         modClassLoader.clearNegativeCacheFor(candidate.getClassList());
 
         //Only place I could think to add this...
