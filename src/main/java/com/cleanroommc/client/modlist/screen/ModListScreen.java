@@ -28,7 +28,6 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -47,7 +46,6 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("CodeBlock2Expr")
@@ -74,7 +72,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     private static final Map<String, ItemStack> ITEM_ICON_CACHE = new HashMap<>();
     private static final Map<String, IModData> CACHED_MODS = new HashMap<>();
     private static final List<String> FORCE_DEFAULT_ICON_MODS = Arrays.asList(ModListConfig.forceDefaultIconList);
-    private static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]{1,63}$");
     private static final Supplier<Pair<Integer, Integer>> COUNTS = Suppliers.memoize(() -> {
         int[] counts = new int[2];
         CACHED_MODS.forEach((_, data) -> {
@@ -1336,10 +1333,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 return;
             }
             try {
-                Predicate<String> modIdRegex = MOD_ID_PATTERN.asMatchPredicate();
                 if (Files.exists(this.file)) {
                     Files.readAllLines(this.file).forEach(s -> {
-                        if (modIdRegex.test(s) && Loader.isModLoaded(s)) {
+                        if (isSaneModId(s) && CACHED_MODS.containsKey(s)) {
                             this.mods.add(s);
                         }
                     });
@@ -1362,5 +1358,13 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 ModListConstants.LOG.warn("Failed to save mod list favourites", e);
             }
         }
+
+        /**
+         * @see net.minecraftforge.fml.common.FMLModContainer#sanityCheckModId()
+         */
+        private static boolean isSaneModId(String modId) {
+            return !modId.isEmpty() && modId.length() <= 64 && modId.equals(modId.toLowerCase(Locale.ENGLISH));
+        }
+        
     }
 }
