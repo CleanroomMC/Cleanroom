@@ -19,6 +19,7 @@
 
 package net.minecraftforge.common;
 
+import com.cleanroommc.client.modlist.ModListConfig;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import static net.minecraftforge.common.config.Configuration.CATEGORY_CLIENT;
@@ -486,23 +487,29 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void onConfigChanged(OnConfigChangedEvent event)
     {
         String configID = event.getConfigID();
-        if (!this.getMetadata().modId.equals(event.getModID()) || configID == null) {
+        if (!this.getMetadata().modId.equals(event.getModID()) || configID == null)
+        {
             return;
         }
-        switch (configID) {
-            case "chunkLoader" -> {
+        switch (configID)
+        {
+            case "chunkLoader" ->
+            {
                 ForgeChunkManager.syncConfigDefaults();
                 ForgeChunkManager.loadConfiguration();
             }
-            case CATEGORY_CLIENT -> {
+            case CATEGORY_CLIENT ->
+            {
                 boolean tmpStairs = disableStairSlabCulling;
                 syncConfig(false);
                 //stair culling
-                if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling) {
+                if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling)
+                {
                     FMLCommonHandler.instance().reloadRenderers();
                 }
             }
             case "forge_early" -> ConfigManager.sync(ForgeEarlyConfig.class);
+            case "catalogue" -> ConfigManager.sync(ModListConfig.class);
             default -> syncConfig(false);
         }
     }
