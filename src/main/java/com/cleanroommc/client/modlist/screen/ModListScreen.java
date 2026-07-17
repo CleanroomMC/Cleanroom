@@ -211,9 +211,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
         }
 
-        // Init Cleanroom logo for the icon
+        // Init Cleanroom icon for the header
         IModData cleanroomData = CACHED_MODS.get(ModListConstants.OWNER_MOD_ID);
-        if (cleanroomData != null) this.loadAndCacheLogo(cleanroomData);
+        if (cleanroomData != null) this.loadAndCacheIcon(cleanroomData);
     }
 
     private DropdownMenu buildMenu() {
@@ -291,12 +291,12 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Cleanroom icon
-        ImageInfo bannerInfo = BANNER_CACHE.get(ModListConstants.OWNER_MOD_ID);
-        if (bannerInfo != null) {
+        ImageInfo iconInfo = IMAGE_ICON_CACHE.get(ModListConstants.OWNER_MOD_ID);
+        if (iconInfo != null) {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            this.mc.getTextureManager().bindTexture(bannerInfo.resource());
-            drawScaledCustomSizeModalRect(10, 9, 0.0F, 0.0F, bannerInfo.width(), bannerInfo.height(), 10, 10, bannerInfo.width(), bannerInfo.height());
+            this.mc.getTextureManager().bindTexture(iconInfo.resource());
+            drawScaledCustomSizeModalRect(10, 9, 0.0F, 0.0F, iconInfo.width(), iconInfo.height(), 10, 10, iconInfo.width(), iconInfo.height());
             GlStateManager.disableBlend();
         }
 
