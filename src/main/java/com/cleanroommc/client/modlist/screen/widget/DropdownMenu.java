@@ -9,9 +9,11 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nullable;
@@ -89,11 +91,14 @@ public class DropdownMenu extends Gui {
     }
 
     private void updatePosition(Anchor anchor) {
+        ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
         int contentWidth = this.items.stream().mapToInt(item -> item.width).max().orElse(0);
         int contentHeight = this.items.stream().mapToInt(item -> item.height).sum() + Math.max(0, this.items.size() - 1) * SPACING;
-        this.width = contentWidth + BORDER * 2;
+        this.width = Math.min(contentWidth + BORDER * 2, resolution.getScaledWidth());
         this.height = contentHeight + BORDER * 2;
         this.alignment.aligner.accept(this, anchor);
+        this.x = MathHelper.clamp(this.x, 0, Math.max(0, resolution.getScaledWidth() - this.width));
+        this.y = MathHelper.clamp(this.y, 0, Math.max(0, resolution.getScaledHeight() - this.height));
         this.layoutItems();
     }
 
@@ -102,6 +107,7 @@ public class DropdownMenu extends Gui {
         for (MenuItem item : this.items) {
             item.x = this.x + BORDER;
             item.y = itemY;
+            item.width = this.width - BORDER * 2;
             itemY += item.height + SPACING;
         }
     }
@@ -179,7 +185,8 @@ public class DropdownMenu extends Gui {
 
             FontRenderer font = minecraft.fontRenderer;
             int offset = (this.height - font.FONT_HEIGHT) / 2 + 1;
-            this.drawString(font, this.label, this.x + offset, this.y + offset, 0xFFFFFFFF);
+            String text = font.trimStringToWidth(this.label, Math.max(0, this.width - offset * 2));
+            this.drawString(font, text, this.x + offset, this.y + offset, 0xFFFFFFFF);
         }
 
         private boolean mousePressed(int mouseX, int mouseY) {

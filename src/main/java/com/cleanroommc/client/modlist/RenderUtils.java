@@ -180,7 +180,7 @@ public final class RenderUtils {
             blitSprite(nineSlice.width(), nineSlice.height(), nineSlice.width() - rightBorder, nineSlice.height() - bottomBorder, x + width - rightBorder, y + height - bottomBorder, z, rightBorder, bottomBorder);
             blitTiledSprite(x, y + topBorder, z, leftBorder, height - bottomBorder - topBorder, 0, topBorder, leftBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
             blitTiledSprite(x + leftBorder, y + topBorder, z, width - rightBorder - leftBorder, height - bottomBorder - topBorder, leftBorder, topBorder, nineSlice.width() - rightBorder - leftBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
-            blitTiledSprite(x + width - rightBorder, y + topBorder, z, leftBorder, height - bottomBorder - topBorder, nineSlice.width() - rightBorder, topBorder, rightBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
+            blitTiledSprite(x + width - rightBorder, y + topBorder, z, rightBorder, height - bottomBorder - topBorder, nineSlice.width() - rightBorder, topBorder, rightBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
         }
     }
 
