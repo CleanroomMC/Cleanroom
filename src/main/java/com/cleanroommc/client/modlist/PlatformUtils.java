@@ -1,6 +1,5 @@
 package com.cleanroommc.client.modlist;
 
-import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.data.CleanroomModData;
 import com.cleanroommc.client.modlist.data.IModData;
 import com.cleanroommc.client.modlist.data.OptiFineModData;

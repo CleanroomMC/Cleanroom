@@ -7,7 +7,6 @@ cleanroom.gui.submit_bug=Сообщить баг
 cleanroom.gui.open_mods_folder=Открыть папку модов
 cleanroom.gui.licenses=Лицензия(и): %s
 cleanroom.gui.authors=Автор(ы): %s
-cleanroom.gui.contributors=Участник(ы): %s
 cleanroom.gui.credits=Приписание: %s
 cleanroom.gui.version=Версия: %s
 cleanroom.gui.update_available=Обновление: %s

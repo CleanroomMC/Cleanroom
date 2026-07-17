@@ -1,6 +1,5 @@
 package com.cleanroommc.client.modlist;
 
-import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.data.IModData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
