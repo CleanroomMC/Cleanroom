@@ -34,6 +34,7 @@ public class PatchModPresentChecker {
     }
 
     public static boolean isNotPresent() {
+        if (CleanroomEnvironment.isDev()) return false;
         if (ForgeEarlyConfig.DISABLE_PATCH_MOD_CHECK) return false;
         if (!checkPerformed) performCheck();
         return !fuguePresent || !scalarPresent;
