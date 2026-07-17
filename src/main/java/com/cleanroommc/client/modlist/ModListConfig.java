@@ -22,6 +22,7 @@ public final class ModListConfig {
             "FML",
             "mcp",
             "cleanroom",
+            "cleanmix",
             "configanytime",
             "mixinbooter",
             "fugue",
