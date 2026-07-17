@@ -138,8 +138,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     public void initGui() {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        this.searchTextField = new ModListTextField(this.fontRenderer,
-                11, 25, 148, 20) {
+        this.searchTextField = new ModListTextField(this.fontRenderer, 11, 25, 148, 20) {
             @Override
             public int getWidth() {
                 if (this.getText().startsWith("@")) {
@@ -158,11 +157,10 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
         });
 
-        this.modList = new ModList(160, ModListScreen.this.height,
-                46, ModListScreen.this.height - 35);
+        this.modList = new ModList(150, ModListScreen.this.height, 46, ModListScreen.this.height - 35);
+        this.modList.setSlotXBoundsFromLeft(10);
 
-        this.addButton(new ModListTextButton(
-                10, this.modList.bottom + 8, 127, 20,
+        this.addButton(new ModListTextButton(10, this.modList.bottom + 8, 127, 20,
                 I18n.format("gui.back"),
                 _ -> this.mc.displayGuiScreen(this.parentScreen)));
         this.modFolderButton = this.addButton(new ModListIconButton(
@@ -509,12 +507,12 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Override
         protected int getScrollBarX() {
-            return this.width - 6;
+            return this.right - 6;
         }
 
         @Override
         public int getListWidth() {
-            return this.width - 16;
+            return this.width;
         }
 
         @Override
