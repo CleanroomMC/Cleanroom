@@ -50,10 +50,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
+import org.spongepowered.asm.obfuscation.mapping.remap.Unmapper;
 
 import javax.annotation.Nullable;
 
-public class FMLDeobfuscatingRemapper extends Remapper {
+public class FMLDeobfuscatingRemapper extends Remapper implements Unmapper {
     public static final FMLDeobfuscatingRemapper INSTANCE = new FMLDeobfuscatingRemapper();
 
     private BiMap<String, String> classNameBiMap;

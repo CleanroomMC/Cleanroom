@@ -35,7 +35,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.ModListEventHandler;
+import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.common.PatchModPresentChecker;
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import net.minecraft.client.Minecraft;
@@ -115,7 +119,6 @@ import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.toposort.ModSortingException;
-import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.GameData;
 
@@ -220,9 +223,10 @@ public class FMLClientHandler implements IFMLSidedHandler
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
+        ConfigManager.register(ModListConfig.class);
+        MinecraftForge.EVENT_BUS.register(ModListEventHandler.class);
 
-        if (PatchModPresentChecker.isNotPresent()
-                && CoreModManager.hasNonCrlMods())
+        if (PatchModPresentChecker.isNotPresent() && CleanroomModDiscoverer.instance().hasForgeMods())
         {
             String warning = PatchModPresentChecker.getWarningMessage();
             String prompt = "Press any key to continue, ESC to exit.";
@@ -784,7 +788,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public void showInGameModOptions(GuiIngameMenu guiIngameMenu)
     {
-        showGuiScreen(new GuiModList(guiIngameMenu));
+        showGuiScreen(ModListConfig.enable ? new ModListScreen(guiIngameMenu) : new GuiModList(guiIngameMenu));
     }
 
     public IModGuiFactory getGuiFactoryFor(ModContainer selectedMod)
