@@ -19,12 +19,17 @@ public class CleanroomContainer extends DummyModContainer {
         meta.name = "Cleanroom";
         meta.description = """
                 Cleanroom is a 1.12.2 Forge fork, providing newer toolchain, new APIs and 99% compatibility.
-                Our plan is to make 1.12.2 up-to-date with latest toolchain while adding more feature to
-                Forge & vanilla, so we don't need to care about higher versions' X point release * Y Mod API headache.
+                Our plan is to make 1.12.2 up-to-date with latest toolchain while adding more feature to Forge & vanilla, so we don't need to care about higher versions' X point release * Y Mod API headache.
                 """;
         meta.version = CleanroomVersion.VERSION;
         meta.authorList = Arrays.asList("LexManos", "cpw", "fry", "Rongmario", "kappa_maintainer", "Li");
+        meta.credits = "MrCrayFish for the Catalogue mod as base for the revamped mod list.";
+        meta.url = "https://cleanroommc.com";
+        meta.modProperties.put("issueTrackerUrl", "https://github.com/CleanroomMC/Cleanroom/issues");
         meta.updateJSON = "https://download.cleanroommc.com/api/forge";
+        meta.logoFile = "/cleanroom_banner.png";
+        meta.modProperties.put("iconFile", "/cleanroom_icon.png");
+        meta.modProperties.put("backgroundFile", "/cleanroom_background.png");
     }
 
     @Override
