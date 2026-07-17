@@ -699,11 +699,6 @@ public class Loader
         return canonicalConfigDir;
     }
 
-    public File getModsDir()
-    {
-        return canonicalModsDir;
-    }
-
     public String getCrashInformation()
     {
         // Handle being called before we've begun setup

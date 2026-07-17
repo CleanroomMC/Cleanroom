@@ -625,7 +625,4 @@ public class GuiModList extends GuiScreen
         }
     }
 
-    public GuiScreen getParentScreen() {
-        return this.mainMenu;
-    }
 }
