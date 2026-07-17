@@ -13,7 +13,7 @@
          }
  
 -        return s;
-+        return s + net.minecraftforge.common.ForgeHooks.gatherMixinInfo(throwable);
++        return s + com.cleanroommc.cleanmix.CleanMixHooks.addMixinMetadataToCrashReport(throwable);
      }
  
      public String getCompleteReport()

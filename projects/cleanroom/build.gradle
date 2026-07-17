@@ -378,13 +378,20 @@ dependencies {
     installer 'io.github.classgraph:classgraph:4.8.184'
 
     // Mixin
-    installer 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
+    installer "com.cleanroommc:cleanmix:$props.cleanmix_version"
     installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.4')
 
     testImplementation platform('org.junit:junit-bom:6.1.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.junit.vintage:junit-vintage-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+processResources {
+    inputs.property 'cleanmix_version', props.cleanmix_version
+    filesMatching('cleanmix.info') {
+        expand cleanmix_version: props.cleanmix_version
+    }
 }
 
 test {
