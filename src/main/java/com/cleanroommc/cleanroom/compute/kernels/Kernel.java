@@ -3,6 +3,7 @@ package com.cleanroommc.cleanroom.compute.kernels;
 import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.KernelError;
+import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import org.jspecify.annotations.NonNull;
@@ -32,23 +33,16 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
     }
 
     public long invoke(MemoryStack stack, long commandQueue, long device,
-                       final @NonNull PointerBuffer[] arguments,
+                       final @NonNull KernelParameterList arguments,
                        final long @Nullable [] workGroupOffsets,
-                       final long @Nullable [] workGroupSizes,
+                       final long @NonNull [] workGroupSizes,
                        final long... dependencies) {
+        Preconditions.checkNotNull(workGroupSizes);
+        Preconditions.checkNotNull(arguments);
         int dim;
-        int length = -1;
-        for (int i = 0 ; i < arguments.length; i++) {
-            if (length == -1) {
-                length = arguments[i].capacity();
-            } else if (length != arguments[i].capacity()) {
-                throw new KernelError(String.format("Kernel Invocation Error: buffer %d is of a different size from the other arguments", i));
-            }
-            arguments[i].rewind();
-            CL10.clSetKernelArg(kernel, i, arguments[i]);
-        }
-        PointerBuffer offsets = null, sizes, local;
-        if (workGroupSizes != null && workGroupOffsets != null) {
+        arguments.bindAllParameters(this);
+        PointerBuffer offsets, sizes, local;
+        if (workGroupOffsets != null) {
             Preconditions.checkArgument(workGroupSizes.length == workGroupOffsets.length);
             dim = workGroupSizes.length;
         } else {
@@ -58,19 +52,12 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
         offsets = stack.mallocPointer(dim);
         sizes = stack.mallocPointer(dim);
         local = stack.mallocPointer(dim);
-        if (workGroupSizes != null) {
-            Preconditions.checkArgument(workGroupSizes.length < 3);
-            sizes.put(workGroupSizes);
-            for (int i = 0; i < workGroupSizes.length; i++) {
-                local.put(gcd(workGroupSizes[i], deviceSizes[i]));
-            }
-        } else {
-            sizes.put(length);
-            local.put(gcd(length, deviceSizes[0]));
+        Preconditions.checkArgument(workGroupSizes.length < 3);
+        sizes.put(workGroupSizes);
+        for (int i = 0; i < workGroupSizes.length; i++) {
+            local.put(gcd(workGroupSizes[i], deviceSizes[i]));
         }
-        if (workGroupOffsets != null) {
-            Preconditions.checkArgument(workGroupOffsets.length < 3);
-        } else {
+        if (workGroupOffsets == null) {
             for (int i = 0; i < dim; i++) {
                 offsets.put(0);
             }

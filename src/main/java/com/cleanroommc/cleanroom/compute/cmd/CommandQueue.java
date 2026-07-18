@@ -4,7 +4,9 @@ import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.errors.KernelError;
 import com.cleanroommc.cleanroom.compute.errors.UnavaliableDeviceError;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
+import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
 import com.google.common.base.Preconditions;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
@@ -39,20 +41,25 @@ public class CommandQueue implements Closeable {
     }
 
     public Event dispatchKernel(Kernel kernel,
-                                final PointerBuffer[] arguments,
+                                final @NonNull KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
-                                final long @Nullable [] workGroupSizes,
+                                final long @NonNull [] workGroupSizes,
                                 final long... dependencies) {
+        Preconditions.checkNotNull(workGroupSizes);
+        Preconditions.checkNotNull(arguments);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             return this.dispatchKernel(stack, kernel, arguments, workGroupOffsets, workGroupSizes, dependencies);
         }
     }
 
-    public Event dispatchKernel(MemoryStack stack, Kernel kernel,
-                         final PointerBuffer[] arguments,
+    public Event dispatchKernel(@NonNull MemoryStack stack, Kernel kernel,
+                         final @NonNull KernelParameterList arguments,
                          final long @Nullable [] workGroupOffsets,
-                         final long @Nullable [] workGroupSizes,
+                         final long @NonNull [] workGroupSizes,
                          final long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(workGroupSizes);
+        Preconditions.checkNotNull(arguments);
         return new Event(kernel.invoke(stack, commandQueue, device, arguments, workGroupOffsets, workGroupSizes, dependencies), stack);
     }
 
@@ -71,11 +78,17 @@ public class CommandQueue implements Closeable {
         }
 
         public Event next(Kernel kernel,
-                          final PointerBuffer[] arguments,
+                          final @NonNull KernelParameterList arguments,
                           final long @Nullable [] workGroupOffsets,
-                          final long @Nullable [] workGroupSizes,
+                          final long @NonNull [] workGroupSizes,
                           final long... dependencies) {
+            Preconditions.checkNotNull(workGroupSizes);
+            Preconditions.checkNotNull(arguments);
             return dispatchKernel(stack, kernel, arguments, workGroupOffsets, workGroupSizes, eventID);
+        }
+
+        public void execute() {
+            CL10.clFlush(commandQueue);
         }
     }
 }
