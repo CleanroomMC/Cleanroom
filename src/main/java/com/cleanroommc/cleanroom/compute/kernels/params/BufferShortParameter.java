@@ -7,8 +7,8 @@ import java.nio.ShortBuffer;
 
 import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleKernelParamError;
 
-public record BufferShortParameter(ShortBuffer value) implements KernelParameter {
-	
+record BufferShortParameter(ShortBuffer value) implements KernelParameter {
+	@Override
 	public void bindParameter(long kernel, int index) throws KernelError, OutOfMemoryError {
 		handleKernelParamError(CL10.clSetKernelArg(kernel, index, value), index, value);
 	}
