@@ -28,8 +28,8 @@ public class ComputeAPITest {
         Loader.instance();
         Bootstrap.register();
         Logger testLogger = LogManager.getLogger("TestLogger");
-        assertDoesNotThrow(() -> Configuration.OPENCL_EXPLICIT_INIT.set(true));
-        assertDoesNotThrow(() -> ComputeSetup.initOpenCL(testLogger));
+        Configuration.OPENCL_EXPLICIT_INIT.set(true);
+        ComputeSetup.initOpenCL(testLogger);
         Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
         {{
             modId = "accelerate";
@@ -38,15 +38,17 @@ public class ComputeAPITest {
 
     @Test
     public void headerGetTest() {
-        final String good = "#include     <forge/long.h>\n" +
-                "#include /* comment */ <forge/comment.h>\n" +
-                "#include/*comment2*/<forge/comment2.h>\n" +
-                "#include<forge/packed.h>\n" +
-                "#include <forge/normal.h>\n" +
-                "//#include <forge/no.h>\n" +
-                "/*\n" +
-                " * #include <forge/neither.h>\n" +
-                " */\n";
+        final String good = """
+                #include     <forge/long.h>
+                #include /* comment */ <forge/comment.h>
+                #include/*comment2*/<forge/comment2.h>
+                #include<forge/packed.h>
+                #include <forge/normal.h>
+                //#include <forge/no.h>
+                /*
+                 * #include <forge/neither.h>
+                 */
+                """;
         final String bad = "#include gdgrgneisb <forge/gibberish.h>";
         Set<ResourceLocation> goodHeaders = Set.of(
                 new ResourceLocation("forge", "long.h"),
