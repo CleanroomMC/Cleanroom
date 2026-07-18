@@ -1,334 +1,155 @@
-import com.cleanroommc.gradle.helpers.ProjectConstants
-import com.cleanroommc.gradle.helpers.tasks.Util
-import com.palantir.gradle.gitversion.VersionDetails
-
 plugins {
     id 'java-library'
+    id 'com.cleanroommc.gradle'
     id 'idea'
     id 'maven-publish'
-    id 'com.cleanroommc.gradle' version '0.0.1'
 }
-
-// buildSrc path
-apply plugin: 'com.palantir.git-version'
-
-def props = project.properties
-def sysProps = System.getProperties()
-VersionDetails details = versionDetails()
 
 group = 'com.cleanroommc'
-
-if (project.hasProperty("release")) {
-    version = details.lastTag
-} else if (!project.hasProperty("run_number")) {
-    version = "${details.lastTag}+build.${details.commitDistance}"
-} else {
-    version = "${details.lastTag}+build.${details.commitDistance}.run.${props.run_number}"
-}
-
-def version_txt = new File(project.projectDir, "version.txt")
-version_txt.write(version.toString())
-
-println "Setting up Cleanroom $version"
-if (project.hasProperty('run_number')) println("On GitHub runs #${props.run_number}")
-println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
+com.cleanroommc.gradle.api.Versioning.apply(project)
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    toolchain.languageVersion = JavaLanguageVersion.of(providers.gradleProperty('java_major').get())
+    withSourcesJar()
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs += ProjectConstants.COMPILER_JVM_ARGUMENTS
-    options.encoding = 'UTF-8'
-}
+def modules = ['minecraft', 'forge', 'cleanroom', 'kirino', 'builtin/mixinbooter']
 
 sourceSets {
     main {
-        java {
-            srcDirs = [
-                "$rootDir/module/cleanroom/src/main/java",
-                "$rootDir/module/forge/src/main/java",
-                "$rootDir/module/mixinbooter/src/main/java",
-                "$rootDir/module/minecraft/src/main/java",
-                "$rootDir/module/kirino/src/main/java"
-            ]
-        }
-        resources {
-            srcDirs = [
-                // module/cleanroom has no resources yet; Gradle ignores missing dirs.
-                "$rootDir/module/cleanroom/src/main/resources",
-                "$rootDir/module/forge/src/main/resources",
-                "$rootDir/module/kirino/src/main/resources"
-            ]
-        }
+        java.srcDirs = modules.collect { "module/${it}/src/main/java" }
+        resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
     }
     test {
-        compileClasspath += sourceSets.main.runtimeClasspath
-        runtimeClasspath += sourceSets.main.runtimeClasspath
-        java {
-            srcDirs = [
-                "$rootDir/module/cleanroom/src/test/java",
-                "$rootDir/module/forge/src/test/java",
-                "$rootDir/module/kirino/src/test/java"
-            ]
+        java.srcDirs = modules.collect { "module/${it}/src/test/java" }
+        resources.srcDirs = modules.collect { "module/${it}/src/test/resources" }
+    }
+}
+
+var open_arguments = [
+        '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
+        '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+]
+
+var export_arguments = [
+        '--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED',
+        '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
+]
+
+def asm_version = providers.gradleProperty('asm_version').get()
+
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        switch ("${details.requested.group}:${details.requested.name}") {
+            case 'com.google.guava:guava':               details.useVersion '33.6.0-jre';       break
+            case 'com.google.code.gson:gson':            details.useVersion '2.14.0';           break
+            case 'it.unimi.dsi:fastutil':                details.useVersion '8.5.18';           break
+            case 'org.apache.commons:commons-lang3':     details.useVersion '3.20.0';           break
+            case 'commons-io:commons-io':                details.useVersion '2.22.0';           break
+            case 'commons-codec:commons-codec':          details.useVersion '1.22.0';           break
+            case 'org.apache.commons:commons-compress':  details.useVersion '1.28.0';           break
+            case 'commons-logging:commons-logging':      details.useVersion '1.4.0';            break
+            case 'org.apache.httpcomponents:httpclient': details.useVersion '4.5.14';           break
+            case 'org.apache.httpcomponents:httpcore':   details.useVersion '4.4.16';           break
+            case 'org.apache.logging.log4j:log4j-api':   details.useVersion '2.26.0';           break
+            case 'org.apache.logging.log4j:log4j-core':  details.useVersion '2.26.0';           break
+            case 'net.sf.jopt-simple:jopt-simple':       details.useVersion '5.0.4';            break
+            case 'net.java.dev.jna:jna':                 details.useVersion '5.19.1';           break
+            case 'net.java.jinput:jinput':               details.useVersion '2.0.10';           break
+            case 'ca.weblite:java-objc-bridge':          details.useVersion '1.2';              break
+            case 'io.netty:netty-all':                   details.useVersion '4.2.16.Final';     break
         }
-        resources {
-            srcDirs = [
-                "$rootDir/module/cleanroom/src/test/resources",
-                "$rootDir/module/forge/src/test/resources"
-            ]
+        if (details.requested.version != details.target.version) {
+            details.because 'Cleanroom Libraries Update'
         }
     }
 }
 
-cleanroom {
-    patchDev {
-        minecraft {
-            source.set(cleanroom.localCacheDirectory.map { it.dir('sourceSets/mcp/sources').asFile })
-            dependsOn 'remapSrg2Mcp'
-        }
-    }
-}
-
-afterEvaluate {
-    def patchedSrc = file('module/minecraft/src/main/java')
-
-    sourceSets.named('minecraftPatchDev') {
-        java.srcDirs = [patchedSrc]
-    }
-
-    // TODO
-    // The patch-dev source set only feeds diff/copy tasks and can't compile standalone
-    tasks.named('compileMinecraftPatchDevJava') { enabled = false }
-    tasks.named('minecraftPatchDevClasses') { enabled = false }
-    tasks.named('processMinecraftPatchDevResources') { enabled = false }
-
-    tasks.named('copyMinecraftToSourceSet') {
-        onlyIf {
-            !patchedSrc.exists() || (patchedSrc.listFiles()?.length ?: 0) == 0
-        }
-    }
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        name = 'Cleanroom Maven'
-        url = 'https://repo.cleanroommc.com/releases/'
-    }
-    maven {
-        url = 'https://maven.arcseekers.com/releases/'
-    }
-    maven {
-        name = 'Outlands'
-        url = 'https://maven.outlands.top/releases'
-    }
-}
-
-// TODO: fix on CG side
-def mojangRepo = repositories.findByName('Mojang')
-if (mojangRepo != null) {
-    repositories.remove(mojangRepo)
-    repositories.add(mojangRepo)
-}
-
-ext {
-    lwjglArch = Util.getCurrentArch()
-    // Do not change the order unless it is required so
-    lwjglLibraries = [
-        [
-            'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
-            'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
-        ],
-
-        [
-            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
-            'natives-macos-arm64', 'natives-macos',
-            'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
-        ]
-    ]
-}
-
-configurations {
-    configureEach { // LWJGL2 isn't friendly with us, so pye pye
-        exclude group: 'org.lwjgl.lwjgl'
-        exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
-    }
-
-    // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it
-    installer {
-        transitive = false
-    }
-    api.extendsFrom(installer)
-
-    lwjglNatives {
-        transitive = false
-    }
-
-    // Make the joint `main` compile see the Minecraft libraries resolved by CleanroomGradle
-    implementation.extendsFrom(vanilla)
-}
-
-// TODO: entire dep tree needs to be re-evaluated
 dependencies {
-    mcpConfig 'de.oceanlabs.mcp:mcp_config:1.12.2-20260220.202731'
-
-    // TODO
-    // LWJGL
-    compileOnly "com.cleanroommc:lwjglx:1.0.0"
-    installer "com.cleanroommc:lwjglxx:1.1.21"
-    lwjglLibraries[0].each {
-        if (it == 'lwjgl') {
-            installer "org.lwjgl:$it:$props.lwjgl_version:unsafe"
-        }
-        else {
-            installer "org.lwjgl:$it:$props.lwjgl_version"
-        }
-        runtimeOnly "org.lwjgl:$it::$lwjglArch"
-
-        lwjglLibraries[1].each { arch ->
-            lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$arch"
-        }
-    }
-
     // ASM
-    installer "org.ow2.asm:asm:$props.asm_version"
-    installer "org.ow2.asm:asm-commons:$props.asm_version"
-    installer "org.ow2.asm:asm-tree:$props.asm_version"
-    installer "org.ow2.asm:asm-util:$props.asm_version"
-    installer "org.ow2.asm:asm-analysis:$props.asm_version"
-    // Added back deprecated features for mods to load up properly, hosted on outlands
-    installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
-
-    // Hacks
-    installer "top.outlands:foundation:0.19.8"
-    installer 'net.lenni0451:Reflect:1.6.4'
-    installer 'net.lenni0451.commons:unchecked:1.9.2'
-    installer 'org.javassist:javassist:3.30.2-GA'
-
-    // Regular deps
-    installer 'com.ibm.icu:icu4j:78.3'
-    installer 'org.jline:jline:4.1.3'
-    installer 'org.jline:jline-native:4.1.3'
-    installer 'net.java.jinput:jinput:2.0.10'
-
-    installer 'lzma:lzma:0.0.1'
-    installer 'java3d:vecmath:1.5.2'
-    installer 'net.sf.trove4j:core:3.1.0'
-    installer 'net.sf.trove4j:experimental:3.1.0'
-
-    installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
-
-    installer 'com.github.oshi:oshi-core-ffm:7.3.2'
-    installer 'com.github.oshi:oshi-common:7.3.2'
-    installer 'net.java.dev.jna:jna:5.19.1'
-    installer 'net.java.dev.jna:jna-platform:5.19.1'
-
-    installer 'it.unimi.dsi:fastutil:8.5.18'
-
-    installer 'com.google.guava:guava:33.6.0-jre'
-    installer 'com.google.guava:failureaccess:1.0.2'
-    installer 'com.google.code.gson:gson:2.14.0'
-
-    installer 'org.apache.commons:commons-lang3:3.20.0'
-    installer 'org.apache.commons:commons-compress:1.28.0'
-    installer 'commons-codec:commons-codec:1.22.0'
-    installer 'commons-io:commons-io:2.22.0'
-    installer 'commons-logging:commons-logging:1.4.0'
-    installer 'org.apache.maven:maven-artifact:3.9.16'
-    installer 'org.apache.commons:commons-text:1.15.0' // Some old classes in lang3 moved to here, wtf
-
-    // xz in common-compress need this to work
-    installer 'org.tukaani:xz:1.12'
-
-    installer 'com.google.code.findbugs:jsr305:3.0.2'
-    installer 'org.jspecify:jspecify:1.0.0'
-
-    // Apache HTTP, 4 and 5
-    installer 'org.apache.httpcomponents.core5:httpcore5:5.4.3'
-    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
-    installer 'org.apache.httpcomponents.client5:httpclient5:5.6.1'
-
-    installer 'org.apache.httpcomponents:httpclient:4.5.14'
-    installer 'org.apache.httpcomponents:httpcore:4.4.16'
-
-    // Netty
-    installer "io.netty:netty-codec-base:$props.netty_version"
-    installer "io.netty:netty-buffer:$props.netty_version"
-    installer "io.netty:netty-common:$props.netty_version"
-    installer "io.netty:netty-handler:$props.netty_version"
-    installer "io.netty:netty-resolver:$props.netty_version"
-    installer "io.netty:netty-transport:$props.netty_version"
-    installer "io.netty:netty-transport-native-unix-common:$props.netty_version:linux-x86_64"
-    installer "io.netty:netty-transport-classes-epoll:$props.netty_version"
-    installer "io.netty:netty-transport-native-epoll:$props.netty_version:linux-x86_64"
-    installer "io.netty:netty-codec-http:$props.netty_version"
-    installer "io.netty:netty-codec-http2:$props.netty_version"
-    installer "io.netty:netty-codec-dns:$props.netty_version"
-    installer "io.netty:netty-codec-compression:$props.netty_version"
-    installer "io.netty:netty-resolver-dns:$props.netty_version"
-
-    // Jakarta (javax in Java 8)
-    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.3'
-    installer 'jakarta.activation:jakarta.activation-api:2.1.4'
-    installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
-    installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.5'
-    installer 'jakarta.inject:jakarta.inject-api:2.0.1'
-
-    // Logging
-    installer 'org.apache.logging.log4j:log4j-api:2.26.0'
-    installer 'org.apache.logging.log4j:log4j-core:2.26.0'
-    installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0'
-    installer 'org.slf4j:slf4j-api:2.0.18'
-
-    // Scripts
-    installer 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
-    installer 'org.glassfish.jaxb:jaxb-core:4.0.9'
-    installer 'com.sun.istack:istack-commons-runtime:4.2.0'
-    installer 'org.glassfish.corba:glassfish-corba-omgapi:5.0.2'
-    installer 'org.openjdk.nashorn:nashorn-core:15.7'
-
-    // Mac
-    installer 'ca.weblite:java-objc-bridge:1.2'
-
-    // Kirino Engine
-    installer 'org.joml:joml:1.10.9'
-    installer 'io.github.classgraph:classgraph:4.8.184'
+    implementation "org.ow2.asm:asm:${asm_version}"
+    implementation "org.ow2.asm:asm-commons:${asm_version}"
+    implementation "org.ow2.asm:asm-tree:${asm_version}"
+    implementation "org.ow2.asm:asm-util:${asm_version}"
+    implementation "org.ow2.asm:asm-analysis:${asm_version}"
+    implementation "org.ow2.asm:asm-deprecated:7.1"
 
     // Mixin
-    installer 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
-    installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.4')
+    implementation 'com.cleanroommc:cleanmix:0.4.6'
+    implementation 'io.github.llamalad7:mixinextras-common:0.5.4'
 
+
+    api 'top.outlands:foundation:0.19.8'
+    api 'net.lenni0451:Reflect:1.6.4'
+    api 'net.lenni0451.commons:unchecked:1.9.2'
+    api 'org.javassist:javassist:3.30.2-GA'
+    api 'com.google.guava:failureaccess:1.0.2'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    api 'org.jspecify:jspecify:1.0.0'
+    api 'lzma:lzma:0.0.1'
+    api 'java3d:vecmath:1.5.2'
+    api 'net.sf.trove4j:core:3.1.0'
+    api 'net.sf.trove4j:experimental:3.1.0'
+    api 'org.apache.maven:maven-artifact:3.9.16'
+    api 'org.apache.commons:commons-text:1.15.0'
+    api 'org.tukaani:xz:1.12'
+    api 'com.ibm.icu:icu4j:78.3'
+    api 'org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0'
+    api 'org.slf4j:slf4j-api:2.0.18'
+
+    // Apache HTTP 5
+    api 'org.apache.httpcomponents.core5:httpcore5:5.4.3'
+    api 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
+    api 'org.apache.httpcomponents.client5:httpclient5:5.6.1'
+
+    // Jakarta (replaces javax)
+    api 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.3'
+    api 'jakarta.activation:jakarta.activation-api:2.1.4'
+    api 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+    api 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.5'
+    api 'jakarta.inject:jakarta.inject-api:2.0.1'
+
+    // Script engines / XML binding
+    api 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
+    api 'org.glassfish.jaxb:jaxb-core:4.0.9'
+    api 'com.sun.istack:istack-commons-runtime:4.2.0'
+    api 'org.glassfish.corba:glassfish-corba-omgapi:5.0.2'
+    api 'org.openjdk.nashorn:nashorn-core:15.7'
+
+    // cleanroom
+    api 'org.jline:jline:4.1.3'
+    api 'org.jline:jline-native:4.1.3'
+    api 'com.github.oshi:oshi-core-ffm:7.3.2'
+    api 'com.github.oshi:oshi-common:7.3.2'
+    api 'net.java.dev.jna:jna-platform:5.19.1'
+
+    // kirino
+    // TODO
+    // compileOnly 'com.cleanroommc:lwjglx:1.0.0'
+    // api 'com.cleanroommc:lwjglxx:1.1.21'
+    api 'org.joml:joml:1.10.9'
+    api 'io.github.classgraph:classgraph:4.8.184'
+
+    // test
     testImplementation platform('org.junit:junit-bom:6.1.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.junit.vintage:junit-vintage-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.register("genVersion", com.cleanroommc.gradle.helpers.tasks.GenVersionTask)
-
-tasks.named('compileJava') {
-    dependsOn tasks.named('genVersion')
-}
-
-tasks.register('setup') {
-    group = 'setup'
-    description = 'Materializes the patched Minecraft source base (fresh clones) and generates the version class.'
-    dependsOn 'copyMinecraftToSourceSet'
-    dependsOn 'genVersion'
-    // TODO: move to CG + more robust way to see if setup is needed as switching between branches will be a pain
-    // Keeps `setup` a no-op once the source base exists; copy task self-guards too.
-    onlyIf {
-        def patchedSrc = file('module/minecraft/src/main/java')
-        !patchedSrc.exists() || (patchedSrc.listFiles()?.length ?: 0) == 0
+tasks.register('printBuildInfo') {
+    def v = version.toString()
+    outputs.upToDateWhen { false }
+    doLast {
+        logger.lifecycle("Cleanroom ${v}")
+        logger.lifecycle("Java: ${System.getProperty('java.version')} | JVM: ${System.getProperty('java.vm.version')} | Vendor: ${System.getProperty('java.vendor')} | Arch: ${System.getProperty('os.arch')}")
     }
 }
 
-test {
-    maxParallelForks = 1
-    useJUnitPlatform()
-    testLogging {
-        events 'passed', 'skipped', 'failed'
-    }
-    jvmArgs ProjectConstants.JVM_ARGUMENTS + ProjectConstants.COMPILER_JVM_ARGUMENTS
+tasks.withType(JavaCompile).configureEach {
+    dependsOn 'printBuildInfo'
+    options.encoding = 'UTF-8'
+    options.compilerArgs += export_arguments
 }

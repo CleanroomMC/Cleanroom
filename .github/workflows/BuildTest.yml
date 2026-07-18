@@ -10,12 +10,11 @@ name: Build and Upload Test Artifact
 on:
   push:
     paths:
-      - 'src/**'
+      - 'module/**'
       - 'buildSrc/**'
       - 'patches/**'
-      - 'projects/**/build.gradle'
-      - 'projects/kirino'
       - 'build.gradle'
+      - 'settings.gradle'
       - 'gradle.properties'
       - 'script/**'
       - '.github/**'
@@ -70,17 +69,17 @@ jobs:
       - name: Upload Universal Jar
         uses: actions/upload-artifact@v7
         with:
-          path: projects/cleanroom/build/libs/*-universal.jar
+          path: build/libs/*-universal.jar
           archive: false
 
       - name: Upload Installer Jar
         uses: actions/upload-artifact@v7
         with:
-          path: projects/cleanroom/build/libs/*-installer.jar
+          path: build/libs/*-installer.jar
           archive: false
 
       - name: Upload MMC pack zip
         uses: actions/upload-artifact@v7
         with:
-          path: projects/cleanroom/build/libs/*.zip
+          path: build/libs/*.zip
           archive: false

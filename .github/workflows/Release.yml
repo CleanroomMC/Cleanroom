@@ -59,14 +59,9 @@ jobs:
       - name: Publish to maven for mod development
         run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
 
-      - name: Remove userdev jars
-        run: |
-          rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev.jar
-          rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev-temp.jar
-
       - uses: ncipollo/release-action@v1.21.0
         with:
-          artifacts: "projects/cleanroom/build/libs/*"
+          artifacts: "build/libs/*"
           makeLatest: true
           allowUpdates: true
           body: ${{ steps.changelog.outputs.changes }}
