@@ -5,7 +5,7 @@ import org.lwjgl.opencl.CL10;
 
 import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleKernelParamError;
 
-public record ArrayFloatParameter(float... values) implements KernelParameter {
+record ArrayFloatParameter(float... values) implements KernelParameter {
     @Override
     public void bindParameter(long kernel, int index) throws KernelError, OutOfMemoryError {
         handleKernelParamError(CL10.clSetKernelArg(kernel, index, values), index, values);

@@ -5,7 +5,7 @@ import org.lwjgl.opencl.CL10;
 
 import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleKernelParamError;
 
-public record ScalarLongParameter(long value) implements KernelParameter {
+record ScalarLongParameter(long value) implements KernelParameter {
     @Override
     public void bindParameter(long kernel, int index) throws KernelError, OutOfMemoryError {
         handleKernelParamError(CL10.clSetKernelArg1l(kernel, index, value), index, value);
