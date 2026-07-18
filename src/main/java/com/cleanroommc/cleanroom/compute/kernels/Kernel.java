@@ -12,8 +12,6 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.system.MemoryStack;
 
-import java.util.Map;
-
 public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
     public Kernel(long program, KernelMetadata meta) {
         this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments));

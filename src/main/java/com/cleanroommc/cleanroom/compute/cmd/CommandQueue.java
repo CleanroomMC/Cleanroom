@@ -1,21 +1,18 @@
 package com.cleanroommc.cleanroom.compute.cmd;
 
 import com.cleanroommc.cleanroom.compute.Compute;
-import com.cleanroommc.cleanroom.compute.errors.KernelError;
 import com.cleanroommc.cleanroom.compute.errors.UnavaliableDeviceError;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Map;
 
 public class CommandQueue implements Closeable {
 
