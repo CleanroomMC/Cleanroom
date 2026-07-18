@@ -12,14 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.Configuration;
-import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class KernelTest {
 
@@ -31,8 +26,8 @@ public class KernelTest {
         Loader.instance();
         Bootstrap.register();
         Logger testLogger = LogManager.getLogger("TestLogger");
-        assertDoesNotThrow(() -> Configuration.OPENCL_EXPLICIT_INIT.set(true));
-        assertDoesNotThrow(() -> ComputeSetup.initOpenCL(testLogger));
+        Configuration.OPENCL_EXPLICIT_INIT.set(true);
+        ComputeSetup.initOpenCL(testLogger);
         Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
         {{
             modId = "accelerate";
