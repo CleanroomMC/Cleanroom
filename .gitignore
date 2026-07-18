@@ -1,15 +1,14 @@
 /.idea/*
 /.run/
 /.gradle/
+/build/
 /run/
 # Patched Minecraft source
 /module/minecraft/
 /buildSrc/.gradle/
 /buildSrc/build/
 /buildSrc/out/
-/logs/
-build/
-version.txt
+
 module/cleanroom/src/main/java/com/cleanroommc/common/CleanroomVersion.java
 
 !/.idea/icon.svg

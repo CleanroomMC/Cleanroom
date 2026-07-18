@@ -1,8 +1,0 @@
-repositories {
-    gradlePluginPortal()
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'com.palantir.gradle.gitversion:gradle-git-version:4.3.0'
-}
