@@ -40,6 +40,14 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
         parameters[idx++] = parameter;
     }
 
+    public void bindAllParameters(@NonNull Kernel kernel) {
+        Preconditions.checkNotNull(kernel);
+        Preconditions.checkState(isComplete(), "Not all kernel arguments have been set.");
+        for (int  i = 0; i < parameters.length; i++) {
+            parameters[i].bindParameter(kernel.kernel(), i);
+        }
+    }
+
     // <editor-fold desc="Scalars">
 
     public void add(byte value) {
