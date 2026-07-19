@@ -5,7 +5,7 @@
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory
-+public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory, net.minecraftforge.items.IFurnace
++public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory, com.cleanroommc.common.crafting.IFurnace
  {
      private static final int[] SLOTS_TOP = new int[] {0};
      private static final int[] SLOTS_BOTTOM = new int[] {2, 1};
@@ -80,7 +80,7 @@
      public int getCookTime(ItemStack stack)
      {
 -        return 200;
-+        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getCookTime(stack);
++        return com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().getCookTime(stack);
      }
  
      private boolean canSmelt()
@@ -115,7 +115,7 @@
                  this.furnaceItemStacks.set(1, new ItemStack(Items.WATER_BUCKET));
              }
 -
-+            this.addExp(net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getExperience(itemstack));
++            this.addExp(com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().getExperience(itemstack));
              itemstack.shrink(1);
          }
      }

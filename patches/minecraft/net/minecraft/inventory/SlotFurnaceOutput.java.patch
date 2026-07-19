@@ -6,8 +6,8 @@
              int i = this.removeCount;
 -            float f = FurnaceRecipes.instance().getSmeltingExperience(stack);
 +            float f = 0.0F;
-+            if (this.inventory instanceof net.minecraftforge.items.IFurnace) {
-+                f = ((net.minecraftforge.items.IFurnace) this.inventory).extractExp();
++            if (this.inventory instanceof com.cleanroommc.common.crafting.IFurnace) {
++                f = ((com.cleanroommc.common.crafting.IFurnace) this.inventory).extractExp();
 +            }
  
              if (f == 0.0F)

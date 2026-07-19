@@ -5,20 +5,20 @@
      public void addSmeltingRecipeForBlock(Block input, ItemStack stack, float experience)
      {
 -        this.addSmelting(Item.getItemFromBlock(input), stack, experience);
-+        net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
++        com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
      }
  
      public void addSmelting(Item input, ItemStack stack, float experience)
      {
 -        this.addSmeltingRecipe(new ItemStack(input, 1, 32767), stack, experience);
-+        net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
++        com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
      }
  
      public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience)
      {
 -        this.smeltingList.put(input, stack);
 -        this.experienceList.put(stack, experience);
-+        net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
++        com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().registerRecipe(input, stack, experience);
      }
  
      public ItemStack getSmeltingResult(ItemStack stack)
@@ -32,18 +32,22 @@
 -        }
 -
 -        return ItemStack.EMPTY;
-+        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getOutput(stack);
++        return com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().getOutput(stack);
      }
  
      private boolean compareItemStacks(ItemStack stack1, ItemStack stack2)
-@@ -146,19 +137,11 @@
+@@ -146,19 +137,15 @@
  
      public Map<ItemStack, ItemStack> getSmeltingList()
      {
 -        return this.smeltingList;
-+        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getInputToOutputMap();
++        return com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().getInputToOutputMap();
      }
  
++    /**
++     * @deprecated Use {@link com.cleanroommc.common.crafting.FurnaceRecipeManager#getExperience(ItemStack)}
++     */
++    @Deprecated
      public float getSmeltingExperience(ItemStack stack)
      {
 -        for (Entry<ItemStack, Float> entry : this.experienceList.entrySet())
@@ -55,6 +59,6 @@
 -        }
 -
 -        return 0.0F;
-+        return net.minecraftforge.common.crafting.FurnaceRecipeManager.instance().getExperienceFromOutput(stack);
++        return com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().getExperienceFromOutput(stack);
      }
  }

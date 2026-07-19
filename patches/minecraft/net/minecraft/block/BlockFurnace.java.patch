@@ -6,7 +6,7 @@
                  worldIn.updateComparatorOutputLevel(pos, this);
 +                if (!worldIn.isRemote)
 +                {
-+                    float exp = ((net.minecraftforge.items.IFurnace) tileentity).extractExp();
++                    float exp = ((com.cleanroommc.common.crafting.IFurnace) tileentity).extractExp();
 +                    int i = net.minecraft.util.math.MathHelper.floor(exp);
 +                    float decimal = exp - i;
 +

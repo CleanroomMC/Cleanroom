@@ -1,4 +1,4 @@
-package net.minecraftforge.items;
+package com.cleanroommc.common.crafting;
 
 public interface IFurnace {
     float extractExp();

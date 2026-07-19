@@ -1,4 +1,4 @@
-package net.minecraftforge.common.crafting;
+package com.cleanroommc.common.crafting;
 
 import net.minecraft.item.ItemStack;
 
