@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0-alpha] - 2026-07-19
+### New Features
+- [`ed8e356`](https://github.com/CleanroomMC/Cleanroom/commit/ed8e3564f75eeefa698766eb25ff50c136836960) - **cleanmix**: achieve parity with MixinBooter 11 *(PR [#583](https://github.com/CleanroomMC/Cleanroom/pull/583) by [@Rongmario](https://github.com/Rongmario))*
+- [`bd4f552`](https://github.com/CleanroomMC/Cleanroom/commit/bd4f552b80d3089f9e8909a323261da0b1e09aad) - **mod-list**: implemented modern mod list UI *(PR [#589](https://github.com/CleanroomMC/Cleanroom/pull/589) by [@Rongmario](https://github.com/Rongmario))*
+
+### Bug Fixes
+- [`69f118c`](https://github.com/CleanroomMC/Cleanroom/commit/69f118cb4abe123d5e3f0a3365623474ff8e751a) - **mod-list**: add `cleanmix` to default catalogue libraries *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`fbf9fc2`](https://github.com/CleanroomMC/Cleanroom/commit/fbf9fc255ed3940d0801d16b8416bd4ed9b6daaa) - **patch-mods**: check if patch mods are present outside of dev *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`e01a298`](https://github.com/CleanroomMC/Cleanroom/commit/e01a29831376f15fa8f993605a81cf135514dacd) - vanilla json using broken objc-bridge *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Performance Improvements
+- [`6b8c126`](https://github.com/CleanroomMC/Cleanroom/commit/6b8c1260fec2af78aa1ed353e720ef8e3a61511e) - **discovery**: speed up `ASMDataTable::getAnnotationsFor` (O(n^2) -> O(n)) *(PR [#582](https://github.com/CleanroomMC/Cleanroom/pull/582) by [@romanfedyniak](https://github.com/romanfedyniak))*
+
+### Refactors
+- [`a476dbe`](https://github.com/CleanroomMC/Cleanroom/commit/a476dbe805853de6af764e2d85cd66beb2303532) - **mod-list**: re-situate related event listeners *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
 ## [0.5.17-alpha] - 2026-07-09
 ### Bug Fixes
 - [`a436b61`](https://github.com/CleanroomMC/Cleanroom/commit/a436b61ad97099497ac8ebda48819bb66d833d86) - installer can't install server *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -105,3 +122,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.15-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.14-alpha...0.5.15-alpha
 [0.5.16-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.15-alpha...0.5.16-alpha
 [0.5.17-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.16-alpha...0.5.17-alpha
+[0.6.0-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.17-alpha...0.6.0-alpha
