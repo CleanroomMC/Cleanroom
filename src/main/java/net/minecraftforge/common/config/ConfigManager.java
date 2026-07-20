@@ -202,7 +202,7 @@ public class ConfigManager
 
     public static boolean hasConfigForMod(String modid)
     {
-        return asm_data.containsKey(modid);
+        return asm_data.containsKey(modid) || MOD_CONFIG_CLASSES.containsKey(modid);
     }
 
     // =======================================================
