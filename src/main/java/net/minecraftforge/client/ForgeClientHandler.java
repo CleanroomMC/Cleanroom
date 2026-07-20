@@ -80,26 +80,21 @@ public class ForgeClientHandler
     @SubscribeEvent
     public static void onGuiOpen(GuiOpenEvent event)
     {
-        boolean canInput;
+        boolean canInput = false;
         GuiScreen gui = event.getGui();
-        if (gui == null)
-        {
-            // Ignore null GuiScreens
-            canInput = false;
-        }
-        else if (gui instanceof GuiChat)
+        if (gui instanceof GuiChat)
         {
             // Skip, this should be handled by Focus
             return;
         }
-        else
+        else if (gui != null)
         {
             // Vanilla GuiScreens
             canInput = gui instanceof GuiScreenBook || gui instanceof GuiEditSign || guiInWhiteList(gui);
             // Mod list
-            if (ModListConfig.enable && event.getGui() instanceof GuiModList)
+            if (ModListConfig.enable && event.getGui() instanceof GuiModList modList)
             {
-                event.setGui(new ModListScreen(Minecraft.getMinecraft().currentScreen));
+                event.setGui(new ModListScreen(modList.getParent()));
             }
         }
         IMEHandler.setIME(canInput);

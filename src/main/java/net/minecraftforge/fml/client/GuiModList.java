@@ -342,6 +342,11 @@ public class GuiModList extends GuiScreen
         return fontRenderer;
     }
 
+    public GuiScreen getParent()
+    {
+        return mainMenu;
+    }
+
     public void selectModIndex(int index)
     {
         if (index == this.selected)
