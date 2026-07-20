@@ -42,10 +42,8 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
         PointerBuffer offsets, sizes, local;
         if (workGroupOffsets != null) {
             Preconditions.checkArgument(workGroupSizes.length == workGroupOffsets.length);
-            dim = workGroupSizes.length;
-        } else {
-            dim = 1;
         }
+        dim = workGroupSizes.length;
         long[] deviceSizes = Compute.instance().getDeviceItemSizes(device);
         offsets = stack.mallocPointer(dim);
         sizes = stack.mallocPointer(dim);
