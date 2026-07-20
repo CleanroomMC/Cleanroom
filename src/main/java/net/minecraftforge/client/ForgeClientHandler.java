@@ -21,6 +21,7 @@ package net.minecraftforge.client;
 
 import com.cleanroommc.client.IMEHandler;
 import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.client.windows.TaskbarApi;
 import com.cleanroommc.client.windows.WindowsProperties;
@@ -42,9 +43,11 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.client.GuiModList;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
@@ -98,6 +101,15 @@ public class ForgeClientHandler
             }
         }
         IMEHandler.setIME(canInput);
+    }
+
+    @SubscribeEvent
+    public static void onConfigChanged(OnConfigChangedEvent event)
+    {
+        if (ModListConstants.OWNER_MOD_ID.equals(event.getModID()))
+        {
+            ConfigManager.sync(ModListConfig.class);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
