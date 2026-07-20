@@ -510,7 +510,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Override
         public int getListWidth() {
-            return this.width;
+            return this.width - SCROLLBAR_WIDTH * 2;
         }
 
         @Override
@@ -754,7 +754,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         private String getFormattedText(String text, boolean favouriteIconVisible) {
-            int paddingEnd = 4 + SCROLLBAR_WIDTH;
+            int paddingEnd = 4;
             int trimWidth = this.list.getListWidth() - 24 - paddingEnd;
             IModData.CheckResult result = this.data.getCheckResult();
             if (result != null) {
