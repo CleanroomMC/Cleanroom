@@ -52,6 +52,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     private static final ResourceLocation MINECRAFT_LOGO = ModListConstants.resource("textures/gui/minecraft.png");
     private static final ImageInfo MISSING_BANNER_INFO = new ImageInfo(MISSING_BANNER, 120, 120);
     private static final ImageInfo MISSING_BACKGROUND_INFO = new ImageInfo(MISSING_BACKGROUND, 512, 256);
+    private static final int SCROLLBAR_WIDTH = 6;
     private static final Comparator<ModListEntry> SORT_ALPHABETICALLY = Comparator.comparing(o -> o.getData().getDisplayName());
     private static final Comparator<ModListEntry> SORT_ALPHABETICALLY_REVERSED = SORT_ALPHABETICALLY.reversed();
     private static final Comparator<ModListEntry> SORT_FAVOURITES_FIRST = Comparator.comparing(ModListEntry::getData,
@@ -504,7 +505,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Override
         protected int getScrollBarX() {
-            return this.right - 6;
+            return this.right - SCROLLBAR_WIDTH;
         }
 
         @Override
@@ -753,7 +754,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         private String getFormattedText(String text, boolean favouriteIconVisible) {
-            int paddingEnd = 4;
+            int paddingEnd = 4 + SCROLLBAR_WIDTH;
             int trimWidth = this.list.getListWidth() - 24 - paddingEnd;
             IModData.CheckResult result = this.data.getCheckResult();
             if (result != null) {
