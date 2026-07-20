@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1-alpha] - 2026-07-20
+### Bug Fixes
+- [`dcffd58`](https://github.com/CleanroomMC/Cleanroom/commit/dcffd580f565e0c0c310b5204f2241111c9c037e) - **mod-list**: scrollbar sensitive list width *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`568757b`](https://github.com/CleanroomMC/Cleanroom/commit/568757bd70e0813ca983534c2da2e486d1ec11ae) - **mod-list**: consider scrollbar width when trimming text *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`26bc611`](https://github.com/CleanroomMC/Cleanroom/commit/26bc6115d0cc2c41071443c4308a107bad8de7d4) - **mod-list**: set parent via `GuiModList`'s parent *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Chores
+- [`d7e73ca`](https://github.com/CleanroomMC/Cleanroom/commit/d7e73ca03bb3a41666766552b066de76bd5ee21b) - **cleanmix**: update MixinBooter from 11.2 to 11.5 *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
 ## [0.6.0-alpha] - 2026-07-19
 ### New Features
 - [`ed8e356`](https://github.com/CleanroomMC/Cleanroom/commit/ed8e3564f75eeefa698766eb25ff50c136836960) - **cleanmix**: achieve parity with MixinBooter 11 *(PR [#583](https://github.com/CleanroomMC/Cleanroom/pull/583) by [@Rongmario](https://github.com/Rongmario))*
@@ -123,3 +133,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.16-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.15-alpha...0.5.16-alpha
 [0.5.17-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.16-alpha...0.5.17-alpha
 [0.6.0-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.17-alpha...0.6.0-alpha
+[0.6.1-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.0-alpha...0.6.1-alpha
