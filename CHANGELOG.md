@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2-alpha] - 2026-07-20
+### Bug Fixes
+- [`7e8bc27`](https://github.com/CleanroomMC/Cleanroom/commit/7e8bc270a3b0fb31161ee64976185fd3d0a0c1a0) - **discovery**: don't parse built-in mods as discovered files *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
 ## [0.6.1-alpha] - 2026-07-20
 ### Bug Fixes
 - [`dcffd58`](https://github.com/CleanroomMC/Cleanroom/commit/dcffd580f565e0c0c310b5204f2241111c9c037e) - **mod-list**: scrollbar sensitive list width *(commit by [@Rongmario](https://github.com/Rongmario))*
@@ -134,3 +139,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.17-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.16-alpha...0.5.17-alpha
 [0.6.0-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.17-alpha...0.6.0-alpha
 [0.6.1-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.0-alpha...0.6.1-alpha
+[0.6.2-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.1-alpha...0.6.2-alpha
