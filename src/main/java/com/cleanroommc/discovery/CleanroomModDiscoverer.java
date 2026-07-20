@@ -71,11 +71,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private final Gson gson = new GsonBuilder().setLenient().create();
+    private final List<ModContainer> builtInMods = List.of(new MixinBooterModContainer(), new ConfigAnytimeContainer());
+    private final List<String> builtInModIds = builtInMods.stream().map(ModContainer::getModId).toList();
     private final SetMultimap<String, File> modIdToFiles = HashMultimap.create();
     private final SetMultimap<File, String> fileToModIds = LinkedHashMultimap.create();
     private final Map<File, DiscoveredMod> discoveredFiles = new LinkedHashMap<>();
-
     private final ASMDataTable asmDataTable = new ASMDataTable();
+
     private List<File> nonModLibs = List.of();
 
     private boolean hasForgeMods;
@@ -107,6 +109,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     public Set<String> modsFromSource(File source) {
         return Collections.unmodifiableSet(fileToModIds.get(source.getAbsoluteFile()));
+    }
+
+    public boolean isModBuiltIn(String modId) {
+        return this.builtInModIds.contains(modId);
     }
 
     @Override
@@ -189,8 +195,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new CleanMixModContainer(), CleanMixModContainer.location()));
         // Included Mods
-        mods.add(new InjectedModContainer(new MixinBooterModContainer(), FMLSanityChecker.fmlLocation));
-        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
+        this.builtInMods.stream().map(mc -> new InjectedModContainer(mc, FMLSanityChecker.fmlLocation)).forEach(mods::add);
         // Kirino
         KirinoCommonCore.identifyMods(mods);
     }
@@ -286,7 +291,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
             }
             for (String modId : modIds) {
-                recordMod(modId, absolute);
+                if (recordMod(modId, absolute)) {
+                    return;
+                }
             }
         } catch (IOException e) {
             CleanroomLog.get().error("Failed to read mod metadata from {}", absolute.getName(), e);
@@ -586,10 +593,14 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return null;
     }
 
-    private void recordMod(String modId, File source) {
+    private boolean recordMod(String modId, File source) {
+        if (this.builtInModIds.contains(modId)) {
+            return true;
+        }
         File abs = source.getAbsoluteFile();
         modIdToFiles.put(modId, abs);
         fileToModIds.put(abs, modId);
+        return false;
     }
 
     private List<String> parseMcmodInfo(Gson gson, InputStream stream) {
