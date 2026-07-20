@@ -1315,6 +1315,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             return this.mods.contains(modId);
         }
 
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         private boolean init() {
             if (this.file != null) {
                 return true;
