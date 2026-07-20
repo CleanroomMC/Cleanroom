@@ -20,4 +20,8 @@ public record DiscoveredMod(
         modIds = List.copyOf(modIds);
     }
 
+    public boolean isDirectoryBased() {
+        return file.isDirectory();
+    }
+
 }

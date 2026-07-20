@@ -150,9 +150,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         Set<String> mixinConfigs = new LinkedHashSet<>();
         File containedDepsDir = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
         for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
-            File coreMod = discoveredMod.file();
-            if (coreMod.isDirectory()) {
-                CleanroomLog.get().debug("Ignoring folder {} in coremod searching", coreMod);
+            if (discoveredMod.isDirectoryBased()) {
+                CleanroomLog.get().debug("Ignoring folder {} in coremod searching", discoveredMod.file().getAbsolutePath());
                 continue;
             }
             discoverCoreMod(classLoader, tweaker, discoveredMod, containedDepsDir, mixinConfigs);
@@ -255,11 +254,11 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         if (cached != null) {
             return;
         }
-//        if (!isArchive(absolute)) {
-//            DiscoveredMod info = new DiscoveredMod(absolute, Map.of(), List.of(), ManifestAttributes.FORGEMODTYPE, false, false, false, null, null);
-//            discoveredFiles.put(absolute, info);
-//            return;
-//        }
+        if (!isArchive(absolute)) {
+            DiscoveredMod info = new DiscoveredMod(absolute, null, List.of(), ManifestAttributes.CLEANROOMMODTYPE, false, false, false, null, null);
+            discoveredFiles.put(absolute, info);
+            return;
+        }
 
         Attributes attributes = null;
         List<String> modIds = List.of();
