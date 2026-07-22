@@ -1,6 +1,8 @@
 package com.cleanroommc.cleanroom.compute;
 
 import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
+import com.cleanroommc.cleanroom.compute.kernels.Kernel;
+import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
 import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.ResourceLocation;
@@ -13,8 +15,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.system.Configuration;
+import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class KernelTest {
 
@@ -40,6 +46,21 @@ public class KernelTest {
 
     @Test
     public void testSingleExecution() {
+        final float[] values = new float[]{
+                1.f,2.f,3.f,4.f,5.f,6.f,2.f,3.f,1.f,6.f,7.f
+        };
+        assertDoesNotThrow(() -> {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                // TODO: Rewrite this to use buffers or change the test to test for passing a floatn value
+                FloatBuffer param = stack.callocFloat(values.length);
+                param.put(values);
+                param.rewind();
+                Kernel kernel = program.kernel("test");
+                KernelParameterList paramList = new KernelParameterList(kernel);
+                paramList.add(param);
+                queue.dispatchKernel(kernel, paramList, null, new long[]{values.length}).execute();
+            }
+        });
     }
 
     @AfterAll
