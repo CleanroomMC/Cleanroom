@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3-alpha] - 2026-07-22
+### New Features
+- [`f0ef797`](https://github.com/CleanroomMC/Cleanroom/commit/f0ef79765c2dc044e07226be41dd527e2c1408ab) - **version check**: add header of cleanroom *(commit by [@baka-gourd](https://github.com/baka-gourd))*
+
+### Bug Fixes
+- [`daee859`](https://github.com/CleanroomMC/Cleanroom/commit/daee859456fc067caa1cc0beef1b4827e19e124d) - **cleanmix**: updated to fix various mixin loading bugs *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`64af19c`](https://github.com/CleanroomMC/Cleanroom/commit/64af19c3008c2533aca71260b862d85975baf6dd) - **discovery**: handle directory sources *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
 ## [0.6.2-alpha] - 2026-07-20
 ### Bug Fixes
 - [`7e8bc27`](https://github.com/CleanroomMC/Cleanroom/commit/7e8bc270a3b0fb31161ee64976185fd3d0a0c1a0) - **discovery**: don't parse built-in mods as discovered files *(commit by [@Rongmario](https://github.com/Rongmario))*
@@ -140,3 +149,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.0-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.17-alpha...0.6.0-alpha
 [0.6.1-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.0-alpha...0.6.1-alpha
 [0.6.2-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.1-alpha...0.6.2-alpha
+[0.6.3-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.2-alpha...0.6.3-alpha
