@@ -434,7 +434,8 @@ public class LibraryManager
     public static List<File> gatherLegacyCanidates(File mcDir)
     {
         List<File> list = new ArrayList<>();
-        
+        Set<File> seen = new HashSet<>();
+
         String extrapath = System.getProperty("crl.dev.extrapath");
         if (extrapath != null) 
         {
@@ -444,6 +445,7 @@ public class LibraryManager
                 if (file.exists())
                 {
                     list.add(file);
+                    seen.add(file);
                     FMLLog.log.info("Adding extra mod file {}", file);
                 }
                 else
@@ -466,14 +468,14 @@ public class LibraryManager
                 {
                     FMLLog.log.info("  Failed to find mod file {} ({})", mod, file.getAbsolutePath());
                 }
-                else if (!list.contains(file))
+                else if (seen.add(file))
                 {
                     FMLLog.log.debug("  Adding {} ({}) to the mod list", mod, file.getAbsolutePath());
                     list.add(file);
                 }
-                else if (!list.contains(file))
+                else
                 {
-                    FMLLog.log.debug("  Duplicte command line mod detected {} ({})", mod, file.getAbsolutePath());
+                    FMLLog.log.debug("  Duplicate command line mod detected {} ({})", mod, file.getAbsolutePath());
                 }
             }
         }
@@ -487,7 +489,7 @@ public class LibraryManager
             FMLLog.log.info("Searching {} for mods", base.getAbsolutePath());
             for (File f : base.listFiles(MOD_FILENAME_FILTER))
             {
-                if (!list.contains(f))
+                if (seen.add(f))
                 {
                     FMLLog.log.debug("  Adding {} to the mod list", f.getName());
                     list.add(f);
@@ -542,13 +544,14 @@ public class LibraryManager
                 throw new RuntimeException("Unable to instantiate linkage with Bansoukou", e);
             }
         }
+        Set<File> candidateSet = new HashSet<>(candidates);
         for (Artifact artifact : flattenLists(minecraftHome))
         {
             artifact = Repository.resolveAll(artifact);
             if (artifact != null)
             {
                 File target = artifact.getFile();
-                if (!candidates.contains(target))
+                if (candidateSet.add(target))
                     candidates.add(target);
             }
         }
