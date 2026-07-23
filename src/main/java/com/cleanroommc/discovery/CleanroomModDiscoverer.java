@@ -225,14 +225,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         CleanroomLog.get().info("Discovering mods");
         long startTime = System.nanoTime();
 
-        List<File> candidates = new ArrayList<>();
         for (File candidate : LibraryManager.getCandidates()) {
-            File absolute = candidate.getAbsoluteFile();
-            if (!candidates.contains(absolute)) {
-                candidates.add(absolute);
-            }
-        }
-        for (File candidate : candidates) {
             scan(candidate);
         }
         for (URL url : Launch.classLoader.getURLs()) {
