@@ -176,9 +176,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
 
         CleanroomLog.get().debug("Attempting to load mods contained in the minecraft jar file and associated classes");
-        addClasspathCandidates(modClassLoader, modCandidates);
+        Set<File> seenCandidates = new HashSet<>();
+        addClasspathCandidates(modClassLoader, modCandidates, seenCandidates);
         CleanroomLog.get().debug("Minecraft jar mods loaded successfully");
-        addLibraryCandidates(modCandidates);
+        addLibraryCandidates(modCandidates, seenCandidates);
 
         mods.addAll(exploreModCandidates(modCandidates, nonModLibs));
         this.nonModLibs = List.copyOf(nonModLibs);
@@ -490,17 +491,15 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return modList;
     }
 
-    private void addCandidate(List<ModCandidate> modCandidates, ModCandidate candidate) {
-        for (ModCandidate existing : modCandidates) {
-            if (existing.getModContainer().equals(candidate.getModContainer())) {
-                CleanroomLog.get().trace("  Skipping already in list {}", candidate.getModContainer());
-                return;
-            }
+    private void addCandidate(List<ModCandidate> modCandidates, Set<File> seen, ModCandidate candidate) {
+        if (seen.add(candidate.getModContainer())) {
+            modCandidates.add(candidate);
+        } else {
+            CleanroomLog.get().trace("  Skipping already in list {}", candidate.getModContainer());
         }
-        modCandidates.add(candidate);
     }
 
-    private void addClasspathCandidates(ModClassLoader modClassLoader, List<ModCandidate> modCandidates) {
+    private void addClasspathCandidates(ModClassLoader modClassLoader, List<ModCandidate> modCandidates, Set<File> seen) {
         Set<String> knownLibraries = new HashSet<>();
         knownLibraries.addAll(modClassLoader.getDefaultLibraries());
         knownLibraries.addAll(CoreModManager.getIgnoredMods());
@@ -514,7 +513,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     CleanroomLog.get().trace("Skipping known library file {}", source.getAbsolutePath());
                 } else {
                     CleanroomLog.get().debug("Found a minecraft related file at {}, examining for mod candidates", source.getAbsolutePath());
-                    addCandidate(modCandidates, new ModCandidate(source, source, ContainerType.JAR, false, true));
+                    addCandidate(modCandidates, seen, new ModCandidate(source, source, ContainerType.JAR, false, true));
                 }
             } else if (source.isDirectory()) {
                 CleanroomLog.get().debug("Found a minecraft related directory at {}, collecting as developing mod", source.getAbsolutePath());
@@ -545,12 +544,12 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             }
             for (File classDir : classDirs) {
                 CleanroomLog.get().debug("Adding path {} and {} as developing mod", classDir, resourcesDir);
-                addCandidate(modCandidates, new ModCandidate(classDir, resourcesDir));
+                addCandidate(modCandidates, seen, new ModCandidate(classDir, resourcesDir));
             }
         }
     }
 
-    private void addLibraryCandidates(List<ModCandidate> modCandidates) {
+    private void addLibraryCandidates(List<ModCandidate> modCandidates, Set<File> seen) {
         for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
             File mod = discoveredMod.file();
             if (CoreModManager.getIgnoredMods().contains(mod.getName()) &&
@@ -560,7 +559,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 CleanroomLog.get().trace("Skipping directory {}", mod.getName());
             } else {
                 CleanroomLog.get().debug("Found a candidate zip or jar file {}", mod.getName());
-                addCandidate(modCandidates, new ModCandidate(mod, mod, ContainerType.JAR));
+                addCandidate(modCandidates, seen, new ModCandidate(mod, mod, ContainerType.JAR));
             }
         }
     }
