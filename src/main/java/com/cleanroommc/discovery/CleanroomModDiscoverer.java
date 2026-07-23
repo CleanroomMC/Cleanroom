@@ -147,14 +147,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         findDerpMods(modsDir);
 
         CleanroomLog.get().debug("Discovering coremods");
-        Set<String> mixinConfigs = new LinkedHashSet<>();
         File containedDepsDir = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
         for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
             if (discoveredMod.isDirectoryBased()) {
                 CleanroomLog.get().debug("Ignoring folder {} in coremod searching", discoveredMod.file().getAbsolutePath());
                 continue;
             }
-            discoverCoreMod(classLoader, tweaker, discoveredMod, containedDepsDir, mixinConfigs);
+            discoverCoreMod(classLoader, tweaker, discoveredMod, containedDepsDir);
         }
     }
 
@@ -309,7 +308,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
-    private void discoverCoreMod(LaunchClassLoader classLoader, FMLTweaker tweaker, DiscoveredMod discoveredMod, File containedDepsDir, Set<String> mixinConfigs) {
+    private void discoverCoreMod(LaunchClassLoader classLoader, FMLTweaker tweaker, DiscoveredMod discoveredMod, File containedDepsDir) {
         File file = discoveredMod.file();
         CleanroomLog.get().debug("Examining for coremod candidacy {}", file.getName());
         JarFile jar = null;
@@ -545,8 +544,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private void addLibraryCandidates(List<ModCandidate> modCandidates, Set<File> seen) {
         for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
             File mod = discoveredMod.file();
-            if (CoreModManager.getIgnoredMods().contains(mod.getName()) &&
-                    !CoreModManager.getReparseableCoremods().contains(mod.getName())) {
+            if (CoreModManager.getIgnoredMods().contains(mod.getName()) && !CoreModManager.getReparseableCoremods().contains(mod.getName())) {
                 CleanroomLog.get().trace("Skipping already parsed coremod or tweaker {}", mod.getName());
             } else if (mod.isDirectory()) {
                 CleanroomLog.get().trace("Skipping directory {}", mod.getName());
