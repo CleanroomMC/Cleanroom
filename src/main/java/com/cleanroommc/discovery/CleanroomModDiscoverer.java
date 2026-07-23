@@ -441,19 +441,18 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private void findDerpMods(File directory) {
         Path dirPath = directory.toPath();
-        List<Path> derpMods = List.of(), extractedPaths = List.of();
-        try (Stream<Path> stream = Files.walk(dirPath, 1)) {
-            derpMods = stream.filter(path -> path.getFileName().toString().endsWith(".jar.zip")).toList();
-        } catch (IOException e) {
-            CleanroomLog.get().error("Unable to scan {} for derp mods", directory.getName(), e);
-        }
+        List<Path> derpMods = new ArrayList<>(), extractedPaths = new ArrayList<>();
         try (Stream<Path> stream = Files.walk(dirPath, 2)) {
-            extractedPaths = stream
-                    .filter(path -> "META-INF".equals(path.getFileName().toString()))
-                    .filter(Files::isDirectory)
-                    .toList();
+            stream.forEach(path -> {
+                String name = path.getFileName().toString();
+                if (name.endsWith(".jar.zip") && dirPath.equals(path.getParent())) {
+                    derpMods.add(path);
+                } else if ("META-INF".equals(name) && Files.isDirectory(path)) {
+                    extractedPaths.add(path);
+                }
+            });
         } catch (IOException e) {
-            CleanroomLog.get().error("Unable to scan {} for derp directories", directory.getName(), e);
+            CleanroomLog.get().error("Unable to scan {} for problematic mod files", directory.getName(), e);
         }
 
         if (!derpMods.isEmpty()) {
