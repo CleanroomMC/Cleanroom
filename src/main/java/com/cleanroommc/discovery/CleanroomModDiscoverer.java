@@ -613,8 +613,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
             } else if (root instanceof JsonObject rootObject && rootObject.get("modList") instanceof JsonArray modList) {
                 for (JsonElement element : modList) {
-                    if (element instanceof JsonObject modId && modId.get("modid") instanceof JsonObject modid) {
-                        ids.add(modid.getAsString());
+                    if (element instanceof JsonObject mod && mod.has("modid")) {
+                        ids.add(mod.get("modid").getAsString());
                     }
                 }
             }
