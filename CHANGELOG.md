@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.5-alpha] - 2026-07-24
+### New Features
+- [`25f1c0f`](https://github.com/CleanroomMC/Cleanroom/commit/25f1c0f0640f9feb0fe6ca58b7ad85aca0489fbe) - **cleanmix**: update to 0.6.0, more effort for backwards compatibility *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Bug Fixes
+- [`dfd2bca`](https://github.com/CleanroomMC/Cleanroom/commit/dfd2bcaf4154fc660d053dfac38cc86ba7dd1f30) - **discovery**: removed unused mixin configs parameter *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`a4bc796`](https://github.com/CleanroomMC/Cleanroom/commit/a4bc796c0074168f0f72ae8680af251fab716c77) - **discovery**: unable to grab mod ids from certain metadata files *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Performance Improvements
+- [`044356b`](https://github.com/CleanroomMC/Cleanroom/commit/044356b4d7c2693cf1c97b6c7b74e97885308c6e) - **discovery**: remove additional candidate deduplication check *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`3ac1213`](https://github.com/CleanroomMC/Cleanroom/commit/3ac121329bc156367fc14093bd06f2d5c785afbb) - **discovery**: optimized deduplication checks for mod candidates *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`f35a674`](https://github.com/CleanroomMC/Cleanroom/commit/f35a674d6cb6b24686e9a8e0981f79cef11197e8) - **discovery**: faster deduplication checks when gathering mods *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`6fe1114`](https://github.com/CleanroomMC/Cleanroom/commit/6fe1114f410c22f86e2ad9cdaab9cca2d7d04f19) - **discovery**: walk directory once to find derped installations *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
 ## [0.6.4-alpha] - 2026-07-23
 ### Bug Fixes
 - [`c001d07`](https://github.com/CleanroomMC/Cleanroom/commit/c001d07f9c41fe71347d297e5e6ee0553f4143e4) - **cleanmix**: updated to fix accessors to eagerly load their targets *(commit by [@Rongmario](https://github.com/Rongmario))*
@@ -156,3 +171,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.2-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.1-alpha...0.6.2-alpha
 [0.6.3-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.2-alpha...0.6.3-alpha
 [0.6.4-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.3-alpha...0.6.4-alpha
+[0.6.5-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.4-alpha...0.6.5-alpha
