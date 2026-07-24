@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.6-alpha] - 2026-07-24
+### Chores
+- [`75e899b`](https://github.com/CleanroomMC/Cleanroom/commit/75e899b8a56ad5f1d97dc2e9e2586bb8c69022d0) - **foundation**: update to include `com.mojang.` to classloader *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`57ded78`](https://github.com/CleanroomMC/Cleanroom/commit/57ded78b9067913c8cdcb91d890cab521c10b070) - **cleanmix**: update mixinbooter's version *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
 ## [0.6.5-alpha] - 2026-07-24
 ### New Features
 - [`25f1c0f`](https://github.com/CleanroomMC/Cleanroom/commit/25f1c0f0640f9feb0fe6ca58b7ad85aca0489fbe) - **cleanmix**: update to 0.6.0, more effort for backwards compatibility *(commit by [@Rongmario](https://github.com/Rongmario))*
@@ -172,3 +178,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.3-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.2-alpha...0.6.3-alpha
 [0.6.4-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.3-alpha...0.6.4-alpha
 [0.6.5-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.4-alpha...0.6.5-alpha
+[0.6.6-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.5-alpha...0.6.6-alpha
