@@ -1,7 +1,7 @@
 [{
     "modid": "mixinbooter",
     "name": "MixinBooter",
-    "version": "11.5",
+    "version": "11.8",
     "mcversion": "1.12.2",
     "description": "De facto standard on Minecraft 1.8 - 1.12.2 that provides Mixins & standard API for mods to write mixins comfortably",
     "authorList": [ "Rongmario" ],
