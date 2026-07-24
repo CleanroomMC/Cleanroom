@@ -37,7 +37,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -52,6 +51,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
+import com.cleanroommc.common.crafting.FurnaceRecipeManager;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.fml.common.FMLLog;
@@ -213,17 +213,32 @@ public class GameRegistry
 
     public static void addSmelting(Block input, @Nonnull ItemStack output, float xp)
     {
-        FurnaceRecipes.instance().addSmeltingRecipeForBlock(input, output, xp);
+        FurnaceRecipeManager.instance().registerRecipe(input, output, xp);
+    }
+
+    public static void addSmelting(Block input, @Nonnull ItemStack output, int cookTime, float xp)
+    {
+        FurnaceRecipeManager.instance().registerRecipe(input, output, cookTime, xp);
+    }
+
+    public static void addSmelting(Item input, @Nonnull ItemStack output, int cookTime, float xp)
+    {
+        FurnaceRecipeManager.instance().registerRecipe(input, output, cookTime, xp);
     }
 
     public static void addSmelting(Item input, @Nonnull ItemStack output, float xp)
     {
-        FurnaceRecipes.instance().addSmelting(input, output, xp);
+        FurnaceRecipeManager.instance().registerRecipe(input, output, xp);
     }
 
     public static void addSmelting(@Nonnull ItemStack input, @Nonnull ItemStack output, float xp)
     {
-        FurnaceRecipes.instance().addSmeltingRecipe(input, output, xp);
+        FurnaceRecipeManager.instance().registerRecipe(input, output, xp);
+    }
+
+    public static void addSmelting(@Nonnull ItemStack input, @Nonnull ItemStack output, int cookTime, float xp)
+    {
+        FurnaceRecipeManager.instance().registerRecipe(input, output, cookTime, xp);
     }
 
     @Deprecated //TODO: Remove in 1.13, Use ResourceLocation version.

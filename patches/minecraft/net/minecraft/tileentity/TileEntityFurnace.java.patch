@@ -1,6 +1,23 @@
 --- before/net/minecraft/tileentity/TileEntityFurnace.java
 +++ after/net/minecraft/tileentity/TileEntityFurnace.java
-@@ -130,9 +130,9 @@
+@@ -32,7 +32,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory
++public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory, com.cleanroommc.common.crafting.IFurnace
+ {
+     private static final int[] SLOTS_TOP = new int[] {0};
+     private static final int[] SLOTS_BOTTOM = new int[] {2, 1};
+@@ -43,6 +43,7 @@
+     private int cookTime;
+     private int totalCookTime;
+     private String furnaceCustomName;
++    private float storageExp;
+ 
+     @Override
+     public int getSizeInventory()
+@@ -130,11 +131,11 @@
          super.readFromNBT(compound);
          this.furnaceItemStacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
          ItemStackHelper.loadAllItems(compound, this.furnaceItemStacks);
@@ -11,22 +28,28 @@
 +        this.cookTime = compound.getInteger("CookTime");
 +        this.totalCookTime = compound.getInteger("CookTimeTotal");
          this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks.get(1));
- 
+-
++        this.storageExp = compound.getFloat("StorageExp");
          if (compound.hasKey("CustomName", 8))
-@@ -145,9 +145,9 @@
+         {
+             this.furnaceCustomName = compound.getString("CustomName");
+@@ -145,11 +146,11 @@
      public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
          super.writeToNBT(compound);
 -        compound.setShort("BurnTime", (short)this.furnaceBurnTime);
 -        compound.setShort("CookTime", (short)this.cookTime);
 -        compound.setShort("CookTimeTotal", (short)this.totalCookTime);
-+        compound.setInteger("BurnTime", (short)this.furnaceBurnTime);
-+        compound.setInteger("CookTime", (short)this.cookTime);
-+        compound.setInteger("CookTimeTotal", (short)this.totalCookTime);
++        compound.setInteger("BurnTime", this.furnaceBurnTime);
++        compound.setInteger("CookTime", this.cookTime);
++        compound.setInteger("CookTimeTotal", this.totalCookTime);
          ItemStackHelper.saveAllItems(compound, this.furnaceItemStacks);
- 
+-
++        compound.setFloat("StorageExp", this.storageExp);
          if (this.hasCustomName())
-@@ -208,8 +208,8 @@
+         {
+             compound.setString("CustomName", this.furnaceCustomName);
+@@ -208,8 +209,8 @@
  
                              if (itemstack.isEmpty())
                              {
@@ -37,7 +60,31 @@
                              }
                          }
                      }
-@@ -281,11 +281,13 @@
+@@ -250,9 +251,22 @@
+         }
+     }
+ 
++    public void addExp(float experience)
++    {
++        this.storageExp += experience;
++    }
++
++    @Override
++    public float extractExp()
++    {
++        float exp = this.storageExp;
++        this.storageExp = 0;
++        return exp;
++    }
++
+     public int getCookTime(ItemStack stack)
+     {
+-        return 200;
++        return com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().getCookTime(stack);
+     }
+ 
+     private boolean canSmelt()
+@@ -281,11 +295,13 @@
                  {
                      return false;
                  }
@@ -54,7 +101,7 @@
                  }
              }
          }
-@@ -305,7 +307,7 @@
+@@ -305,7 +321,7 @@
              }
              else if (itemstack2.getItem() == itemstack1.getItem())
              {
@@ -63,7 +110,16 @@
              }
  
              if (itemstack.getItem() == Item.getItemFromBlock(Blocks.SPONGE)
-@@ -328,6 +330,8 @@
+@@ -315,7 +331,7 @@
+             {
+                 this.furnaceItemStacks.set(1, new ItemStack(Items.WATER_BUCKET));
+             }
+-
++            this.addExp(com.cleanroommc.common.crafting.FurnaceRecipeManager.instance().getExperience(itemstack));
+             itemstack.shrink(1);
+         }
+     }
+@@ -328,6 +344,8 @@
          }
          else
          {
@@ -72,7 +128,7 @@
              Item item = stack.getItem();
  
              if (item == Item.getItemFromBlock(Blocks.WOODEN_SLAB))
-@@ -549,5 +553,24 @@
+@@ -549,5 +567,24 @@
      public void clear()
      {
          this.furnaceItemStacks.clear();
