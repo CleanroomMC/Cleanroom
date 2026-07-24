@@ -301,19 +301,35 @@ public class TerminalConsoleAppender extends AbstractAppender
 
     private synchronized void print(String text)
     {
-        if (terminal != null)
+        // Capture the shared terminal/reader into locals. close() and setReader()
+        // synchronize on the class, while this method synchronizes on the instance,
+        // so the fields can be cleared concurrently (e.g. during server shutdown).
+        Terminal currentTerminal = terminal;
+        LineReader currentReader = reader;
+        if (currentTerminal != null)
         {
-            if (reader != null)
+            try
             {
-                reader.printAbove(text);
-            }
-            else
-            {
-                terminal.writer().print(text);
-                terminal.writer().flush();
-            }
+                if (currentReader != null)
+                {
+                    currentReader.printAbove(text);
+                }
+                else
+                {
+                    currentTerminal.writer().print(text);
+                    currentTerminal.writer().flush();
+                }
 
-            terminal.writer().flush();
+                currentTerminal.writer().flush();
+            }
+            catch (IllegalStateException ignored)
+            {
+                // The terminal was closed (typically while MinecraftServer.stopServer()
+                // keeps logging during shutdown) before this log event was dispatched.
+                // Fall back to the saved standard output instead of failing the appender
+                // with "Terminal has been closed".
+                stdout.print(text);
+            }
         }
         else
         {
@@ -341,6 +357,9 @@ public class TerminalConsoleAppender extends AbstractAppender
                 finally
                 {
                     terminal = null;
+                    // Drop the stale reader as well; it is bound to the now-closed
+                    // terminal and would otherwise throw on the next log event.
+                    reader = null;
                 }
             }
         }
