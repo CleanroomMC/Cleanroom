@@ -1,6 +1,17 @@
 --- before/net/minecraft/client/gui/GuiSlot.java
 +++ after/net/minecraft/client/gui/GuiSlot.java
-@@ -186,27 +186,8 @@
+@@ -110,8 +110,8 @@
+ 
+     public int getSlotIndexFromScreenCoords(int posX, int posY)
+     {
+-        int i = this.left + this.width / 2 - this.getListWidth() / 2;
+-        int j = this.left + this.width / 2 + this.getListWidth() / 2;
++        int i = this.getListLeft();
++        int j = this.getListRight();
+         int k = posY - this.top - this.headerPadding + (int)this.amountScrolled - 4;
+         int l = k / this.slotHeight;
+         return posX < this.getScrollBarX() && posX >= i && posX <= j && l >= 0 && k >= 0 && l < this.getSize() ? l : -1;
+@@ -186,28 +186,9 @@
              GlStateManager.disableFog();
              Tessellator tessellator = Tessellator.getInstance();
              BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -25,12 +36,80 @@
 -            .color(32, 32, 32, 255)
 -            .endVertex();
 -            tessellator.draw();
+-            int k = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
 +            // Forge: background rendering moved into separate method.
 +            this.drawContainerBackground(tessellator);
-             int k = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
++            int k = this.getListEntryLeft();
              int l = this.top + 4 - (int)this.amountScrolled;
  
-@@ -491,5 +472,31 @@
+             if (this.hasListHeader)
+@@ -229,6 +210,7 @@
+             GlStateManager.disableAlpha();
+             GlStateManager.shadeModel(7425);
+             GlStateManager.disableTexture2D();
++            if (this.drawTopBottomShadow(tessellator)) {
+             int i1 = 4;
+             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+             bufferbuilder.pos(this.left, this.top + 4, 0.0).tex(0.0, 1.0).color(0, 0, 0, 0).endVertex();
+@@ -242,12 +224,12 @@
+             bufferbuilder.pos(this.right, this.bottom - 4, 0.0).tex(1.0, 0.0).color(0, 0, 0, 0).endVertex();
+             bufferbuilder.pos(this.left, this.bottom - 4, 0.0).tex(0.0, 0.0).color(0, 0, 0, 0).endVertex();
+             tessellator.draw();
++            }
+             int j1 = this.getMaxScroll();
+ 
+             if (j1 > 0)
+             {
+-                int k1 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
+-                k1 = MathHelper.clamp(k1, 32, this.bottom - this.top - 8);
++                int k1 = this.getScrollThumbHeight();
+                 int l1 = (int)this.amountScrolled * (this.bottom - this.top - k1) / j1 + this.top;
+ 
+                 if (l1 < this.top)
+@@ -292,8 +274,8 @@
+                     && this.mouseY >= this.top
+                     && this.mouseY <= this.bottom)
+             {
+-                int i = (this.width - this.getListWidth()) / 2;
+-                int j = (this.width + this.getListWidth()) / 2;
++                int i = this.getListLeft();
++                int j = this.getListRight();
+                 int k = this.mouseY - this.top - this.headerPadding + (int)this.amountScrolled - 4;
+                 int l = k / this.slotHeight;
+ 
+@@ -318,8 +300,8 @@
+ 
+                 if (this.mouseY >= this.top && this.mouseY <= this.bottom)
+                 {
+-                    int j2 = (this.width - this.getListWidth()) / 2;
+-                    int k2 = (this.width + this.getListWidth()) / 2;
++                    int j2 = this.getListLeft();
++                    int k2 = this.getListRight();
+                     int l2 = this.mouseY - this.top - this.headerPadding + (int)this.amountScrolled - 4;
+                     int i1 = l2 / this.slotHeight;
+ 
+@@ -349,8 +331,7 @@
+                             k1 = 1;
+                         }
+ 
+-                        int l1 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / this.getContentHeight());
+-                        l1 = MathHelper.clamp(l1, 32, this.bottom - this.top - 8);
++                        int l1 = this.getScrollThumbHeight();
+                         this.scrollMultiplier = this.scrollMultiplier / ((float)(this.bottom - this.top - l1) / k1);
+                     }
+                     else
+@@ -429,8 +410,8 @@
+ 
+             if (this.showSelectionBox && this.isSelected(j))
+             {
+-                int i1 = this.left + (this.width / 2 - this.getListWidth() / 2);
+-                int j1 = this.left + this.width / 2 + this.getListWidth() / 2;
++                int i1 = this.getListLeft();
++                int j1 = this.getListRight();
+                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                 GlStateManager.disableTexture2D();
+                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+@@ -491,5 +472,57 @@
      public int getSlotHeight()
      {
          return this.slotHeight;
@@ -60,5 +139,31 @@
 +        .color(32, 32, 32, 255)
 +        .endVertex();
 +        tessellator.draw();
++    }
++
++    protected boolean drawTopBottomShadow(Tessellator tessellator)
++    {
++        return true;
++    }
++
++    protected int getScrollThumbHeight()
++    {
++        int viewHeight = this.bottom - this.top;
++        return MathHelper.clamp(viewHeight * viewHeight / this.getContentHeight(), 32, viewHeight - 8);
++    }
++
++    protected int getListLeft()
++    {
++        return this.left + this.width / 2 - this.getListWidth() / 2;
++    }
++
++    protected int getListRight()
++    {
++        return this.left + this.width / 2 + this.getListWidth() / 2;
++    }
++
++    protected int getListEntryLeft()
++    {
++        return this.getListLeft() + 2;
      }
  }

@@ -34,6 +34,24 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
     protected void overlayBackground(int startY, int endY, int startAlpha, int endAlpha) {
     }
 
+    @Override
+    protected void drawSlot(int slotIndex, int x, int y, int height, int mouseX, int mouseY, float partialTicks) {
+        if (y + this.slotHeight >= this.top && y <= this.bottom) {
+            super.drawSlot(slotIndex, x, y, height, mouseX, mouseY, partialTicks);
+        }
+    }
+
+    @Override
+    protected int getScrollThumbHeight() {
+        int viewHeight = this.bottom - this.top;
+        int contentHeight = this.getContentHeight();
+        if (viewHeight <= 0 || contentHeight <= 0) return 0;
+
+        int maxThumbHeight = Math.max(1, viewHeight - 8);
+        int minThumbHeight = Math.min(32, maxThumbHeight);
+        return MathHelper.clamp(viewHeight * viewHeight / contentHeight, minThumbHeight, maxThumbHeight);
+    }
+
     public final List<E> children() {
         return this.entries;
     }
