@@ -42,7 +42,7 @@ cleanroom.gui.submit_bug=提交Bug
 cleanroom.gui.mod_id=Mod ID：%s
 
 cleanroom.config.enable=启用
-cleanroom.config.enable.tooltip=控制是否启用Cleanroom。 \n设置为否会阻止Cleanroom重定向Forge模组列表的调用。
+cleanroom.config.enable.tooltip=控制是否启用Cleanroom模组列表。 \n设置为否会阻止Cleanroom重定向Forge模组列表的调用。
 cleanroom.config.library_list=库列表
 cleanroom.config.library_list.tooltip=库模组的Mod ID列表。\n它们会在模组列表中显示灰色名字。
 cleanroom.config.ignored_dependencies_list=忽略前置列表
