@@ -277,7 +277,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             }
             if (modIds.isEmpty()) {
                 ZipEntry entry = jarFile.getEntry("mcmod.info");
-                modIds = entry != null ? parseMcmodInfo(gson, jarFile.getInputStream(entry)) : List.of();
+                modIds = entry != null ? parseMcmodInfo(file, gson, jarFile.getInputStream(entry)) : List.of();
                 if (modIds.isEmpty()) {
                     modIds = scanModAnnotations(jarFile);
                 }
@@ -591,7 +591,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return false;
     }
 
-    private List<String> parseMcmodInfo(Gson gson, InputStream stream) {
+    private List<String> parseMcmodInfo(File file, Gson gson, InputStream stream) {
         try {
             List<String> ids = new ArrayList<>();
             JsonElement root = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonElement.class);
@@ -610,7 +610,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             }
             return ids;
         } catch (Throwable t) {
-            CleanroomLog.get().error("Failed to parse mcmod.info", t);
+            CleanroomLog.get().error("Failed to parse mcmod.info for {}", file.getName(), t);
         } finally {
             IOUtils.closeQuietly(stream);
         }
