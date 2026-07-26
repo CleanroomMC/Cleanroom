@@ -22,6 +22,7 @@ package net.minecraftforge.fml.common.launcher;
 import java.io.File;
 import java.util.List;
 
+import com.cleanroommc.cleanmix.service.CleanMixService;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
+import org.spongepowered.asm.service.MixinService;
 import top.outlands.foundation.TransformerDelegate;
 
 public class FMLDeobfTweaker implements ITweaker {
@@ -52,6 +54,9 @@ public class FMLDeobfTweaker implements ITweaker {
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockSpecialTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.PotionEffectTransformer");
+
+        ((CleanMixService) MixinService.getService()).transitionToInit();
+
         try
         {
             FMLLog.log.debug("Validating minecraft");

@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.mixin.transformer.ClassInfo;
 import org.spongepowered.asm.mixin.transformer.Config;
-import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import zone.rong.mixinbooter.*;
 
@@ -141,7 +140,6 @@ public class CleanMixHooks {
                 logger.error("Failed to execute late loader [{}].", lateLoader.getClass().getName(), t);
             }
         }
-        Proxy.refreshMixins();
     }
 
     private static boolean findAndAddMixinMetadata(StringBuilder mixinMetadataBuilder, String className, ClassInfo classInfo) {

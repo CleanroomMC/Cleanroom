@@ -4,6 +4,7 @@ import com.cleanroommc.cleanmix.CleanMixModContainer;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.google.common.base.Strings;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraftforge.fml.common.launcher.FMLTweaker;
@@ -12,10 +13,11 @@ import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
 import org.spongepowered.asm.launch.platform.container.IContainerHandle;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.extensibility.IRemapper;
-
-import org.spongepowered.asm.obfuscation.mapping.mcp.Srg2McpRemapper;
 import org.spongepowered.asm.obfuscation.mapping.remap.CleanroomRemapper;
+import org.spongepowered.asm.service.IClassBytecodeProvider;
+import org.spongepowered.asm.service.IClassProvider;
+import org.spongepowered.asm.service.IClassTracker;
+import org.spongepowered.asm.service.ITransformerProvider;
 import org.spongepowered.asm.service.mojang.AbstractMixinServiceLaunchWrapper;
 import org.spongepowered.asm.service.mojang.MixinAuditFile;
 
@@ -26,7 +28,16 @@ import java.util.Collections;
 
 public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
 
+    private final FoundationClassProvider classProvider = new FoundationClassProvider();
+    private final FoundationTransformerProvider transformerProvider = new FoundationTransformerProvider();
+    private final FoundationClassTracker classTracker = new FoundationClassTracker();
+    private final FoundationBytecodeProvider bytecodeProvider = new FoundationBytecodeProvider(this.transformerProvider, this.lock, this.classTracker);
+
     private boolean initialized;
+
+    public void transitionToInit() {
+        this.phaseTransitioner.accept(MixinEnvironment.Phase.INIT);
+    }
 
     @Override
     public String getName() {
@@ -50,10 +61,9 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
         }
         this.initialized = true;
         super.init();
-        IRemapper remapper = isDevelopment() ?
-                new Srg2McpRemapper(MixinEnvironment.getDefaultEnvironment()) :
-                new CleanroomRemapper<>(FMLDeobfuscatingRemapper.INSTANCE);
-        MixinEnvironment.getDefaultEnvironment().getRemappers().add(remapper);
+        if (!isDevelopment()) {
+            MixinEnvironment.getDefaultEnvironment().getRemappers().add(new CleanroomRemapper<>(FMLDeobfuscatingRemapper.INSTANCE));
+        }
         String devConfigs = System.getProperty("crl.dev.mixin");
         if (!Strings.isNullOrEmpty(devConfigs)) {
             for (String singleMixinConfig : devConfigs.split(",")) {
@@ -92,6 +102,31 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
             } catch (IllegalArgumentException ignored) { }
         }
         return null;
+    }
+
+    @Override
+    public IClassProvider getClassProvider() {
+        return this.classProvider;
+    }
+
+    @Override
+    public IClassBytecodeProvider getBytecodeProvider() {
+        return this.bytecodeProvider;
+    }
+
+    @Override
+    public ITransformerProvider getTransformerProvider() {
+        return this.transformerProvider;
+    }
+
+    @Override
+    public IClassTracker getClassTracker() {
+        return this.classTracker;
+    }
+
+    @Override
+    protected void onRefresh() {
+        this.transformerProvider.refreshDelegatedTransformers();
     }
 
 }
