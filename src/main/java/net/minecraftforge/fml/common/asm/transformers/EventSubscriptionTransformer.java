@@ -75,6 +75,27 @@ public class EventSubscriptionTransformer implements IClassTransformer
             return bytes;
         }
         ClassReader cr = new ClassReader(bytes);
+        String superName = cr.getSuperName();
+        if (superName == null)
+        {
+            return bytes;
+        }
+
+        try
+        {
+            // Yes, this recursively loads classes until we get this base class. THIS IS NOT A ISSUE. Coremods should handle re-entry just fine.
+            // If they do not this a COREMOD issue NOT a Forge/LaunchWrapper issue.
+            Class<?> parent = this.getClass().getClassLoader().loadClass(superName.replace('/', '.'));
+            if (!Event.class.isAssignableFrom(parent))
+            {
+                return bytes;
+            }
+        }
+        catch (ClassNotFoundException ex)
+        {
+            return bytes;
+        }
+
         ClassNode classNode = new ClassNode();
         cr.accept(classNode, 0);
 
@@ -102,14 +123,6 @@ public class EventSubscriptionTransformer implements IClassTransformer
 
     private boolean buildEvents(ClassNode classNode) throws Exception
     {
-        // Yes, this recursively loads classes until we get this base class. THIS IS NOT A ISSUE. Coremods should handle re-entry just fine.
-        // If they do not this a COREMOD issue NOT a Forge/LaunchWrapper issue.
-        Class<?> parent = this.getClass().getClassLoader().loadClass(classNode.superName.replace('/', '.'));
-        if (!Event.class.isAssignableFrom(parent))
-        {
-            return false;
-        }
-
         //Class<?> listenerListClazz = Class.forName("net.minecraftforge.fml.common.eventhandler.ListenerList", false, getClass().getClassLoader());
         Type tList = Type.getType("Lnet/minecraftforge/fml/common/eventhandler/ListenerList;");
 
