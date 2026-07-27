@@ -21,7 +21,7 @@ public class Buffer implements Closeable {
 
     private final @Nullable Buffer parent;
     private final List<Buffer> children = new ReferenceArrayList<>();
-    private final long handle;
+    public final long handle;
     public final long size;
     public final BufferFlags flags;
     private boolean isClosed = false;
