@@ -1,0 +1,10 @@
+{
+  "kernels": {
+    "test": {
+      "name": "test",
+      "arguments": {
+        "vals": "float*"
+      }
+    }
+  }
+}

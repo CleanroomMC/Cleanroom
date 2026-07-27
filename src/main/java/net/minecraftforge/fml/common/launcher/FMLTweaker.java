@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common.launcher;
 
+import com.cleanroommc.cleanroom.compute.ComputeSetup;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
@@ -28,6 +29,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.apache.logging.log4j.LogManager;
 
+import org.lwjgl.system.Configuration;
 import org.spongepowered.asm.launch.GlobalProperties;
 import org.spongepowered.asm.launch.MixinBootstrap;
 
@@ -55,6 +57,8 @@ public class FMLTweaker implements ITweaker {
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
+        Configuration.OPENCL_EXPLICIT_INIT.set(true);
+        ComputeSetup.initOpenCL(LogManager.getLogger("Compute"));
         LogManager.getLogger("FML.TWEAK").info("Initializing Mixins...");
         MixinBootstrap.init();
         LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");
