@@ -27,9 +27,9 @@ public class CleanroomContainer extends DummyModContainer {
         meta.url = "https://cleanroommc.com";
         meta.modProperties.put("issueTrackerUrl", "https://github.com/CleanroomMC/Cleanroom/issues");
         meta.updateJSON = "https://download.cleanroommc.com/api/forge";
-        meta.logoFile = "/cleanroom_banner.png";
-        meta.modProperties.put("iconFile", "/cleanroom_icon.png");
-        meta.modProperties.put("backgroundFile", "/cleanroom_background.png");
+        meta.logoFile = "/assets/cleanroom/banner.png";
+        meta.modProperties.put("iconFile", "/assets/cleanroom/icon.png");
+        meta.modProperties.put("backgroundFile", "/assets/cleanroom/background.png");
     }
 
     @Override
