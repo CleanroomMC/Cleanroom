@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.8-alpha] - 2026-07-28
+### Bug Fixes
+- [`9946eb1`](https://github.com/CleanroomMC/Cleanroom/commit/9946eb1f17a66a72d518e5e4a92d45c62c6d33fc) - **mixinextras**: allows late ME environments to register with no issue *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Performance Improvements
+- [`5df027d`](https://github.com/CleanroomMC/Cleanroom/commit/5df027d89e6ffcab116d271a3c1329dfc67811da) - Rewrite EventSubscriptionTransformer in core API *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`6956d37`](https://github.com/CleanroomMC/Cleanroom/commit/6956d37ecd1b4397de97e226272b290549239e1a) - Optimized EventSubscriptionTransformer by reading super w/ ClassReader *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Chores
+- [`bdc1436`](https://github.com/CleanroomMC/Cleanroom/commit/bdc14364564ae1fd280804e5e075a3b77c2af9a2) - Update foundation for new loading rules *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.6.7-alpha] - 2026-07-26
 ### Bug Fixes
 - [`2d83b07`](https://github.com/CleanroomMC/Cleanroom/commit/2d83b071fc959a4885eb1049258bb6900d7ff4d5) - **cleanmix**: update to 0.7.0, fixes variety of issues *(commit by [@Rongmario](https://github.com/Rongmario))*
@@ -188,3 +200,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.5-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.4-alpha...0.6.5-alpha
 [0.6.6-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.5-alpha...0.6.6-alpha
 [0.6.7-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.6-alpha...0.6.7-alpha
+[0.6.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.7-alpha...0.6.8-alpha
