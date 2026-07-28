@@ -379,7 +379,7 @@ dependencies {
 
     // Mixin
     installer "com.cleanroommc:cleanmix:$props.cleanmix_version"
-    installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.4')
+    installer annotationProcessor('com.cleanroommc:mixinextras-common:0.5.5')
 
     testImplementation platform('org.junit:junit-bom:6.1.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
