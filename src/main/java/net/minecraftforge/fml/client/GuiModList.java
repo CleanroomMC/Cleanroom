@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fml.client;
 
+import com.cleanroommc.client.modlist.LegacyModListScreen;
+
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -70,7 +72,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author cpw
  */
-public class GuiModList extends GuiScreen
+public class GuiModList extends GuiScreen implements LegacyModListScreen
 {
     private enum SortType implements Comparator<ModContainer>
     {
@@ -342,6 +344,7 @@ public class GuiModList extends GuiScreen
         return fontRenderer;
     }
 
+    @Override
     public GuiScreen getParent()
     {
         return mainMenu;
