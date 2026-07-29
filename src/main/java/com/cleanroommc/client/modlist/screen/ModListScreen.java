@@ -696,16 +696,16 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Nonnull
         private ItemStack getItemIcon() {
-            ItemStack icon = this.cachedData.itemIcon;
-            if (icon != null) {
-                return icon;
+            if (this.cachedData.itemIcon != null) {
+                return this.cachedData.itemIcon;
             }
+
             // Default is grass
             ItemStack defaultIcon = new ItemStack(Blocks.GRASS);
+            this.cachedData.itemIcon = defaultIcon;
 
             for (String forcedDefaultIcon : ModListConfig.forceDefaultIconList) {
                 if (forcedDefaultIcon.equals(this.data.getModId())) {
-                    this.cachedData.itemIcon = defaultIcon;
                     return defaultIcon;
                 }
             }
@@ -724,41 +724,38 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                         return itemStack;
                     }
                 } catch (Exception e) {
-                    ModListConstants.LOG.warn("Failed to get customized item icon for mod '{}'", this.data.getModId(), e);
+                    ModListConstants.LOG.warn("Failed to parse item icon '{}' for mod '{}'", itemIcon, this.data.getModId(), e);
                 }
             }
 
             // If the mod has a creative tab, the mod list will attempt to use the tab's icon
-            icon = Arrays.stream(CreativeTabs.CREATIVE_TAB_ARRAY)
-                    .filter(Objects::nonNull)
-                    .map(tab -> {
-                        try {
-                            return tab.getIcon();
-                        } catch (Exception e) {
-                            ModListConstants.LOG.warn("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
-                            return ItemStack.EMPTY;
-                        }
-                    })
-                    .filter(tabItem -> !tabItem.isEmpty())
-                    .filter(tabItem -> {
-                        ResourceLocation resource = tabItem.getItem().getRegistryName();
-                        return resource != null && resource.getNamespace().equals(this.data.getModId());
-                    })
-                    .findFirst()
-                    // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
-                    .orElseGet(() -> {
-                        return ForgeRegistries.ITEMS.getValuesCollection().stream()
-                                .filter(Objects::nonNull)
-                                .filter(item -> {
-                                    ResourceLocation resource = item.getRegistryName();
-                                    return resource != null && resource.getNamespace().equals(this.data.getModId());
-                                })
-                                .map(ItemStack::new)
-                                .findFirst()
-                                .orElse(defaultIcon);
-                    });
-            this.cachedData.itemIcon = icon;
-            return icon;
+            for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
+                if (tab == null) continue;
+                ItemStack tabItem;
+                try {
+                    tabItem = tab.getIcon();
+                } catch (Exception e) {
+                    ModListConstants.LOG.warn("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
+                    continue;
+                }
+                if (tabItem.isEmpty()) continue;
+                ResourceLocation resource = tabItem.getItem().getRegistryName();
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                this.cachedData.itemIcon = tabItem;
+                return tabItem;
+            }
+
+            // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
+            for (Item item : ForgeRegistries.ITEMS) {
+                if (item == null) continue;
+                ResourceLocation resource = item.getRegistryName();
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                ItemStack itemStack = new ItemStack(item);
+                this.cachedData.itemIcon = itemStack;
+                return itemStack;
+            }
+
+            return defaultIcon;
         }
 
         private String getFormattedModName(boolean favouriteIconVisible) {
