@@ -1336,7 +1336,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             try {
                 if (Files.exists(this.file)) {
                     Files.readAllLines(this.file).forEach(s -> {
-                        if (isSaneModId(s) && CACHED_MODS.containsKey(s)) {
+                        if (!s.isEmpty() && CACHED_MODS.containsKey(s)) {
                             this.mods.add(s);
                         }
                     });
@@ -1359,15 +1359,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 ModListConstants.LOG.warn("Failed to save mod list favourites", e);
             }
         }
-
-        /**
-         * @see net.minecraftforge.fml.common.FMLModContainer#sanityCheckModId()
-         */
-        @SuppressWarnings("JavadocReference")
-        private static boolean isSaneModId(String modId) {
-            return !modId.isEmpty() && modId.length() <= 64 && modId.equals(modId.toLowerCase(Locale.ENGLISH));
-        }
-        
     }
 
     private static class ModData {
