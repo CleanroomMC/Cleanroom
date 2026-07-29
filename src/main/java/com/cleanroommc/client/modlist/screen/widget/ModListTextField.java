@@ -125,19 +125,4 @@ public class ModListTextField extends GuiTextField {
     public void setFormatter(@Nullable BiFunction<String, Integer, String> formatter) {
         this.formatter = formatter;
     }
-
-    // Patch vanilla missing methods
-    @Override
-    public void setText(String text) {
-        String preText = this.getText();
-        super.setText(text);
-        if (!preText.equals(this.getText())) this.setResponderEntryValue(this.getId(), this.getText());
-    }
-
-    @Override
-    public void setMaxStringLength(int length) {
-        String preText = this.getText();
-        super.setMaxStringLength(length);
-        if (!preText.equals(this.getText())) this.setResponderEntryValue(this.getId(), this.getText());
-    }
 }

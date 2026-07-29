@@ -20,11 +20,12 @@
 package net.minecraftforge.client;
 
 import com.cleanroommc.client.IMEHandler;
+import com.cleanroommc.client.modlist.LegacyModListScreen;
 import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.client.windows.TaskbarApi;
 import com.cleanroommc.client.windows.WindowsProperties;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -42,9 +43,10 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.client.GuiModList;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
@@ -80,24 +82,31 @@ public class ForgeClientHandler
     @SubscribeEvent
     public static void onGuiOpen(GuiOpenEvent event)
     {
-        boolean canInput = false;
         GuiScreen gui = event.getGui();
         if (gui instanceof GuiChat)
         {
             // Skip, this should be handled by Focus
             return;
         }
-        else if (gui != null)
+
+        // Forge's mod list may get mixin in late phase, which leads to crash
+        // Use an interface to avoid this
+        if (ModListConfig.enable && gui instanceof LegacyModListScreen modList)
         {
-            // Vanilla GuiScreens
-            canInput = gui instanceof GuiScreenBook || gui instanceof GuiEditSign || guiInWhiteList(gui);
-            // Mod list
-            if (ModListConfig.enable && event.getGui() instanceof GuiModList modList)
-            {
-                event.setGui(new ModListScreen(modList.getParent()));
-            }
+            event.setGui(new ModListScreen(modList.getParent()));
         }
-        IMEHandler.setIME(canInput);
+
+        IMEHandler.setIME(gui != null &&
+                (gui instanceof GuiScreenBook || gui instanceof GuiEditSign || guiInWhiteList(gui)));
+    }
+
+    @SubscribeEvent
+    public static void onConfigChanged(OnConfigChangedEvent event)
+    {
+        if (ModListConstants.OWNER_MOD_ID.equals(event.getModID()))
+        {
+            ConfigManager.sync(ModListConfig.class);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

@@ -52,7 +52,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     private static final ResourceLocation MINECRAFT_LOGO = ModListConstants.resource("textures/gui/minecraft.png");
     private static final ImageInfo MISSING_BANNER_INFO = new ImageInfo(MISSING_BANNER, 120, 120);
     private static final ImageInfo MISSING_BACKGROUND_INFO = new ImageInfo(MISSING_BACKGROUND, 512, 256);
-    private static final int SCROLLBAR_WIDTH = 6;
     private static final Comparator<ModListEntry> SORT_ALPHABETICALLY = Comparator.comparing(o -> o.getData().getDisplayName());
     private static final Comparator<ModListEntry> SORT_ALPHABETICALLY_REVERSED = SORT_ALPHABETICALLY.reversed();
     private static final Comparator<ModListEntry> SORT_FAVOURITES_FIRST = Comparator.comparing(ModListEntry::getData,
@@ -103,7 +102,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     public ModListScreen(GuiScreen parent) {
         this.parentScreen = parent;
         if (!loaded) {
-            PlatformUtils.getAllModData().forEach(data -> CACHED_MODS.put(data.getModId(), new ModData(data)));
+            PlatformUtils.getAllModData().forEach(data -> CACHED_MODS.put(data.getModId().toLowerCase(Locale.ENGLISH), new ModData(data)));
             // Override minecraft
             ModData minecraft = new ModData(new MinecraftModData());
             minecraft.banner = new ImageInfo(MINECRAFT_LOGO, 1024, 256);
@@ -505,12 +504,27 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Override
         protected int getScrollBarX() {
-            return this.right - SCROLLBAR_WIDTH;
+            return this.getMaxScroll() > 0 ? this.right - 6 : this.right + 1;
+        }
+
+        @Override
+        protected int getListLeft() {
+            return this.left;
+        }
+
+        @Override
+        protected int getListRight() {
+            return this.getMaxScroll() > 0 ? this.right - 6 : this.right;
+        }
+
+        @Override
+        protected int getListEntryLeft() {
+            return this.getListLeft();
         }
 
         @Override
         public int getListWidth() {
-            return this.width - SCROLLBAR_WIDTH * 2;
+            return this.getListRight() - this.getListLeft();
         }
 
         @Override
@@ -521,6 +535,11 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 return;
             }
             super.drawContainerBackground(tessellator);
+        }
+
+        @Override
+        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
+            return false;
         }
 
         @Override
@@ -677,16 +696,16 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Nonnull
         private ItemStack getItemIcon() {
-            ItemStack icon = this.cachedData.itemIcon;
-            if (icon != null) {
-                return icon;
+            if (this.cachedData.itemIcon != null) {
+                return this.cachedData.itemIcon;
             }
+
             // Default is grass
             ItemStack defaultIcon = new ItemStack(Blocks.GRASS);
+            this.cachedData.itemIcon = defaultIcon;
 
             for (String forcedDefaultIcon : ModListConfig.forceDefaultIconList) {
                 if (forcedDefaultIcon.equals(this.data.getModId())) {
-                    this.cachedData.itemIcon = defaultIcon;
                     return defaultIcon;
                 }
             }
@@ -705,41 +724,38 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                         return itemStack;
                     }
                 } catch (Exception e) {
-                    ModListConstants.LOG.warn("Failed to get customized item icon for mod '{}'", this.data.getModId(), e);
+                    ModListConstants.LOG.warn("Failed to parse item icon '{}' for mod '{}'", itemIcon, this.data.getModId(), e);
                 }
             }
 
             // If the mod has a creative tab, the mod list will attempt to use the tab's icon
-            icon = Arrays.stream(CreativeTabs.CREATIVE_TAB_ARRAY)
-                    .filter(Objects::nonNull)
-                    .map(tab -> {
-                        try {
-                            return tab.getIcon();
-                        } catch (Exception e) {
-                            ModListConstants.LOG.warn("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
-                            return ItemStack.EMPTY;
-                        }
-                    })
-                    .filter(tabItem -> !tabItem.isEmpty())
-                    .filter(tabItem -> {
-                        ResourceLocation resource = tabItem.getItem().getRegistryName();
-                        return resource != null && resource.getNamespace().equals(this.data.getModId());
-                    })
-                    .findFirst()
-                    // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
-                    .orElseGet(() -> {
-                        return ForgeRegistries.ITEMS.getValuesCollection().stream()
-                                .filter(Objects::nonNull)
-                                .filter(item -> {
-                                    ResourceLocation resource = item.getRegistryName();
-                                    return resource != null && resource.getNamespace().equals(this.data.getModId());
-                                })
-                                .map(ItemStack::new)
-                                .findFirst()
-                                .orElse(defaultIcon);
-                    });
-            this.cachedData.itemIcon = icon;
-            return icon;
+            for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
+                if (tab == null) continue;
+                ItemStack tabItem;
+                try {
+                    tabItem = tab.getIcon();
+                } catch (Exception e) {
+                    ModListConstants.LOG.warn("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
+                    continue;
+                }
+                if (tabItem.isEmpty()) continue;
+                ResourceLocation resource = tabItem.getItem().getRegistryName();
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                this.cachedData.itemIcon = tabItem;
+                return tabItem;
+            }
+
+            // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
+            for (Item item : ForgeRegistries.ITEMS) {
+                if (item == null) continue;
+                ResourceLocation resource = item.getRegistryName();
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                ItemStack itemStack = new ItemStack(item);
+                this.cachedData.itemIcon = itemStack;
+                return itemStack;
+            }
+
+            return defaultIcon;
         }
 
         private String getFormattedModName(boolean favouriteIconVisible) {
@@ -968,14 +984,15 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         @Override
         protected void drawContainerBackground(@Nullable Tessellator tessellator) {
-            int x = this.left;
-            int y = this.top;
-            int width = this.width;
-            int height = this.height;
-            drawRect(x, y + 1, x + 1, y + height - 1, 0x77000000);
-            drawRect(x + 1, y, x + width - 1, y + height, 0x77000000);
-            drawRect(x + width - 1, y + 1, x + width, y + height - 1, 0x77000000);
+            drawRect(this.left, this.top + 1, this.left + 1, this.top + this.height - 1, 0x77000000);
+            drawRect(this.left + 1, this.top, this.left + this.width - 1, this.top + this.height, 0x77000000);
+            drawRect(this.left + this.width - 1, this.top + 1, this.left + this.width, this.top + this.height - 1, 0x77000000);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        }
+
+        @Override
+        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
+            return false;
         }
 
         @Override
@@ -984,8 +1001,23 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
+        protected int getListLeft() {
+            return this.left + 8;
+        }
+
+        @Override
+        protected int getListRight() {
+            return this.right - 8;
+        }
+
+        @Override
+        protected int getListEntryLeft() {
+            return this.getListLeft();
+        }
+
+        @Override
         public int getListWidth() {
-            return this.width - 12;
+            return this.getListRight() - this.getListLeft();
         }
 
         @Override
@@ -1280,6 +1312,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             return this.mods.contains(modId);
         }
 
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         private boolean init() {
             if (this.file != null) {
                 return true;
@@ -1303,7 +1336,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             try {
                 if (Files.exists(this.file)) {
                     Files.readAllLines(this.file).forEach(s -> {
-                        if (isSaneModId(s) && CACHED_MODS.containsKey(s)) {
+                        if (!s.isEmpty() && CACHED_MODS.containsKey(s)) {
                             this.mods.add(s);
                         }
                     });
@@ -1326,14 +1359,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 ModListConstants.LOG.warn("Failed to save mod list favourites", e);
             }
         }
-
-        /**
-         * @see net.minecraftforge.fml.common.FMLModContainer#sanityCheckModId()
-         */
-        private static boolean isSaneModId(String modId) {
-            return !modId.isEmpty() && modId.length() <= 64 && modId.equals(modId.toLowerCase(Locale.ENGLISH));
-        }
-        
     }
 
     private static class ModData {

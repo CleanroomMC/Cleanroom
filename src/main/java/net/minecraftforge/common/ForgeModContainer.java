@@ -19,7 +19,6 @@
 
 package net.minecraftforge.common;
 
-import com.cleanroommc.client.modlist.ModListConfig;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import static net.minecraftforge.common.config.Configuration.CATEGORY_CLIENT;
@@ -509,7 +508,6 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                 }
             }
             case "forge_early" -> ConfigManager.sync(ForgeEarlyConfig.class);
-            case "catalogue" -> ConfigManager.sync(ModListConfig.class);
             default -> syncConfig(false);
         }
     }

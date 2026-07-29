@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import java.util.Set;
 
 /// <h1>Experimental</h1>
-///
 public interface IModData {
     Type getType();
 
