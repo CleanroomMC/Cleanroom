@@ -1012,6 +1012,15 @@
          {
              return false;
          }
+@@ -3077,7 +3302,7 @@
+         {
+             return iblockstate.getMaterial() == Material.CIRCUITS && blockIn == Blocks.ANVIL
+                    ? true
+-                   : iblockstate.getMaterial().isReplaceable() && blockIn.canPlaceBlockOnSide(this, pos, sidePlacedOn);
++                   : iblockstate.getBlock().isReplaceable(this, pos) && blockIn.canPlaceBlockOnSide(this, pos, sidePlacedOn);
+         }
+     }
+ 
 @@ -3163,7 +3388,7 @@
      public int getRedstonePower(BlockPos pos, EnumFacing facing)
      {
