@@ -1,0 +1,10 @@
+--- before/net/minecraft/advancements/FunctionManager.java
++++ after/net/minecraft/advancements/FunctionManager.java
+@@ -182,6 +182,7 @@
+                     }
+                 }
+             }
++            net.minecraftforge.common.ForgeHooks.onMCFunctionLoad(this, this.field_193070_d);
+ 
+             if (!this.field_193070_d.isEmpty())
+             {
