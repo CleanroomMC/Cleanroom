@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
+import com.cleanroommc.common.CleanroomVersion;
 
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
@@ -59,7 +61,7 @@ public class ForgeVersion
     //This number is incremented every time a interface changes or new major feature is added, and reset every Minecraft version
     public static final int revisionVersion = 5;
     //This number is incremented every time Jenkins builds Forge, and never reset. Should always be 0 in the repo code.
-    public static final int buildVersion    = 2860;
+    public static final int buildVersion    = 2864;
     // This is the minecraft version we're building for - used in various places in Forge/FML code
     public static final String mcVersion = "1.12.2";
     // This is the MCP data version we're using
@@ -210,15 +212,15 @@ public class ForgeVersion
             /**
              * Opens stream for given URL while following redirects
              */
-            private InputStream openUrlStream(URL url) throws IOException
+            static InputStream openUrlStream(URL url) throws IOException
             {
                 URL currentUrl = url;
                 for (int redirects = 0; redirects < MAX_HTTP_REDIRECTS; redirects++)
                 {
                     URLConnection c = currentUrl.openConnection();
-                    if (c instanceof HttpURLConnection)
+                    c.setRequestProperty("User-Agent", "Cleanroom/" + CleanroomVersion.getVersion());
+                    if (c instanceof HttpURLConnection huc)
                     {
-                        HttpURLConnection huc = (HttpURLConnection) c;
                         huc.setInstanceFollowRedirects(false);
                         int responseCode = huc.getResponseCode();
                         if (responseCode >= 300 && responseCode <= 399)
@@ -250,7 +252,7 @@ public class ForgeVersion
                     ComparableVersion target = null;
 
                     InputStream con = openUrlStream(url);
-                    String data = new String(ByteStreams.toByteArray(con), "UTF-8");
+                    String data = new String(ByteStreams.toByteArray(con), StandardCharsets.UTF_8);
                     con.close();
 
                     log.debug("[{}] Received version check data:\n{}", mod.getModId(), data);
@@ -375,7 +377,7 @@ public class ForgeVersion
         return ret;
     }
 
-    private static Map<ModContainer, CheckResult> results = new ConcurrentHashMap<ModContainer, CheckResult>();
+    private static final Map<ModContainer, CheckResult> results = new ConcurrentHashMap<>();
     private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null, null, null);
 
     public static CheckResult getResult(ModContainer mod)

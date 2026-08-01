@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
-import net.minecraftforge.fml.common.discovery.ModDiscoverer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
+import net.minecraftforge.fml.common.discovery.ModDiscoverer;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.minecraftforge.fml.common.versioning.VersionParser;
@@ -225,8 +225,13 @@ public class ModAPIManager {
 
     public void manageAPI(ModClassLoader modClassLoader, ModDiscoverer discoverer)
     {
-        registerDataTableAndParseAPI(discoverer.getASMTable());
-        transformer = modClassLoader.addModAPITransformer(dataTable);
+        this.manageAPI(modClassLoader, discoverer.getASMTable());
+    }
+
+    public void manageAPI(ModClassLoader modClassLoader, ASMDataTable dataTable)
+    {
+        registerDataTableAndParseAPI(dataTable);
+        transformer = modClassLoader.addModAPITransformer(this.dataTable);
     }
 
     public void injectAPIModContainers(List<ModContainer> mods, Map<String, ModContainer> nameLookup)

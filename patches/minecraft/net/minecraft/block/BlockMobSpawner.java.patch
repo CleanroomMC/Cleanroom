@@ -1,60 +1,17 @@
 --- before/net/minecraft/block/BlockMobSpawner.java
 +++ after/net/minecraft/block/BlockMobSpawner.java
-@@ -22,52 +22,48 @@
-         super(Material.field_151576_e);
-     }
- 
--    @Override
-     public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+@@ -44,8 +44,12 @@
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
-         return new TileEntityMobSpawner();
-     }
- 
--    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
-     {
-         return Items.field_190931_a;
-     }
- 
--    @Override
-     public int func_149745_a(Random p_149745_1_)
-     {
-         return 0;
-     }
- 
--    @Override
-     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
-     {
-         super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);
--        int i = 15 + p_180653_1_.field_73012_v.nextInt(15) + p_180653_1_.field_73012_v.nextInt(15);
--        this.func_180637_b(p_180653_1_, p_180653_2_, i);
-     }
- 
-     @Override
+         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
+-        int i = 15 + worldIn.rand.nextInt(15) + worldIn.rand.nextInt(15);
+-        this.dropXpOnBlockBreak(worldIn, pos, i);
++    }
++
++    @Override
 +    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
 +        return 15 + RANDOM.nextInt(15) + RANDOM.nextInt(15);
-+    }
-+
-     public boolean func_149662_c(IBlockState p_149662_1_)
-     {
-         return false;
      }
  
--    @Override
-     public EnumBlockRenderType func_149645_b(IBlockState p_149645_1_)
-     {
-         return EnumBlockRenderType.MODEL;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer func_180664_k()
-     {
-         return BlockRenderLayer.CUTOUT;
-     }
- 
--    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
-     {
-         return ItemStack.field_190927_a;
+     @Override

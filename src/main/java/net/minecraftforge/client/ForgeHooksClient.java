@@ -37,12 +37,18 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
+import com.cleanroommc.client.LoadingTracker;
+import com.cleanroommc.client.windows.DwmApi;
+import com.cleanroommc.client.windows.NtDll;
+import com.cleanroommc.client.windows.TaskbarApi;
+import com.cleanroommc.client.windows.WindowsProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -68,6 +74,7 @@ import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.block.model.SimpleBakedModel;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -94,6 +101,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -111,6 +119,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.event.RenderArmEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
@@ -134,10 +143,12 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.async.ThreadNameCachingStrategy;
 import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -191,6 +202,11 @@ public class ForgeHooksClient
     public static boolean renderSpecificFirstPersonHand(EnumHand hand, float partialTicks, float interpPitch, float swingProgress, float equipProgress, ItemStack stack)
     {
         return MinecraftForge.EVENT_BUS.post(new RenderSpecificHandEvent(hand, partialTicks, interpPitch, swingProgress, equipProgress, stack));
+    }
+
+    public static boolean renderSpecificFirstPersonArm(RenderPlayer renderer, AbstractClientPlayer player, EnumHandSide arm)
+    {
+        return MinecraftForge.EVENT_BUS.post(new RenderArmEvent(renderer, player, arm));
     }
 
     public static void onTextureStitchedPre(TextureMap map)
@@ -967,6 +983,50 @@ public class ForgeHooksClient
         catch (ReflectiveOperationException | NoClassDefFoundError e)
         {
             FMLLog.log.error("Unable to invalidate log4j thread cache, thread fields in logs may be inaccurate", e);
+        }
+    }
+    
+    public static void setWindowStyle(boolean isFullScreen) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            DwmApi.updateDwm(isFullScreen, WindowsProperties.handle);
+        }
+    }
+
+    public static void initializeWindowsInformation(){
+        if (SystemUtils.IS_OS_WINDOWS) {
+            NtDll.initializeWindowsInformation(Display.getWindow());
+        }
+    }
+
+    public static void initializeTaskbarAPI(){
+        if (SystemUtils.IS_OS_WINDOWS) {
+            try {
+                TaskbarApi taskbarApi = TaskbarApi.create();
+            } catch (Throwable t) {
+                FMLLog.log.error("Unable to initialize Taskbar API", t);
+                TaskbarApi.clearInstance();
+            }
+        }
+        LoadingTracker.init();
+    }
+
+    public static void shutdownTaskbarAPI() {
+        TaskbarApi api = TaskbarApi.getInstance();
+        if (api != null) {
+            api.close();
+            TaskbarApi.clearInstance();
+        }
+    }
+    
+    public static void clearTaskbarProgress() {
+        LoadingTracker.finish();
+        if (SystemUtils.IS_OS_WINDOWS) {
+            var taskbar = TaskbarApi.getInstance();
+            if (taskbar != null) {
+                taskbar.clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
+            } else {
+                FMLLog.log.error("Unable to clear taskbar progress, cannot invoke a null object.");
+            }
         }
     }
 }

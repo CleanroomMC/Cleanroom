@@ -1,76 +1,13 @@
 --- before/net/minecraft/entity/item/EntityMinecartMobSpawner.java
 +++ after/net/minecraft/entity/item/EntityMinecartMobSpawner.java
-@@ -21,21 +21,21 @@
- {
-     private final MobSpawnerBaseLogic field_98040_a = new MobSpawnerBaseLogic()
-     {
--        @Override
-         public void func_98267_a(int p_98267_1_)
-         {
-             EntityMinecartMobSpawner.this.field_70170_p.func_72960_a(EntityMinecartMobSpawner.this, (byte)p_98267_1_);
-         }
--        @Override
-         public World func_98271_a()
-         {
-             return EntityMinecartMobSpawner.this.field_70170_p;
-         }
--        @Override
-         public BlockPos func_177221_b()
+@@ -36,6 +36,10 @@
          {
              return new BlockPos(EntityMinecartMobSpawner.this);
          }
++        @Override  
 +        public net.minecraft.entity.Entity getSpawnerEntity() {
 +            return EntityMinecartMobSpawner.this;
 +        }
      };
  
-     public EntityMinecartMobSpawner(World p_i46752_1_)
-@@ -53,7 +53,6 @@
-         func_189669_a(p_189672_0_, EntityMinecartMobSpawner.class);
-         p_189672_0_.func_188258_a(FixTypes.ENTITY, new IDataWalker()
-         {
--            @Override
-             public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
-             {
-                 String s = p_188266_2_.func_74779_i("id");
-@@ -70,26 +69,22 @@
-         });
-     }
- 
--    @Override
-     public EntityMinecart.Type func_184264_v()
-     {
-         return EntityMinecart.Type.SPAWNER;
-     }
- 
--    @Override
-     public IBlockState func_180457_u()
-     {
-         return Blocks.field_150474_ac.func_176223_P();
-     }
- 
--    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
-     {
-         super.func_70037_a(p_70037_1_);
-         this.field_98040_a.func_98270_a(p_70037_1_);
-     }
- 
--    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
-     {
-         super.func_70014_b(p_70014_1_);
-@@ -97,13 +92,11 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void func_70103_a(byte p_70103_1_)
-     {
-         this.field_98040_a.func_98268_b(p_70103_1_);
-     }
- 
--    @Override
-     public void func_70071_h_()
-     {
-         super.func_70071_h_();
+     public EntityMinecartMobSpawner(World worldIn)

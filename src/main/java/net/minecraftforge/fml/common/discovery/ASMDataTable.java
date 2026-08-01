@@ -19,23 +19,21 @@
 
 package net.minecraftforge.fml.common.discovery;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
 import net.minecraftforge.fml.common.ModContainer;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class ASMDataTable
 {
@@ -55,22 +53,30 @@ public class ASMDataTable
             this.objectName = objectName;
             this.annotationInfo = info;
         }
+
         public ModCandidate getCandidate()
         {
             return candidate;
         }
+
         public String getAnnotationName()
         {
             return annotationName;
         }
+
+        /**
+         * @return the internal name
+         */
         public String getClassName()
         {
             return className;
         }
+
         public String getObjectName()
         {
             return objectName;
         }
+
         public Map<String, Object> getAnnotationInfo()
         {
             return annotationInfo;
@@ -91,40 +97,56 @@ public class ASMDataTable
         }
     }
 
-    private static class ModContainerPredicate implements Predicate<ASMData>
-    {
-        private ModContainer container;
-        public ModContainerPredicate(ModContainer container)
-        {
-            this.container = container;
-        }
-        @Override
-        public boolean apply(ASMData data)
-        {
-            return container.getSource().equals(data.candidate.getModContainer());
-        }
-    }
     private final SetMultimap<String, ASMData> globalAnnotationData = HashMultimap.create();
     private Map<ModContainer, SetMultimap<String,ASMData>> containerAnnotationData;
 
     private List<ModContainer> containers = Lists.newArrayList();
-    private SetMultimap<String,ModCandidate> packageMap = HashMultimap.create();
+    private SetMultimap<String, ModCandidate> packageMap = HashMultimap.create();
 
-    public SetMultimap<String,ASMData> getAnnotationsFor(ModContainer container)
+    public SetMultimap<String, ASMData> getAnnotationsFor(ModContainer container)
     {
         if (containerAnnotationData == null)
         {
-            //concurrently filter the values to speed this up
-            containerAnnotationData = containers.parallelStream()
-                    .map(cont -> Pair.of(cont, ImmutableSetMultimap.copyOf(Multimaps.filterValues(globalAnnotationData, new ModContainerPredicate(cont)))))
-                    .collect(ImmutableMap.toImmutableMap(Pair::getKey, Pair::getValue));
+            // single pass grouping by source file instead of re-filtering the whole
+            // globalAnnotationData table once per mod container (was O(mods * annotations))
+            Map<File, ImmutableSetMultimap.Builder<String, ASMData>> bySource = new HashMap<>();
+            for (Map.Entry<String, ASMData> entry : globalAnnotationData.entries())
+            {
+                bySource.computeIfAbsent(entry.getValue().candidate.getModContainer(), f -> ImmutableSetMultimap.builder())
+                        .put(entry.getKey(), entry.getValue());
+            }
+            ImmutableMap.Builder<ModContainer, SetMultimap<String, ASMData>> result = ImmutableMap.builder();
+            for (ModContainer cont : containers)
+            {
+                ImmutableSetMultimap.Builder<String, ASMData> builder = bySource.get(cont.getSource());
+                result.put(cont, builder == null ? ImmutableSetMultimap.of() : builder.build());
+            }
+            containerAnnotationData = result.build();
         }
         return containerAnnotationData.get(container);
     }
 
-    public Set<ASMData> getAll(String annotation)
+    /**
+     * @param type The canonical name of an annotation type
+     *              Or the internal name of an interface type
+     * @return the asm datas
+     */
+    public Set<ASMData> getAll(String type)
     {
-        return globalAnnotationData.get(annotation);
+        return globalAnnotationData.get(type);
+    }
+
+    /**
+     * @param type interface of annotation
+     * @return the asm datas
+     */
+    public Set<ASMData> getAll(Class<?> type)
+    {
+        if (type.isAnnotation()) {
+            return this.getAll(type.getName());
+        } else if (type.isInterface()) {
+            return this.getAll(type.getName().replace('.', '/'));
+        } else throw new IllegalArgumentException("The type are trying to be got from ASMDataTable is neither annotation nor interface");
     }
 
     public void addASMData(ModCandidate candidate, String annotation, String className, @Nullable String objectName, @Nullable Map<String,Object> annotationInfo)

@@ -1,18 +1,10 @@
 --- before/net/minecraft/client/network/NetHandlerHandshakeMemory.java
 +++ after/net/minecraft/client/network/NetHandlerHandshakeMemory.java
-@@ -21,14 +21,13 @@
-         this.field_147384_b = p_i45287_2_;
-     }
- 
--    @Override
-     public void func_147383_a(C00Handshake p_147383_1_)
+@@ -24,6 +24,7 @@
+     @Override
+     public void processHandshake(C00Handshake packetIn)
      {
-+        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(p_147383_1_, this.field_147384_b)) return;
-         this.field_147384_b.func_150723_a(p_147383_1_.func_149594_c());
-         this.field_147384_b.func_150719_a(new NetHandlerLoginServer(this.field_147385_a, this.field_147384_b));
-     }
- 
--    @Override
-     public void func_147231_a(ITextComponent p_147231_1_)
-     {
++        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager)) return;
+         this.networkManager.setConnectionState(packetIn.getRequestedState());
+         this.networkManager.setNetHandler(new NetHandlerLoginServer(this.server, this.networkManager));
      }

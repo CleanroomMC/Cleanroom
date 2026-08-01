@@ -1,103 +1,21 @@
 --- before/net/minecraft/block/BlockMycelium.java
 +++ after/net/minecraft/block/BlockMycelium.java
-@@ -3,6 +3,7 @@
- import java.util.Random;
- import net.minecraft.block.material.MapColor;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyBool;
- import net.minecraft.block.state.BlockStateContainer;
- import net.minecraft.block.state.IBlockState;
-@@ -23,24 +24,23 @@
-     protected BlockMycelium()
+@@ -40,7 +40,8 @@
      {
-         super(Material.field_151577_b, MapColor.field_151678_z);
--        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176384_a, false));
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176384_a, Boolean.valueOf(false)));
-         this.func_149675_a(true);
-         this.func_149647_a(CreativeTabs.field_78030_b);
-     }
- 
--    @Override
-     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
-     {
-         Block block = p_176221_2_.func_180495_p(p_176221_3_.func_177984_a()).func_177230_c();
--        return p_176221_1_.func_177226_a(field_176384_a, block == Blocks.field_150433_aE || block == Blocks.field_150431_aC);
-+        return p_176221_1_.func_177226_a(field_176384_a, Boolean.valueOf(block == Blocks.field_150433_aE || block == Blocks.field_150431_aC));
-     }
- 
--    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
-     {
-         if (!p_180650_1_.field_72995_K)
+         if (!worldIn.isRemote)
          {
--            if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) < 4 && p_180650_1_.func_180495_p(p_180650_2_.func_177984_a()).func_185891_c() > 2)
-+            if (!p_180650_1_.func_175697_a(p_180650_2_, 2)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
-+            if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) < 4 && p_180650_1_.func_180495_p(p_180650_2_.func_177984_a()).getLightOpacity(p_180650_1_, p_180650_2_.func_177984_a()) > 2)
+-            if (worldIn.getLightFromNeighbors(pos.up()) < 4 && worldIn.getBlockState(pos.up()).getLightOpacity() > 2)
++            if (!worldIn.isAreaLoaded(pos, 2)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
++            if (worldIn.getLightFromNeighbors(pos.up()) < 4 && worldIn.getBlockState(pos.up()).getLightOpacity(worldIn, pos.up()) > 2)
              {
-                 p_180650_1_.func_175656_a(p_180650_2_, Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT));
+                 worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT));
              }
-@@ -48,16 +48,13 @@
-             {
-                 if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) >= 9)
-                 {
--                    for (int i = 0; i < 4; i++)
-+                    for (int i = 0; i < 4; ++i)
-                     {
-                         BlockPos blockpos = p_180650_2_.func_177982_a(p_180650_4_.nextInt(3) - 1, p_180650_4_.nextInt(5) - 3, p_180650_4_.nextInt(3) - 1);
-                         IBlockState iblockstate = p_180650_1_.func_180495_p(blockpos);
-                         IBlockState iblockstate1 = p_180650_1_.func_180495_p(blockpos.func_177984_a());
- 
--                        if (iblockstate.func_177230_c() == Blocks.field_150346_d
--                                && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.DIRT
--                                && p_180650_1_.func_175671_l(blockpos.func_177984_a()) >= 4
--                                && iblockstate1.func_185891_c() <= 2)
-+                        if (iblockstate.func_177230_c() == Blocks.field_150346_d && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.DIRT && p_180650_1_.func_175671_l(blockpos.func_177984_a()) >= 4 && iblockstate1.getLightOpacity(p_180650_1_, blockpos.func_177984_a()) <= 2)
+@@ -57,7 +58,7 @@
+                         if (iblockstate.getBlock() == Blocks.DIRT
+                                 && iblockstate.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
+                                 && worldIn.getLightFromNeighbors(blockpos.up()) >= 4
+-                                && iblockstate1.getLightOpacity() <= 2)
++                                && iblockstate1.getLightOpacity(worldIn, blockpos.up()) <= 2)
                          {
-                             p_180650_1_.func_175656_a(blockpos, this.func_176223_P());
+                             worldIn.setBlockState(blockpos, this.getDefaultState());
                          }
-@@ -68,41 +65,28 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
-     {
-         super.func_180655_c(p_180655_1_, p_180655_2_, p_180655_3_, p_180655_4_);
- 
-         if (p_180655_4_.nextInt(10) == 0)
-         {
--            p_180655_2_.func_175688_a(
--                EnumParticleTypes.TOWN_AURA,
--                (double)((float)p_180655_3_.func_177958_n() + p_180655_4_.nextFloat()),
--                (double)((float)p_180655_3_.func_177956_o() + 1.1F),
--                (double)((float)p_180655_3_.func_177952_p() + p_180655_4_.nextFloat()),
--                0.0,
--                0.0,
--                0.0
--            );
-+            p_180655_2_.func_175688_a(EnumParticleTypes.TOWN_AURA, (double)((float)p_180655_3_.func_177958_n() + p_180655_4_.nextFloat()), (double)((float)p_180655_3_.func_177956_o() + 1.1F), (double)((float)p_180655_3_.func_177952_p() + p_180655_4_.nextFloat()), 0.0D, 0.0D, 0.0D);
-         }
-     }
- 
--    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
-     {
--        return Blocks.field_150346_d
--               .func_180660_a(Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT), p_180660_2_, p_180660_3_);
-+        return Blocks.field_150346_d.func_180660_a(Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT), p_180660_2_, p_180660_3_);
-     }
- 
--    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
-     {
-         return 0;
-     }
- 
--    @Override
-     protected BlockStateContainer func_180661_e()
-     {
--        return new BlockStateContainer(this, field_176384_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176384_a});
-     }
- }

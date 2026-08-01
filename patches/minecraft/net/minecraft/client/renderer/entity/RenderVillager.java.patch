@@ -2,34 +2,25 @@
 +++ after/net/minecraft/client/renderer/entity/RenderVillager.java
 @@ -31,22 +31,7 @@
  
-     protected ResourceLocation func_110775_a(EntityVillager p_110775_1_)
+     protected ResourceLocation getEntityTexture(EntityVillager entity)
      {
--        switch (p_110775_1_.func_70946_n())
+-        switch (entity.getProfession())
 -        {
 -            case 0:
--                return field_110904_g;
+-                return FARMER_VILLAGER_TEXTURES;
 -            case 1:
--                return field_110908_h;
+-                return LIBRARIAN_VILLAGER_TEXTURES;
 -            case 2:
--                return field_110907_k;
+-                return PRIEST_VILLAGER_TEXTURES;
 -            case 3:
--                return field_110905_l;
+-                return SMITH_VILLAGER_TEXTURES;
 -            case 4:
--                return field_110906_m;
+-                return BUTCHER_VILLAGER_TEXTURES;
 -            case 5:
 -            default:
--                return field_110903_f;
+-                return VILLAGER_TEXTURES;
 -        }
-+        return p_110775_1_.getProfessionForge().getSkin();
++        return entity.getProfessionForge().getSkin();
      }
  
-     protected void func_77041_b(EntityVillager p_77041_1_, float p_77041_2_)
-@@ -55,7 +40,7 @@
- 
-         if (p_77041_1_.func_70874_b() < 0)
-         {
--            f = (float)((double)f * 0.5);
-+            f = (float)((double)f * 0.5D);
-             this.field_76989_e = 0.25F;
-         }
-         else
+     protected void preRenderCallback(EntityVillager entitylivingbaseIn, float partialTickTime)

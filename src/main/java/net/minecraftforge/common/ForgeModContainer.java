@@ -27,6 +27,8 @@ import static net.minecraftforge.common.config.Configuration.CATEGORY_GENERAL;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
@@ -127,6 +129,8 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public static boolean logCascadingWorldGeneration = true; // see Chunk#logCascadingWorldGeneration()
     public static boolean fixVanillaCascading = false; // There are various places in vanilla that cause cascading worldgen. Enabling this WILL change where blocks are placed to prevent this.
                                                        // DO NOT contact Forge about worldgen not 'matching' vanilla if this flag is set.
+    public static int maxTooltipNBTListLength = 100;
+    public static boolean displayAdvancedTooltips = true;
 
     static final Logger log = LogManager.getLogger(ForgeVersion.MOD_ID);
 
@@ -143,21 +147,23 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public ForgeModContainer()
     {
         super(new ModMetadata());
-        ModMetadata meta = getMetadata();
-        meta.modId       = ForgeVersion.MOD_ID;
-        meta.name        = "Minecraft Forge";
-        meta.version     = ForgeVersion.getVersion();
-        meta.credits     = "Made possible with help from many people";
-        meta.authorList  = Arrays.asList("LexManos", "cpw", "fry");
-        meta.description = "Minecraft Forge is a common open source API allowing a broad range of mods " +
-                           "to work cooperatively together. It allows many mods to be created without " +
-                           "them editing the main Minecraft code.";
-        meta.url         = "http://minecraftforge.net";
-        meta.screenshots = new String[0];
-        meta.logoFile    = "/forge_logo.png";
+        ModMetadata meta     = getMetadata();
+        meta.modId           = ForgeVersion.MOD_ID;
+        meta.name            = "Minecraft Forge";
+        meta.version         = ForgeVersion.getVersion();
+        meta.credits         = "Anyone who has contributed on Github and supports our development";
+        meta.authorList      = Arrays.asList("LexManos", "cpw", "fry");
+        meta.description     = """
+                Forge, a broad compatibility API.
+                """;
+        meta.url             = "https://minecraftforge.net/";
+        meta.modProperties.put("issueTrackerUrl", "https://minecraftforge.net/");
+        meta.modProperties.put("license", "LGPL v2.1");
+        meta.screenshots     = new String[0];
+        meta.logoFile        = "/forge_logo.png";
         try {
-            updateJSONUrl    = new URL("http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json");
-        } catch (MalformedURLException e) {}
+            updateJSONUrl    = new URI("https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json").toURL();
+        } catch (MalformedURLException | URISyntaxException ignored) {}
 
         config = null;
         File cfgFile = new File(Loader.instance().getConfigDir(), "forge.cfg");
@@ -384,6 +390,18 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         prop.setLanguageKey("forge.configgui.inputMethodGuiWhiteList");
         propOrder.add(prop.getName());
 
+        prop = config.get(Configuration.CATEGORY_CLIENT, "maxTooltipNBTListLength", 100,
+                "Maximum length (in characters) of NBT data (from NBTTagCompound#toString()) to display in tooltips (set to 0 to disable).");
+        maxTooltipNBTListLength = prop.getInt(100);
+        prop.setLanguageKey("forge.configgui.maxTooltipNBTListLength");
+        propOrder.add(prop.getName());
+        
+        prop = config.get(Configuration.CATEGORY_CLIENT, "displayAdvancedTooltips", false,
+            "Whether to disable advanced tooltips (will also disable NBT data in tooltips).)");
+        displayAdvancedTooltips = prop.getBoolean();
+        prop.setLanguageKey("forge.configgui.displayAdvancedTooltips");
+        propOrder.add(prop.getName());
+
         var categoryHudId = CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud";
         var categoryHud = config.getCategory(categoryHudId);
         categoryHud.setComment("Controls rendering of various HUD elements");
@@ -468,22 +486,28 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void onConfigChanged(OnConfigChangedEvent event)
     {
         String configID = event.getConfigID();
-        if (!this.getMetadata().modId.equals(event.getModID()) || configID == null) {
+        if (!this.getMetadata().modId.equals(event.getModID()) || configID == null)
+        {
             return;
         }
-        switch (configID) {
-            case "chunkLoader" -> {
+        switch (configID)
+        {
+            case "chunkLoader" ->
+            {
                 ForgeChunkManager.syncConfigDefaults();
                 ForgeChunkManager.loadConfiguration();
             }
-            case CATEGORY_CLIENT -> {
+            case CATEGORY_CLIENT ->
+            {
                 boolean tmpStairs = disableStairSlabCulling;
                 syncConfig(false);
                 //stair culling
-                if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling) {
+                if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling)
+                {
                     FMLCommonHandler.instance().reloadRenderers();
                 }
             }
+            case "forge_early" -> ConfigManager.sync(ForgeEarlyConfig.class);
             default -> syncConfig(false);
         }
     }
@@ -530,9 +554,9 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         }
 
         List<String> all = Lists.newArrayList();
-        for (ASMData asm : evt.getASMHarvestedData().getAll(ICrashReportDetail.class.getName().replace('.', '/')))
+        for (ASMData asm : evt.getASMHarvestedData().getAll(ICrashReportDetail.class))
             all.add(asm.getClassName());
-        for (ASMData asm : evt.getASMHarvestedData().getAll(ICrashCallable.class.getName().replace('.', '/')))
+        for (ASMData asm : evt.getASMHarvestedData().getAll(ICrashCallable.class))
             all.add(asm.getClassName());
         // Add table classes for mod list tabulation
         all.add("net/minecraftforge/common/util/TextTable");
@@ -675,10 +699,25 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     {
         return FMLForgePlugin.forgeLocation;
     }
+
+    @Override
+    public File getResource()
+    {
+        File mainSource = FMLForgePlugin.forgeLocation;
+        if (mainSource.isDirectory())
+        {
+            return new File(System.getProperty("java.class.path").split(File.pathSeparator)[1]);
+        }
+        else
+        {
+            return FMLForgePlugin.forgeLocation;
+        }
+    }
+    
     @Override
     public Class<?> getCustomResourcePackClass()
     {
-        if (getSource().isDirectory())
+        if (getResource().isDirectory())
         {
             return FMLFolderResourcePack.class;
         }

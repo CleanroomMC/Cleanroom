@@ -37,4 +37,14 @@ public class AbnormalListeners {
             return null;
         }
     }
+
+    public static class IllegalParamType {
+        public Integer captured = null;
+
+        @SubscribeEvent
+        public void onEvent(Object event) {
+            var casted = (ExampleEvent) event;
+            captured = casted.id;
+        }
+    }
 }

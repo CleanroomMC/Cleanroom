@@ -1,34 +1,16 @@
 --- before/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ after/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -86,7 +86,7 @@
-         {
-             Map<Enchantment, Integer> map = EnchantmentHelper.func_82781_a(p_192493_1_);
- 
--            for (int i = 0; i < this.field_192499_e.length; i++)
-+            for (int i = 0; i < this.field_192499_e.length; ++i)
-             {
-                 if (!this.field_192499_e[i].func_192463_a(map))
-                 {
 @@ -104,6 +104,13 @@
-         if (p_192492_0_ != null && !p_192492_0_.isJsonNull())
+         if (element != null && !element.isJsonNull())
          {
-             JsonObject jsonobject = JsonUtils.func_151210_l(p_192492_0_, "item");
+             JsonObject jsonobject = JsonUtils.getJsonObject(element, "item");
 +            if (jsonobject.has("type"))
 +            {
-+                 final ResourceLocation rl = new ResourceLocation(JsonUtils.func_151200_h(jsonobject, "type"));
++                 final ResourceLocation rl = new ResourceLocation(JsonUtils.getString(jsonobject, "type"));
 +                 final Map<ResourceLocation, java.util.function.Function<JsonObject, ItemPredicate>> map = net.minecraftforge.advancements.critereon.ItemPredicates.getPredicates();
 +                 if (map.containsKey(rl)) return map.get(rl).apply(jsonobject);
 +                 else throw new JsonSyntaxException("There is no ItemPredicate of type "+rl);
 +            }
-             MinMaxBounds minmaxbounds = MinMaxBounds.func_192515_a(jsonobject.get("count"));
-             MinMaxBounds minmaxbounds1 = MinMaxBounds.func_192515_a(jsonobject.get("durability"));
-             Integer integer = jsonobject.has("data") ? JsonUtils.func_151203_m(jsonobject, "data") : null;
-@@ -151,7 +158,7 @@
-             JsonArray jsonarray = JsonUtils.func_151207_m(p_192494_0_, "items");
-             ItemPredicate[] aitempredicate = new ItemPredicate[jsonarray.size()];
- 
--            for (int i = 0; i < aitempredicate.length; i++)
-+            for (int i = 0; i < aitempredicate.length; ++i)
-             {
-                 aitempredicate[i] = func_192492_a(jsonarray.get(i));
-             }
+             MinMaxBounds minmaxbounds = MinMaxBounds.deserialize(jsonobject.get("count"));
+             MinMaxBounds minmaxbounds1 = MinMaxBounds.deserialize(jsonobject.get("durability"));
+             Integer integer = jsonobject.has("data") ? JsonUtils.getInt(jsonobject, "data") : null;

@@ -1,0 +1,12 @@
+--- before/net/minecraft/util/math/Vec2f.java
++++ after/net/minecraft/util/math/Vec2f.java
+@@ -1,9 +1,5 @@
+ package net.minecraft.util.math;
+ 
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+-
+-@SideOnly(Side.CLIENT)
+ public class Vec2f
+ {
+     public static final Vec2f ZERO = new Vec2f(0.0F, 0.0F);

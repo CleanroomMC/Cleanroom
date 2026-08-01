@@ -1,79 +1,39 @@
 --- before/net/minecraft/block/BlockStaticLiquid.java
 +++ after/net/minecraft/block/BlockStaticLiquid.java
-@@ -21,7 +21,6 @@
-         }
-     }
- 
--    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
-     {
-         if (!this.func_176365_e(p_189540_2_, p_189540_3_, p_189540_1_))
-@@ -37,7 +36,6 @@
-         p_176370_1_.func_175684_a(p_176370_2_, blockdynamicliquid, this.func_149738_a(p_176370_1_));
-     }
- 
--    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
-     {
-         if (this.field_149764_J == Material.field_151587_i)
-@@ -50,26 +48,26 @@
-                 {
-                     BlockPos blockpos = p_180650_2_;
- 
--                    for (int j = 0; j < i; j++)
-+                    for (int j = 0; j < i; ++j)
+@@ -54,22 +54,22 @@
                      {
-                         blockpos = blockpos.func_177982_a(p_180650_4_.nextInt(3) - 1, 1, p_180650_4_.nextInt(3) - 1);
+                         blockpos = blockpos.add(rand.nextInt(3) - 1, 1, rand.nextInt(3) - 1);
  
--                        if (blockpos.func_177956_o() >= 0 && blockpos.func_177956_o() < 256 && !p_180650_1_.func_175667_e(blockpos))
-+                        if (blockpos.func_177956_o() >= 0 && blockpos.func_177956_o() < p_180650_1_.func_72800_K() && !p_180650_1_.func_175667_e(blockpos))
+-                        if (blockpos.getY() >= 0 && blockpos.getY() < 256 && !worldIn.isBlockLoaded(blockpos))
++                        if (blockpos.getY() >= 0 && blockpos.getY() < worldIn.getHeight() && !worldIn.isBlockLoaded(blockpos))
                          {
                              return;
                          }
  
--                        Block block = p_180650_1_.func_180495_p(blockpos).func_177230_c();
-+                        IBlockState block = p_180650_1_.func_180495_p(blockpos);
+-                        Block block = worldIn.getBlockState(blockpos).getBlock();
++                        IBlockState block = worldIn.getBlockState(blockpos);
  
--                        if (block.field_149764_J == Material.field_151579_a)
-+                        if (block.func_177230_c().isAir(block, p_180650_1_, blockpos))
+-                        if (block.material == Material.AIR)
++                        if (block.getBlock().isAir(block, worldIn, blockpos))
                          {
-                             if (this.func_176369_e(p_180650_1_, blockpos))
+                             if (this.isSurroundingBlockFlammable(worldIn, blockpos))
                              {
--                                p_180650_1_.func_175656_a(blockpos, Blocks.field_150480_ab.func_176223_P());
-+                                p_180650_1_.func_175656_a(blockpos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(p_180650_1_, blockpos, p_180650_2_, Blocks.field_150480_ab.func_176223_P()));
+-                                worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
++                                worldIn.setBlockState(blockpos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos, pos, Blocks.FIRE.getDefaultState()));
                                  return;
                              }
                          }
--                        else if (block.field_149764_J.func_76230_c())
-+                        else if (block.func_185904_a().func_76230_c())
+-                        else if (block.material.blocksMovement())
++                        else if (block.getMaterial().blocksMovement())
                          {
                              return;
                          }
-@@ -77,7 +75,7 @@
-                 }
-                 else
-                 {
--                    for (int k = 0; k < 3; k++)
-+                    for (int k = 0; k < 3; ++k)
-                     {
-                         BlockPos blockpos1 = p_180650_2_.func_177982_a(p_180650_4_.nextInt(3) - 1, 0, p_180650_4_.nextInt(3) - 1);
+@@ -88,7 +88,7 @@
  
-@@ -88,7 +86,7 @@
- 
-                         if (p_180650_1_.func_175623_d(blockpos1.func_177984_a()) && this.func_176368_m(p_180650_1_, blockpos1))
+                         if (worldIn.isAirBlock(blockpos1.up()) && this.getCanBlockBurn(worldIn, blockpos1))
                          {
--                            p_180650_1_.func_175656_a(blockpos1.func_177984_a(), Blocks.field_150480_ab.func_176223_P());
-+                            p_180650_1_.func_175656_a(blockpos1.func_177984_a(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(p_180650_1_, blockpos1.func_177984_a(), p_180650_2_, Blocks.field_150480_ab.func_176223_P()));
+-                            worldIn.setBlockState(blockpos1.up(), Blocks.FIRE.getDefaultState());
++                            worldIn.setBlockState(blockpos1.up(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos1.up(), pos, Blocks.FIRE.getDefaultState()));
                          }
                      }
                  }
-@@ -111,8 +109,6 @@
- 
-     private boolean func_176368_m(World p_176368_1_, BlockPos p_176368_2_)
-     {
--        return p_176368_2_.func_177956_o() >= 0 && p_176368_2_.func_177956_o() < 256 && !p_176368_1_.func_175667_e(p_176368_2_)
--               ? false
--               : p_176368_1_.func_180495_p(p_176368_2_).func_185904_a().func_76217_h();
-+        return p_176368_2_.func_177956_o() >= 0 && p_176368_2_.func_177956_o() < 256 && !p_176368_1_.func_175667_e(p_176368_2_) ? false : p_176368_1_.func_180495_p(p_176368_2_).func_185904_a().func_76217_h();
-     }
- }

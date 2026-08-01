@@ -1,240 +1,43 @@
 --- before/net/minecraft/entity/item/EntityMinecartContainer.java
 +++ after/net/minecraft/entity/item/EntityMinecartContainer.java
-@@ -26,7 +26,7 @@
- 
- public abstract class EntityMinecartContainer extends EntityMinecart implements ILockableContainer, ILootContainer
- {
--    private NonNullList<ItemStack> field_94113_a = NonNullList.func_191197_a(36, ItemStack.field_190927_a);
-+    private NonNullList<ItemStack> field_94113_a = NonNullList.<ItemStack>func_191197_a(36, ItemStack.field_190927_a);
-     public boolean field_94112_b = true;
-     private ResourceLocation field_184290_c;
-     private long field_184291_d;
-@@ -41,7 +41,6 @@
-         super(p_i1717_1_, p_i1717_2_, p_i1717_4_, p_i1717_6_);
-     }
- 
--    @Override
-     public void func_94095_a(DamageSource p_94095_1_)
-     {
-         super.func_94095_a(p_94095_1_);
-@@ -52,7 +51,6 @@
-         }
-     }
- 
--    @Override
-     public boolean func_191420_l()
-     {
-         for (ItemStack itemstack : this.field_94113_a)
-@@ -66,24 +64,21 @@
-         return true;
-     }
- 
--    @Override
-     public ItemStack func_70301_a(int p_70301_1_)
-     {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         return this.field_94113_a.get(p_70301_1_);
-     }
- 
--    @Override
-     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
-     {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         return ItemStackHelper.func_188382_a(this.field_94113_a, p_70298_1_, p_70298_2_);
-     }
- 
--    @Override
-     public ItemStack func_70304_b(int p_70304_1_)
-     {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         ItemStack itemstack = this.field_94113_a.get(p_70304_1_);
- 
-         if (itemstack.func_190926_b())
-@@ -97,10 +92,9 @@
-         }
-     }
- 
--    @Override
-     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
-     {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         this.field_94113_a.set(p_70299_1_, p_70299_2_);
- 
-         if (!p_70299_2_.func_190926_b() && p_70299_2_.func_190916_E() > this.func_70297_j_())
-@@ -109,48 +103,47 @@
-         }
-     }
- 
--    @Override
-     public void func_70296_d()
-     {
-     }
- 
--    @Override
-     public boolean func_70300_a(EntityPlayer p_70300_1_)
-     {
--        return this.field_70128_L ? false : !(p_70300_1_.func_70068_e(this) > 64.0);
-+        if (this.field_70128_L)
-+        {
-+            return false;
-+        }
-+        else
-+        {
-+            return p_70300_1_.func_70068_e(this) <= 64.0D;
-+        }
-     }
- 
--    @Override
-     public void func_174889_b(EntityPlayer p_174889_1_)
-     {
-     }
- 
--    @Override
-     public void func_174886_c(EntityPlayer p_174886_1_)
-     {
-     }
- 
--    @Override
-     public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
-     {
-         return true;
-     }
- 
--    @Override
-     public int func_70297_j_()
-     {
-         return 64;
-     }
+@@ -144,10 +144,10 @@
  
      @Nullable
--    @Override
--    public Entity func_184204_a(int p_184204_1_)
-+    public Entity changeDimension(int p_184204_1_, net.minecraftforge.common.util.ITeleporter teleporter)
+     @Override
+-    public Entity changeDimension(int dimensionIn)
++    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
      {
-         this.field_94112_b = false;
--        return super.func_184204_a(p_184204_1_);
-+        return super.changeDimension(p_184204_1_, teleporter);
+         this.dropContentsWhenDead = false;
+-        return super.changeDimension(dimensionIn);
++        return super.changeDimension(dimensionIn, teleporter);
      }
  
--    @Override
-     public void func_70106_y()
+     @Override
+@@ -213,6 +213,7 @@
+     @Override
+     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
      {
-         if (this.field_94112_b)
-@@ -161,7 +154,6 @@
-         super.func_70106_y();
-     }
- 
--    @Override
-     public void func_184174_b(boolean p_184174_1_)
-     {
-         this.field_94112_b = p_184174_1_;
-@@ -170,10 +162,9 @@
-     public static void func_190574_b(DataFixer p_190574_0_, Class<?> p_190574_1_)
-     {
-         EntityMinecart.func_189669_a(p_190574_0_, p_190574_1_);
--        p_190574_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, "Items"));
-+        p_190574_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, new String[] {"Items"}));
-     }
- 
--    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
-     {
-         super.func_70014_b(p_70014_1_);
-@@ -193,11 +184,10 @@
-         }
-     }
- 
--    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
-     {
-         super.func_70037_a(p_70037_1_);
--        this.field_94113_a = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
-+        this.field_94113_a = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
- 
-         if (p_70037_1_.func_150297_b("LootTable", 8))
++        if (super.processInitialInteract(player, hand)) return true;
+         if (!this.world.isRemote)
          {
-@@ -210,9 +200,9 @@
-         }
-     }
- 
--    @Override
-     public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
-     {
-+        if (super.func_184230_a(p_184230_1_, p_184230_2_)) return true;
-         if (!this.field_70170_p.field_72995_K)
-         {
-             p_184230_1_.func_71007_a(this);
-@@ -221,7 +211,6 @@
-         return true;
-     }
- 
--    @Override
-     protected void func_94101_h()
-     {
-         float f = 0.98F;
-@@ -233,39 +222,33 @@
-         }
- 
-         this.field_70159_w *= (double)f;
--        this.field_70181_x *= 0.0;
-+        this.field_70181_x *= 0.0D;
-         this.field_70179_y *= (double)f;
-     }
- 
--    @Override
-     public int func_174887_a_(int p_174887_1_)
-     {
-         return 0;
-     }
- 
--    @Override
-     public void func_174885_b(int p_174885_1_, int p_174885_2_)
-     {
-     }
- 
--    @Override
-     public int func_174890_g()
-     {
-         return 0;
-     }
- 
--    @Override
-     public boolean func_174893_q_()
-     {
-         return false;
-     }
- 
--    @Override
-     public void func_174892_a(LockCode p_174892_1_)
-     {
-     }
- 
--    @Override
-     public LockCode func_174891_i()
-     {
-         return LockCode.field_180162_a;
-@@ -288,21 +271,40 @@
-                 random = new Random(this.field_184291_d);
+             player.displayGUIChest(this);
+@@ -288,15 +289,35 @@
+                 random = new Random(this.lootTableSeed);
              }
  
--            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.field_70170_p);
-+            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.field_70170_p).func_186472_a(this); // Forge: add looted entity to LootContext
+-            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.world);
++            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.world).withLootedEntity(this); // Forge: add looted entity to LootContext
  
-             if (p_184288_1_ != null)
+             if (player != null)
              {
--                lootcontext$builder.func_186469_a(p_184288_1_.func_184817_da());
-+                lootcontext$builder.func_186469_a(p_184288_1_.func_184817_da()).func_186470_a(p_184288_1_); // Forge: add player to LootContext
+-                lootcontext$builder.withLuck(player.getLuck());
++                lootcontext$builder.withLuck(player.getLuck()).withPlayer(player); // Forge: add player to LootContext
              }
  
-             loottable.func_186460_a(this, random, lootcontext$builder.func_186471_a());
+             loottable.fillInventory(this, random, lootcontext$builder.build());
          }
-     }
- 
--    @Override
++    }
++
 +    public net.minecraftforge.items.IItemHandler itemHandler = new net.minecraftforge.items.wrapper.InvWrapper(this);
 +
 +    @SuppressWarnings("unchecked")
@@ -253,20 +56,6 @@
 +    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
 +    {
 +        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-+    }
-+
-     public void func_174888_l()
-     {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         this.field_94113_a.clear();
      }
  
-@@ -312,7 +314,6 @@
-         this.field_184291_d = p_184289_2_;
-     }
- 
--    @Override
-     public ResourceLocation func_184276_b()
-     {
-         return this.field_184290_c;
+     @Override

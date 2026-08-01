@@ -1,9 +1,14 @@
 package net.minecraftforge.common;
 
 import net.minecraftforge.common.config.Config;
+import zone.rong.mixinbooter.Tags;
 
 @Config(modid = ForgeVersion.MOD_ID, name = ForgeVersion.MOD_ID + "_early")
 public class ForgeEarlyConfig {
+
+    public static int OPENGL_VERSION_MAJOR = 4;
+    public static int OPENGL_VERSION_MINOR = 6;
+    public static boolean OPENGL_COMPAT_PROFILE = true;
 
     public static boolean RAW_INPUT = true;
 
@@ -55,14 +60,23 @@ public class ForgeEarlyConfig {
     @Config.Comment("Linux-only - change the X11 class name, which is used by your window manager to identify the running application")
     public static String X11_CLASS_NAME = "minecraft";
 
-    @Config.Comment("OSX-only - identifier used to save and restore the window position and size")
+    @Config.Comment("MAC OS-only - identifier used to save and restore the window position and size")
     public static String COCOA_FRAME_NAME = "minecraft";
-    @Config.Comment("OSX-only - Specifies whether to use full resolution framebuffers on Retina displays")
-    public static boolean COCOA_RETINA_FRAMEBUFFER = false;
+    @Config.Comment("MAC OS & Wayland - Specifies whether the framebuffer should be resized based on content scale changes.")
+    public static boolean GLFW_SCALE_FRAMEBUFFER = true;
+
+    @Config.Comment({
+        "Disable the Fugue/Scalar coremod presence check at startup.",
+        "When enabled, the patch mod check is skipped and always returns true.",
+        "When disabled, checks whether Fugue (https://www.curseforge.com/minecraft/mc-mods/fugue)",
+        "and Scalar (https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) are present.",
+        "Only disable this if you know what you are doing!"
+    })
+    public static boolean DISABLE_PATCH_MOD_CHECK = false;
 
     public static boolean CUSTOM_BUILT_IN_MOD_VERSION = false;
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
-    public static String MIXIN_BOOTER_VERSION = "10.6";
+    public static String MIXIN_BOOTER_VERSION = Tags.VERSION;
 
     @Config.Comment("""
             Mods in this list have one or more of the problems list below:
@@ -87,5 +101,31 @@ public class ForgeEarlyConfig {
         public boolean ENABLE_HRTF = false;
     }
 
-
+    public static ModernWindowsStyles MODERN_WINDOWS_STYLES = new ModernWindowsStyles();
+    public static class ModernWindowsStyles {
+        @Config.Comment("Enable immersive dark mode, it will follow windows theme settings")
+        public boolean USE_IMMERSIVE_DARK_MODE = true;
+        @Config.Comment("Backdrop type [0:auto 1:none 2:mica 3:acrylic 4:tabbed]")
+        public int SYSTEM_BACKDROP_TYPE;
+        @Config.Comment("Window corner type [0:default 1:do_not_round 2:round 3:round_small]")
+        public int WINDOW_CORNER;
+        @Config.Comment("Use default corner")
+        public boolean USE_DEFAULT_BORDER = true;
+        @Config.Comment("Hide window border")
+        public boolean HIDE_WINDOW_BORDER;
+        @Config.Comment("Window border color [RGB hex in int]")
+        public int BORDER_COLOR;
+        @Config.Comment("Use default caption color")
+        public boolean USE_DEFAULT_CAPTION = true;
+        @Config.Comment("Window caption color [RGB hex in int]")
+        public int CAPTION_COLOR;
+        @Config.Comment("Use default text color")
+        public boolean USE_DEFAULT_TEXT = true;
+        @Config.Comment("Window text color [RGB hex in int]")
+        public int TEXT_COLOR;
+        @Config.Comment("Use cleanroom embed loading progressbar handling")
+        public boolean UPDATE_WINDOWS_TASKBAR_PROGRESS = true;
+        @Config.Comment("Disable flash after loaded")
+        public boolean DISABLE_FLASH_AFTER_LOADED = false;
+    }
 }

@@ -1,107 +1,60 @@
 --- before/net/minecraft/client/settings/KeyBinding.java
 +++ after/net/minecraft/client/settings/KeyBinding.java
-@@ -14,10 +14,10 @@
- @SideOnly(Side.CLIENT)
+@@ -15,7 +15,7 @@
  public class KeyBinding implements Comparable<KeyBinding>
  {
--    private static final Map<String, KeyBinding> field_74516_a = Maps.newHashMap();
--    private static final IntHashMap<KeyBinding> field_74514_b = new IntHashMap<>();
--    private static final Set<String> field_151473_c = Sets.newHashSet();
--    private static final Map<String, Integer> field_193627_d = Maps.newHashMap();
-+    private static final Map<String, KeyBinding> field_74516_a = Maps.<String, KeyBinding>newHashMap();
-+    private static final net.minecraftforge.client.settings.KeyBindingMap field_74514_b = new net.minecraftforge.client.settings.KeyBindingMap();
-+    private static final Set<String> field_151473_c = Sets.<String>newHashSet();
-+    private static final Map<String, Integer> field_193627_d = Maps.<String, Integer>newHashMap();
-     private final String field_74515_c;
-     private final int field_151472_e;
-     private final String field_151471_f;
+     private static final Map<String, KeyBinding> KEYBIND_ARRAY = Maps.newHashMap();
+-    private static final IntHashMap<KeyBinding> HASH = new IntHashMap<>();
++    private static final net.minecraftforge.client.settings.KeyBindingMap HASH = new net.minecraftforge.client.settings.KeyBindingMap();
+     private static final Set<String> KEYBIND_SET = Sets.newHashSet();
+     private static final Map<String, Integer> CATEGORY_ORDER = Maps.newHashMap();
+     private final String keyDescription;
 @@ -29,12 +29,7 @@
      {
-         if (p_74507_0_ != 0)
+         if (keyCode != 0)
          {
--            KeyBinding keybinding = field_74514_b.func_76041_a(p_74507_0_);
+-            KeyBinding keybinding = HASH.lookup(keyCode);
 -
 -            if (keybinding != null)
 -            {
--                keybinding.field_151474_i++;
+-                keybinding.pressTime++;
 -            }
-+            field_74514_b.lookupActives(p_74507_0_).forEach($ -> ++$.field_151474_i);
++            HASH.lookupActives(keyCode).forEach($ -> ++$.pressTime);
          }
      }
  
 @@ -42,7 +37,7 @@
      {
-         if (p_74510_0_ != 0)
+         if (keyCode != 0)
          {
--            KeyBinding keybinding = field_74514_b.func_76041_a(p_74510_0_);
-+            for (KeyBinding keybinding : field_74514_b.lookupAll(p_74510_0_))
+-            KeyBinding keybinding = HASH.lookup(keyCode);
++            for (KeyBinding keybinding : HASH.lookupAll(keyCode))
  
              if (keybinding != null)
              {
-@@ -59,8 +54,9 @@
-             {
-                 func_74510_a(keybinding.field_74512_d, keybinding.field_74512_d < 256 && Keyboard.isKeyDown(keybinding.field_74512_d));
-             }
--            catch (IndexOutOfBoundsException indexoutofboundsexception)
-+            catch (IndexOutOfBoundsException var3)
-             {
-+                ;
-             }
-         }
-     }
-@@ -75,11 +71,11 @@
+@@ -101,7 +96,7 @@
  
-     public static void func_74508_b()
+     public boolean isKeyDown()
      {
--        field_74514_b.func_76046_c();
-+        field_74514_b.clearMap();
- 
-         for (KeyBinding keybinding : field_74516_a.values())
-         {
--            field_74514_b.func_76038_a(keybinding.field_74512_d, keybinding);
-+            field_74514_b.addKey(keybinding.field_74512_d, keybinding);
-         }
+-        return this.pressed;
++        return this.pressed && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
      }
  
-@@ -95,13 +91,13 @@
-         this.field_151472_e = p_i45001_2_;
-         this.field_151471_f = p_i45001_3_;
-         field_74516_a.put(p_i45001_1_, this);
--        field_74514_b.func_76038_a(p_i45001_2_, this);
-+        field_74514_b.addKey(p_i45001_2_, this);
-         field_151473_c.add(p_i45001_3_);
-     }
- 
-     public boolean func_151470_d()
-     {
--        return this.field_74513_e;
-+        return this.field_74513_e && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
-     }
- 
-     public String func_151466_e()
-@@ -117,7 +113,7 @@
-         }
-         else
-         {
--            this.field_151474_i--;
-+            --this.field_151474_i;
-             return true;
-         }
-     }
-@@ -150,25 +146,166 @@
+     public String getKeyCategory()
+@@ -150,15 +145,156 @@
  
      public int compareTo(KeyBinding p_compareTo_1_)
      {
--        return this.field_151471_f.equals(p_compareTo_1_.field_151471_f)
--               ? I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c))
--               : field_193627_d.get(this.field_151471_f).compareTo(field_193627_d.get(p_compareTo_1_.field_151471_f));
+-        return this.keyCategory.equals(p_compareTo_1_.keyCategory)
+-               ? I18n.format(this.keyDescription).compareTo(I18n.format(p_compareTo_1_.keyDescription))
+-               : CATEGORY_ORDER.get(this.keyCategory).compareTo(CATEGORY_ORDER.get(p_compareTo_1_.keyCategory));
 -    }
-+        if (this.field_151471_f.equals(p_compareTo_1_.field_151471_f)) return I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c));
-+        Integer tCat = field_193627_d.get(this.field_151471_f);
-+        Integer oCat = field_193627_d.get(p_compareTo_1_.field_151471_f);
++        if (this.keyCategory.equals(p_compareTo_1_.keyCategory)) return I18n.format(this.keyDescription).compareTo(I18n.format(p_compareTo_1_.keyDescription));
++        Integer tCat = CATEGORY_ORDER.get(this.keyCategory);
++        Integer oCat = CATEGORY_ORDER.get(p_compareTo_1_.keyCategory);
 +        if (tCat == null && oCat != null) return 1;
 +        if (tCat != null && oCat == null) return -1;
-+        if (tCat == null && oCat == null) return I18n.func_135052_a(this.field_151471_f).compareTo(I18n.func_135052_a(p_compareTo_1_.field_151471_f));
++        if (tCat == null && oCat == null) return I18n.format(this.keyCategory).compareTo(I18n.format(p_compareTo_1_.keyCategory));
 +        return  tCat.compareTo(oCat);
 +    }
 +
@@ -123,10 +76,10 @@
 +     */
 +    public KeyBinding(String description, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext, net.minecraftforge.client.settings.KeyModifier keyModifier, int keyCode, String category)
 +    {
-+        this.field_74515_c = description;
-+        this.field_74512_d = keyCode;
-+        this.field_151472_e = keyCode;
-+        this.field_151471_f = category;
++        this.keyDescription = description;
++        this.keyCode = keyCode;
++        this.keyCodeDefault = keyCode;
++        this.keyCategory = category;
 +        this.keyConflictContext = keyConflictContext;
 +        this.keyModifier = keyModifier;
 +        this.keyModifierDefault = keyModifier;
@@ -134,9 +87,9 @@
 +        {
 +            this.keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
 +        }
-+        field_74516_a.put(description, this);
-+        field_74514_b.addKey(keyCode, this);
-+        field_151473_c.add(category);
++        KEYBIND_ARRAY.put(description, this);
++        HASH.addKey(keyCode, this);
++        KEYBIND_SET.add(category);
 +    }
 +
 +    /**
@@ -144,7 +97,7 @@
 +     */
 +    public boolean isActiveAndMatches(int keyCode)
 +    {
-+        return keyCode != 0 && keyCode == this.func_151463_i() && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
++        return keyCode != 0 && keyCode == this.getKeyCode() && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
 +    }
 +
 +    public void setKeyConflictContext(net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext)
@@ -169,24 +122,24 @@
 +
 +    public void setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier keyModifier, int keyCode)
 +    {
-+        this.field_74512_d = keyCode;
++        this.keyCode = keyCode;
 +        if (keyModifier.matches(keyCode))
 +        {
 +            keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
 +        }
-+        field_74514_b.removeKey(this);
++        HASH.removeKey(this);
 +        this.keyModifier = keyModifier;
-+        field_74514_b.addKey(keyCode, this);
++        HASH.addKey(keyCode, this);
 +    }
 +
 +    public void setToDefault()
 +    {
-+        setKeyModifierAndCode(getKeyModifierDefault(), func_151469_h());
++        setKeyModifierAndCode(getKeyModifierDefault(), getKeyCodeDefault());
 +    }
 +
 +    public boolean isSetToDefaultValue()
 +    {
-+        return func_151463_i() == func_151469_h() && getKeyModifier() == getKeyModifierDefault();
++        return getKeyCode() == getKeyCodeDefault() && getKeyModifier() == getKeyModifierDefault();
 +    }
 +
 +    /**
@@ -198,11 +151,11 @@
 +        {
 +            net.minecraftforge.client.settings.KeyModifier keyModifier = getKeyModifier();
 +            net.minecraftforge.client.settings.KeyModifier otherKeyModifier = other.getKeyModifier();
-+            if (keyModifier.matches(other.func_151463_i()) || otherKeyModifier.matches(func_151463_i()))
++            if (keyModifier.matches(other.getKeyCode()) || otherKeyModifier.matches(getKeyCode()))
 +            {
 +                return true;
 +            }
-+            else if (func_151463_i() == other.func_151463_i())
++            else if (getKeyCode() == other.getKeyCode())
 +            {
 +                return keyModifier == otherKeyModifier ||
 +                        // IN_GAME key contexts have a conflict when at least one modifier is NONE.
@@ -222,7 +175,7 @@
 +    {
 +        if (getKeyConflictContext().conflicts(other.getKeyConflictContext()) || other.getKeyConflictContext().conflicts(getKeyConflictContext()))
 +        {
-+            if (getKeyModifier().matches(other.func_151463_i()) || other.getKeyModifier().matches(func_151463_i()))
++            if (getKeyModifier().matches(other.getKeyCode()) || other.getKeyModifier().matches(getKeyCode()))
 +            {
 +                return true;
 +            }
@@ -232,17 +185,17 @@
 +
 +    public String getDisplayName()
 +    {
-+        return getKeyModifier().getLocalizedComboName(func_151463_i());
++        return getKeyModifier().getLocalizedComboName(getKeyCode());
 +    }
 +    /****************** Forge End *****************************/
  
-     public static Supplier<String> func_193626_b(String p_193626_0_)
+     public static Supplier<String> getDisplayString(String key)
      {
-         KeyBinding keybinding = field_74516_a.get(p_193626_0_);
--        return keybinding == null ? () -> p_193626_0_ : () -> GameSettings.func_74298_c(keybinding.func_151463_i());
+         KeyBinding keybinding = KEYBIND_ARRAY.get(key);
+-        return keybinding == null ? () -> key : () -> GameSettings.getKeyDisplayString(keybinding.getKeyCode());
 +        return keybinding == null ? () ->
 +        {
-+            return p_193626_0_;
++            return key;
 +        } : () ->
 +        {
 +            return keybinding.getDisplayName();
@@ -250,20 +203,3 @@
      }
  
      static
-     {
--        field_193627_d.put("key.categories.movement", 1);
--        field_193627_d.put("key.categories.gameplay", 2);
--        field_193627_d.put("key.categories.inventory", 3);
--        field_193627_d.put("key.categories.creative", 4);
--        field_193627_d.put("key.categories.multiplayer", 5);
--        field_193627_d.put("key.categories.ui", 6);
--        field_193627_d.put("key.categories.misc", 7);
-+        field_193627_d.put("key.categories.movement", Integer.valueOf(1));
-+        field_193627_d.put("key.categories.gameplay", Integer.valueOf(2));
-+        field_193627_d.put("key.categories.inventory", Integer.valueOf(3));
-+        field_193627_d.put("key.categories.creative", Integer.valueOf(4));
-+        field_193627_d.put("key.categories.multiplayer", Integer.valueOf(5));
-+        field_193627_d.put("key.categories.ui", Integer.valueOf(6));
-+        field_193627_d.put("key.categories.misc", Integer.valueOf(7));
-     }
- }

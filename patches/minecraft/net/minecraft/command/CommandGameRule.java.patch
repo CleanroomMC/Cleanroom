@@ -1,70 +1,10 @@
 --- before/net/minecraft/command/CommandGameRule.java
 +++ after/net/minecraft/command/CommandGameRule.java
-@@ -12,25 +12,21 @@
- 
- public class CommandGameRule extends CommandBase
- {
--    @Override
-     public String func_71517_b()
-     {
-         return "gamerule";
-     }
- 
--    @Override
-     public int func_82362_a()
-     {
-         return 2;
-     }
- 
--    @Override
-     public String func_71518_a(ICommandSender p_71518_1_)
-     {
-         return "commands.gamerule.usage";
-     }
- 
--    @Override
-     public void func_184881_a(MinecraftServer p_184881_1_, ICommandSender p_184881_2_, String[] p_184881_3_) throws CommandException
-     {
-         GameRules gamerules = this.func_184897_a(p_184881_1_);
-@@ -46,18 +42,18 @@
- 
-                 if (!gamerules.func_82765_e(s))
-                 {
--                    throw new CommandException("commands.gamerule.norule", s);
-+                    throw new CommandException("commands.gamerule.norule", new Object[] {s});
-                 }
- 
-                 String s2 = gamerules.func_82767_a(s);
--                p_184881_2_.func_145747_a(new TextComponentString(s).func_150258_a(" = ").func_150258_a(s2));
-+                p_184881_2_.func_145747_a((new TextComponentString(s)).func_150258_a(" = ").func_150258_a(s2));
-                 p_184881_2_.func_174794_a(CommandResultStats.Type.QUERY_RESULT, gamerules.func_180263_c(s));
-                 break;
-             default:
- 
-                 if (gamerules.func_180264_a(s, GameRules.ValueType.BOOLEAN_VALUE) && !"true".equals(s1) && !"false".equals(s1))
-                 {
--                    throw new CommandException("commands.generic.boolean.invalid", s1);
-+                    throw new CommandException("commands.generic.boolean.invalid", new Object[] {s1});
-                 }
- 
-                 gamerules.func_82764_b(s, s1);
-@@ -77,9 +73,9 @@
-                 entityplayermp.field_71135_a.func_147359_a(new SPacketEntityStatus(entityplayermp, b0));
+@@ -77,6 +77,7 @@
+                 entityplayermp.connection.sendPacket(new SPacketEntityStatus(entityplayermp, b0));
              }
          }
-+        net.minecraftforge.event.ForgeEventFactory.onGameRuleChange(p_184898_0_, p_184898_1_, p_184898_2_);
++        net.minecraftforge.event.ForgeEventFactory.onGameRuleChange(rules, p_184898_1_, server);
      }
  
--    @Override
-     public List<String> func_184883_a(MinecraftServer p_184883_1_, ICommandSender p_184883_2_, String[] p_184883_3_, @Nullable BlockPos p_184883_4_)
-     {
-         if (p_184883_3_.length == 1)
-@@ -103,7 +99,7 @@
-                 }
-             }
- 
--            return Collections.emptyList();
-+            return Collections.<String>emptyList();
-         }
-     }
- 
+     @Override

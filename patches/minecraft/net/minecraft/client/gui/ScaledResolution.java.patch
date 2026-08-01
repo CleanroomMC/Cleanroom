@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/ScaledResolution.java
++++ after/net/minecraft/client/gui/ScaledResolution.java
+@@ -34,7 +34,7 @@
+ 
+         if (flag && this.scaleFactor % 2 != 0 && this.scaleFactor != 1)
+         {
+-            this.scaleFactor--;
++            this.scaleFactor++;
+         }
+ 
+         this.scaledWidthD = (double)this.scaledWidth / this.scaleFactor;

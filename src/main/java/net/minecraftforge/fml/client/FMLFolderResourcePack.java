@@ -21,45 +21,53 @@ package net.minecraftforge.fml.client;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import net.minecraftforge.fml.common.FMLLog;
-import org.apache.logging.log4j.LogManager;
 
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraftforge.fml.common.FMLContainerHolder;
 import net.minecraftforge.fml.common.ModContainer;
+import org.jspecify.annotations.NonNull;
 
 public class FMLFolderResourcePack extends FolderResourcePack implements FMLContainerHolder {
 
-    private ModContainer container;
+    private final ModContainer container;
+    protected final File resourcePackFolder;
 
     public FMLFolderResourcePack(ModContainer container)
     {
-        super(container.getSource());
+        super(container.getResource());
         this.container = container;
+        this.resourcePackFolder = container.getResource();
     }
 
     @Override
-    protected boolean hasResourceName(String p_110593_1_)
+    protected boolean hasResourceName(@NonNull String resourceName)
     {
-        return super.hasResourceName(p_110593_1_);
+        return new File(resourcePackFolder, resourceName).exists();
     }
+    
     @Override
+    @NonNull
     public String getPackName()
     {
-        return "FMLFileResourcePack:"+container.getName();
+        return "FMLFileResourcePack:" + container.getName();
     }
+    
     @Override
-    protected InputStream getInputStreamByName(String resourceName) throws IOException
+    @NonNull
+    protected InputStream getInputStreamByName(@NonNull String resourceName) throws IOException
     {
         try
         {
-            return super.getInputStreamByName(resourceName);
+            return new FileInputStream(new File(resourcePackFolder, resourceName));
         }
         catch (IOException ioe)
         {
@@ -78,6 +86,7 @@ public class FMLFolderResourcePack extends FolderResourcePack implements FMLCont
     }
 
     @Override
+    @NonNull
     public BufferedImage getPackImage() throws IOException
     {
         return ImageIO.read(getInputStreamByName(container.getMetadata().logoFile));

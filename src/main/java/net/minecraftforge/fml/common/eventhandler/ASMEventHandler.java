@@ -22,6 +22,7 @@ package net.minecraftforge.fml.common.eventhandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.util.function.Consumer;
 
 import net.minecraftforge.fml.common.ModContainer;
 
@@ -32,10 +33,10 @@ public class ASMEventHandler implements IEventListener
 {
     private static final boolean GETCONTEXT = Boolean.parseBoolean(System.getProperty("fml.LogContext", "false"));
 
-    private final IEventListener handler;
+    private final Consumer<Event> handler;
     private final SubscribeEvent subInfo;
-    private ModContainer owner;
-    private String readable;
+    private final ModContainer owner;
+    private final String readable;
 
     @Deprecated
     public ASMEventHandler(Object target, Method method, ModContainer owner) throws Exception
@@ -58,7 +59,7 @@ public class ASMEventHandler implements IEventListener
             var filter = parameterized.getActualTypeArguments()[0];
             this.handler = event -> {
                 if (filter == ((IGenericEvent<?>) event).getGenericType()) {
-                    rawHandler.invoke(event);
+                    rawHandler.accept(event);
                 }
             };
         } else {
@@ -75,7 +76,7 @@ public class ASMEventHandler implements IEventListener
         {
             if (!event.isCancelable() || !event.isCanceled() || subInfo.receiveCanceled())
             {
-                handler.invoke(event);
+                handler.accept(event);
             }
         }
         if (GETCONTEXT)

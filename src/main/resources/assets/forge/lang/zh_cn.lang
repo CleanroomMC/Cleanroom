@@ -30,14 +30,14 @@ commands.forge.tracking.reset.usage=用法：/forge reset <te|实体>
 commands.forge.tracking.reset=时间数据已清空！
 commands.forge.tracking.te.usage=用法：/forge track te
 
-commands.forge.tracking.timingEntry=%s - %s [%d, %d, %d]\: %s
+commands.forge.tracking.timingEntry=%s - %s [%d, %d, %d]：%s
 commands.forge.tracking.noData=暂无数据记录。
 commands.tree_base.invalid_cmd=子命令 '%s' 无效！
 commands.tree_base.invalid_cmd.list_subcommands=子命令 '%s' 无效！有效子命令：%d
 commands.tree_base.available_subcommands=可用子命令：%s
 forge.texture.preload.warning=警告：%s材质未被预加载，该问题将会导致渲染错误！
 forge.client.shutdown.internal=正在关闭内置服务端...
-forge.update.newversion=新的Forge版本已可用\: %s
+forge.update.newversion=新的Forge版本已可用：%s
 forge.update.beta.1=%s警告：%sForge为Beta版
 forge.update.beta.2=更新可能会出现重大问题，请在报告前进行确认。
 
@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=模组设置覆盖
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=允许你自定义指定模组中覆盖默认值的设置。取值为0则禁用有关模组的区块加载。
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ 添加新的模组设置覆盖
 forge.configgui.ctgy.VersionCheckConfig=版本检测设置
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=编辑 forge_early.cfg 中的设置，包括 OpenGL、窗口、输入及启动选项。
+forge.configgui.ctgy.forgeEarlyConfig=早期配置
 
 forge.configgui.biomeSkyBlendRange.tooltip=控制不同生物群系中已着色天空之间的天空混色取值范围.
 forge.configgui.biomeSkyBlendRange=生物群系天空混色取值范围
@@ -185,7 +187,7 @@ fml.config.sample.title=这只是配置界面的示例，不会保存修改结�
 fml.configgui.applyGlobally=应用到全局
 fml.configgui.confirmRestartMessage=我知道了
 fml.configgui.gameRestartRequired=有一个或多个设置需要重新启动 Minecraft 才能生效。
-fml.configgui.gameRestartTitle=需要重新启动Minecraft
+fml.configgui.gameRestartTitle=需要重新启动 Minecraft
 fml.configgui.sampletext=示例文本
 fml.configgui.tooltip.addNewEntryAbove=在上面添加新条目
 fml.configgui.tooltip.applyGlobally=在全局应用撤消更改或重置为默认值。
@@ -194,8 +196,8 @@ fml.configgui.tooltip.resetAll=重置所有设置为默认值。如果勾选“�
 fml.configgui.tooltip.resetToDefault=重置为默认值
 fml.configgui.tooltip.undoAll=撤消所有更改。如果勾选“应用到全局”复选框，子屏幕的更改也将撤消。
 fml.configgui.tooltip.undoChanges=撤消更改
-fml.configgui.tooltip.default=[默认值\: %s]
-fml.configgui.tooltip.defaultNumeric=[范围\: %s ~ %s，默认值\: %s]
+fml.configgui.tooltip.default=[默认值：%s]
+fml.configgui.tooltip.defaultNumeric=[范围：%s ~ %s，默认值：%s]
 
 forge.controlsgui.shift=SHIFT + %s
 forge.controlsgui.control=CTRL + %s
@@ -205,7 +207,6 @@ forge.controlsgui.alt=ALT + %s
 fml.menu.mods=模组
 fml.menu.mods.normal=普通
 fml.menu.mods.search=搜索：
-fml.menu.modoptions=模组设置
 
 item.forge.bucketFilled.name=%s桶
 
@@ -243,3 +244,12 @@ forge.container.enchant.limitedEnchantability=附魔能力限制
 attribute.name.generic.reachDistance=触及半径
 attribute.name.forge.swimSpeed=游泳速度
 
+item.burn_time=燃烧时间: %d刻 (%d秒)
+
+item.forge.advanced_shift_info=按住 §eSHIFT§r 以显示更多信息
+item.forge.advanced_ctrl_info=按住 §9CTRL§r 以显示NBT列表
+item.forge.advanced_info=高级信息:
+item.forge.nbt_list=NBT:
+item.forge.nbt_limited=(截取到%d个字符)
+item.forge.oredict=矿物词典:
+item.forge.translation_key=未本地化名称:

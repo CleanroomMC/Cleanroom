@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod の上書き
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=デフォルトを上書きする Mod 固有の設定を定義できます。いずれかの項目に 0 の値を設定すると、その Mod のチャンク読み込み機能を無効にします。
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Mod の上書きを追加
 forge.configgui.ctgy.VersionCheckConfig=バージョンチェック設定
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=OpenGL、ウィンドウ、入力、起動オプションを含む forge_early.cfg の設定を編集します。
+forge.configgui.ctgy.forgeEarlyConfig=早期設定
 
 forge.configgui.biomeSkyBlendRange.tooltip=バイオームでの色のついた空の混合範囲。
 forge.configgui.biomeSkyBlendRange=バイオームの空の混合範囲
@@ -203,7 +205,6 @@ forge.controlsgui.alt=Alt + %s
 fml.menu.mods=Mod
 fml.menu.mods.normal=通常
 fml.menu.mods.search=検索：
-fml.menu.modoptions=Mod 設定…
 
 item.forge.bucketFilled.name=%s入りバケツ
 
@@ -241,3 +242,12 @@ forge.container.enchant.limitedEnchantability=エンチャントが付加され�
 attribute.name.generic.reachDistance=描画距離
 attribute.name.forge.swimSpeed=泳ぐ速度
 
+item.burn_time=燃焼時間: %d ticks (%d秒)
+
+item.forge.advanced_shift_info=§eSHIFT§rを押しながら詳細が表示されます
+item.forge.advanced_ctrl_info=§eCTRL§rを押しながらNBTリストが表示されます
+item.forge.advanced_info=詳細:
+item.forge.nbt_list=NBT:
+item.forge.nbt_limited=(%d文字に切り詰め)
+item.forge.oredict=鉱石辞書:
+item.forge.translation_key=未ローカライズ名:

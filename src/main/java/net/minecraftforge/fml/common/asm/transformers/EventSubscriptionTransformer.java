@@ -19,23 +19,6 @@
 
 package net.minecraftforge.fml.common.asm.transformers;
 
-import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
-import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
-import static org.objectweb.asm.Opcodes.ACC_PROTECTED;
-import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
-import static org.objectweb.asm.Opcodes.ACC_STATIC;
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ARETURN;
-import static org.objectweb.asm.Opcodes.DUP;
-import static org.objectweb.asm.Opcodes.F_SAME;
-import static org.objectweb.asm.Opcodes.GETSTATIC;
-import static org.objectweb.asm.Opcodes.IFNULL;
-import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
-import static org.objectweb.asm.Opcodes.NEW;
-import static org.objectweb.asm.Opcodes.PUTSTATIC;
-import static org.objectweb.asm.Opcodes.RETURN;
-import static org.objectweb.asm.Opcodes.IRETURN;
-import static org.objectweb.asm.Opcodes.ICONST_1;
 import static org.objectweb.asm.Type.VOID_TYPE;
 import static org.objectweb.asm.Type.BOOLEAN_TYPE;
 import static org.objectweb.asm.Type.getMethodDescriptor;
@@ -44,24 +27,27 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AnnotationNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.FrameNode;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.TypeInsnNode;
-import org.objectweb.asm.tree.VarInsnNode;
 
-public class EventSubscriptionTransformer implements IClassTransformer
+public class EventSubscriptionTransformer implements IClassTransformer, Opcodes
 {
+    private static final Type LISTENER_LIST_TYPE = Type.getObjectType("net/minecraftforge/fml/common/eventhandler/ListenerList");
+    private static final String LISTENER_LIST_INTERNAL_NAME = LISTENER_LIST_TYPE.getInternalName();
+    private static final String LISTENER_LIST_DESC = LISTENER_LIST_TYPE.getDescriptor();
+    private static final String LISTENER_LIST_METHOD_DESC = getMethodDescriptor(LISTENER_LIST_TYPE);
+    private static final String VOID_METHOD_DESC = getMethodDescriptor(VOID_TYPE);
+    private static final String BOOLEAN_METHOD_DESC = getMethodDescriptor(BOOLEAN_TYPE);
+    private static final String LISTENER_LIST_CTR_DESC = getMethodDescriptor(VOID_TYPE, LISTENER_LIST_TYPE);
+    private static final String CANCELABLE_ANNOTATION_DESC = "Lnet/minecraftforge/fml/common/eventhandler/Cancelable;";
+    private static final String HAS_RESULT_ANNOTATION_DESC = "Lnet/minecraftforge/fml/common/eventhandler/Event$HasResult;";
+
     public EventSubscriptionTransformer()
     {
         new Event(); // make sure the base event class loaded and initialized.
@@ -74,23 +60,36 @@ public class EventSubscriptionTransformer implements IClassTransformer
         {
             return bytes;
         }
+        // ClassReader's constructor only indexes the constant pool, just enough for getSuperName()
         ClassReader cr = new ClassReader(bytes);
-        ClassNode classNode = new ClassNode();
-        cr.accept(classNode, 0);
+        String superName = cr.getSuperName();
+        if (superName == null)
+        {
+            return bytes;
+        }
 
         try
         {
-            if (buildEvents(classNode))
+            // Yes, this recursively loads classes until we get this base class. THIS IS NOT A ISSUE. Coremods should handle re-entry just fine.
+            // If they do not this a COREMOD issue NOT a Forge/LaunchWrapper issue.
+            Class<?> parent = this.getClass().getClassLoader().loadClass(superName.replace('/', '.'));
+            if (!Event.class.isAssignableFrom(parent))
             {
-                ClassWriter cw = new ClassWriter(COMPUTE_FRAMES);
-                classNode.accept(cw);
-                return cw.toByteArray();
+                return bytes;
             }
-            return bytes;
         }
         catch (ClassNotFoundException ex)
         {
             // Discard silently- it's just noise
+            return bytes;
+        }
+
+        try
+        {
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
+            EventClassVisitor visitor = new EventClassVisitor(cw, superName);
+            cr.accept(visitor, 0);
+            return visitor.isEdited() ? cw.toByteArray() : bytes;
         }
         catch (Exception e)
         {
@@ -99,146 +98,178 @@ public class EventSubscriptionTransformer implements IClassTransformer
 
         return bytes;
     }
-
-    private boolean buildEvents(ClassNode classNode) throws Exception
+    
+    private static final class EventClassVisitor extends ClassVisitor
     {
-        // Yes, this recursively loads classes until we get this base class. THIS IS NOT A ISSUE. Coremods should handle re-entry just fine.
-        // If they do not this a COREMOD issue NOT a Forge/LaunchWrapper issue.
-        Class<?> parent = this.getClass().getClassLoader().loadClass(classNode.superName.replace('/', '.'));
-        if (!Event.class.isAssignableFrom(parent))
+        private final String superName;
+
+        private String className;
+        private boolean edited;
+
+        private boolean hasSetup;
+        private boolean hasGetListenerList;
+        private boolean hasDefaultCtr;
+        private boolean hasCancelable;
+        private boolean hasResult;
+        private boolean cancelableAnnotation;
+        private boolean hasResultAnnotation;
+
+        EventClassVisitor(ClassVisitor classVisitor, String superName)
         {
-            return false;
+            super(ASM9, classVisitor);
+            this.superName = superName;
         }
 
-        //Class<?> listenerListClazz = Class.forName("net.minecraftforge.fml.common.eventhandler.ListenerList", false, getClass().getClassLoader());
-        Type tList = Type.getType("Lnet/minecraftforge/fml/common/eventhandler/ListenerList;");
-
-        boolean edited             = false;
-        boolean hasSetup           = false;
-        boolean hasGetListenerList = false;
-        boolean hasDefaultCtr      = false;
-        boolean hasCancelable      = false;
-        boolean hasResult          = false;
-        String voidDesc            = Type.getMethodDescriptor(VOID_TYPE);
-        String boolDesc            = Type.getMethodDescriptor(BOOLEAN_TYPE);
-        String listDesc            = tList.getDescriptor();
-        String listDescM           = Type.getMethodDescriptor(tList);
-
-        for (MethodNode method : classNode.methods)
+        boolean isEdited()
         {
-            if (method.name.equals("setup") && method.desc.equals(voidDesc) && (method.access & ACC_PROTECTED) == ACC_PROTECTED) hasSetup = true;
-            if ((method.access & ACC_PUBLIC) == ACC_PUBLIC)
+            return this.edited;
+        }
+
+        @Override
+        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)
+        {
+            this.className = name;
+            super.visit(version, access, name, signature, superName, interfaces);
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(String descriptor, boolean visible)
+        {
+            if (visible)
             {
-                if (method.name.equals("getListenerList") && method.desc.equals(listDescM)) hasGetListenerList = true;
-                if (method.name.equals("isCancelable")    && method.desc.equals(boolDesc))  hasCancelable = true;
-                if (method.name.equals("hasResult")       && method.desc.equals(boolDesc))  hasResult = true;
+                if (HAS_RESULT_ANNOTATION_DESC.equals(descriptor)) this.hasResultAnnotation = true;
+                else if (CANCELABLE_ANNOTATION_DESC.equals(descriptor)) this.cancelableAnnotation = true;
             }
-            if (method.name.equals("<init>") && method.desc.equals(voidDesc)) hasDefaultCtr = true;
+            return super.visitAnnotation(descriptor, visible);
         }
 
-        if (classNode.visibleAnnotations != null)
+        @Override
+        public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions)
         {
-            for (AnnotationNode node : classNode.visibleAnnotations)
+            if (name.equals("setup") && descriptor.equals(VOID_METHOD_DESC) && (access & ACC_PROTECTED) == ACC_PROTECTED) this.hasSetup = true;
+            if ((access & ACC_PUBLIC) == ACC_PUBLIC)
             {
-                if (!hasResult && node.desc.equals("Lnet/minecraftforge/fml/common/eventhandler/Event$HasResult;"))
-                {
-                    /* Add:
-                     *      public boolean hasResult()
-                     *      {
-                     *            return true;
-                     *      }
-                     */
-                    MethodNode method = new MethodNode(ACC_PUBLIC, "hasResult", boolDesc, null, null);
-                    method.instructions.add(new InsnNode(ICONST_1));
-                    method.instructions.add(new InsnNode(IRETURN));
-                    classNode.methods.add(method);
-                    edited = true;
-                }
-                else if (!hasCancelable && node.desc.equals("Lnet/minecraftforge/fml/common/eventhandler/Cancelable;"))
-                {
-                    /* Add:
-                     *      public boolean isCancelable()
-                     *      {
-                     *            return true;
-                     *      }
-                     */
-                    MethodNode method = new MethodNode(ACC_PUBLIC, "isCancelable", boolDesc, null, null);
-                    method.instructions.add(new InsnNode(ICONST_1));
-                    method.instructions.add(new InsnNode(IRETURN));
-                    classNode.methods.add(method);
-                    edited = true;
-                }
+                if (name.equals("getListenerList") && descriptor.equals(LISTENER_LIST_METHOD_DESC)) this.hasGetListenerList = true;
+                if (name.equals("isCancelable")    && descriptor.equals(BOOLEAN_METHOD_DESC))       this.hasCancelable = true;
+                if (name.equals("hasResult")       && descriptor.equals(BOOLEAN_METHOD_DESC))       this.hasResult = true;
             }
+            if (name.equals("<init>") && descriptor.equals(VOID_METHOD_DESC)) this.hasDefaultCtr = true;
+
+            // Returning the writer's own MethodVisitor is what lets ASM copy this method verbatim.
+            return super.visitMethod(access, name, descriptor, signature, exceptions);
         }
 
-        if (hasSetup)
+        @Override
+        public void visitEnd()
         {
-            if (!hasGetListenerList)
-                throw new RuntimeException("Event class defines setup() but does not define getListenerList! " + classNode.name);
-            else
-                return edited;
+            if (this.hasResultAnnotation && !this.hasResult)
+            {
+                /* Add:
+                 *      public boolean hasResult()
+                 *      {
+                 *            return true;
+                 *      }
+                 */
+                this.addConstantTrueMethod("hasResult");
+            }
+
+            if (this.cancelableAnnotation && !this.hasCancelable)
+            {
+                /* Add:
+                 *      public boolean isCancelable()
+                 *      {
+                 *            return true;
+                 *      }
+                 */
+                this.addConstantTrueMethod("isCancelable");
+            }
+
+            if (this.hasSetup)
+            {
+                if (!this.hasGetListenerList)
+                    throw new RuntimeException("Event class defines setup() but does not define getListenerList! " + this.className);
+
+                super.visitEnd();
+                return;
+            }
+
+            //Add private static ListenerList LISTENER_LIST
+            super.visitField(ACC_PRIVATE | ACC_STATIC, "LISTENER_LIST", LISTENER_LIST_DESC, null, null).visitEnd();
+
+            if (!this.hasDefaultCtr)
+            {
+                /*Add:
+                 *      public <init>()
+                 *      {
+                 *              super();
+                 *      }
+                 */
+                MethodVisitor mv = super.visitMethod(ACC_PUBLIC, "<init>", VOID_METHOD_DESC, null, null);
+                mv.visitCode();
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitMethodInsn(INVOKESPECIAL, this.superName, "<init>", VOID_METHOD_DESC, false);
+                mv.visitInsn(RETURN);
+                mv.visitMaxs(0, 0);
+                mv.visitEnd();
+            }
+
+            /*Add:
+             *      protected void setup()
+             *      {
+             *              super.setup();
+             *              if (LISTENER_LIST != NULL)
+             *              {
+             *                      return;
+             *              }
+             *              LISTENER_LIST = new ListenerList(super.getListenerList());
+             *      }
+             */
+            MethodVisitor mv = super.visitMethod(ACC_PROTECTED, "setup", VOID_METHOD_DESC, null, null);
+            mv.visitCode();
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKESPECIAL, this.superName, "setup", VOID_METHOD_DESC, false);
+            mv.visitFieldInsn(GETSTATIC, this.className, "LISTENER_LIST", LISTENER_LIST_DESC);
+            Label initListener = new Label();
+            mv.visitJumpInsn(IFNULL, initListener);
+            mv.visitInsn(RETURN);
+            mv.visitLabel(initListener);
+            mv.visitFrame(F_SAME, 0, null, 0, null);
+            mv.visitTypeInsn(NEW, LISTENER_LIST_INTERNAL_NAME);
+            mv.visitInsn(DUP);
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKESPECIAL, this.superName, "getListenerList", LISTENER_LIST_METHOD_DESC, false);
+            mv.visitMethodInsn(INVOKESPECIAL, LISTENER_LIST_INTERNAL_NAME, "<init>", LISTENER_LIST_CTR_DESC, false);
+            mv.visitFieldInsn(PUTSTATIC, this.className, "LISTENER_LIST", LISTENER_LIST_DESC);
+            mv.visitInsn(RETURN);
+            mv.visitMaxs(0, 0);
+            mv.visitEnd();
+
+            /*Add:
+             *      public ListenerList getListenerList()
+             *      {
+             *              return this.LISTENER_LIST;
+             *      }
+             */
+            mv = super.visitMethod(ACC_PUBLIC, "getListenerList", LISTENER_LIST_METHOD_DESC, null, null);
+            mv.visitCode();
+            mv.visitFieldInsn(GETSTATIC, this.className, "LISTENER_LIST", LISTENER_LIST_DESC);
+            mv.visitInsn(ARETURN);
+            mv.visitMaxs(0, 0);
+            mv.visitEnd();
+
+            this.edited = true;
+            super.visitEnd();
         }
 
-        // Type tSuper = Type.getType(classNode.superName);
-        Type tSuper = Type.getObjectType(classNode.superName);
-
-        //Add private static ListenerList LISTENER_LIST
-        classNode.fields.add(new FieldNode(ACC_PRIVATE | ACC_STATIC, "LISTENER_LIST", listDesc, null, null));
-
-        /*Add:
-         *      public <init>()
-         *      {
-         *              super();
-         *      }
-         */
-        if (!hasDefaultCtr)
+        private void addConstantTrueMethod(String name)
         {
-            MethodNode method = new MethodNode(ACC_PUBLIC, "<init>", voidDesc, null, null);
-            method.instructions.add(new VarInsnNode(ALOAD, 0));
-            method.instructions.add(new MethodInsnNode(INVOKESPECIAL, tSuper.getInternalName(), "<init>", voidDesc, false));
-            method.instructions.add(new InsnNode(RETURN));
-            classNode.methods.add(method);
+            MethodVisitor mv = super.visitMethod(ACC_PUBLIC, name, BOOLEAN_METHOD_DESC, null, null);
+            mv.visitCode();
+            mv.visitInsn(ICONST_1);
+            mv.visitInsn(IRETURN);
+            mv.visitMaxs(0, 0);
+            mv.visitEnd();
+            this.edited = true;
         }
-
-        /*Add:
-         *      protected void setup()
-         *      {
-         *              super.setup();
-         *              if (LISTENER_LIST != NULL)
-         *              {
-         *                      return;
-         *              }
-         *              LISTENER_LIST = new ListenerList(super.getListenerList());
-         *      }
-         */
-        MethodNode method = new MethodNode(ACC_PROTECTED, "setup", voidDesc, null, null);
-        method.instructions.add(new VarInsnNode(ALOAD, 0));
-        method.instructions.add(new MethodInsnNode(INVOKESPECIAL, tSuper.getInternalName(), "setup", voidDesc, false));
-        method.instructions.add(new FieldInsnNode(GETSTATIC, classNode.name, "LISTENER_LIST", listDesc));
-        LabelNode initListener = new LabelNode();
-        method.instructions.add(new JumpInsnNode(IFNULL, initListener));
-        method.instructions.add(new InsnNode(RETURN));
-        method.instructions.add(initListener);
-        method.instructions.add(new FrameNode(F_SAME, 0, null, 0, null));
-        method.instructions.add(new TypeInsnNode(NEW, tList.getInternalName()));
-        method.instructions.add(new InsnNode(DUP));
-        method.instructions.add(new VarInsnNode(ALOAD, 0));
-        method.instructions.add(new MethodInsnNode(INVOKESPECIAL, tSuper.getInternalName(), "getListenerList", listDescM, false));
-        method.instructions.add(new MethodInsnNode(INVOKESPECIAL, tList.getInternalName(), "<init>", getMethodDescriptor(VOID_TYPE, tList), false));
-        method.instructions.add(new FieldInsnNode(PUTSTATIC, classNode.name, "LISTENER_LIST", listDesc));
-        method.instructions.add(new InsnNode(RETURN));
-        classNode.methods.add(method);
-
-        /*Add:
-         *      public ListenerList getListenerList()
-         *      {
-         *              return this.LISTENER_LIST;
-         *      }
-         */
-        method = new MethodNode(ACC_PUBLIC, "getListenerList", listDescM, null, null);
-        method.instructions.add(new FieldInsnNode(GETSTATIC, classNode.name, "LISTENER_LIST", listDesc));
-        method.instructions.add(new InsnNode(ARETURN));
-        classNode.methods.add(method);
-        return true;
     }
 }
