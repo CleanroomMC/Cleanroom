@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 public class ModContainerFactory
 {
     public static Map<Type, Constructor<? extends ModContainer>> modTypes = Maps.newHashMap();
-    private static ModContainerFactory INSTANCE = new ModContainerFactory();
+    private static final ModContainerFactory INSTANCE = new ModContainerFactory();
 
     private ModContainerFactory() {
         // We always know about Mod type
@@ -51,7 +51,7 @@ public class ModContainerFactory
     {
         try
         {
-            Constructor<? extends ModContainer> constructor = container.getConstructor(new Class<?>[] { String.class, ModCandidate.class, Map.class });
+            Constructor<? extends ModContainer> constructor = container.getConstructor(String.class, ModCandidate.class, Map.class);
             modTypes.put(type, constructor);
         }
         catch (Exception e)

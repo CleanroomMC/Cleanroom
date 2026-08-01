@@ -41,8 +41,6 @@ public class Main {
 
         List<String> cleanArgs = parseArgs(args);
 
-        GradleHacks.searchCoremods(cleanArgs);
-
         StringBuilder b = new StringBuilder();
         b.append('[');
         int size = cleanArgs.size();

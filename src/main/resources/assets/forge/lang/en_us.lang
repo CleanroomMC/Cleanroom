@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod Overrides
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Allows you to define mod-specific settings that will override the defaults. A value of zero in either entry effectively disables any chunkloading capabilities for that mod.
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Add New Mod Override
 forge.configgui.ctgy.VersionCheckConfig=Version Check Settings
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=Edit settings contained in forge_early.cfg, including OpenGL, window, input, and startup options.
+forge.configgui.ctgy.forgeEarlyConfig=Early Config
 
 forge.configgui.biomeSkyBlendRange.tooltip=Control the range of sky blending for colored skies in biomes.
 forge.configgui.biomeSkyBlendRange=Biome Sky Blend Range
@@ -144,6 +146,10 @@ forge.configgui.logCascadingWorldGeneration=Log Cascading World Gen
 forge.configgui.logCascadingWorldGeneration.tooltip=Log cascading chunk generation issues during terrain population.
 forge.configgui.fixVanillaCascading=Fix Vanilla Cascading
 forge.configgui.fixVanillaCascading.tooltip=Fix various bugs in vanilla world gen that causes extra chunks to load. This WILL change your worldgen from vanilla. Do not report differences if this is enabled.
+forge.configgui.maxTooltipNBTListLength=Max NBT List Length
+forge.configgui.maxTooltipNBTListLength.tooltip=Maximum length (in characters) of NBT data (from NBTTagCompound#toString()) to display in tooltips (set to 0 to disable)
+forge.configgui.displayAdvancedTooltips=Display Advanced Tooltip
+forge.configgui.displayAdvancedTooltips.tooltip=Display furnace burn time, oredicts, translation key and NBT list in tooltip.
 
 fml.config.sample.basicDouble.tooltip=A double property with no defined bounds.
 fml.config.sample.basicDouble=Unbounded Double
@@ -237,7 +243,6 @@ forge.controlsgui.alt=ALT + %s
 fml.menu.mods=Mods
 fml.menu.mods.normal=Normal
 fml.menu.mods.search=Search:
-fml.menu.modoptions=Mod Options...
 
 item.forge.bucketFilled.name=%s Bucket
 
@@ -276,3 +281,13 @@ fml.button.open.file=Open %s
 forge.container.enchant.limitedEnchantability=Limited Enchantability
 attribute.name.generic.reachDistance=Reach Distance
 attribute.name.forge.swimSpeed=Swim Speed
+
+item.burn_time=Burn Time: %d ticks (%d seconds)
+
+item.forge.advanced_shift_info=Hold §eSHIFT§r to show advanced info
+item.forge.advanced_ctrl_info=Hold §9CTRL§r to show NBT list
+item.forge.advanced_info=Advanced Info:
+item.forge.nbt_list=NBT:
+item.forge.nbt_limited=(truncated to %d characters)
+item.forge.oredict=Ore Dictionaries:
+item.forge.translation_key=Unlocalized Name:

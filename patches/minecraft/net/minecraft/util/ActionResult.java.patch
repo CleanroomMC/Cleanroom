@@ -2,7 +2,7 @@
 +++ after/net/minecraft/util/ActionResult.java
 @@ -20,4 +20,10 @@
      {
-         return this.field_188400_b;
+         return this.result;
      }
 +
 +    //Just a generic helper function to make typecasing easier...

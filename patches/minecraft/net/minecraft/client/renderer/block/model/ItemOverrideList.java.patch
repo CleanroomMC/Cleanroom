@@ -1,30 +1,13 @@
 --- before/net/minecraft/client/renderer/block/model/ItemOverrideList.java
 +++ after/net/minecraft/client/renderer/block/model/ItemOverrideList.java
-@@ -14,7 +14,7 @@
- public class ItemOverrideList
- {
-     public static final ItemOverrideList field_188022_a = new ItemOverrideList();
--    private final List<ItemOverride> field_188023_b = Lists.newArrayList();
-+    private final List<ItemOverride> field_188023_b = Lists.<ItemOverride>newArrayList();
- 
-     private ItemOverrideList()
-     {
-@@ -22,13 +22,14 @@
- 
-     public ItemOverrideList(List<ItemOverride> p_i46570_1_)
-     {
--        for (int i = p_i46570_1_.size() - 1; i >= 0; i--)
-+        for (int i = p_i46570_1_.size() - 1; i >= 0; --i)
-         {
-             this.field_188023_b.add(p_i46570_1_.get(i));
-         }
+@@ -29,6 +29,7 @@
      }
  
      @Nullable
 +    @Deprecated
-     public ResourceLocation func_188021_a(ItemStack p_188021_1_, @Nullable World p_188021_2_, @Nullable EntityLivingBase p_188021_3_)
+     public ResourceLocation applyOverride(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
      {
-         if (!this.field_188023_b.isEmpty())
+         if (!this.overrides.isEmpty())
 @@ -43,5 +44,23 @@
          }
  
@@ -33,12 +16,12 @@
 +
 +    public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity)
 +    {
-+        if (!stack.func_190926_b() && stack.func_77973_b().func_185040_i())
++        if (!stack.isEmpty() && stack.getItem().hasCustomProperties())
 +        {
-+            ResourceLocation location = func_188021_a(stack, world, entity);
++            ResourceLocation location = applyOverride(stack, world, entity);
 +            if (location != null)
 +            {
-+                return net.minecraft.client.Minecraft.func_71410_x().func_175599_af().func_175037_a().func_178083_a().func_174953_a(net.minecraftforge.client.model.ModelLoader.getInventoryVariant(location.toString()));
++                return net.minecraft.client.Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(net.minecraftforge.client.model.ModelLoader.getInventoryVariant(location.toString()));
 +            }
 +        }
 +        return originalModel;
@@ -46,6 +29,6 @@
 +
 +    public com.google.common.collect.ImmutableList<ItemOverride> getOverrides()
 +    {
-+        return com.google.common.collect.ImmutableList.copyOf(field_188023_b);
++        return com.google.common.collect.ImmutableList.copyOf(overrides);
      }
  }

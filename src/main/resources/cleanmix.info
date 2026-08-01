@@ -1,0 +1,11 @@
+[{
+    "modid": "cleanmix",
+    "name": "CleanMix",
+    "version": "${cleanmix_version}",
+    "mcversion": "1.12.2",
+    "description": "Fork of Fabric Mixin that aims to target 1.12.2 environments.",
+    "authorList": [ "Rongmario" ],
+    "credits": "Thanks to Fabric for providing an upstream mixin fork.",
+    "url": "https://github.com/CleanroomMC/CleanMix",
+    "logoFile": "/assets/cleanmix/icon.png"
+}]

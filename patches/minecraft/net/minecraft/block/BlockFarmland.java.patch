@@ -1,168 +1,33 @@
 --- before/net/minecraft/block/BlockFarmland.java
 +++ after/net/minecraft/block/BlockFarmland.java
-@@ -2,6 +2,7 @@
- 
- import java.util.Random;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockFaceShape;
- import net.minecraft.block.state.BlockStateContainer;
-@@ -22,45 +23,41 @@
- public class BlockFarmland extends Block
- {
-     public static final PropertyInteger field_176531_a = PropertyInteger.func_177719_a("moisture", 0, 7);
--    protected static final AxisAlignedBB field_185665_b = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.9375, 1.0);
--    protected static final AxisAlignedBB field_194405_c = new AxisAlignedBB(0.0, 0.9375, 0.0, 1.0, 1.0, 1.0);
-+    protected static final AxisAlignedBB field_185665_b = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
-+    protected static final AxisAlignedBB field_194405_c = new AxisAlignedBB(0.0D, 0.9375D, 0.0D, 1.0D, 1.0D, 1.0D);
- 
-     protected BlockFarmland()
+@@ -76,11 +76,7 @@
+     @Override
+     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance)
      {
-         super(Material.field_151578_c);
--        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176531_a, 0));
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176531_a, Integer.valueOf(0)));
-         this.func_149675_a(true);
-         this.func_149713_g(255);
-     }
- 
--    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
-     {
-         return field_185665_b;
-     }
- 
--    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
-     {
-         return false;
-     }
- 
--    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
-     {
--        int i = p_180650_3_.func_177229_b(field_176531_a);
-+        int i = ((Integer)p_180650_3_.func_177229_b(field_176531_a)).intValue();
- 
-         if (!this.func_176530_e(p_180650_1_, p_180650_2_) && !p_180650_1_.func_175727_C(p_180650_2_.func_177984_a()))
+-        if (!worldIn.isRemote
+-                && worldIn.rand.nextFloat() < fallDistance - 0.5F
+-                && entityIn instanceof EntityLivingBase
+-                && (entityIn instanceof EntityPlayer || worldIn.getGameRules().getBoolean("mobGriefing"))
+-                && entityIn.width * entityIn.width * entityIn.height > 0.512F)
++        if (net.minecraftforge.common.ForgeHooks.onFarmlandTrample(worldIn, pos, Blocks.DIRT.getDefaultState(), fallDistance, entityIn)) // Forge: Move logic to Entity#canTrample
          {
-             if (i > 0)
-             {
--                p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_.func_177226_a(field_176531_a, i - 1), 2);
-+                p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_.func_177226_a(field_176531_a, Integer.valueOf(i - 1)), 2);
-             }
-             else if (!this.func_176529_d(p_180650_1_, p_180650_2_))
-             {
-@@ -69,18 +66,13 @@
+             turnToDirt(worldIn, pos);
          }
-         else if (i < 7)
-         {
--            p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_.func_177226_a(field_176531_a, 7), 2);
-+            p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_.func_177226_a(field_176531_a, Integer.valueOf(7)), 2);
-         }
-     }
- 
--    @Override
-     public void func_180658_a(World p_180658_1_, BlockPos p_180658_2_, Entity p_180658_3_, float p_180658_4_)
+@@ -103,7 +99,7 @@
+     private boolean hasCrops(World worldIn, BlockPos pos)
      {
--        if (!p_180658_1_.field_72995_K
--                && p_180658_1_.field_73012_v.nextFloat() < p_180658_4_ - 0.5F
--                && p_180658_3_ instanceof EntityLivingBase
--                && (p_180658_3_ instanceof EntityPlayer || p_180658_1_.func_82736_K().func_82766_b("mobGriefing"))
--                && p_180658_3_.field_70130_N * p_180658_3_.field_70130_N * p_180658_3_.field_70131_O > 0.512F)
-+        if (net.minecraftforge.common.ForgeHooks.onFarmlandTrample(p_180658_1_, p_180658_2_, Blocks.field_150346_d.func_176223_P(), p_180658_4_, p_180658_3_)) // Forge: Move logic to Entity#canTrample
-         {
-             func_190970_b(p_180658_1_, p_180658_2_);
-         }
-@@ -93,17 +85,17 @@
-         p_190970_0_.func_175656_a(p_190970_1_, Blocks.field_150346_d.func_176223_P());
-         AxisAlignedBB axisalignedbb = field_194405_c.func_186670_a(p_190970_1_);
- 
--        for (Entity entity : p_190970_0_.func_72839_b(null, axisalignedbb))
-+        for (Entity entity : p_190970_0_.func_72839_b((Entity)null, axisalignedbb))
-         {
-             double d0 = Math.min(axisalignedbb.field_72337_e - axisalignedbb.field_72338_b, axisalignedbb.field_72337_e - entity.func_174813_aQ().field_72338_b);
--            entity.func_70634_a(entity.field_70165_t, entity.field_70163_u + d0 + 0.001, entity.field_70161_v);
-+            entity.func_70634_a(entity.field_70165_t, entity.field_70163_u + d0 + 0.001D, entity.field_70161_v);
-         }
-     }
- 
-     private boolean func_176529_d(World p_176529_1_, BlockPos p_176529_2_)
-     {
-         Block block = p_176529_1_.func_180495_p(p_176529_2_.func_177984_a()).func_177230_c();
+         Block block = worldIn.getBlockState(pos.up()).getBlock();
 -        return block instanceof BlockCrops || block instanceof BlockStem;
-+        return block instanceof net.minecraftforge.common.IPlantable && canSustainPlant(p_176529_1_.func_180495_p(p_176529_2_), p_176529_1_, p_176529_2_, net.minecraft.util.EnumFacing.UP, (net.minecraftforge.common.IPlantable)block);
++        return block instanceof net.minecraftforge.common.IPlantable && canSustainPlant(worldIn.getBlockState(pos), worldIn, pos, net.minecraft.util.EnumFacing.UP, (net.minecraftforge.common.IPlantable)block);
      }
  
-     private boolean func_176530_e(World p_176530_1_, BlockPos p_176530_2_)
-@@ -116,10 +108,9 @@
+     private boolean hasWater(World worldIn, BlockPos pos)
+@@ -116,7 +112,7 @@
              }
          }
  
 -        return false;
-+        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(p_176530_1_, p_176530_2_);
++        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(worldIn, pos);
      }
  
--    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
-     {
-         super.func_189540_a(p_189540_1_, p_189540_2_, p_189540_3_, p_189540_4_, p_189540_5_);
-@@ -130,7 +121,6 @@
-         }
-     }
- 
--    @Override
-     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
-     {
-         super.func_176213_c(p_176213_1_, p_176213_2_, p_176213_3_);
-@@ -142,7 +132,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean func_176225_a(IBlockState p_176225_1_, IBlockAccess p_176225_2_, BlockPos p_176225_3_, EnumFacing p_176225_4_)
-     {
-         switch (p_176225_4_)
-@@ -161,32 +150,26 @@
-         }
-     }
- 
--    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
-     {
--        return Blocks.field_150346_d
--               .func_180660_a(Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT), p_180660_2_, p_180660_3_);
-+        return Blocks.field_150346_d.func_180660_a(Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT), p_180660_2_, p_180660_3_);
-     }
- 
--    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
--        return this.func_176223_P().func_177226_a(field_176531_a, p_176203_1_ & 7);
-+        return this.func_176223_P().func_177226_a(field_176531_a, Integer.valueOf(p_176203_1_ & 7));
-     }
- 
--    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
-     {
--        return p_176201_1_.func_177229_b(field_176531_a);
-+        return ((Integer)p_176201_1_.func_177229_b(field_176531_a)).intValue();
-     }
- 
--    @Override
-     protected BlockStateContainer func_180661_e()
-     {
--        return new BlockStateContainer(this, field_176531_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176531_a});
-     }
- 
--    @Override
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
-     {
-         return p_193383_4_ == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+     @Override

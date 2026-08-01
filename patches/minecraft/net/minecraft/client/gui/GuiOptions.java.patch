@@ -1,11 +1,11 @@
 --- before/net/minecraft/client/gui/GuiOptions.java
 +++ after/net/minecraft/client/gui/GuiOptions.java
 @@ -85,7 +85,7 @@
-                 this.field_175357_i.field_146124_l = false;
+                 this.difficultyButton.enabled = false;
              }
          }
 -        else
 +        else if (false) // removed realms button
          {
-             this.field_146292_n
+             this.buttonList
              .add(

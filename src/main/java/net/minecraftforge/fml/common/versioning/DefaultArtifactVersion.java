@@ -58,7 +58,7 @@ public class DefaultArtifactVersion implements ArtifactVersion
     @Override
     public int compareTo(ArtifactVersion o)
     {
-        return unbounded ? 0 : this.comparableVersion.compareTo(((DefaultArtifactVersion)o).comparableVersion);
+        return unbounded || ((DefaultArtifactVersion)o).unbounded ? 0 : this.comparableVersion.compareTo(((DefaultArtifactVersion)o).comparableVersion);
     }
 
     @Override

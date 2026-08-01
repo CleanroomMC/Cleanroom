@@ -5,6 +5,6 @@
      static
      {
 +        if (System.getProperty("io.netty.leakDetection.level") == null) // Forge: allow level to be manually specified
-         ResourceLeakDetector.setLevel(field_184877_a);
+         ResourceLeakDetector.setLevel(NETTY_LEAK_DETECTION);
      }
  }

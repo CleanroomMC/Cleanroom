@@ -8,122 +8,27 @@
  import net.minecraft.block.properties.PropertyEnum;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -19,7 +20,7 @@
- 
- public class BlockQuartz extends Block
- {
--    public static final PropertyEnum<BlockQuartz.EnumType> field_176335_a = PropertyEnum.func_177709_a("variant", BlockQuartz.EnumType.class);
-+    public static final PropertyEnum<BlockQuartz.EnumType> field_176335_a = PropertyEnum.<BlockQuartz.EnumType>func_177709_a("variant", BlockQuartz.EnumType.class);
- 
-     public BlockQuartz()
+@@ -129,6 +130,27 @@
+     protected BlockStateContainer createBlockState()
      {
-@@ -28,17 +29,7 @@
-         this.func_149647_a(CreativeTabs.field_78030_b);
-     }
- 
--    @Override
--    public IBlockState func_180642_a(
--        World p_180642_1_,
--        BlockPos p_180642_2_,
--        EnumFacing p_180642_3_,
--        float p_180642_4_,
--        float p_180642_5_,
--        float p_180642_6_,
--        int p_180642_7_,
--        EntityLivingBase p_180642_8_
--    )
-+    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
-     {
-         if (p_180642_7_ == BlockQuartz.EnumType.LINES_Y.func_176796_a())
-         {
-@@ -53,30 +44,21 @@
-             }
-         }
- 
--        return p_180642_7_ == BlockQuartz.EnumType.CHISELED.func_176796_a()
--               ? this.func_176223_P().func_177226_a(field_176335_a, BlockQuartz.EnumType.CHISELED)
--               : this.func_176223_P().func_177226_a(field_176335_a, BlockQuartz.EnumType.DEFAULT);
-+        return p_180642_7_ == BlockQuartz.EnumType.CHISELED.func_176796_a() ? this.func_176223_P().func_177226_a(field_176335_a, BlockQuartz.EnumType.CHISELED) : this.func_176223_P().func_177226_a(field_176335_a, BlockQuartz.EnumType.DEFAULT);
-     }
- 
--    @Override
-     public int func_180651_a(IBlockState p_180651_1_)
-     {
--        BlockQuartz.EnumType blockquartz$enumtype = p_180651_1_.func_177229_b(field_176335_a);
--        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z
--               ? blockquartz$enumtype.func_176796_a()
--               : BlockQuartz.EnumType.LINES_Y.func_176796_a();
-+        BlockQuartz.EnumType blockquartz$enumtype = (BlockQuartz.EnumType)p_180651_1_.func_177229_b(field_176335_a);
-+        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z ? blockquartz$enumtype.func_176796_a() : BlockQuartz.EnumType.LINES_Y.func_176796_a();
-     }
- 
--    @Override
-     protected ItemStack func_180643_i(IBlockState p_180643_1_)
-     {
--        BlockQuartz.EnumType blockquartz$enumtype = p_180643_1_.func_177229_b(field_176335_a);
--        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z
--               ? super.func_180643_i(p_180643_1_)
--               : new ItemStack(Item.func_150898_a(this), 1, BlockQuartz.EnumType.LINES_Y.func_176796_a());
-+        BlockQuartz.EnumType blockquartz$enumtype = (BlockQuartz.EnumType)p_180643_1_.func_177229_b(field_176335_a);
-+        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z ? super.func_180643_i(p_180643_1_) : new ItemStack(Item.func_150898_a(this), 1, BlockQuartz.EnumType.LINES_Y.func_176796_a());
-     }
- 
--    @Override
-     public void func_149666_a(CreativeTabs p_149666_1_, NonNullList<ItemStack> p_149666_2_)
-     {
-         p_149666_2_.add(new ItemStack(this, 1, BlockQuartz.EnumType.DEFAULT.func_176796_a()));
-@@ -84,25 +66,21 @@
-         p_149666_2_.add(new ItemStack(this, 1, BlockQuartz.EnumType.LINES_Y.func_176796_a()));
-     }
- 
--    @Override
-     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
-     {
-         return MapColor.field_151677_p;
-     }
- 
--    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
-         return this.func_176223_P().func_177226_a(field_176335_a, BlockQuartz.EnumType.func_176794_a(p_176203_1_));
-     }
- 
--    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
-     {
--        return p_176201_1_.func_177229_b(field_176335_a).func_176796_a();
-+        return ((BlockQuartz.EnumType)p_176201_1_.func_177229_b(field_176335_a)).func_176796_a();
-     }
- 
--    @Override
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
-     {
-         switch (p_185499_2_)
-@@ -125,10 +103,29 @@
-         }
-     }
- 
--    @Override
-     protected BlockStateContainer func_180661_e()
-     {
--        return new BlockStateContainer(this, field_176335_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176335_a});
+         return new BlockStateContainer(this, VARIANT);
 +    }
 +
++    @Override
 +    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
 +    {
-+        IBlockState state = world.func_180495_p(pos);
-+        for (IProperty prop : state.func_177228_b().keySet())
++        IBlockState state = world.getBlockState(pos);
++        for (IProperty prop : state.getProperties().keySet())
 +        {
-+            if (prop.func_177701_a().equals("variant") && prop.func_177699_b() == EnumType.class)
++            if (prop.getName().equals("variant") && prop.getValueClass() == EnumType.class)
 +            {
-+                EnumType current = (EnumType)state.func_177229_b(prop);
++                EnumType current = (EnumType)state.getValue(prop);
 +                EnumType next = current == EnumType.LINES_X ? EnumType.LINES_Y :
-+                                current == EnumType.LINES_Y ? EnumType.LINES_Z :
-+                                current == EnumType.LINES_Z ? EnumType.LINES_X : current;
++                    current == EnumType.LINES_Y ? EnumType.LINES_Z :
++                        current == EnumType.LINES_Z ? EnumType.LINES_X : current;
 +                if (next == current)
 +                    return false;
-+                world.func_175656_a(pos, state.func_177226_a(prop, next));
++                world.setBlockState(pos, state.withProperty(prop, next));
 +                return true;
 +            }
 +        }
@@ -131,19 +36,3 @@
      }
  
      public static enum EnumType implements IStringSerializable
-@@ -156,7 +153,6 @@
-             return this.field_176798_g;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.field_176806_i;
-@@ -172,7 +168,6 @@
-             return field_176797_f[p_176794_0_];
-         }
- 
--        @Override
-         public String func_176610_l()
-         {
-             return this.field_176805_h;

@@ -1,102 +1,11 @@
 --- before/net/minecraft/block/BlockMushroom.java
 +++ after/net/minecraft/block/BlockMushroom.java
-@@ -12,20 +12,18 @@
- 
- public class BlockMushroom extends BlockBush implements IGrowable
- {
--    protected static final AxisAlignedBB field_185518_a = new AxisAlignedBB(0.3F, 0.0, 0.3F, 0.7F, 0.4F, 0.7F);
-+    protected static final AxisAlignedBB field_185518_a = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 0.4000000059604645D, 0.699999988079071D);
- 
-     protected BlockMushroom()
-     {
-         this.func_149675_a(true);
-     }
- 
--    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
-     {
-         return field_185518_a;
-     }
- 
--    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
-     {
-         if (p_180650_4_.nextInt(25) == 0)
-@@ -37,7 +35,9 @@
+@@ -90,7 +90,7 @@
              {
-                 if (p_180650_1_.func_180495_p(blockpos).func_177230_c() == this)
-                 {
--                    if (--i <= 0)
-+                    --i;
-+
-+                    if (i <= 0)
-                     {
-                         return;
-                     }
-@@ -46,7 +46,7 @@
- 
-             BlockPos blockpos1 = p_180650_2_.func_177982_a(p_180650_4_.nextInt(3) - 1, p_180650_4_.nextInt(2) - p_180650_4_.nextInt(2), p_180650_4_.nextInt(3) - 1);
- 
--            for (int k = 0; k < 4; k++)
-+            for (int k = 0; k < 4; ++k)
-             {
-                 if (p_180650_1_.func_175623_d(blockpos1) && this.func_180671_f(p_180650_1_, blockpos1, this.func_176223_P()))
-                 {
-@@ -63,19 +63,16 @@
-         }
-     }
- 
--    @Override
-     public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
-     {
-         return super.func_176196_c(p_176196_1_, p_176196_2_) && this.func_180671_f(p_176196_1_, p_176196_2_, this.func_176223_P());
-     }
- 
--    @Override
-     protected boolean func_185514_i(IBlockState p_185514_1_)
-     {
-         return p_185514_1_.func_185913_b();
-     }
- 
--    @Override
-     public boolean func_180671_f(World p_180671_1_, BlockPos p_180671_2_, IBlockState p_180671_3_)
-     {
-         if (p_180671_2_.func_177956_o() >= 0 && p_180671_2_.func_177956_o() < 256)
-@@ -86,11 +83,13 @@
-             {
-                 return true;
-             }
-+            else if (iblockstate.func_177230_c() == Blocks.field_150346_d && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.PODZOL)
-+            {
-+                return true;
-+            }
-             else
-             {
--                return iblockstate.func_177230_c() == Blocks.field_150346_d && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.PODZOL
--                       ? true
--                       : p_180671_1_.func_175699_k(p_180671_2_) < 13 && this.func_185514_i(iblockstate);
-+                return p_180671_1_.func_175699_k(p_180671_2_) < 13 && iblockstate.func_177230_c().canSustainPlant(iblockstate, p_180671_1_, p_180671_2_.func_177977_b(), net.minecraft.util.EnumFacing.UP, this);
+                 return iblockstate.getBlock() == Blocks.DIRT && iblockstate.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.PODZOL
+                        ? true
+-                       : worldIn.getLight(pos) < 13 && this.canSustainBush(iblockstate);
++                       : worldIn.getLight(pos) < 13 && iblockstate.getBlock().canSustainPlant(iblockstate, worldIn, pos.down(), net.minecraft.util.EnumFacing.UP, this);
              }
          }
          else
-@@ -124,19 +123,16 @@
-         }
-     }
- 
--    @Override
-     public boolean func_176473_a(World p_176473_1_, BlockPos p_176473_2_, IBlockState p_176473_3_, boolean p_176473_4_)
-     {
-         return true;
-     }
- 
--    @Override
-     public boolean func_180670_a(World p_180670_1_, Random p_180670_2_, BlockPos p_180670_3_, IBlockState p_180670_4_)
-     {
--        return (double)p_180670_2_.nextFloat() < 0.4;
-+        return (double)p_180670_2_.nextFloat() < 0.4D;
-     }
- 
--    @Override
-     public void func_176474_b(World p_176474_1_, Random p_176474_2_, BlockPos p_176474_3_, IBlockState p_176474_4_)
-     {
-         this.func_176485_d(p_176474_1_, p_176474_3_, p_176474_4_, p_176474_2_);

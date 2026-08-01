@@ -35,6 +35,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.screen.ModListScreen;
+import com.cleanroommc.common.PatchModPresentChecker;
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
+import com.cleanroommc.kirino.KirinoClientCore;
+import com.cleanroommc.kirino.KirinoCommonCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
@@ -216,6 +222,19 @@ public class FMLClientHandler implements IFMLSidedHandler
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
+
+        if (PatchModPresentChecker.isNotPresent() && CleanroomModDiscoverer.instance().hasForgeMods())
+        {
+            String warning = PatchModPresentChecker.getWarningMessage();
+            String prompt = "Press any key to continue, ESC to exit.";
+
+            if (!SplashProgress.confirm(warning, prompt))
+            {
+                SplashProgress.finish();
+                System.exit(0);
+            }
+        }
+
         this.resourcePackList = resourcePackList;
         this.metaSerializer = metaSerializer;
         this.resourcePackMap = Maps.newHashMap();
@@ -225,6 +244,8 @@ public class FMLClientHandler implements IFMLSidedHandler
             haltGame("FML will not run in demo mode", new RuntimeException());
             return;
         }
+
+        KirinoCommonCore.configEvent();
 
         List<String> injectedModContainers = FMLCommonHandler.instance().beginLoading(this);
         try
@@ -285,6 +306,8 @@ public class FMLClientHandler implements IFMLSidedHandler
                 sharedModList.put(sharedModId, sharedModDescriptor);
             }
         }
+
+        KirinoClientCore.init();
     }
 
     private void detectOptifine()
@@ -392,6 +415,8 @@ public class FMLClientHandler implements IFMLSidedHandler
         if (!hasError())
             Loader.instance().loadingComplete();
         SplashProgress.finish();
+
+        KirinoClientCore.postInit();
     }
 
     public void extendModList()
@@ -443,6 +468,22 @@ public class FMLClientHandler implements IFMLSidedHandler
     public Minecraft getClient()
     {
         return client;
+    }
+
+    /**
+     * Get the resource pack list, unmodifiable
+     * @return resource pack list
+     */
+    public List<IResourcePack> getResourcePackList() {
+        return Collections.unmodifiableList(resourcePackList);
+    }
+
+    /**
+     * Get the whole resource pack map, unmodifiable
+     * @return resource pack map
+     */
+    public Map<String, IResourcePack> getResourcePackMap() {
+        return Collections.unmodifiableMap(resourcePackMap);
     }
 
     /**
@@ -636,7 +677,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             {
                 IResourcePack pack = (IResourcePack) resourcePackType.getConstructor(ModContainer.class).newInstance(container);
 
-                PackMetadataSection meta = (PackMetadataSection)pack.getPackMetadata(this.metaSerializer, "pack");
+                PackMetadataSection meta = pack.getPackMetadata(this.metaSerializer, "pack");
 
                 if (meta != null && meta.getPackFormat() == 2)
                 {
@@ -744,7 +785,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public void showInGameModOptions(GuiIngameMenu guiIngameMenu)
     {
-        showGuiScreen(new GuiModList(guiIngameMenu));
+        showGuiScreen(ModListConfig.enable ? new ModListScreen(guiIngameMenu) : new GuiModList(guiIngameMenu));
     }
 
     public IModGuiFactory getGuiFactoryFor(ModContainer selectedMod)
@@ -985,7 +1026,7 @@ public class FMLClientHandler implements IFMLSidedHandler
                     if (resPack instanceof FMLContainerHolder) {
                         FMLContainerHolder containerHolder = (FMLContainerHolder) resPack;
                         ModContainer fmlContainer = containerHolder.getFMLContainer();
-                        logger.error("      mod {} resources at {}", fmlContainer.getModId(), fmlContainer.getSource().getPath());
+                        logger.error("      mod {} resources at {}", fmlContainer.getModId(), fmlContainer.getResource().getPath());
                     }
                     else if (resPack instanceof AbstractResourcePack)
                     {

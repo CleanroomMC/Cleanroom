@@ -40,7 +40,7 @@ public class FMLFileResourcePack extends FileResourcePack implements FMLContaine
 
     public FMLFileResourcePack(ModContainer container)
     {
-        super(container.getSource());
+        super(container.getResource());
         this.container = container;
     }
 

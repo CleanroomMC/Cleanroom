@@ -1,24 +1,24 @@
 --- before/net/minecraft/world/DimensionType.java
 +++ after/net/minecraft/world/DimensionType.java
 @@ -13,6 +13,7 @@
-     private final String field_186075_e;
-     private final String field_186076_f;
-     private final Class <? extends WorldProvider > field_186077_g;
+     private final String name;
+     private final String suffix;
+     private final Class <? extends WorldProvider > clazz;
 +    private boolean shouldLoadSpawn = false;
  
-     private DimensionType(int p_i46672_3_, String p_i46672_4_, String p_i46672_5_, Class <? extends WorldProvider > p_i46672_6_)
+     private DimensionType(int idIn, String nameIn, String suffixIn, Class <? extends WorldProvider > clazzIn)
      {
 @@ -20,6 +21,7 @@
-         this.field_186075_e = p_i46672_4_;
-         this.field_186076_f = p_i46672_5_;
-         this.field_186077_g = p_i46672_6_;
-+        this.shouldLoadSpawn = p_i46672_3_ == 0;
+         this.name = nameIn;
+         this.suffix = suffixIn;
+         this.clazz = clazzIn;
++        this.shouldLoadSpawn = idIn == 0;
      }
  
-     public int func_186068_a()
+     public int getId()
 @@ -74,6 +76,20 @@
  
-         throw new IllegalArgumentException("Invalid dimension id " + p_186069_0_);
+         throw new IllegalArgumentException("Invalid dimension id " + id);
      }
 +
 +    public boolean shouldLoadSpawn(){ return this.shouldLoadSpawn; }
@@ -35,5 +35,5 @@
 +    }
 +    //TODO: Unregister? There is no way to really delete a enum value...
  
-     public static DimensionType func_193417_a(String p_193417_0_)
+     public static DimensionType byName(String nameIn)
      {

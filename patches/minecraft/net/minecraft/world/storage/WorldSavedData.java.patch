@@ -7,21 +7,21 @@
 -public abstract class WorldSavedData
 +public abstract class WorldSavedData implements net.minecraftforge.common.util.INBTSerializable<NBTTagCompound>
  {
-     public final String field_76190_i;
-     private boolean field_76189_a;
+     public final String mapName;
+     private boolean dirty;
 @@ -29,5 +29,15 @@
-     public boolean func_76188_b()
+     public boolean isDirty()
      {
-         return this.field_76189_a;
+         return this.dirty;
 +    }
 +
 +    public void deserializeNBT(NBTTagCompound nbt)
 +    {
-+        this.func_76184_a(nbt);
++        this.readFromNBT(nbt);
 +    }
 +
 +    public NBTTagCompound serializeNBT()
 +    {
-+        return this.func_189551_b(new NBTTagCompound());
++        return this.writeToNBT(new NBTTagCompound());
      }
  }

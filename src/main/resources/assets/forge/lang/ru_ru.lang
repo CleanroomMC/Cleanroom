@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=Переопределение �
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Позволяет установить настройки модов, переопределяющие параметры по умолчанию. Значение ноль в любом пункте отключит возможность загрузки чанков для этого мода.
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ добавить новое переопределение
 forge.configgui.ctgy.VersionCheckConfig=Настройки проверки версий
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=Редактирование настроек из forge_early.cfg, включая OpenGL, окно, ввод и параметры запуска.
+forge.configgui.ctgy.forgeEarlyConfig=Ранние настройки
 
 forge.configgui.biomeSkyBlendRange.tooltip=Управляет диапазоном размытия цветного неба в биомах.
 forge.configgui.biomeSkyBlendRange=Диапазон смешивания цветов неба
@@ -203,7 +205,6 @@ forge.controlsgui.alt=ALT + %s
 fml.menu.mods=Моды
 fml.menu.mods.normal=Обычная
 fml.menu.mods.search=Поиск\:
-fml.menu.modoptions=Настройки модов...
 
 item.forge.bucketFilled.name=Ведро %s
 
@@ -241,3 +242,12 @@ forge.container.enchant.limitedEnchantability=Ограничение зачар�
 attribute.name.generic.reachDistance=Расстояние
 attribute.name.forge.swimSpeed=Скорость плавания
 
+item.burn_time=Burn Time: %d ticks (%d seconds)
+
+item.forge.advanced_shift_info=Hold §eSHIFT§r to show advanced info
+item.forge.advanced_ctrl_info=Hold §9CTRL§r to show NBT list
+item.forge.advanced_info=Advanced Info:
+item.forge.nbt_list=NBT:
+item.forge.nbt_limited=(truncated to %d characters)
+item.forge.oredict=Ore Dictionaries:
+item.forge.translation_key=Unlocalized Name:

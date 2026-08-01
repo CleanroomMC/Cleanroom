@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipesBanners.java
 +++ after/net/minecraft/item/crafting/RecipesBanners.java
-@@ -12,19 +12,16 @@
+@@ -12,12 +12,10 @@
  import net.minecraft.tileentity.TileEntityBanner;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -12,209 +12,86 @@
 -    public static class RecipeAddPattern implements IRecipe
 +    public static class RecipeAddPattern extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
          {
--            @Override
-             public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
-             {
-                 boolean flag = false;
- 
--                for (int i = 0; i < p_77569_1_.func_70302_i_(); i++)
-+                for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
-                 {
-                     ItemStack itemstack = p_77569_1_.func_70301_a(i);
- 
-@@ -44,15 +41,21 @@
-                     }
-                 }
- 
--                return !flag ? false : this.func_190933_c(p_77569_1_) != null;
-+                if (!flag)
-+                {
-+                    return false;
-+                }
-+                else
-+                {
-+                    return this.func_190933_c(p_77569_1_) != null;
-+                }
-             }
- 
--            @Override
-             public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
-             {
-                 ItemStack itemstack = ItemStack.field_190927_a;
- 
--                for (int i = 0; i < p_77572_1_.func_70302_i_(); i++)
-+                for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
-                 {
-                     ItemStack itemstack1 = p_77572_1_.func_70301_a(i);
- 
-@@ -70,13 +73,14 @@
-                 {
-                     int k = 0;
- 
--                    for (int j = 0; j < p_77572_1_.func_70302_i_(); j++)
-+                    for (int j = 0; j < p_77572_1_.func_70302_i_(); ++j)
+             @Override
+             public boolean matches(InventoryCrafting inv, World worldIn)
+@@ -74,9 +72,10 @@
                      {
-                         ItemStack itemstack2 = p_77572_1_.func_70301_a(j);
+                         ItemStack itemstack2 = inv.getStackInSlot(j);
  
--                        if (itemstack2.func_77973_b() == Items.field_151100_aR)
+-                        if (itemstack2.getItem() == Items.DYE)
 +                        int color = net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack2);
 +                        if (color != -1)
                          {
--                            k = itemstack2.func_77960_j();
+-                            k = itemstack2.getMetadata();
 +                            k = color;
                              break;
                          }
                      }
-@@ -103,25 +107,19 @@
-                 return itemstack;
-             }
- 
--            @Override
-             public ItemStack func_77571_b()
-             {
-                 return ItemStack.field_190927_a;
-             }
- 
--            @Override
-             public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
-             {
--                NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
-+                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
- 
--                for (int i = 0; i < nonnulllist.size(); i++)
-+                for (int i = 0; i < nonnulllist.size(); ++i)
+@@ -117,11 +116,7 @@
+                 for (int i = 0; i < nonnulllist.size(); i++)
                  {
-                     ItemStack itemstack = p_179532_1_.func_70301_a(i);
+                     ItemStack itemstack = inv.getStackInSlot(i);
 -
--                    if (itemstack.func_77973_b().func_77634_r())
+-                    if (itemstack.getItem().hasContainerItem())
 -                    {
--                        nonnulllist.set(i, new ItemStack(itemstack.func_77973_b().func_77668_q()));
+-                        nonnulllist.set(i, new ItemStack(itemstack.getItem().getContainerItem()));
 -                    }
 +                    nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
                  }
  
                  return nonnulllist;
-@@ -141,13 +139,13 @@
-                             boolean flag1 = false;
-                             boolean flag2 = false;
+@@ -147,7 +142,7 @@
  
--                            for (int i = 0; i < p_190933_1_.func_70302_i_() && flag; i++)
-+                            for (int i = 0; i < p_190933_1_.func_70302_i_() && flag; ++i)
-                             {
-                                 ItemStack itemstack = p_190933_1_.func_70301_a(i);
- 
-                                 if (!itemstack.func_190926_b() && itemstack.func_77973_b() != Items.field_179564_cE)
+                                 if (!itemstack.isEmpty() && itemstack.getItem() != Items.BANNER)
                                  {
--                                    if (itemstack.func_77973_b() == Items.field_151100_aR)
+-                                    if (itemstack.getItem() == Items.DYE)
 +                                    if (net.minecraftforge.oredict.DyeUtils.isDye(itemstack))
                                      {
                                          if (flag2)
                                          {
-@@ -179,7 +177,7 @@
-                         {
-                             int j = -1;
+@@ -187,7 +182,7 @@
  
--                            for (int k = 0; k < p_190933_1_.func_70302_i_() && flag; k++)
-+                            for (int k = 0; k < p_190933_1_.func_70302_i_() && flag; ++k)
-                             {
-                                 int l = k / 3;
-                                 int i1 = k % 3;
-@@ -187,7 +185,7 @@
- 
-                                 if (!itemstack1.func_190926_b() && itemstack1.func_77973_b() != Items.field_179564_cE)
+                                 if (!itemstack1.isEmpty() && itemstack1.getItem() != Items.BANNER)
                                  {
--                                    if (itemstack1.func_77973_b() != Items.field_151100_aR)
+-                                    if (itemstack1.getItem() != Items.DYE)
 +                                    if (!net.minecraftforge.oredict.DyeUtils.isDye(itemstack1))
                                      {
                                          flag = false;
                                          break;
-@@ -229,29 +227,25 @@
-                 return null;
-             }
- 
--            @Override
-             public boolean func_192399_d()
-             {
+@@ -235,7 +230,6 @@
                  return true;
              }
  
 -            @SideOnly(Side.CLIENT)
--            @Override
-             public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
+             @Override
+             public boolean canFit(int width, int height)
              {
-                 return p_194133_1_ >= 3 && p_194133_2_ >= 3;
+@@ -243,7 +237,7 @@
              }
          }
  
 -    public static class RecipeDuplicatePattern implements IRecipe
 +    public static class RecipeDuplicatePattern extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
          {
--            @Override
-             public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
-             {
-                 ItemStack itemstack = ItemStack.field_190927_a;
-                 ItemStack itemstack1 = ItemStack.field_190927_a;
+             @Override
+             public boolean matches(InventoryCrafting inv, World worldIn)
+@@ -347,9 +341,9 @@
  
--                for (int i = 0; i < p_77569_1_.func_70302_i_(); i++)
-+                for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
-                 {
-                     ItemStack itemstack2 = p_77569_1_.func_70301_a(i);
- 
-@@ -312,10 +306,9 @@
-                 return !itemstack.func_190926_b() && !itemstack1.func_190926_b();
-             }
- 
--            @Override
-             public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
-             {
--                for (int i = 0; i < p_77572_1_.func_70302_i_(); i++)
-+                for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
-                 {
-                     ItemStack itemstack = p_77572_1_.func_70301_a(i);
- 
-@@ -330,26 +323,24 @@
-                 return ItemStack.field_190927_a;
-             }
- 
--            @Override
-             public ItemStack func_77571_b()
-             {
-                 return ItemStack.field_190927_a;
-             }
- 
--            @Override
-             public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
-             {
--                NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
-+                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
- 
--                for (int i = 0; i < nonnulllist.size(); i++)
-+                for (int i = 0; i < nonnulllist.size(); ++i)
-                 {
-                     ItemStack itemstack = p_179532_1_.func_70301_a(i);
- 
-                     if (!itemstack.func_190926_b())
+                     if (!itemstack.isEmpty())
                      {
--                        if (itemstack.func_77973_b().func_77634_r())
-+                        if (itemstack.func_77973_b().hasContainerItem(itemstack))
+-                        if (itemstack.getItem().hasContainerItem())
++                        if (itemstack.getItem().hasContainerItem(itemstack))
                          {
--                            nonnulllist.set(i, new ItemStack(itemstack.func_77973_b().func_77668_q()));
+-                            nonnulllist.set(i, new ItemStack(itemstack.getItem().getContainerItem()));
 +                            nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
                          }
-                         else if (itemstack.func_77942_o() && TileEntityBanner.func_175113_c(itemstack) > 0)
+                         else if (itemstack.hasTagCompound() && TileEntityBanner.getPatterns(itemstack) > 0)
                          {
-@@ -363,14 +354,11 @@
-                 return nonnulllist;
-             }
- 
--            @Override
-             public boolean func_192399_d()
-             {
+@@ -369,7 +363,6 @@
                  return true;
              }
  
 -            @SideOnly(Side.CLIENT)
--            @Override
-             public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
+             @Override
+             public boolean canFit(int width, int height)
              {
-                 return p_194133_1_ * p_194133_2_ >= 2;

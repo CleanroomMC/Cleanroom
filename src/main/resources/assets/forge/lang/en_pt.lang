@@ -53,6 +53,8 @@ forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod Overrides, yarrr!
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Allows ye to define mod-specific settings that will override the defaults, arrr! A value of zero in either entry effectively disables any chunkloading capabilities fer that mod.
 forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Add New Mod Override, hoist the sails!
 forge.configgui.ctgy.VersionCheckConfig=Version Check Settings, ye salty sea dog!
+forge.configgui.ctgy.forgeEarlyConfig.tooltip=Edit the settings in forge_early.cfg, includin' OpenGL, windows, input, and startup, savvy?
+forge.configgui.ctgy.forgeEarlyConfig=Early Config, before the tides rise!
 
 forge.configgui.biomeSkyBlendRange.tooltip=Control the range of sky blending fer colored skies in biomes, savvy?
 forge.configgui.biomeSkyBlendRange=Biome Sky Blend Range, ho ho!
@@ -112,3 +114,13 @@ commands.forge.entity.list.spawner.none=No spawners found, blow the man down!
 
 commands.forge.tracking.timingEntrySet=%s - %s [%d, %d, %d]: %s, a fine entry!
 commands.forge.tracking.timingEntryNotSet=No data has been recorded yet, ye scallywag!
+
+item.burn_time=Burn Time: %d ticks (%d seconds)
+
+item.forge.advanced_shift_info=Hold §eSHIFT§r t' spy extra fancy info, ye scallywag!
+item.forge.advanced_ctrl_info=Hold §9CTRL§r t' spy the NBT list, yarrr!
+item.forge.advanced_info=Secret Lore fer Clever Buccaneers:
+item.forge.nbt_list=NBT Booty:
+item.forge.nbt_limited=(trimmed t' %d glyphs, ye scurvy dog!)
+item.forge.oredict=Ore Dictionaries o' the realm:
+item.forge.translation_key=Unlocalized Name, matey:

@@ -11,19 +11,19 @@
      UNCOMMON(TextFormatting.YELLOW, "Uncommon"),
 @@ -16,5 +16,17 @@
      {
-         this.field_77937_e = p_i45349_3_;
-         this.field_77934_f = p_i45349_4_;
+         this.color = color;
+         this.rarityName = name;
 +    }
 +
 +    @Override
 +    public TextFormatting getColor()
 +    {
-+        return this.field_77937_e;
++        return this.color;
 +    }
 +
 +    @Override
 +    public String getName()
 +    {
-+        return this.field_77934_f;
++        return this.rarityName;
      }
  }

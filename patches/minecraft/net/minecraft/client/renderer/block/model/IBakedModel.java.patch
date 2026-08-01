@@ -2,15 +2,15 @@
 +++ after/net/minecraft/client/renderer/block/model/IBakedModel.java
 @@ -21,7 +21,18 @@
  
-     TextureAtlasSprite func_177554_e();
+     TextureAtlasSprite getParticleTexture();
  
--    ItemCameraTransforms func_177552_f();
+-    ItemCameraTransforms getItemCameraTransforms();
 +    @Deprecated
-+    default ItemCameraTransforms func_177552_f() { return ItemCameraTransforms.field_178357_a; }
++    default ItemCameraTransforms getItemCameraTransforms() { return ItemCameraTransforms.DEFAULT; }
  
-     ItemOverrideList func_188617_f();
+     ItemOverrideList getOverrides();
 +
-+    default boolean isAmbientOcclusion(IBlockState state) { return func_177555_b(); }
++    default boolean isAmbientOcclusion(IBlockState state) { return isAmbientOcclusion(); }
 +
 +    /*
 +     * Returns the pair of the model for the given perspective, and the matrix
