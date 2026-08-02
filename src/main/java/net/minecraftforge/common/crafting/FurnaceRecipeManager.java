@@ -165,9 +165,5 @@ public class FurnaceRecipeManager {
             }
             return new ItemKey(stack.getItem(), metadata);
         }
-
-        public ItemStack toStack() {
-            return new ItemStack(item, metadata);
-        }
     }
 }
