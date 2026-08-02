@@ -1,14 +1,47 @@
 --- before/net/minecraft/item/crafting/FurnaceRecipes.java
 +++ after/net/minecraft/item/crafting/FurnaceRecipes.java
-@@ -121,6 +121,7 @@
+@@ -17,6 +17,7 @@
+     private static final FurnaceRecipes SMELTING_BASE = new FurnaceRecipes();
+     private final Map<ItemStack, ItemStack> smeltingList = Maps.newHashMap();
+     private final Map<ItemStack, Float> experienceList = Maps.newHashMap();
++    private final Map<ItemStack, Integer> cookTimeList = Maps.newHashMap();
  
+     public static FurnaceRecipes instance()
+     {
+@@ -114,15 +115,32 @@
+         this.addSmelting(Item.getItemFromBlock(input), stack, experience);
+     }
+ 
++    public void addSmeltingRecipeForBlock(Block input, ItemStack stack, float experience, int cookTime)
++    {
++        this.addSmelting(Item.getItemFromBlock(input), stack, experience, cookTime);
++    }
++
+     public void addSmelting(Item input, ItemStack stack, float experience)
+     {
+         this.addSmeltingRecipe(new ItemStack(input, 1, 32767), stack, experience);
+     }
+ 
++    public void addSmelting(Item input, ItemStack stack, float experience, int cookTime)
++    {
++        this.addSmeltingRecipe(new ItemStack(input, 1, 32767), stack, experience, cookTime);
++    }
++
      public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience)
      {
++        this.addSmeltingRecipe(input, stack, experience, 200);
++    }
++
++    public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience, int cookTime)
++    {
 +        if (getSmeltingResult(input) != ItemStack.EMPTY) { net.minecraftforge.fml.common.FMLLog.log.info("Ignored smelting recipe with conflicting input: {} = {}", input, stack); return; }
          this.smeltingList.put(input, stack);
          this.experienceList.put(stack, experience);
++        this.cookTimeList.put(input, cookTime);
      }
-@@ -151,6 +152,9 @@
+ 
+     public ItemStack getSmeltingResult(ItemStack stack)
+@@ -151,6 +169,9 @@
  
      public float getSmeltingExperience(ItemStack stack)
      {
@@ -18,3 +51,22 @@
          for (Entry<ItemStack, Float> entry : this.experienceList.entrySet())
          {
              if (this.compareItemStacks(stack, entry.getKey()))
+@@ -160,5 +181,18 @@
+         }
+ 
+         return 0.0F;
++    }
++
++    public int getCookTime(ItemStack stack)
++    {
++        for (Entry<ItemStack, Integer> entry : this.cookTimeList.entrySet())
++        {
++            if (this.compareItemStacks(stack, entry.getKey()))
++            {
++                return entry.getValue();
++            }
++        }
++
++        return 200;
+     }
+ }
