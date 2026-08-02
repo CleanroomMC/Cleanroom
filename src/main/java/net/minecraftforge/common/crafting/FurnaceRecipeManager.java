@@ -1,4 +1,4 @@
-package com.cleanroommc.common.crafting;
+package net.minecraftforge.common.crafting;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -155,5 +155,19 @@ public class FurnaceRecipeManager {
     private static class RecipeBucket {
         final Int2ObjectMap<SmeltingRecipe> specific = new Int2ObjectOpenHashMap<>();
         SmeltingRecipe wildcard;
+    }
+
+    private record ItemKey(Item item, int metadata) {
+        public static ItemKey of(ItemStack stack) {
+            int metadata = stack.getMetadata();
+            if (!stack.getHasSubtypes()) {
+                metadata = 0;
+            }
+            return new ItemKey(stack.getItem(), metadata);
+        }
+
+        public ItemStack toStack() {
+            return new ItemStack(item, 1, metadata);
+        }
     }
 }
