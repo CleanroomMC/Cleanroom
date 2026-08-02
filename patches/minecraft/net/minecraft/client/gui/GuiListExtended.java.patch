@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/gui/GuiListExtended.java
++++ after/net/minecraft/client/gui/GuiListExtended.java
+@@ -59,7 +59,7 @@
+ 
+             if (i >= 0)
+             {
+-                int j = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
++                int j = this.getListEntryLeft();
+                 int k = this.top + 4 - this.getAmountScrolled() + i * this.slotHeight + this.headerPadding;
+                 int l = mouseX - j;
+                 int i1 = mouseY - k;
+@@ -79,7 +79,7 @@
+     {
+         for (int i = 0; i < this.getSize(); i++)
+         {
+-            int j = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
++            int j = this.getListEntryLeft();
+             int k = this.top + 4 - this.getAmountScrolled() + i * this.slotHeight + this.headerPadding;
+             int l = x - j;
+             int i1 = y - k;

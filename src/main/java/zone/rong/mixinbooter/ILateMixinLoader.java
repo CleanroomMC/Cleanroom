@@ -3,16 +3,20 @@ package zone.rong.mixinbooter;
 import java.util.List;
 
 /**
- * @deprecated We forked Mixin.
- * <br>New approach:
- * Check <a href=https://github.com/CleanroomMC/Fugue/tree/master>Fugue</a>.<br>
- * Summary:<br>
- * If you are coremod, just call {@link org.spongepowered.asm.mixin.Mixins#addConfigurations(String...)} in loadingPlugin or Tweaker, and handle shouldApply in IMixinConfigPlugin<br>
- * If you aren't coremod:<br>
- * Group mixins by phase, add target env in config, use @env(MOD) for mod mixins.<br>
- * Add {"MixinConfigs": "modid.mod.mixin.json,modid.default.mixin.json"} to your jar manifest.<br>
- * Handle shouldApply in IMixinConfigPlugin. You can call {@link net.minecraftforge.fml.common.Loader#isModLoaded(String)} for {@link org.spongepowered.asm.mixin.MixinEnvironment.Phase#MOD} mixin.<br>
- * Recommend to group target mod name by package name. You can also get config instance from {@link org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin#injectConfig(org.spongepowered.asm.mixin.transformer.Config)}.
+ * Late mixins are defined as mixins that affects mod classes.
+ * Or technically, classes that can be queried via the current state of
+ * {@link net.minecraft.launchwrapper.LaunchClassLoader} and {@link net.minecraftforge.fml.common.ModClassLoader}
+ *
+ * Majority if not all vanilla and forge classes would have been loaded here.
+ * If you want to add mixins that affect vanilla or forge, use and consult {@link IEarlyMixinLoader}
+ *
+ * Implement this in any arbitrary class. Said class will be constructed when mixins are ready to be queued.
+ * Return all late mixin configs you want MixinBooter to queue and send to Mixin library.
+ *
+ * @deprecated as of 11.0, the line of "early" and "late" mixin loading no longer is present, use
+ *             {@code MixinConfigs} manifest entry to list your configs or {@code MixinConnector} to denote
+ *             a class implementing {@link org.spongepowered.asm.mixin.connect.IMixinConnector} and call
+ *             {@link org.spongepowered.asm.mixin.Mixins#addConfiguration(String)} (or related methods) there
  */
 @Deprecated
 public interface ILateMixinLoader {
@@ -36,7 +40,7 @@ public interface ILateMixinLoader {
     /**
      * Runs when a mixin config is successfully queued and sent to Mixin library.
      *
-     * @param mixinConfig mixin config name, queried via {@link IEarlyMixinLoader#getMixinConfigs()}.
+     * @param mixinConfig mixin config name, queried via {@link ILateMixinLoader#getMixinConfigs()}.
      * @return true if the mixinConfig should be queued, false if it should not.
      */
     default boolean shouldMixinConfigQueue(String mixinConfig) {
@@ -54,7 +58,7 @@ public interface ILateMixinLoader {
 
     /**
      * Runs when a mixin config is successfully queued and sent to Mixin library.
-     * @param mixinConfig mixin config name, queried via {@link IEarlyMixinLoader#getMixinConfigs()}.
+     * @param mixinConfig mixin config name, queried via {@link ILateMixinLoader#getMixinConfigs()}.
      */
     default void onMixinConfigQueued(String mixinConfig) { }
 

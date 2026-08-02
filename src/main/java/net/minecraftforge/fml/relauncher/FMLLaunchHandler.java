@@ -23,8 +23,10 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.CleanroomVersion;
-import net.minecraft.launchwrapper.Launch;
+import com.cleanroommc.util.CleanroomLog;
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -32,11 +34,12 @@ import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 
 import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.launch.MixinBootstrap;
 
 public class FMLLaunchHandler
 {
     private static FMLLaunchHandler INSTANCE;
-    static Side side;
+    static Side side = CleanroomEnvironment.side();
     private LaunchClassLoader classLoader;
     private FMLTweaker tweaker;
     private File minecraftHome;
@@ -66,6 +69,13 @@ public class FMLLaunchHandler
         this.classLoader = launchLoader;
         this.tweaker = tweaker;
         this.minecraftHome = tweaker.getGameDir();
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.launch.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.service.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.mixin.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.logging.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.util.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.asm.lib.");
+        this.classLoader.addTransformerExclusion("org.objectweb.asm.");
         this.classLoader.addTransformerExclusion("com.cleanroommc.loader.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.relauncher.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.classloading.");
@@ -80,13 +90,11 @@ public class FMLLaunchHandler
 
     private void setupClient()
     {
-        side = Side.CLIENT;
         setupHome();
     }
 
     private void setupServer()
     {
-        side = Side.SERVER;
         setupHome();
     }
 
@@ -111,6 +119,10 @@ public class FMLLaunchHandler
         try
         {
             LibraryManager.setup(minecraftHome);
+            CleanroomLog.get().info("Initializing CleanMix...");
+            MixinBootstrap.init();
+            CleanroomLog.get().info("Initializing MixinExtras...");
+            MixinExtrasBootstrap.init();
             CoreModManager.handleLaunch(minecraftHome, classLoader, tweaker);
         }
         catch (Throwable t)
@@ -144,6 +156,6 @@ public class FMLLaunchHandler
 
     public static boolean isDeobfuscatedEnvironment()
     {
-        return CoreModManager.deobfuscatedEnvironment;
+        return CleanroomEnvironment.isDev();
     }
 }

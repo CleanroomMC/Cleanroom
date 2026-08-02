@@ -148,81 +148,12 @@
         {
             "downloads": {
                 "artifact": {
-                    "sha1": "6ef160c3133a78de015830860197602ca1c855d3",
-                    "size": 40502,
-                    "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0.jar"
-                },
-                "classifiers": {
-                    "natives-osx": {
-                        "sha1": "08befab4894d55875f33c3d300f4f71e6e828f64",
-                        "size": 5629,
-                        "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-natives-osx.jar"
-                    }
-                }
-            },
-            "extract": {
-                "exclude": [
-                    "META-INF/"
-                ]
-            },
-            "name": "ca.weblite:java-objc-bridge:1.0.0",
-            "natives": {
-                "osx": "natives-osx"
-            },
-            "rules": [
-                {
-                    "action": "allow",
-                    "os": {
-                        "name": "osx"
-                    }
-                }
-            ]
-        },
-        {
-            "downloads": {
-                "artifact": {
-                    "sha1": "6ef160c3133a78de015830860197602ca1c855d3",
-                    "size": 40502,
-                    "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0.jar"
-                }
-            },
-            "name": "ca.weblite:java-objc-bridge:1.0.0",
-            "rules": [
-                {
-                    "action": "allow",
-                    "os": {
-                        "name": "osx"
-                    }
-                }
-            ]
-        },
-        {
-            "downloads": {
-                "artifact": {
                     "sha1": "f378f889797edd7df8d32272c06ca80a1b6b0f58",
                     "size": 13164,
                     "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.3/text2speech-1.11.3.jar"
                 }
             },
             "name": "com.mojang:text2speech:1.11.3",
-            "rules": [
-                {
-                    "action": "allow",
-                    "os": {
-                        "name": "osx-arm64"
-                    }
-                }
-            ]
-        },
-        {
-            "downloads": {
-                "artifact": {
-                    "sha1": "369a83621e3c65496348491e533cb97fe5f2f37d",
-                    "size": 91947,
-                    "url": "https://github.com/MinecraftMachina/Java-Objective-C-Bridge/releases/download/1.1.0-mmachina.1/java-objc-bridge-1.1.jar"
-                }
-            },
-            "name": "ca.weblite:java-objc-bridge:1.1.0-mmachina.1",
             "rules": [
                 {
                     "action": "allow",

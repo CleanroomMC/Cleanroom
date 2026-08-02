@@ -19,47 +19,35 @@
 
 package net.minecraftforge.fml.relauncher;
 
-import com.cleanroommc.common.PatchModPresentChecker;
+import com.cleanroommc.cleanmix.CleanMixHooks;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
+import com.cleanroommc.common.CleanroomEnvironment;
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraftforge.common.ForgeEarlyConfig;
-import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.CertificateHelper;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.asm.ASMTransformerWrapper;
-import net.minecraftforge.fml.common.asm.transformers.ModAccessTransformer;
 import net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker;
 import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.*;
-import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
-import org.spongepowered.asm.util.Constants;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.function.ToIntFunction;
-import java.util.jar.Attributes;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 public class CoreModManager {
-    private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
-    private static final Attributes.Name FORCELOADASMOD = new Attributes.Name("ForceLoadAsMod");
-    private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
-    private static boolean hasNonCrlMods;
     private static final Set<String> loadedPlugins = new HashSet<>();
-    private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "net.minecraftforge.fml.relauncher.MixinBooterPlugin" };
+    private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
     private static List<FMLPluginWrapper> loadPlugins;
@@ -79,7 +67,7 @@ public class CoreModManager {
         }
     }
 
-    private static class FMLPluginWrapper implements ITweaker {
+    public static final class FMLPluginWrapper implements ITweaker {
         public final String name;
         public final IFMLLoadingPlugin coreModInstance;
         public final List<String> predepends;
@@ -186,25 +174,10 @@ public class CoreModManager {
 
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
     {
-        try {
         CoreModManager.mcDir = mcDir;
         CoreModManager.tweaker = tweaker;
 
-        //TODO: Detect this better? Support install time deobfusication? Decouple deobf from dev? Add dev flag in GradleStart?
-        try
-        {
-            // Are we in a 'decompiled' environment?
-            byte[] bs = classLoader.getClassBytes("net.minecraft.world.World");
-            if (bs != null)
-            {
-                FMLLog.log.info("Managed to load a deobfuscated Minecraft name- we are in a deobfuscated environment. Skipping runtime deobfuscation");
-                deobfuscatedEnvironment = true;
-            }
-        }
-        catch (IOException e1)
-        {
-            // NOOP
-        }
+        deobfuscatedEnvironment = CleanroomEnvironment.isDev(); // TODO: check
 
         if (!deobfuscatedEnvironment)
         {
@@ -260,8 +233,7 @@ public class CoreModManager {
                 }
             }
         }
-        // Now that we have the root plugins loaded - lets see what else might
-        // be around
+        // Now that we have the root plugins loaded - lets see what else might be around
         String commandLineCoremods = System.getProperty("fml.coreMods.load", "");
         for (String coreModClassName : commandLineCoremods.split(","))
         {
@@ -272,287 +244,15 @@ public class CoreModManager {
             FMLLog.log.info("Found a command line coremod : {}", coreModClassName);
             loadCoreMod(classLoader, coreModClassName, null);
         }
-        discoverCoreMods(mcDir, classLoader);
-        } finally {
-            PatchModPresentChecker.performCheck();
-        }
+        // Coremods
+        CleanroomModDiscoverer.instance().discoverCoreMods(mcDir, classLoader, tweaker);
+        // Mixin Mods
+        CleanroomModDiscoverer.instance().discoverMixinMods();
     }
 
-    private static void findDerpMods(LaunchClassLoader classLoader, File modDir, File modDirVer)
-    {
-        File[] derplist = listFiles(path -> path.getName().endsWith(".jar.zip"), modDir, modDirVer);
-        if (derplist != null && derplist.length > 0)
-        {
-            FMLLog.log.fatal("FML has detected several badly downloaded jar files,  which have been named as zip files. You probably need to download them again, or they may not work properly");
-            for (File f : derplist)
-                FMLLog.log.fatal("Problem file : {}", f.getName());
-        }
-
-        FileFilter derpdirfilter = pathname -> pathname.isDirectory() && new File(pathname,"META-INF").isDirectory();
-        File[] derpdirlist = listFiles(derpdirfilter, modDir, modDirVer);
-        if (derpdirlist != null && derpdirlist.length > 0)
-        {
-            FMLLog.log.fatal("There appear to be jars extracted into the mods directory. This is VERY BAD and will almost NEVER WORK WELL");
-            FMLLog.log.fatal("You should place original jars only in the mods directory. NEVER extract them to the mods directory.");
-            FMLLog.log.fatal("The directories below appear to be extracted jar files. Fix this before you continue.");
-
-            for (File f : derpdirlist)
-            {
-                FMLLog.log.fatal("Directory {} contains {}", f.getName(), Arrays.asList(new File(f,"META-INF").list()));
-            }
-
-            RuntimeException re = new RuntimeException("Extracted mod jars found, loading will NOT continue");
-            // We're generating a crash report for the launcher to show to the user here
-            // Does this actually work with the obfed names?
-            try
-            {
-                Class<?> crashreportclass = classLoader.loadClass("b");
-                Object crashreport = crashreportclass.getMethod("a", Throwable.class, String.class).invoke(null, re, "FML has discovered extracted jar files in the mods directory.\nThis breaks mod loading functionality completely.\nRemove the directories and replace with the jar files originally provided.");
-                File crashreportfile = new File(new File(modDir.getParentFile(),"crash-reports"),String.format("fml-crash-%1$tY-%1$tm-%1$td_%1$tH.%1$tM.%1$tS.txt",Calendar.getInstance()));
-                crashreportclass.getMethod("a",File.class).invoke(crashreport, crashreportfile);
-                FMLLog.log.fatal("#@!@# FML has crashed the game deliberately. Crash report saved to: #@!@# {}", crashreportfile.getAbsolutePath());
-            } catch (Exception e)
-            {
-                FMLLog.log.fatal("#@!@# FML has crashed while generating a crash report, please report this. #@!@#", e);
-                // NOOP - hopefully
-            }
-            throw re;
-        }
-    }
-
-    private static File[] listFiles(FileFilter filter, File ... dirs)
-    {
-        File[] ret = null;
-        for (File dir : dirs)
-        {
-            if (!dir.isDirectory() || !dir.exists())
-                continue;
-            if (ret == null)
-                ret = dir.listFiles(filter);
-            else
-                ret = ObjectArrays.concat(ret, dir.listFiles(filter), File.class);
-        }
-        return ret == null ? new File[0] : ret;
-    }
-
-    private static void discoverCoreMods(File mcDir, LaunchClassLoader classLoader)
-    {
-
-        File modsDir = setupCoreModDir(mcDir);
-        File modsDirVer = new File(modsDir, FMLInjectionData.mccversion);
-
-        findDerpMods(classLoader, modsDir, modsDirVer);
-
-        //By the time we get here, all bundeled jars should be extracted to the proper repos.
-        //As well as the mods folders being cleaned up {any files that have maven info being moved to maven folder}
-
-        FMLLog.log.debug("Discovering coremods");
-        //Do we want to sort the full list after resolving artifacts?
-        //TODO: Add dependency gathering?
-        List<File> candidates = LibraryManager.getCandidates();
-        Set<String> mixin_configs = new HashSet<>();
-        File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
-        for (File coreMod : candidates)
-        {
-            if (coreMod.isDirectory())
-            {
-                FMLLog.log.debug("Ignoring folder {} in coremod searching", coreMod);
-                continue;
-            }
-            FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
-            JarFile jar = null;
-            Attributes mfAttributes;
-            String fmlCorePlugin;
-            String configs;
-            String cascadedTweaker;
-            boolean containNonMods, ignoreMods = false;
-            try
-            {
-                File manifest = new File(coreMod.getAbsolutePath() + ".meta");
-
-                if (LibraryManager.DISABLE_EXTERNAL_MANIFEST || !manifest.exists())
-                {
-                    jar = new JarFile(coreMod);
-                    mfAttributes = jar.getManifest() == null ? null : jar.getManifest().getMainAttributes();
-                }
-                else
-                {
-                    FileInputStream fis = new FileInputStream(manifest);
-                    mfAttributes = new Manifest(fis).getMainAttributes();
-                    fis.close();
-                }
-
-                if (mfAttributes == null) // Not a coremod and no access transformer list
-                    continue;
-
-                String modSide = mfAttributes.getValue(LibraryManager.MODSIDE);
-                if (modSide != null && !"BOTH".equals(modSide) && !FMLLaunchHandler.side().name().equals(modSide))
-                {
-                    FMLLog.log.debug("Mod {} has ModSide meta-inf value {}, and we're {} It will be ignored", coreMod.getName(), modSide, FMLLaunchHandler.side.name());
-                    ignoredModFiles.add(coreMod.getName());
-                    continue;
-                }
-
-                String ats = mfAttributes.getValue(ModAccessTransformer.FMLAT);
-                if (ats != null && !ats.isEmpty())
-                {
-                    if (jar == null) //We could of loaded the external manifest earlier, if so the jar isn't loaded.
-                        jar = new JarFile(coreMod);
-                    ModAccessTransformer.addJar(jar, ats);
-                }
-                configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
-                cascadedTweaker = mfAttributes.getValue("TweakClass");
-                containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
-                if (cascadedTweaker != null)
-                {
-                    if (containNonMods)
-                    {
-                        for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" "))
-                        {
-                            classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
-                        }
-                    }
-                    FMLLog.log.info("Loading tweaker {} from {}", cascadedTweaker, coreMod.getName());
-                    Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
-                    sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
-                    handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
-                    if (!Strings.isNullOrEmpty(configs))
-                        for (String singleMixinConfig : configs.split(","))
-                            mixin_configs.add(singleMixinConfig.trim());
-                    ignoredModFiles.add(coreMod.getName());
-                    if (!MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker))
-                    {
-                        continue;
-                    }
-                }
-                List<String> modTypes = mfAttributes.containsKey(MODTYPE) ? Arrays.asList(mfAttributes.getValue(MODTYPE).split(",")) : ImmutableList.of("FML");
-
-                if (modTypes.contains("FML")) hasNonCrlMods = true;
-
-                if (!modTypes.contains("FML") && !modTypes.contains("CRL"))
-                {
-                    FMLLog.log.debug("Adding {} to the list of things to skip. It is not an FML mod, it has types {}", coreMod.getName(), modTypes);
-                    ignoredModFiles.add(coreMod.getName());
-                    continue;
-                }
-                fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
-                for (String plugin : ForgeEarlyConfig.LOADING_PLUGIN_BLACKLIST)
-                {
-                    if (plugin.equals(fmlCorePlugin))
-                    {
-                        ignoreMods = true;
-                        break;
-                    }
-                }
-                if (ignoreMods)
-                {
-                    ignoredModFiles.add(coreMod.getName());
-                    FMLLog.log.warn("The mod with loading plugin {} is in blacklist and won't be loaded. Check forge_early.cfg for more info.", fmlCorePlugin);
-                    continue;
-                }
-                if (fmlCorePlugin == null)
-                {
-                    // Not a coremod
-                    FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                    if (MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && (mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD)))
-                    {
-                        FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in mixin container {}.", coreMod.getName());
-                        candidateModFiles.add(coreMod.getName());
-                        ignoredModFiles.remove(coreMod.getName());
-                    }
-                    continue;
-                }
-            }
-            catch (IOException ioe)
-            {
-                FMLLog.log.error("Unable to read the jar file {} - ignoring", coreMod.getName(), ioe);
-                continue;
-            }
-            finally
-            {
-                closeQuietly(jar);
-            }
-            // Support things that are mod jars, but not FML mod jars
-            try
-            {
-                if (containNonMods)
-                {
-                    for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" "))
-                    {
-                        classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
-                    }
-                }
-                classLoader.addURL(coreMod.toURI().toURL());
-                if (!Strings.isNullOrEmpty(configs))
-                    mixin_configs.addAll(List.of(configs.split(",")));
-                if (!(mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD)))
-                {
-                    FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
-                    ignoredModFiles.add(coreMod.getName());
-                }
-                else
-                {
-                    FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
-                            coreMod.getName());
-                    candidateModFiles.add(coreMod.getName());
-                    ignoredModFiles.remove(coreMod.getName());
-                }
-            }
-            catch (MalformedURLException e)
-            {
-                FMLLog.log.error("Unable to convert file into a URL. weird", e);
-                continue;
-            }
-            loadCoreMod(classLoader, fmlCorePlugin, coreMod);
-        }
-        String devConfigs = System.getProperty("crl.dev.mixin");
-        if (!Strings.isNullOrEmpty(devConfigs))
-        {
-            for (String singleMixinConfig : devConfigs.split(","))
-                mixin_configs.add(singleMixinConfig.trim());
-        }
-        Launch.blackboard.put(Constants.ManifestAttributes.MIXINCONFIGS, mixin_configs);
-    }
-
+    // Some mods call this reflectively
     private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) throws MalformedURLException {
-        try
-        {
-            classLoader.addURL(coreMod.toURI().toURL());
-            CoreModManager.tweaker.injectCascadingTweak(cascadedTweaker);
-            tweakSorting.put(cascadedTweaker,sortingOrder);
-        }
-        catch (Exception e)
-        {
-            FMLLog.log.info("There was a problem trying to load the mod dir tweaker {}", coreMod.getAbsolutePath(), e);
-            //FMLLog.log.info("Thread loader: " + classLoader.getClass() + ",\nLoader of loader: " + classLoader.getClass().getClassLoader().getClass() + ",\nCoremod loader: " + coreMod.toURI().toURL().getClass());
-        }
-    }
-
-    /**
-     * @param mcDir
-     *            the minecraft home directory
-     * @return the coremod directory
-     */
-    private static File setupCoreModDir(File mcDir)
-    {
-        File coreModDir = new File(mcDir, "mods");
-        try
-        {
-            coreModDir = coreModDir.getCanonicalFile();
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(String.format("Unable to canonicalize the coremod dir at %s", mcDir.getName()), e);
-        }
-        if (!coreModDir.exists())
-        {
-            coreModDir.mkdir();
-        }
-        else if (coreModDir.exists() && !coreModDir.isDirectory())
-        {
-            throw new RuntimeException(String.format("Found a coremod file in %s that's not a directory", mcDir.getName()));
-        }
-        return coreModDir;
+        injectDiscoveredCascadingTweaker(coreMod, cascadedTweaker, classLoader, tweaker, sortingOrder);
     }
 
     public static List<String> getIgnoredMods()
@@ -568,6 +268,24 @@ public class CoreModManager {
     public static List<String> getReparseableCoremods()
     {
         return candidateModFiles;
+    }
+
+    public static void injectDiscoveredCascadingTweaker(File coreMod, String cascadedTweaker, LaunchClassLoader classLoader, FMLTweaker tweaker, int sortingOrder) throws MalformedURLException {
+        try
+        {
+            classLoader.addURL(coreMod.toURI().toURL());
+            tweaker.injectCascadingTweak(cascadedTweaker);
+            tweakSorting.put(cascadedTweaker, sortingOrder);
+        }
+        catch (Exception e)
+        {
+            FMLLog.log.info("There was a problem trying to load tweaker {} from {}", cascadedTweaker.getClass().getName(), coreMod.getAbsolutePath(), e);
+        }
+    }
+
+    public static boolean isCoreModLoaded(String coreModClass)
+    {
+        return loadedPlugins.contains(coreModClass);
     }
 
     private static FMLPluginWrapper loadCoreMod(LaunchClassLoader classLoader, String coreModClass, File location)
@@ -659,7 +377,6 @@ public class CoreModManager {
             loadPlugins.add(wrap);
             loadedPlugins.add(coreModClass);
             FMLLog.log.debug("Enqueued coremod {}", coreModName);
-            MixinBooterPlugin.queneEarlyMixinLoader(plugin);
             return wrap;
         }
         catch (ClassNotFoundException cnfe)
@@ -684,6 +401,11 @@ public class CoreModManager {
         return null;
     }
 
+    public static boolean loadCoreModFromDiscoveredJar(LaunchClassLoader classLoader, String coreModClass, File location)
+    {
+        return loadCoreMod(classLoader, coreModClass, location) != null;
+    }
+
     public static void injectTransformers(LaunchClassLoader classLoader)
     {
 
@@ -698,6 +420,11 @@ public class CoreModManager {
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Add the sorting tweaker first- it'll appear twice in the list
         tweakers.addFirst(fmlInjectionAndSortingTweaker);
+        // Load rescued (ForceLoadAsMod) coremods
+        CleanroomModDiscoverer.instance().rescueDroppedCoremods();
+        // Early Mixin Loaders Instantiation
+        CleanMixHooks.loadMixinBooterEarlyMixins(loadPlugins);
+        // Add loadPlugins (including rescued coremods)
         tweakers.addAll(loadPlugins);
     }
 
@@ -733,17 +460,6 @@ public class CoreModManager {
             }
             builder.append("Contact their authors BEFORE contacting forge\n\n");
         }
-    }
-
-    private static void closeQuietly(Closeable closeable) {
-        try {
-            if (closeable != null)
-                closeable.close();
-        } catch (final IOException _){}
-    }
-
-    public static boolean hasNonCrlMods() {
-        return hasNonCrlMods;
     }
 
 }

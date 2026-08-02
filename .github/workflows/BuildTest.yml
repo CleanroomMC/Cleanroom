@@ -19,7 +19,6 @@ on:
       - 'gradle.properties'
       - 'script/**'
       - '.github/**'
-  pull_request:
   workflow_dispatch:
 
 run-name: "${{ github.event_name == 'pull_request' && 'Pull Request Build, DO NOT DOWNLOAD' || format('{0}#{1}: {2}', github.ref_name, github.run_number, github.event.commits[0].message)}}"

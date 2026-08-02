@@ -282,7 +282,7 @@ dependencies {
     installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
     // Hacks
-    installer "top.outlands:foundation:0.19.8"
+    installer "top.outlands:foundation:0.19.11"
     installer 'net.lenni0451:Reflect:1.6.4'
     installer 'net.lenni0451.commons:unchecked:1.9.2'
     installer 'org.javassist:javassist:3.30.2-GA'
@@ -378,13 +378,20 @@ dependencies {
     installer 'io.github.classgraph:classgraph:4.8.184'
 
     // Mixin
-    installer 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
-    installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.4')
+    installer "com.cleanroommc:cleanmix:$props.cleanmix_version"
+    installer annotationProcessor('com.cleanroommc:mixinextras-common:0.5.5')
 
     testImplementation platform('org.junit:junit-bom:6.1.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.junit.vintage:junit-vintage-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+processResources {
+    inputs.property 'cleanmix_version', props.cleanmix_version
+    filesMatching('cleanmix.info') {
+        expand cleanmix_version: props.cleanmix_version
+    }
 }
 
 test {
