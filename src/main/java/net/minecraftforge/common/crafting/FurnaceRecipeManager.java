@@ -159,11 +159,7 @@ public class FurnaceRecipeManager {
 
     private record ItemKey(Item item, int metadata) {
         public static ItemKey of(ItemStack stack) {
-            int metadata = stack.getMetadata();
-            if (!stack.getHasSubtypes()) {
-                metadata = 0;
-            }
-            return new ItemKey(stack.getItem(), metadata);
+            return new ItemKey(stack.getItem(), stack.getMetadata());
         }
     }
 }
