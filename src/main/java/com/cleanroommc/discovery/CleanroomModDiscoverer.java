@@ -254,7 +254,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
 
         Attributes attributes = null;
-        List<String> modIds = List.of();
+        Set<String> modIds = new LinkedHashSet<>();
         String modType = ManifestAttributes.FORGEMODTYPE;
         String coremod = null, tweaker = null;
         boolean hasMixinManifestAttributes = false, mixinTweakerForceMod = false, coreModContainsMod = false;
@@ -272,15 +272,15 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 mixinTweakerForceMod = "true".equalsIgnoreCase(attributes.getValue(FORCE_LOAD_AS_MOD)) && MIXIN_TWEAKER.equals(tweaker);
                 coreModContainsMod = attributes.getValue(COREMOD_CONTAINS_FML_MOD) != null;
                 if ("optifine.OptiFineForgeTweaker".equals(tweaker)) {
-                    modIds = List.of("optifine");
+                    modIds.add("optifine");
                 }
             }
             if (modIds.isEmpty()) {
                 ZipEntry entry = jarFile.getEntry("mcmod.info");
-                modIds = entry != null ? parseMcmodInfo(file, gson, jarFile.getInputStream(entry)) : List.of();
-                if (modIds.isEmpty()) {
-                    modIds = scanModAnnotations(jarFile);
+                if (entry != null) {
+                    parseMcmodInfo(file, gson, jarFile.getInputStream(entry), modIds);
                 }
+                scanModAnnotations(jarFile, modIds);
             }
             for (String modId : modIds) {
                 if (recordMod(modId, absolute)) {
@@ -294,7 +294,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         DiscoveredMod info = new DiscoveredMod(
                 absolute,
                 attributes,
-                modIds,
+                List.copyOf(modIds),
                 modType,
                 hasMixinManifestAttributes,
                 mixinTweakerForceMod,
@@ -591,9 +591,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return false;
     }
 
-    private List<String> parseMcmodInfo(File file, Gson gson, InputStream stream) {
+    private void parseMcmodInfo(File file, Gson gson, InputStream stream, Set<String> ids) {
         try {
-            List<String> ids = new ArrayList<>();
             JsonElement root = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonElement.class);
             if (root instanceof JsonArray rootArray) {
                 for (JsonElement element : rootArray) {
@@ -608,17 +607,14 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     }
                 }
             }
-            return ids;
         } catch (Throwable t) {
             CleanroomLog.get().error("Failed to parse mcmod.info for {}", file.getName(), t);
         } finally {
             IOUtils.closeQuietly(stream);
         }
-        return List.of();
     }
 
-    private List<String> scanModAnnotations(JarFile jar) {
-        Set<String> modIds = new LinkedHashSet<>();
+    private void scanModAnnotations(JarFile jar, Set<String> modIds) {
         var entries = jar.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
@@ -638,7 +634,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
             } catch (Exception ignored) { }
         }
-        return List.copyOf(modIds);
     }
 
 }
