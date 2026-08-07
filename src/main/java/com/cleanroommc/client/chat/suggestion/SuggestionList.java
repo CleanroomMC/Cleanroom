@@ -201,6 +201,9 @@ public class SuggestionList {
             suggestion = this.getFirst();
         }
         int cursorPos = inputField.getCursorPosition();
+        if (cursorPos != inputField.getText().length()) {
+            return;
+        }
         int wordStart = inputField.getNthWordFromPosWS(-1, cursorPos, false);
         String typedWord = inputField.getText().substring(wordStart, cursorPos);
         if (typedWord.isEmpty() || !suggestion.toLowerCase(Locale.ROOT).startsWith(typedWord.toLowerCase(Locale.ROOT))) {
