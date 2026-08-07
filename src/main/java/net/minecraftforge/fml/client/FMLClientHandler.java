@@ -35,6 +35,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.screen.ModListScreen;
+import com.cleanroommc.common.PatchModPresentChecker;
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import net.minecraft.client.Minecraft;
@@ -218,6 +222,19 @@ public class FMLClientHandler implements IFMLSidedHandler
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
+
+        if (PatchModPresentChecker.isNotPresent() && CleanroomModDiscoverer.instance().hasForgeMods())
+        {
+            String warning = PatchModPresentChecker.getWarningMessage();
+            String prompt = "Press any key to continue, ESC to exit.";
+
+            if (!SplashProgress.confirm(warning, prompt))
+            {
+                SplashProgress.finish();
+                System.exit(0);
+            }
+        }
+
         this.resourcePackList = resourcePackList;
         this.metaSerializer = metaSerializer;
         this.resourcePackMap = Maps.newHashMap();
@@ -768,7 +785,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public void showInGameModOptions(GuiIngameMenu guiIngameMenu)
     {
-        showGuiScreen(new GuiModList(guiIngameMenu));
+        showGuiScreen(ModListConfig.enable ? new ModListScreen(guiIngameMenu) : new GuiModList(guiIngameMenu));
     }
 
     public IModGuiFactory getGuiFactoryFor(ModContainer selectedMod)

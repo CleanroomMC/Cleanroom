@@ -23,6 +23,7 @@ dependencies {
 }
 
 patcher {
+    removeDefaultRuns()
     parent = project(':mcp')
     mcVersion = props.minecraft_version
     patchedSrc = file('src/main/java')

@@ -124,9 +124,15 @@ public class FluidStack
         return this.getFluid().getLocalizedName(this);
     }
 
+    @Deprecated
     public String getUnlocalizedName()
     {
         return this.getFluid().getUnlocalizedName(this);
+    }
+
+    public String getTranslationKey()
+    {
+        return getUnlocalizedName();
     }
 
     /**

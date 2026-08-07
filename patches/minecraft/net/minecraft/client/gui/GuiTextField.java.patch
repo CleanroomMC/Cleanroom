@@ -7,7 +7,23 @@
  import com.google.common.base.Predicate;
  import com.google.common.base.Predicates;
  import net.minecraft.client.Minecraft;
-@@ -603,6 +604,11 @@
+@@ -71,6 +72,7 @@
+             }
+ 
+             this.setCursorPositionEnd();
++            this.setResponderEntryValue(this.id, this.text);
+         }
+     }
+ 
+@@ -590,6 +592,7 @@
+         if (this.text.length() > length)
+         {
+             this.text = this.text.substring(0, length);
++            this.setResponderEntryValue(this.id, this.text);
+         }
+     }
+ 
+@@ -603,6 +606,11 @@
          return this.cursorPosition;
      }
  
@@ -19,7 +35,7 @@
      public boolean getEnableBackgroundDrawing()
      {
          return this.enableBackgroundDrawing;
-@@ -631,6 +637,7 @@
+@@ -631,6 +639,7 @@
          }
  
          this.isFocused = isFocusedIn;

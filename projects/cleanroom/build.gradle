@@ -1,7 +1,10 @@
 import com.cleanroommc.gradle.helpers.ProjectConstants
 import com.cleanroommc.gradle.helpers.tasks.GenVersionTask
+import com.cleanroommc.gradle.helpers.tasks.CreateMMCPackTask
 import com.cleanroommc.gradle.helpers.tasks.Util
+import com.palantir.gradle.gitversion.VersionDetails
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.ExtractInheritance
@@ -78,13 +81,10 @@ repositories {
     mavenCentral()
     maven {
         name = 'Cleanroom Maven'
-        url = 'https://maven.cleanroommc.com/'
+        url = 'https://repo.cleanroommc.com/releases/'
     }
     maven {
-        url = "https://repo.cleanroommc.com/snapshots"
-    }
-    maven {
-        url = "https://maven.outlands.top/releases/"
+        url = "https://maven.arcseekers.com/releases/"
     }
 }
 
@@ -107,6 +107,7 @@ ext {
 }
 
 patcher {
+    removeDefaultRuns()
     excs.from file("$rootDir/src/main/resources/forge.exc")
     parent = project(':minecraft')
     patches = file("$rootDir/patches/minecraft")
@@ -140,6 +141,20 @@ patcher {
             environment 'FORGE_VERSION', props.last_forge_version
 
             jvmArgs ProjectConstants.JVM_ARGUMENTS + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true'
+
+            def legacyVanillaClasspathExclusions = [
+                    '^patchy-.*$',
+                    '^oshi-core-1.*$',
+                    '^jna-4.*$',
+                    '^icu4j-core-mojang-51.*$',
+                    '^netty-all-4.*$',
+                    '^lwjgl-2.*$',
+                    '^lwjgl_util-2.*$',
+                    '^lwjgl-platform-2.*$',
+                    '^java-objc-bridge-1.*$'
+            ]
+
+            classpathExclude(*legacyVanillaClasspathExclusions)
             //jvmArgs jvm_arguments
 
             // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
@@ -257,9 +272,14 @@ configurations {
 dependencies {
     // LWJGL
     compileOnly "com.cleanroommc:lwjglx:1.0.0"
-    installer "com.cleanroommc:lwjglxx:1.1.17"
+    installer "com.cleanroommc:lwjglxx:1.1.22"
     lwjglLibraries[0].each {
-        installer "org.lwjgl:$it:$props.lwjgl_version"
+        if (it == 'lwjgl') {
+            installer "org.lwjgl:$it:$props.lwjgl_version:unsafe"
+        }
+        else {
+            installer "org.lwjgl:$it:$props.lwjgl_version"
+        }
         runtimeOnly "org.lwjgl:$it::$lwjglArch"
 
         lwjglLibraries[1].each { arch ->
@@ -277,16 +297,16 @@ dependencies {
     installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
     // Hacks
-    installer "top.outlands:foundation:0.19.7"
-    installer 'net.lenni0451:Reflect:1.6.3'
+    installer "top.outlands:foundation:0.19.11"
+    installer 'net.lenni0451:Reflect:1.6.4'
     installer 'net.lenni0451.commons:unchecked:1.9.2'
     installer 'org.javassist:javassist:3.30.2-GA'
     //installer "zone.rong:imaginebreaker:2.1"
 
     // Regular deps
     installer 'com.ibm.icu:icu4j:78.3'
-    installer 'org.jline:jline:4.0.10'
-    installer 'org.jline:jline-native:4.0.10'
+    installer 'org.jline:jline:4.1.3'
+    installer 'org.jline:jline-native:4.1.3'
     installer 'net.java.jinput:jinput:2.0.10'
 
     installer 'lzma:lzma:0.0.1'
@@ -296,30 +316,35 @@ dependencies {
 
     installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
 
-    installer 'com.github.oshi:oshi-core:6.11.0'
-    installer 'net.java.dev.jna:jna:5.18.1'
-    installer 'net.java.dev.jna:jna-platform:5.18.1'
+    installer 'com.github.oshi:oshi-core-ffm:7.3.2'
+    installer 'com.github.oshi:oshi-common:7.3.2'
+    installer 'net.java.dev.jna:jna:5.19.1'
+    installer 'net.java.dev.jna:jna-platform:5.19.1'
 
     installer 'it.unimi.dsi:fastutil:8.5.18'
 
-    installer 'com.google.guava:guava:33.5.0-jre'
+    installer 'com.google.guava:guava:33.6.0-jre'
     installer 'com.google.guava:failureaccess:1.0.2'
-    installer 'com.google.code.gson:gson:2.13.2'
+    installer 'com.google.code.gson:gson:2.14.0'
 
     installer 'org.apache.commons:commons-lang3:3.20.0'
     installer 'org.apache.commons:commons-compress:1.28.0'
-    installer 'commons-codec:commons-codec:1.20.0'
-    installer 'commons-io:commons-io:2.21.0'
-    installer 'commons-logging:commons-logging:1.3.6'
-    installer 'org.apache.maven:maven-artifact:3.9.14'
+    installer 'commons-codec:commons-codec:1.22.0'
+    installer 'commons-io:commons-io:2.22.0'
+    installer 'commons-logging:commons-logging:1.4.0'
+    installer 'org.apache.maven:maven-artifact:3.9.16'
+    installer 'org.apache.commons:commons-text:1.15.0' // Some old classes in lang3 moved to here, wtf
+    
+    // xz in common-compress need this to work
+    installer 'org.tukaani:xz:1.12'
 
     installer 'com.google.code.findbugs:jsr305:3.0.2'
     installer 'org.jspecify:jspecify:1.0.0'
 
     // Apache HTTP, 4 and 5
-    installer 'org.apache.httpcomponents.core5:httpcore5:5.4.2'
-    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.2'
-    installer 'org.apache.httpcomponents.client5:httpclient5:5.6'
+    installer 'org.apache.httpcomponents.core5:httpcore5:5.4.3'
+    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
+    installer 'org.apache.httpcomponents.client5:httpclient5:5.6.1'
 
     installer 'org.apache.httpcomponents:httpclient:4.5.14'
     installer 'org.apache.httpcomponents:httpcore:4.4.16'
@@ -341,40 +366,47 @@ dependencies {
     installer "io.netty:netty-resolver-dns:$props.netty_version"
 
     // Jakarta (javax in Java 8)
-    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
+    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.3'
     installer 'jakarta.activation:jakarta.activation-api:2.1.4'
     installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
-    installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.4'
+    installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.5'
     installer 'jakarta.inject:jakarta.inject-api:2.0.1'
 
     // Logging
-    installer 'org.apache.logging.log4j:log4j-api:2.25.4'
-    installer 'org.apache.logging.log4j:log4j-core:2.25.4'
-    installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.4'
-    installer 'org.slf4j:slf4j-api:2.0.17'
+    installer 'org.apache.logging.log4j:log4j-api:2.26.0'
+    installer 'org.apache.logging.log4j:log4j-core:2.26.0'
+    installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0'
+    installer 'org.slf4j:slf4j-api:2.0.18'
 
     // Scripts
-    installer 'org.glassfish.jaxb:jaxb-runtime:4.0.6'
-    installer 'org.glassfish.jaxb:jaxb-core:4.0.6'
+    installer 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
+    installer 'org.glassfish.jaxb:jaxb-core:4.0.9'
     installer 'com.sun.istack:istack-commons-runtime:4.2.0'
-    installer 'org.glassfish.corba:glassfish-corba-omgapi:5.0.0'
+    installer 'org.glassfish.corba:glassfish-corba-omgapi:5.0.2'
     installer 'org.openjdk.nashorn:nashorn-core:15.7'
 
     // Mac
     installer 'ca.weblite:java-objc-bridge:1.2'
 
     // Kirino Engine
-    installer 'org.joml:joml:1.10.8'
+    installer 'org.joml:joml:1.10.9'
     installer 'io.github.classgraph:classgraph:4.8.184'
 
     // Mixin
-    installer 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
-    installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.4')
+    installer "com.cleanroommc:cleanmix:$props.cleanmix_version"
+    installer annotationProcessor('com.cleanroommc:mixinextras-common:0.5.5')
 
-    testImplementation platform('org.junit:junit-bom:6.0.2')
+    testImplementation platform('org.junit:junit-bom:6.1.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.junit.vintage:junit-vintage-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+processResources {
+    inputs.property 'cleanmix_version', props.cleanmix_version
+    filesMatching('cleanmix.info') {
+        expand cleanmix_version: props.cleanmix_version
+    }
 }
 
 test {
@@ -606,36 +638,77 @@ tasks.register('checkSAS') {
     }
 }
 
+tasks.register('resolveInstallerArtifacts') {
+    inputs.files(project.configurations.installer)
+    inputs.files(project.configurations.lwjglNatives)
+    inputs.files(project.configurations.testCompile)
+
+    ext.outputFile = file('build/installerArtifacts.json')
+    outputs.file(outputFile)
+
+    doLast {
+        def result = [
+            artifacts    : Util.getArtifacts(project.configurations.installer, true),
+            lwjglNatives : Util.getLWJGLNatives(
+                project.configurations.lwjglNatives,
+                project.configurations.testCompile,
+                lwjglLibraries[0],
+                lwjglLibraries[1]
+            )
+        ]
+        outputFile.text = new JsonBuilder(result).toPrettyString()
+    }
+}
+
 tasks.register('launcherJson') {
-    dependsOn universalJar
+    dependsOn universalJar, resolveInstallerArtifacts
     inputs.file {
         universalJar.archiveFile
     }
     ext {
         output = file('build/version.json')
-        vanilla = project(':mcp').file('build/mcp/downloadJson/version.json')
+        mmcVanilla = rootProject.file('mmcpack-template/patches/net.minecraft.json')
         timestamp = Util.iso8601Now()
         comment = [
             'Please do not automate the download and installation of Cleanroom.',
             'Our efforts are supported by ads from the download page.'
             // TODO: Donation Page? (Was LexManos')
         ]
-        id = "${project.name}-${project.version}"
+        id = "1.12.2-Cleanroom-${project.version}"
     }
-    inputs.file vanilla
+    inputs.file mmcVanilla
+    inputs.file resolveInstallerArtifacts.outputFile
     outputs.file output
     doLast {
-//        def json_vanilla = vanilla.json()
+        def json_vanilla = mmcVanilla.json()
         def json = [
-            _comment_         : comment,
-            id                : id,
-            time              : timestamp,
-            releaseTime       : timestamp,
-            type              : 'release',
-            mainClass         : 'top.outlands.foundation.boot.Foundation',
-            inheritsFrom      : props.minecraft_version,
-            logging           : {},
-            minecraftArguments: [
+            _comment_              : comment,
+            id                     : id,
+            time                   : timestamp,
+            releaseTime            : timestamp,
+            type                   : 'release',
+            mainClass              : 'top.outlands.foundation.boot.Foundation',
+            assetIndex             : json_vanilla.assetIndex,
+            assets                 : json_vanilla.assetIndex.id,
+            downloads              : [
+                client: [
+                    url : 'https://piston-data.mojang.com/v1/objects/0f275bc1547d01fa5f56ba34bdc87d981ee12daf/client.jar',
+                    sha1: '0f275bc1547d01fa5f56ba34bdc87d981ee12daf',
+                    size: 10180113
+                ],
+                server: [
+                    url : 'https://piston-data.mojang.com/v1/objects/886945bfb2b978778c3a0288fd7fab09d315b25f/server.jar',
+                    sha1: '886945bfb2b978778c3a0288fd7fab09d315b25f',
+                    size: 30222121
+                ]
+            ],
+            javaVersion            : [
+                component   : 'java-runtime-epsilon',
+                majorVersion: 25
+            ],
+            complianceLevel        : 1,
+            minimumLauncherVersion : 18,
+            minecraftArguments     : [
                 '--username', '${auth_player_name}',
                 '--version', '${version_name}',
                 '--gameDir', '${game_directory}',
@@ -647,30 +720,47 @@ tasks.register('launcherJson') {
                 '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker',
                 '--versionType', 'Forge'
             ].join(' '),
-            libraries         : [
-                [
-                    // Package our universal jar as the 'main' jar Mojang's launcher loads. It will in turn load Forge's regular jars itself.
-                    name     : "${project.group}:${project.name}:${project.version}",
-                    downloads: [
-                        artifact: [
-                            path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
-                            // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                            url : '',
-                            sha1: Util.sha1(universalJar.archiveFile.get().asFile),
-                            size: universalJar.archiveFile.get().asFile.length()
-                        ]
-                    ]
+            libraries              : new ArrayList(json_vanilla.libraries)
+        ]
+
+        json.libraries.add([
+            name     : "${project.group}:${project.name}:${project.version}",
+            downloads: [
+                artifact: [
+                    path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
+                    url : '',
+                    sha1: Util.sha1(universalJar.archiveFile.get().asFile),
+                    size: universalJar.archiveFile.get().asFile.length()
                 ]
             ]
-        ]
-        Util.getArtifacts(project.configurations.installer, false)
-            .each { key, lib ->
+        ])
+
+        def cache = new JsonSlurper().parse(resolveInstallerArtifacts.outputFile)
+        cache.artifacts.each { key, lib ->
+            def nameParts = (lib.name as String).split(':')
+            if (nameParts.length >= 4) {
+                def rawClassifier = nameParts[3].contains('@') ? nameParts[3].split('@')[0] : nameParts[3]
+                def mergedVersion = "${nameParts[2]}-${rawClassifier}"
+                def mergedName = "${nameParts[0]}:${nameParts[1]}:${mergedVersion}"
+                json.libraries.add([
+                    name     : mergedName,
+                    downloads: [
+                        artifact: [
+                            path: lib.downloads.artifact.path,
+                            url : lib.downloads.artifact.url,
+                            sha1: lib.downloads.artifact.sha1,
+                            size: lib.downloads.artifact.size
+                        ]
+                    ]
+                ])
+            } else {
                 json.libraries.add(lib)
             }
-        Util.getLWJGLNatives(project.configurations.lwjglNatives, project.configurations.testCompile, lwjglLibraries[0], lwjglLibraries[1])
-            .each { key, lib ->
-                json.libraries.add(lib)
-            }
+        }
+        cache.lwjglNatives.each { key, lib ->
+            json.libraries.add(lib)
+        }
+
         output.text = new JsonBuilder(json).toPrettyString()
     }
 }
@@ -703,14 +793,14 @@ tasks.register('installerJson') {
         def json = [
             _comment_ : launcherJson.comment,
             spec      : 0,
-            profile   : project.name,
+            profile   : rootProject.name,
             version   : launcherJson.id,
             icon      : 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
             json      : '/version.json',
             path      : "${project.group}:${project.name}:${project.version}",
             logo      : '/big_logo.png',
             minecraft : props.minecraft_version,
-            welcome   : "Welcome to the simple ${project.name.capitalize()} installer.",
+            welcome   : 'installer.welcome.message',
             data      : [] as Map,
             processors: []
         ]
@@ -790,7 +880,7 @@ universalJar {
 }
 
 tasks.register('downloadInstaller', DownloadMavenArtifact) {
-    artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
+    artifact = 'com.cleanroommc:installer:2.0.+:shrunk'
     changing = true
 }
 
@@ -815,6 +905,32 @@ tasks.register('installerJar', Zip) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }
+
+def versionDetailsClosure = rootProject.extensions.extraProperties.get('versionDetails')
+def details = ((Closure<VersionDetails>) versionDetailsClosure).call()
+
+tasks.register('createMMCPack', CreateMMCPackTask) {
+    dependsOn launcherJson, universalJar
+    group = 'build'
+    description = 'Creates a MultiMC/Prism instance package for Cleanroom'
+
+    versionJson = launcherJson.output
+    templateDir = rootProject.layout.projectDirectory.dir('mmcpack-template')
+    universalJarFile = universalJar.archiveFile
+    cleanroomVersion = rootProject.version.toString()
+    isRelease = !rootProject.version.toString().contains('+')
+
+    def verStr = rootProject.version.toString()
+    def isRel = !verStr.contains('+')
+    def isCI = verStr.contains('.run.')
+    def suffix = ''
+    if (!isRel && !isCI) {
+        suffix = details.isCleanTag ? '-local' : '-dirty-local'
+    }
+    outputZip = layout.buildDirectory.file("libs/cleanroom-${verStr}${suffix}.zip")
+}
+
+publish.dependsOn createMMCPack
 
 // TODO: Signing
 /*
@@ -841,10 +957,12 @@ tasks.register('installerJar', Zip) {
 // TODO: MDK Task
 
 userdevConfig {
-    def artifacts = Util.getArtifacts(project.configurations.installer, true)
-    artifacts.each { key, lib ->
-        libraries.add(lib.name)
-    }
+    dependsOn resolveInstallerArtifacts
+    //noinspection GroovyAssignabilityCheck
+    libraries.addAll(project.provider {
+        def cache = new JsonSlurper().parse(resolveInstallerArtifacts.outputFile)
+        cache.artifacts.values().collect { it.name }
+    })
     libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
     universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
     runs {
@@ -956,7 +1074,7 @@ if (project.hasProperty('UPDATE_MAPPINGS')) {
 }
 
 tasks.named("assemble") {
-    dependsOn(universalJar, installerJar)
+    dependsOn(universalJar, installerJar, createMMCPack)
 }
 
 
@@ -981,7 +1099,7 @@ publishing {
             artifact universalJar
             artifact sourcesJar
             artifact installerJar
-            artifact new File(rootProject.rootDir, "./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${version}.zip")
+            artifact createMMCPack.outputZip
         }
     }
 }

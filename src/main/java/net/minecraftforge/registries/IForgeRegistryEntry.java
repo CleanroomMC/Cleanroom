@@ -31,12 +31,12 @@ public interface IForgeRegistryEntry<V>
      * Sets a unique name for this Item. This should be used for uniquely identify the instance of the Item.
      * This is the valid replacement for the atrocious 'getUnlocalizedName().substring(6)' stuff that everyone does.
      * Unlocalized names have NOTHING to do with unique identifiers. As demonstrated by vanilla blocks and items.
-     *
+     * <p>
      * The supplied name will be prefixed with the currently active mod's modId.
      * If the supplied name already has a prefix that is different, it will be used and a warning will be logged.
-     *
+     * <p>
      * If a name already exists, or this Item is already registered in a registry, then an IllegalStateException is thrown.
-     *
+     * <p>
      * Returns 'this' to allow for chaining.
      *
      * @param name Unique registry name
@@ -58,11 +58,11 @@ public interface IForgeRegistryEntry<V>
 
     // Default implementation, modders who make extra items SHOULD extend this instead of Object.
     // So, all fields in interfaces are forced static, so even with Java8 people must still extend this.
-    @SuppressWarnings({ "serial", "unchecked" })
-    public static class Impl<T  extends IForgeRegistryEntry<T>> implements IForgeRegistryEntry<T>
+    @SuppressWarnings({"unchecked" })
+    class Impl<T  extends IForgeRegistryEntry<T>> implements IForgeRegistryEntry<T>
     {
-        private TypeToken<T> token = new TypeToken<T>(getClass()){};
-        public final IRegistryDelegate<T> delegate = new RegistryDelegate<T>((T)this, (Class<T>)token.getRawType());
+        private final TypeToken<T> token = new TypeToken<>(getClass()){};
+        public final IRegistryDelegate<T> delegate = new RegistryDelegate<>((T)this, (Class<T>)token.getRawType());
         private ResourceLocation registryName = null;
 
         public final T setRegistryName(String name)

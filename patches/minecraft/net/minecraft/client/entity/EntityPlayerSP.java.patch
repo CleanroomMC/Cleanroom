@@ -8,11 +8,10 @@
          return false;
      }
  
-@@ -474,7 +475,15 @@
+@@ -474,6 +475,15 @@
          }
      }
  
--    @Override
 +    private boolean isHeadspaceFree(BlockPos pos, int height)
 +    {
 +        for (int y = 0; y < height; y++)
@@ -22,10 +21,10 @@
 +        return true;
 +    }
 +
+     @Override
      protected boolean pushOutOfBlocks(double x, double y, double z)
      {
-         if (this.noClip)
-@@ -487,30 +496,34 @@
+@@ -487,30 +497,34 @@
              double d0 = x - blockpos.getX();
              double d1 = z - blockpos.getZ();
  
@@ -65,7 +64,7 @@
                  {
                      d2 = 1.0 - d1;
                      i = 5;
-@@ -545,7 +558,8 @@
+@@ -545,7 +559,8 @@
  
      private boolean isOpenBlockSpace(BlockPos pos)
      {
@@ -75,7 +74,7 @@
      }
  
      @Override
-@@ -596,8 +610,13 @@
+@@ -596,8 +611,13 @@
      @Override
      public void playSound(SoundEvent soundIn, float volume, float pitch)
      {
@@ -91,7 +90,7 @@
      }
  
      @Override
-@@ -893,6 +912,7 @@
+@@ -893,6 +913,7 @@
          float f = 0.8F;
          boolean flag2 = this.movementInput.moveForward >= 0.8F;
          this.movementInput.updatePlayerMoveState();
@@ -99,7 +98,7 @@
          this.mc.getTutorial().handleMovement(this.movementInput);
  
          if (this.isHandActive() && !this.isRiding())
-@@ -912,10 +932,13 @@
+@@ -912,10 +933,13 @@
          }
  
          AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
@@ -113,7 +112,7 @@
          boolean flag4 = this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
  
          if (this.onGround
-@@ -1243,5 +1266,18 @@
+@@ -1243,5 +1267,18 @@
                  }
              }
          }

@@ -19,23 +19,21 @@
 
 package net.minecraftforge.fml.common.discovery;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
 import net.minecraftforge.fml.common.ModContainer;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class ASMDataTable
 {
@@ -78,7 +76,7 @@ public class ASMDataTable
         {
             return objectName;
         }
-        
+
         public Map<String, Object> getAnnotationInfo()
         {
             return annotationInfo;
@@ -99,19 +97,6 @@ public class ASMDataTable
         }
     }
 
-    private static class ModContainerPredicate implements Predicate<ASMData>
-    {
-        private ModContainer container;
-        public ModContainerPredicate(ModContainer container)
-        {
-            this.container = container;
-        }
-        @Override
-        public boolean apply(ASMData data)
-        {
-            return container.getSource().equals(data.candidate.getModContainer());
-        }
-    }
     private final SetMultimap<String, ASMData> globalAnnotationData = HashMultimap.create();
     private Map<ModContainer, SetMultimap<String,ASMData>> containerAnnotationData;
 
@@ -122,10 +107,21 @@ public class ASMDataTable
     {
         if (containerAnnotationData == null)
         {
-            //concurrently filter the values to speed this up
-            containerAnnotationData = containers.parallelStream()
-                    .map(cont -> Pair.of(cont, ImmutableSetMultimap.copyOf(Multimaps.filterValues(globalAnnotationData, new ModContainerPredicate(cont)))))
-                    .collect(ImmutableMap.toImmutableMap(Pair::getKey, Pair::getValue));
+            // single pass grouping by source file instead of re-filtering the whole
+            // globalAnnotationData table once per mod container (was O(mods * annotations))
+            Map<File, ImmutableSetMultimap.Builder<String, ASMData>> bySource = new HashMap<>();
+            for (Map.Entry<String, ASMData> entry : globalAnnotationData.entries())
+            {
+                bySource.computeIfAbsent(entry.getValue().candidate.getModContainer(), f -> ImmutableSetMultimap.builder())
+                        .put(entry.getKey(), entry.getValue());
+            }
+            ImmutableMap.Builder<ModContainer, SetMultimap<String, ASMData>> result = ImmutableMap.builder();
+            for (ModContainer cont : containers)
+            {
+                ImmutableSetMultimap.Builder<String, ASMData> builder = bySource.get(cont.getSource());
+                result.put(cont, builder == null ? ImmutableSetMultimap.of() : builder.build());
+            }
+            containerAnnotationData = result.build();
         }
         return containerAnnotationData.get(container);
     }

@@ -1,14 +1,6 @@
 --- before/net/minecraft/item/ItemHoe.java
 +++ after/net/minecraft/item/ItemHoe.java
-@@ -37,7 +37,6 @@
-     }
- 
-     @SuppressWarnings("incomplete-switch")
--    @Override
-     public EnumActionResult onItemUse(
-         EntityPlayer player,
-         World worldIn,
-@@ -57,10 +56,13 @@
+@@ -57,10 +57,13 @@
          }
          else
          {

@@ -3,16 +3,18 @@ package zone.rong.mixinbooter;
 import java.util.List;
 
 /**
- * @deprecated We forked Mixin.
- * <br>New approach:
- * Check <a href=https://github.com/CleanroomMC/Fugue/tree/master>Fugue</a>.<br>
- * Summary:<br>
- * If you are coremod, just call {@link org.spongepowered.asm.mixin.Mixins#addConfigurations(String...)} in loadingPluging or Tweaker, and handle shouldApply in IMixinConfigPlugin<br>
- * If you aren't coremod:<br>
- * Group mixins by phase, add target env in config, use @env(MOD) for mod mixins.<br>
- * Add {"MixinConfigs": "modid.mod.mixin.json,modid.default.mixin.json"} to your jar manifest.<br>
- * Handle shouldApply in IMixinConfigPlugin. You can call {@link net.minecraftforge.fml.common.Loader#isModLoaded(String)} for {@link org.spongepowered.asm.mixin.MixinEnvironment.Phase#MOD} mixin.<br>
- * Recommend to group target mod name by package name. You can also get config instance from {@link org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin#injectConfig(org.spongepowered.asm.mixin.transformer.Config)}.
+ * Early mixins are defined as mixins that affects vanilla or forge classes.
+ * Or technically, classes that can be queried via the current state of {@link net.minecraft.launchwrapper.LaunchClassLoader}
+ *
+ * If you want to add mixins that affect mods, use {@link ILateMixinLoader}
+ *
+ * Implement this in your {@link net.minecraftforge.fml.relauncher.IFMLLoadingPlugin}.
+ * Return all early mixin configs you want MixinBooter to queue and send to Mixin library.
+ *
+ * @deprecated as of 11.0, the line of "early" and "late" mixin loading no longer is present, use
+ *             {@code MixinConfigs} manifest entry to list your configs or {@code MixinConnector} to denote
+ *             a class implementing {@link org.spongepowered.asm.mixin.connect.IMixinConnector} and call
+ *             {@link org.spongepowered.asm.mixin.Mixins#addConfiguration(String)} (or related methods) there
  */
 @Deprecated
 public interface IEarlyMixinLoader {
@@ -57,4 +59,5 @@ public interface IEarlyMixinLoader {
      * @param mixinConfig mixin config name, queried via {@link IEarlyMixinLoader#getMixinConfigs()}.
      */
     default void onMixinConfigQueued(String mixinConfig) { }
+
 }

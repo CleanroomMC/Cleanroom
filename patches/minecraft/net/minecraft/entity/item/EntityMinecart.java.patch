@@ -260,19 +260,7 @@
                              {
                                  entityIn.motionX *= 0.2F;
                                  entityIn.motionZ *= 0.2F;
-@@ -961,10 +988,7 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
--    public void setPositionAndRotationDirect(
--        double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport
--    )
-+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
-     {
-         this.minecartX = x;
-         this.minecartY = y;
-@@ -1062,6 +1086,236 @@
+@@ -1062,6 +1089,236 @@
      {
          this.getDataManager().set(SHOW_BLOCK, showBlock);
      }

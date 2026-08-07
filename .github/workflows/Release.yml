@@ -44,11 +44,6 @@ jobs:
       - name: Stop Gradle daemon again
         run: ./gradlew --stop
 
-      - name: setup python
-        uses: actions/setup-python@v6.2.0
-        with:
-          python-version: "3.13"
-
       - name: Update CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
@@ -60,17 +55,6 @@ jobs:
           reverseOrder: true
           excludeTypes: style,build,docs
         continue-on-error: true
-
-      - name: Generate MMC Pack
-        run: python main.py
-        working-directory: ./script/MMC-Builder
-        env:
-          PATH_TO_EXIST_INSTALLER: ../../projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-installer.jar
-          BRANCH: "main"
-          VERSION: ${{ env.CLEANROOM_VERSION }}
-
-      - name: Copy MMC Pack
-        run: cp script/MMC-Builder/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
 
       - name: Publish to maven for mod development
         run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
