@@ -25,6 +25,14 @@ public class SuggestionList {
     private static final int ENTRY_HEIGHT = 12;
     private static final int PADDING_X = 3;
     private static final Set<String> knownCommands = new HashSet<>();
+    private static final int[] ARGUMENT_COLORS = new int[] {
+            0xFFAA00, // Orange
+            0xFFFF55, // Yellow
+            0x55FFFF, // Cyan
+            0x5555FF, // Blue
+            0xAA00FF, // Purple
+            0xFF55FF, // Magenta
+    };
 
     // Tracks the connection the knownCommands were learned on. Different connection means a different server
     private static WeakReference<NetHandlerPlayClient> lastConnection = new WeakReference<>(null);
@@ -234,18 +242,39 @@ public class SuggestionList {
         if (text.isEmpty() || (!this.commandBlockMode && !text.startsWith("/"))) {
             return;
         }
+        int scrollOffset = inputField.getLineScrollOffset();
+        if (scrollOffset >= text.length()) {
+            return;
+        }
         int firstSpaceIdx = text.indexOf(' ');
-        String firstWord = firstSpaceIdx == -1 ? text : text.substring(0, firstSpaceIdx);
+        int commandEnd = firstSpaceIdx == -1 ? text.length() : firstSpaceIdx;
+        String firstWord = text.substring(0, commandEnd);
         String cmdName = firstWord.startsWith("/") ? firstWord.substring(1) : firstWord;
         if (cmdName.isEmpty()) {
             return;
         }
-        int scrollOffset = inputField.getLineScrollOffset();
-        if (scrollOffset >= firstWord.length()) {
-            return;
+        int x = textOriginX(inputField);
+        int y = textOriginY(inputField);
+        if (scrollOffset < commandEnd) {
+            int knownColor = knownCommands.contains(cmdName) ? 0x55FF55 : 0xFF5555;
+            fontRenderer.drawStringWithShadow(text.substring(scrollOffset, commandEnd), x, y, knownColor);
         }
-        int color = knownCommands.contains(cmdName) ? 0x55FF55 : 0xFF5555;
-        fontRenderer.drawStringWithShadow(firstWord.substring(scrollOffset), textOriginX(inputField), textOriginY(inputField), color);
+        int argIndex = 0;
+        int pos = commandEnd + 1;
+        while (pos > 0 && pos <= text.length()) {
+            int end = text.indexOf(' ', pos);
+            if (end == -1) {
+                end = text.length();
+            }
+            int visibleStart = Math.max(pos, scrollOffset);
+            if (visibleStart < end) {
+                int tokenX = x + fontRenderer.getStringWidth(text.substring(scrollOffset, visibleStart));
+                int color = ARGUMENT_COLORS[argIndex % ARGUMENT_COLORS.length];
+                fontRenderer.drawStringWithShadow(text.substring(visibleStart, end), tokenX, y, color);
+            }
+            argIndex++;
+            pos = end + 1;
+        }
     }
 
     public boolean isMouseOver(int mouseX, int mouseY) {
