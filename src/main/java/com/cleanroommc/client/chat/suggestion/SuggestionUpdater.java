@@ -6,7 +6,6 @@ import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.TabCompleter;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import java.util.List;
@@ -111,14 +110,23 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         if (!this.commandBlockMode && !this.field.getText().startsWith("/")) {
             return;
         }
+        String currentWord = this.currentWord();
+        boolean exactMatch = suggestions.stream().anyMatch(currentWord::equalsIgnoreCase);
+        if (exactMatch && this.field.getCursorPosition() < this.field.getText().length()) {
+            this.suggestionList.hide();
+            return;
+        }
         // A lone suggestion identical to the word already typed completes nothing, don't pop up over it
-        if (suggestions.size() == 1 && this.currentWord().equalsIgnoreCase(TextFormatting.getTextWithoutFormattingCodes(suggestions.getFirst()))) {
+        if (suggestions.size() == 1 && exactMatch) {
             this.suggestionList.hide();
             return;
         }
         this.suggestionList.setSuggestions(suggestions);
     }
 
+    /**
+     * The full token containing the cursor, regardless of where within it the cursor sits.
+     */
     private String currentWord() {
         String text = this.field.getText();
         int cursor = this.field.getCursorPosition();

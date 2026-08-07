@@ -158,7 +158,7 @@ public class SuggestionList {
         if (clientComplete != null) {
             for (String s : clientComplete) {
                 if (!s.isEmpty()) {
-                    list.add(s);
+                    list.add(TextFormatting.getTextWithoutFormattingCodes(s));
                 }
             }
         }
@@ -196,7 +196,7 @@ public class SuggestionList {
         }
         int wordStart = inputField.getNthWordFromPosWS(-1, cursor, false);
         inputField.deleteFromCursor(wordStart - inputField.getCursorPosition());
-        inputField.writeText(TextFormatting.getTextWithoutFormattingCodes(suggestion));
+        inputField.writeText(suggestion);
         this.hide();
     }
 
