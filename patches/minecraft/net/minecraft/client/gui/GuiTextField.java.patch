@@ -23,7 +23,19 @@
          }
      }
  
-@@ -631,6 +634,7 @@
+@@ -603,6 +606,11 @@
+         return this.cursorPosition;
+     }
+ 
++    public int getLineScrollOffset()
++    {
++        return this.lineScrollOffset;
++    }
++
+     public boolean getEnableBackgroundDrawing()
+     {
+         return this.enableBackgroundDrawing;
+@@ -631,6 +639,7 @@
          }
  
          this.isFocused = isFocusedIn;
