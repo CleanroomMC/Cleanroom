@@ -23,6 +23,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
 import java.awt.image.BufferedImage;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,6 +36,7 @@ import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
@@ -258,7 +260,7 @@ public class SplashProgress
             private final int barOffset = 55;
             private long updateTiming;
             private long framecount;
-            @Override
+          
             public void run()
             {
                 setGL();
@@ -267,227 +269,230 @@ public class SplashProgress
                 forgeTexture = new Texture(forgeLoc, forgeFallbackLoc);
                 dirtBackground = new Texture(new ResourceLocation("textures/gui/options_background.png"), null, false);
                 glEnable(GL_TEXTURE_2D);
-                fontRenderer = new SplashFontRenderer();
-                glDisable(GL_TEXTURE_2D);
-                while(!done)
-                {
-                    framecount++;
-                    com.cleanroommc.client.LoadingTracker.tick();
-
-                    if (warningWarning != null && warningPrompt != null)
+                try (SplashFontRenderer fontRenderer = new SplashFontRenderer(false)) {
+                    fontRenderer = new SplashFontRenderer();
+                    glDisable(GL_TEXTURE_2D);
+                    while(!done)
                     {
-                        // Warning confirmation screen
-                        int w = Display.getWidth();
-                        int h = Display.getHeight();
-                        glClear(GL_COLOR_BUFFER_BIT);
-                        glViewport(0, 0, w, h);
-                        glMatrixMode(GL_PROJECTION);
-                        glLoadIdentity();
-                        glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
-                        glMatrixMode(GL_MODELVIEW);
-                        glLoadIdentity();
+                        framecount++;
+                        com.cleanroommc.client.LoadingTracker.tick();
 
-                        // Dirt background (same as GuiDupesFound)
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                        dirtBackground.bind();
-                        glEnable(GL_TEXTURE_2D);
-                        float left = 320 - (float)w / 2;
-                        float right = 320 + (float)w / 2;
-                        float top = 240 - (float)h / 2;
-                        float bottom = 240 + (float)h / 2;
-                        float us = (float)w / 64f;
-                        float vs = (float)h / 64f;
-                        glBegin(GL_QUADS);
-                            glColor4f(0.25f, 0.25f, 0.25f, 1.0f);
-                            glTexCoord2f(0, 0);     glVertex2f(left, top);
-                            glTexCoord2f(us, 0);    glVertex2f(right, top);
-                            glTexCoord2f(us, vs);   glVertex2f(right, bottom);
-                            glTexCoord2f(0, vs);    glVertex2f(left, bottom);
-                        glEnd();
-                        glColor4f(1, 1, 1, 1);
-                        glDisable(GL_TEXTURE_2D);
+                        if (warningWarning != null && warningPrompt != null)
+                        {
+                            // Warning confirmation screen
+                            int w = Display.getWidth();
+                            int h = Display.getHeight();
+                            glClear(GL_COLOR_BUFFER_BIT);
+                            glViewport(0, 0, w, h);
+                            glMatrixMode(GL_PROJECTION);
+                            glLoadIdentity();
+                            glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
+                            glMatrixMode(GL_MODELVIEW);
+                            glLoadIdentity();
 
-                        // Warning section: dynamic text (top, white)
-                        String[] warnLines = warningWarning.split("\n");
-                        float warnY = 180f;
-                        for (String line : warnLines) {
-                            if (line.isEmpty()) { warnY += 20; continue; }
-                            glPushMatrix();
-                            int lw = fontRenderer.getStringWidth(line);
-                            glTranslatef(320 - lw, warnY, 0);
-                            glScalef(2, 2, 1);
+                            // Dirt background (same as GuiDupesFound)
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                            dirtBackground.bind();
                             glEnable(GL_TEXTURE_2D);
-                            fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
+                            float left = 320 - (float)w / 2;
+                            float right = 320 + (float)w / 2;
+                            float top = 240 - (float)h / 2;
+                            float bottom = 240 + (float)h / 2;
+                            float us = (float)w / 64f;
+                            float vs = (float)h / 64f;
+                            glBegin(GL_QUADS);
+                                glColor4f(0.25f, 0.25f, 0.25f, 1.0f);
+                                glTexCoord2f(0, 0);     glVertex2f(left, top);
+                                glTexCoord2f(us, 0);    glVertex2f(right, top);
+                                glTexCoord2f(us, vs);   glVertex2f(right, bottom);
+                                glTexCoord2f(0, vs);    glVertex2f(left, bottom);
+                            glEnd();
+                            glColor4f(1, 1, 1, 1);
                             glDisable(GL_TEXTURE_2D);
-                            glPopMatrix();
-                            warnY += 20;
+
+                            // Warning section: dynamic text (top, white)
+                            String[] warnLines = warningWarning.split("\n");
+                            float warnY = 180f;
+                            for (String line : warnLines) {
+                                if (line.isEmpty()) { warnY += 20; continue; }
+                                glPushMatrix();
+                                int lw = fontRenderer.getStringWidth(line);
+                                glTranslatef(320 - lw, warnY, 0);
+                                glScalef(2, 2, 1);
+                                glEnable(GL_TEXTURE_2D);
+                                fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
+                                glDisable(GL_TEXTURE_2D);
+                                glPopMatrix();
+                                warnY += 20;
+                            }
+
+                            // Gap between sections
+                            warnY += 10;
+
+                            // Prompt section: fixed text (bottom, white)
+                            String[] promptLines = warningPrompt.split("\n");
+                            for (String line : promptLines) {
+                                if (line.isEmpty()) { warnY += 20; continue; }
+                                glPushMatrix();
+                                int lw = fontRenderer.getStringWidth(line);
+                                glTranslatef(320 - lw, warnY, 0);
+                                glScalef(2, 2, 1);
+                                glEnable(GL_TEXTURE_2D);
+                                fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
+                                glDisable(GL_TEXTURE_2D);
+                                glPopMatrix();
+                                warnY += 20;
+                            }
+
                         }
-
-                        // Gap between sections
-                        warnY += 10;
-
-                        // Prompt section: fixed text (bottom, white)
-                        String[] promptLines = warningPrompt.split("\n");
-                        for (String line : promptLines) {
-                            if (line.isEmpty()) { warnY += 20; continue; }
-                            glPushMatrix();
-                            int lw = fontRenderer.getStringWidth(line);
-                            glTranslatef(320 - lw, warnY, 0);
-                            glScalef(2, 2, 1);
-                            glEnable(GL_TEXTURE_2D);
-                            fontRenderer.drawString(line, 0, 0, 0xFFFFFF);
-                            glDisable(GL_TEXTURE_2D);
-                            glPopMatrix();
-                            warnY += 20;
-                        }
-
-                    }
-                    else
-                    {
-                    ProgressBar first = null, penult = null, last = null;
-                    Iterator<ProgressBar> i = ProgressManager.barIterator();
-                    while(i.hasNext())
-                    {
-                        if(first == null) first = i.next();
                         else
                         {
-                            penult = last;
-                            last = i.next();
+                            ProgressBar first = null, penult = null, last = null;
+                            Iterator<ProgressBar> i = ProgressManager.barIterator();
+                            while(i.hasNext())
+                            {
+                                if(first == null) first = i.next();
+                                else
+                                {
+                                    penult = last;
+                                    last = i.next();
+                                }
+                            }
+
+                            glClear(GL_COLOR_BUFFER_BIT);
+
+                            // matrix setup
+                            int w = Display.getWidth();
+                            int h = Display.getHeight();
+                            glViewport(0, 0, w, h);
+                            glMatrixMode(GL_PROJECTION);
+                            glLoadIdentity();
+                            glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
+                            glMatrixMode(GL_MODELVIEW);
+                            glLoadIdentity();
+
+                            // mojang logo
+                            setColor(backgroundColor);
+                            glEnable(GL_TEXTURE_2D);
+                            logoTexture.bind();
+                            glBegin(GL_QUADS);
+                            logoTexture.texCoord(0, 0, 0);
+                            glVertex2f(320 - 256, 240 - 256);
+                            logoTexture.texCoord(0, 0, 1);
+                            glVertex2f(320 - 256, 240 + 256);
+                            logoTexture.texCoord(0, 1, 1);
+                            glVertex2f(320 + 256, 240 + 256);
+                            logoTexture.texCoord(0, 1, 0);
+                            glVertex2f(320 + 256, 240 - 256);
+                            glEnd();
+                            glDisable(GL_TEXTURE_2D);
+
+                            // memory usage
+                            if (showMemory)
+                            {
+                                glPushMatrix();
+                                glTranslatef(320 - (float) barWidth / 2, 20, 0);
+                                drawMemoryBar();
+                                glPopMatrix();
+                            }
+
+                            // bars
+                            if(first != null)
+                            {
+                                glPushMatrix();
+                                glTranslatef(320 - (float)barWidth / 2, 310, 0);
+                                drawBar(first);
+                                if(penult != null)
+                                {
+                                    glTranslatef(0, barOffset, 0);
+                                    drawBar(penult);
+                                }
+                                if(last != null)
+                                {
+                                    glTranslatef(0, barOffset, 0);
+                                    drawBar(last);
+                                }
+                                glPopMatrix();
+                            }
+
+                            angle += 1;
+
+                            // forge logo
+                            glColor4f(1, 1, 1, 1);
+                            float fw = (float)forgeTexture.getWidth() / 2;
+                            float fh = (float)forgeTexture.getHeight() / 2;
+                            if(rotate)
+                            {
+                                float sh = Math.max(fw, fh);
+                                glTranslatef(320 + w/2 - sh - logoOffset, 240 + h/2 - sh - logoOffset, 0);
+                                glRotatef(angle, 0, 0, 1);
+                            }
+                            else
+                            {
+                                glTranslatef(320 + w/2 - fw - logoOffset, 240 + h/2 - fh - logoOffset, 0);
+                            }
+                            int f = (angle / 5) % forgeTexture.getFrames();
+                            glEnable(GL_TEXTURE_2D);
+                            forgeTexture.bind();
+                            glBegin(GL_QUADS);
+                            forgeTexture.texCoord(f, 0, 0);
+                            glVertex2f(-fw, -fh);
+                            forgeTexture.texCoord(f, 0, 1);
+                            glVertex2f(-fw, fh);
+                            forgeTexture.texCoord(f, 1, 1);
+                            glVertex2f(fw, fh);
+                            forgeTexture.texCoord(f, 1, 0);
+                            glVertex2f(fw, -fh);
+                            glEnd();
+                            glDisable(GL_TEXTURE_2D);
                         }
-                    }
 
-                    glClear(GL_COLOR_BUFFER_BIT);
-
-                    // matrix setup
-                    int w = Display.getWidth();
-                    int h = Display.getHeight();
-                    glViewport(0, 0, w, h);
-                    glMatrixMode(GL_PROJECTION);
-                    glLoadIdentity();
-                    glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
-                    glMatrixMode(GL_MODELVIEW);
-                    glLoadIdentity();
-
-                    // mojang logo
-                    setColor(backgroundColor);
-                    glEnable(GL_TEXTURE_2D);
-                    logoTexture.bind();
-                    glBegin(GL_QUADS);
-                    logoTexture.texCoord(0, 0, 0);
-                    glVertex2f(320 - 256, 240 - 256);
-                    logoTexture.texCoord(0, 0, 1);
-                    glVertex2f(320 - 256, 240 + 256);
-                    logoTexture.texCoord(0, 1, 1);
-                    glVertex2f(320 + 256, 240 + 256);
-                    logoTexture.texCoord(0, 1, 0);
-                    glVertex2f(320 + 256, 240 - 256);
-                    glEnd();
-                    glDisable(GL_TEXTURE_2D);
-
-                    // memory usage
-                    if (showMemory)
-                    {
-                        glPushMatrix();
-                        glTranslatef(320 - (float) barWidth / 2, 20, 0);
-                        drawMemoryBar();
-                        glPopMatrix();
-                    }
-
-                    // bars
-                    if(first != null)
-                    {
-                        glPushMatrix();
-                        glTranslatef(320 - (float)barWidth / 2, 310, 0);
-                        drawBar(first);
-                        if(penult != null)
+                        // We use mutex to indicate safely to the main thread that we're taking the display global lock
+                        // So the main thread can skip processing messages while we're updating.
+                        // There are system setups where this call can pause for a while, because the GL implementation
+                        // is trying to impose a framerate or other thing is occurring. Without the mutex, the main
+                        // thread would delay waiting for the same global display lock
+                        mutex.acquireUninterruptibly();
+                        long updateStart = System.nanoTime();
+                        Display.update();
+                        // As soon as we're done, we release the mutex. The other thread can now ping the processmessages
+                        // call as often as it wants until we get get back here again
+                        long dur = System.nanoTime() - updateStart;
+                        if (framecount < TIMING_FRAME_COUNT) {
+                            updateTiming += dur;
+                        }
+                        mutex.release();
+                        if(pause)
                         {
-                            glTranslatef(0, barOffset, 0);
-                            drawBar(penult);
+                            clearGL();
+                            setGL();
                         }
-                        if(last != null)
+                        // Such a hack - if the time taken is greater than 10 milliseconds, we're gonna guess that we're on a
+                        // system where vsync is forced through the swapBuffers call - so we have to force a sleep and let the
+                        // loading thread have a turn - some badly designed mods access Keyboard and therefore GlobalLock.lock
+                        // during splash screen, and mutex against the above Display.update call as a result.
+                        // 4 milliseconds is a guess - but it should be enough to trigger in most circumstances. (Maybe if
+                        // 240FPS is possible, this won't fire?)
+                        if (framecount >= TIMING_FRAME_COUNT && updateTiming > TIMING_FRAME_THRESHOLD) {
+                            if (!isDisplayVSyncForced)
+                            {
+                                isDisplayVSyncForced = true;
+                                FMLLog.log.info("Using alternative sync timing : {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
+                            }
+                            try { Thread.sleep(16); } catch (InterruptedException ie) {}
+                        } else
                         {
-                            glTranslatef(0, barOffset, 0);
-                            drawBar(last);
+                            if (framecount ==TIMING_FRAME_COUNT) {
+                                FMLLog.log.info("Using sync timing. {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
+                            }
+                            Display.sync(100);
                         }
-                        glPopMatrix();
-                    }
-
-                    angle += 1;
-
-                    // forge logo
-                    glColor4f(1, 1, 1, 1);
-                    float fw = (float)forgeTexture.getWidth() / 2;
-                    float fh = (float)forgeTexture.getHeight() / 2;
-                    if(rotate)
-                    {
-                        float sh = Math.max(fw, fh);
-                        glTranslatef(320 + w/2 - sh - logoOffset, 240 + h/2 - sh - logoOffset, 0);
-                        glRotatef(angle, 0, 0, 1);
-                    }
-                    else
-                    {
-                        glTranslatef(320 + w/2 - fw - logoOffset, 240 + h/2 - fh - logoOffset, 0);
-                    }
-                    int f = (angle / 5) % forgeTexture.getFrames();
-                    glEnable(GL_TEXTURE_2D);
-                    forgeTexture.bind();
-                    glBegin(GL_QUADS);
-                    forgeTexture.texCoord(f, 0, 0);
-                    glVertex2f(-fw, -fh);
-                    forgeTexture.texCoord(f, 0, 1);
-                    glVertex2f(-fw, fh);
-                    forgeTexture.texCoord(f, 1, 1);
-                    glVertex2f(fw, fh);
-                    forgeTexture.texCoord(f, 1, 0);
-                    glVertex2f(fw, -fh);
-                    glEnd();
-                    glDisable(GL_TEXTURE_2D);
-                    }
-
-                    // We use mutex to indicate safely to the main thread that we're taking the display global lock
-                    // So the main thread can skip processing messages while we're updating.
-                    // There are system setups where this call can pause for a while, because the GL implementation
-                    // is trying to impose a framerate or other thing is occurring. Without the mutex, the main
-                    // thread would delay waiting for the same global display lock
-                    mutex.acquireUninterruptibly();
-                    long updateStart = System.nanoTime();
-                    Display.update();
-                    // As soon as we're done, we release the mutex. The other thread can now ping the processmessages
-                    // call as often as it wants until we get get back here again
-                    long dur = System.nanoTime() - updateStart;
-                    if (framecount < TIMING_FRAME_COUNT) {
-                        updateTiming += dur;
-                    }
-                    mutex.release();
-                    if(pause)
-                    {
-                        clearGL();
-                        setGL();
-                    }
-                    // Such a hack - if the time taken is greater than 10 milliseconds, we're gonna guess that we're on a
-                    // system where vsync is forced through the swapBuffers call - so we have to force a sleep and let the
-                    // loading thread have a turn - some badly designed mods access Keyboard and therefore GlobalLock.lock
-                    // during splash screen, and mutex against the above Display.update call as a result.
-                    // 4 milliseconds is a guess - but it should be enough to trigger in most circumstances. (Maybe if
-                    // 240FPS is possible, this won't fire?)
-                    if (framecount >= TIMING_FRAME_COUNT && updateTiming > TIMING_FRAME_THRESHOLD) {
-                        if (!isDisplayVSyncForced)
-                        {
-                            isDisplayVSyncForced = true;
-                            FMLLog.log.info("Using alternative sync timing : {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
-                        }
-                        try { Thread.sleep(16); } catch (InterruptedException ie) {}
-                    } else
-                    {
-                        if (framecount ==TIMING_FRAME_COUNT) {
-                            FMLLog.log.info("Using sync timing. {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
-                        }
-                        Display.sync(100);
                     }
                 }
                 clearGL();
             }
+       
 
             private void setColor(int color)
             {
@@ -870,7 +875,7 @@ public class SplashProgress
     private static final IntBuffer buf = BufferUtils.createIntBuffer(4 * 1024 * 1024);
 
     @SuppressWarnings("unused")
-    private static class Texture
+    private static class Texture implements Closeable 
     {
         private final ResourceLocation location;
         private final int name;
@@ -1018,21 +1023,38 @@ public class SplashProgress
         {
             glTexCoord2f(getU(frame, u), getV(frame, v));
         }
+
+        @Override
+        public void close(){
+            this.delete();
+        }
     }
 
-    private static class SplashFontRenderer extends FontRenderer
+    public static class SplashFontRenderer extends FontRenderer implements Closeable 
     {
-        public SplashFontRenderer()
+        protected HashMap<ResourceLocation, Texture> cachedImages;
+        
+        public SplashFontRenderer(boolean isForcedUnicode)
         {
-            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, false);
+            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, isForcedUnicode);
             super.onResourceManagerReload(null);
         }
 
         @Override
         protected void bindTexture(@Nonnull ResourceLocation location)
         {
-            if(location != locationFontTexture) throw new IllegalArgumentException();
-            fontTexture.bind();
+            if (cachedImages == null) {
+                cachedImages = new HashMap<>();
+                var texture = new Texture(location, null);
+                cachedImages.put(location, texture = new Texture(location, null)); 
+                texture.bind();
+            } else {
+                var texture = cachedImages.get(location);
+                if (texture == null) {
+                    cachedImages.put(location, texture = new Texture(location, null)); 
+                }
+                texture.bind();
+            }
         }
 
         @Nonnull
@@ -1041,6 +1063,17 @@ public class SplashProgress
         {
             DefaultResourcePack pack = Minecraft.getMinecraft().defaultResourcePack;
             return new SimpleResource(pack.getPackName(), location, pack.getInputStream(location), null, null);
+        }
+
+        @Override
+        public void close() {
+            if(cachedImages != null){
+                for(Texture texture : cachedImages.values()) {
+                   texture.delete();
+                }
+                cachedImages.clear();
+                cachedImages = null;
+            }
         }
     }
 
