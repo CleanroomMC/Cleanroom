@@ -32,6 +32,7 @@ import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.commons.io.IOUtils;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
+import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.util.Constants.ManifestAttributes;
 import zone.rong.mixinbooter.MixinBooterModContainer;
 
@@ -139,6 +140,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             }
             CleanroomLog.get().debug("Submitting mixin container for {}", mod.file().getName());
             MixinBootstrap.getPlatform().addContainer(new ContainerHandleURI(mod.file().toURI()));
+        }
+        // TODO: evaluate if this is a good place for this
+        String devConfigs = System.getProperty("crl.dev.mixin");
+        if (!Strings.isNullOrEmpty(devConfigs)) {
+            for (String singleMixinConfig : devConfigs.split(",")) {
+                Mixins.addConfiguration(singleMixinConfig.trim());
+            }
         }
     }
 
