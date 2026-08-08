@@ -601,20 +601,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private void parseMcmodInfo(File file, Gson gson, InputStream stream, Set<String> ids) {
         try {
-            JsonElement root = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonElement.class);
-            if (root instanceof JsonArray rootArray) {
-                for (JsonElement element : rootArray) {
-                    if (element instanceof JsonObject mod && mod.has("modid")) {
-                        ids.add(mod.get("modid").getAsString());
-                    }
-                }
-            } else if (root instanceof JsonObject rootObject && rootObject.get("modList") instanceof JsonArray modList) {
-                for (JsonElement element : modList) {
-                    if (element instanceof JsonObject mod && mod.has("modid")) {
-                        ids.add(mod.get("modid").getAsString());
-                    }
-                }
-            }
+            ids.addAll(MetadataCollection.from(stream, file.getName()).getIds());
         } catch (Throwable t) {
             CleanroomLog.get().error("Failed to parse mcmod.info for {}", file.getName(), t);
         } finally {
