@@ -21,8 +21,8 @@ package net.minecraftforge.fml.client;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 
 import java.awt.*;
@@ -34,7 +34,7 @@ public class GuiErrorBase extends GuiErrorScreen
     static final File logFile = new File(minecraftDir, "logs/latest.log");
     public GuiErrorBase()
     {
-        super(null, null);
+        super("", "");
     }
 
     private String translateOrDefault(String translateKey, String alternative, Object... format)
@@ -57,26 +57,12 @@ public class GuiErrorBase extends GuiErrorScreen
     {
         if (button.id == 10)
         {
-            try
-            {
-                File modsDir = new File(minecraftDir, "mods");
-                Desktop.getDesktop().open(modsDir);
-            }
-            catch (Exception e)
-            {
-                FMLLog.log.error("Problem opening mods folder", e);
-            }
+            File modsDir = new File(minecraftDir, "mods");
+            OpenGlHelper.openFile(modsDir);
         }
         else if (button.id == 11)
         {
-            try
-            {
-                Desktop.getDesktop().open(logFile);
-            }
-            catch (Exception e)
-            {
-                FMLLog.log.error("Problem opening log file {}", logFile, e);
-            }
+            OpenGlHelper.openFile(logFile);
         }
     }
 

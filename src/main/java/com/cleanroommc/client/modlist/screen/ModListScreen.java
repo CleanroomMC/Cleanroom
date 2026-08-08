@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
@@ -165,7 +166,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 _ -> this.mc.displayGuiScreen(this.parentScreen)));
         this.modFolderButton = this.addButton(new ModListIconButton(
                 140, this.modList.bottom + 8, 0, 0,
-                _ -> PlatformUtils.openFile(PlatformUtils.getModDirectory())));
+                _ -> OpenGlHelper.openFile(PlatformUtils.getModDirectory())));
 
         int padding = 10;
         int contentLeft = this.modList.right + 12 + padding;
