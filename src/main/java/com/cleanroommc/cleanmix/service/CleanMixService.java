@@ -64,12 +64,6 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
         if (!isDevelopment()) {
             MixinEnvironment.getDefaultEnvironment().getRemappers().add(new CleanroomRemapper<>(FMLDeobfuscatingRemapper.INSTANCE));
         }
-        String devConfigs = System.getProperty("crl.dev.mixin");
-        if (!Strings.isNullOrEmpty(devConfigs)) {
-            for (String singleMixinConfig : devConfigs.split(",")) {
-                Mixins.addConfiguration(singleMixinConfig.trim());
-            }
-        }
     }
 
     @Override
