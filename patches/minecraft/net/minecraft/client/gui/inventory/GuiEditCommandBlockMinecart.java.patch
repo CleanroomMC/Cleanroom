@@ -1,0 +1,170 @@
+--- before/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
++++ after/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
+@@ -21,6 +21,8 @@
+ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabCompleter
+ {
+     private GuiTextField commandField;
++    private com.cleanroommc.client.chat.suggestion.SuggestionList suggestionList;
++    private com.cleanroommc.client.chat.suggestion.SuggestionUpdater suggestionUpdater;
+     private GuiTextField previousEdit;
+     private final CommandBlockBaseLogic commandBlockLogic;
+     private GuiButton doneButton;
+@@ -72,6 +74,10 @@
+                 return GuiEditCommandBlockMinecart.this.commandBlockLogic.getPosition();
+             }
+         };
++        // Cleanroom: modern dropdown completion, in command-block mode (suggest with or without a leading "/")
++        this.suggestionList = new com.cleanroommc.client.chat.suggestion.SuggestionList(this.commandField, true);
++        this.suggestionUpdater = new com.cleanroommc.client.chat.suggestion.SuggestionUpdater(this.suggestionList, this.tabCompleter, this.commandField, true);
++        this.commandField.setGuiResponder(this.suggestionUpdater);
+     }
+ 
+     @Override
+@@ -121,6 +127,18 @@
+ 
+         if (keyCode == 15)
+         {
++            // Cleanroom: Tab applies the selected/first suggestion while the dropdown is open
++            if (this.suggestionList.isVisible())
++            {
++                String selected = this.suggestionList.getSelected();
++                if (selected == null)
++                {
++                    selected = this.suggestionList.getFirst();
++                }
++                this.suggestionList.applySuggestion(this.commandField, selected);
++                this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
++                return;
++            }
+             this.tabCompleter.complete();
+         }
+         else
+@@ -128,26 +146,93 @@
+             this.tabCompleter.resetDidComplete();
+         }
+ 
++        // Cleanroom: reroute navigation/confirm keys to the dropdown while it is visible
++        if (keyCode == 1)
++        {
++            if (this.suggestionList.isVisible())
++            {
++                this.suggestionList.hide();
++                return;
++            }
++            this.actionPerformed(this.cancelButton);
++            return;
++        }
++        else if (keyCode == 28 || keyCode == 156)
++        {
++            String selected = this.suggestionList.getSelected();
++            if (selected != null)
++            {
++                this.suggestionList.applySuggestion(this.commandField, selected);
++                this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
++                return;
++            }
++            this.actionPerformed(this.doneButton);
++            return;
++        }
++        else if (keyCode == 200)
++        {
++            if (this.suggestionList.isVisible())
++            {
++                // Cleanroom: list grows upward, so Up moves to the next (visually higher) suggestion
++                this.suggestionList.selectNext();
++                return;
++            }
++        }
++        else if (keyCode == 208)
++        {
++            if (this.suggestionList.isVisible())
++            {
++                this.suggestionList.selectPrev();
++                return;
++            }
++        }
++
+         this.commandField.textboxKeyTyped(typedChar, keyCode);
+         this.previousEdit.textboxKeyTyped(typedChar, keyCode);
+         this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
++        // Cleanroom: cursor-move keys change the cursor without firing the GuiResponder - refresh here
++        this.suggestionUpdater.refresh();
++    }
+ 
+-        if (keyCode == 28 || keyCode == 156)
+-        {
+-            this.actionPerformed(this.doneButton);
+-        }
+-        else if (keyCode == 1)
+-        {
+-            this.actionPerformed(this.cancelButton);
++    @Override
++    public void handleMouseInput() throws IOException
++    {
++        super.handleMouseInput();
++        // Cleanroom: scroll the suggestion dropdown with the mouse wheel while hovering it
++        if (this.suggestionList.isVisible())
++        {
++            int wheel = org.lwjgl.input.Mouse.getEventDWheel();
++            if (wheel != 0)
++            {
++                int mouseX = org.lwjgl.input.Mouse.getEventX() * this.width / this.mc.displayWidth;
++                int mouseY = this.height - org.lwjgl.input.Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
++                if (this.suggestionList.isMouseOver(mouseX, mouseY))
++                {
++                    this.suggestionList.scroll(wheel);
++                }
++            }
+         }
+     }
+ 
+     @Override
+     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+     {
++        if (mouseButton == 0)
++        {
++            // Cleanroom: clicking a suggestion applies it
++            String clicked = this.suggestionList.mouseClicked(mouseX, mouseY);
++            if (clicked != null)
++            {
++                this.suggestionList.applySuggestion(this.commandField, clicked);
++                this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
++                return;
++            }
++        }
+         super.mouseClicked(mouseX, mouseY, mouseButton);
+         this.commandField.mouseClicked(mouseX, mouseY, mouseButton);
+         this.previousEdit.mouseClicked(mouseX, mouseY, mouseButton);
++        // Cleanroom: click repositions the cursor without firing the GuiResponder - refresh to follow it
++        this.suggestionUpdater.refresh();
+     }
+ 
+     @Override
+@@ -156,7 +241,9 @@
+         this.drawDefaultBackground();
+         this.drawCenteredString(this.fontRenderer, I18n.format("advMode.setCommand"), this.width / 2, 20, 16777215);
+         this.drawString(this.fontRenderer, I18n.format("advMode.command"), this.width / 2 - 150, 40, 10526880);
++        this.suggestionList.drawGhostText(this.commandField, this.fontRenderer);
+         this.commandField.drawTextBox();
++        this.suggestionList.drawCommandColor(this.commandField, this.fontRenderer);
+         int i = 75;
+         int j = 0;
+         this.drawString(
+@@ -182,6 +269,7 @@
+             this.previousEdit.drawTextBox();
+         }
+ 
++        this.suggestionList.render(mouseX, mouseY);
+         super.drawScreen(mouseX, mouseY, partialTicks);
+     }
+ 
+@@ -207,5 +295,9 @@
+     public void setCompletions(String... newCompletions)
+     {
+         this.tabCompleter.setCompletions(newCompletions);
++        // Cleanroom: one reply consumes the Tab request, or every auto-suggest reply would keep mutating the field
++        this.tabCompleter.resetRequested();
++        // Cleanroom: route through the updater so stale async replies can be validated against the current prefix
++        this.suggestionUpdater.onServerCompletions(newCompletions);
+     }
+ }

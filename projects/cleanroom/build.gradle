@@ -107,6 +107,7 @@ ext {
 }
 
 patcher {
+    removeDefaultRuns()
     excs.from file("$rootDir/src/main/resources/forge.exc")
     parent = project(':minecraft')
     patches = file("$rootDir/patches/minecraft")
@@ -140,6 +141,20 @@ patcher {
             environment 'FORGE_VERSION', props.last_forge_version
 
             jvmArgs ProjectConstants.JVM_ARGUMENTS + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true'
+
+            def legacyVanillaClasspathExclusions = [
+                    '^patchy-.*$',
+                    '^oshi-core-1.*$',
+                    '^jna-4.*$',
+                    '^icu4j-core-mojang-51.*$',
+                    '^netty-all-4.*$',
+                    '^lwjgl-2.*$',
+                    '^lwjgl_util-2.*$',
+                    '^lwjgl-platform-2.*$',
+                    '^java-objc-bridge-1.*$'
+            ]
+
+            classpathExclude(*legacyVanillaClasspathExclusions)
             //jvmArgs jvm_arguments
 
             // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
@@ -257,7 +272,7 @@ configurations {
 dependencies {
     // LWJGL
     compileOnly "com.cleanroommc:lwjglx:1.0.0"
-    installer "com.cleanroommc:lwjglxx:1.1.21"
+    installer "com.cleanroommc:lwjglxx:1.1.22"
     lwjglLibraries[0].each {
         if (it == 'lwjgl') {
             installer "org.lwjgl:$it:$props.lwjgl_version:unsafe"

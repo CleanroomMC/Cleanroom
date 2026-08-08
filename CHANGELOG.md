@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.9-alpha] - 2026-08-08
+### Bug Fixes
+- [`7874a07`](https://github.com/CleanroomMC/Cleanroom/commit/7874a07403d2188347720f775cfb051da62ac04e) - **os**: open files the intended way *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`f5dd105`](https://github.com/CleanroomMC/Cleanroom/commit/f5dd1055ab49173078f470e287ebd69c8851c7d5) - **discovery**: queues crl.dev.mixin configurations later, resolves [#599](https://github.com/CleanroomMC/Cleanroom/pull/599) *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`75f2065`](https://github.com/CleanroomMC/Cleanroom/commit/75f20656a99091f9f591ca1b47fe4487c2cd7244) - **console**: guard console appender from writing to a closed terminal during shutdown *(PR [#579](https://github.com/CleanroomMC/Cleanroom/pull/579) by [@mvanhorn](https://github.com/mvanhorn))*
+  - *fixes issue [#566](https://github.com/CleanroomMC/Cleanroom/issues/566) opened by [@NoDMoon](https://github.com/NoDMoon)*
+- [`41047ab`](https://github.com/CleanroomMC/Cleanroom/commit/41047ab1c3aa21b5002792b8b8461e98b6fb9f53) - **discovery**: always scan Mod annotation *(PR [#598](https://github.com/CleanroomMC/Cleanroom/pull/598) by [@friendlyhj](https://github.com/friendlyhj))*
+- [`fd78c16`](https://github.com/CleanroomMC/Cleanroom/commit/fd78c16fee1841d1765f80d738b527f3f57f7993) - patchy jar may crash cleanroomClient in some case *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`388e90f`](https://github.com/CleanroomMC/Cleanroom/commit/388e90fd856d50edfde6deec798ebda06b6ce14b) - Should fix [#576](https://github.com/CleanroomMC/Cleanroom/pull/576) can't place block agains modded grass *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`2e756de`](https://github.com/CleanroomMC/Cleanroom/commit/2e756de88838c767665cf05f1749832619040887) - **mod-list**: issues fixed pulled in due to author nagging over and over and over again *(PR [#592](https://github.com/CleanroomMC/Cleanroom/pull/592) by [@RuiXuqi](https://github.com/RuiXuqi))*
+
+### Chores
+- [`9d9ea47`](https://github.com/CleanroomMC/Cleanroom/commit/9d9ea47b03dcb9798656a092ffa6e88a78e0e694) - **cleanmix**: update to 0.7.1 *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`5fba066`](https://github.com/CleanroomMC/Cleanroom/commit/5fba06625520d52ec7248edd5dcc861eefffbb57) - Update lwjglxx to fix macos ctrl keybind *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.6.8-alpha] - 2026-07-28
 ### Bug Fixes
 - [`9946eb1`](https://github.com/CleanroomMC/Cleanroom/commit/9946eb1f17a66a72d518e5e4a92d45c62c6d33fc) - **mixinextras**: allows late ME environments to register with no issue *(commit by [@Rongmario](https://github.com/Rongmario))*
@@ -201,3 +217,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.6-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.5-alpha...0.6.6-alpha
 [0.6.7-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.6-alpha...0.6.7-alpha
 [0.6.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.7-alpha...0.6.8-alpha
+[0.6.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.8-alpha...0.6.9-alpha
