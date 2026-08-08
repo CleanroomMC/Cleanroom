@@ -37,6 +37,15 @@
                              }
                          }
                      }
+@@ -252,7 +252,7 @@
+ 
+     public int getCookTime(ItemStack stack)
+     {
+-        return 200;
++        return FurnaceRecipes.instance().getCookTime(stack);
+     }
+ 
+     private boolean canSmelt()
 @@ -281,11 +281,13 @@
                  {
                      return false;
