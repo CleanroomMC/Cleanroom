@@ -134,10 +134,10 @@ public class SuggestionList {
             boolean hovered = mouseX >= g.x && mouseX < g.x + g.width && mouseY >= entryY && mouseY < entryY + ENTRY_HEIGHT;
             mc.fontRenderer.drawStringWithShadow(text, g.x + PADDING_X, entryY + 2, (selected || hovered) ? 0xFFFF55 : 0xFFFFFF);
         }
-        if (this.suggestions.size() > MAX_VISIBLE) {
+        if (this.suggestions.size() > g.visibleCount) {
             int barX = g.x + g.width;
-            int thumbHeight = Math.max(ENTRY_HEIGHT, g.height * MAX_VISIBLE / this.suggestions.size());
-            int maxScroll = this.suggestions.size() - MAX_VISIBLE;
+            int thumbHeight = Math.max(ENTRY_HEIGHT, g.height * g.visibleCount / this.suggestions.size());
+            int maxScroll = this.suggestions.size() - g.visibleCount;
             // scrollOffset grows upward with the list, so the thumb travels from the bottom up
             int thumbY = g.topY + g.height - thumbHeight - this.scrollOffset * (g.height - thumbHeight) / maxScroll;
             Gui.drawRect(barX, g.topY, barX + 2, g.topY + g.height, 0xFF333333);
@@ -286,10 +286,11 @@ public class SuggestionList {
     }
 
     public void scroll(int wheelDelta) {
-        if (!this.isVisible() || this.suggestions.size() <= MAX_VISIBLE) {
+        int maxVisible = this.maxVisibleRows();
+        if (!this.isVisible() || this.suggestions.size() <= maxVisible) {
             return;
         }
-        int maxOffset = this.suggestions.size() - MAX_VISIBLE;
+        int maxOffset = this.suggestions.size() - maxVisible;
         // List grows upward, so wheel up reveals the higher-index rows above
         this.scrollOffset = Math.clamp(this.scrollOffset + (wheelDelta > 0 ? 1 : -1), 0, maxOffset);
     }
@@ -312,22 +313,28 @@ public class SuggestionList {
     }
 
     private void clampScroll() {
+        int maxVisible = this.maxVisibleRows();
         if (this.selectedIndex == -1) {
             this.scrollOffset = 0;
             return;
         }
         if (this.selectedIndex < this.scrollOffset) {
             this.scrollOffset = this.selectedIndex;
-        } else if (this.selectedIndex >= this.scrollOffset + MAX_VISIBLE) {
-            this.scrollOffset = this.selectedIndex - MAX_VISIBLE + 1;
+        } else if (this.selectedIndex >= this.scrollOffset + maxVisible) {
+            this.scrollOffset = this.selectedIndex - maxVisible + 1;
         }
     }
 
+    private int maxVisibleRows() {
+        int spaceAbove = this.field.y - 2;
+        return Math.max(1, Math.min(MAX_VISIBLE, spaceAbove / ENTRY_HEIGHT));
+    }
+
     private Geometry computeGeometry() {
-        int visibleCount = Math.min(MAX_VISIBLE, this.suggestions.size());
+        int visibleCount = Math.min(this.maxVisibleRows(), this.suggestions.size());
         int height = visibleCount * ENTRY_HEIGHT;
-        // Grows upward from just above the input
-        int topY = this.field.y - height - 2;
+        // Grows upward from just above the input, clamped so it never goes off the top of the screen
+        int topY = Math.max(0, this.field.y - height - 2);
         int width = Math.min(this.cachedWidth, this.field.width);
         // Anchor the left edge at the screen-x of the token being completed, not the field's left edge
         String text = this.field.getText();
