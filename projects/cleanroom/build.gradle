@@ -151,7 +151,7 @@ patcher {
                     '^lwjgl-2.*$',
                     '^lwjgl_util-2.*$',
                     '^lwjgl-platform-2.*$',
-                    '^java-objc-bridge-1.*$'
+                    '^java-objc-bridge-1.0.*$'
             ]
 
             classpathExclude(*legacyVanillaClasspathExclusions)
