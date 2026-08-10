@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.10-alpha] - 2026-08-10
+### New Features
+- [`8d4d83a`](https://github.com/CleanroomMC/Cleanroom/commit/8d4d83a081ed99249cbbb81cf953d356c3d8c9c7) - **commands**: modern suggestions, completions, argument highlighting *(PR [#557](https://github.com/CleanroomMC/Cleanroom/pull/557) by [@Rongmario](https://github.com/Rongmario))*
+
+### Bug Fixes
+- [`90669ae`](https://github.com/CleanroomMC/Cleanroom/commit/90669ae4790d03d715e2c21d0560f6050e8740c8) - **commands**: only display visible amount of command suggestions *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`628ab32`](https://github.com/CleanroomMC/Cleanroom/commit/628ab3278ecfebe3ad29114e0ef34ebbf81e2cc4) - **cleanmix**: update to 0.7.2 to fix [#603](https://github.com/CleanroomMC/Cleanroom/pull/603) *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`67b5788`](https://github.com/CleanroomMC/Cleanroom/commit/67b57883dc0249ec7d473c273616191fbd1179dd) - **discovery**: duplicate sites on loading crl.dev.mixin configs *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Chores
+- [`6687ae9`](https://github.com/CleanroomMC/Cleanroom/commit/6687ae94d66342a9f2195859918ccbb467da79ec) - Update Gradle to 9.7.0 *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.6.9-alpha] - 2026-08-08
 ### Bug Fixes
 - [`7874a07`](https://github.com/CleanroomMC/Cleanroom/commit/7874a07403d2188347720f775cfb051da62ac04e) - **os**: open files the intended way *(commit by [@Rongmario](https://github.com/Rongmario))*
@@ -218,3 +231,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.7-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.6-alpha...0.6.7-alpha
 [0.6.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.7-alpha...0.6.8-alpha
 [0.6.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.8-alpha...0.6.9-alpha
+[0.6.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.9-alpha...0.6.10-alpha
