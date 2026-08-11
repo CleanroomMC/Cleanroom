@@ -686,7 +686,7 @@ public class CommandQueue implements Closeable {
 
         //<editor-fold desc="Buffer Write Float">
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull FloatBuffer data,
                           final boolean blocking,
                           final long offset) {
@@ -695,7 +695,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull FloatBuffer data,
                           final long offset) {
             Preconditions.checkNotNull(buffer);
@@ -703,7 +703,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull FloatBuffer data,
                           final boolean blocking) {
             Preconditions.checkNotNull(buffer);
@@ -711,14 +711,14 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull FloatBuffer data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
             return bufferWrite(stack, buffer, data, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final float @NonNull [] data,
                           final boolean blocking,
                           final long offset) {
@@ -727,7 +727,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final float @NonNull [] data,
                           final long offset) {
             Preconditions.checkNotNull(buffer);
@@ -735,7 +735,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final float @NonNull [] data,
                           final boolean blocking) {
             Preconditions.checkNotNull(buffer);
@@ -743,7 +743,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final float @NonNull [] data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
@@ -754,7 +754,7 @@ public class CommandQueue implements Closeable {
 
         //<editor-fold desc="Buffer Write Double">
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull DoubleBuffer data,
                           final boolean blocking,
                           final long offset) {
@@ -763,7 +763,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull DoubleBuffer data,
                           final long offset) {
             Preconditions.checkNotNull(buffer);
@@ -771,7 +771,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull DoubleBuffer data,
                           final boolean blocking) {
             Preconditions.checkNotNull(buffer);
@@ -779,14 +779,14 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull DoubleBuffer data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
             return bufferWrite(stack, buffer, data, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final double @NonNull [] data,
                           final boolean blocking,
                           final long offset) {
@@ -795,7 +795,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final double @NonNull [] data,
                           final long offset) {
             Preconditions.checkNotNull(buffer);
@@ -803,7 +803,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final double @NonNull [] data,
                           final boolean blocking) {
             Preconditions.checkNotNull(buffer);
@@ -811,7 +811,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final double @NonNull [] data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
@@ -822,7 +822,7 @@ public class CommandQueue implements Closeable {
 
         //<editor-fold desc="Buffer Write Byte">
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ByteBuffer data,
                           final boolean blocking,
                           final long offset) {
@@ -831,7 +831,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ByteBuffer data,
                           final long offset) {
             Preconditions.checkNotNull(buffer);
@@ -839,7 +839,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ByteBuffer data,
                           final boolean blocking) {
             Preconditions.checkNotNull(buffer);
@@ -847,7 +847,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ByteBuffer data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
@@ -859,7 +859,7 @@ public class CommandQueue implements Closeable {
 
         //<editor-fold desc="Buffer Write Short">
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ShortBuffer data,
                           final boolean blocking,
                           final long offset) {
@@ -868,7 +868,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ShortBuffer data,
                           final long offset) {
             Preconditions.checkNotNull(buffer);
@@ -876,7 +876,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ShortBuffer data,
                           final boolean blocking) {
             Preconditions.checkNotNull(buffer);
@@ -884,14 +884,14 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final @NonNull ShortBuffer data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
             return bufferWrite(stack, buffer, data, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final short @NonNull [] data,
                           final boolean blocking,
                           final long offset) {
@@ -900,7 +900,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final short @NonNull [] data,
                           final long offset) {
             Preconditions.checkNotNull(buffer);
@@ -908,7 +908,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, offset, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final short @NonNull [] data,
                           final boolean blocking) {
             Preconditions.checkNotNull(buffer);
@@ -916,7 +916,7 @@ public class CommandQueue implements Closeable {
             return bufferWrite(stack, buffer, data, blocking, eventID);
         }
 
-        public Event next(@NonNull Buffer buffer,
+        public Event write(@NonNull Buffer buffer,
                           final short @NonNull [] data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
