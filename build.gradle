@@ -15,11 +15,13 @@ java {
 
 cleanroom {
     loaderProject = true
+    developInitialPatches = false
     accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
     patchDev {
         minecraft {
-            source = layout.buildDirectory.dir('cleanroom_gradle/sourceSets/mcp/sources').get().asFile
-            patchesDirectory = file('module/minecraft/patches')
+            input = layout.buildDirectory.dir('cleanroom_gradle/sourceSets/mcp/sources')
+            patches = layout.projectDirectory.dir('module/minecraft/patches')
+            output = layout.projectDirectory.dir('module/minecraft/src/main/java')
             dependsOn 'remapSrg2Mcp'
         }
     }
