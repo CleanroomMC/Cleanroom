@@ -84,6 +84,19 @@ configurations.configureEach {
     }
 }
 
+configurations.named('vanillaNatives') {
+    exclude group: 'ca.weblite', module: 'java-objc-bridge'
+    // LWJGL 2's natives are never loaded: LWJGLY reaches LWJGL 3's instead.
+    exclude group: 'org.lwjgl.lwjgl'
+}
+
+// TODO: Needed?
+['runtimeClasspath', 'testRuntimeClasspath'].each { name ->
+    configurations.named(name) {
+        exclude group: 'org.lwjgl.lwjgl'
+    }
+}
+
 dependencies {
     // ASM
     def asm_version = providers.gradleProperty('asm_version').get()
