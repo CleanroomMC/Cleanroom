@@ -162,17 +162,25 @@ dependencies {
     // java-objc-bridge bumped here for updated OSX arm64 natives
     api 'ca.weblite:java-objc-bridge:1.2'
 
-    // LWJGL
-    api platform('org.lwjgl:lwjgl-bom:3.4.1')
+    api platform('org.lwjgl:lwjgl-bom:3.4.2')
     api 'org.lwjgl:lwjgl'
+    api 'org.lwjgl:lwjgl-jemalloc'
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-openal'
+    api 'org.lwjgl:lwjgl-stb'
+    api 'org.lwjgl:lwjgl-tinyfd'
     api 'org.lwjgl:lwjgl-sdl'
+
+    // TODO
+    // compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
+    //  runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
     runtimeOnly 'org.lwjgl:lwjgl::natives-windows'
+    runtimeOnly 'org.lwjgl:lwjgl-jemalloc::natives-windows'
     runtimeOnly 'org.lwjgl:lwjgl-opengl::natives-windows'
     runtimeOnly 'org.lwjgl:lwjgl-openal::natives-windows'
+    runtimeOnly 'org.lwjgl:lwjgl-stb::natives-windows'
+    runtimeOnly 'org.lwjgl:lwjgl-tinyfd::natives-windows'
     runtimeOnly 'org.lwjgl:lwjgl-sdl::natives-windows'
-    // runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
 
     // Kirino
     api 'org.joml:joml:1.10.9'
