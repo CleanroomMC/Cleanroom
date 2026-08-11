@@ -55,6 +55,11 @@ var export_arguments = [
 ]
 
 configurations.configureEach {
+    exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
+    // patchy ships its own copy of io.netty.bootstrap.Bootstrap
+    // Against 4.2 netty it shadows the real class and dies on a superclass method that no longer exists
+    exclude group: 'com.mojang', module: 'patchy'
+
     resolutionStrategy.eachDependency { details ->
         switch ("${details.requested.group}:${details.requested.name}") {
             case 'com.google.guava:guava':               details.useVersion '33.6.0-jre';       break
