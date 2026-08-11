@@ -112,11 +112,10 @@ dependencies {
     implementation "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
 
     api 'org.jspecify:jspecify:1.0.0'
-    api 'top.outlands:foundation:0.19.8'
+    api 'top.outlands:foundation:0.19.11'
     api 'net.lenni0451:Reflect:1.6.4' // FIXME
     api 'net.lenni0451.commons:unchecked:1.9.2' // FIXME
     api 'org.javassist:javassist:3.30.2-GA' // FIXME
-    api 'com.google.code.findbugs:jsr305:3.0.2' // FIXME
     api 'lzma:lzma:0.0.1'
     api 'java3d:vecmath:1.5.2' // TODO: joml
     api 'net.sf.trove4j:core:3.1.0'
@@ -134,11 +133,16 @@ dependencies {
     api 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
     api 'org.apache.httpcomponents.client5:httpclient5:5.6.1'
 
-    // Jakarta (replaces javax)
+    // Jakarta replacements for APIs that were bundled with Java 8 SE, except javax.inject.
+    // Java 8 SE packages: javax.xml.ws and javax.jws
     api 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.3'
+    // Java 8 SE package: javax.activation
     api 'jakarta.activation:jakarta.activation-api:2.1.4'
+    // Java 8 SE package: javax.annotation
     api 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+    // Java 8 SE packages: javax.xml.bind and its subpackages
     api 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.5'
+    // TODO: javax.inject was the external JSR-330 API, *NOT* part of Java 8 SE
     api 'jakarta.inject:jakarta.inject-api:2.0.1'
 
     // TODO reconsider
