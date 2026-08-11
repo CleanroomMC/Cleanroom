@@ -399,6 +399,98 @@ public class Buffer implements Closeable {
         }
     }
 
+    public long read(@NonNull MemoryStack stack, long commandQueue, short @NonNull [] target, boolean blocking, long offset, long... events) {
+        final int sizeof = 2;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkState(flags.canRead, "Attempted to read from a write-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            return event.get(0);
+        }
+    }
+
+    public long read(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] target, boolean blocking, long offset, long... events) {
+        final int sizeof = 4;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkState(flags.canRead, "Attempted to read from a write-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            return event.get(0);
+        }
+    }
+
+    public long read(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] target, boolean blocking, long offset, long... events) {
+        final int sizeof = 4;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkState(flags.canRead, "Attempted to read from a write-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            return event.get(0);
+        }
+    }
+
+    public long read(@NonNull MemoryStack stack, long commandQueue, double @NonNull [] target, boolean blocking, long offset, long... events) {
+        final int sizeof = 8;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkState(flags.canRead, "Attempted to read from a write-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            return event.get(0);
+        }
+    }
+
     @Override
     public void close() throws IOException {
         this.isClosed = true;
