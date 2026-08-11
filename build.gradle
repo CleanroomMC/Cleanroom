@@ -27,7 +27,14 @@ cleanroom {
     }
 }
 
-def modules = ['minecraft', 'forge', 'cleanroom', 'kirino', 'builtin/mixinbooter']
+def modules = [
+        'minecraft',
+        'forge',
+        'cleanroom',
+        'kirino',
+        'builtin/mixinbooter',
+        'builtin/configanytime'
+]
 
 sourceSets {
     main {
