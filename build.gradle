@@ -92,8 +92,8 @@ dependencies {
     implementation "org.ow2.asm:asm-deprecated:7.1"
 
     // Mixin
-    implementation 'com.cleanroommc:cleanmix:0.4.6'
-    implementation 'io.github.llamalad7:mixinextras-common:0.5.4'
+    implementation "com.cleanroommc:cleanmix:${providers.gradleProperty('cleanmix_version').get()}"
+    implementation "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
 
     api 'org.jspecify:jspecify:1.0.0'
     api 'top.outlands:foundation:0.19.8'
