@@ -159,6 +159,8 @@ dependencies {
     api 'com.github.oshi:oshi-core-ffm:7.3.2'
     api 'com.github.oshi:oshi-common:7.3.2'
     api 'net.java.dev.jna:jna-platform:5.19.1'
+    // java-objc-bridge bumped here for updated OSX arm64 natives
+    api 'ca.weblite:java-objc-bridge:1.2'
 
     // LWJGL
     api platform('org.lwjgl:lwjgl-bom:3.4.1')
