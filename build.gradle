@@ -25,15 +25,11 @@ cleanroom {
     }
 }
 
-afterEvaluate {
-    sourceSets.minecraftPatchDev.java.srcDir 'module/minecraft/src/main/java'
-}
-
 def modules = ['minecraft', 'forge', 'cleanroom', 'kirino', 'builtin/mixinbooter']
 
 sourceSets {
     main {
-        java.srcDirs = modules.collect { "module/${it}/src/main/java" }
+        java.srcDirs = modules.collect { "module/${it}/src/main/java" } + 'module/minecraft/injected/java'
         resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
     }
     test {
