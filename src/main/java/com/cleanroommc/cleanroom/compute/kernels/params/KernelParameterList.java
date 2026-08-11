@@ -1,5 +1,6 @@
 package com.cleanroommc.cleanroom.compute.kernels.params;
 
+import com.cleanroommc.cleanroom.compute.buffers.Buffer;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2d;
@@ -128,6 +129,10 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
 
     public void add(@NonNull PointerBuffer value) {
         add(new BufferPointerParameter(value));
+    }
+
+    public void add(@NonNull Buffer value) {
+        add(new BufferParameter(value));
     }
 
     // </editor-fold>
