@@ -144,6 +144,88 @@ public class CommandQueue implements Closeable {
         }
     }
 
+    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                             final float @NonNull [] data,
+                             final long offset,
+                             final boolean blocking,
+                             final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+    }
+
+    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                             final long offset,
+                             final float @NonNull [] data,
+                             final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+    }
+
+    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                             final float @NonNull [] data,
+                             final boolean blocking, final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+    }
+
+    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                             final float @NonNull [] data,
+                             final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+    }
+
+    public Event bufferWrite(@NonNull Buffer buffer,
+                             final float @NonNull [] data,
+                             final long offset,
+                             final boolean blocking,
+                             final long... events) {
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferWrite(stack, buffer, data, offset, blocking, events);
+        }
+    }
+
+    public Event bufferWrite(@NonNull Buffer buffer,
+                             final long offset,
+                             final float @NonNull [] data,
+                             final long... events) {
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferWrite(stack, buffer, offset, data, events);
+        }
+    }
+
+    public Event bufferWrite(@NonNull Buffer buffer,
+                             final float @NonNull [] data,
+                             final boolean blocking, final long... events) {
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferWrite(stack, buffer, data, blocking, events);
+        }
+    }
+
+    public Event bufferWrite(@NonNull Buffer buffer,
+                             final float @NonNull [] data,
+                             final long... events) {
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(buffer);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferWrite(stack, buffer, data, events);
+        }
+    }
+
     @Override
     public void close() throws IOException {
         CL20.clReleaseCommandQueue(commandQueue);
@@ -195,6 +277,38 @@ public class CommandQueue implements Closeable {
 
         public Event next(@NonNull Buffer buffer,
                           final @NonNull FloatBuffer data) {
+            Preconditions.checkNotNull(buffer);
+            Preconditions.checkNotNull(data);
+            return bufferWrite(stack, buffer, data, eventID);
+        }
+
+        public Event next(@NonNull Buffer buffer,
+                          final float @NonNull [] data,
+                          final boolean blocking,
+                          final long offset) {
+            Preconditions.checkNotNull(buffer);
+            Preconditions.checkNotNull(data);
+            return bufferWrite(stack, buffer, data, blocking, offset, eventID);
+        }
+
+        public Event next(@NonNull Buffer buffer,
+                          final float @NonNull [] data,
+                          final long offset) {
+            Preconditions.checkNotNull(buffer);
+            Preconditions.checkNotNull(data);
+            return bufferWrite(stack, buffer, data, offset, eventID);
+        }
+
+        public Event next(@NonNull Buffer buffer,
+                          final float @NonNull [] data,
+                          final boolean blocking) {
+            Preconditions.checkNotNull(buffer);
+            Preconditions.checkNotNull(data);
+            return bufferWrite(stack, buffer, data, blocking, eventID);
+        }
+
+        public Event next(@NonNull Buffer buffer,
+                          final float @NonNull [] data) {
             Preconditions.checkNotNull(buffer);
             Preconditions.checkNotNull(data);
             return bufferWrite(stack, buffer, data, eventID);
