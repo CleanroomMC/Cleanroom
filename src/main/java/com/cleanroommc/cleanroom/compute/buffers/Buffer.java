@@ -303,4 +303,14 @@ public class Buffer implements Closeable {
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to write to buffer.");
         }
     }
+
+    private static void checkBufferReadErrors(int err) {
+        switch (err) {
+            case CL10.CL_INVALID_MEM_OBJECT -> throw new BufferError("Buffer is not a valid memory object.");
+            case CL10.CL_INVALID_VALUE -> throw new ArrayIndexOutOfBoundsException("Attempted to read buffer out of bounds.");
+            case CL11.CL_MISALIGNED_SUB_BUFFER_OFFSET -> throw new BufferError("Misaligned subbuffer offset");
+            case CL11.CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST -> throw new IllegalArgumentException("Negative event value in wait list for blocking buffer write operation.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to write to buffer.");
+        }
+    }
 }
