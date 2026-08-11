@@ -23,8 +23,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,9 +39,9 @@ import net.minecraftforge.fml.common.ModContainer;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.MapMaker;
-import com.google.common.collect.Sets;
-import com.google.common.reflect.TypeToken;
 import org.jspecify.annotations.NonNull;
+
+import org.objectweb.asm.Type;
 
 public class EventBus implements IEventExceptionHandler
 {
@@ -80,76 +82,100 @@ public class EventBus implements IEventExceptionHandler
         listenerOwners.put(target, activeModContainer);
 
         boolean isStatic;
-        Set<? extends Class<?>> supers;
         Class<?> scanTarget;
         if (target instanceof Class<?> clazz) {
             isStatic = true;
-            supers = Set.of(clazz);
             scanTarget = clazz;
         } else {
             isStatic = false;
-            supers = TypeToken.of(target.getClass()).getTypes().rawTypes();
             scanTarget = target.getClass();
         }
 
-        for (Method method : scanTarget.getMethods())
+        for (Method matched : collectHandlers(scanTarget, isStatic))
         {
-            if (isStatic != Modifier.isStatic(method.getModifiers()))
+            if (isStatic != Modifier.isStatic(matched.getModifiers()))
                 continue;
 
-            try {
-                // do `.getDeclaredMethod(...)` to force JVM to walk through declared methods and load their parameter
-                // types. This is for preventing shortcut below from skipping classloading
-                //
-                // mod developers should be responsible for not loading non-existent class, but :(
-                // related issue: https://github.com/CleanroomMC/Cleanroom/issues/349
-                method.getDeclaringClass().getDeclaredMethod("forceClassLoadingForDeclaredMethods", Event.class);
-            } catch (NoSuchMethodException e) {
-                // swallow this specific exception, other exceptions, like ClassNotFoundException, will fall through
-            }
+            Class<?> eventType = getEventType(matched);
 
-            var parameterTypes = method.getParameterTypes();
-            var matched = supers.stream()
-                .map(cls -> {
-                    if (cls == method.getDeclaringClass()) {
-                        // shortcut for most event handler classes with no explicit superclass
-                        return method;
-                    }
-                    try {
-                        return cls.getDeclaredMethod(method.getName(), parameterTypes);
-                    } catch (NoSuchMethodException e) {
-                        // Eat the error, this is not unexpected
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .filter(m -> m.isAnnotationPresent(SubscribeEvent.class))
-                .findFirst()
-                .orElse(null);
-
-            if (matched == null)
-            {
-                continue;
-            }
-
-            if (parameterTypes.length != 1)
-            {
-                throw new IllegalArgumentException(
-                    "Method " + method + " has @SubscribeEvent annotation, but requires " + parameterTypes.length +
-                        " arguments.  Event handler methods must require a single argument."
-                );
-            }
-
-            Class<?> eventType = parameterTypes[0];
-
-            if (!Event.class.isAssignableFrom(eventType))
-            {
-                throw new IllegalArgumentException("Method " + method + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
-            }
-
-            // the method to be registered here is "matched", not "method", it should be a bug of
-            // the original event bus, since the exceptions above are all referencing "method"
             register(eventType, target, matched, activeModContainer);
+        }
+    }
+
+    private static @NonNull Class<?> getEventType(Method matched) {
+        var parameterTypes = matched.getParameterTypes();
+        if (parameterTypes.length != 1)
+        {
+            throw new IllegalArgumentException(
+                "Method " + matched + " has @SubscribeEvent annotation, but requires " + parameterTypes.length +
+                    " arguments.  Event handler methods must require a single argument."
+            );
+        }
+
+        Class<?> eventType = parameterTypes[0];
+
+        if (!Event.class.isAssignableFrom(eventType))
+        {
+            throw new IllegalArgumentException("Method " + matched + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
+        }
+        return eventType;
+    }
+
+    /**
+     * Collects listener handlers by walking the class hierarchy from the given class upwards,
+     * subclass declarations first. For each signature only annotated declarations matter and
+     * the first one encountered (in subclass-first order) wins, so an override without
+     * {@code @SubscribeEvent} naturally falls through to the annotated supertype declaration.
+     * Interfaces are walked after the class chain. When {@code declaredOnly} is true (static
+     * registration) only methods declared on the class itself are considered, so a subclass
+     * never inherits its superclass' static listeners.
+     */
+    private static List<Method> collectHandlers(Class<?> clazz, boolean declaredOnly) {
+        Map<String, Method> handlers = new LinkedHashMap<>();
+        if (declaredOnly) {
+            collectLayer(clazz, handlers);
+        } else {
+            for (Class<?> c = clazz; c != null && c != Object.class; c = c.getSuperclass()) {
+                collectLayer(c, handlers);
+            }
+            for (Class<?> itf : allInterfaces(clazz)) {
+                collectLayer(itf, handlers);
+            }
+        }
+        return new ArrayList<>(handlers.values());
+    }
+
+    private static void collectLayer(Class<?> type, Map<String, Method> handlers) {
+        for (Method m : type.getDeclaredMethods()) {
+            if (m.isBridge() || m.isSynthetic()) continue;
+            if (m.isAnnotationPresent(SubscribeEvent.class)) {
+                handlers.putIfAbsent(signatureKey(m), m);
+            }
+        }
+    }
+
+    private static String signatureKey(Method m) {
+        return m.getName() + Type.getMethodDescriptor(m);
+    }
+
+    /**
+     * All interfaces of the class hierarchy, including super-interfaces, deduplicated.
+     */
+    private static List<Class<?>> allInterfaces(Class<?> clazz) {
+        Set<Class<?>> interfaces = new LinkedHashSet<>();
+        for (Class<?> c = clazz; c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Class<?> itf : c.getInterfaces()) {
+                collectInterfaces(itf, interfaces);
+            }
+        }
+        return new ArrayList<>(interfaces);
+    }
+
+    private static void collectInterfaces(Class<?> itf, Set<Class<?>> out) {
+        if (out.add(itf)) {
+            for (Class<?> parent : itf.getInterfaces()) {
+                collectInterfaces(parent, out);
+            }
         }
     }
 

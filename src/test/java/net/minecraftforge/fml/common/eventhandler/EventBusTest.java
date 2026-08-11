@@ -4,7 +4,10 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.impl.AbnormalListeners;
 import net.minecraftforge.fml.common.eventhandler.impl.ExampleEvent;
+import net.minecraftforge.fml.common.eventhandler.impl.InheritedListeners;
 import net.minecraftforge.fml.common.eventhandler.impl.InstanceListeners;
+import net.minecraftforge.fml.common.eventhandler.impl.NonPublicInstanceListeners;
+import net.minecraftforge.fml.common.eventhandler.impl.NonPublicStaticListeners;
 import net.minecraftforge.fml.common.eventhandler.impl.StaticListeners;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -85,5 +88,41 @@ public class EventBusTest {
         bus.post(event);
 
         Assertions.assertEquals(event.id, listener.captured);
+    }
+
+    @Test
+    public void registerNonPublicInstance() {
+        var bus = new EventBus();
+
+        var listeners = new NonPublicInstanceListeners();
+        bus.register(listeners);
+
+        bus.post(new ExampleEvent());
+        bus.post(new ExampleEvent());
+
+        Assertions.assertEquals(6, listeners.total(), "private/protected/package-private instance listeners must all fire");
+    }
+
+    @Test
+    public void registerNonPublicStatic() {
+        var bus = new EventBus();
+
+        bus.register(NonPublicStaticListeners.class);
+
+        bus.post(new ExampleEvent());
+
+        Assertions.assertEquals(2, NonPublicStaticListeners.total(), "private/protected static listeners must all fire");
+    }
+
+    @Test
+    public void registerInheritedAnnotation() {
+        var bus = new EventBus();
+
+        var listeners = new InheritedListeners.Derived();
+        bus.register(listeners);
+
+        bus.post(new ExampleEvent());
+
+        Assertions.assertEquals(1, listeners.baseCalls, "override without @SubscribeEvent inherits the annotated supertype declaration");
     }
 }
