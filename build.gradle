@@ -207,7 +207,3 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs += export_arguments
 }
-
-tasks.withType(com.cleanroommc.gradle.api.task.mc.RunMinecraft).configureEach {
-    jvmArgs '-Dmixin.debug.export=true', '-Dmixin.checks.interfaces=true'
-}
