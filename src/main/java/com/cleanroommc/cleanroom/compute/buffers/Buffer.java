@@ -70,6 +70,102 @@ public class Buffer implements Closeable {
         this.parent.children.add(this);
     }
 
+    public long write(@NonNull MemoryStack stack, long commandQueue, short @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 2;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
+        Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
+        Preconditions.checkState(flags.canWrite, "Attempted to write to read-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            return event.get(0);
+        }
+    }
+
+    public long write(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 4;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
+        Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
+        Preconditions.checkState(flags.canWrite, "Attempted to write to read-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            return event.get(0);
+        }
+    }
+
+    public long write(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 4;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
+        Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
+        Preconditions.checkState(flags.canWrite, "Attempted to write to read-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            return event.get(0);
+        }
+    }
+
+    public long write(@NonNull MemoryStack stack, long commandQueue, double @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 8;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
+        Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
+        Preconditions.checkState(flags.canWrite, "Attempted to write to read-only or no-access buffer");
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            return event.get(0);
+        }
+    }
+
     public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull ByteBuffer data, boolean blocking, long offset, long... events) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
