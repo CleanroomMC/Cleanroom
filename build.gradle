@@ -193,6 +193,13 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.named('test', Test) {
+    maxParallelForks = 1
+    useJUnitPlatform()
+    testLogging.events 'passed', 'skipped', 'failed'
+    jvmArgs open_arguments + export_arguments
+}
+
 tasks.register('printBuildInfo') {
     def v = version.toString()
     outputs.upToDateWhen { false }
