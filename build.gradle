@@ -97,13 +97,6 @@ configurations.named('vanillaNatives') {
     exclude group: 'org.lwjgl.lwjgl'
 }
 
-// TODO: Needed?
-['runtimeClasspath', 'testRuntimeClasspath'].each { name ->
-    configurations.named(name) {
-        exclude group: 'org.lwjgl.lwjgl'
-    }
-}
-
 dependencies {
     // ASM
     def asm_version = providers.gradleProperty('asm_version').get()
@@ -181,17 +174,18 @@ dependencies {
     // TODO
     // compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
     //  runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
-    runtimeOnly 'org.lwjgl:lwjgl::natives-windows'
-    runtimeOnly 'org.lwjgl:lwjgl-jemalloc::natives-windows'
-    runtimeOnly 'org.lwjgl:lwjgl-opengl::natives-windows'
-    runtimeOnly 'org.lwjgl:lwjgl-openal::natives-windows'
-    runtimeOnly 'org.lwjgl:lwjgl-stb::natives-windows'
-    runtimeOnly 'org.lwjgl:lwjgl-tinyfd::natives-windows'
-    runtimeOnly 'org.lwjgl:lwjgl-sdl::natives-windows'
+    lwjglNative 'org.lwjgl:lwjgl'
+    lwjglNative 'org.lwjgl:lwjgl-jemalloc'
+    lwjglNative 'org.lwjgl:lwjgl-opengl'
+    lwjglNative 'org.lwjgl:lwjgl-openal'
+    lwjglNative 'org.lwjgl:lwjgl-stb'
+    lwjglNative 'org.lwjgl:lwjgl-tinyfd'
+    lwjglNative 'org.lwjgl:lwjgl-sdl'
 
     // Kirino
     api 'org.joml:joml:1.10.9'
     api 'io.github.classgraph:classgraph:4.8.184'
+    lwjglNative 'org.lwjgl:lwjgl-freetype'
 
     // Test
     testImplementation platform('org.junit:junit-bom:6.1.0')
