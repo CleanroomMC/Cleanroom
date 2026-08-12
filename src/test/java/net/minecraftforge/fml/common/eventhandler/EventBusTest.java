@@ -20,7 +20,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * @author ZZZank
@@ -201,6 +204,83 @@ public class EventBusTest {
 
         bus.post(new HandWrittenListParameterizedEvent(1));
         Assertions.assertEquals(1, listener.calls);
+    }
+
+    @Test
+    public void registerLambda() {
+        var bus = new EventBus();
+        List<ExampleEvent> received = new ArrayList<>();
+        bus.register(ExampleEvent.class, EventPriority.HIGHEST, received::add);
+
+        var event = new ExampleEvent();
+        bus.post(event);
+
+        Assertions.assertEquals(List.of(event), received);
+    }
+
+    @Test
+    public void lambdaPriorityOrder() {
+        var bus = new EventBus();
+        List<EventPriority> order = new ArrayList<>();
+        bus.register(ExampleEvent.class, EventPriority.LOWEST, e -> order.add(EventPriority.LOWEST));
+        bus.register(ExampleEvent.class, EventPriority.NORMAL, e -> order.add(EventPriority.NORMAL));
+        bus.register(ExampleEvent.class, EventPriority.HIGHEST, e -> order.add(EventPriority.HIGHEST));
+
+        bus.post(new ExampleEvent());
+
+        Assertions.assertEquals(
+            List.of(EventPriority.HIGHEST, EventPriority.NORMAL, EventPriority.LOWEST),
+            order
+        );
+    }
+
+    @Test
+    public void lambdaReceiveCanceled() {
+        // default: canceled events are still dispatched, matching annotated listeners
+        var bus1 = new EventBus();
+        AtomicInteger calls1 = new AtomicInteger();
+        bus1.register(CancelableEvents.CancelableEvent.class, e -> calls1.incrementAndGet());
+        var canceled1 = new CancelableEvents.CancelableEvent();
+        canceled1.setCanceled(true);
+        bus1.post(canceled1);
+        Assertions.assertEquals(1, calls1.get());
+
+        // receiveCanceled = false: canceled events are skipped (a fresh instance: posting
+        // advances the event phase, so an already-posted instance cannot be reused)
+        var bus2 = new EventBus();
+        AtomicInteger calls2 = new AtomicInteger();
+        bus2.register(CancelableEvents.CancelableEvent.class, EventPriority.NORMAL, false, e -> calls2.incrementAndGet());
+        var canceled2 = new CancelableEvents.CancelableEvent();
+        canceled2.setCanceled(true);
+        bus2.post(canceled2);
+        Assertions.assertEquals(0, calls2.get());
+    }
+
+    @Test
+    public void unregisterLambda() {
+        var bus = new EventBus();
+        AtomicInteger calls = new AtomicInteger();
+        Consumer<ExampleEvent> handler = e -> calls.incrementAndGet();
+        bus.register(ExampleEvent.class, handler);
+
+        bus.post(new ExampleEvent());
+        Assertions.assertEquals(1, calls.get());
+
+        bus.unregister(handler);
+        bus.post(new ExampleEvent());
+        Assertions.assertEquals(1, calls.get(), "unregistered lambda must not be invoked");
+    }
+
+    @Test
+    public void getOwner() {
+        var bus = new EventBus();
+        var listeners = new InstanceListeners();
+        bus.register(listeners);
+
+        // in the test environment Loader is not initialized, so the owner falls back to the
+        // Minecraft mod container; only assert that a registered target has a non-null owner
+        Assertions.assertNotNull(bus.getOwner(listeners));
+        Assertions.assertNull(bus.getOwner(new Object()), "unregistered target has no owner");
     }
 
     @Test

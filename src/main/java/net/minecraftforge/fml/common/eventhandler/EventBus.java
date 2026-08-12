@@ -29,8 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
@@ -48,8 +51,8 @@ public class EventBus implements IEventExceptionHandler
 {
     private static int maxID = 0;
 
-    private ConcurrentHashMap<Object, ArrayList<IEventListener>> listeners = new ConcurrentHashMap<Object, ArrayList<IEventListener>>();
-    private Map<Object,ModContainer> listenerOwners = new MapMaker().weakKeys().weakValues().makeMap();
+    private final ConcurrentHashMap<Object, ArrayList<IEventListener>> listeners = new ConcurrentHashMap<>();
+    private final Map<Object,ModContainer> listenerOwners = new MapMaker().weakKeys().weakValues().makeMap();
     private final int busID = maxID++;
     private IEventExceptionHandler exceptionHandler;
     private boolean shutdown;
@@ -101,6 +104,58 @@ public class EventBus implements IEventExceptionHandler
 
             register(eventType, target, matched, activeModContainer);
         }
+    }
+
+    /**
+     * Returns the mod container that registered the given listener target on this bus, no guarantee and nullable.
+     */
+    @Nullable
+    public ModContainer getOwner(Object listener)
+    {
+        return listenerOwners.get(listener);
+    }
+
+    /**
+     * Unlike the annotated path, a lambda listener has no declaring class or mod container
+     * context, so {@code IGenericEvent}/{@code IContextSetter} wrapping does not apply. Events
+     * are dispatched regardless of their canceled state by default, matching annotated
+     * listeners; pass {@code receiveCanceled = false} to skip canceled events.
+     */
+    public <T extends Event> void register(Class<T> eventType, Consumer<T> handler)
+    {
+        register(eventType, EventPriority.NORMAL, true, handler);
+    }
+
+    public <T extends Event> void register(Class<T> eventType, EventPriority priority, Consumer<T> handler)
+    {
+        register(eventType, priority, true, handler);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Event> void register(Class<T> eventType, EventPriority priority, boolean receiveCanceled, Consumer<T> handler)
+    {
+        Objects.requireNonNull(eventType, "eventType");
+        Objects.requireNonNull(priority, "priority");
+        Objects.requireNonNull(handler, "handler");
+        if (!Event.class.isAssignableFrom(eventType))
+        {
+            throw new IllegalArgumentException("Not an event type: " + eventType);
+        }
+        if (listeners.containsKey(handler))
+        {
+            return;
+        }
+
+        IEventListener listener = event -> {
+            if (!receiveCanceled && event.isCancelable() && event.isCanceled())
+            {
+                return;
+            }
+            handler.accept((T) event);
+        };
+        EventCompatProbe.listenerList(eventType).register(busID, priority, listener);
+
+        listeners.computeIfAbsent(handler, _ -> new ArrayList<>()).add(listener);
     }
 
     private static @NonNull Class<?> getEventType(Method matched) {
