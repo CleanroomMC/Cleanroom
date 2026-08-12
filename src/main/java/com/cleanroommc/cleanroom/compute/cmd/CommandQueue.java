@@ -1142,6 +1142,86 @@ public class CommandQueue implements Closeable {
 
     //</editor-fold>
 
+    //<editor-fold desc="Buffer Read Byte">
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            @NonNull ByteBuffer target,
+                            final long offset,
+                            final boolean blocking,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            final long offset,
+                            @NonNull ByteBuffer target,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            @NonNull ByteBuffer target,
+                            final boolean blocking,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            @NonNull ByteBuffer target,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            @NonNull ByteBuffer target,
+                            final long offset,
+                            final boolean blocking,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, offset, blocking, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            final long offset,
+                            @NonNull ByteBuffer target,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, offset, target, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            @NonNull ByteBuffer target,
+                            final boolean blocking,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, blocking, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            @NonNull ByteBuffer target,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, events);
+        }
+    }
+
+    //</editor-fold>
+
     //</editor-fold>
 
     @Override
@@ -1597,6 +1677,38 @@ public class CommandQueue implements Closeable {
 
         public Event read(@NonNull Buffer buffer,
                           double @NonNull [] target,
+                          final long... dependencies) {
+            return bufferRead(stack, buffer, target, eventID);
+        }
+
+        //</editor-fold>
+
+        //<editor-fold desc="Buffer Read Byte">
+
+        public Event read(@NonNull Buffer buffer,
+                          @NonNull ByteBuffer target,
+                          final long offset,
+                          final boolean blocking,
+                          final long... dependencies) {
+            return bufferRead(stack, buffer, target, offset, blocking, eventID);
+        }
+
+        public Event read(@NonNull Buffer buffer,
+                          final long offset,
+                          @NonNull ByteBuffer target,
+                          final long... dependencies) {
+            return bufferRead(stack, buffer, target, offset, eventID);
+        }
+
+        public Event read(@NonNull Buffer buffer,
+                          @NonNull ByteBuffer target,
+                          final boolean blocking,
+                          final long... dependencies) {
+            return bufferRead(stack, buffer, target, blocking, eventID);
+        }
+
+        public Event read(@NonNull Buffer buffer,
+                          @NonNull ByteBuffer target,
                           final long... dependencies) {
             return bufferRead(stack, buffer, target, eventID);
         }
