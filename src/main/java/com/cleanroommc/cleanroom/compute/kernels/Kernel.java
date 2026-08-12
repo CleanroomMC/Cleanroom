@@ -81,6 +81,25 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
         return event.get(0);
     }
 
+    public long invoke(MemoryStack stack, long commandQueue,
+                       final @NonNull KernelParameterList arguments,
+                       final long... dependencies) {
+        Preconditions.checkNotNull(arguments);
+        arguments.bindAllParameters(this);
+        PointerBuffer eventWaitList = null;
+        if (dependencies != null && dependencies.length > 0) {
+            eventWaitList = stack.mallocPointer(dependencies.length);
+            eventWaitList.put(dependencies);
+            eventWaitList.rewind();
+        }
+        PointerBuffer event = stack.mallocPointer(1);
+        switch (CL10.clEnqueueTask(commandQueue, this.kernel, eventWaitList, event)) {
+            case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
+        }
+        return event.get(0);
+    }
+
     private static long gcd(long a, long b){
         long tmp;
         while(b != 0){
