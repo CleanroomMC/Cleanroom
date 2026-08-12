@@ -1,5 +1,7 @@
 package com.cleanroommc.cleanroom.compute;
 
+import com.cleanroommc.cleanroom.compute.buffers.Buffer;
+import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
@@ -18,7 +20,6 @@ import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,18 +50,21 @@ public class KernelTest {
         final float[] values = new float[]{
                 1.f,2.f,3.f,4.f,5.f,6.f,2.f,3.f,1.f,6.f,7.f
         };
+        float[] results = new float[values.length];
         assertDoesNotThrow(() -> {
             try (MemoryStack stack = MemoryStack.stackPush()) {
-                // TODO: Rewrite this to use buffers or change the test to test for passing a floatn value
-                FloatBuffer param = stack.callocFloat(values.length);
-                param.put(values);
-                param.rewind();
+                Buffer buffer = new Buffer(stack, values.length * 4, BufferFlags.READ_WRITE);
                 Kernel kernel = program.kernel("test");
                 KernelParameterList paramList = new KernelParameterList(kernel);
-                paramList.add(param);
-                queue.dispatchKernel(kernel, paramList, null, new long[]{values.length}).execute();
+                paramList.add(buffer);
+                queue.bufferWrite(stack, buffer, values, 0, true)
+                        .next(kernel, paramList, null, new long[]{values.length})
+                        .read(buffer, results).execute();
+                buffer.close();
             }
         });
+        for (int i = 0; i < values.length; i++)
+            assertEquals(values[i]+1.f, results[i]);
     }
 
     @AfterAll
