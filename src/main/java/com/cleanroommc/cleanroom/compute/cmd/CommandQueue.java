@@ -1378,6 +1378,162 @@ public class CommandQueue implements Closeable {
 
     //</editor-fold>
 
+    //<editor-fold desc="Buffer Read Int">
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            @NonNull IntBuffer target,
+                            final long offset,
+                            final boolean blocking,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            final long offset,
+                            @NonNull IntBuffer target,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            @NonNull IntBuffer target,
+                            final boolean blocking,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            @NonNull IntBuffer target,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            int @NonNull [] target,
+                            final long offset,
+                            final boolean blocking,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            final long offset,
+                            int @NonNull [] target,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            int @NonNull [] target,
+                            final boolean blocking,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+    }
+
+    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+                            int @NonNull [] target,
+                            final long... events) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkNotNull(buffer);
+        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            @NonNull IntBuffer target,
+                            final long offset,
+                            final boolean blocking,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, offset, blocking, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            final long offset,
+                            @NonNull IntBuffer target,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, offset, target, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            @NonNull IntBuffer target,
+                            final boolean blocking,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, blocking, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            @NonNull IntBuffer target,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            int @NonNull [] target,
+                            final long offset,
+                            final boolean blocking,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, offset, blocking, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            final long offset,
+                            int @NonNull [] target,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, offset, target, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            int @NonNull [] target,
+                            final boolean blocking,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, blocking, events);
+        }
+    }
+
+    public Event bufferRead(@NonNull Buffer buffer,
+                            int @NonNull [] target,
+                            final long... events) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return this.bufferRead(stack, buffer, target, events);
+        }
+    }
+
+    //</editor-fold>
+
     //</editor-fold>
 
     @Override
