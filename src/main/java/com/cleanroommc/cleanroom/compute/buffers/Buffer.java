@@ -70,6 +70,48 @@ public class Buffer implements Closeable {
         this.parent.children.add(this);
     }
 
+    public Buffer(long size, @NonNull BufferFlags flags) {
+        Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
+        Preconditions.checkNotNull(flags);
+        this.parent = null;
+        this.size = size;
+        this.flags = flags;
+        try (MemoryStack substack = MemoryStack.stackPush()) {
+            IntBuffer err = substack.mallocInt(1);
+            handle = CL10.clCreateBuffer(Compute.instance().context, flags.flags, size, err);
+            switch (err.get(0)) {
+                case CL10.CL_INVALID_CONTEXT -> throw new IllegalStateException("Can't create buffer, invalid context. This should not hapen. Something is seriously wrong.");
+                case CL10.CL_INVALID_VALUE -> throw new IllegalArgumentException("Can't create buffer, invalid provided flags.");
+                case CL10.CL_MEM_OBJECT_ALLOCATION_FAILURE -> throw new BufferError("Can't create buffer, allocation failed.");
+                case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
+            }
+        }
+    }
+
+    public Buffer(@NonNull Buffer parent, long offset, long size, @NonNull BufferFlags flags) {
+        Preconditions.checkNotNull(parent);
+        Preconditions.checkArgument(offset + size <= parent.size, "Subbuffer goes outside parent buffer.");
+        Preconditions.checkArgument(!parent.flags.isConflicting(flags), "Conflict between buffer and subbuffer.");
+        Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
+        Preconditions.checkNotNull(flags);
+        this.parent = parent;
+        this.size = size;
+        this.flags = flags;
+        try (MemoryStack substack = MemoryStack.stackPush()) {
+            IntBuffer err = substack.mallocInt(1);
+            ByteBuffer region = substack.malloc(CLBufferRegion.SIZE);
+            try (CLBufferRegion tmp = new CLBufferRegion(region)) {
+                tmp.set(offset, size);
+            }
+            handle = CL11.clCreateSubBuffer(parent.handle, flags.flags, CL11.CL_BUFFER_CREATE_TYPE_REGION, region, err);
+            switch (err.get(0)) { // All other errors should be eliminated by preconditions
+                case CL10.CL_MEM_OBJECT_ALLOCATION_FAILURE -> throw new BufferError("Can't create buffer, allocation failed.");
+                case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
+            }
+        }
+        this.parent.children.add(this);
+    }
+
     public long write(@NonNull MemoryStack stack, long commandQueue, short @NonNull [] data, boolean blocking, long offset, long... events) {
         final int sizeof = 2;
 
