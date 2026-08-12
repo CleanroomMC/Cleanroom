@@ -174,6 +174,50 @@ public class EventBusTest {
     }
 
     @Test
+    public void annotatedReceiveCanceledFalse() {
+        // @SubscribeEvent(receiveCanceled = false): the cancel check is kept for a cancelable
+        // event class (canceled events are skipped), but optimized away for a non-cancelable
+        // event class (the listener still receives the event)
+        var bus = new EventBus();
+
+        var skip = new CancelableEvents.SkipCanceled();
+        bus.register(skip);
+        var canceled = new CancelableEvents.CancelableEvent();
+        canceled.setCanceled(true);
+        bus.post(canceled);
+        Assertions.assertEquals(0, skip.calls, "canceled cancelable event must be skipped");
+
+        var nonCancelable = new CancelableEvents.NonCancelableListener();
+        bus.register(nonCancelable);
+        bus.post(new CancelableEvents.NonCancelableEvent());
+        Assertions.assertEquals(1, nonCancelable.calls, "non-cancelable event must still fire");
+    }
+
+    @Test
+    public void nonCancelableReceiveCanceledFalseLambda() {
+        // receiveCanceled=false on a non-cancelable event class: the per-invocation check is
+        // optimized away, so the listener still receives the event
+        var bus = new EventBus();
+        AtomicInteger calls = new AtomicInteger();
+        bus.register(CancelableEvents.NonCancelableEvent.class, EventPriority.NORMAL, false, e -> calls.incrementAndGet());
+        bus.post(new CancelableEvents.NonCancelableEvent());
+        Assertions.assertEquals(1, calls.get());
+    }
+
+    @Test
+    public void handWrittenReceiveCanceledFalseLambda() {
+        // a handwritten isCancelable() override forces the conservative path: the check is
+        // kept, so a canceled event still skips a receiveCanceled=false listener
+        var bus = new EventBus();
+        AtomicInteger calls = new AtomicInteger();
+        bus.register(CancelableEvents.HandWritten.class, EventPriority.NORMAL, false, e -> calls.incrementAndGet());
+        var canceled = new CancelableEvents.HandWritten();
+        canceled.setCanceled(true);
+        bus.post(canceled);
+        Assertions.assertEquals(0, calls.get());
+    }
+
+    @Test
     public void polymorphicPost() {
         var bus = new EventBus();
         var parent = new PolymorphicEvents.ParentListener();

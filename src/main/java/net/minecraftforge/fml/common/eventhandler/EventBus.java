@@ -146,16 +146,45 @@ public class EventBus implements IEventExceptionHandler
             return;
         }
 
-        IEventListener listener = event -> {
-            if (!receiveCanceled && event.isCancelable() && event.isCanceled())
-            {
-                return;
-            }
-            handler.accept((T) event);
-        };
+        // Small optimization for uncancelable event
+        IEventListener listener;
+        if (receiveCanceled || !isCancelCheckNeeded(eventType))
+        {
+            listener = event -> handler.accept((T) event);
+        }
+        else
+        {
+            listener = event -> {
+                if (event.isCancelable() && event.isCanceled())
+                {
+                    return;
+                }
+                handler.accept((T) event);
+            };
+        }
         EventCompatProbe.listenerList(eventType).register(busID, priority, listener);
 
         listeners.computeIfAbsent(handler, _ -> new ArrayList<>()).add(listener);
+    }
+
+    /**
+     * Handwritten {@code isCancelable()} override cannot be seen by the probe, so
+     * such classes take the conservative path and keep the check.
+     */
+    private static boolean isCancelCheckNeeded(Class<?> eventType)
+    {
+        try
+        {
+            if (eventType.getMethod("isCancelable").getDeclaringClass() != Event.class)
+            {
+                return true;
+            }
+        }
+        catch (NoSuchMethodException e)
+        {
+            return true; // defensive: keep the check
+        }
+        return EventCompatProbe.isCancelable(eventType);
     }
 
     private static @NonNull Class<?> getEventType(Method matched) {
@@ -266,7 +295,8 @@ public class EventBus implements IEventExceptionHandler
                 }
             }
 
-            final ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
+            boolean cancelCheck = isCancelCheckNeeded(eventType);
+            final ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType), cancelCheck);
 
             IEventListener listener = asm;
             if (IContextSetter.class.isAssignableFrom(eventType))

@@ -37,6 +37,7 @@ public class ASMEventHandler implements IEventListener
     private final SubscribeEvent subInfo;
     private final ModContainer owner;
     private final String readable;
+    private final boolean cancelCheck;
 
     @Deprecated
     public ASMEventHandler(Object target, Method method, ModContainer owner) throws Exception
@@ -46,7 +47,13 @@ public class ASMEventHandler implements IEventListener
 
     public ASMEventHandler(Object target, Method method, ModContainer owner, boolean isGeneric) throws Exception
     {
+        this(target, method, owner, isGeneric, true);
+    }
+
+    public ASMEventHandler(Object target, Method method, ModContainer owner, boolean isGeneric, boolean cancelCheck) throws Exception
+    {
         this.owner = owner;
+        this.cancelCheck = cancelCheck;
         subInfo = method.getAnnotation(SubscribeEvent.class);
         readable = "ASM: " + target + " " + method.getName() + Type.getMethodDescriptor(method);
 
@@ -74,7 +81,9 @@ public class ASMEventHandler implements IEventListener
             ThreadContext.put("mod", owner == null ? "" : owner.getName());
         if (handler != null)
         {
-            if (!event.isCancelable() || !event.isCanceled() || subInfo.receiveCanceled())
+            // the cancel check is compiled out entirely for non-cancelable event classes
+            // (see EventBus.isCancelCheckNeeded): for those, isCanceled() is always false
+            if (!cancelCheck || !event.isCancelable() || !event.isCanceled() || subInfo.receiveCanceled())
             {
                 handler.accept(event);
             }
