@@ -15,6 +15,14 @@
         "vals2": "uchar*",
         "outs": "uchar*"
       }
+    },
+    "shortTest": {
+      "name": "shortTest",
+      "arguments": {
+        "p1": "short2",
+        "p2": "short4",
+        "out": "short*"
+      }
     }
   }
 }

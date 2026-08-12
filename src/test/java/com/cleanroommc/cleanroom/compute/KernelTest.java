@@ -167,11 +167,38 @@ public class KernelTest {
                 for (int i = 0; i < results.length; i++)
                     results[i] = out.get(i);
             }
+
+            parent.close();
+            output.close();
         });
 
         for (int x = 0; x < vals1.length; x++)
             for (int y = 0; y < vals2.length; y++)
                 assertEquals(vals1[x]+vals2[y], results[(x*vals2.length)+y]);
+    }
+
+    @Test
+    public void testShortArgumentTaskVectors() {
+        final short arg1x = 5;
+        final short arg1y = 6;
+        final short[] arg2 = new short[] {
+                1, 2, 3, 4
+        };
+        short[] results = new short[6];
+
+        assertDoesNotThrow(() -> {
+            Buffer out = new Buffer(results.length*2, BufferFlags.READ_WRITE);
+            Kernel kernel = program.kernel("shortTest");
+            KernelParameterList parameters = new KernelParameterList(kernel);
+            parameters.add(arg1x, arg1y);
+            parameters.add(arg2);
+            parameters.add(out);
+            queue.dispatchKernel(kernel, parameters).read(out, results).execute();
+            out.close();
+        });
+
+        for (int i = 1; i <= 6; i++)
+            assertEquals(i, results[i-1]);
     }
 
     @AfterAll
