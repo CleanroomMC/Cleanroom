@@ -99,7 +99,7 @@ public class Buffer implements Closeable {
         this.flags = flags;
         try (MemoryStack substack = MemoryStack.stackPush()) {
             IntBuffer err = substack.mallocInt(1);
-            ByteBuffer region = substack.malloc(CLBufferRegion.SIZE);
+            ByteBuffer region = substack.malloc(CLBufferRegion.SIZEOF);
             try (CLBufferRegion tmp = new CLBufferRegion(region)) {
                 tmp.set(offset, size);
             }
