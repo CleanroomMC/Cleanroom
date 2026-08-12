@@ -5,6 +5,16 @@
       "arguments": {
         "vals": "float*"
       }
+    },
+    "byteTest": {
+      "name": "byteTest",
+      "arguments": {
+        "dimX": "ulong",
+        "dimY": "ulong",
+        "vals1": "uchar*",
+        "vals2": "uchar*",
+        "outs": "uchar*"
+      }
     }
   }
 }

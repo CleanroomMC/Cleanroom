@@ -20,6 +20,7 @@ import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -131,6 +132,46 @@ public class KernelTest {
         });
         for (int i = 0; i < values.length; i++)
             assertEquals(values[i]+3.f, results[i]);
+    }
+
+    @Test
+    public void testByteArguments2D() {
+        final byte[] vals1 = new byte[] {
+                1,2,3,2,4,5,1,3,2,6,7,1,8,9,10
+        };
+        final byte[] vals2 = new byte[] {
+                3,2,1,4,5,0,1,4,3,2,1,0
+        };
+        byte[] results = new byte[vals1.length*vals2.length];
+        assertDoesNotThrow(() -> {
+            Buffer parent = new Buffer(vals1.length + vals2.length, BufferFlags.READ_WRITE);
+            Buffer v1 = new Buffer(parent, 0, vals1.length, BufferFlags.READ_WRITE);
+            Buffer v2 = new Buffer(parent, vals1.length, vals2.length, BufferFlags.READ_WRITE);
+            Buffer output = new Buffer(results.length, BufferFlags.READ_WRITE);
+            Kernel kernel = program.kernel("byteTest");
+            KernelParameterList paramList = new KernelParameterList(kernel);
+            paramList.add((long) vals1.length);
+            paramList.add((long) vals2.length);
+            paramList.add(v1);
+            paramList.add(v2);
+            paramList.add(output);
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                ByteBuffer bv1 = stack.bytes(vals1);
+                ByteBuffer bv2 = stack.bytes(vals2);
+                ByteBuffer out = stack.malloc(results.length);
+                CommandQueue.Event wv1 = queue.bufferWrite(v1, 0, bv1);
+                CommandQueue.Event wv2 = queue.bufferWrite(v2, 0, bv2);
+                queue.dispatchKernel(kernel, paramList, null, new long[]{vals1.length, vals2.length}, wv1.eventID, wv2.eventID)
+                        .read(output, out).execute();
+                out.rewind();
+                for (int i = 0; i < results.length; i++)
+                    results[i] = out.get(i);
+            }
+        });
+
+        for (int x = 0; x < vals1.length; x++)
+            for (int y = 0; y < vals2.length; y++)
+                assertEquals(vals1[x]+vals2[y], results[(x*vals2.length)+y]);
     }
 
     @AfterAll
