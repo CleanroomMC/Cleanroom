@@ -25,7 +25,6 @@ final class FoundationTransformerProvider implements ITransformerProvider {
      * excluded automatically at runtime via the re-entrance lock.
      */
     private static final Set<String> REENTRANT_EXCLUSIONS = Sets.newHashSet(
-            "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
             "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer"
     );
 

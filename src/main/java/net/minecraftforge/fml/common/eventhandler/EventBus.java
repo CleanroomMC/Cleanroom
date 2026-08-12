@@ -36,6 +36,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
+import net.lenni0451.reflect.accessor.UnsafeAccess;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.MapMaker;
@@ -184,9 +185,32 @@ public class EventBus implements IEventExceptionHandler
     {
         try
         {
-            Constructor<?> ctr = eventType.getConstructor();
-            ctr.setAccessible(true);
-            Event event = (Event)ctr.newInstance();
+            ListenerList listenerList;
+            try
+            {
+                // Check if it has a constructor first
+                Constructor<?> ctr = eventType.getConstructor();
+                ctr.setAccessible(true);
+                Event event = (Event)ctr.newInstance();
+                listenerList = event.getListenerList();
+            }
+            catch (NoSuchMethodException e)
+            {
+                // Use Unsafe hack later
+                try
+                {
+                    UnsafeAccess.ensureClassInitialized(eventType);
+                    Event event = (Event) UnsafeAccess.allocateInstance(eventType);
+                    listenerList = event.getListenerList();
+                }
+                catch (Throwable t)
+                {
+                    // last resort: resolve the per-class list from the probe cache, which builds
+                    // the same list chained to the superclass list that the injected code built
+                    listenerList = EventCompatProbe.listenerList(eventType);
+                }
+            }
+
             final ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
 
             IEventListener listener = asm;
@@ -195,7 +219,7 @@ public class EventBus implements IEventExceptionHandler
                 listener = new ContextSetterEventListener(owner, asm);
             }
 
-            event.getListenerList().register(busID, asm.getPriority(), listener);
+            listenerList.register(busID, asm.getPriority(), listener);
 
             ArrayList<IEventListener> others = listeners.computeIfAbsent(target, k -> new ArrayList<>());
             others.add(listener);

@@ -49,7 +49,6 @@ public class Event
 
     private boolean isCanceled = false;
     private Result result = Result.DEFAULT;
-    private static ListenerList listeners = new ListenerList();
     private EventPriority phase = null;
 
     public Event()
@@ -62,11 +61,12 @@ public class Event
      * @return If access to setCanceled should be allowed
      *
      * Note:
-     * Events with the Cancelable annotation will have this method automatically added to return true.
+     * Events with the Cancelable annotation will have this method automatically return true.
+     * A handwritten override anywhere in the class hierarchy is preferred by virtual dispatch.
      */
     public boolean isCancelable()
     {
-        return false;
+        return EventCompatProbe.isCancelable(getClass());
     }
 
     /**
@@ -103,11 +103,11 @@ public class Event
      * Determines if this event expects a significant result value.
      *
      * Note:
-     * Events with the HasResult annotation will have this method automatically added to return true.
+     * Events with the HasResult annotation will have this method automatically return true.
      */
     public boolean hasResult()
     {
-        return false;
+        return EventCompatProbe.hasResult(getClass());
     }
 
     /**
@@ -132,22 +132,25 @@ public class Event
     }
 
     /**
-     * Called by the base constructor, this is used by ASM generated
-     * event classes to setup various functionality such as the listener list.
+     * Called by the base constructor. The base implementation is empty; event classes that
+     * manage their own listener list (the legacy handwritten pattern) may override this to
+     * set it up lazily.
      */
     protected void setup()
     {
     }
 
     /**
-     * Returns a ListenerList object that contains all listeners
-     * that are registered to this event.
+     * Returns the {@link ListenerList} that contains all listeners registered to this event
+     * type. The base implementation resolves one list per event class, chained to the
+     * superclass list, so listeners registered to a superclass event also fire for subclass
+     * events. A handwritten override is preferred by virtual dispatch.
      *
      * @return Listener List
      */
     public ListenerList getListenerList()
     {
-        return listeners;
+        return EventCompatProbe.listenerList(getClass());
     }
 
     @Nullable
