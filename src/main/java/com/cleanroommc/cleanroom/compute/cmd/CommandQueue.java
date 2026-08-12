@@ -70,6 +70,29 @@ public class CommandQueue implements Closeable {
         return new Event(kernel.invoke(stack, commandQueue, device, arguments, workGroupOffsets, workGroupSizes, dependencies), stack);
     }
 
+    public Event dispatchKernel(@NonNull Kernel kernel,
+                                final @NonNull KernelParameterList arguments,
+                                final long... dependencies) {
+        Preconditions.checkNotNull(arguments);
+        MemoryStack stack = MemoryStack.create().push();
+        try {
+            Event event = new Event(kernel.invoke(stack, this.commandQueue, arguments, dependencies), stack);
+            event.ownsStack = true;
+            return event;
+        } catch (RuntimeException | Error exception) {
+            stack.close();
+            throw exception;
+        }
+    }
+
+    public Event dispatchKernel(@NonNull MemoryStack stack, @NonNull Kernel kernel,
+                                final @NonNull KernelParameterList arguments,
+                                final long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(arguments);
+        return new Event(kernel.invoke(stack, this.commandQueue, arguments, dependencies), stack);
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Buffer Write">
@@ -1998,11 +2021,11 @@ public class CommandQueue implements Closeable {
             this.stack = Preconditions.checkNotNull(stack);
         }
 
-        public Event next(@NonNull Kernel kernel,
-                          final @NonNull KernelParameterList arguments,
-                          final long @Nullable [] workGroupOffsets,
-                          final long @NonNull [] workGroupSizes,
-                          final Event... dependencies) {
+        public @NonNull Event next(@NonNull Kernel kernel,
+                                   final @NonNull KernelParameterList arguments,
+                                   final long @Nullable [] workGroupOffsets,
+                                   final long @NonNull [] workGroupSizes,
+                                   final Event... dependencies) {
             Preconditions.checkNotNull(kernel);
             Preconditions.checkNotNull(arguments);
             Preconditions.checkNotNull(workGroupSizes);
@@ -2027,15 +2050,38 @@ public class CommandQueue implements Closeable {
             return transferOwnership(next);
         }
 
+        public @NonNull Event next(@NonNull Kernel kernel,
+                                   final @NonNull KernelParameterList arguments,
+                                   final Event... dependencies) {
+            Preconditions.checkNotNull(kernel);
+            Preconditions.checkNotNull(arguments);
+
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = dispatchKernel(stack,
+                        kernel,
+                        arguments,
+                        dependencyIDs
+                );
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
         //<editor-fold desc="Buffer Write">
 
         //<editor-fold desc="Buffer Write Float">
 
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull FloatBuffer data,
-                           final long offset,
-                           final boolean blocking,
-                           final Event... dependencies) {
+        public @NonNull Event write(@NonNull Buffer buffer,
+                                    final @NonNull FloatBuffer data,
+                                    final long offset,
+                                    final boolean blocking,
+                                    final Event... dependencies) {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
@@ -2049,10 +2095,10 @@ public class CommandQueue implements Closeable {
             return transferOwnership(next);
         }
 
-        public Event write(@NonNull Buffer buffer,
-                           final long offset,
-                           final @NonNull FloatBuffer data,
-                           final Event... dependencies) {
+        public @NonNull Event write(@NonNull Buffer buffer,
+                                    final long offset,
+                                    final @NonNull FloatBuffer data,
+                                    final Event... dependencies) {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
@@ -2066,10 +2112,10 @@ public class CommandQueue implements Closeable {
             return transferOwnership(next);
         }
 
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull FloatBuffer data,
-                           final boolean blocking,
-                           final Event... dependencies) {
+        public @NonNull Event write(@NonNull Buffer buffer,
+                                    final @NonNull FloatBuffer data,
+                                    final boolean blocking,
+                                    final Event... dependencies) {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
@@ -2083,9 +2129,9 @@ public class CommandQueue implements Closeable {
             return transferOwnership(next);
         }
 
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull FloatBuffer data,
-                           final Event... dependencies) {
+        public @NonNull Event write(@NonNull Buffer buffer,
+                                    final @NonNull FloatBuffer data,
+                                    final Event... dependencies) {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
@@ -2099,11 +2145,11 @@ public class CommandQueue implements Closeable {
             return transferOwnership(next);
         }
 
-        public Event write(@NonNull Buffer buffer,
-                           final float @NonNull [] data,
-                           final long offset,
-                           final boolean blocking,
-                           final Event... dependencies) {
+        public @NonNull Event write(@NonNull Buffer buffer,
+                                    final float @NonNull [] data,
+                                    final long offset,
+                                    final boolean blocking,
+                                    final Event... dependencies) {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
