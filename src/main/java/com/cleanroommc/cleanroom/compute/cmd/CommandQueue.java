@@ -66,6 +66,8 @@ public class CommandQueue implements Closeable {
 
     //</editor-fold>
 
+    //<editor-fold desc="Buffer Write">
+
     //<editor-fold desc="Buffer Write Float">
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -824,6 +826,8 @@ public class CommandQueue implements Closeable {
 
     //</editor-fold>
 
+    //</editor-fold>
+
     @Override
     public void close() throws IOException {
         CL20.clReleaseCommandQueue(commandQueue);
@@ -847,6 +851,8 @@ public class CommandQueue implements Closeable {
             Preconditions.checkNotNull(arguments);
             return dispatchKernel(stack, kernel, arguments, workGroupOffsets, workGroupSizes, eventID);
         }
+
+        //<editor-fold desc="Buffer Write">
 
         //<editor-fold desc="Buffer Write Float">
 
@@ -1154,6 +1160,8 @@ public class CommandQueue implements Closeable {
             Preconditions.checkNotNull(data);
             return bufferWrite(stack, buffer, data, eventID);
         }
+
+        //</editor-fold>
 
         //</editor-fold>
 
