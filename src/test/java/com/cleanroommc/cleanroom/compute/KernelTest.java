@@ -67,6 +67,30 @@ public class KernelTest {
             assertEquals(values[i]+1.f, results[i]);
     }
 
+    @Test
+    public void testConsequentExecution() {
+        final float[] values = new float[]{
+                1.f,2.f,3.f,4.f,5.f,6.f,2.f,3.f,1.f,6.f,7.f
+        };
+        float[] results = new float[values.length];
+        assertDoesNotThrow(() -> {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                Buffer buffer = new Buffer(stack, values.length * 4, BufferFlags.READ_WRITE);
+                Kernel kernel = program.kernel("test");
+                KernelParameterList paramList = new KernelParameterList(kernel);
+                paramList.add(buffer);
+                queue.bufferWrite(stack, buffer, values, 0, true)
+                        .next(kernel, paramList, null, new long[]{values.length})
+                        .next(kernel, paramList, null, new long[]{values.length})
+                        .next(kernel, paramList, null, new long[]{values.length})
+                        .read(buffer, results).execute();
+                buffer.close();
+            }
+        });
+        for (int i = 0; i < values.length; i++)
+            assertEquals(values[i]+3.f, results[i]);
+    }
+
     @AfterAll
     public static void cleanup() throws IOException {
         queue.close();
