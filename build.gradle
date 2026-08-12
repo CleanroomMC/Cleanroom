@@ -17,14 +17,6 @@ cleanroom {
     loaderProject = true
     developInitialPatches = false
     accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
-    patchDev {
-        minecraft {
-            input = layout.buildDirectory.dir('cleanroom_gradle/sourceSets/mcp/sources')
-            patches = layout.projectDirectory.dir('module/minecraft/patches')
-            output = layout.projectDirectory.dir('module/minecraft/src/main/java')
-            dependsOn 'remapSrg2Mcp'
-        }
-    }
 }
 
 def modules = [
@@ -172,8 +164,8 @@ dependencies {
     api 'org.lwjgl:lwjgl-sdl'
 
     // TODO
-    // compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
-    //  runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
+    compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
+    runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
     lwjglNative 'org.lwjgl:lwjgl'
     lwjglNative 'org.lwjgl:lwjgl-jemalloc'
     lwjglNative 'org.lwjgl:lwjgl-opengl'

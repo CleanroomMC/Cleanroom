@@ -14,5 +14,5 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.cleanroommc.cleanroomgradle.settings' version '0.4.3'
+    id 'com.cleanroommc.cleanroomgradle.settings' version '0.4.4'
 }
