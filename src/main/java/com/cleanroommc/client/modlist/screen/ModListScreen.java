@@ -64,6 +64,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     private static final MutableBoolean OPTION_UPDATES_ONLY = new MutableBoolean(false);
     private static final MutableBoolean OPTION_FAVOURITES_ONLY = new MutableBoolean(false);
     private static final Map<String, ModData> CACHED_MODS = new HashMap<>();
+    private static final Set<CreativeTabs> SKIPPED_TABS = new HashSet<>();
     private static final TextFormatting SEARCH_FILTER_KEY = TextFormatting.GOLD;
     private static final TextFormatting SEARCH_FILTER_VALUE = TextFormatting.WHITE;
     private static final Map<String, SearchFilter> SEARCH_FILTERS = Map.of(
@@ -605,7 +606,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         private final IModData data;
         private final ModList list;
         private final PinnedButton button;
-        private ItemStack icon;
         private boolean hovered;
 
         public ModListEntry(@Nonnull ModData cachedData, ModList list) {
@@ -613,7 +613,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             this.data = cachedData.modData;
             this.list = list;
             this.button = new PinnedButton();
-            this.icon = this.getItemIcon();
+            this.loadItemIcon();
         }
 
         @Override
@@ -672,16 +672,14 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             ModListScreen.this.itemRender.zLevel = 300.0F;
 
             try {
-                ModListScreen.this.itemRender.renderItemAndEffectIntoGUI(this.icon, left + 4, top + 2);
+                ModListScreen.this.itemRender.renderItemAndEffectIntoGUI(this.cachedData.itemIcon, left + 4, top + 2);
             } catch (Exception e) {
                 // Attempt to catch exceptions when rendering item. Sometime level instance isn't checked for null
                 ModListConstants.LOG.error("Failed to draw icon '{}' for mod '{}'. "
                                 + "To avoid issues, consider adding the mod to forceDefaultIconList",
-                        this.icon.toString(), this.data.getModId(), e
+                        this.cachedData.itemIcon.toString(), this.data.getModId(), e
                 );
-                ItemStack grass = new ItemStack(Blocks.GRASS);
-                this.cachedData.itemIcon = grass;
-                this.icon = grass;
+                this.cachedData.itemIcon = new ItemStack(Blocks.GRASS);
             }
 
             ModListScreen.this.zLevel = screenZ;
@@ -694,19 +692,17 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         }
 
-        @Nonnull
-        private ItemStack getItemIcon() {
+        private void loadItemIcon() {
             if (this.cachedData.itemIcon != null) {
-                return this.cachedData.itemIcon;
+                return;
             }
 
             // Default is grass
-            ItemStack defaultIcon = new ItemStack(Blocks.GRASS);
-            this.cachedData.itemIcon = defaultIcon;
+            this.cachedData.itemIcon = new ItemStack(Blocks.GRASS);
 
             for (String forcedDefaultIcon : ModListConfig.forceDefaultIconList) {
                 if (forcedDefaultIcon.equals(this.data.getModId())) {
-                    return defaultIcon;
+                    return;
                 }
             }
 
@@ -719,9 +715,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                     Item item = Item.getByNameOrId(parts[0] + ":" + parts[1]);
                     if (item != null) {
                         int meta = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
-                        ItemStack itemStack = new ItemStack(item, 1, meta);
-                        this.cachedData.itemIcon = itemStack;
-                        return itemStack;
+                        this.cachedData.itemIcon = new ItemStack(item, 1, meta);
+                        return;
                     }
                 } catch (Exception e) {
                     ModListConstants.LOG.warn("Failed to parse item icon '{}' for mod '{}'", itemIcon, this.data.getModId(), e);
@@ -730,19 +725,23 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
             // If the mod has a creative tab, the mod list will attempt to use the tab's icon
             for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-                if (tab == null) continue;
+                if (tab == null || SKIPPED_TABS.contains(tab)) continue;
                 ItemStack tabItem;
                 try {
                     tabItem = tab.getIcon();
                 } catch (Exception e) {
-                    ModListConstants.LOG.warn("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
+                    ModListConstants.LOG.warn("Failed to get item icon for creative tab '{}'", tab.getTranslationKey(), e);
+                    SKIPPED_TABS.add(tab);
                     continue;
                 }
-                if (tabItem.isEmpty()) continue;
+                if (tabItem.isEmpty()) {
+                    SKIPPED_TABS.add(tab);
+                    continue;
+                }
                 ResourceLocation resource = tabItem.getItem().getRegistryName();
                 if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
                 this.cachedData.itemIcon = tabItem;
-                return tabItem;
+                return;
             }
 
             // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
@@ -750,12 +749,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 if (item == null) continue;
                 ResourceLocation resource = item.getRegistryName();
                 if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
-                ItemStack itemStack = new ItemStack(item);
-                this.cachedData.itemIcon = itemStack;
-                return itemStack;
+                this.cachedData.itemIcon = new ItemStack(item);
+                return;
             }
-
-            return defaultIcon;
         }
 
         private String getFormattedModName(boolean favouriteIconVisible) {
