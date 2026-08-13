@@ -18,6 +18,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 public class LoadingTracker {
     private static final int MAX_PROGRESS = 10000;
+    private static final long TASKBAR_UPDATE_DEBOUNCE_NANOS = 100_000_000L;
 
     public static final class Phase {
         private static final List<Phase> REGISTRY = new ArrayList<>();
@@ -96,6 +97,7 @@ public class LoadingTracker {
 
     private static Phase currentPhase = null;
     private static int lastProgress = 0;
+    private static long lastTaskbarUpdateNanos = 0L;
     private static boolean initialized = false;
 
     private static final String TIMING_FILE_NAME = "cleanroom_load_timings.dat";
@@ -127,6 +129,7 @@ public class LoadingTracker {
         phaseDurationMs = new long[phaseCount];
         currentPhase = null;
         lastProgress = 0;
+        lastTaskbarUpdateNanos = 0L;
 
         int[] weights = loadHistory();
         if (weights == null) {
@@ -163,7 +166,7 @@ public class LoadingTracker {
 
         if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) {
             setTaskbarState(TaskbarApi.TBPFLAG.TBPF_NORMAL);
-            updateTaskbar(0);
+            updateTaskbar(0, true);
         } else {
             setTaskbarState(TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
         }
@@ -176,7 +179,7 @@ public class LoadingTracker {
             endPhaseTimer(currentPhase);
         }
 
-        updateTaskbar(MAX_PROGRESS);
+        updateTaskbar(MAX_PROGRESS, true);
         saveHistory();
 
         initialized = false;
@@ -289,9 +292,18 @@ public class LoadingTracker {
     }
 
     private static void updateTaskbar(int progress) {
+        updateTaskbar(progress, false);
+    }
+
+    private static void updateTaskbar(int progress, boolean force) {
         if (!SystemUtils.IS_OS_WINDOWS || !ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) return;
         TaskbarApi api = TaskbarApi.getInstance();
         if (api == null || WindowsProperties.handle == Long.MIN_VALUE) return;
+
+        long now = System.nanoTime();
+        if (!force && lastTaskbarUpdateNanos != 0L && now - lastTaskbarUpdateNanos < TASKBAR_UPDATE_DEBOUNCE_NANOS) return;
+        lastTaskbarUpdateNanos = now;
+
         try {
             HWND hwnd = TaskbarApi.hwndFromGlfw(WindowsProperties.handle);
             api.setProgressValue(hwnd, progress, MAX_PROGRESS);
