@@ -13,6 +13,13 @@ java {
     withSourcesJar()
 }
 
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
 cleanroom {
     loaderProject = true
     developInitialPatches = false
