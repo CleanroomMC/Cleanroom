@@ -1,11 +1,10 @@
 package com.cleanroommc.client.modlist.screen.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiListExtended;
 
 import javax.annotation.Nullable;
 
-public class ModListSelection<E extends GuiListExtended.IGuiListEntry> extends ModListExtended<E> {
+public class ModListSelection<E extends ModListExtended.IListEntry> extends ModListExtended<E> {
     private @Nullable E selected;
 
     public ModListSelection(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {

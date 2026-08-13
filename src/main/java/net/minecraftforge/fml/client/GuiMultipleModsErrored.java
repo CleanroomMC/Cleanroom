@@ -94,9 +94,7 @@ public class GuiMultipleModsErrored extends GuiErrorBase
                   GuiMultipleModsErrored.this.height -30,
                   30, GuiMultipleModsErrored.this.height-50,
                     10,
-                  entryHeight,
-                  GuiMultipleModsErrored.this.width,
-                  GuiMultipleModsErrored.this.height);
+                  entryHeight);
         }
 
         @Override
@@ -106,22 +104,13 @@ public class GuiMultipleModsErrored extends GuiErrorBase
         }
 
         @Override
-        protected void elementClicked(int index, boolean doubleClick) {}
-
-        @Override
-        protected boolean isSelected(int index)
-        {
-            return false;
-        }
-
-        @Override
         protected void drawBackground()
         {
             drawDefaultBackground();
         }
 
         @Override
-        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+        protected void drawSlot(int slotIndex, int entryRight, int slotTop, int slotBuffer, Tessellator tess, float partialTicks)
         {
             int offset = slotTop;
             FontRenderer renderer = GuiMultipleModsErrored.this.fontRenderer;

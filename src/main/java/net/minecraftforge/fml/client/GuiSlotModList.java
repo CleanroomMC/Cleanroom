@@ -95,9 +95,9 @@ public class GuiSlotModList extends GuiScrollingList
     }
 
     @Override
-    protected void drawSlot(int idx, int right, int top, int height, Tessellator tess)
+    protected void drawSlot(int slotIndex, int right, int top, int height, Tessellator tess, float partialTicks)
     {
-        ModContainer mc       = mods.get(idx);
+        ModContainer mc       = mods.get(slotIndex);
         String       name     = StringUtils.stripControlCodes(mc.getName());
         String       version  = StringUtils.stripControlCodes(Strings.isNullOrEmpty(mc.getDisplayVersion()) ? mc.getVersion() : mc.getDisplayVersion());
         FontRenderer font     = this.parent.getFontRenderer();

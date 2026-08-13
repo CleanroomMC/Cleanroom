@@ -159,7 +159,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         });
 
         this.modList = new ModList(150, ModListScreen.this.height, 46, ModListScreen.this.height - 35);
-        this.modList.setSlotXBoundsFromLeft(10);
+        this.modList.setLeft(10);
 
         this.addButton(new ModListTextButton(10, this.modList.bottom + 8, 127, 20,
                 I18n.format("gui.back"),
@@ -268,7 +268,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(@Nonnull GuiButton button) throws IOException {
         if (button instanceof ModListTextButton textButton) {
             textButton.onClick();
             return;
@@ -425,7 +425,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         String countLabel = TextFormatting.GRAY + "(" + (totalMods + totalLibraries) + ")";
         String title = modsLabel + " " + countLabel;
         int titleWidth = this.fontRenderer.getStringWidth(title);
-        int titleLeft = this.modList.left + (this.modList.width - titleWidth) / 2;
+        int titleLeft = this.modList.left + (this.modList.right - this.modList.left - titleWidth) / 2;
         this.drawString(this.fontRenderer, title, titleLeft, 10, 0xFFFFFF);
 
         int countLabelWidth = this.fontRenderer.getStringWidth(countLabel);
@@ -481,7 +481,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             super.drawScreen(mouseX, mouseY, partialTicks);
             if (this.children().isEmpty()) {
                 String text = TextFormatting.GRAY + I18n.format("cleanroom.gui.no_mods");
-                int left = this.left + this.width / 2;
+                int left = (this.left + this.right) / 2;
                 int top = this.top + (this.bottom - this.top - ModListScreen.this.fontRenderer.FONT_HEIGHT) / 2;
                 ModListScreen.this.drawCenteredString(ModListScreen.this.fontRenderer, text, left, top, 0xFFFFFFFF);
             }
@@ -504,23 +504,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        protected int getScrollBarX() {
-            return this.getMaxScroll() > 0 ? this.right - 6 : this.right + 1;
-        }
-
-        @Override
-        protected int getListLeft() {
-            return this.left;
-        }
-
-        @Override
         protected int getListRight() {
             return this.getMaxScroll() > 0 ? this.right - 6 : this.right;
-        }
-
-        @Override
-        protected int getListEntryLeft() {
-            return this.getListLeft();
         }
 
         @Override
@@ -529,13 +514,13 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        protected void drawContainerBackground(Tessellator tessellator) {
-            if (this.mc.world != null) {
+        protected boolean drawBackground(Tessellator tessellator) {
+            if (this.client.world != null) {
                 drawRect(this.left, this.top, this.right, this.bottom, 0x66000000);
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                return;
+                return false;
             }
-            super.drawContainerBackground(tessellator);
+            return true;
         }
 
         @Override
@@ -544,9 +529,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        public void handleMouseInput() {
+        public void handleMouseInput(int mouseX, int mouseY) throws IOException {
             this.hideFavourites = Mouse.getEventDWheel() != 0;
-            super.handleMouseInput();
+            super.handleMouseInput(mouseX, mouseY);
         }
 
         @Override
@@ -833,7 +818,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
 
             @Override
-            public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTick) {
+            public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTick) {
                 if (!this.visible) return;
                 this.hovered = ModListEntry.this.hovered && RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
                 this.mouseDragged(mc, mouseX, mouseY);
@@ -847,7 +832,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
 
             @Override
-            public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+            public boolean mousePressed(@Nonnull Minecraft mc, int mouseX, int mouseY) {
                 return super.mousePressed(mc, mouseX, mouseY) && ModListEntry.this.data.getType() != IModData.Type.CHILD && !ModListEntry.this.list.shouldHideFavourites();
             }
         }
@@ -960,7 +945,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     private class StringList extends ModListExtended<StringEntry> {
         public StringList(int width, int height, int left, int top) {
             super(ModListScreen.this.mc, width, height, top, top + height, 10);
-            this.setSlotXBoundsFromLeft(left + 8);
+            this.setLeft(left + 8);
             this.visible = false;
         }
 
@@ -979,24 +964,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        protected void drawContainerBackground(@Nullable Tessellator tessellator) {
-            drawRect(this.left, this.top + 1, this.left + 1, this.top + this.height - 1, 0x77000000);
-            drawRect(this.left + 1, this.top, this.left + this.width - 1, this.top + this.height, 0x77000000);
-            drawRect(this.left + this.width - 1, this.top + 1, this.left + this.width, this.top + this.height - 1, 0x77000000);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
-
-        @Override
-        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
-            return false;
-        }
-
-        @Override
-        protected int getScrollBarX() {
-            return this.left + this.width - 7;
-        }
-
-        @Override
         protected int getListLeft() {
             return this.left + 8;
         }
@@ -1007,7 +974,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        protected int getListEntryLeft() {
+        protected int getListContentLeft() {
             return this.getListLeft();
         }
 
@@ -1017,8 +984,27 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
+        protected int getScrollbarLeft() {
+            return this.right - 7;
+        }
+
+        @Override
+        protected boolean drawBackground(@Nullable Tessellator tessellator) {
+            drawRect(this.left, this.top + 1, this.left + 1, this.bottom - 1, 0x77000000);
+            drawRect(this.left + 1, this.top, this.right - 1, this.bottom, 0x77000000);
+            drawRect(this.right - 1, this.top + 1, this.right, this.bottom - 1, 0x77000000);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            return false;
+        }
+
+        @Override
+        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
+            return false;
+        }
+
+        @Override
         public int getMaxScroll() {
-            return Math.max(0, this.getContentHeight() - (this.height - 12));
+            return Math.max(0, this.getContentHeight() - (this.bottom - this.top - 12));
         }
     }
 
@@ -1222,7 +1208,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         int labelCount = this.getFooterTextElementCount(data);
         this.descriptionList.setWidth(contentWidth);
         this.descriptionList.setHeight(this.height - 135 - labelCount * 15 - 9);
-        this.descriptionList.setSlotXBoundsFromLeft(contentLeft);
+        this.descriptionList.setLeft(contentLeft - 8);
         this.descriptionList.setTextFromInfo(data);
         this.descriptionList.setAmountScrolled(0);
     }

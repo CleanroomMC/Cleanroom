@@ -506,9 +506,7 @@ public class GuiModList extends GuiScreen implements LegacyModListScreen
                   width,
                   GuiModList.this.height,
                   32, GuiModList.this.height - 88 + 4,
-                  GuiModList.this.listWidth + 20, 60,
-                  GuiModList.this.width,
-                  GuiModList.this.height);
+                  GuiModList.this.listWidth + 20, 60);
             this.lines    = resizeContent(lines);
             this.logoPath = logoPath;
             this.logoDims = logoDims;
@@ -517,10 +515,6 @@ public class GuiModList extends GuiScreen implements LegacyModListScreen
         }
 
         @Override protected int getSize() { return 0; }
-        @Override protected void elementClicked(int index, boolean doubleClick) { }
-        @Override protected boolean isSelected(int index) { return false; }
-        @Override protected void drawBackground() {}
-        @Override protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess) { }
 
         private List<ITextComponent> resizeContent(List<String> lines)
         {
