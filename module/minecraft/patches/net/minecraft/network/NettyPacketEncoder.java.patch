@@ -1,0 +1,11 @@
+--- original/net/minecraft/network/NettyPacketEncoder.java
++++ modified/net/minecraft/network/NettyPacketEncoder.java
+@@ -41,7 +41,7 @@
+         try {
+             p_encode_2_.writePacketData(packetbuffer);
+         } catch (Throwable throwable) {
+-            LOGGER.error(throwable);
++            throw throwable; // Forge: throw this instead of logging it, to prevent corrupt packets from being sent to the client where they are much harder to debug.
+         }
+     }
+ }

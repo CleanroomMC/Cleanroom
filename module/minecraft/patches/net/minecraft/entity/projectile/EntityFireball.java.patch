@@ -1,0 +1,12 @@
+--- original/net/minecraft/entity/projectile/EntityFireball.java
++++ modified/net/minecraft/entity/projectile/EntityFireball.java
+@@ -86,7 +86,8 @@
+ 
+             this.ticksInAir++;
+             RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
+-            if (raytraceresult != null) {
++
++            if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+                 this.onImpact(raytraceresult);
+             }
+ 

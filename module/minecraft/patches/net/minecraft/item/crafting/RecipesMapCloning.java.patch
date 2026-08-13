@@ -1,0 +1,35 @@
+--- original/net/minecraft/item/crafting/RecipesMapCloning.java
++++ modified/net/minecraft/item/crafting/RecipesMapCloning.java
+@@ -5,11 +5,8 @@
+ import net.minecraft.item.ItemStack;
+ import net.minecraft.util.NonNullList;
+ import net.minecraft.world.World;
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class RecipesMapCloning implements IRecipe {
+-    /** Used to check if a recipe matches current crafting inventory */
++public class RecipesMapCloning extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+     @Override
+     public boolean matches(InventoryCrafting inv, World worldIn) {
+         int i = 0;
+@@ -90,9 +87,7 @@
+ 
+         for (int i = 0; i < nonnulllist.size(); i++) {
+             ItemStack itemstack = inv.getStackInSlot(i);
+-            if (itemstack.getItem().hasContainerItem()) {
+-                nonnulllist.set(i, new ItemStack(itemstack.getItem().getContainerItem()));
+-            }
++            nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+         }
+ 
+         return nonnulllist;
+@@ -104,8 +99,6 @@
+         return true;
+     }
+ 
+-    /** Used to determine if this recipe can fit in a grid of the given width/height */
+-    @SideOnly(Side.CLIENT)
+     @Override
+     public boolean canFit(int width, int height) {
+         return width >= 3 && height >= 3;

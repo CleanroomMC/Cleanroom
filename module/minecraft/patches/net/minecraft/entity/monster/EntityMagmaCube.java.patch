@@ -1,0 +1,10 @@
+--- original/net/minecraft/entity/monster/EntityMagmaCube.java
++++ modified/net/minecraft/entity/monster/EntityMagmaCube.java
+@@ -101,6 +101,7 @@
+     protected void jump() {
+         this.motionY = 0.42F + this.getSlimeSize() * 0.1F;
+         this.isAirBorne = true;
++        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
+     }
+ 
+     @Override

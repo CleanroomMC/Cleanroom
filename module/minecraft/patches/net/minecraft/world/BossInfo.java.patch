@@ -1,0 +1,27 @@
+--- original/net/minecraft/world/BossInfo.java
++++ modified/net/minecraft/world/BossInfo.java
+@@ -2,8 +2,6 @@
+ 
+ import java.util.UUID;
+ import net.minecraft.util.text.ITextComponent;
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ public abstract class BossInfo {
+     private final UUID uniqueId;
+@@ -47,7 +45,6 @@
+         return this.color;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public void setColor(BossInfo.Color colorIn) {
+         this.color = colorIn;
+     }
+@@ -56,7 +53,6 @@
+         return this.overlay;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public void setOverlay(BossInfo.Overlay overlayIn) {
+         this.overlay = overlayIn;
+     }

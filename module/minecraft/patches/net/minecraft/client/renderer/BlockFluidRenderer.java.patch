@@ -1,0 +1,13 @@
+--- original/net/minecraft/client/renderer/BlockFluidRenderer.java
++++ modified/net/minecraft/client/renderer/BlockFluidRenderer.java
+@@ -201,8 +201,8 @@
+             BlockPos blockpos = blockPosIn.add(j1, 0, k1);
+             TextureAtlasSprite textureatlassprite1 = atextureatlassprite[1];
+             if (!flag) {
+-                Block block = blockAccess.getBlockState(blockpos).getBlock();
+-                if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS) {
++                IBlockState state = blockAccess.getBlockState(blockpos);
++                if (state.getBlockFaceShape(blockAccess, blockpos, EnumFacing.VALUES[i1 + 2].getOpposite()) == net.minecraft.block.state.BlockFaceShape.SOLID) {
+                     textureatlassprite1 = this.atlasSpriteWaterOverlay;
+                 }
+             }

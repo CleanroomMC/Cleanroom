@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/gen/feature/WorldGenLiquids.java
++++ modified/net/minecraft/world/gen/feature/WorldGenLiquids.java
+@@ -26,7 +26,7 @@
+         }
+ 
+         IBlockState iblockstate = worldIn.getBlockState(position);
+-        if (iblockstate.getMaterial() != Material.AIR && iblockstate.getBlock() != Blocks.STONE) {
++        if (!iblockstate.getBlock().isAir(iblockstate, worldIn, position) && iblockstate.getBlock() != Blocks.STONE) {
+             return false;
+         }
+ 

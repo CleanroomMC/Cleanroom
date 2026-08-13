@@ -1,0 +1,11 @@
+--- original/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
++++ modified/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
+@@ -37,7 +37,7 @@
+     @Override
+     public void writePacketData(PacketBuffer buf) throws IOException {
+         buf.writeShort(this.slotId);
+-        buf.writeItemStack(this.stack);
++        net.minecraftforge.common.util.PacketUtil.writeItemStackFromClientToServer(buf, this.stack);
+     }
+ 
+     public int getSlotId() {

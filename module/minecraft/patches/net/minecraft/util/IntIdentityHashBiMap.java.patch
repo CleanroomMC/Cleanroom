@@ -1,0 +1,10 @@
+--- original/net/minecraft/util/IntIdentityHashBiMap.java
++++ modified/net/minecraft/util/IntIdentityHashBiMap.java
+@@ -141,7 +141,6 @@
+         return Iterators.filter(Iterators.forArray(this.byId), Predicates.notNull());
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public void clear() {
+         Arrays.fill(this.values, null);
+         Arrays.fill(this.byId, null);

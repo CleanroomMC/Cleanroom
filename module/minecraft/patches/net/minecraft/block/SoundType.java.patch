@@ -1,0 +1,18 @@
+--- original/net/minecraft/block/SoundType.java
++++ modified/net/minecraft/block/SoundType.java
+@@ -147,7 +147,6 @@
+         return this.pitch;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public SoundEvent getBreakSound() {
+         return this.breakSound;
+     }
+@@ -160,7 +159,6 @@
+         return this.placeSound;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public SoundEvent getHitSound() {
+         return this.hitSound;
+     }

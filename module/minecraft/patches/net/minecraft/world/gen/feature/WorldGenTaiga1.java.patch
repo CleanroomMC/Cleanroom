@@ -1,0 +1,47 @@
+--- original/net/minecraft/world/gen/feature/WorldGenTaiga1.java
++++ modified/net/minecraft/world/gen/feature/WorldGenTaiga1.java
+@@ -48,7 +48,7 @@
+                     for (int l1 = position.getZ() - j1; l1 <= position.getZ() + j1 && flag; l1++) {
+                         if (i1 < 0 || i1 >= 256) {
+                             flag = false;
+-                        } else if (!this.canGrowInto(worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, i1, l1)).getBlock())) {
++                        } else if (!this.isReplaceable(worldIn,blockpos$mutableblockpos.setPos(k1, i1, l1))) {
+                             flag = false;
+                         }
+                     }
+@@ -59,9 +59,11 @@
+                 return false;
+             }
+ 
+-            Block block = worldIn.getBlockState(position.down()).getBlock();
+-            if ((block == Blocks.GRASS || block == Blocks.DIRT) && position.getY() < 256 - i - 1) {
+-                this.setDirtAt(worldIn, position.down());
++            BlockPos down = position.down();
++            IBlockState state = worldIn.getBlockState(down);
++            boolean isSoil = state.getBlock().canSustainPlant(state, worldIn, down, net.minecraft.util.EnumFacing.UP, (net.minecraft.block.BlockSapling)Blocks.SAPLING);
++            if (isSoil && position.getY() < worldIn.getHeight() - i - 1) {
++                state.getBlock().onPlantGrow(state, worldIn, down, position);
+                 int k2 = 0;
+ 
+                 for (int l2 = position.getY() + i; l2 >= position.getY() + j; l2--) {
+@@ -72,7 +74,7 @@
+                             int j2 = i2 - position.getZ();
+                             if (Math.abs(k3) != k2 || Math.abs(j2) != k2 || k2 <= 0) {
+                                 BlockPos blockpos = new BlockPos(j3, l2, i2);
+-                                if (!worldIn.getBlockState(blockpos).isFullBlock()) {
++                                if (state.getBlock().canBeReplacedByLeaves(state, worldIn, blockpos)) {
+                                     this.setBlockAndNotifyAdequately(worldIn, blockpos, LEAF);
+                                 }
+                             }
+@@ -87,8 +89,9 @@
+                 }
+ 
+                 for (int i3 = 0; i3 < i - 1; i3++) {
+-                    Material material = worldIn.getBlockState(position.up(i3)).getMaterial();
+-                    if (material == Material.AIR || material == Material.LEAVES) {
++                        BlockPos upN = position.up(i3);
++                        state = worldIn.getBlockState(upN);
++                        if (state.getBlock().isAir(state, worldIn, upN) || state.getBlock().isLeaves(state, worldIn, upN)) {
+                         this.setBlockAndNotifyAdequately(worldIn, position.up(i3), TRUNK);
+                     }
+                 }

@@ -1,0 +1,11 @@
+--- original/net/minecraft/util/text/ITextComponent.java
++++ modified/net/minecraft/util/text/ITextComponent.java
+@@ -53,8 +53,6 @@
+     /** Gets the text of this component <em>and all sibling components</em>, without any formatting codes. */
+     String getUnformattedText();
+ 
+-    /** Gets the text of this component <em>and all sibling components</em>, with formatting codes added for rendering. */
+-    @SideOnly(Side.CLIENT)
+     String getFormattedText();
+ 
+     /** Gets the sibling components of this one. */

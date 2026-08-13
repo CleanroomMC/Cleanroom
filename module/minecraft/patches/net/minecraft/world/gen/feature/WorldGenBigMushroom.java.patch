@@ -1,0 +1,32 @@
+--- original/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
++++ modified/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
+@@ -48,8 +48,9 @@
+                 for (int l = position.getX() - k; l <= position.getX() + k && flag; l++) {
+                     for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; i1++) {
+                         if (j >= 0 && j < 256) {
+-                            Material material = worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, j, i1)).getMaterial();
+-                            if (material != Material.AIR && material != Material.LEAVES) {
++                            IBlockState state = worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, j, i1));
++
++                            if (!state.getBlock().isAir(state, worldIn, blockpos$mutableblockpos) && !state.getBlock().isLeaves(state, worldIn, blockpos$mutableblockpos)) {
+                                 flag = false;
+                             }
+                         } else {
+@@ -149,7 +150,7 @@
+                         if (position.getY() >= position.getY() + i - 1
+                             || blockhugemushroom$enumtype != BlockHugeMushroom.EnumType.ALL_INSIDE) {
+                             BlockPos blockpos = new BlockPos(l1, l2, i2);
+-                            if (!worldIn.getBlockState(blockpos).isFullBlock()) {
++                            IBlockState state = worldIn.getBlockState(blockpos); if (state.getBlock().canBeReplacedByLeaves(state, worldIn, blockpos)) {
+                                 this.setBlockAndNotifyAdequately(
+                                     worldIn, blockpos, block.getDefaultState().withProperty(BlockHugeMushroom.VARIANT, blockhugemushroom$enumtype)
+                                 );
+@@ -161,7 +162,7 @@
+ 
+             for (int i3 = 0; i3 < i; i3++) {
+                 IBlockState iblockstate = worldIn.getBlockState(position.up(i3));
+-                if (!iblockstate.isFullBlock()) {
++                if (iblockstate.getBlock().canBeReplacedByLeaves(iblockstate, worldIn, position.up(i3))) {
+                     this.setBlockAndNotifyAdequately(
+                         worldIn,
+                         position.up(i3),

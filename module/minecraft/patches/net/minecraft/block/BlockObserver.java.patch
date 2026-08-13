@@ -1,0 +1,14 @@
+--- original/net/minecraft/block/BlockObserver.java
++++ modified/net/minecraft/block/BlockObserver.java
+@@ -157,4 +157,11 @@
+     public IBlockState getStateFromMeta(int meta) {
+         return this.getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7));
+     }
++
++    /* ======================================== FORGE START =====================================*/
++    @Override
++    public void observedNeighborChange(IBlockState observerState, World world, BlockPos observerPos, Block changedBlock, BlockPos changedBlockPos) {
++        observedNeighborChanged(observerState, world, observerPos, changedBlock, changedBlockPos);
++    }
++    /* ========================================= FORGE END ======================================*/
+ }

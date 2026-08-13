@@ -1,0 +1,1479 @@
+--- original/net/minecraft/world/World.java
++++ modified/net/minecraft/world/World.java
+@@ -62,7 +62,14 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public abstract class World implements IBlockAccess {
++public abstract class World implements IBlockAccess, net.minecraftforge.common.capabilities.ICapabilityProvider {
++    /**
++     * Used in the getEntitiesWithinAABB functions to expand the search area for entities.
++     * Modders should change this variable to a higher value if it is less then the radius
++     * of one of there entities.
++     */
++    public static double MAX_ENTITY_RADIUS = 2.0D;
++
+     private int seaLevel = 63;
+     /** boolean; if true updates scheduled by scheduleBlockUpdate happen immediately */
+     protected boolean scheduledUpdatesAreImmediate;
+@@ -127,6 +134,12 @@
+     /** is a temporary list of blocks and light values used when updating light levels. Holds up to 32x32x32 blocks (the maximum influence of a light source.) Every element is a packed bit value: 0000000000LLLLzzzzzzyyyyyyxxxxxx. The 4-bit L is a light level used when darkening blocks. 6-bit numbers x, y and z represent the block's offset from the original block, plus 32 (i.e. value of 31 would mean a -1 offset */
+     int[] lightUpdateBlockList = new int[32768];
+ 
++    public boolean restoringBlockSnapshots = false;
++    public boolean captureBlockSnapshots = false;
++    public java.util.ArrayList<net.minecraftforge.common.util.BlockSnapshot> capturedBlockSnapshots = new java.util.ArrayList<net.minecraftforge.common.util.BlockSnapshot>();
++    private net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
++    private net.minecraftforge.common.util.WorldCapabilityData capabilityData;
++
+     protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
+         this.saveHandler = saveHandlerIn;
+         this.profiler = profilerIn;
+@@ -134,6 +147,7 @@
+         this.provider = providerIn;
+         this.isRemote = client;
+         this.worldBorder = providerIn.createWorldBorder();
++        perWorldStorage = new MapStorage(null);
+     }
+ 
+     public World init() {
+@@ -142,6 +156,10 @@
+ 
+     @Override
+     public Biome getBiome(final BlockPos pos) {
++        return this.provider.getBiomeForCoords(pos);
++    }
++
++    public Biome getBiomeForCoordsBody(final BlockPos pos) {
+         if (this.isBlockLoaded(pos)) {
+             Chunk chunk = this.getChunk(pos);
+ 
+@@ -210,7 +228,7 @@
+     /** Checks to see if an air block exists at the provided location. Note that this only checks to see if the blocks material is set to air, meaning it is possible for non-vanilla blocks to still pass this check. */
+     @Override
+     public boolean isAirBlock(BlockPos pos) {
+-        return this.getBlockState(pos).getMaterial() == Material.AIR;
++        return this.getBlockState(pos).getBlock().isAir(this.getBlockState(pos), this, pos);
+     }
+ 
+     public boolean isBlockLoaded(BlockPos pos) {
+@@ -344,6 +362,27 @@
+         return true;
+     }
+ 
++    // Split off from original setBlockState(BlockPos, IBlockState, int) method in order to directly send client and physic updates
++    public void markAndNotifyBlock(BlockPos pos, @Nullable Chunk chunk, IBlockState iblockstate, IBlockState newState, int flags) {
++        Block block = newState.getBlock(); {
++            {
++                if ((flags & 2) != 0 && (!this.isRemote || (flags & 4) == 0) && (chunk == null || chunk.isPopulated())) {
++                    this.notifyBlockUpdate(pos, iblockstate, newState, flags);
++                }
++
++                if (!this.isRemote && (flags & 1) != 0) {
++                    this.notifyNeighborsRespectDebug(pos, iblockstate.getBlock(), true);
++
++                    if (newState.hasComparatorInputOverride()) {
++                        this.updateComparatorOutputLevel(pos, block);
++                    }
++                } else if (!this.isRemote && (flags & 16) == 0) {
++                    this.updateObservingBlocksAt(pos, block);
++                }
++            }
++        }
++    }
++
+     public boolean setBlockToAir(BlockPos pos) {
+         return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+     }
+@@ -352,7 +391,8 @@
+     public boolean destroyBlock(BlockPos pos, boolean dropBlock) {
+         IBlockState iblockstate = this.getBlockState(pos);
+         Block block = iblockstate.getBlock();
+-        if (iblockstate.getMaterial() == Material.AIR) {
++
++        if (block.isAir(iblockstate, this, pos)) {
+             return false;
+         }
+ 
+@@ -431,6 +471,9 @@
+     }
+ 
+     public void notifyNeighborsOfStateChange(BlockPos pos, Block blockType, boolean updateObservers) {
++        if(net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, pos, this.getBlockState(pos), java.util.EnumSet.allOf(EnumFacing.class), updateObservers).isCanceled())
++            return;
++
+         this.neighborChanged(pos.west(), blockType, pos);
+         this.neighborChanged(pos.east(), blockType, pos);
+         this.neighborChanged(pos.down(), blockType, pos);
+@@ -443,6 +486,11 @@
+     }
+ 
+     public void notifyNeighborsOfStateExcept(BlockPos pos, Block blockType, EnumFacing skipSide) {
++        java.util.EnumSet<EnumFacing> directions = java.util.EnumSet.allOf(EnumFacing.class);
++        directions.remove(skipSide);
++        if(net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, pos, this.getBlockState(pos), directions, false).isCanceled())
++            return;
++
+         if (skipSide != EnumFacing.WEST) {
+             this.neighborChanged(pos.west(), blockType, pos);
+         }
+@@ -480,19 +528,16 @@
+                 crashreportcategory.addDetail(
+                     "Source block type",
+                     new ICrashReportDetail<String>() {
+-                        public String call() throws Exception {
+-                            try {
+-                                return String.format(
+-                                    "ID #%d (%s // %s)",
+-                                    Block.getIdFromBlock(blockIn),
+-                                    blockIn.getTranslationKey(),
+-                                    blockIn.getClass().getCanonicalName()
+-                                );
+-                            } catch (Throwable throwable1) {
+-                                return "ID #" + Block.getIdFromBlock(blockIn);
+-                            }
++                    public String call() throws Exception {
++                        try {
++                            return String.format(
++                                       "ID #%d (%s // %s // %s)", Block.getIdFromBlock(blockIn), blockIn.getTranslationKey(), blockIn.getClass().getName(), blockIn.getRegistryName()
++                                   );
++                        } catch (Throwable throwable1) {
++                            return "ID #" + Block.getIdFromBlock(blockIn);
+                         }
+                     }
++                }
+                 );
+                 CrashReportCategory.addBlockInfo(crashreportcategory, pos, iblockstate);
+                 throw new ReportedException(crashreport);
+@@ -503,28 +548,26 @@
+     public void observedNeighborChanged(BlockPos pos, final Block changedBlock, BlockPos changedBlockPos) {
+         if (!this.isRemote) {
+             IBlockState iblockstate = this.getBlockState(pos);
+-            if (iblockstate.getBlock() == Blocks.OBSERVER) {
++
++            if (true) {
+                 try {
+-                    ((BlockObserver)iblockstate.getBlock()).observedNeighborChanged(iblockstate, this, pos, changedBlock, changedBlockPos);
++                    iblockstate.getBlock().observedNeighborChange(iblockstate, this, pos, changedBlock, changedBlockPos);
+                 } catch (Throwable throwable) {
+                     CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception while updating neighbours");
+                     CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being updated");
+                     crashreportcategory.addDetail(
+                         "Source block type",
+                         new ICrashReportDetail<String>() {
+-                            public String call() throws Exception {
+-                                try {
+-                                    return String.format(
+-                                        "ID #%d (%s // %s)",
+-                                        Block.getIdFromBlock(changedBlock),
+-                                        changedBlock.getTranslationKey(),
+-                                        changedBlock.getClass().getCanonicalName()
+-                                    );
+-                                } catch (Throwable throwable1) {
+-                                    return "ID #" + Block.getIdFromBlock(changedBlock);
+-                                }
++                        public String call() throws Exception {
++                            try {
++                                return String.format(
++                                           "ID #%d (%s // %s // %s)", Block.getIdFromBlock(changedBlock), changedBlock.getTranslationKey(), changedBlock.getClass().getName(), changedBlock.getRegistryName()
++                                       );
++                            } catch (Throwable throwable1) {
++                                return "ID #" + Block.getIdFromBlock(changedBlock);
+                             }
+                         }
++                    }
+                     );
+                     CrashReportCategory.addBlockInfo(crashreportcategory, pos, iblockstate);
+                     throw new ReportedException(crashreport);
+@@ -544,21 +587,23 @@
+     public boolean canBlockSeeSky(BlockPos pos) {
+         if (pos.getY() >= this.getSeaLevel()) {
+             return this.canSeeSky(pos);
+-        }
++        } else {
++            BlockPos blockpos = new BlockPos(pos.getX(), this.getSeaLevel(), pos.getZ());
+ 
+-        BlockPos blockpos = new BlockPos(pos.getX(), this.getSeaLevel(), pos.getZ());
+-        if (!this.canSeeSky(blockpos)) {
+-            return false;
+-        }
+-
+-        for (BlockPos blockpos1 = blockpos.down(); blockpos1.getY() > pos.getY(); blockpos1 = blockpos1.down()) {
+-            IBlockState iblockstate = this.getBlockState(blockpos1);
+-            if (iblockstate.getLightOpacity() > 0 && !iblockstate.getMaterial().isLiquid()) {
++            if (!this.canSeeSky(blockpos)) {
+                 return false;
++            } else {
++                for (BlockPos blockpos1 = blockpos.down(); blockpos1.getY() > pos.getY(); blockpos1 = blockpos1.down()) {
++                    IBlockState iblockstate = this.getBlockState(blockpos1);
++
++                    if (iblockstate.getBlock().getLightOpacity(iblockstate, this, blockpos) > 0 && !iblockstate.getMaterial().isLiquid()) {
++                        return false;
++                    }
++                }
++
++                return true;
+             }
+         }
+-
+-        return true;
+     }
+ 
+     public int getLight(BlockPos pos) {
+@@ -768,7 +813,7 @@
+ 
+     /** Checks whether its daytime by seeing if the light subtracted from the skylight is less than 4 */
+     public boolean isDaytime() {
+-        return this.skylightSubtracted < 4;
++        return this.provider.isDaytime();
+     }
+ 
+     /** ray traces all blocks, including non-collideable ones */
+@@ -942,6 +987,13 @@
+         float volume,
+         float pitch
+     ) {
++        net.minecraftforge.event.entity.PlaySoundAtEntityEvent event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(player, soundIn, category, volume, pitch);
++        if (event.isCanceled() || event.getSound() == null) return;
++        soundIn = event.getSound();
++        category = event.getCategory();
++        volume = event.getVolume();
++        pitch = event.getPitch();
++
+         for (int i = 0; i < this.eventListeners.size(); i++) {
+             this.eventListeners.get(i).playSoundToAllNearExcept(player, soundIn, category, x, y, z, volume, pitch);
+         }
+@@ -1051,12 +1103,18 @@
+ 
+     /** adds a lightning bolt to the list of lightning bolts in this world. */
+     public boolean addWeatherEffect(Entity entityIn) {
++        if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, this)))
++            return false;
++
+         this.weatherEffects.add(entityIn);
+         return true;
+     }
+ 
+     /** Called when an entity is spawned in the world. This includes players. */
+     public boolean spawnEntity(Entity entityIn) {
++        // do not drop any items while restoring blocksnapshots. Prevents dupes
++        if (!this.isRemote && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots))) return false;
++
+         int i = MathHelper.floor(entityIn.posX / 16.0);
+         int j = MathHelper.floor(entityIn.posZ / 16.0);
+         boolean flag = entityIn.forceSpawn;
+@@ -1068,6 +1126,8 @@
+             return false;
+         }
+ 
++            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, this)) && !flag) return false;
++
+         if (entityIn instanceof EntityPlayer) {
+             EntityPlayer entityplayer = (EntityPlayer)entityIn;
+             this.playerEntities.add(entityplayer);
+@@ -1084,12 +1144,14 @@
+         for (int i = 0; i < this.eventListeners.size(); i++) {
+             this.eventListeners.get(i).onEntityAdded(entityIn);
+         }
++        entityIn.onAddedToWorld();
+     }
+ 
+     public void onEntityRemoved(Entity entityIn) {
+         for (int i = 0; i < this.eventListeners.size(); i++) {
+             this.eventListeners.get(i).onEntityRemoved(entityIn);
+         }
++        entityIn.onRemovedFromWorld();
+     }
+ 
+     /** Schedule the entity for removal during the next tick. Marks the entity dead in anticipation. */
+@@ -1134,8 +1196,6 @@
+         this.eventListeners.add(listener);
+     }
+ 
+-    /** Remove a world event listener */
+-    @SideOnly(Side.CLIENT)
+     public void removeEventListener(IWorldEventListener listener) {
+         this.eventListeners.remove(listener);
+     }
+@@ -1162,6 +1222,7 @@
+         IBlockState iblockstate = Blocks.STONE.getDefaultState();
+         BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
+ 
++        if (p_191504_3_ && !net.minecraftforge.event.ForgeEventFactory.gatherCollisionBoxes(this, entityIn, aabb, outList)) return true;
+         try {
+             for (int k1 = i; k1 < j; k1++) {
+                 for (int l1 = i1; l1 < j1; l1++) {
+@@ -1187,7 +1248,8 @@
+                                 }
+ 
+                                 iblockstate1.addCollisionBoxToList(this, blockpos$pooledmutableblockpos, aabb, outList, entityIn, false);
+-                                if (p_191504_3_ && !outList.isEmpty()) {
++
++                                if (p_191504_3_ && !net.minecraftforge.event.ForgeEventFactory.gatherCollisionBoxes(this, entityIn, aabb, outList)) {
+                                     return true;
+                                 }
+                             }
+@@ -1224,7 +1286,7 @@
+                 }
+             }
+         }
+-
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.GetCollisionBoxesEvent(this, entityIn, aabb, list));
+         return list;
+     }
+ 
+@@ -1255,19 +1317,36 @@
+ 
+     /** Returns the amount of skylight subtracted for the current time */
+     public int calculateSkylightSubtracted(float partialTicks) {
++        float f = provider.getSunBrightnessFactor(partialTicks);
++        f = 1 - f;
++        return (int)(f * 11);
++    }
++
++    /**
++     * The current sun brightness factor for this dimension.
++     * 0.0f means no light at all, and 1.0f means maximum sunlight.
++     * Highly recommended for sunlight detection like solar panel.
++     *
++     * @return The current brightness factor
++     * */
++    public float getSunBrightnessFactor(float partialTicks) {
+         float f = this.getCelestialAngle(partialTicks);
+         float f1 = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F);
+         f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
+         f1 = 1.0F - f1;
+         f1 = (float)(f1 * (1.0 - this.getRainStrength(partialTicks) * 5.0F / 16.0));
+         f1 = (float)(f1 * (1.0 - this.getThunderStrength(partialTicks) * 5.0F / 16.0));
+-        f1 = 1.0F - f1;
+-        return (int)(f1 * 11.0F);
++        return f1;
+     }
+ 
+     /** Returns the sun brightness - checks time of day, rain and thunder */
+     @SideOnly(Side.CLIENT)
+     public float getSunBrightness(float partialTicks) {
++        return this.provider.getSunBrightness(partialTicks);
++    }
++
++    @SideOnly(Side.CLIENT)
++    public float getSunBrightnessBody(float partialTicks) {
+         float f = this.getCelestialAngle(partialTicks);
+         float f1 = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.2F);
+         f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
+@@ -1280,6 +1359,11 @@
+     /** Calculates the color for the skybox */
+     @SideOnly(Side.CLIENT)
+     public Vec3d getSkyColor(Entity entityIn, float partialTicks) {
++        return this.provider.getSkyColor(entityIn, partialTicks);
++    }
++
++    @SideOnly(Side.CLIENT)
++    public Vec3d getSkyColorBody(Entity entityIn, float partialTicks) {
+         float f = this.getCelestialAngle(partialTicks);
+         float f1 = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+         f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
+@@ -1287,9 +1371,7 @@
+         int j = MathHelper.floor(entityIn.posY);
+         int k = MathHelper.floor(entityIn.posZ);
+         BlockPos blockpos = new BlockPos(i, j, k);
+-        Biome biome = this.getBiome(blockpos);
+-        float f2 = biome.getTemperature(blockpos);
+-        int l = biome.getSkyColorByTemp(f2);
++        int l = net.minecraftforge.client.ForgeHooksClient.getSkyBlendColour(this, blockpos);
+         float f3 = (l >> 16 & 0xFF) / 255.0F;
+         float f4 = (l >> 8 & 0xFF) / 255.0F;
+         float f5 = (l & 0xFF) / 255.0F;
+@@ -1331,19 +1413,23 @@
+ 
+     /** calls calculateCelestialAngle */
+     public float getCelestialAngle(float partialTicks) {
+-        return this.provider.calculateCelestialAngle(this.worldInfo.getWorldTime(), partialTicks);
++        return this.provider.calculateCelestialAngle(this.getWorldTime(), partialTicks);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+     public int getMoonPhase() {
+-        return this.provider.getMoonPhase(this.worldInfo.getWorldTime());
++        return this.provider.getMoonPhase(this.getWorldTime());
+     }
+ 
+     /** gets the current fullness of the moon expressed as a float between 1.0 and 0.0, in steps of .25 */
+     public float getCurrentMoonPhaseFactor() {
+-        return WorldProvider.MOON_PHASE_FACTORS[this.provider.getMoonPhase(this.worldInfo.getWorldTime())];
++        return provider.getCurrentMoonPhaseFactor();
+     }
+ 
++    public float getCurrentMoonPhaseFactorBody() {
++        return WorldProvider.MOON_PHASE_FACTORS[this.provider.getMoonPhase(this.getWorldTime())];
++    }
++
+     /** Return getCelestialAngle()*2*PI */
+     public float getCelestialAngleRadians(float partialTicks) {
+         float f = this.getCelestialAngle(partialTicks);
+@@ -1352,6 +1438,11 @@
+ 
+     @SideOnly(Side.CLIENT)
+     public Vec3d getCloudColour(float partialTicks) {
++        return this.provider.getCloudColor(partialTicks);
++    }
++
++    @SideOnly(Side.CLIENT)
++    public Vec3d getCloudColorBody(float partialTicks) {
+         float f = this.getCelestialAngle(partialTicks);
+         float f1 = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+         f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
+@@ -1400,8 +1491,9 @@
+ 
+         while (blockpos.getY() >= 0) {
+             BlockPos blockpos1 = blockpos.down();
+-            Material material = chunk.getBlockState(blockpos1).getMaterial();
+-            if (material.blocksMovement() && material != Material.LEAVES) {
++            IBlockState state = chunk.getBlockState(blockpos1);
++
++            if (state.getMaterial().blocksMovement() && !state.getBlock().isLeaves(state, this, blockpos1) && !state.getBlock().isFoliage(this, blockpos1)) {
+                 break;
+             }
+ 
+@@ -1414,6 +1506,11 @@
+     /** How bright are stars in the sky */
+     @SideOnly(Side.CLIENT)
+     public float getStarBrightness(float partialTicks) {
++        return this.provider.getStarBrightness(partialTicks);
++    }
++
++    @SideOnly(Side.CLIENT)
++    public float getStarBrightnessBody(float partialTicks) {
+         float f = this.getCelestialAngle(partialTicks);
+         float f1 = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.25F);
+         f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
+@@ -1444,17 +1541,23 @@
+             Entity entity = this.weatherEffects.get(i);
+ 
+             try {
++                if(entity.updateBlocked) continue;
+                 entity.ticksExisted++;
+                 entity.onUpdate();
+             } catch (Throwable throwable2) {
+                 CrashReport crashreport = CrashReport.makeCrashReport(throwable2, "Ticking entity");
+                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Entity being ticked");
++
+                 if (entity == null) {
+                     crashreportcategory.addCrashSection("Entity", "~~NULL~~");
+                 } else {
+                     entity.addEntityCrashInfo(crashreportcategory);
+                 }
+ 
++                if (net.minecraftforge.common.ForgeModContainer.removeErroringEntities) {
++                    net.minecraftforge.fml.common.FMLLog.log.fatal("{}", crashreport.getCompleteReport());
++                    removeEntity(entity);
++                } else
+                 throw new ReportedException(crashreport);
+             }
+ 
+@@ -1470,6 +1573,7 @@
+             Entity entity1 = this.unloadedEntityList.get(k);
+             int j = entity1.chunkCoordX;
+             int k1 = entity1.chunkCoordZ;
++
+             if (entity1.addedToChunk && this.isChunkLoaded(j, k1, true)) {
+                 this.getChunk(j, k1).removeEntity(entity1);
+             }
+@@ -1486,6 +1590,7 @@
+         for (int i1 = 0; i1 < this.loadedEntityList.size(); i1++) {
+             Entity entity2 = this.loadedEntityList.get(i1);
+             Entity entity3 = entity2.getRidingEntity();
++
+             if (entity3 != null) {
+                 if (!entity3.isDead && entity3.isPassenger(entity2)) {
+                     continue;
+@@ -1495,22 +1600,31 @@
+             }
+ 
+             this.profiler.startSection("tick");
++
+             if (!entity2.isDead && !(entity2 instanceof EntityPlayerMP)) {
+                 try {
++                    net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackStart(entity2);
+                     this.updateEntity(entity2);
++                    net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackEnd(entity2);
+                 } catch (Throwable throwable1) {
+                     CrashReport crashreport1 = CrashReport.makeCrashReport(throwable1, "Ticking entity");
+                     CrashReportCategory crashreportcategory1 = crashreport1.makeCategory("Entity being ticked");
+                     entity2.addEntityCrashInfo(crashreportcategory1);
++                    if (net.minecraftforge.common.ForgeModContainer.removeErroringEntities) {
++                        net.minecraftforge.fml.common.FMLLog.log.fatal("{}", crashreport1.getCompleteReport());
++                        removeEntity(entity2);
++                    } else
+                     throw new ReportedException(crashreport1);
+                 }
+             }
+ 
+             this.profiler.endSection();
+             this.profiler.startSection("remove");
++
+             if (entity2.isDead) {
+                 int l1 = entity2.chunkCoordX;
+                 int i2 = entity2.chunkCoordZ;
++
+                 if (entity2.addedToChunk && this.isChunkLoaded(l1, i2, true)) {
+                     this.getChunk(l1, i2).removeEntity(entity2);
+                 }
+@@ -1523,28 +1637,46 @@
+         }
+ 
+         this.profiler.endStartSection("blockEntities");
++
++        this.processingLoadedTiles = true; //FML Move above remove to prevent CMEs
++
+         if (!this.tileEntitiesToBeRemoved.isEmpty()) {
+-            this.tickableTileEntities.removeAll(this.tileEntitiesToBeRemoved);
+-            this.loadedTileEntityList.removeAll(this.tileEntitiesToBeRemoved);
++            for (Object tile : tileEntitiesToBeRemoved) {
++               ((TileEntity)tile).onChunkUnload();
++            }
++
++            // forge: faster "contains" makes this removal much more efficient
++            java.util.Set<TileEntity> remove = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
++            remove.addAll(tileEntitiesToBeRemoved);
++            this.tickableTileEntities.removeAll(remove);
++            this.loadedTileEntityList.removeAll(remove);
+             this.tileEntitiesToBeRemoved.clear();
+         }
+ 
+-        this.processingLoadedTiles = true;
+         Iterator<TileEntity> iterator = this.tickableTileEntities.iterator();
+ 
+         while (iterator.hasNext()) {
+             TileEntity tileentity = iterator.next();
++
+             if (!tileentity.isInvalid() && tileentity.hasWorld()) {
+                 BlockPos blockpos = tileentity.getPos();
+-                if (this.isBlockLoaded(blockpos) && this.worldBorder.contains(blockpos)) {
++
++                if (this.isBlockLoaded(blockpos, false) && this.worldBorder.contains(blockpos)) { //Forge: Fix TE's getting an extra tick on the client side....
+                     try {
+-                        this.profiler.func_194340_a(() -> String.valueOf(TileEntity.getKey((Class<? extends TileEntity>)tileentity.getClass())));
++                        this.profiler.func_194340_a(() -> String.valueOf(TileEntity.getKey(tileentity.getClass())));
++                        net.minecraftforge.server.timings.TimeTracker.TILE_ENTITY_UPDATE.trackStart(tileentity);
+                         ((ITickable)tileentity).update();
++                        net.minecraftforge.server.timings.TimeTracker.TILE_ENTITY_UPDATE.trackEnd(tileentity);
+                         this.profiler.endSection();
+                     } catch (Throwable throwable) {
+                         CrashReport crashreport2 = CrashReport.makeCrashReport(throwable, "Ticking block entity");
+                         CrashReportCategory crashreportcategory2 = crashreport2.makeCategory("Block entity being ticked");
+                         tileentity.addInfoToCrashReport(crashreportcategory2);
++                        if (net.minecraftforge.common.ForgeModContainer.removeErroringTileEntities) {
++                            net.minecraftforge.fml.common.FMLLog.log.fatal("{}", crashreport2.getCompleteReport());
++                            tileentity.invalidate();
++                            this.removeTileEntity(tileentity.getPos());
++                        } else
+                         throw new ReportedException(crashreport2);
+                     }
+                 }
+@@ -1553,17 +1685,23 @@
+             if (tileentity.isInvalid()) {
+                 iterator.remove();
+                 this.loadedTileEntityList.remove(tileentity);
++
+                 if (this.isBlockLoaded(tileentity.getPos())) {
+-                    this.getChunk(tileentity.getPos()).removeTileEntity(tileentity.getPos());
++                    //Forge: Bugfix: If we set the tile entity it immediately sets it in the chunk, so we could be desyned
++                    Chunk chunk = this.getChunk(tileentity.getPos());
++                    if (chunk.getTileEntity(tileentity.getPos(), net.minecraft.world.chunk.Chunk.EnumCreateEntityType.CHECK) == tileentity)
++                        chunk.removeTileEntity(tileentity.getPos());
+                 }
+             }
+         }
+ 
+         this.processingLoadedTiles = false;
+         this.profiler.endStartSection("pendingBlockEntities");
++
+         if (!this.addedTileEntityList.isEmpty()) {
+             for (int j1 = 0; j1 < this.addedTileEntityList.size(); j1++) {
+                 TileEntity tileentity1 = this.addedTileEntityList.get(j1);
++
+                 if (!tileentity1.isInvalid()) {
+                     if (!this.loadedTileEntityList.contains(tileentity1)) {
+                         this.addTileEntity(tileentity1);
+@@ -1589,10 +1727,16 @@
+     }
+ 
+     public boolean addTileEntity(TileEntity tile) {
++        // Forge - set the world early as vanilla doesn't set it until next tick
++        if (tile.getWorld() != this) tile.setWorld(this);
++        // Forge: wait to add new TE if we're currently processing existing ones
++        if (processingLoadedTiles) return addedTileEntityList.add(tile);
++
+         boolean flag = this.loadedTileEntityList.add(tile);
+         if (flag && tile instanceof ITickable) {
+             this.tickableTileEntities.add(tile);
+         }
++        tile.onLoad();
+ 
+         if (this.isRemote) {
+             BlockPos blockpos = tile.getPos();
+@@ -1605,6 +1749,10 @@
+ 
+     public void addTileEntities(Collection<TileEntity> tileEntityCollection) {
+         if (this.processingLoadedTiles) {
++            for (TileEntity te : tileEntityCollection) {
++                if (te.getWorld() != this) // Forge - set the world early as vanilla doesn't set it until next tick
++                    te.setWorld(this);
++            }
+             this.addedTileEntityList.addAll(tileEntityCollection);
+         } else {
+             for (TileEntity tileentity : tileEntityCollection) {
+@@ -1623,8 +1771,13 @@
+         if (!(entityIn instanceof EntityPlayer)) {
+             int i = MathHelper.floor(entityIn.posX);
+             int j = MathHelper.floor(entityIn.posZ);
+-            int k = 32;
+-            if (forceUpdate && !this.isAreaLoaded(i - 32, 0, j - 32, i + 32, 0, j + 32, true)) {
++
++            boolean isForced = !this.isRemote && getPersistentChunks().containsKey(new net.minecraft.util.math.ChunkPos(i >> 4, j >> 4));
++            int range = isForced ? 0 : 32;
++            boolean canUpdate = !forceUpdate || this.isAreaLoaded(i - range, 0, j - range, i + range, 0, j + range, true);
++            if (!canUpdate) canUpdate = net.minecraftforge.event.ForgeEventFactory.canEntityUpdate(entityIn);
++
++            if (!canUpdate) {
+                 return;
+             }
+         }
+@@ -1639,6 +1792,7 @@
+             if (entityIn.isRiding()) {
+                 entityIn.updateRidden();
+             } else {
++                if(!entityIn.updateBlocked)
+                 entityIn.onUpdate();
+             }
+         }
+@@ -1702,7 +1856,8 @@
+ 
+         for (int i = 0; i < list.size(); i++) {
+             Entity entity = list.get(i);
+-            if (!entity.isDead && entity.preventEntitySpawning && entity != entityIn && (entityIn == null || entity.isRidingSameEntity(entityIn))) {
++
++            if (!entity.isDead && entity.preventEntitySpawning && entity != entityIn && (entityIn == null || !entity.isRidingSameEntity(entityIn))) { // Forge: fix MC-103516
+                 return false;
+             }
+         }
+@@ -1750,6 +1905,13 @@
+             for (int l1 = k; l1 < l; l1++) {
+                 for (int i2 = i1; i2 < j1; i2++) {
+                     IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2));
++
++                    Boolean result = iblockstate.getBlock().isAABBInsideLiquid(this, blockpos$pooledmutableblockpos, bb);
++                    if (result != null) {
++                        if (!result) continue;
++                        blockpos$pooledmutableblockpos.release();
++                        return true;
++                    }
+                     if (iblockstate.getMaterial().isLiquid()) {
+                         blockpos$pooledmutableblockpos.release();
+                         return true;
+@@ -1779,6 +1941,9 @@
+                         if (block == Blocks.FIRE || block == Blocks.FLOWING_LAVA || block == Blocks.LAVA) {
+                             blockpos$pooledmutableblockpos.release();
+                             return true;
++                        } else if (block.isBurning(this, new BlockPos(k1, l1, i2))) {
++                            blockpos$pooledmutableblockpos.release();
++                            return true;
+                         }
+                     }
+                 }
+@@ -1798,41 +1963,53 @@
+         int l = MathHelper.ceil(bb.maxY);
+         int i1 = MathHelper.floor(bb.minZ);
+         int j1 = MathHelper.ceil(bb.maxZ);
++
+         if (!this.isAreaLoaded(i, k, i1, j, l, j1, true)) {
+             return false;
+-        }
++        } else {
++            boolean flag = false;
++            Vec3d vec3d = Vec3d.ZERO;
++            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
+ 
+-        boolean flag = false;
+-        Vec3d vec3d = Vec3d.ZERO;
+-        BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
++            for (int k1 = i; k1 < j; k1++) {
++                for (int l1 = k; l1 < l; l1++) {
++                    for (int i2 = i1; i2 < j1; i2++) {
++                        blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
++                        IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos);
++                        Block block = iblockstate.getBlock();
+ 
+-        for (int k1 = i; k1 < j; k1++) {
+-            for (int l1 = k; l1 < l; l1++) {
+-                for (int i2 = i1; i2 < j1; i2++) {
+-                    blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
+-                    IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos);
+-                    Block block = iblockstate.getBlock();
+-                    if (iblockstate.getMaterial() == materialIn) {
+-                        double d0 = l1 + 1 - BlockLiquid.getLiquidHeightPercent(iblockstate.getValue(BlockLiquid.LEVEL));
+-                        if (l >= d0) {
++                        Boolean result = block.isEntityInsideMaterial(this, blockpos$pooledmutableblockpos, iblockstate, entityIn, (double)l, materialIn, false);
++                        if (result != null && result == true) {
++                            // Forge: When requested call blocks modifyAcceleration method, and more importantly cause this method to return true, which results in an entity being "inWater"
+                             flag = true;
+                             vec3d = block.modifyAcceleration(this, blockpos$pooledmutableblockpos, entityIn, vec3d);
++                            continue;
++                        } else if (result != null && result == false) continue;
++
++                        if (iblockstate.getMaterial() == materialIn) {
++                            double d0 = l1 + 1 - BlockLiquid.getLiquidHeightPercent(iblockstate.getValue(BlockLiquid.LEVEL));
++
++                            if (l >= d0) {
++                                flag = true;
++                                vec3d = block.modifyAcceleration(this, blockpos$pooledmutableblockpos, entityIn, vec3d);
++                            }
+                         }
+                     }
+                 }
+             }
+-        }
+ 
+-        blockpos$pooledmutableblockpos.release();
+-        if (vec3d.length() > 0.0 && entityIn.isPushedByWater()) {
+-            vec3d = vec3d.normalize();
+-            double d1 = 0.014;
+-            entityIn.motionX = entityIn.motionX + vec3d.x * 0.014;
+-            entityIn.motionY = entityIn.motionY + vec3d.y * 0.014;
+-            entityIn.motionZ = entityIn.motionZ + vec3d.z * 0.014;
+-        }
++            blockpos$pooledmutableblockpos.release();
+ 
+-        return flag;
++            if (vec3d.length() > 0.0 && entityIn.isPushedByWater()) {
++                vec3d = vec3d.normalize();
++                double d1 = 0.014;
++                entityIn.motionX = entityIn.motionX + vec3d.x * 0.014;
++                entityIn.motionY = entityIn.motionY + vec3d.y * 0.014;
++                entityIn.motionZ = entityIn.motionZ + vec3d.z * 0.014;
++            }
++
++            return flag;
++        }
+     }
+ 
+     /** Returns true if the given bounding box contains the given material */
+@@ -1848,10 +2025,17 @@
+         for (int k1 = i; k1 < j; k1++) {
+             for (int l1 = k; l1 < l; l1++) {
+                 for (int i2 = i1; i2 < j1; i2++) {
+-                    if (this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2)).getMaterial() == materialIn) {
++                    IBlockState iblockstate1 = this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2));
++                    Boolean result = iblockstate1.getBlock().isAABBInsideMaterial(this, blockpos$pooledmutableblockpos, bb, materialIn);
++                    if (result != null) {
++                        if (!result) continue;
+                         blockpos$pooledmutableblockpos.release();
+                         return true;
+                     }
++                    if (iblockstate1.getMaterial() == materialIn) {
++                        blockpos$pooledmutableblockpos.release();
++                        return true;
++                    }
+                 }
+             }
+         }
+@@ -1870,6 +2054,7 @@
+         @Nullable Entity entityIn, double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain
+     ) {
+         Explosion explosion = new Explosion(this, entityIn, x, y, z, strength, causesFire, damagesTerrain);
++        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this, explosion)) return explosion;
+         explosion.doExplosionA();
+         explosion.doExplosionB(true);
+         return explosion;
+@@ -1967,23 +2152,29 @@
+     }
+ 
+     public void setTileEntity(BlockPos pos, @Nullable TileEntity tileEntityIn) {
++        pos = pos.toImmutable(); // Forge - prevent mutable BlockPos leaks
+         if (!this.isOutsideBuildHeight(pos)) {
+             if (tileEntityIn != null && !tileEntityIn.isInvalid()) {
+                 if (this.processingLoadedTiles) {
+                     tileEntityIn.setPos(pos);
++                    if (tileEntityIn.getWorld() != this)
++                        tileEntityIn.setWorld(this); // Forge - set the world early as vanilla doesn't set it until next tick
+                     Iterator<TileEntity> iterator = this.addedTileEntityList.iterator();
++                    List<TileEntity> toInvalidate = Lists.newArrayList();
+ 
+                     while (iterator.hasNext()) {
+                         TileEntity tileentity = iterator.next();
+                         if (tileentity.getPos().equals(pos)) {
+-                            tileentity.invalidate();
++                            toInvalidate.add(tileentity); // Forge - don't call invalidate while iterating
+                             iterator.remove();
+                         }
+                     }
+ 
++                    toInvalidate.forEach(TileEntity::invalidate);
+                     this.addedTileEntityList.add(tileEntityIn);
+                 } else {
+-                    this.getChunk(pos).addTileEntity(pos, tileEntityIn);
++                    Chunk chunk = this.getChunk(pos);
++                    if (chunk != null) chunk.addTileEntity(pos, tileEntityIn);
+                     this.addTileEntity(tileEntityIn);
+                 }
+             }
+@@ -1995,6 +2186,8 @@
+         if (tileentity != null && this.processingLoadedTiles) {
+             tileentity.invalidate();
+             this.addedTileEntityList.remove(tileentity);
++            if (!(tileentity instanceof ITickable)) //Forge: If they are not tickable they wont be removed in the update loop.
++                this.loadedTileEntityList.remove(tileentity);
+         } else {
+             if (tileentity != null) {
+                 this.addedTileEntityList.remove(tileentity);
+@@ -2004,6 +2197,7 @@
+ 
+             this.getChunk(pos).removeTileEntity(pos);
+         }
++        this.updateComparatorOutputLevel(pos, getBlockState(pos).getBlock()); //Notify neighbors of changes
+     }
+ 
+     /** Adds the specified TileEntity to the pending removal list. */
+@@ -2024,7 +2218,7 @@
+             Chunk chunk = this.chunkProvider.getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
+             if (chunk != null && !chunk.isEmpty()) {
+                 IBlockState iblockstate = this.getBlockState(pos);
+-                return iblockstate.getMaterial().isOpaque() && iblockstate.isFullCube();
++                return iblockstate.getBlock().isNormalCube(iblockstate, this, pos);
+             } else {
+                 return _default;
+             }
+@@ -2043,6 +2237,7 @@
+     public void setAllowedSpawnTypes(boolean hostile, boolean peaceful) {
+         this.spawnHostileMobs = hostile;
+         this.spawnPeacefulMobs = peaceful;
++        this.provider.setAllowedSpawnTypes(hostile, peaceful);
+     }
+ 
+     /** Runs a single tick for the world */
+@@ -2052,6 +2247,10 @@
+ 
+     /** Called from World constructor to set rainingStrength and thunderingStrength */
+     protected void calculateInitialWeather() {
++        this.provider.calculateInitialWeather();
++    }
++
++    public void calculateInitialWeatherBody() {
+         if (this.worldInfo.isRaining()) {
+             this.rainingStrength = 1.0F;
+             if (this.worldInfo.isThundering()) {
+@@ -2062,6 +2261,10 @@
+ 
+     /** Updates all weather states. */
+     protected void updateWeather() {
++        this.provider.updateWeather();
++    }
++
++    public void updateWeatherBody() {
+         if (this.provider.hasSkyLight()) {
+             if (!this.isRemote) {
+                 boolean flag = this.getGameRules().getBoolean("doWeatherCycle");
+@@ -2146,6 +2349,10 @@
+ 
+     /** Checks to see if a given block is both water and cold enough to freeze. */
+     public boolean canBlockFreeze(BlockPos pos, boolean noWaterAdj) {
++        return this.provider.canBlockFreeze(pos, noWaterAdj);
++    }
++
++    public boolean canBlockFreezeBody(BlockPos pos, boolean noWaterAdj) {
+         Biome biome = this.getBiome(pos);
+         float f = biome.getTemperature(pos);
+         if (f >= 0.15F) {
+@@ -2179,6 +2386,10 @@
+ 
+     /** Checks to see if a given block can accumulate snow from it snowing */
+     public boolean canSnowAt(BlockPos pos, boolean checkLight) {
++        return this.provider.canSnowAt(pos, checkLight);
++    }
++
++    public boolean canSnowAtBody(BlockPos pos, boolean checkLight) {
+         Biome biome = this.getBiome(pos);
+         float f = biome.getTemperature(pos);
+         if (f >= 0.15F) {
+@@ -2191,7 +2402,7 @@
+ 
+         if (pos.getY() >= 0 && pos.getY() < 256 && this.getLightFor(EnumSkyBlock.BLOCK, pos) < 10) {
+             IBlockState iblockstate = this.getBlockState(pos);
+-            if (iblockstate.getMaterial() == Material.AIR && Blocks.SNOW_LAYER.canPlaceBlockAt(this, pos)) {
++            if (iblockstate.getBlock().isAir(iblockstate, this, pos) && Blocks.SNOW_LAYER.canPlaceBlockAt(this, pos)) {
+                 return true;
+             }
+         }
+@@ -2212,153 +2423,163 @@
+     private int getRawLight(BlockPos pos, EnumSkyBlock lightType) {
+         if (lightType == EnumSkyBlock.SKY && this.canSeeSky(pos)) {
+             return 15;
+-        }
++        } else {
++            IBlockState iblockstate = this.getBlockState(pos);
++            int i = lightType == EnumSkyBlock.SKY ? 0 : iblockstate.getBlock().getLightValue(iblockstate, this, pos);
++            int j = iblockstate.getBlock().getLightOpacity(iblockstate, this, pos);
+ 
+-        IBlockState iblockstate = this.getBlockState(pos);
+-        int i = lightType == EnumSkyBlock.SKY ? 0 : iblockstate.getLightValue();
+-        int j = iblockstate.getLightOpacity();
+-        if (j >= 15 && iblockstate.getLightValue() > 0) {
+-            j = 1;
+-        }
++            if (false) { // Forge: fix MC-119932
++                j = 1;
++            }
+ 
+-        if (j < 1) {
+-            j = 1;
+-        }
++            if (j < 1) {
++                j = 1;
++            }
+ 
+-        if (j >= 15) {
+-            return 0;
+-        }
++            if (j >= 15) {
++                return i; // Forge: fix MC-119932
++            } else if (i >= 14) {
++                return i;
++            } else {
++                BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
+ 
+-        if (i >= 14) {
+-            return i;
+-        }
++                try {
++                    for (EnumFacing enumfacing : EnumFacing.values()) {
++                        blockpos$pooledmutableblockpos.setPos(pos).move(enumfacing);
++                        int k = this.getLightFor(lightType, blockpos$pooledmutableblockpos) - j;
+ 
+-        BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
++                        if (k > i) {
++                            i = k;
++                        }
+ 
+-        try {
+-            for (EnumFacing enumfacing : EnumFacing.values()) {
+-                blockpos$pooledmutableblockpos.setPos(pos).move(enumfacing);
+-                int k = this.getLightFor(lightType, blockpos$pooledmutableblockpos) - j;
+-                if (k > i) {
+-                    i = k;
+-                }
++                        if (i >= 14) {
++                            return i;
++                        }
++                    }
+ 
+-                if (i >= 14) {
+                     return i;
++                } finally {
++                    blockpos$pooledmutableblockpos.release();
+                 }
+             }
+-        } finally {
+-            blockpos$pooledmutableblockpos.release();
+         }
+-
+-        return i;
+     }
+ 
+     public boolean checkLightFor(EnumSkyBlock lightType, BlockPos pos) {
+-        if (!this.isAreaLoaded(pos, 17, false)) {
++        if (!this.isAreaLoaded(pos, 16, false)) {
+             return false;
+-        }
++        } else {
++            int updateRange = this.isAreaLoaded(pos, 18, false) ? 17 : 15;
++            int i = 0;
++            int j = 0;
++            this.profiler.startSection("getBrightness");
++            int k = this.getLightFor(lightType, pos);
++            int l = this.getRawLight(pos, lightType);
++            int i1 = pos.getX();
++            int j1 = pos.getY();
++            int k1 = pos.getZ();
+ 
+-        int i = 0;
+-        int j = 0;
+-        this.profiler.startSection("getBrightness");
+-        int k = this.getLightFor(lightType, pos);
+-        int l = this.getRawLight(pos, lightType);
+-        int i1 = pos.getX();
+-        int j1 = pos.getY();
+-        int k1 = pos.getZ();
+-        if (l > k) {
+-            this.lightUpdateBlockList[j++] = 133152;
+-        } else if (l < k) {
+-            this.lightUpdateBlockList[j++] = 133152 | k << 18;
++            if (l > k) {
++                this.lightUpdateBlockList[j++] = 133152;
++            } else if (l < k) {
++                this.lightUpdateBlockList[j++] = 133152 | k << 18;
+ 
+-            while (i < j) {
+-                int l1 = this.lightUpdateBlockList[i++];
+-                int i2 = (l1 & 63) - 32 + i1;
+-                int j2 = (l1 >> 6 & 63) - 32 + j1;
+-                int k2 = (l1 >> 12 & 63) - 32 + k1;
+-                int l2 = l1 >> 18 & 15;
+-                BlockPos blockpos = new BlockPos(i2, j2, k2);
+-                int i3 = this.getLightFor(lightType, blockpos);
+-                if (i3 == l2) {
+-                    this.setLightFor(lightType, blockpos, 0);
+-                    if (l2 > 0) {
+-                        int j3 = MathHelper.abs(i2 - i1);
+-                        int k3 = MathHelper.abs(j2 - j1);
+-                        int l3 = MathHelper.abs(k2 - k1);
+-                        if (j3 + k3 + l3 < 17) {
+-                            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
++                while (i < j) {
++                    int l1 = this.lightUpdateBlockList[i++];
++                    int i2 = (l1 & 63) - 32 + i1;
++                    int j2 = (l1 >> 6 & 63) - 32 + j1;
++                    int k2 = (l1 >> 12 & 63) - 32 + k1;
++                    int l2 = l1 >> 18 & 15;
++                    BlockPos blockpos = new BlockPos(i2, j2, k2);
++                    int i3 = this.getLightFor(lightType, blockpos);
+ 
+-                            for (EnumFacing enumfacing : EnumFacing.values()) {
+-                                int i4 = i2 + enumfacing.getXOffset();
+-                                int j4 = j2 + enumfacing.getYOffset();
+-                                int k4 = k2 + enumfacing.getZOffset();
+-                                blockpos$pooledmutableblockpos.setPos(i4, j4, k4);
+-                                int l4 = Math.max(1, this.getBlockState(blockpos$pooledmutableblockpos).getLightOpacity());
+-                                i3 = this.getLightFor(lightType, blockpos$pooledmutableblockpos);
+-                                if (i3 == l2 - l4 && j < this.lightUpdateBlockList.length) {
+-                                    this.lightUpdateBlockList[j++] = i4 - i1 + 32 | j4 - j1 + 32 << 6 | k4 - k1 + 32 << 12 | l2 - l4 << 18;
++                    if (i3 == l2) {
++                        this.setLightFor(lightType, blockpos, 0);
++
++                        if (l2 > 0) {
++                            int j3 = MathHelper.abs(i2 - i1);
++                            int k3 = MathHelper.abs(j2 - j1);
++                            int l3 = MathHelper.abs(k2 - k1);
++
++                            if (j3 + k3 + l3 < updateRange) {
++                                BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
++
++                                for (EnumFacing enumfacing : EnumFacing.values()) {
++                                    int i4 = i2 + enumfacing.getXOffset();
++                                    int j4 = j2 + enumfacing.getYOffset();
++                                    int k4 = k2 + enumfacing.getZOffset();
++                                    blockpos$pooledmutableblockpos.setPos(i4, j4, k4);
++                                    IBlockState bs = this.getBlockState(blockpos$pooledmutableblockpos);
++                                    int l4 = Math.max(1, bs.getBlock().getLightOpacity(bs, this, blockpos$pooledmutableblockpos));
++                                    i3 = this.getLightFor(lightType, blockpos$pooledmutableblockpos);
++
++                                    if (i3 == l2 - l4 && j < this.lightUpdateBlockList.length) {
++                                        this.lightUpdateBlockList[j++] = i4 - i1 + 32 | j4 - j1 + 32 << 6 | k4 - k1 + 32 << 12 | l2 - l4 << 18;
++                                    }
+                                 }
+-                            }
+ 
+-                            blockpos$pooledmutableblockpos.release();
++                                blockpos$pooledmutableblockpos.release();
++                            }
+                         }
+                     }
+                 }
++
++                i = 0;
+             }
+ 
+-            i = 0;
+-        }
++            this.profiler.endSection();
++            this.profiler.startSection("checkedPosition < toCheckCount");
+ 
+-        this.profiler.endSection();
+-        this.profiler.startSection("checkedPosition < toCheckCount");
++            while (i < j) {
++                int j7 = this.lightUpdateBlockList[i++];
++                int k7 = (j7 & 63) - 32 + i1;
++                int l7 = (j7 >> 6 & 63) - 32 + j1;
++                int i8 = (j7 >> 12 & 63) - 32 + k1;
++                BlockPos blockpos2 = new BlockPos(k7, l7, i8);
++                int j8 = this.getLightFor(lightType, blockpos2);
++                int k8 = this.getRawLight(blockpos2, lightType);
+ 
+-        while (i < j) {
+-            int i5 = this.lightUpdateBlockList[i++];
+-            int j5 = (i5 & 63) - 32 + i1;
+-            int k5 = (i5 >> 6 & 63) - 32 + j1;
+-            int l5 = (i5 >> 12 & 63) - 32 + k1;
+-            BlockPos blockpos1 = new BlockPos(j5, k5, l5);
+-            int i6 = this.getLightFor(lightType, blockpos1);
+-            int j6 = this.getRawLight(blockpos1, lightType);
+-            if (j6 != i6) {
+-                this.setLightFor(lightType, blockpos1, j6);
+-                if (j6 > i6) {
+-                    int k6 = Math.abs(j5 - i1);
+-                    int l6 = Math.abs(k5 - j1);
+-                    int i7 = Math.abs(l5 - k1);
+-                    boolean flag = j < this.lightUpdateBlockList.length - 6;
+-                    if (k6 + l6 + i7 < 17 && flag) {
+-                        if (this.getLightFor(lightType, blockpos1.west()) < j6) {
+-                            this.lightUpdateBlockList[j++] = j5 - 1 - i1 + 32 + (k5 - j1 + 32 << 6) + (l5 - k1 + 32 << 12);
+-                        }
++                if (k8 != j8) {
++                    this.setLightFor(lightType, blockpos2, k8);
+ 
+-                        if (this.getLightFor(lightType, blockpos1.east()) < j6) {
+-                            this.lightUpdateBlockList[j++] = j5 + 1 - i1 + 32 + (k5 - j1 + 32 << 6) + (l5 - k1 + 32 << 12);
+-                        }
++                    if (k8 > j8) {
++                        int l8 = Math.abs(k7 - i1);
++                        int i9 = Math.abs(l7 - j1);
++                        int j9 = Math.abs(i8 - k1);
++                        boolean flag = j < this.lightUpdateBlockList.length - 6;
+ 
+-                        if (this.getLightFor(lightType, blockpos1.down()) < j6) {
+-                            this.lightUpdateBlockList[j++] = j5 - i1 + 32 + (k5 - 1 - j1 + 32 << 6) + (l5 - k1 + 32 << 12);
+-                        }
++                        if (l8 + i9 + j9 < updateRange && flag) {
++                            if (this.getLightFor(lightType, blockpos2.west()) < k8) {
++                                this.lightUpdateBlockList[j++] = k7 - 1 - i1 + 32 + (l7 - j1 + 32 << 6) + (i8 - k1 + 32 << 12);
++                            }
+ 
+-                        if (this.getLightFor(lightType, blockpos1.up()) < j6) {
+-                            this.lightUpdateBlockList[j++] = j5 - i1 + 32 + (k5 + 1 - j1 + 32 << 6) + (l5 - k1 + 32 << 12);
+-                        }
++                            if (this.getLightFor(lightType, blockpos2.east()) < k8) {
++                                this.lightUpdateBlockList[j++] = k7 + 1 - i1 + 32 + (l7 - j1 + 32 << 6) + (i8 - k1 + 32 << 12);
++                            }
+ 
+-                        if (this.getLightFor(lightType, blockpos1.north()) < j6) {
+-                            this.lightUpdateBlockList[j++] = j5 - i1 + 32 + (k5 - j1 + 32 << 6) + (l5 - 1 - k1 + 32 << 12);
+-                        }
++                            if (this.getLightFor(lightType, blockpos2.down()) < k8) {
++                                this.lightUpdateBlockList[j++] = k7 - i1 + 32 + (l7 - 1 - j1 + 32 << 6) + (i8 - k1 + 32 << 12);
++                            }
+ 
+-                        if (this.getLightFor(lightType, blockpos1.south()) < j6) {
+-                            this.lightUpdateBlockList[j++] = j5 - i1 + 32 + (k5 - j1 + 32 << 6) + (l5 + 1 - k1 + 32 << 12);
++                            if (this.getLightFor(lightType, blockpos2.up()) < k8) {
++                                this.lightUpdateBlockList[j++] = k7 - i1 + 32 + (l7 + 1 - j1 + 32 << 6) + (i8 - k1 + 32 << 12);
++                            }
++
++                            if (this.getLightFor(lightType, blockpos2.north()) < k8) {
++                                this.lightUpdateBlockList[j++] = k7 - i1 + 32 + (l7 - j1 + 32 << 6) + (i8 - 1 - k1 + 32 << 12);
++                            }
++
++                            if (this.getLightFor(lightType, blockpos2.south()) < k8) {
++                                this.lightUpdateBlockList[j++] = k7 - i1 + 32 + (l7 - j1 + 32 << 6) + (i8 + 1 - k1 + 32 << 12);
++                            }
+                         }
+                     }
+                 }
+             }
+-        }
+ 
+-        this.profiler.endSection();
+-        return true;
++            this.profiler.endSection();
++            return true;
++        }
+     }
+ 
+     /** Runs through the list of updates to run and ticks them */
+@@ -2384,10 +2605,10 @@
+     /** Gets all entities within the specified AABB excluding the one passed into it. */
+     public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
+         List<Entity> list = Lists.newArrayList();
+-        int i = MathHelper.floor((boundingBox.minX - 2.0) / 16.0);
+-        int j = MathHelper.floor((boundingBox.maxX + 2.0) / 16.0);
+-        int k = MathHelper.floor((boundingBox.minZ - 2.0) / 16.0);
+-        int l = MathHelper.floor((boundingBox.maxZ + 2.0) / 16.0);
++        int i = MathHelper.floor((boundingBox.minX - MAX_ENTITY_RADIUS) / 16.0);
++        int j = MathHelper.floor((boundingBox.maxX + MAX_ENTITY_RADIUS) / 16.0);
++        int k = MathHelper.floor((boundingBox.minZ - MAX_ENTITY_RADIUS) / 16.0);
++        int l = MathHelper.floor((boundingBox.maxZ + MAX_ENTITY_RADIUS) / 16.0);
+ 
+         for (int i1 = i; i1 <= j; i1++) {
+             for (int j1 = k; j1 <= l; j1++) {
+@@ -2430,10 +2651,10 @@
+     }
+ 
+     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
+-        int i = MathHelper.floor((aabb.minX - 2.0) / 16.0);
+-        int j = MathHelper.ceil((aabb.maxX + 2.0) / 16.0);
+-        int k = MathHelper.floor((aabb.minZ - 2.0) / 16.0);
+-        int l = MathHelper.ceil((aabb.maxZ + 2.0) / 16.0);
++        int i = MathHelper.floor((aabb.minX - MAX_ENTITY_RADIUS) / 16.0);
++        int j = MathHelper.ceil((aabb.maxX + MAX_ENTITY_RADIUS) / 16.0);
++        int k = MathHelper.floor((aabb.minZ - MAX_ENTITY_RADIUS) / 16.0);
++        int l = MathHelper.ceil((aabb.maxZ + MAX_ENTITY_RADIUS) / 16.0);
+         List<T> list = Lists.newArrayList();
+ 
+         for (int i1 = i; i1 < j; i1++) {
+@@ -2499,10 +2720,11 @@
+     }
+ 
+     public void loadEntities(Collection<Entity> entityCollection) {
+-        this.loadedEntityList.addAll(entityCollection);
+-
+         for (Entity entity : entityCollection) {
+-            this.onEntityAdded(entity);
++            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
++                loadedEntityList.add(entity);
++                this.onEntityAdded(entity);
++            }
+         }
+     }
+ 
+@@ -2514,7 +2736,9 @@
+     public boolean mayPlace(Block blockIn, BlockPos pos, boolean skipCollisionCheck, EnumFacing sidePlacedOn, @Nullable Entity placer) {
+         IBlockState iblockstate = this.getBlockState(pos);
+         AxisAlignedBB axisalignedbb = skipCollisionCheck ? null : blockIn.getDefaultState().getCollisionBoundingBox(this, pos);
+-        if (axisalignedbb != Block.NULL_AABB && !this.checkNoEntityCollision(axisalignedbb.offset(pos), placer)) {
++
++        if (!((placer instanceof EntityPlayer) || !net.minecraftforge.event.ForgeEventFactory.onBlockPlace(placer, new net.minecraftforge.common.util.BlockSnapshot(this, pos, blockIn.getDefaultState()), sidePlacedOn).isCanceled())) return false;
++        if (axisalignedbb != Block.NULL_AABB && !this.checkNoEntityCollision(axisalignedbb.offset(pos))) { // Forge: Remove second parameter, we patch placer to be non-null, passing it here skips collision checks for the placer
+             return false;
+         } else {
+             return iblockstate.getMaterial() == Material.CIRCUITS && blockIn == Blocks.ANVIL
+@@ -2580,7 +2804,7 @@
+ 
+     public int getRedstonePower(BlockPos pos, EnumFacing facing) {
+         IBlockState iblockstate = this.getBlockState(pos);
+-        return iblockstate.isNormalCube() ? this.getStrongPower(pos) : iblockstate.getWeakPower(this, pos, facing);
++        return iblockstate.getBlock().shouldCheckWeakPower(iblockstate, this, pos, facing) ? this.getStrongPower(pos) : iblockstate.getWeakPower(this, pos, facing);
+     }
+ 
+     public boolean isBlockPowered(BlockPos pos) {
+@@ -2717,6 +2941,8 @@
+                     d2 *= MoreObjects.firstNonNull(playerToDouble.apply(entityplayer1), 1.0);
+                 }
+ 
++                d2 = net.minecraftforge.common.ForgeHooks.getPlayerVisibilityDistance(entityplayer1, d2, maxYDistance);
++
+                 if ((maxYDistance < 0.0 || Math.abs(entityplayer1.posY - posY) < maxYDistance * maxYDistance)
+                     && (maxXZDistance < 0.0 || d1 < d2 * d2)
+                     && (d0 == -1.0 || d1 < d0)) {
+@@ -2771,7 +2997,7 @@
+ 
+     /** gets the random world seed */
+     public long getSeed() {
+-        return this.worldInfo.getSeed();
++        return this.provider.getSeed();
+     }
+ 
+     public long getTotalWorldTime() {
+@@ -2779,17 +3005,18 @@
+     }
+ 
+     public long getWorldTime() {
+-        return this.worldInfo.getWorldTime();
++        return this.provider.getWorldTime();
+     }
+ 
+     /** Sets the world time. */
+     public void setWorldTime(long time) {
+-        this.worldInfo.setWorldTime(time);
++        this.provider.setWorldTime(time);
+     }
+ 
+     /** Gets the spawn point in the world */
+     public BlockPos getSpawnPoint() {
+-        BlockPos blockpos = new BlockPos(this.worldInfo.getSpawnX(), this.worldInfo.getSpawnY(), this.worldInfo.getSpawnZ());
++        BlockPos blockpos = this.provider.getSpawnPoint();
++
+         if (!this.getWorldBorder().contains(blockpos)) {
+             blockpos = this.getHeight(new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
+         }
+@@ -2798,7 +3025,7 @@
+     }
+ 
+     public void setSpawnPoint(BlockPos pos) {
+-        this.worldInfo.setSpawn(pos);
++        this.provider.setSpawnPoint(pos);
+     }
+ 
+     /** spwans an entity and loads surrounding chunks */
+@@ -2815,11 +3042,16 @@
+         }
+ 
+         if (!this.loadedEntityList.contains(entityIn)) {
++            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, this)))
+             this.loadedEntityList.add(entityIn);
+         }
+     }
+ 
+     public boolean isBlockModifiable(EntityPlayer player, BlockPos pos) {
++        return this.provider.canMineBlock(player, pos);
++    }
++
++    public boolean canMineBlockBody(EntityPlayer player, BlockPos pos) {
+         return true;
+     }
+ 
+@@ -2907,8 +3139,7 @@
+     }
+ 
+     public boolean isBlockinHighHumidity(BlockPos pos) {
+-        Biome biome = this.getBiome(pos);
+-        return biome.isHighHumidity();
++        return this.provider.isBlockHighHumidity(pos);
+     }
+ 
+     @Nullable
+@@ -2960,12 +3191,12 @@
+ 
+     /** Returns maximum world height. */
+     public int getHeight() {
+-        return 256;
++        return this.provider.getHeight();
+     }
+ 
+     /** Returns current world height. */
+     public int getActualHeight() {
+-        return this.provider.isNether() ? 128 : 256;
++        return this.provider.getActualHeight();
+     }
+ 
+     /** puts the World Random seed to a specific state dependant on the inputs */
+@@ -2978,7 +3209,7 @@
+     /** Returns horizon height for use in rendering the sky. */
+     @SideOnly(Side.CLIENT)
+     public double getHorizon() {
+-        return this.worldInfo.getTerrainType() == WorldType.FLAT ? 0.0 : 63.0;
++        return provider.getHorizon();
+     }
+ 
+     /** Adds some basic stats of the world to the given crash report. */
+@@ -3032,17 +3263,18 @@
+     }
+ 
+     public void updateComparatorOutputLevel(BlockPos pos, Block blockIn) {
+-        for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL) {
++        for (EnumFacing enumfacing : EnumFacing.VALUES) {
+             BlockPos blockpos = pos.offset(enumfacing);
+             if (this.isBlockLoaded(blockpos)) {
+                 IBlockState iblockstate = this.getBlockState(blockpos);
+-                if (Blocks.UNPOWERED_COMPARATOR.isSameDiode(iblockstate)) {
+-                    iblockstate.neighborChanged(this, blockpos, blockIn, pos);
+-                } else if (iblockstate.isNormalCube()) {
++
++                iblockstate.getBlock().onNeighborChange(this, blockpos, pos);
++                if (iblockstate.getBlock().isNormalCube(iblockstate, this, blockpos)) {
+                     blockpos = blockpos.offset(enumfacing);
+                     iblockstate = this.getBlockState(blockpos);
+-                    if (Blocks.UNPOWERED_COMPARATOR.isSameDiode(iblockstate)) {
+-                        iblockstate.neighborChanged(this, blockpos, blockIn, pos);
++
++                    if (iblockstate.getBlock().getWeakChanges(this, blockpos)) {
++                        iblockstate.getBlock().onNeighborChange(this, blockpos, pos);
+                     }
+                 }
+             }
+@@ -3098,6 +3330,107 @@
+         return i >= -128 && i <= 128 && j >= -128 && j <= 128;
+     }
+ 
++    /* ======================================== FORGE START =====================================*/
++    /**
++     * Determine if the given block is considered solid on the
++     * specified side.  Used by placement logic.
++     *
++     * @param pos Block Position
++     * @param side The Side in question
++     * @return True if the side is solid
++    */
++    public boolean isSideSolid(BlockPos pos, EnumFacing side) {
++       return isSideSolid(pos, side, false);
++    }
++
++    /**
++     * Determine if the given block is considered solid on the
++     * specified side.  Used by placement logic.
++     *
++     * @param pos Block Position
++     * @param side The Side in question
++     * @param _default The default to return if the block doesn't exist.
++     * @return True if the side is solid
++     */
++    @Override
++    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
++        if (!this.isValid(pos)) return _default;
++
++        Chunk chunk = getChunk(pos);
++        if (chunk == null || chunk.isEmpty()) return _default;
++        return getBlockState(pos).isSideSolid(this, pos, side);
++    }
++
++    /**
++     * Get the persistent chunks for this world
++     *
++     * @return
++     */
++    public com.google.common.collect.ImmutableSetMultimap<net.minecraft.util.math.ChunkPos, net.minecraftforge.common.ForgeChunkManager.Ticket> getPersistentChunks() {
++        return net.minecraftforge.common.ForgeChunkManager.getPersistentChunksFor(this);
++    }
++
++    public Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator) {
++        return net.minecraftforge.common.ForgeChunkManager.getPersistentChunksIterableFor(this, chunkIterator);
++    }
++    /**
++     * Readded as it was removed, very useful helper function
++     *
++     * @param pos Block position
++     * @return The blocks light opacity
++     */
++    public int getBlockLightOpacity(BlockPos pos) {
++        if (!this.isValid(pos)) return 0;
++        return getChunk(pos).getBlockLightOpacity(pos);
++    }
++
++    /**
++     * Returns a count of entities that classify themselves as the specified creature type.
++     */
++    public int countEntities(net.minecraft.entity.EnumCreatureType type, boolean forSpawnCount) {
++        int count = 0;
++        for (int x = 0; x < loadedEntityList.size(); x++) {
++            if (((Entity)loadedEntityList.get(x)).isCreatureType(type, forSpawnCount)) {
++                count++;
++            }
++        }
++        return count;
++    }
++
++    @Deprecated // remove in 1.13
++    public void markTileEntitiesInChunkForRemoval(Chunk chunk) {
++        for (TileEntity tileentity : chunk.getTileEntityMap().values()) {
++            markTileEntityForRemoval(tileentity);
++        }
++    }
++
++    protected void initCapabilities() {
++        net.minecraftforge.common.capabilities.ICapabilityProvider parent = provider.initCapabilities();
++        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this, parent);
++        net.minecraftforge.common.util.WorldCapabilityData data = (net.minecraftforge.common.util.WorldCapabilityData)perWorldStorage.getOrLoadData(net.minecraftforge.common.util.WorldCapabilityData.class, net.minecraftforge.common.util.WorldCapabilityData.ID);
++        if (data == null) {
++            capabilityData = new net.minecraftforge.common.util.WorldCapabilityData(capabilities);
++            perWorldStorage.setData(capabilityData.mapName, capabilityData);
++        } else {
++            capabilityData = data;
++            capabilityData.setCapabilities(provider, capabilities);
++        }
++    }
++    @Override
++    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable EnumFacing facing) {
++        return capabilities == null ? false : capabilities.hasCapability(capability, facing);
++    }
++    @Override
++    @Nullable
++    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable EnumFacing facing) {
++        return capabilities == null ? null : capabilities.getCapability(capability, facing);
++    }
++
++    protected MapStorage perWorldStorage; //Moved to a getter to simulate final without being final so we can load in subclasses.
++    public MapStorage getPerWorldStorage() {
++        return perWorldStorage;
++    }
++
+     public void sendPacketToServer(Packet<?> packetIn) {
+         throw new UnsupportedOperationException("Can't send packets to server unless you're on the client.");
+     }

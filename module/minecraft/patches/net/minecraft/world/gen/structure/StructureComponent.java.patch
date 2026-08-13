@@ -1,0 +1,12 @@
+--- original/net/minecraft/world/gen/structure/StructureComponent.java
++++ modified/net/minecraft/world/gen/structure/StructureComponent.java
+@@ -40,6 +40,9 @@
+ 
+     /** Writes structure base data (id, boundingbox, {@link net.minecraft.world.gen.structure.StructureComponent#coordBaseMode coordBase} and {@link net.minecraft.world.gen.structure.StructureComponent#componentType componentType}) to new NBTTagCompound and returns it. */
+     public final NBTTagCompound createStructureBaseNBT() {
++        if (MapGenStructureIO.getStructureComponentName(this) == null) { // Friendlier error then the Null String error below.
++            throw new RuntimeException("StructureComponent \"" + this.getClass().getName() + "\" missing ID Mapping, Modder see MapGenStructureIO");
++        }
+         NBTTagCompound nbttagcompound = new NBTTagCompound();
+         nbttagcompound.setString("id", MapGenStructureIO.getStructureComponentName(this));
+         nbttagcompound.setTag("BB", this.boundingBox.toNBTTagIntArray());

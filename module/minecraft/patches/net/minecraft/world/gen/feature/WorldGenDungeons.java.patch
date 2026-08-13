@@ -1,0 +1,10 @@
+--- original/net/minecraft/world/gen/feature/WorldGenDungeons.java
++++ modified/net/minecraft/world/gen/feature/WorldGenDungeons.java
+@@ -134,6 +134,6 @@
+ 
+     /** Randomly decides which spawner to use in a dungeon */
+     private ResourceLocation pickMobSpawner(Random rand) {
+-        return SPAWNERTYPES[rand.nextInt(SPAWNERTYPES.length)];
++        return net.minecraftforge.common.DungeonHooks.getRandomDungeonMob(rand);
+     }
+ }

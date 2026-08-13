@@ -1,0 +1,28 @@
+--- original/net/minecraft/item/ItemSlab.java
++++ modified/net/minecraft/item/ItemSlab.java
+@@ -70,9 +70,9 @@
+                     IBlockState iblockstate1 = this.makeState(iproperty, comparable1);
+                     AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
+                     if (axisalignedbb != Block.NULL_AABB
+-                        && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
+-                        && worldIn.setBlockState(pos, iblockstate1, 11)) {
+-                        SoundType soundtype = this.doubleSlab.getSoundType();
++                            && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
++                            && worldIn.setBlockState(pos, iblockstate1, 11)) {
++                        SoundType soundtype = this.doubleSlab.getSoundType(iblockstate1, worldIn, pos, player);
+                         worldIn.playSound(
+                             player,
+                             pos,
+@@ -128,9 +128,9 @@
+                 IBlockState iblockstate1 = this.makeState(this.singleSlab.getVariantProperty(), comparable);
+                 AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
+                 if (axisalignedbb != Block.NULL_AABB
+-                    && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
+-                    && worldIn.setBlockState(pos, iblockstate1, 11)) {
+-                    SoundType soundtype = this.doubleSlab.getSoundType();
++                        && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos))
++                        && worldIn.setBlockState(pos, iblockstate1, 11)) {
++                    SoundType soundtype = this.doubleSlab.getSoundType(iblockstate1, worldIn, pos, player);
+                     worldIn.playSound(
+                         player,
+                         pos,

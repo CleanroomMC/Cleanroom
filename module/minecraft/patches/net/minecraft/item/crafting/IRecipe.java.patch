@@ -1,0 +1,42 @@
+--- original/net/minecraft/item/crafting/IRecipe.java
++++ modified/net/minecraft/item/crafting/IRecipe.java
+@@ -4,10 +4,8 @@
+ import net.minecraft.item.ItemStack;
+ import net.minecraft.util.NonNullList;
+ import net.minecraft.world.World;
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public interface IRecipe {
++public interface IRecipe extends net.minecraftforge.registries.IForgeRegistryEntry<IRecipe> {
+     /** Used to check if a recipe matches current crafting inventory */
+     boolean matches(InventoryCrafting var1, World var2);
+ 
+@@ -15,13 +13,14 @@
+     ItemStack getCraftingResult(InventoryCrafting var1);
+ 
+     /** Used to determine if this recipe can fit in a grid of the given width/height */
+-    @SideOnly(Side.CLIENT)
+     boolean canFit(int var1, int var2);
+ 
+     /** Get the result of this recipe, usually for display purposes (e.g. recipe book). If your recipe has more than one possible result (e.g. it's dynamic and depends on its inputs), then return an empty stack. */
+     ItemStack getRecipeOutput();
+ 
+-    NonNullList<ItemStack> getRemainingItems(InventoryCrafting var1);
++    default NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
++        return net.minecraftforge.common.ForgeHooks.defaultRecipeGetRemainingItems(inv);
++    }
+ 
+     default NonNullList<Ingredient> getIngredients() {
+         return NonNullList.create();
+@@ -32,9 +31,7 @@
+         return false;
+     }
+ 
+-    /** Recipes with equal group are combined into one button in the recipe book */
+-    @SideOnly(Side.CLIENT)
+-    default String getGroup() {
++default String getGroup() {
+         return "";
+     }
+ }

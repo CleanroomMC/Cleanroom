@@ -1,0 +1,27 @@
+--- original/net/minecraft/tileentity/TileEntityLockable.java
++++ modified/net/minecraft/tileentity/TileEntityLockable.java
+@@ -57,4 +57,24 @@
+     public ITextComponent getDisplayName() {
+         return this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName());
+     }
++
++    private net.minecraftforge.items.IItemHandler itemHandler;
++
++    protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
++        return new net.minecraftforge.items.wrapper.InvWrapper(this);
++    }
++
++    @SuppressWarnings("unchecked")
++    @Override
++    @javax.annotation.Nullable
++    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing) {
++        if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
++            return (T) (itemHandler == null ? (itemHandler = createUnSidedHandler()) : itemHandler);
++        return super.getCapability(capability, facing);
++    }
++
++    @Override
++    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing) {
++        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
++    }
+ }

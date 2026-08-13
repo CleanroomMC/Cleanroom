@@ -1,0 +1,61 @@
+--- original/net/minecraft/block/BlockPane.java
++++ modified/net/minecraft/block/BlockPane.java
+@@ -130,22 +130,10 @@
+     /** Get the actual Block state of this Block at the given position. This applies properties not visible in the metadata, such as fence connections. */
+     @Override
+     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+-        return state.withProperty(
+-                NORTH,
+-                this.attachesTo(worldIn, worldIn.getBlockState(pos.north()), pos.north(), EnumFacing.SOUTH)
+-            )
+-            .withProperty(
+-                SOUTH,
+-                this.attachesTo(worldIn, worldIn.getBlockState(pos.south()), pos.south(), EnumFacing.NORTH)
+-            )
+-            .withProperty(
+-                WEST,
+-                this.attachesTo(worldIn, worldIn.getBlockState(pos.west()), pos.west(), EnumFacing.EAST)
+-            )
+-            .withProperty(
+-                EAST,
+-                this.attachesTo(worldIn, worldIn.getBlockState(pos.east()), pos.east(), EnumFacing.WEST)
+-            );
++        return state.withProperty(NORTH, canPaneConnectTo(worldIn, pos, EnumFacing.NORTH))
++               .withProperty(SOUTH, canPaneConnectTo(worldIn, pos, EnumFacing.SOUTH))
++               .withProperty(WEST,  canPaneConnectTo(worldIn, pos, EnumFacing.WEST))
++               .withProperty(EAST,  canPaneConnectTo(worldIn, pos, EnumFacing.EAST));
+     }
+ 
+     /** Get the Item that this Block should drop when harvested. */
+@@ -269,15 +257,23 @@
+         return new BlockStateContainer(this, NORTH, EAST, WEST, SOUTH);
+     }
+ 
+-    /**
+-     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+-     * <p>
+-     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that does not fit the other descriptions and will generally cause other things not to connect to the face.
+-     * 
+-     * @return an approximation of the form of the given face
+-     * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
+-     */
++    /* ======================================== FORGE START ======================================== */
++
+     @Override
++    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
++        BlockPos offset = pos.offset(facing);
++        return attachesTo(world, world.getBlockState(offset), offset, facing.getOpposite());
++    }
++
++    public boolean canPaneConnectTo(IBlockAccess world, BlockPos pos, EnumFacing dir) {
++        BlockPos other = pos.offset(dir);
++        IBlockState state = world.getBlockState(other);
++        return state.getBlock().canBeConnectedTo(world, other, dir.getOpposite()) || attachesTo(world, state, other, dir.getOpposite());
++    }
++
++    /* ======================================== FORGE END ======================================== */
++
++    @Override
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+         return face != EnumFacing.UP && face != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THIN : BlockFaceShape.CENTER_SMALL;
+     }

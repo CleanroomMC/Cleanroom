@@ -1,0 +1,41 @@
+--- original/net/minecraft/block/BlockWall.java
++++ modified/net/minecraft/block/BlockWall.java
+@@ -216,10 +216,10 @@
+     /** Get the actual Block state of this Block at the given position. This applies properties not visible in the metadata, such as fence connections. */
+     @Override
+     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+-        boolean flag = this.canConnectTo(worldIn, pos.north(), EnumFacing.SOUTH);
+-        boolean flag1 = this.canConnectTo(worldIn, pos.east(), EnumFacing.WEST);
+-        boolean flag2 = this.canConnectTo(worldIn, pos.south(), EnumFacing.NORTH);
+-        boolean flag3 = this.canConnectTo(worldIn, pos.west(), EnumFacing.EAST);
++        boolean flag =  canWallConnectTo(worldIn, pos, EnumFacing.NORTH);
++        boolean flag1 = canWallConnectTo(worldIn, pos, EnumFacing.EAST);
++        boolean flag2 = canWallConnectTo(worldIn, pos, EnumFacing.SOUTH);
++        boolean flag3 = canWallConnectTo(worldIn, pos, EnumFacing.WEST);
+         boolean flag4 = flag && !flag1 && flag2 && !flag3 || !flag && flag1 && !flag2 && flag3;
+         return state.withProperty(UP, !flag4 || !worldIn.isAirBlock(pos.up()))
+             .withProperty(NORTH, flag)
+@@ -245,7 +245,23 @@
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+         return face != EnumFacing.UP && face != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THICK : BlockFaceShape.CENTER_BIG;
+     }
++    /* ======================================== FORGE START ======================================== */
+ 
++    @Override
++    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
++    {
++        return canConnectTo(world, pos.offset(facing), facing.getOpposite());
++    }
++
++    private boolean canWallConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
++    {
++        BlockPos other = pos.offset(facing);
++        Block block = world.getBlockState(other).getBlock();
++        return block.canBeConnectedTo(world, other, facing.getOpposite()) || canConnectTo(world, other, facing.getOpposite());
++    }
++
++    /* ======================================== FORGE END ======================================== */
++
+     public enum EnumType implements IStringSerializable {
+         NORMAL(0, "cobblestone", "normal"),
+         MOSSY(1, "mossy_cobblestone", "mossy");

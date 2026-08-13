@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/gen/feature/WorldGenHellLava.java
++++ modified/net/minecraft/world/gen/feature/WorldGenHellLava.java
+@@ -23,7 +23,7 @@
+             return false;
+         }
+ 
+-        if (worldIn.getBlockState(position).getMaterial() != Material.AIR
++        if (!worldIn.isAirBlock(position)
+             && worldIn.getBlockState(position).getBlock() != Blocks.NETHERRACK) {
+             return false;
+         }

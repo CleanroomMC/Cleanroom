@@ -1,0 +1,29 @@
+--- original/net/minecraft/util/text/Style.java
++++ modified/net/minecraft/util/text/Style.java
+@@ -157,13 +157,6 @@
+         public Style createDeepCopy() {
+             return this;
+         }
+-
+-        /**
+-         * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
+-         *  
+-         * @return A formatted string that can be combined with text to produce this style.
+-         */
+-        @SideOnly(Side.CLIENT)
+         @Override
+         public String getFormattingCode() {
+             return "";
+@@ -292,12 +285,6 @@
+         return this;
+     }
+ 
+-    /**
+-     * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
+-     *  
+-     * @return A formatted string that can be combined with text to produce this style.
+-     */
+-    @SideOnly(Side.CLIENT)
+     public String getFormattingCode() {
+         if (this.isEmpty()) {
+             return this.parentStyle != null ? this.parentStyle.getFormattingCode() : "";

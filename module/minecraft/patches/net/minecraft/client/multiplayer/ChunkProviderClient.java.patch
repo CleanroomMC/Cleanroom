@@ -1,0 +1,34 @@
+--- original/net/minecraft/client/multiplayer/ChunkProviderClient.java
++++ modified/net/minecraft/client/multiplayer/ChunkProviderClient.java
+@@ -31,6 +31,9 @@
+     /** Reference to the World object. */
+     private final World world;
+ 
++    private java.util.function.BiConsumer<Integer, Integer> loadChunkCallback = null;
++    private java.util.function.BiConsumer<Integer, Integer> unloadChunkCallback = null;
++
+     public ChunkProviderClient(World worldIn) {
+         this.blankChunk = new EmptyChunk(worldIn, 0, 0);
+         this.world = worldIn;
+@@ -44,6 +47,9 @@
+         }
+ 
+         this.loadedChunks.remove(ChunkPos.asLong(x, z));
++        if (unloadChunkCallback != null) {
++            unloadChunkCallback.accept(x, z);
++        }
+     }
+ 
+     @Nullable
+@@ -56,7 +62,11 @@
+     public Chunk loadChunk(int chunkX, int chunkZ) {
+         Chunk chunk = new Chunk(this.world, chunkX, chunkZ);
+         this.loadedChunks.put(ChunkPos.asLong(chunkX, chunkZ), chunk);
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Load(chunk));
+         chunk.markLoaded(true);
++        if (loadChunkCallback != null) {
++            loadChunkCallback.accept(chunkX, chunkZ);
++        }
+         return chunk;
+     }
+ 

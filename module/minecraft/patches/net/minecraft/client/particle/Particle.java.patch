@@ -1,0 +1,22 @@
+--- original/net/minecraft/client/particle/Particle.java
++++ modified/net/minecraft/client/particle/Particle.java
+@@ -286,17 +286,8 @@
+         if (particleWidth != this.width || particleHeight != this.height) {
+             this.width = particleWidth;
+             this.height = particleHeight;
+-            AxisAlignedBB axisalignedbb = this.getBoundingBox();
+-            this.setBoundingBox(
+-                new AxisAlignedBB(
+-                    axisalignedbb.minX,
+-                    axisalignedbb.minY,
+-                    axisalignedbb.minZ,
+-                    axisalignedbb.minX + this.width,
+-                    axisalignedbb.minY + this.height,
+-                    axisalignedbb.minZ + this.width
+-                )
+-            );
++            // FORGE: Fix MC-12269 - Glitchy movement when setSize is called without setPosition
++            setPosition(posX, posY, posZ);
+         }
+     }
+ 

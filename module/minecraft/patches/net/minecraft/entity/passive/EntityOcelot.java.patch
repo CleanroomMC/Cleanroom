@@ -1,0 +1,21 @@
+--- original/net/minecraft/entity/passive/EntityOcelot.java
++++ modified/net/minecraft/entity/passive/EntityOcelot.java
+@@ -200,7 +200,7 @@
+             }
+ 
+             if (!this.world.isRemote) {
+-                if (this.rand.nextInt(3) == 0) {
++                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
+                     this.setTamedBy(player);
+                     this.setTameSkin(1 + this.world.rand.nextInt(3));
+                     this.playTameEffect(true);
+@@ -281,7 +281,8 @@
+ 
+             IBlockState iblockstate = this.world.getBlockState(blockpos.down());
+             Block block = iblockstate.getBlock();
+-            if (block == Blocks.GRASS || iblockstate.getMaterial() == Material.LEAVES) {
++
++            if (block == Blocks.GRASS || block.isLeaves(iblockstate, this.world, blockpos.down())) {
+                 return true;
+             }
+         }

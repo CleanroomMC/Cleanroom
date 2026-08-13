@@ -1,0 +1,50 @@
+--- original/net/minecraft/tileentity/TileEntityBeacon.java
++++ modified/net/minecraft/tileentity/TileEntityBeacon.java
+@@ -127,16 +127,22 @@
+                 afloat = iblockstate.getValue(BlockStainedGlass.COLOR).getColorComponentValues();
+             } else {
+                 if (iblockstate.getBlock() != Blocks.STAINED_GLASS_PANE) {
+-                    if (iblockstate.getLightOpacity() >= 15 && iblockstate.getBlock() != Blocks.BEDROCK) {
++                    if (iblockstate.getLightOpacity(world, blockpos$mutableblockpos) >= 15 && iblockstate.getBlock() != Blocks.BEDROCK) {
+                         this.isComplete = false;
+                         this.beamSegments.clear();
+                         break;
+                     }
+ 
++                    float[] customColor = iblockstate.getBlock().getBeaconColorMultiplier(iblockstate, this.world, blockpos$mutableblockpos, getPos());
++                    if (customColor != null)
++                        afloat = customColor;
++                    else {
+                     tileentitybeacon$beamsegment.incrementHeight();
+                     continue;
++                    }
+                 }
+ 
++                else
+                 afloat = iblockstate.getValue(BlockStainedGlassPane.COLOR).getColorComponentValues();
+             }
+ 
+@@ -170,10 +176,7 @@
+                 for (int j1 = i - l1; j1 <= i + l1 && flag1; j1++) {
+                     for (int k1 = k - l1; k1 <= k + l1; k1++) {
+                         Block block = this.world.getBlockState(new BlockPos(j1, i2, k1)).getBlock();
+-                        if (block != Blocks.EMERALD_BLOCK
+-                            && block != Blocks.GOLD_BLOCK
+-                            && block != Blocks.DIAMOND_BLOCK
+-                            && block != Blocks.IRON_BLOCK) {
++                        if (!block.isBeaconBase(this.world, new BlockPos(j1, i2, k1), getPos())) {
+                             flag1 = false;
+                             break;
+                         }
+@@ -392,10 +395,7 @@
+     /** Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot. For guis use Slot.isItemValid */
+     @Override
+     public boolean isItemValidForSlot(int index, ItemStack stack) {
+-        return stack.getItem() == Items.EMERALD
+-            || stack.getItem() == Items.DIAMOND
+-            || stack.getItem() == Items.GOLD_INGOT
+-            || stack.getItem() == Items.IRON_INGOT;
++        return stack.getItem() != null && stack.getItem().isBeaconPayment(stack);
+     }
+ 
+     @Override

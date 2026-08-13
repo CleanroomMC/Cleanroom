@@ -1,0 +1,32 @@
+--- original/net/minecraft/client/resources/ResourcePackRepository.java
++++ modified/net/minecraft/client/resources/ResourcePackRepository.java
+@@ -240,7 +240,7 @@
+                     FileUtils.deleteQuietly(file1);
+                     settablefuture.setException(p_onFailure_1_);
+                 }
+-            });
++            }, Runnable::run);
+             return this.downloadingPacks;
+         } finally {
+             this.lock.unlock();
+@@ -248,8 +248,10 @@
+     }
+ 
+     private boolean checkHash(String p_190113_1_, File p_190113_2_) {
++        java.io.InputStream is = null;
+         try {
+-            String s = DigestUtils.sha1Hex(new FileInputStream(p_190113_2_));
++            String s = DigestUtils.sha1Hex(is = new FileInputStream(p_190113_2_));
++
+             if (p_190113_1_.isEmpty()) {
+                 LOGGER.info("Found file {} without verification hash", p_190113_2_);
+                 return true;
+@@ -263,7 +265,7 @@
+             LOGGER.warn("File {} had wrong hash (expected {}, found {}).", p_190113_2_, p_190113_1_, s);
+         } catch (IOException ioexception) {
+             LOGGER.warn("File {} couldn't be hashed.", p_190113_2_, ioexception);
+-        }
++        } finally { IOUtils.closeQuietly(is); } // Forge: close stream after use
+ 
+         return false;
+     }

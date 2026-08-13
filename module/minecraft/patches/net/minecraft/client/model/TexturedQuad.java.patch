@@ -1,0 +1,19 @@
+--- original/net/minecraft/client/model/TexturedQuad.java
++++ modified/net/minecraft/client/model/TexturedQuad.java
+@@ -7,7 +7,6 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-@SideOnly(Side.CLIENT)
+ public class TexturedQuad {
+     public PositionTextureVertex[] vertexPositions;
+     public int nVertices;
+@@ -38,7 +37,7 @@
+         this.vertexPositions = apositiontexturevertex;
+     }
+ 
+-    /** Draw this primitve. This is typically called only once as the generated drawing instructions are saved by the renderer and reused later. */
++    @SideOnly(Side.CLIENT)
+     public void draw(BufferBuilder renderer, float scale) {
+         Vec3d vec3d = this.vertexPositions[1].vector3D.subtractReverse(this.vertexPositions[0].vector3D);
+         Vec3d vec3d1 = this.vertexPositions[1].vector3D.subtractReverse(this.vertexPositions[2].vector3D);

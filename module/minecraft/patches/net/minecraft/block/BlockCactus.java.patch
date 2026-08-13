@@ -1,0 +1,66 @@
+--- original/net/minecraft/block/BlockCactus.java
++++ modified/net/minecraft/block/BlockCactus.java
+@@ -19,7 +19,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class BlockCactus extends Block {
++public class BlockCactus extends Block implements net.minecraftforge.common.IPlantable {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
+     protected static final AxisAlignedBB CACTUS_COLLISION_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0625, 0.9375, 0.9375, 0.9375);
+     protected static final AxisAlignedBB CACTUS_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0625, 0.9375, 1.0, 0.9375);
+@@ -33,6 +33,7 @@
+ 
+     @Override
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
++        if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
+         BlockPos blockpos = pos.up();
+         if (worldIn.isAirBlock(blockpos)) {
+             int i = 1;
+@@ -43,6 +44,8 @@
+ 
+             if (i < 3) {
+                 int j = state.getValue(AGE);
++
++                if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, blockpos, state, true)) {
+                 if (j == 15) {
+                     worldIn.setBlockState(blockpos, this.getDefaultState());
+                     IBlockState iblockstate = state.withProperty(AGE, 0);
+@@ -51,6 +54,8 @@
+                 } else {
+                     worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
+                 }
++                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
++                }
+             }
+         }
+     }
+@@ -108,9 +113,8 @@
+             }
+         }
+ 
+-        Block block = worldIn.getBlockState(pos.down()).getBlock();
+-        return block == Blocks.CACTUS
+-            || block == Blocks.SAND && !worldIn.getBlockState(pos.up()).getMaterial().isLiquid();
++        IBlockState state = worldIn.getBlockState(pos.down());
++        return state.getBlock().canSustainPlant(state, worldIn, pos.down(), EnumFacing.UP, this) && !worldIn.getBlockState(pos.up()).getMaterial().isLiquid();
+     }
+ 
+     /** Called When an Entity Collided with the Block */
+@@ -139,6 +143,16 @@
+     }
+ 
+     @Override
++    public net.minecraftforge.common.EnumPlantType getPlantType(net.minecraft.world.IBlockAccess world, BlockPos pos) {
++        return net.minecraftforge.common.EnumPlantType.Desert;
++    }
++
++    @Override
++    public IBlockState getPlant(net.minecraft.world.IBlockAccess world, BlockPos pos) {
++        return getDefaultState();
++    }
++
++    @Override
+     protected BlockStateContainer createBlockState() {
+         return new BlockStateContainer(this, AGE);
+     }

@@ -1,0 +1,217 @@
+--- original/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
++++ modified/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
+@@ -50,10 +50,28 @@
+         this.fixer = dataFixerIn;
+     }
+ 
+-    /** Loads the specified(XZ) chunk into the specified world. */
++    @Deprecated // TODO: remove (1.13)
++    public boolean chunkExists(World world, int x, int z) {
++        return isChunkGeneratedAt(x, z);
++    }
++
+     @Nullable
+     @Override
+     public Chunk loadChunk(World worldIn, int x, int z) throws IOException {
++        Object[] data = this.loadChunk__Async(worldIn, x, z);
++
++        if (data != null) {
++            Chunk chunk = (Chunk) data[0];
++            NBTTagCompound nbttagcompound = (NBTTagCompound) data[1];
++            this.loadEntities(worldIn, nbttagcompound.getCompoundTag("Level"), chunk);
++            return chunk;
++        }
++
++        return null;
++    }
++
++    @Nullable
++    public Object[] loadChunk__Async(World worldIn, int x, int z) throws IOException {
+         ChunkPos chunkpos = new ChunkPos(x, z);
+         NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
+         if (nbttagcompound == null) {
+@@ -63,9 +81,10 @@
+             }
+ 
+             nbttagcompound = this.fixer.process(FixTypes.CHUNK, CompressedStreamTools.read(datainputstream));
++            datainputstream.close(); // Forge: close stream after use
+         }
+ 
+-        return this.checkedReadChunkFromNBT(worldIn, x, z, nbttagcompound);
++        return this.checkedReadChunkFromNBT__Async(worldIn, x, z, nbttagcompound);
+     }
+ 
+     @Override
+@@ -78,34 +97,59 @@
+     /** Wraps readChunkFromNBT. Checks the coordinates and several NBT tags. */
+     @Nullable
+     protected Chunk checkedReadChunkFromNBT(World worldIn, int x, int z, NBTTagCompound compound) {
++        Object[] data = this.checkedReadChunkFromNBT__Async(worldIn, x, z, compound);
++        return data != null ? (Chunk)data[0] : null;
++    }
++
++    @Nullable
++    protected Object[] checkedReadChunkFromNBT__Async(World worldIn, int x, int z, NBTTagCompound compound) {
+         if (!compound.hasKey("Level", 10)) {
+             LOGGER.error("Chunk file at {},{} is missing level data, skipping", x, z);
+             return null;
+-        }
++        } else {
++            NBTTagCompound nbttagcompound = compound.getCompoundTag("Level");
+ 
+-        NBTTagCompound nbttagcompound = compound.getCompoundTag("Level");
+-        if (!nbttagcompound.hasKey("Sections", 9)) {
+-            LOGGER.error("Chunk file at {},{} is missing block data, skipping", x, z);
+-            return null;
+-        }
++            if (!nbttagcompound.hasKey("Sections", 9)) {
++                LOGGER.error("Chunk file at {},{} is missing block data, skipping", x, z);
++                return null;
++            } else {
++                Chunk chunk = this.readChunkFromNBT(worldIn, nbttagcompound);
+ 
+-        Chunk chunk = this.readChunkFromNBT(worldIn, nbttagcompound);
+-        if (!chunk.isAtLocation(x, z)) {
+-            LOGGER.error(
+-                "Chunk file at {},{} is in the wrong location; relocating. (Expected {}, {}, got {}, {})",
+-                x,
+-                z,
+-                x,
+-                z,
+-                chunk.x,
+-                chunk.z
+-            );
+-            nbttagcompound.setInteger("xPos", x);
+-            nbttagcompound.setInteger("zPos", z);
+-            chunk = this.readChunkFromNBT(worldIn, nbttagcompound);
+-        }
++                if (!chunk.isAtLocation(x, z)) {
++                    LOGGER.error(
++                        "Chunk file at {},{} is in the wrong location; relocating. (Expected {}, {}, got {}, {})",
++                        x,
++                        z,
++                        x,
++                        z,
++                        chunk.x,
++                        chunk.z
++                    );
++                    nbttagcompound.setInteger("xPos", x);
++                    nbttagcompound.setInteger("zPos", z);
+ 
+-        return chunk;
++                    // Have to move tile entities since we don't load them at this stage
++                    NBTTagList _tileEntities = nbttagcompound.getTagList("TileEntities", 10);
++
++                    if (_tileEntities != null) {
++                        for (int te = 0; te < _tileEntities.tagCount(); te++) {
++                            NBTTagCompound _nbt = (NBTTagCompound) _tileEntities.getCompoundTagAt(te);
++                            _nbt.setInteger("x", x * 16 + (_nbt.getInteger("x") - chunk.x * 16));
++                            _nbt.setInteger("z", z * 16 + (_nbt.getInteger("z") - chunk.z * 16));
++                        }
++                    }
++
++                    chunk = this.readChunkFromNBT(worldIn, nbttagcompound);
++                }
++
++                Object[] data = new Object[2];
++                data[0] = chunk;
++                data[1] = compound;
++                // event is fired in ChunkIOProvider.callStage2 since it must be fired after TE's load.
++                // MinecraftForge.EVENT_BUS.post(new ChunkDataEvent.Load(chunk, par4NBTTagCompound));
++                return data;
++            }
++        }
+     }
+ 
+     @Override
+@@ -117,7 +161,10 @@
+             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+             nbttagcompound.setTag("Level", nbttagcompound1);
+             nbttagcompound.setInteger("DataVersion", 1343);
++            net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbttagcompound);
+             this.writeChunkToNBT(chunkIn, worldIn, nbttagcompound1);
++            net.minecraftforge.common.ForgeChunkManager.storeChunkNBT(chunkIn, nbttagcompound1);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkDataEvent.Save(chunkIn, nbttagcompound));
+             this.addChunkToPending(chunkIn.getPos(), nbttagcompound);
+         } catch (Exception exception) {
+             LOGGER.error("Failed to save chunk", exception);
+@@ -275,10 +322,16 @@
+         for (int i = 0; i < chunkIn.getEntityLists().length; i++) {
+             for (Entity entity : chunkIn.getEntityLists()[i]) {
+                 NBTTagCompound nbttagcompound2 = new NBTTagCompound();
++
++                try {
+                 if (entity.writeToNBTOptional(nbttagcompound2)) {
+                     chunkIn.setHasEntities(true);
+                     nbttaglist1.appendTag(nbttagcompound2);
+                 }
++                } catch (Exception e) {
++                    net.minecraftforge.fml.common.FMLLog.log.error("An Entity type {} has thrown an exception trying to write state. It will not persist. Report this to the mod author",
++                            entity.getClass().getName(), e);
++                }
+             }
+         }
+ 
+@@ -286,8 +339,13 @@
+         NBTTagList nbttaglist2 = new NBTTagList();
+ 
+         for (TileEntity tileentity : chunkIn.getTileEntityMap().values()) {
++            try {
+             NBTTagCompound nbttagcompound3 = tileentity.writeToNBT(new NBTTagCompound());
+             nbttaglist2.appendTag(nbttagcompound3);
++            } catch (Exception e) {
++                net.minecraftforge.fml.common.FMLLog.log.error("A TileEntity type {} has throw an exception trying to write state. It will not persist. Report this to the mod author",
++                        tileentity.getClass().getName(), e);
++            }
+         }
+ 
+         compound.setTag("TileEntities", nbttaglist2);
+@@ -310,6 +368,14 @@
+ 
+             compound.setTag("TileTicks", nbttaglist3);
+         }
++
++        if (chunkIn.getCapabilities() != null) {
++            try {
++                compound.setTag("ForgeCaps", chunkIn.getCapabilities().serializeNBT());
++            } catch (Exception exception) {
++                net.minecraftforge.fml.common.FMLLog.log.error("A capability provider has thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
++            }
++        }
+     }
+ 
+     /** Reads the data stored in the passed NBTTagCompound and creates a Chunk with that data in the passed World. Returns the created Chunk. */
+@@ -348,6 +414,15 @@
+             chunk.setBiomeArray(compound.getByteArray("Biomes"));
+         }
+ 
++        if (chunk.getCapabilities() != null && compound.hasKey("ForgeCaps")) {
++            chunk.getCapabilities().deserializeNBT(compound.getCompoundTag("ForgeCaps"));
++        }
++
++        // End this method here and split off entity loading to another method
++        return chunk;
++    }
++
++    public void loadEntities(World worldIn, NBTTagCompound compound, Chunk chunk) {
+         NBTTagList nbttaglist1 = compound.getTagList("Entities", 10);
+ 
+         for (int j1 = 0; j1 < nbttaglist1.tagCount(); j1++) {
+@@ -386,8 +461,6 @@
+                 );
+             }
+         }
+-
+-        return chunk;
+     }
+ 
+     @Nullable
+@@ -481,4 +554,8 @@
+ 
+         return entity;
+     }
++
++    public int getPendingSaveCount() {
++        return this.chunksToSave.size();
++    }
+ }

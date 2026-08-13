@@ -1,0 +1,15 @@
+--- original/net/minecraft/util/math/RayTraceResult.java
++++ modified/net/minecraft/util/math/RayTraceResult.java
+@@ -4,6 +4,12 @@
+ import net.minecraft.util.EnumFacing;
+ 
+ public class RayTraceResult {
++    /** Used to determine what sub-segment is hit */
++    public int subHit = -1;
++
++    /** Used to add extra hit info */
++    public Object hitInfo = null;
++
+     private BlockPos blockPos;
+     /** The type of hit that occured, see {@link RayTraceResult#Type} for possibilities. */
+     public RayTraceResult.Type typeOfHit;

@@ -1,0 +1,66 @@
+--- original/net/minecraft/item/crafting/RecipeFireworks.java
++++ modified/net/minecraft/item/crafting/RecipeFireworks.java
+@@ -10,10 +10,8 @@
+ import net.minecraft.nbt.NBTTagList;
+ import net.minecraft.util.NonNullList;
+ import net.minecraft.world.World;
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class RecipeFireworks implements IRecipe {
++public class RecipeFireworks extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+     private ItemStack resultItem = ItemStack.EMPTY;
+ 
+     /** Used to check if a recipe matches current crafting inventory */
+@@ -34,7 +32,7 @@
+                     j++;
+                 } else if (itemstack.getItem() == Items.FIREWORK_CHARGE) {
+                     l++;
+-                } else if (itemstack.getItem() == Items.DYE) {
++                } else if (net.minecraftforge.oredict.DyeUtils.isDye(itemstack)) {
+                     k++;
+                 } else if (itemstack.getItem() == Items.PAPER) {
+                     i++;
+@@ -96,8 +94,8 @@
+             for (int l1 = 0; l1 < inv.getSizeInventory(); l1++) {
+                 ItemStack itemstack2 = inv.getStackInSlot(l1);
+                 if (!itemstack2.isEmpty()) {
+-                    if (itemstack2.getItem() == Items.DYE) {
+-                        list.add(ItemDye.DYE_COLORS[itemstack2.getMetadata() & 15]);
++                    if (net.minecraftforge.oredict.DyeUtils.isDye(itemstack2)) {
++                        list.add(ItemDye.DYE_COLORS[net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack2) & 15]);
+                     } else if (itemstack2.getItem() == Items.GLOWSTONE_DUST) {
+                         nbttagcompound2.setBoolean("Flicker", true);
+                     } else if (itemstack2.getItem() == Items.DIAMOND) {
+@@ -131,8 +129,8 @@
+             for (int i2 = 0; i2 < inv.getSizeInventory(); i2++) {
+                 ItemStack itemstack1 = inv.getStackInSlot(i2);
+                 if (!itemstack1.isEmpty()) {
+-                    if (itemstack1.getItem() == Items.DYE) {
+-                        list1.add(ItemDye.DYE_COLORS[itemstack1.getMetadata() & 15]);
++                    if (net.minecraftforge.oredict.DyeUtils.isDye(itemstack1)) {
++                        list1.add(ItemDye.DYE_COLORS[net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack1) & 15]);
+                     } else if (itemstack1.getItem() == Items.FIREWORK_CHARGE) {
+                         this.resultItem = itemstack1.copy();
+                         this.resultItem.setCount(1);
+@@ -180,9 +178,8 @@
+ 
+         for (int i = 0; i < nonnulllist.size(); i++) {
+             ItemStack itemstack = inv.getStackInSlot(i);
+-            if (itemstack.getItem().hasContainerItem()) {
+-                nonnulllist.set(i, new ItemStack(itemstack.getItem().getContainerItem()));
+-            }
++
++            nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+         }
+ 
+         return nonnulllist;
+@@ -194,8 +191,6 @@
+         return true;
+     }
+ 
+-    /** Used to determine if this recipe can fit in a grid of the given width/height */
+-    @SideOnly(Side.CLIENT)
+     @Override
+     public boolean canFit(int width, int height) {
+         return width * height >= 1;

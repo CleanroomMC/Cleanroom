@@ -1,0 +1,44 @@
+--- original/net/minecraft/client/model/ModelRenderer.java
++++ modified/net/minecraft/client/model/ModelRenderer.java
+@@ -9,7 +9,6 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-@SideOnly(Side.CLIENT)
+ public class ModelRenderer {
+     /** The size of the texture file's width in pixels. */
+     public float textureWidth = 64.0F;
+@@ -123,6 +122,7 @@
+         this.rotationPointZ = rotationPointZIn;
+     }
+ 
++    @SideOnly(Side.CLIENT)
+     public void render(float scale) {
+         if (!this.isHidden) {
+             if (this.showModel) {
+@@ -178,6 +178,7 @@
+         }
+     }
+ 
++    @SideOnly(Side.CLIENT)
+     public void renderWithRotation(float scale) {
+         if (!this.isHidden) {
+             if (this.showModel) {
+@@ -205,7 +206,7 @@
+         }
+     }
+ 
+-    /** Allows the changing of Angles after a box has been rendered */
++    @SideOnly(Side.CLIENT)
+     public void postRender(float scale) {
+         if (!this.isHidden) {
+             if (this.showModel) {
+@@ -233,7 +234,7 @@
+         }
+     }
+ 
+-    /** Compiles a GL display list for this model */
++    @SideOnly(Side.CLIENT)
+     private void compileDisplayList(float scale) {
+         this.displayList = GLAllocation.generateDisplayLists(1);
+         GlStateManager.glNewList(this.displayList, 4864);

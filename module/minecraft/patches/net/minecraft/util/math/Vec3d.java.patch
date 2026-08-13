@@ -1,0 +1,44 @@
+--- original/net/minecraft/util/math/Vec3d.java
++++ modified/net/minecraft/util/math/Vec3d.java
+@@ -1,9 +1,6 @@
+ package net.minecraft.util.math;
+ 
+ import javax.annotation.Nullable;
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+-
+ public class Vec3d {
+     public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
+     /** X coordinate of Vec3D */
+@@ -54,8 +51,6 @@
+         return this.x * vec.x + this.y * vec.y + this.z * vec.z;
+     }
+ 
+-    /** Returns a new vector with the result of this vector x the specified vector. */
+-    @SideOnly(Side.CLIENT)
+     public Vec3d crossProduct(Vec3d vec) {
+         return new Vec3d(
+             this.y * vec.z - this.z * vec.y,
+@@ -115,7 +110,6 @@
+         );
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public double lengthSquared() {
+         return this.x * this.x + this.y * this.y + this.z * this.z;
+     }
+@@ -211,14 +205,10 @@
+         return new Vec3d(d0, d1, d2);
+     }
+ 
+-    /** returns a Vec3d from given pitch and yaw degrees as Vec2f */
+-    @SideOnly(Side.CLIENT)
+     public static Vec3d fromPitchYaw(Vec2f p_189984_0_) {
+         return fromPitchYaw(p_189984_0_.x, p_189984_0_.y);
+     }
+ 
+-    /** returns a Vec3d from given pitch and yaw degrees */
+-    @SideOnly(Side.CLIENT)
+     public static Vec3d fromPitchYaw(float p_189986_0_, float p_189986_1_) {
+         float f = MathHelper.cos(-p_189986_1_ * (float) (Math.PI / 180.0) - (float) Math.PI);
+         float f1 = MathHelper.sin(-p_189986_1_ * (float) (Math.PI / 180.0) - (float) Math.PI);

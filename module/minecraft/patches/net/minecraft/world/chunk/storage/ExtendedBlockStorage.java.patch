@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
++++ modified/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
+@@ -37,6 +37,8 @@
+     }
+ 
+     public void set(int x, int y, int z, IBlockState state) {
++        if (state instanceof net.minecraftforge.common.property.IExtendedBlockState)
++            state = ((net.minecraftforge.common.property.IExtendedBlockState) state).getClean();
+         IBlockState iblockstate = this.get(x, y, z);
+         Block block = iblockstate.getBlock();
+         Block block1 = state.getBlock();

@@ -1,0 +1,11 @@
+--- original/net/minecraft/block/BlockRailDetector.java
++++ modified/net/minecraft/block/BlockRailDetector.java
+@@ -163,6 +163,8 @@
+     @Override
+     public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
+         if (blockState.getValue(POWERED)) {
++            List<EntityMinecart> carts = this.findMinecarts(worldIn, pos, EntityMinecart.class);
++            if (!carts.isEmpty() && carts.getFirst().getComparatorLevel() > -1) return carts.getFirst().getComparatorLevel();
+             List<EntityMinecartCommandBlock> list = this.findMinecarts(worldIn, pos, EntityMinecartCommandBlock.class);
+             if (!list.isEmpty()) {
+                 return list.get(0).getCommandBlockLogic().getSuccessCount();

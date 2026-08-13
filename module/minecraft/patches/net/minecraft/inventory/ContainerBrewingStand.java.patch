@@ -1,0 +1,29 @@
+--- original/net/minecraft/inventory/ContainerBrewingStand.java
++++ modified/net/minecraft/inventory/ContainerBrewingStand.java
+@@ -166,7 +166,7 @@
+         /** Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel. */
+         @Override
+         public boolean isItemValid(ItemStack stack) {
+-            return PotionHelper.isReagent(stack);
++            return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(stack);
+         }
+ 
+         /** Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in the case of armor slots) */
+@@ -197,6 +197,7 @@
+         public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack) {
+             PotionType potiontype = PotionUtils.getPotionFromItem(stack);
+             if (thePlayer instanceof EntityPlayerMP) {
++                net.minecraftforge.event.ForgeEventFactory.onPlayerBrewedPotion(thePlayer, stack);
+                 CriteriaTriggers.BREWED_POTION.trigger((EntityPlayerMP)thePlayer, potiontype);
+             }
+ 
+@@ -206,8 +207,7 @@
+ 
+         /** Returns true if this itemstack can be filled with a potion */
+         public static boolean canHoldPotion(ItemStack stack) {
+-            Item item = stack.getItem();
+-            return item == Items.POTIONITEM || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE;
++            return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(stack);
+         }
+     }
+ }

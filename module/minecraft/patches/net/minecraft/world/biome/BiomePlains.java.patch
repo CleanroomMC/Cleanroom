@@ -1,0 +1,39 @@
+--- original/net/minecraft/world/biome/BiomePlains.java
++++ modified/net/minecraft/world/biome/BiomePlains.java
+@@ -62,6 +62,7 @@
+             this.decorator.grassPerChunk = 10;
+             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.GRASS);
+ 
++            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
+             for (int i = 0; i < 7; i++) {
+                 int j = rand.nextInt(16) + 8;
+                 int k = rand.nextInt(16) + 8;
+@@ -70,7 +71,7 @@
+             }
+         }
+ 
+-        if (this.sunflowers) {
++        if (this.sunflowers && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS)) {
+             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.SUNFLOWER);
+ 
+             for (int i1 = 0; i1 < 10; i1++) {
+@@ -85,6 +86,19 @@
+     }
+ 
+     @Override
++    public void addDefaultFlowers() {
++        BlockFlower red = net.minecraft.init.Blocks.RED_FLOWER;
++        BlockFlower yel = net.minecraft.init.Blocks.YELLOW_FLOWER;
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.ORANGE_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.RED_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.PINK_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.WHITE_TULIP), 3);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.POPPY), 20);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.HOUSTONIA), 20);
++        addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.OXEYE_DAISY), 20);
++        addFlower(yel.getDefaultState().withProperty(yel.getTypeProperty(), BlockFlower.EnumFlowerType.DANDELION), 30);
++    }
++
+     public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
+         return rand.nextInt(3) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE;
+     }

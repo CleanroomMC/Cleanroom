@@ -1,0 +1,19 @@
+--- original/net/minecraft/entity/ai/EntityAIVillagerMate.java
++++ modified/net/minecraft/entity/ai/EntityAIVillagerMate.java
+@@ -96,11 +96,15 @@
+     }
+ 
+     private void giveBirth() {
+-        EntityVillager entityvillager = this.villager.createChild(this.mate);
++        net.minecraft.entity.EntityAgeable entityvillager = this.villager.createChild(this.mate);
+         this.mate.setGrowingAge(6000);
+         this.villager.setGrowingAge(6000);
+         this.mate.setIsWillingToMate(false);
+         this.villager.setIsWillingToMate(false);
++
++        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(villager, mate, entityvillager);
++        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event) || event.getChild() == null) { return; }
++        entityvillager = event.getChild();
+         entityvillager.setGrowingAge(-24000);
+         entityvillager.setLocationAndAngles(this.villager.posX, this.villager.posY, this.villager.posZ, 0.0F, 0.0F);
+         this.world.spawnEntity(entityvillager);

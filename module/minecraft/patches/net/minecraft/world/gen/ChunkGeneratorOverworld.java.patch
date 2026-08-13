@@ -1,0 +1,113 @@
+--- original/net/minecraft/world/gen/ChunkGeneratorOverworld.java
++++ modified/net/minecraft/world/gen/ChunkGeneratorOverworld.java
+@@ -59,6 +59,16 @@
+     double[] depthRegion;
+ 
+     public ChunkGeneratorOverworld(World worldIn, long seed, boolean mapFeaturesEnabledIn, String generatorOptions) {
++        {
++            caveGenerator = net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(caveGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.CAVE);
++            strongholdGenerator = (MapGenStronghold)net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(strongholdGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.STRONGHOLD);
++            villageGenerator = (MapGenVillage)net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(villageGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.VILLAGE);
++            mineshaftGenerator = (MapGenMineshaft)net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(mineshaftGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.MINESHAFT);
++            scatteredFeatureGenerator = (MapGenScatteredFeature)net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(scatteredFeatureGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.SCATTERED_FEATURE);
++            ravineGenerator = net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(ravineGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.RAVINE);
++            oceanMonumentGenerator = (StructureOceanMonument)net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(oceanMonumentGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.OCEAN_MONUMENT);
++            woodlandMansionGenerator = (WoodlandMansion)net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(woodlandMansionGenerator, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.WOODLAND_MANSION);
++        }
+         this.world = worldIn;
+         this.mapFeaturesEnabled = mapFeaturesEnabledIn;
+         this.terrainType = worldIn.getWorldInfo().getTerrainType();
+@@ -85,6 +95,17 @@
+             this.oceanBlock = this.settings.useLavaOceans ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState();
+             worldIn.setSeaLevel(this.settings.seaLevel);
+         }
++
++        net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextOverworld ctx =
++                new net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextOverworld(minLimitPerlinNoise, maxLimitPerlinNoise, mainPerlinNoise, surfaceNoise, scaleNoise, depthNoise, forestNoise);
++        ctx = net.minecraftforge.event.terraingen.TerrainGen.getModdedNoiseGenerators(worldIn, this.rand, ctx);
++        this.minLimitPerlinNoise = ctx.getLPerlin1();
++        this.maxLimitPerlinNoise = ctx.getLPerlin2();
++        this.mainPerlinNoise = ctx.getPerlin();
++        this.surfaceNoise = ctx.getHeight();
++        this.scaleNoise = ctx.getScale();
++        this.depthNoise = ctx.getDepth();
++        this.forestNoise = ctx.getForest();
+     }
+ 
+     public void setBlocksInChunk(int x, int z, ChunkPrimer primer) {
+@@ -148,6 +169,7 @@
+     }
+ 
+     public void replaceBiomeBlocks(int x, int z, ChunkPrimer primer, Biome[] biomesIn) {
++        if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, x, z, primer, this.world)) return;
+         double d0 = 0.03125;
+         this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, x * 16, z * 16, 16, 16, 0.0625, 0.0625, 1.0);
+ 
+@@ -349,6 +371,9 @@
+         this.rand.setSeed(x * k + z * l ^ this.world.getSeed());
+         boolean flag = false;
+         ChunkPos chunkpos = new ChunkPos(x, z);
++
++        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.world, this.rand, x, z, flag);
++
+         if (this.mapFeaturesEnabled) {
+             if (this.settings.useMineShafts) {
+                 this.mineshaftGenerator.generateStructure(this.world, this.rand, chunkpos);
+@@ -376,17 +401,19 @@
+         }
+ 
+         if (biome != Biomes.DESERT
+-            && biome != Biomes.DESERT_HILLS
+-            && this.settings.useWaterLakes
+-            && !flag
+-            && this.rand.nextInt(this.settings.waterLakeChance) == 0) {
++                && biome != Biomes.DESERT_HILLS
++                && this.settings.useWaterLakes
++                && !flag
++                && this.rand.nextInt(this.settings.waterLakeChance) == 0)
++        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, flag, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.LAKE)) {
+             int i1 = this.rand.nextInt(16) + 8;
+             int j1 = this.rand.nextInt(256);
+             int k1 = this.rand.nextInt(16) + 8;
+             new WorldGenLakes(Blocks.WATER).generate(this.world, this.rand, blockpos.add(i1, j1, k1));
+         }
+ 
+-        if (!flag && this.rand.nextInt(this.settings.lavaLakeChance / 10) == 0 && this.settings.useLavaLakes) {
++        if (!flag && this.rand.nextInt(this.settings.lavaLakeChance / 10) == 0 && this.settings.useLavaLakes)
++        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, flag, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.LAVA)) {
+             int i2 = this.rand.nextInt(16) + 8;
+             int l2 = this.rand.nextInt(this.rand.nextInt(248) + 8);
+             int k3 = this.rand.nextInt(16) + 8;
+@@ -395,7 +422,8 @@
+             }
+         }
+ 
+-        if (this.settings.useDungeons) {
++        if (this.settings.useDungeons)
++        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, flag, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.DUNGEON)) {
+             for (int j2 = 0; j2 < this.settings.dungeonChance; j2++) {
+                 int i3 = this.rand.nextInt(16) + 8;
+                 int l3 = this.rand.nextInt(256);
+@@ -405,9 +433,11 @@
+         }
+ 
+         biome.decorate(this.world, this.rand, new BlockPos(i, 0, j));
++        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, flag, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.ANIMALS))
+         WorldEntitySpawner.performWorldGenSpawning(this.world, biome, i + 8, j + 8, 16, 16, this.rand);
+         blockpos = blockpos.add(8, 0, 8);
+ 
++        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, flag, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.ICE)) {
+         for (int k2 = 0; k2 < 16; k2++) {
+             for (int j3 = 0; j3 < 16; j3++) {
+                 BlockPos blockpos1 = this.world.getPrecipitationHeight(blockpos.add(k2, 0, j3));
+@@ -421,7 +451,10 @@
+                 }
+             }
+         }
++        }//Forge: End ICE
+ 
++        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.world, this.rand, x, z, flag);
++
+         BlockFalling.fallInstantly = false;
+     }
+ 

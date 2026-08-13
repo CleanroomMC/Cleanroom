@@ -1,0 +1,20 @@
+--- original/net/minecraft/client/shader/ShaderManager.java
++++ modified/net/minecraft/client/shader/ShaderManager.java
+@@ -51,14 +51,14 @@
+     private final ShaderLoader fragmentShaderLoader;
+ 
+     public ShaderManager(IResourceManager resourceManager, String programName) throws IOException, JsonException {
+-        JsonParser jsonparser = new JsonParser();
+-        ResourceLocation resourcelocation = new ResourceLocation("shaders/program/" + programName + ".json");
++        String[] rl = ResourceLocation.splitObjectName(programName);
++        ResourceLocation resourcelocation = new ResourceLocation(rl[0], "shaders/program/" + rl[1] + ".json");
+         this.programFilename = programName;
+         IResource iresource = null;
+ 
+         try {
+             iresource = resourceManager.getResource(resourcelocation);
+-            JsonObject jsonobject = jsonparser.parse(IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8)).getAsJsonObject();
++            JsonObject jsonobject = JsonParser.parseString(IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8)).getAsJsonObject();
+             String s = JsonUtils.getString(jsonobject, "vertex");
+             String s1 = JsonUtils.getString(jsonobject, "fragment");
+             JsonArray jsonarray = JsonUtils.getJsonArray(jsonobject, "samplers", null);

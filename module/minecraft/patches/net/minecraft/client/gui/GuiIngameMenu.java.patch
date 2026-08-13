@@ -1,0 +1,57 @@
+--- original/net/minecraft/client/gui/GuiIngameMenu.java
++++ modified/net/minecraft/client/gui/GuiIngameMenu.java
+@@ -12,6 +12,7 @@
+ public class GuiIngameMenu extends GuiScreen {
+     private int saveStep;
+     private int visibleTime;
++    private net.minecraftforge.client.gui.NotificationModUpdateScreen modUpdateNotification;
+ 
+     /** Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the window resizes, the buttonList is cleared beforehand. */
+     @Override
+@@ -28,13 +29,16 @@
+         this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + -16, I18n.format("menu.returnToGame")));
+         this.buttonList
+             .add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.options")));
+-        GuiButton guibutton = this.addButton(
+-            new GuiButton(7, this.width / 2 + 2, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.shareToLan"))
+-        );
++        GuiButton modButton = this.addButton(new GuiButton(12, this.width / 2 + 2, this.height / 4 + 96 + i, 98, 20, I18n.format("fml.menu.mods")));
++        GuiButton guibutton = this.addButton(new GuiButton(7, this.width / 2 - 100, this.height / 4 + 72 + -16, 200, 20, I18n.format("menu.shareToLan", new Object[0])));
+         guibutton.enabled = this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic();
+         this.buttonList
+             .add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.advancements")));
+         this.buttonList.add(new GuiButton(6, this.width / 2 + 2, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.stats")));
++
++        this.modUpdateNotification = new net.minecraftforge.client.gui.NotificationModUpdateScreen(modButton);
++        this.modUpdateNotification.setGuiSize(this.width, this.height);
++        this.modUpdateNotification.initGui();
+     }
+ 
+     /** Called by the controls from the buttonList when activated. (Mouse pressed for buttons) */
+@@ -67,13 +71,19 @@
+                 this.mc.setIngameFocus();
+                 break;
+             case 5:
++                if (this.mc.player != null)
+                 this.mc.displayGuiScreen(new GuiScreenAdvancements(this.mc.player.connection.getAdvancementManager()));
+                 break;
+             case 6:
++                if (this.mc.player != null)
+                 this.mc.displayGuiScreen(new GuiStats(this, this.mc.player.getStatFileWriter()));
+                 break;
+             case 7:
+                 this.mc.displayGuiScreen(new GuiShareToLan(this));
++                break;
++            case 12:
++                net.minecraftforge.fml.client.FMLClientHandler.instance().showInGameModOptions(this);
++                break;
+         }
+     }
+ 
+@@ -90,5 +100,6 @@
+         this.drawDefaultBackground();
+         this.drawCenteredString(this.fontRenderer, I18n.format("menu.game"), this.width / 2, 40, 16777215);
+         super.drawScreen(mouseX, mouseY, partialTicks);
++        this.modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
+     }
+ }

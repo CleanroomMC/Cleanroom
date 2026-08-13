@@ -1,0 +1,12 @@
+--- original/net/minecraft/util/BlockRenderLayer.java
++++ modified/net/minecraft/util/BlockRenderLayer.java
+@@ -1,9 +1,5 @@
+ package net.minecraft.util;
+ 
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+-
+-@SideOnly(Side.CLIENT)
+ public enum BlockRenderLayer {
+     SOLID("Solid"),
+     CUTOUT_MIPPED("Mipped Cutout"),

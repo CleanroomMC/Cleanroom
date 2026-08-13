@@ -1,0 +1,62 @@
+--- original/net/minecraft/tileentity/TileEntityHopper.java
++++ modified/net/minecraft/tileentity/TileEntityHopper.java
+@@ -77,7 +77,8 @@
+     @Override
+     public ItemStack decrStackSize(int index, int count) {
+         this.fillWithLoot(null);
+-        return ItemStackHelper.getAndSplit(this.getItems(), index, count);
++        ItemStack itemstack = ItemStackHelper.getAndSplit(this.getItems(), index, count);
++        return itemstack;
+     }
+ 
+     /** Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections). */
+@@ -180,6 +181,7 @@
+     }
+ 
+     private boolean transferItemsOut() {
++        if (net.minecraftforge.items.VanillaInventoryCodeHooks.insertHook(this)) { return true; }
+         IInventory iinventory = this.getInventoryForHopperTransfer();
+         if (iinventory == null) {
+             return false;
+@@ -263,6 +265,8 @@
+      * @return whether any items were successfully added to the hopper
+      */
+     public static boolean pullItems(IHopper hopper) {
++        Boolean ret = net.minecraftforge.items.VanillaInventoryCodeHooks.extractHook(hopper);
++        if (ret != null) return ret;
+         IInventory iinventory = getSourceInventory(hopper);
+         if (iinventory != null) {
+             EnumFacing enumfacing = EnumFacing.DOWN;
+@@ -337,7 +341,11 @@
+         return flag;
+     }
+ 
+-    /** Attempts to place the passed stack in the inventory, using as many slots as required. Returns leftover items */
++
++    protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
++        return new net.minecraftforge.items.VanillaHopperItemHandler(this);
++    }
++
+     public static ItemStack putStackInInventoryAllSlots(IInventory source, IInventory destination, ItemStack stack, @Nullable EnumFacing direction) {
+         if (destination instanceof ISidedInventory && direction != null) {
+             ISidedInventory isidedinventory = (ISidedInventory)destination;
+@@ -441,8 +449,10 @@
+         int j = MathHelper.floor(y);
+         int k = MathHelper.floor(z);
+         BlockPos blockpos = new BlockPos(i, j, k);
+-        Block block = worldIn.getBlockState(blockpos).getBlock();
+-        if (block.hasTileEntity()) {
++        net.minecraft.block.state.IBlockState state = worldIn.getBlockState(blockpos);
++        Block block = state.getBlock();
++
++        if (block.hasTileEntity(state)) {
+             TileEntity tileentity = worldIn.getTileEntity(blockpos);
+             if (tileentity instanceof IInventory) {
+                 iinventory = (IInventory)tileentity;
+@@ -521,4 +531,6 @@
+     protected NonNullList<ItemStack> getItems() {
+         return this.inventory;
+     }
++
++    public long getLastUpdateTime() { return tickedGameTime; } // Forge
+ }

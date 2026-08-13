@@ -1,0 +1,20 @@
+--- original/net/minecraft/entity/monster/EntitySilverfish.java
++++ modified/net/minecraft/entity/monster/EntitySilverfish.java
+@@ -180,7 +180,7 @@
+             }
+ 
+             Random random = this.entity.getRNG();
+-            if (this.entity.world.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0) {
++            if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entity.world, this.entity) && random.nextInt(10) == 0) {
+                 this.facing = EnumFacing.random(random);
+                 BlockPos blockpos = new BlockPos(this.entity.posX, this.entity.posY + 0.5, this.entity.posZ)
+                     .offset(this.facing);
+@@ -261,7 +261,7 @@
+                             BlockPos blockpos1 = blockpos.add(j, i, k);
+                             IBlockState iblockstate = world.getBlockState(blockpos1);
+                             if (iblockstate.getBlock() == Blocks.MONSTER_EGG) {
+-                                if (world.getGameRules().getBoolean("mobGriefing")) {
++                                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, this.silverfish)) {
+                                     world.destroyBlock(blockpos1, true);
+                                 } else {
+                                     world.setBlockState(blockpos1, iblockstate.getValue(BlockSilverfish.VARIANT).getModelBlock(), 3);

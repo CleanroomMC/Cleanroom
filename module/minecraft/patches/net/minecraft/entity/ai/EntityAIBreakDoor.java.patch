@@ -1,0 +1,29 @@
+--- original/net/minecraft/entity/ai/EntityAIBreakDoor.java
++++ modified/net/minecraft/entity/ai/EntityAIBreakDoor.java
+@@ -19,9 +19,23 @@
+         if (!super.shouldExecute()) {
+             return false;
+         } else {
+-            return !this.entity.world.getGameRules().getBoolean("mobGriefing")
+-                ? false
+-                : !BlockDoor.isOpen(this.entity.world, this.doorPosition);
++            return !net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entity.world, this.entity)
++                   || !this.entity.world
++                       .getBlockState(this.doorPosition)
++                       .getBlock()
++                       .canEntityDestroy(
++                           this.entity.world.getBlockState(this.doorPosition),
++                           this.entity.world,
++                           this.doorPosition,
++                           this.entity
++                       )
++                   || !net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(
++                       this.entity,
++                       this.doorPosition,
++                       this.entity.world.getBlockState(this.doorPosition)
++                   )
++                   ? false
++                   : !BlockDoor.isOpen(this.entity.world, this.doorPosition);
+         }
+     }
+ 

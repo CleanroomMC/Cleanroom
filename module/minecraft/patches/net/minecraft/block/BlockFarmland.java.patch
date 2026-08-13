@@ -1,0 +1,33 @@
+--- original/net/minecraft/block/BlockFarmland.java
++++ modified/net/minecraft/block/BlockFarmland.java
+@@ -69,11 +69,7 @@
+     /** Block's chance to react to a living entity falling on it. */
+     @Override
+     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance) {
+-        if (!worldIn.isRemote
+-            && worldIn.rand.nextFloat() < fallDistance - 0.5F
+-            && entityIn instanceof EntityLivingBase
+-            && (entityIn instanceof EntityPlayer || worldIn.getGameRules().getBoolean("mobGriefing"))
+-            && entityIn.width * entityIn.width * entityIn.height > 0.512F) {
++        if (net.minecraftforge.common.ForgeHooks.onFarmlandTrample(worldIn, pos, Blocks.DIRT.getDefaultState(), fallDistance, entityIn)) { // Forge: Move logic to Entity#canTrample
+             turnToDirt(worldIn, pos);
+         }
+ 
+@@ -92,7 +88,7 @@
+ 
+     private boolean hasCrops(World worldIn, BlockPos pos) {
+         Block block = worldIn.getBlockState(pos.up()).getBlock();
+-        return block instanceof BlockCrops || block instanceof BlockStem;
++        return block instanceof net.minecraftforge.common.IPlantable && canSustainPlant(worldIn.getBlockState(pos), worldIn, pos, net.minecraft.util.EnumFacing.UP, (net.minecraftforge.common.IPlantable)block);
+     }
+ 
+     private boolean hasWater(World worldIn, BlockPos pos) {
+@@ -104,7 +100,7 @@
+             }
+         }
+ 
+-        return false;
++        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(worldIn, pos);
+     }
+ 
+     /** Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid block, etc. */

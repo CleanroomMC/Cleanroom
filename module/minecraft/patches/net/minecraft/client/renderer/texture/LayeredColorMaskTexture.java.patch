@@ -1,0 +1,12 @@
+--- original/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
++++ modified/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
+@@ -61,8 +61,7 @@
+                         String s = this.listTextures.get(j);
+                         int k = this.listDyeColors.get(j).getColorValue();
+                         if (s != null) {
+-                            iresource1 = resourceManager.getResource(new ResourceLocation(s));
+-                            BufferedImage bufferedimage2 = TextureUtil.readBufferedImage(iresource1.getInputStream());
++                            BufferedImage bufferedimage2 = net.minecraftforge.client.MinecraftForgeClient.getImageLayer(new ResourceLocation(s), resourceManager);
+                             if (bufferedimage2.getWidth() == bufferedimage.getWidth()
+                                 && bufferedimage2.getHeight() == bufferedimage.getHeight()
+                                 && bufferedimage2.getType() == 6) {
