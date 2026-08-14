@@ -127,7 +127,8 @@ public final class Image1D extends Image<Long> {
             bufLen += dependencies.length;
         PointerBuffer coordinates = stack.mallocPointer(bufLen);
         coordinates.put(from);
-        coordinates.put(FILLER);
+        coordinates.put(mipmap);
+        coordinates.put(0);
         coordinates.put(region);
         coordinates.put(FILLER);
         if (dependencies != null && dependencies.length > 0)
