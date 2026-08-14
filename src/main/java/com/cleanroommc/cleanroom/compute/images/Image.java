@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public abstract class Image<CT> {
+public sealed abstract class Image<CT> permits Image1D {
 
     public final long handle;
 
