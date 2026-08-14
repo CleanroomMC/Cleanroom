@@ -16,7 +16,6 @@ import org.lwjgl.opencl.CLImageFormat;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public sealed abstract class Image<CT> permits Image1D {
