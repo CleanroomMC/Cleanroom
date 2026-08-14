@@ -1,4 +1,4 @@
-package com.cleanroommc.cleanroom.compute.buffers;
+package com.cleanroommc.cleanroom.compute.images;
 
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL11;

@@ -1,4 +1,4 @@
-package com.cleanroommc.cleanroom.compute.buffers;
+package com.cleanroommc.cleanroom.compute.images;
 
 import com.google.common.base.Preconditions;
 import org.lwjgl.opencl.CL10;
