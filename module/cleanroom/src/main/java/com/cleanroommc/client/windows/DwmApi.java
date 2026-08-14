@@ -10,7 +10,6 @@ import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.ptr.IntByReference;
 import net.minecraftforge.common.ForgeEarlyConfig;
-import org.lwjgl.glfw.GLFWNativeWin32;
 import org.lwjgl.system.NativeType;
 import java.util.List;
 
@@ -93,11 +92,11 @@ public interface DwmApi extends Library {
 
     static void updateDwm(final boolean fullscreen, final long window) {
         // Check build number
-        if (!WindowsProperties.checkCompatibility()) {
+        if (!WindowsProperties.checkCompatibility() || window == Long.MIN_VALUE) {
             return;
         }
 
-        final HWND hwnd = new HWND(Pointer.createConstant(GLFWNativeWin32.glfwGetWin32Window(window)));
+        final HWND hwnd = TaskbarApi.hwnd(window);
         if (fullscreen) {
             DwmApi.disableWindowEffect(hwnd);
             return;

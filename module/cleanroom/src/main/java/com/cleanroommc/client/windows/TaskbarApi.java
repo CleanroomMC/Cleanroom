@@ -13,8 +13,6 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
-import org.lwjgl.glfw.GLFWNativeWin32;
-
 import java.util.List;
 
 public final class TaskbarApi implements AutoCloseable {
@@ -96,8 +94,9 @@ public final class TaskbarApi implements AutoCloseable {
         return api;
     }
 
-    public static HWND hwndFromGlfw(long glfwWindow) {
-        return new HWND(Pointer.createConstant(GLFWNativeWin32.glfwGetWin32Window(glfwWindow)));
+    /** Converts an operating-system window handle to JNA's HWND wrapper. */
+    public static HWND hwnd(long nativeWindow) {
+        return new HWND(Pointer.createConstant(nativeWindow));
     }
 
     public void hrInit() {
@@ -166,7 +165,7 @@ public final class TaskbarApi implements AutoCloseable {
     }
 
     public static boolean flashTaskbarUntilForeground(long window) {
-        final WinDef.HWND hwnd = TaskbarApi.hwndFromGlfw(window);
+        final WinDef.HWND hwnd = hwnd(window);
         User32Ex.FLASHWINFO info = new User32Ex.FLASHWINFO();
         info.hwnd = hwnd;
         info.dwFlags = User32Ex.FLASHW_TRAY | User32Ex.FLASHW_TIMERNOFG;

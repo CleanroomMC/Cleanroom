@@ -38,6 +38,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
 import com.cleanroommc.client.LoadingTracker;
+import com.cleanroommc.client.input.Window;
 import com.cleanroommc.client.windows.DwmApi;
 import com.cleanroommc.client.windows.NtDll;
 import com.cleanroommc.client.windows.TaskbarApi;
@@ -992,16 +993,19 @@ public class ForgeHooksClient
         }
     }
 
-    public static void initializeWindowsInformation(){
+    public static void initializeWindowsInformation() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            NtDll.initializeWindowsInformation(Display.getWindow());
+            Window window = Window.main();
+            if (window != null) {
+                NtDll.initializeWindowsInformation(window.nativeHandle());
+            }
         }
     }
 
-    public static void initializeTaskbarAPI(){
+    public static void initializeTaskbarAPI() {
         if (SystemUtils.IS_OS_WINDOWS) {
             try {
-                TaskbarApi taskbarApi = TaskbarApi.create();
+                TaskbarApi.create();
             } catch (Throwable t) {
                 FMLLog.log.error("Unable to initialize Taskbar API", t);
                 TaskbarApi.clearInstance();
@@ -1023,7 +1027,7 @@ public class ForgeHooksClient
         if (SystemUtils.IS_OS_WINDOWS) {
             var taskbar = TaskbarApi.getInstance();
             if (taskbar != null) {
-                taskbar.clearProgress(TaskbarApi.hwndFromGlfw(WindowsProperties.handle));
+                taskbar.clearProgress(TaskbarApi.hwnd(WindowsProperties.handle));
             } else {
                 FMLLog.log.error("Unable to clear taskbar progress, cannot invoke a null object.");
             }

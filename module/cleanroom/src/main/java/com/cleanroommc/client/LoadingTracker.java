@@ -281,7 +281,7 @@ public class LoadingTracker {
         TaskbarApi api = TaskbarApi.getInstance();
         if (api == null || WindowsProperties.handle == Long.MIN_VALUE) return;
         try {
-            HWND hwnd = TaskbarApi.hwndFromGlfw(WindowsProperties.handle);
+            HWND hwnd = TaskbarApi.hwnd(WindowsProperties.handle);
             api.setProgressState(hwnd, flag);
         } catch (Throwable t) {
             FMLLog.log.debug("LoadingTracker: Failed to set taskbar state", t);
@@ -293,7 +293,7 @@ public class LoadingTracker {
         TaskbarApi api = TaskbarApi.getInstance();
         if (api == null || WindowsProperties.handle == Long.MIN_VALUE) return;
         try {
-            HWND hwnd = TaskbarApi.hwndFromGlfw(WindowsProperties.handle);
+            HWND hwnd = TaskbarApi.hwnd(WindowsProperties.handle);
             api.setProgressValue(hwnd, progress, MAX_PROGRESS);
         } catch (Throwable t) {
             FMLLog.log.debug("LoadingTracker: Failed to update taskbar progress", t);
