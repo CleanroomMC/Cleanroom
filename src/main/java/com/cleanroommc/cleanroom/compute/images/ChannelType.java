@@ -182,9 +182,9 @@ public enum ChannelType {
         }
     };
 
-    public final long type;
+    public final int type;
 
-    ChannelType(long type) {
+    ChannelType(int type) {
         this.type = type;
     }
 

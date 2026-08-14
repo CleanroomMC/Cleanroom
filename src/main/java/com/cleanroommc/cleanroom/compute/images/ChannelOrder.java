@@ -28,10 +28,10 @@ public enum ChannelOrder {
     sBGRA(CL20.CL_sBGRA, 4),
     sRGBx(CL20.CL_sRGBx, 4);
 
-    public final long order;
+    public final int order;
     public final int channels;
 
-    ChannelOrder(long order, int channels) {
+    ChannelOrder(int order, int channels) {
         this.order = order;
         this.channels = channels;
     }
