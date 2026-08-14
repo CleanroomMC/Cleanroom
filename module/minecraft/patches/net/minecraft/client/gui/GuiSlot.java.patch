@@ -30,7 +30,7 @@
              int k = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
              int l = this.top + 4 - (int)this.amountScrolled;
              if (this.hasListHeader) {
-@@ -438,4 +419,29 @@
+@@ -438,4 +419,51 @@
      public int getSlotHeight() {
          return this.slotHeight;
      }
@@ -58,5 +58,26 @@
 +        .color(32, 32, 32, 255)
 +        .endVertex();
 +        tessellator.draw();
++    }
++
++    protected boolean drawTopBottomShadow(Tessellator tessellator) {
++        return true;
++    }
++
++    protected int getScrollThumbHeight() {
++        int viewHeight = this.bottom - this.top;
++        return MathHelper.clamp(viewHeight * viewHeight / this.getContentHeight(), 32, viewHeight - 8);
++    }
++
++    protected int getListLeft() {
++        return this.left + this.width / 2 - this.getListWidth() / 2;
++    }
++
++    protected int getListRight() {
++        return this.left + this.width / 2 + this.getListWidth() / 2;
++    }
++
++    protected int getListEntryLeft() {
++        return this.getListLeft() + 2;
 +    }
  }

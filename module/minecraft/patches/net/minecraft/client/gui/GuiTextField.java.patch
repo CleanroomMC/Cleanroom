@@ -1,18 +1,23 @@
 --- original/net/minecraft/client/gui/GuiTextField.java
 +++ modified/net/minecraft/client/gui/GuiTextField.java
-@@ -1,5 +1,6 @@
- package net.minecraft.client.gui;
- 
-+import com.cleanroommc.client.IMEHandler;
- import com.google.common.base.Predicate;
- import com.google.common.base.Predicates;
- import net.minecraft.client.Minecraft;
-@@ -519,6 +520,8 @@
+@@ -519,6 +519,10 @@
          }
  
          this.isFocused = isFocusedIn;
-+        IMEHandler.setIME(this.isFocused);
++        com.cleanroommc.client.input.Window window = com.cleanroommc.client.input.Window.main();
++        if (window != null) {
++            window.textInput(this.isFocused);
++        }
 +
          if (Minecraft.getMinecraft().currentScreen != null) {
              Minecraft.getMinecraft().currentScreen.setFocused(isFocusedIn);
          }
+@@ -592,4 +596,8 @@
+     public void setVisible(boolean isVisible) {
+         this.visible = isVisible;
+     }
++
++    public int getLineScrollOffset() {
++        return lineScrollOffset;
++    }
+ }

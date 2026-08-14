@@ -41,12 +41,14 @@ public final class SDL {
         return (initializedBits & flags) == flags;
     }
 
-    /** Tears down every subsystem this class brought up, and clears {@link Inputs}' listeners. */
+    /** Closes the host window and tears down every subsystem this class brought up. */
     public static synchronized void shutdown() {
         if (initializedBits == 0) {
             return;
         }
+        // TODO: new SDL input stack
         // Inputs.reset();
+        Window.closeMain();
         SDLInit.SDL_Quit();
         initializedBits = 0;
     }

@@ -116,8 +116,6 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public static boolean disableVersionCheck = false;
     public static boolean forgeLightPipelineEnabled = true;
     public static boolean selectiveResourceReloadEnabled = false;
-    public static boolean inputMethodBlockingEnabled = true;
-    public static String[] inputMethodGuiWhiteList = new String[] {""};
     @Deprecated // TODO remove in 1.13
     public static boolean replaceVanillaBucketModel = true;
     public static boolean zoomInMissingModelTextInGui = false;
@@ -376,18 +374,6 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                 "When enabled, makes specific reload tasks such as language changing quicker to run.");
         selectiveResourceReloadEnabled = prop.getBoolean(false);
         prop.setLanguageKey("forge.configgui.selectiveResourceReloadEnabled");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "inputMethodBlockingEnabled", true,
-                "When enabled, input methods will be blocked in non-input situations.");
-        inputMethodBlockingEnabled = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.inputMethodGuiWhiteList");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "inputMethodGuiWhiteList", new String[]{},
-                "A list of modded gui classes considered as input method suitable.");
-        inputMethodGuiWhiteList = prop.getStringList();
-        prop.setLanguageKey("forge.configgui.inputMethodGuiWhiteList");
         propOrder.add(prop.getName());
 
         prop = config.get(Configuration.CATEGORY_CLIENT, "maxTooltipNBTListLength", 100,

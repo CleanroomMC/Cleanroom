@@ -19,14 +19,13 @@
 
 package net.minecraftforge.client;
 
-import com.cleanroommc.client.IMEHandler;
+import com.cleanroommc.client.input.Window;
 import com.cleanroommc.client.modlist.LegacyModListScreen;
 import com.cleanroommc.client.modlist.ModListConfig;
 import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.client.windows.TaskbarApi;
 import com.cleanroommc.client.windows.WindowsProperties;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;
@@ -51,14 +50,10 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ForgeClientHandler
 {
-    private static final Set<String> classList = Arrays.stream(ForgeModContainer.inputMethodGuiWhiteList).collect(Collectors.toSet());
     private static boolean played = false;
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
@@ -83,12 +78,6 @@ public class ForgeClientHandler
     public static void onGuiOpen(GuiOpenEvent event)
     {
         GuiScreen gui = event.getGui();
-        if (gui instanceof GuiChat)
-        {
-            // Skip, this should be handled by Focus
-            return;
-        }
-
         // Forge's mod list may get mixin in late phase, which leads to crash
         // Use an interface to avoid this
         if (ModListConfig.enable && gui instanceof LegacyModListScreen modList)
@@ -96,8 +85,11 @@ public class ForgeClientHandler
             event.setGui(new ModListScreen(modList.getParent()));
         }
 
-        IMEHandler.setIME(gui != null &&
-                (gui instanceof GuiScreenBook || gui instanceof GuiEditSign || guiInWhiteList(gui)));
+        Window window = Window.main();
+        if (window != null)
+        {
+            window.textInput(gui instanceof GuiScreenBook || gui instanceof GuiEditSign);
+        }
     }
 
     @SubscribeEvent
@@ -126,11 +118,6 @@ public class ForgeClientHandler
         }
     }
 
-    private static boolean guiInWhiteList(GuiScreen gui) {
-        String current = gui.getClass().getName();
-        return classList.contains(current);
-    }
-    
     @SubscribeEvent
     public static void appendAdvancedTooltip(ItemTooltipEvent event) {
         if (!ForgeModContainer.displayAdvancedTooltips || !event.getFlags().isAdvanced())
