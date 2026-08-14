@@ -454,7 +454,7 @@ public class ForgeHooksClient
             matrixBuf.put(t);
         }
         matrixBuf.flip();
-        GL11.glMultMatrix(matrixBuf);
+        GL11.glMultMatrixf(matrixBuf);
     }
 
     // moved and expanded from WorldVertexBufferUploader.draw
