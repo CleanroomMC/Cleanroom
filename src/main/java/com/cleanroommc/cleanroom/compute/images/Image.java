@@ -68,11 +68,18 @@ public sealed abstract class Image<CT> permits Image1D {
         this(workaround.stack(), workaround.memoryFlags(), workaround.format(), workaround.descriptor(), workaround.hostMemory());
     }
 
-    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull ByteBuffer color, @NonNull CT from, @NonNull CT size, long... dependencies);
-    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull IntBuffer color, @NonNull CT from, @NonNull CT size, long... dependencies);
-    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull FloatBuffer color, @NonNull CT from, @NonNull CT size, long... dependencies);
-    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies);
-    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies);
+    public abstract <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public final <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+        return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
+    }
+    public final long fill(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+        return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
+    }
+    public final long fill(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+        return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
+    }
 
     public abstract <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination, @NonNull CT from, @NonNull CT2 to, @NonNull CT2 size, long... dependencies);
 
