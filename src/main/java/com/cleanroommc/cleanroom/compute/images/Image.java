@@ -64,6 +64,10 @@ public abstract class Image<CT> {
         }
     }
 
+    protected Image(@NonNull Workaround workaround) {
+        this(workaround.stack(), workaround.memoryFlags(), workaround.format(), workaround.descriptor(), workaround.hostMemory());
+    }
+
     public abstract long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull ByteBuffer color, @NonNull CT from, @NonNull CT size, long... dependencies);
     public abstract long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull IntBuffer color, @NonNull CT from, @NonNull CT size, long... dependencies);
     public abstract long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull FloatBuffer color, @NonNull CT from, @NonNull CT size, long... dependencies);
@@ -83,4 +87,10 @@ public abstract class Image<CT> {
             default -> "invalid";
         };
     }
+
+    protected record Workaround(@NonNull MemoryStack stack,
+                              @NonNull BufferFlags memoryFlags,
+                              @NonNull CLImageFormat format,
+                              @NonNull CLImageDesc descriptor,
+                              @Nullable ByteBuffer hostMemory) {}
 }
