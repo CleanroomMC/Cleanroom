@@ -184,6 +184,7 @@ dependencies {
     // Kirino
     api 'org.joml:joml:1.10.9'
     api 'io.github.classgraph:classgraph:4.8.184'
+    api 'org.lwjgl:lwjgl-freetype'
     lwjglNative 'org.lwjgl:lwjgl-freetype'
 
     // Test
