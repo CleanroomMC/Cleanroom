@@ -84,7 +84,9 @@ public sealed abstract class Image<CT> permits Image1D {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
 
-    public abstract <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination, @NonNull CT from, @NonNull CT2 to, @NonNull CT2 size, long... dependencies);
+    public abstract <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+                                    @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap,
+                                    @NonNull CT2 size, long... dependencies);
 
     protected static @NonNull String imageTypeName(final long val) {
         return switch((int) val) {
