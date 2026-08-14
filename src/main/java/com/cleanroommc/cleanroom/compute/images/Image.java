@@ -4,8 +4,11 @@ import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.errors.ImageError;
 import com.google.common.base.Preconditions;
+import org.joml.Vector2L;
+import org.joml.Vector3L;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
 import org.lwjgl.opencl.CLImageDesc;
@@ -92,6 +95,20 @@ public sealed abstract class Image<CT> permits Image1D {
             case CL12.CL_MEM_OBJECT_IMAGE1D_ARRAY -> "image1d_array";
             case CL12.CL_MEM_OBJECT_IMAGE2D_ARRAY -> "image2d_array";
             default -> "invalid";
+        };
+    }
+
+    protected static <CT2> @NonNull PointerBuffer getCoordinates(@NonNull MemoryStack stack, @NonNull CT2 vector, int mipmap) {
+        return switch(vector) {
+            case Long l -> stack.mallocPointer(3).put(l).put(mipmap).put(0);
+            case Vector2L v2 -> stack.mallocPointer(3).put(v2.x).put(v2.y).put(mipmap);
+            case Vector3L v3 -> {
+                PointerBuffer buffer = stack.mallocPointer(mipmap == 0 ? 3 : 4).put(v3.x).put(v3.y).put(v3.z);
+                if (mipmap != 0)
+                    buffer.put(mipmap);
+                yield buffer;
+            }
+            default -> throw new IllegalArgumentException("Provided parameter is not allowed.");
         };
     }
 
