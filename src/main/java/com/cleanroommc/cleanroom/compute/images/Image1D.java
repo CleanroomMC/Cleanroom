@@ -4,7 +4,6 @@ import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.errors.ImageError;
 import com.cleanroommc.cleanroom.compute.utils.ErrorUtils;
 import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -16,6 +15,8 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
+import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleEnqueueCopyImageError;
 
 public final class Image1D extends Image<Long> {
 
@@ -116,8 +117,30 @@ public final class Image1D extends Image<Long> {
     }
 
     @Override
-    public <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination, @NonNull Long from, @NonNull CT2 to, @NonNull CT2 size, long... dependencies) {
-        throw new NotImplementedException("TODO"); // TODO: Implement
+    public <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+                           @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap,
+                           @NonNull CT2 size, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer fromBuf = substack.mallocPointer(3);
+            fromBuf.put(from);
+            fromBuf.put(fromMipmap);
+            fromBuf.put(0);
+            fromBuf.rewind();
+            PointerBuffer deps = null;
+            if (dependencies != null && dependencies.length > 0) {
+                deps = substack.mallocPointer(dependencies.length);
+                deps.put(dependencies);
+                deps.rewind();
+            }
+            PointerBuffer ev = stack.mallocPointer(1);
+            handleEnqueueCopyImageError(CL12.clEnqueueCopyImage(commandQueue,
+                    this.handle, destination.handle,
+                    fromBuf, getCoordinates(substack, to, toMipmap),
+                    getRegion(substack, size),
+                    deps, ev
+            ));
+            return ev.get(0);
+        }
     }
 
     private static PointerBuffer makeParameterBuffer(@NonNull MemoryStack stack, long from, long region, int mipmap, long... dependencies) {
