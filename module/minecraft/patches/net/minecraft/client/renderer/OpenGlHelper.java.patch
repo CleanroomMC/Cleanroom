@@ -34,12 +34,10 @@
          } catch (Throwable throwable) {
          }
      }
-@@ -303,10 +306,13 @@
+@@ -303,10 +306,11 @@
      }
  
      public static void glShaderSource(int shaderIn, ByteBuffer string) {
-+        // LWJGL 2 took the source as raw bytes; LWJGL 3 takes a CharSequence. Decoded through a
-+        // duplicate so the caller's buffer keeps its position -- LWJGL 2 did not consume it either.
 +        CharSequence source = java.nio.charset.StandardCharsets.UTF_8.decode(string.duplicate());
          if (arbShaders) {
 -            ARBShaderObjects.glShaderSourceARB(shaderIn, string);
@@ -50,7 +48,7 @@
          }
      }
  
-@@ -364,9 +370,9 @@
+@@ -364,9 +368,9 @@
  
      public static void glUniform1(int location, IntBuffer values) {
          if (arbShaders) {
@@ -62,7 +60,7 @@
          }
      }
  
-@@ -380,81 +386,81 @@
+@@ -380,81 +384,81 @@
  
      public static void glUniform1(int location, FloatBuffer values) {
          if (arbShaders) {
@@ -164,7 +162,7 @@
          }
      }
  
-@@ -676,6 +682,11 @@
+@@ -676,6 +680,11 @@
          } else {
              GL13.glMultiTexCoord2f(target, x, y);
          }
