@@ -30,39 +30,37 @@ public abstract class Image<CT> {
         Preconditions.checkNotNull(format);
         Preconditions.checkNotNull(descriptor);
 
-        try (MemoryStack substack = stack.push()) {
-            IntBuffer err = substack.mallocInt(1);
-            this.handle = CL12.clCreateImage(
-                    Compute.instance().context,
-                    memoryFlags.flags | (hostMemory != null ? CL10.CL_MEM_COPY_HOST_PTR : 0),
-                    format,
-                    descriptor,
-                    hostMemory,
-                    err
+        IntBuffer err = stack.mallocInt(1);
+        this.handle = CL12.clCreateImage(
+                Compute.instance().context,
+                memoryFlags.flags | (hostMemory != null ? CL10.CL_MEM_COPY_HOST_PTR : 0),
+                format,
+                descriptor,
+                hostMemory,
+                err
+        );
+        switch (err.get(0)) {
+            case CL12.CL_INVALID_IMAGE_FORMAT_DESCRIPTOR -> throw new ImageError(String.format("Image format descriptor CLImageFormat[order=%s, type=%s] is invalid.",
+                    ChannelOrder.findFromOpenCL(format.image_channel_data_type()),
+                    ChannelType.findFromOpenCL(format.image_channel_data_type()))
             );
-            switch (err.get(0)) {
-                case CL12.CL_INVALID_IMAGE_FORMAT_DESCRIPTOR -> throw new ImageError(String.format("Image format descriptor CLImageFormat[order=%s, type=%s] is invalid.",
-                                ChannelOrder.findFromOpenCL(format.image_channel_data_type()),
-                                ChannelType.findFromOpenCL(format.image_channel_data_type()))
-                        );
-                case CL12.CL_INVALID_IMAGE_DESCRIPTOR -> throw new ImageError(String.format("Image descriptor CLImageDesc[type=%s, width=%d, height=%d, depth=%d, array_size=%d, row_pitch=%d, slice_pitch=%d, mip_levels=%d, samples=%d] is invalid.",
-                        imageTypeName(descriptor.image_type()),
-                        descriptor.image_width(),
-                        descriptor.image_height(),
-                        descriptor.image_depth(),
-                        descriptor.image_array_size(),
-                        descriptor.image_row_pitch(),
-                        descriptor.image_slice_pitch(),
-                        descriptor.num_mip_levels(),
-                        descriptor.num_samples()
-                ));
-                case CL10.CL_INVALID_VALUE -> throw new ImageError("Host memory pointer specified for image created from memory object.");
-                case CL12.CL_INVALID_IMAGE_SIZE -> throw new ImageError("Image dimensions exceed maximum permitted dimensions of the device.");
-                case CL12.CL_IMAGE_FORMAT_NOT_SUPPORTED -> throw new ImageError("Unsupported image format.");
-                case CL10.CL_MEM_OBJECT_ALLOCATION_FAILURE -> throw new ImageError("Failed to allocate memory for image.");
-                case CL10.CL_INVALID_OPERATION -> throw new ImageError("None of the devices support images.");
-                case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL image.");
-            }
+            case CL12.CL_INVALID_IMAGE_DESCRIPTOR -> throw new ImageError(String.format("Image descriptor CLImageDesc[type=%s, width=%d, height=%d, depth=%d, array_size=%d, row_pitch=%d, slice_pitch=%d, mip_levels=%d, samples=%d] is invalid.",
+                    imageTypeName(descriptor.image_type()),
+                    descriptor.image_width(),
+                    descriptor.image_height(),
+                    descriptor.image_depth(),
+                    descriptor.image_array_size(),
+                    descriptor.image_row_pitch(),
+                    descriptor.image_slice_pitch(),
+                    descriptor.num_mip_levels(),
+                    descriptor.num_samples()
+            ));
+            case CL10.CL_INVALID_VALUE -> throw new ImageError("Host memory pointer specified for image created from memory object.");
+            case CL12.CL_INVALID_IMAGE_SIZE -> throw new ImageError("Image dimensions exceed maximum permitted dimensions of the device.");
+            case CL12.CL_IMAGE_FORMAT_NOT_SUPPORTED -> throw new ImageError("Unsupported image format.");
+            case CL10.CL_MEM_OBJECT_ALLOCATION_FAILURE -> throw new ImageError("Failed to allocate memory for image.");
+            case CL10.CL_INVALID_OPERATION -> throw new ImageError("None of the devices support images.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL image.");
         }
     }
 
