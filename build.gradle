@@ -38,10 +38,14 @@ def modules = [
 sourceSets {
     main {
         java.srcDirs = modules.collect { "module/${it}/src/main/java" } + 'module/minecraft/injected/java'
+        // Fixme: Temp
+        java.exclude 'com/cleanroommc/kirino/utils/KsmlcUtils.java'
         resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
     }
     test {
         java.srcDirs = modules.collect { "module/${it}/src/test/java" }
+        // Fixme: Temp
+        java.exclude 'com/cleanroommc/test/kirino/gl/ksml/**'
         resources.srcDirs = modules.collect { "module/${it}/src/test/resources" }
     }
 }
