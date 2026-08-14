@@ -5,6 +5,8 @@ import org.lwjgl.opencl.CL11;
 import org.lwjgl.opencl.CL20;
 import org.lwjgl.opencl.KHRDepthImages;
 
+import java.util.Arrays;
+
 public enum ChannelOrder {
     RED(CL10.CL_R, 1),
     ALPHA(CL10.CL_A, 1),
@@ -32,5 +34,19 @@ public enum ChannelOrder {
     ChannelOrder(long order, int channels) {
         this.order = order;
         this.channels = channels;
+    }
+
+    public static final ChannelOrder[] values = ChannelOrder.values();
+    private static final long[] CL_VALS;
+
+    public static ChannelOrder findFromOpenCL(long val) {
+        return values[Arrays.binarySearch(CL_VALS, val)];
+    }
+
+    static {
+        CL_VALS = new long[values.length];
+        for (int i = 0; i < CL_VALS.length; i++)
+            CL_VALS[i] = values[i].order;
+        Arrays.sort(CL_VALS);
     }
 }

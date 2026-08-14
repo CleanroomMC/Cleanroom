@@ -6,6 +6,8 @@ import org.lwjgl.opencl.CL20;
 import org.lwjgl.opencl.CL21;
 import org.lwjgl.opencl.KHRGLDepthImages;
 
+import java.util.Arrays;
+
 public enum ChannelType {
     /**
      * Each channel component is a normalized signed 8-bit integer value
@@ -192,4 +194,18 @@ public enum ChannelType {
      * @return the size
      */
     public abstract int sizeof(ChannelOrder order);
+
+    public static final ChannelType[] values = ChannelType.values();
+    private static final long[] CL_VALS;
+
+    public static ChannelType findFromOpenCL(long val) {
+        return values[Arrays.binarySearch(CL_VALS, val)];
+    }
+
+    static {
+        CL_VALS = new long[values.length];
+        for (int i = 0; i < CL_VALS.length; i++)
+            CL_VALS[i] = values[i].type;
+        Arrays.sort(CL_VALS);
+    }
 }
