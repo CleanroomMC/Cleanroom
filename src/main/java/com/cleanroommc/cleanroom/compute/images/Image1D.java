@@ -12,11 +12,10 @@ import org.lwjgl.opencl.CLImageDesc;
 import org.lwjgl.opencl.CLImageFormat;
 import org.lwjgl.system.MemoryStack;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 
 import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleEnqueueCopyImageError;
+import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleEnqueueReadWriteImageError;
 
 public final class Image1D extends Image<Long> {
 
@@ -139,6 +138,70 @@ public final class Image1D extends Image<Long> {
                     getRegion(substack, size),
                     deps, ev
             ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public <B extends Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
+                                        @NonNull Long from, int mipmap, @NonNull Long size,
+                                        long rowPitch, long slicePitch,
+                                        @NonNull B buffer, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(switch (buffer) {
+                case ByteBuffer bb -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, bb, waitList, ev);
+                case ShortBuffer sb -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, sb, waitList, ev);
+                case IntBuffer ib -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, ib, waitList, ev);
+                case FloatBuffer fb -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, fb, waitList, ev);
+                case DoubleBuffer db -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, db, waitList, ev);
+                default -> throw new IllegalArgumentException("Wrong buffer type.");
+            });
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public <B extends Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
+                                         @NonNull Long from, int mipmap, @NonNull Long size,
+                                         long rowPitch, long slicePitch,
+                                         @NonNull B buffer, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(switch (buffer) {
+                case ByteBuffer bb -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, bb, waitList, ev);
+                case ShortBuffer sb -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, sb, waitList, ev);
+                case IntBuffer ib -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, ib, waitList, ev);
+                case FloatBuffer fb -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, fb, waitList, ev);
+                case DoubleBuffer db -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                        getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                        rowPitch, slicePitch, db, waitList, ev);
+                default -> throw new IllegalArgumentException("Wrong buffer type.");
+            });
             return ev.get(0);
         }
     }
