@@ -3,6 +3,7 @@ package com.cleanroommc.cleanroom.compute.cmd;
 import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.buffers.Buffer;
 import com.cleanroommc.cleanroom.compute.errors.UnavaliableDeviceError;
+import com.cleanroommc.cleanroom.compute.images.Image;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
 import com.google.common.base.Preconditions;
@@ -1997,6 +1998,195 @@ public class CommandQueue implements Closeable {
 
     //</editor-fold>
 
+    //<editor-fold desc="Image Fill">
+
+    public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
+                                                           @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(color);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.fill(stack, this.commandQueue, color, from, size, mipmap, dependencies), stack);
+    }
+
+    public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
+                                                           @NonNull B color, @NonNull CT from, @NonNull CT size,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(color);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.fill(stack, this.commandQueue, color, from, size, dependencies), stack);
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="Image Copy">
+
+    public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
+                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                      @NonNull CT1 from, int mipmapFrom,
+                                      @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+                                      long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(start);
+        Preconditions.checkNotNull(destination);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(to);
+        Preconditions.checkNotNull(size);
+        return new Event(start.copy(stack, this.commandQueue, destination, from, mipmapFrom, to, mipmapTo, size, dependencies), stack);
+    }
+
+    public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
+                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                      @NonNull CT1 from,
+                                      @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+                                      long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(start);
+        Preconditions.checkNotNull(destination);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(to);
+        Preconditions.checkNotNull(size);
+        return new Event(start.copy(stack, this.commandQueue, destination, from, to, mipmapTo, size, dependencies), stack);
+    }
+
+    public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
+                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                      @NonNull CT1 from, int mipmapFrom,
+                                      @NonNull CT2 to, @NonNull CT2 size,
+                                      long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(start);
+        Preconditions.checkNotNull(destination);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(to);
+        Preconditions.checkNotNull(size);
+        return new Event(start.copy(stack, this.commandQueue, destination, from, mipmapFrom, to, size, dependencies), stack);
+    }
+
+    public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
+                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                      @NonNull CT1 from,
+                                      @NonNull CT2 to, @NonNull CT2 size,
+                                      long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(start);
+        Preconditions.checkNotNull(destination);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(to);
+        Preconditions.checkNotNull(size);
+        return new Event(start.copy(stack, this.commandQueue, destination, from, to, size, dependencies), stack);
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="Image Read">
+
+    public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+    }
+
+    public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+    }
+
+    public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+    }
+
+    public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="Image Write">
+
+    public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, int mipmap, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, @NonNull B buffer,
+                                                            boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+    }
+
+    public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, int mipmap, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, @NonNull B buffer, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+    }
+
+    public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, @NonNull B buffer,
+                                                            boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+    }
+
+    public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, @NonNull B buffer, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(buffer);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+    }
+
+    //</editor-fold>
+
+
     @Override
     public void close() throws IOException {
         CL20.clReleaseCommandQueue(commandQueue);
@@ -3334,6 +3524,259 @@ public class CommandQueue implements Closeable {
         }
 
         //</editor-fold>
+
+        //</editor-fold>
+
+        //<editor-fold desc="Image Fill">
+
+        public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
+                                                                   @NonNull CT from, @NonNull CT size, int mipmap,
+                                                                   final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageFill(stack, image, color, from, size, mipmap, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
+                                                                   @NonNull CT from, @NonNull CT size,
+                                                                   final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageFill(stack, image, color, from, size, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        //</editor-fold>
+
+        //<editor-fold desc="Image Copy">
+
+        public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                              @NonNull CT1 from, int mipmapFrom,
+                                              @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+                                              final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageCopy(stack, start, destination, from, mipmapFrom, to, mipmapTo, size, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                              @NonNull CT1 from,
+                                              @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+                                              final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageCopy(stack, start, destination, from, to, mipmapTo, size, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                              @NonNull CT1 from, int mipmapFrom,
+                                              @NonNull CT2 to, @NonNull CT2 size,
+                                              final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageCopy(stack, start, destination, from, mipmapFrom, to, size, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
+                                              @NonNull CT1 from,
+                                              @NonNull CT2 to, @NonNull CT2 size,
+                                              final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageCopy(stack, start, destination, from, to, size, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+
+        //</editor-fold>
+
+        //<editor-fold desc="Image Read">
+
+        public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
+                                                          @NonNull CT from, int mipmap, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
+                                                          @NonNull CT from, int mipmap, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
+                                                          @NonNull CT from, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
+                                                          @NonNull CT from, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        //</editor-fold>
+
+        //<editor-fold desc="Image Write">
+
+        public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
+                                                          @NonNull CT from, int mipmap, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
+                                                          @NonNull CT from, int mipmap, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
+                                                          @NonNull CT from, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
+                                                          @NonNull CT from, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
 
         //</editor-fold>
 
