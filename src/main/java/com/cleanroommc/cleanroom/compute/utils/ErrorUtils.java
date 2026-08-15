@@ -44,4 +44,18 @@ public record ErrorUtils() {
             case CL12.CL_MEM_COPY_OVERLAP -> throw new ImageError("Copy regions overlapping.");
         }
     }
+    public static void handleEnqueueReadWriteImageError(int err) {
+        switch (err) {
+            case CL10.CL_INVALID_MEM_OBJECT -> throw new ImageError("Image is not a valid memory object.");
+            case CL10GL.CL_INVALID_MIP_LEVEL -> throw new ImageError("Provided mipmap level is invalid.");
+            case CL10.CL_INVALID_VALUE -> throw new ImageError("Image read/write starting position and size do not follow specified rules (wrong dimensionality, et cetera).");
+            case CL10.CL_INVALID_EVENT_WAIT_LIST -> throw new ImageError("One or more events provided as dependencies is invalid.");
+            case CL12.CL_INVALID_IMAGE_SIZE -> throw new ImageError("Image size exceeds the maximum size of the device.");
+            case CL12.CL_IMAGE_FORMAT_NOT_SUPPORTED -> throw new ImageError("Image format unsupported by device.");
+            case CL10.CL_MEM_OBJECT_ALLOCATION_FAILURE -> throw new ImageError("Failed to allocate memory for image read/write operation");
+            case CL10.CL_INVALID_OPERATION -> throw new ImageError("Device associated with command queue does not support images.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources to read/write image.");
+
+        }
+    }
 }
