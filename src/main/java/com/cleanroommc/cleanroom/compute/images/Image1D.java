@@ -393,7 +393,7 @@ public final class Image1D extends Image<Long> {
                     format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
                     descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE1D).image_width(size).image_height(0)
                             .image_depth(0)
-                            .image_row_pitch(size * channelType.sizeof(channelOrder))
+                            .image_row_pitch(hostMemory != null ? size * channelType.sizeof(channelOrder) : 0)
                             .image_slice_pitch(0)
                             .num_mip_levels(mipmaps)
                             .num_samples(0);
