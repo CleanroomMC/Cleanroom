@@ -416,7 +416,7 @@ public final class Image3D extends Image<Vector3L> {
                                          final @NonNull ChannelOrder channelOrder,
                                          @Nullable ByteBuffer hostMemory) {
         try (MemoryStack substack = stack.push()) {
-            ByteBuffer container = substack.malloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
+            ByteBuffer container = substack.calloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
             try (CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF))) {
                 try (CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF))) {
                     format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
@@ -424,8 +424,7 @@ public final class Image3D extends Image<Vector3L> {
                             .image_depth(depth)
                             .image_row_pitch(hostMemory != null ? width * channelType.sizeof(channelOrder) : 0)
                             .image_slice_pitch(hostMemory != null ? width * height * channelType.sizeof(channelOrder) : 0)
-                            .num_mip_levels(mipmaps)
-                            .num_samples(0);
+                            .num_mip_levels(mipmaps);
                     if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch() * descriptor.image_slice_pitch())
                         throw new ImageError(String.format("Image size %d too large for host memory %d.",
                                 descriptor.image_row_pitch() * descriptor.image_slice_pitch(), hostMemory.remaining()));
