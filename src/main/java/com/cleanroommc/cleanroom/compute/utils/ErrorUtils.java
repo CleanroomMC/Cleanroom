@@ -40,7 +40,7 @@ public record ErrorUtils() {
             case CL12.CL_IMAGE_FORMAT_NOT_SUPPORTED -> throw new ImageError("Image format unsupported by device.");
             case CL10.CL_MEM_OBJECT_ALLOCATION_FAILURE -> throw new ImageError("Failed to allocate memory for image fill operation");
             case CL10.CL_INVALID_OPERATION -> throw new ImageError("Device associated with command queue does not support images.");
-            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources to copy image.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources to fill image.");
             case CL12.CL_MEM_COPY_OVERLAP -> throw new ImageError("Copy regions overlapping.");
         }
     }
