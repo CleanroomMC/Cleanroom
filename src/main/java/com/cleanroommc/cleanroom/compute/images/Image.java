@@ -21,8 +21,10 @@ import java.nio.IntBuffer;
 public sealed abstract class Image<CT> permits Image1D {
 
     public final long handle;
+    protected final Vector3L size;
+    public final int mipmaps;
 
-    protected Image(@NonNull MemoryStack stack,
+    private Image(@NonNull MemoryStack stack,
                     @NonNull BufferFlags memoryFlags,
                     @NonNull CLImageFormat format,
                     @NonNull CLImageDesc descriptor,
@@ -31,6 +33,12 @@ public sealed abstract class Image<CT> permits Image1D {
         Preconditions.checkNotNull(memoryFlags);
         Preconditions.checkNotNull(format);
         Preconditions.checkNotNull(descriptor);
+
+        this.size = new Vector3L((int) descriptor.image_width(),
+                (int) descriptor.image_height(),
+                (int) descriptor.image_depth()
+        );
+        this.mipmaps = descriptor.num_mip_levels();
 
         IntBuffer err = stack.mallocInt(1);
         this.handle = CL12.clCreateImage(
@@ -68,6 +76,18 @@ public sealed abstract class Image<CT> permits Image1D {
 
     protected Image(@NonNull Workaround workaround) {
         this(workaround.stack(), workaround.memoryFlags(), workaround.format(), workaround.descriptor(), workaround.hostMemory());
+    }
+
+    public final long width() {
+        return this.size.x;
+    }
+
+    public final long height() {
+        return this.size.y;
+    }
+
+    public final long depth() {
+        return this.size.z;
     }
 
     public abstract <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
