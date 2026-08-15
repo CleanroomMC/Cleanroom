@@ -39,16 +39,18 @@
                  int k2 = 3;
                  int l2 = 0;
  
-@@ -94,7 +97,7 @@
+@@ -93,8 +96,8 @@
+                             int j2 = i2 - position.getZ();
                              if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0) {
                                  BlockPos blockpos = new BlockPos(k1, i3, i2);
-                                 Material material = worldIn.getBlockState(blockpos).getMaterial();
+-                                Material material = worldIn.getBlockState(blockpos).getMaterial();
 -                                if (material == Material.AIR || material == Material.LEAVES || material == Material.VINE) {
++                                state = worldIn.getBlockState(blockpos);
 +                                if (state.getBlock().isAir(state, worldIn, blockpos) || state.getBlock().isLeaves(state, worldIn, blockpos) || state.getMaterial() == Material.VINE) {
                                      this.setBlockAndNotifyAdequately(worldIn, blockpos, this.metaLeaves);
                                  }
                              }
-@@ -102,15 +105,18 @@
+@@ -102,14 +105,17 @@
                      }
                  }
  
@@ -63,7 +65,7 @@
 +                    for (int j3 = 0; j3 < i; j3++) {
 +                        BlockPos upN = position.up(j3);
 +                        state = worldIn.getBlockState(upN);
- 
++
 +                        if (state.getBlock().isAir(state, worldIn, upN) || state.getBlock().isLeaves(state, worldIn, upN) || state.getMaterial() == Material.VINE) {
 +                            this.setBlockAndNotifyAdequately(worldIn, position.up(j3), this.metaWood);
 +
@@ -71,11 +73,41 @@
 +                                if (rand.nextInt(3) > 0 && worldIn.isAirBlock(position.add(-1, j3, 0))) {
 +                                    this.addVine(worldIn, position.add(-1, j3, 0), BlockVine.EAST);
 +                                }
-+
+ 
                              if (rand.nextInt(3) > 0 && worldIn.isAirBlock(position.add(1, j3, 0))) {
                                  this.addVine(worldIn, position.add(1, j3, 0), BlockVine.WEST);
-                             }
-@@ -202,7 +208,7 @@
+@@ -135,24 +141,25 @@
+                         for (int l4 = position.getX() - k4; l4 <= position.getX() + k4; l4++) {
+                             for (int i5 = position.getZ() - k4; i5 <= position.getZ() + k4; i5++) {
+                                 blockpos$mutableblockpos1.setPos(l4, k3, i5);
+-                                if (worldIn.getBlockState(blockpos$mutableblockpos1).getMaterial() == Material.LEAVES) {
++                                state = worldIn.getBlockState(blockpos$mutableblockpos1);
++                                if (state.getBlock().isLeaves(state, worldIn, blockpos$mutableblockpos1)) {
+                                     BlockPos blockpos2 = blockpos$mutableblockpos1.west();
+                                     BlockPos blockpos3 = blockpos$mutableblockpos1.east();
+                                     BlockPos blockpos4 = blockpos$mutableblockpos1.north();
+                                     BlockPos blockpos1 = blockpos$mutableblockpos1.south();
+-                                    if (rand.nextInt(4) == 0 && worldIn.getBlockState(blockpos2).getMaterial() == Material.AIR) {
++                                    if (rand.nextInt(4) == 0 && worldIn.isAirBlock(blockpos2)) {
+                                         this.addHangingVine(worldIn, blockpos2, BlockVine.EAST);
+                                     }
+ 
+-                                    if (rand.nextInt(4) == 0 && worldIn.getBlockState(blockpos3).getMaterial() == Material.AIR) {
++                                    if (rand.nextInt(4) == 0 && worldIn.isAirBlock(blockpos3)) {
+                                         this.addHangingVine(worldIn, blockpos3, BlockVine.WEST);
+                                     }
+ 
+-                                    if (rand.nextInt(4) == 0 && worldIn.getBlockState(blockpos4).getMaterial() == Material.AIR) {
++                                    if (rand.nextInt(4) == 0 && worldIn.isAirBlock(blockpos4)) {
+                                         this.addHangingVine(worldIn, blockpos4, BlockVine.SOUTH);
+                                     }
+ 
+-                                    if (rand.nextInt(4) == 0 && worldIn.getBlockState(blockpos1).getMaterial() == Material.AIR) {
++                                    if (rand.nextInt(4) == 0 && worldIn.isAirBlock(blockpos1)) {
+                                         this.addHangingVine(worldIn, blockpos1, BlockVine.NORTH);
+                                     }
+                                 }
+@@ -202,7 +209,7 @@
          this.addVine(worldIn, pos, prop);
          int i = 4;
  
