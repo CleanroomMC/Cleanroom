@@ -9,7 +9,17 @@
                  && position.getY() > 1;
              iblockstate = worldIn.getBlockState(position)
          ) {
-@@ -44,19 +44,19 @@
+@@ -33,7 +33,8 @@
+                 rand.nextInt(3) - rand.nextInt(3),
+                 rand.nextInt(4) - rand.nextInt(4)
+             );
+-            if (worldIn.isAirBlock(blockpos) && worldIn.getBlockState(blockpos.down()).isTopSolid()) {
++            if (worldIn.isAirBlock(blockpos)
++                && worldIn.getBlockState(blockpos.down()).isSideSolid(worldIn, blockpos.down(), net.minecraft.util.EnumFacing.UP)) {
+                 worldIn.setBlockState(blockpos, Blocks.CHEST.getDefaultState(), 2);
+                 TileEntity tileentity = worldIn.getTileEntity(blockpos);
+                 if (tileentity instanceof TileEntityChest) {
+@@ -44,19 +45,19 @@
                  BlockPos blockpos2 = blockpos.west();
                  BlockPos blockpos3 = blockpos.north();
                  BlockPos blockpos4 = blockpos.south();
