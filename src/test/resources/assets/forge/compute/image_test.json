@@ -1,0 +1,10 @@
+{
+  "kernels": {
+    "gradient1d": {
+      "name": "gradient1d",
+      "arguments": {
+        "image": "image1d_t"
+      }
+    }
+  }
+}
