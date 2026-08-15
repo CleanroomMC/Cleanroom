@@ -34,6 +34,8 @@ public final class Image1D extends Image<Long> {
         Preconditions.checkArgument(color instanceof ByteBuffer
                                 || color instanceof IntBuffer
                                 || color instanceof FloatBuffer);
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
@@ -76,6 +78,8 @@ public final class Image1D extends Image<Long> {
     @Override
     public long fill(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, long... dependencies) {
         Preconditions.checkArgument(color.length == 1);
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
@@ -97,6 +101,8 @@ public final class Image1D extends Image<Long> {
     @Override
     public long fill(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, long... dependencies) {
         Preconditions.checkArgument(color.length == 1);
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
@@ -147,6 +153,8 @@ public final class Image1D extends Image<Long> {
                                         @NonNull Long from, int mipmap, @NonNull Long size,
                                         long rowPitch, long slicePitch,
                                         @NonNull B buffer, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -179,6 +187,8 @@ public final class Image1D extends Image<Long> {
                      @NonNull Long from, int mipmap, @NonNull Long size,
                      long rowPitch, long slicePitch, short @NonNull [] array,
                      boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -195,6 +205,8 @@ public final class Image1D extends Image<Long> {
 
     @Override
     public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -211,6 +223,8 @@ public final class Image1D extends Image<Long> {
 
     @Override
     public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -227,6 +241,8 @@ public final class Image1D extends Image<Long> {
 
     @Override
     public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -246,6 +262,8 @@ public final class Image1D extends Image<Long> {
                                          @NonNull Long from, int mipmap, @NonNull Long size,
                                          long rowPitch, long slicePitch,
                                          @NonNull B buffer, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -275,6 +293,8 @@ public final class Image1D extends Image<Long> {
 
     @Override
     public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -291,6 +311,8 @@ public final class Image1D extends Image<Long> {
 
     @Override
     public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -307,6 +329,8 @@ public final class Image1D extends Image<Long> {
 
     @Override
     public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
@@ -323,6 +347,8 @@ public final class Image1D extends Image<Long> {
 
     @Override
     public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from + size < this.size.x);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
