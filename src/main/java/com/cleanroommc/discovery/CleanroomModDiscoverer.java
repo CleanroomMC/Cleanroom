@@ -281,6 +281,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 coreModContainsMod = attributes.getValue(COREMOD_CONTAINS_FML_MOD) != null;
                 if ("optifine.OptiFineForgeTweaker".equals(tweaker)) {
                     modIds.add("optifine");
+                } else if ("net.jan.moddirector.launchwrapper.ModDirectorTweaker".equals(tweaker)) {
+                    modIds.add("moddirector");
+                } else if ("git.jbredwards.jsonpaintings.mod.asm.ASMHandler".equals(coremod)) {
+                    modIds.add("jsonpaintings");
                 }
             }
             if (modIds.isEmpty()) {
