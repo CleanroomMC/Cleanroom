@@ -20,7 +20,7 @@
              return true;
          }
  
-@@ -84,7 +86,7 @@
+@@ -84,11 +86,11 @@
              return false;
          }
  
@@ -29,6 +29,11 @@
              BlockPos blockpos = origin.offset(this.moveDirection.getOpposite(), i);
              iblockstate = this.world.getBlockState(blockpos);
              block = iblockstate.getBlock();
+-            if (iblockstate.getMaterial() == Material.AIR
++            if (iblockstate.getBlock().isAir(iblockstate, this.world, blockpos)
+                 || !BlockPistonBase.canPush(iblockstate, this.world, blockpos, this.moveDirection, false, this.moveDirection.getOpposite())
+                 || blockpos.equals(this.pistonPos)) {
+                 break;
 @@ -116,7 +118,7 @@
  
                  for (int l = 0; l <= k + i1; l++) {
