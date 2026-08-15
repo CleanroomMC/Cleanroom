@@ -22,6 +22,9 @@ package net.minecraftforge.fml.client;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
+import com.cleanroommc.client.input.SharedGLContext;
+import com.cleanroommc.client.input.Window;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,8 +76,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.Drawable;
-import org.lwjgl.opengl.SharedDrawable;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.input.Keyboard;
 
@@ -85,7 +86,7 @@ import org.lwjgl.input.Keyboard;
 @SuppressWarnings("serial")
 public class SplashProgress
 {
-    private static Drawable d;
+    private static SharedGLContext shared;
     private static volatile boolean pause = false;
     private static volatile boolean done = false;
     private static Thread thread;
@@ -236,11 +237,11 @@ public class SplashProgress
 
         try
         {
-            d = new SharedDrawable(Display.getDrawable());
-            Display.getDrawable().releaseContext();
-            d.makeCurrent();
+            shared = SharedGLContext.create(Window.main());
+            Display.releaseContext();
+            shared.makeCurrent();
         }
-        catch (LWJGLException e)
+        catch (LWJGLException | RuntimeException e)
         {
             FMLLog.log.error("Error starting SplashProgress:", e);
             disableSplash(e);
@@ -610,7 +611,7 @@ public class SplashProgress
                 lock.lock();
                 try
                 {
-                    Display.getDrawable().makeCurrent();
+                    Display.makeCurrent();
                 }
                 catch (LWJGLException e)
                 {
@@ -637,7 +638,7 @@ public class SplashProgress
                 glAlphaFunc(GL_GREATER, .1f);
                 try
                 {
-                    Display.getDrawable().releaseContext();
+                    Display.releaseContext();
                 }
                 catch (LWJGLException e)
                 {
@@ -701,8 +702,8 @@ public class SplashProgress
         lock.lock();
         try
         {
-            d.releaseContext();
-            Display.getDrawable().makeCurrent();
+            shared.release();
+            Display.makeCurrent();
         }
         catch (LWJGLException e)
         {
@@ -722,8 +723,8 @@ public class SplashProgress
         pause = false;
         try
         {
-            Display.getDrawable().releaseContext();
-            d.makeCurrent();
+            Display.releaseContext();
+            shared.makeCurrent();
         }
         catch (LWJGLException e)
         {
@@ -742,11 +743,13 @@ public class SplashProgress
             done = true;
             thread.join();
             glFlush();        // process any remaining GL calls before releaseContext (prevents missing textures on mac)
-            d.releaseContext();
-            Display.getDrawable().makeCurrent();
+            shared.release();
+            Display.makeCurrent();
             fontTexture.delete();
             logoTexture.delete();
             forgeTexture.delete();
+            shared.close();
+            shared = null;
         }
         catch (Exception e)
         {
