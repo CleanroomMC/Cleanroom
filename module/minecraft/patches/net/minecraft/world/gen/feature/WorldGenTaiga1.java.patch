@@ -24,16 +24,17 @@
                  int k2 = 0;
  
                  for (int l2 = position.getY() + i; l2 >= position.getY() + j; l2--) {
-@@ -72,7 +74,7 @@
+@@ -72,7 +74,8 @@
                              int j2 = i2 - position.getZ();
                              if (Math.abs(k3) != k2 || Math.abs(j2) != k2 || k2 <= 0) {
                                  BlockPos blockpos = new BlockPos(j3, l2, i2);
 -                                if (!worldIn.getBlockState(blockpos).isFullBlock()) {
++                                state = worldIn.getBlockState(blockpos);
 +                                if (state.getBlock().canBeReplacedByLeaves(state, worldIn, blockpos)) {
                                      this.setBlockAndNotifyAdequately(worldIn, blockpos, LEAF);
                                  }
                              }
-@@ -87,8 +89,9 @@
+@@ -87,8 +90,9 @@
                  }
  
                  for (int i3 = 0; i3 < i - 1; i3++) {
