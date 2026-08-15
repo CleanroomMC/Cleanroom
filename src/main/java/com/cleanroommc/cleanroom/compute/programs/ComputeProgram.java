@@ -88,20 +88,24 @@ public class ComputeProgram {
         Set<ResourceLocation> dependencies = getHeadersFromFile(src, resourceLocation);
         @SuppressWarnings("unused")
         List<ByteBuffer> pathList = new ObjectArrayList<>(); // This exists so that the buffers don't expire since MemoryStack auto-manages memory
-        PointerBuffer paths = stack.mallocPointer(dependencies.size());
-        PointerBuffer libraryHandles = stack.mallocPointer(dependencies.size());
-        for (ResourceLocation rl : dependencies) {
-            String fname = String.format("%s/%s", rl.getNamespace(), rl.getPath());
-            ByteBuffer buf = stack.UTF8(fname);
-            pathList.add(buf);
-            paths.put(buf);
-            libraryHandles.put(Compute.instance().getOrCreateLibrary(rl, stack));
+        PointerBuffer paths = null;
+        PointerBuffer libraryHandles = null;
+        if (!dependencies.isEmpty()) {
+            paths = stack.mallocPointer(dependencies.size());
+            libraryHandles = stack.mallocPointer(dependencies.size());
+            for (ResourceLocation rl : dependencies) {
+                String fname = String.format("%s/%s", rl.getNamespace(), rl.getPath());
+                ByteBuffer buf = stack.UTF8(fname);
+                pathList.add(buf);
+                paths.put(buf);
+                libraryHandles.put(Compute.instance().getOrCreateLibrary(rl, stack));
+            }
+            libraryHandles.flip();
+            paths.flip();
         }
         PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
         devices.put(Compute.instance().devices);
         devices.flip();
-        paths.flip();
-        libraryHandles.flip();
         switch (CL12.clCompileProgram(program, devices, "", libraryHandles, paths, null, 0)) {
             case CL12.CL_COMPILER_NOT_AVAILABLE -> throw new CompilationError("Compiler unavailable.");
             case CL12.CL_COMPILE_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to compile program %s. \nBuild Logs:\n%s", resourceLocation, combineStrings(getBuildLog(stack, program), "\n\t")));
