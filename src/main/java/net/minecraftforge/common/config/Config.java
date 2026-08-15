@@ -51,7 +51,17 @@ public @interface Config
      */
     String category() default "general";
 
-    public static enum Type
+    /**
+     * The {@link Side} this configuration file is registered on.
+     * <p>
+     * Defaults to {@link Side#BOTH}, meaning the config is registered on both the client and the dedicated server.
+     * When a config is marked with a specific side it is only created, loaded and synced on that environment;
+     * on the other side it is completely ignored: no config file is created, no fields are read or written
+     * and nothing is shown in the config GUI.
+     */
+    Side side() default Side.BOTH;
+
+    enum Type
     {
         /**
         * Loaded once, directly after mod construction. Before pre-init.
@@ -61,8 +71,31 @@ public @interface Config
 
 
         private boolean isStatic = true;
-        private Type(boolean isStatic) { this.isStatic = isStatic; }
+        Type(boolean isStatic) { this.isStatic = isStatic; }
         public boolean isStatic(){ return this.isStatic; }
+    }
+
+    /**
+     * CLIENT = regular client, SERVER = dedicated server
+     */
+    enum Side
+    {
+        BOTH,
+        CLIENT,
+        SERVER;
+
+        /**
+         * Checks whether this config side should be registered in the given environment.
+         *
+         * @param env the physical side the game is currently running on, or {@code null} if the side could not be determined
+         * @return {@code true} if the config should be registered; an unknown environment ({@code null}) is treated as {@link #BOTH}
+         */
+        public boolean notAppliesTo(net.minecraftforge.fml.relauncher.Side env)
+        {
+            return env != null && this != BOTH
+                && (this != CLIENT || env != net.minecraftforge.fml.relauncher.Side.CLIENT)
+                && (this != SERVER || env != net.minecraftforge.fml.relauncher.Side.SERVER);
+        }
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -124,4 +157,14 @@ public @interface Config
     @Target(ElementType.FIELD)
     @interface SlidingOption
     {}
+
+    /**
+     * Restricts a single config entry，a whole category or a whole config file to a specific {@link Side}.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.TYPE})
+    @interface SideOnly
+    {
+        Side value();
+    }
 }

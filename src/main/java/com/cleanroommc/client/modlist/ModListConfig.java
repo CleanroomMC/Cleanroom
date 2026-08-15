@@ -2,7 +2,7 @@ package com.cleanroommc.client.modlist;
 
 import net.minecraftforge.common.config.Config;
 
-@Config(modid = ModListConstants.OWNER_MOD_ID, name = "catalogue")
+@Config(modid = ModListConstants.OWNER_MOD_ID, name = "catalogue", side = Config.Side.CLIENT)
 public final class ModListConfig {
     @Config.Comment({
             "Whether to enable the mod list.",

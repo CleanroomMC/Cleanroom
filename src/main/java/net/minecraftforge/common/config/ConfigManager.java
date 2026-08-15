@@ -33,8 +33,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
+import com.cleanroommc.common.CleanroomEnvironment;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.LangKey;
 import net.minecraftforge.common.config.Config.Name;
@@ -42,6 +42,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder;
@@ -107,7 +108,8 @@ public class ConfigManager
 
     public static void loadData(ASMDataTable data)
     {
-        FMLLog.log.debug("Loading @Config anotation data");
+        FMLLog.log.debug("Loading @Config annotation data");
+        Side currentSide = currentSide();
         for (ASMData target : data.getAll(Config.class))
         {
             String modid = (String)target.getAnnotationInfo().get("modid");
@@ -115,6 +117,14 @@ public class ConfigManager
 
             EnumHolder tholder = (EnumHolder)target.getAnnotationInfo().get("type");
             Config.Type type = tholder == null ? Config.Type.INSTANCE : Config.Type.valueOf(tholder.getValue());
+
+            EnumHolder sideHolder = (EnumHolder)target.getAnnotationInfo().get("side");
+            Config.Side side = sideHolder == null ? Config.Side.BOTH : Config.Side.valueOf(sideHolder.getValue());
+            if (side.notAppliesTo(currentSide))
+            {
+                FMLLog.log.debug("Skipping @Config class {} on side {}: marked as {}", target.getClassName(), currentSide, side);
+                continue;
+            }
 
             map.put(type, target);
         }
@@ -156,11 +166,19 @@ public class ConfigManager
         if (map == null)
             return;
 
+        Side currentSide = currentSide();
         for (ASMData targ : map.get(type))
         {
             try
             {
                 Class<?> cls = Class.forName(targ.getClassName(), true, mcl);
+
+                Config config = cls.getAnnotation(Config.class);
+                if (config != null && config.side().notAppliesTo(currentSide))
+                {
+                    FMLLog.log.debug("Skipping @Config class {} on side {}: marked as {}", targ.getClassName(), currentSide, config.side());
+                    continue;
+                }
 
                 Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modid, k -> Sets.<Class<?>>newHashSet());
                 modConfigClasses.add(cls);
@@ -215,9 +233,23 @@ public class ConfigManager
         File configFile = new File(configDir, name + ".cfg");
         return CONFIGS.get(configFile.getAbsolutePath());
     }
+    
+    private static Side currentSide()
+    {
+        try
+        {
+            return CleanroomEnvironment.side();
+        }
+        catch (Throwable ignored)
+        {
+            //side not set yet
+        }
+        return null;
+    }
 
     private static void sync(Configuration cfg, Class<?> cls, String modid, String category, boolean loading, Object instance)
     {
+        Side currentSide = currentSide();
         for (Field f : cls.getDeclaredFields())
         {
             if (!Modifier.isPublic(f.getModifiers()))
@@ -230,6 +262,15 @@ public class ConfigManager
 
             if (f.isAnnotationPresent(Config.Ignore.class))
                 continue;
+
+            Config.SideOnly sideOnly = f.getAnnotation(Config.SideOnly.class);
+            if (sideOnly == null)
+                sideOnly = f.getType().getAnnotation(Config.SideOnly.class);
+            if (sideOnly != null && sideOnly.value().notAppliesTo(currentSide))
+            {
+                FMLLog.log.debug("Skipping config entry '{}' of class '{}' on side {}: marked as {}", f.getName(), cls.getName(), currentSide, sideOnly.value());
+                continue;
+            }
 
             String comment = null;
             Comment ca = f.getAnnotation(Comment.class);
@@ -384,6 +425,10 @@ public class ConfigManager
      */
     public static void register(Class<?> configClass) {
         Config config = configClass.getAnnotation(Config.class);
+        if (config.side().notAppliesTo(currentSide())) {
+            FMLLog.log.debug("Skipping @Config class {} on side {}: marked as {}", configClass.getName(), currentSide(), config.side());
+            return;
+        }
         String modId = config.modid();
         Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modId, k -> Sets.newHashSet());
         modConfigClasses.add(configClass);
