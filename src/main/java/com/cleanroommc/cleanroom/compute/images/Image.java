@@ -18,7 +18,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public sealed abstract class Image<CT> permits Image1D {
+public sealed abstract class Image<CT> permits Image1D, Image2D {
 
     public final long handle;
     protected final Vector3L size;
