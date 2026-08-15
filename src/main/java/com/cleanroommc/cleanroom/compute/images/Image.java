@@ -107,6 +107,21 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
     public abstract <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
                                     @NonNull CT from, int fromMipmap, @NonNull CT2 to, int toMipmap,
                                     @NonNull CT2 size, long... dependencies);
+    public final <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+                                 @NonNull CT from, @NonNull CT2 to, int toMipmap,
+                                 @NonNull CT2 size, long... dependencies) {
+        return this.copy(stack, commandQueue, destination, from, 0, to, toMipmap, size, dependencies);
+    }
+    public final <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+                                 @NonNull CT from, int fromMipmap, @NonNull CT2 to,
+                                 @NonNull CT2 size, long... dependencies) {
+        return this.copy(stack, commandQueue, destination, from, fromMipmap, to, 0, size, dependencies);
+    }
+    public final <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+                                 @NonNull CT from, @NonNull CT2 to,
+                                 @NonNull CT2 size, long... dependencies) {
+        return this.copy(stack, commandQueue, destination, from, 0, to, 0, size, dependencies);
+    }
 
     public abstract <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
