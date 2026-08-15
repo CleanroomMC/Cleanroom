@@ -16,7 +16,17 @@
          this.isDemo = gameConfig.gameInfo.isDemo;
          this.displayWidth = gameConfig.displayInfo.width > 0 ? gameConfig.displayInfo.width : 1;
          this.displayHeight = gameConfig.displayInfo.height > 0 ? gameConfig.displayInfo.height : 1;
-@@ -470,10 +470,10 @@
+@@ -455,7 +455,8 @@
+             this.displayWidth = this.gameSettings.overrideWidth;
+             this.displayHeight = this.gameSettings.overrideHeight;
+         }
+-
++        com.cleanroommc.client.input.Window window = com.cleanroommc.client.input.Window.builder().title("Cleanroom").size(this.displayWidth, this.displayHeight).resizable().vsync(this.gameSettings.enableVsync).openGL().build();
++        com.cleanroommc.client.input.CleanroomWindowBridge.install(window);
+         LOGGER.info("LWJGL Version: {}", Sys.getVersion());
+         this.setWindowIcon();
+         this.setInitialDisplayMode();
+@@ -470,10 +471,10 @@
          this.resourceManager = new SimpleReloadableResourceManager(this.metadataSerializer);
          this.languageManager = new LanguageManager(this.metadataSerializer, this.gameSettings.language);
          this.resourceManager.registerReloadListener(this.languageManager);
@@ -29,7 +39,7 @@
          this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
          this.saveLoader = new AnvilSaveConverter(new File(this.gameDir, "saves"), this.dataFixer);
          this.soundHandler = new SoundHandler(this.resourceManager, this.gameSettings);
-@@ -491,6 +491,8 @@
+@@ -491,6 +492,8 @@
          this.resourceManager.registerReloadListener(new GrassColorReloadListener());
          this.resourceManager.registerReloadListener(new FoliageColorReloadListener());
          this.mouseHelper = new MouseHelper();
@@ -38,7 +48,7 @@
          this.checkGLError("Pre startup");
          GlStateManager.enableTexture2D();
          GlStateManager.shadeModel(7425);
-@@ -504,19 +506,24 @@
+@@ -504,19 +507,24 @@
          GlStateManager.loadIdentity();
          GlStateManager.matrixMode(5888);
          this.checkGLError("Startup");
@@ -63,7 +73,7 @@
          this.entityRenderer = new EntityRenderer(this, this.resourceManager);
          this.resourceManager.registerReloadListener(this.entityRenderer);
          this.blockRenderDispatcher = new BlockRendererDispatcher(this.modelManager.getBlockModelShapes(), this.blockColors);
-@@ -527,18 +534,25 @@
+@@ -527,18 +535,25 @@
          this.resourceManager.registerReloadListener(this.searchTreeManager);
          GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
          this.effectRenderer = new ParticleManager(this.world, this.renderEngine);
@@ -92,12 +102,9 @@
          if (this.gameSettings.fullScreen && !this.fullscreen) {
              this.toggleFullscreen();
          }
-@@ -597,26 +611,14 @@
-         this.metadataSerializer.registerMetadataSectionType(new LanguageMetadataSectionSerializer(), LanguageMetadataSection.class);
-     }
+@@ -599,24 +614,12 @@
  
--    private void createDisplay() throws LWJGLException {
-+    private void createDisplay() {
+     private void createDisplay() throws LWJGLException {
          Display.setResizable(true);
 -        Display.setTitle("Minecraft 1.12.2");
 +        Display.setTitle("Cleanroom");
@@ -125,7 +132,7 @@
      }
  
      private void setInitialDisplayMode() throws LWJGLException {
-@@ -679,6 +681,7 @@
+@@ -679,6 +682,7 @@
      }
  
      private void startTimerHackThread() {
@@ -133,7 +140,7 @@
          Thread thread = new Thread("Timer hack thread") {
              @Override
              public void run() {
-@@ -691,6 +694,7 @@
+@@ -691,6 +695,7 @@
              }
          };
          thread.setDaemon(true);
@@ -141,7 +148,7 @@
          thread.start();
      }
  
-@@ -704,22 +708,26 @@
+@@ -704,22 +709,26 @@
          File file1 = new File(getMinecraft().gameDir, "crash-reports");
          File file2 = new File(file1, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
          Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());
@@ -171,7 +178,7 @@
      public void refreshResources() {
          List<IResourcePack> list = Lists.newArrayList(this.defaultResourcePacks);
          if (this.integratedServer != null) {
-@@ -902,16 +910,22 @@
+@@ -902,16 +911,22 @@
       * @param guiScreenIn The {@link GuiScreen} to display. If it is {@code null}, any open GUI will be closed.
       */
      public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {
@@ -198,7 +205,15 @@
          if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer) {
              this.gameSettings.showDebugInfo = false;
              this.ingameGUI.getChatGUI().clearChatMessages(true);
-@@ -999,7 +1013,7 @@
+@@ -963,6 +978,7 @@
+             this.soundHandler.unloadSounds();
+         } finally {
+             Display.destroy();
++            com.cleanroommc.client.input.SDL.shutdown();
+             if (!this.hasCrashed) {
+                 System.exit(0);
+             }
+@@ -999,7 +1015,7 @@
          long i1 = System.nanoTime() - l;
          this.checkGLError("Pre render");
          this.profiler.endStartSection("sound");
@@ -207,7 +222,7 @@
          this.profiler.endSection();
          this.profiler.startSection("render");
          GlStateManager.pushMatrix();
-@@ -1009,11 +1023,13 @@
+@@ -1009,11 +1025,13 @@
          GlStateManager.enableTexture2D();
          this.profiler.endSection();
          if (!this.skipRenderWorld) {
@@ -221,7 +236,7 @@
          }
  
          this.profiler.endSection();
-@@ -1308,9 +1324,9 @@
+@@ -1308,9 +1326,9 @@
          if (this.leftClickCounter <= 0 && !this.player.isHandActive()) {
              if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                  BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -234,7 +249,7 @@
                      this.player.swingArm(EnumHand.MAIN_HAND);
                  }
              } else {
-@@ -1333,7 +1349,8 @@
+@@ -1333,7 +1351,8 @@
                          break;
                      case BLOCK:
                          BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -244,7 +259,7 @@
                              this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                              break;
                          }
-@@ -1343,6 +1360,7 @@
+@@ -1343,6 +1362,7 @@
                          }
  
                          this.player.resetCooldown();
@@ -252,7 +267,7 @@
                  }
  
                  this.player.swingArm(EnumHand.MAIN_HAND);
-@@ -1399,6 +1417,7 @@
+@@ -1399,6 +1419,7 @@
                          }
                      }
  
@@ -260,18 +275,19 @@
                      if (!itemstack.isEmpty()
                          && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
                          this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
-@@ -1411,6 +1430,10 @@
+@@ -1411,6 +1432,11 @@
  
      /** Toggles fullscreen mode. */
      public void toggleFullscreen() {
 +        if (net.minecraftforge.common.ForgeEarlyConfig.WINDOW_BORDERLESS_REPLACES_FULLSCREEN) {
-+            Display.toggleBorderless();
++            com.cleanroommc.client.input.Window window = com.cleanroommc.client.input.Window.main();
++            if (window != null) window.borderless(!window.borderless());
 +            return;
 +        }
          try {
              this.fullscreen = !this.fullscreen;
              this.gameSettings.fullScreen = this.fullscreen;
-@@ -1445,6 +1468,10 @@
+@@ -1445,6 +1471,10 @@
              }
  
              Display.setFullscreen(this.fullscreen);
@@ -282,7 +298,7 @@
              Display.setVSyncEnabled(this.gameSettings.enableVsync);
              this.updateDisplay();
          } catch (Exception exception) {
-@@ -1483,6 +1510,8 @@
+@@ -1483,6 +1513,8 @@
              this.rightClickDelayTimer--;
          }
  
@@ -291,7 +307,7 @@
          this.profiler.startSection("gui");
          if (!this.isGamePaused) {
              this.ingameGUI.updateTick();
-@@ -1632,6 +1661,7 @@
+@@ -1632,6 +1664,7 @@
          }
  
          this.profiler.endSection();
@@ -299,7 +315,7 @@
          this.systemTime = getSystemTime();
      }
  
-@@ -1705,6 +1735,7 @@
+@@ -1705,6 +1738,7 @@
                      }
                  }
              }
@@ -307,7 +323,7 @@
          }
  
          this.processKeyBinds();
-@@ -1896,6 +1927,8 @@
+@@ -1896,6 +1930,8 @@
  
      private void runTickMouse() throws IOException {
          while (Mouse.next()) {
@@ -316,7 +332,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
              if (Mouse.getEventButtonState()) {
-@@ -1931,6 +1964,7 @@
+@@ -1931,6 +1967,7 @@
                      this.currentScreen.handleMouseInput();
                  }
              }
@@ -324,7 +340,7 @@
          }
      }
  
-@@ -1949,6 +1983,7 @@
+@@ -1949,6 +1986,7 @@
  
      /** Arguments: World foldername,  World ingame name, WorldSettings */
      public void launchIntegratedServer(String folderName, String worldName, @Nullable WorldSettings worldSettingsIn) {
@@ -332,7 +348,7 @@
          this.loadWorld(null);
          System.gc();
          ISaveHandler isavehandler = this.saveLoader.getSaveLoader(folderName, false);
-@@ -1990,6 +2025,11 @@
+@@ -1990,6 +2028,11 @@
          this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
  
          while (!this.integratedServer.serverIsInRunLoop()) {
@@ -344,7 +360,7 @@
              String s = this.integratedServer.getUserMessage();
              if (s != null) {
                  this.loadingScreen.displayLoadingString(I18n.format(s));
-@@ -2007,8 +2047,13 @@
+@@ -2007,8 +2050,13 @@
          SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
          NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
          networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, null));
@@ -360,7 +376,7 @@
          this.networkManager = networkmanager;
      }
  
-@@ -2019,6 +2064,8 @@
+@@ -2019,6 +2067,8 @@
  
      /** par2Str is displayed on the loading screen to the user unloads the current world first */
      public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
@@ -369,7 +385,7 @@
          if (worldClientIn == null) {
              NetHandlerPlayClient nethandlerplayclient = this.getConnection();
              if (nethandlerplayclient != null) {
-@@ -2027,6 +2074,14 @@
+@@ -2027,6 +2077,14 @@
  
              if (this.integratedServer != null && this.integratedServer.isAnvilFileSet()) {
                  this.integratedServer.initiateShutdown();
@@ -384,7 +400,7 @@
              }
  
              this.integratedServer = null;
-@@ -2047,6 +2102,7 @@
+@@ -2047,6 +2105,7 @@
              this.ingameGUI.resetPlayersOverlayFooterHeader();
              this.setServerData(null);
              this.integratedServerIsRunning = false;
@@ -392,7 +408,7 @@
          }
  
          this.soundHandler.stopSounds();
-@@ -2060,6 +2116,8 @@
+@@ -2060,6 +2119,8 @@
          }
  
          TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
@@ -401,7 +417,7 @@
          if (worldClientIn != null) {
              if (!this.integratedServerIsRunning) {
                  AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-@@ -2112,6 +2170,7 @@
+@@ -2112,6 +2173,7 @@
                  this.player == null ? new RecipeBook() : this.player.getRecipeBook()
              );
          this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
@@ -409,7 +425,7 @@
          this.player.dimension = dimension;
          this.renderViewEntity = this.player;
          this.player.preparePlayerToSpawn();
-@@ -2153,110 +2212,8 @@
+@@ -2153,110 +2215,8 @@
      /** Called when user clicked he's mouse middle button (pick block) */
      private void middleClickMouse() {
          if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) {
@@ -522,7 +538,7 @@
          }
      }
  
-@@ -2293,7 +2250,11 @@
+@@ -2293,7 +2253,11 @@
          });
          theCrash.getCategory().addDetail("OpenGL", new ICrashReportDetail<String>() {
              public String call() {
@@ -535,7 +551,7 @@
              }
          });
          theCrash.getCategory().addDetail("GL Caps", new ICrashReportDetail<String>() {
-@@ -2372,6 +2333,7 @@
+@@ -2372,6 +2336,7 @@
          return instance;
      }
  
@@ -543,7 +559,7 @@
      public ListenableFuture<Object> scheduleResourcesRefresh() {
          return this.addScheduledTask(new Runnable() {
              @Override
-@@ -2536,15 +2498,8 @@
+@@ -2536,15 +2501,8 @@
  
      /** Used in the usage snooper. */
      public static int getGLMaximumTextureSize() {
@@ -561,7 +577,7 @@
      }
  
      /** Returns whether snooping is enabled or not. */
-@@ -2658,6 +2613,9 @@
+@@ -2658,6 +2616,9 @@
          }
  
          if (this.player != null) {
@@ -571,7 +587,7 @@
              if (this.player.world.provider instanceof WorldProviderHell) {
                  return MusicTicker.MusicType.NETHER;
              } else if (this.player.world.provider instanceof WorldProviderEnd) {
-@@ -2677,9 +2635,9 @@
+@@ -2677,9 +2638,9 @@
          if (i != 0 && !Keyboard.isRepeatEvent()) {
              if (!(this.currentScreen instanceof GuiControls) || ((GuiControls)this.currentScreen).time <= getSystemTime() - 20L) {
                  if (Keyboard.getEventKeyState()) {
@@ -583,7 +599,7 @@
                          this.ingameGUI
                              .getChatGUI()
                              .printChatMessage(ScreenShotHelper.saveScreenshot(this.gameDir, this.displayWidth, this.displayHeight, this.framebuffer));
-@@ -2691,7 +2649,7 @@
+@@ -2691,7 +2652,7 @@
                              ((ScreenChatOptions)this.currentScreen).updateNarratorButton();
                          }
                      }
@@ -592,7 +608,7 @@
              }
          }
      }
-@@ -2720,7 +2678,7 @@
+@@ -2720,7 +2681,7 @@
              try {
                  return Futures.immediateFuture(callableToSchedule.call());
              } catch (Exception exception) {
@@ -601,7 +617,7 @@
              }
          } else {
              ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(callableToSchedule);
-@@ -2802,7 +2760,11 @@
+@@ -2802,7 +2763,11 @@
          return this.blockColors;
      }
  
@@ -614,7 +630,7 @@
      public boolean isReducedDebug() {
          return this.player != null && this.player.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
      }
-@@ -2814,4 +2776,8 @@
+@@ -2814,4 +2779,8 @@
      public Tutorial getTutorial() {
          return this.tutorial;
      }

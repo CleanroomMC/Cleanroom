@@ -30,7 +30,7 @@
              int k = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
              int l = this.top + 4 - (int)this.amountScrolled;
              if (this.hasListHeader) {
-@@ -438,4 +419,51 @@
+@@ -438,4 +419,50 @@
      public int getSlotHeight() {
          return this.slotHeight;
      }
