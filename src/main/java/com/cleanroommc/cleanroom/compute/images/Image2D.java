@@ -405,7 +405,7 @@ public final class Image2D extends Image<Vector2L> {
             try (CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF))) {
                 try (CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF))) {
                     format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
-                    descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE1D).image_width(width).image_height(height)
+                    descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE2D).image_width(width).image_height(height)
                             .image_depth(0)
                             .image_row_pitch(hostMemory != null ? width * channelType.sizeof(channelOrder) : 0)
                             .image_slice_pitch(0)
