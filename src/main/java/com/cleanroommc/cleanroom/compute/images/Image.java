@@ -91,20 +91,92 @@ public sealed abstract class Image<CT> permits Image1D {
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           boolean blocking, long... dependencies);
+    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+                              @NonNull CT from, int mipmap, @NonNull CT size,
+                              long rowPitch, long slicePitch, short @NonNull [] array,
+                              boolean blocking, long... dependencies);
+    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+                              @NonNull CT from, int mipmap, @NonNull CT size,
+                              long rowPitch, long slicePitch, int @NonNull [] array,
+                              boolean blocking, long... dependencies);
+    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+                              @NonNull CT from, int mipmap, @NonNull CT size,
+                              long rowPitch, long slicePitch, float @NonNull [] array,
+                              boolean blocking, long... dependencies);
+    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+                              @NonNull CT from, int mipmap, @NonNull CT size,
+                              long rowPitch, long slicePitch, double @NonNull [] array,
+                              boolean blocking, long... dependencies);
     public final <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, long... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
+    }
+    public final long read(@NonNull MemoryStack stack, long commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, short @NonNull [] array,
+                           boolean blocking, long... dependencies) {
+        return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
+    }
+    public final long read(@NonNull MemoryStack stack, long commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, int @NonNull [] array,
+                           boolean blocking, long... dependencies) {
+        return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
+    }
+    public final long read(@NonNull MemoryStack stack, long commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, float @NonNull [] array,
+                           boolean blocking, long... dependencies) {
+        return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
+    }
+    public final long read(@NonNull MemoryStack stack, long commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, double @NonNull [] array,
+                           boolean blocking, long... dependencies) {
+        return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
 
     public abstract <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
                                                            boolean blocking, long... dependencies);
+    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, short @NonNull [] array,
+                               boolean blocking, long... dependencies);
+    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, int @NonNull [] array,
+                               boolean blocking, long... dependencies);
+    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, float @NonNull [] array,
+                               boolean blocking, long... dependencies);
+    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, double @NonNull [] array,
+                               boolean blocking, long... dependencies);
     public final <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
                                                         @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, long... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
+    }
+    public final long write(@NonNull MemoryStack stack, long commandQueue,
+                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, short @NonNull [] array,
+                            boolean blocking, long... dependencies) {
+        return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
+    }
+    public final long write(@NonNull MemoryStack stack, long commandQueue,
+                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, int @NonNull [] array,
+                            boolean blocking, long... dependencies) {
+        return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
+    }
+    public final long write(@NonNull MemoryStack stack, long commandQueue,
+                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, float @NonNull [] array,
+                            boolean blocking, long... dependencies) {
+        return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
+    }
+    public final long write(@NonNull MemoryStack stack, long commandQueue,
+                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, double @NonNull [] array,
+                            boolean blocking, long... dependencies) {
+        return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
 
     protected static @NonNull String imageTypeName(final long val) {
