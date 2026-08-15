@@ -15,10 +15,11 @@ import org.lwjgl.opencl.CLImageDesc;
 import org.lwjgl.opencl.CLImageFormat;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public sealed abstract class Image<CT> permits Image1D, Image2D, Image3D {
+public sealed abstract class Image<CT> implements Closeable permits Image1D, Image2D, Image3D {
 
     public final long handle;
     protected final Vector3L size;
@@ -197,6 +198,11 @@ public sealed abstract class Image<CT> permits Image1D, Image2D, Image3D {
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, double @NonNull [] array,
                             boolean blocking, long... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
+    }
+
+    @Override
+    public final void close() {
+        CL12.clReleaseMemObject(this.handle);
     }
 
     protected static @NonNull String imageTypeName(final long val) {
