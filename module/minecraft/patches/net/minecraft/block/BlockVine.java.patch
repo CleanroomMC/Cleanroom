@@ -37,7 +37,7 @@
                          EnumFacing enumfacing = enumfacing2.rotateY();
                          EnumFacing enumfacing1 = enumfacing2.rotateYCCW();
                          boolean flag1 = state.getValue(getPropertyFor(enumfacing));
-@@ -462,14 +463,15 @@
+@@ -462,15 +463,16 @@
          return i;
      }
  
@@ -52,12 +52,13 @@
 +    /*************************FORGE START***********************************/
 +    @Override public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity){ return true; }
 +    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
-+    @Override
+     @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
 +        return java.util.Arrays.asList(new ItemStack(this, 1));
 +    }
 +    /*************************FORGE END***********************************/
 +
-     @Override
++    @Override
      public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
          return BlockFaceShape.UNDEFINED;
+     }

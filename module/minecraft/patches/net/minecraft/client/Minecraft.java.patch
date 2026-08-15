@@ -205,15 +205,16 @@
          if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer) {
              this.gameSettings.showDebugInfo = false;
              this.ingameGUI.getChatGUI().clearChatMessages(true);
-@@ -963,6 +978,7 @@
+@@ -963,6 +978,8 @@
              this.soundHandler.unloadSounds();
          } finally {
              Display.destroy();
 +            com.cleanroommc.client.input.SDL.shutdown();
++            com.cleanroommc.kirino.engine.ShutdownManager.runMainHooks();
              if (!this.hasCrashed) {
                  System.exit(0);
              }
-@@ -999,7 +1015,7 @@
+@@ -999,7 +1016,7 @@
          long i1 = System.nanoTime() - l;
          this.checkGLError("Pre render");
          this.profiler.endStartSection("sound");
@@ -222,7 +223,7 @@
          this.profiler.endSection();
          this.profiler.startSection("render");
          GlStateManager.pushMatrix();
-@@ -1009,11 +1025,13 @@
+@@ -1009,11 +1026,13 @@
          GlStateManager.enableTexture2D();
          this.profiler.endSection();
          if (!this.skipRenderWorld) {
@@ -236,7 +237,7 @@
          }
  
          this.profiler.endSection();
-@@ -1308,9 +1326,9 @@
+@@ -1308,9 +1327,9 @@
          if (this.leftClickCounter <= 0 && !this.player.isHandActive()) {
              if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                  BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -249,7 +250,7 @@
                      this.player.swingArm(EnumHand.MAIN_HAND);
                  }
              } else {
-@@ -1333,7 +1351,8 @@
+@@ -1333,7 +1352,8 @@
                          break;
                      case BLOCK:
                          BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -259,7 +260,7 @@
                              this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                              break;
                          }
-@@ -1343,6 +1362,7 @@
+@@ -1343,6 +1363,7 @@
                          }
  
                          this.player.resetCooldown();
@@ -267,7 +268,7 @@
                  }
  
                  this.player.swingArm(EnumHand.MAIN_HAND);
-@@ -1399,6 +1419,7 @@
+@@ -1399,6 +1420,7 @@
                          }
                      }
  
@@ -275,7 +276,7 @@
                      if (!itemstack.isEmpty()
                          && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
                          this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
-@@ -1411,6 +1432,11 @@
+@@ -1411,6 +1433,11 @@
  
      /** Toggles fullscreen mode. */
      public void toggleFullscreen() {
@@ -287,7 +288,7 @@
          try {
              this.fullscreen = !this.fullscreen;
              this.gameSettings.fullScreen = this.fullscreen;
-@@ -1445,6 +1471,10 @@
+@@ -1445,6 +1472,10 @@
              }
  
              Display.setFullscreen(this.fullscreen);
@@ -298,7 +299,7 @@
              Display.setVSyncEnabled(this.gameSettings.enableVsync);
              this.updateDisplay();
          } catch (Exception exception) {
-@@ -1483,6 +1513,8 @@
+@@ -1483,6 +1514,8 @@
              this.rightClickDelayTimer--;
          }
  
@@ -307,7 +308,7 @@
          this.profiler.startSection("gui");
          if (!this.isGamePaused) {
              this.ingameGUI.updateTick();
-@@ -1632,6 +1664,7 @@
+@@ -1632,6 +1665,7 @@
          }
  
          this.profiler.endSection();
@@ -315,7 +316,7 @@
          this.systemTime = getSystemTime();
      }
  
-@@ -1705,6 +1738,7 @@
+@@ -1705,6 +1739,7 @@
                      }
                  }
              }
@@ -323,7 +324,7 @@
          }
  
          this.processKeyBinds();
-@@ -1896,6 +1930,8 @@
+@@ -1896,6 +1931,8 @@
  
      private void runTickMouse() throws IOException {
          while (Mouse.next()) {
@@ -332,7 +333,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
              if (Mouse.getEventButtonState()) {
-@@ -1931,6 +1967,7 @@
+@@ -1931,6 +1968,7 @@
                      this.currentScreen.handleMouseInput();
                  }
              }
@@ -340,7 +341,7 @@
          }
      }
  
-@@ -1949,6 +1986,7 @@
+@@ -1949,6 +1987,7 @@
  
      /** Arguments: World foldername,  World ingame name, WorldSettings */
      public void launchIntegratedServer(String folderName, String worldName, @Nullable WorldSettings worldSettingsIn) {
@@ -348,7 +349,7 @@
          this.loadWorld(null);
          System.gc();
          ISaveHandler isavehandler = this.saveLoader.getSaveLoader(folderName, false);
-@@ -1990,6 +2028,11 @@
+@@ -1990,6 +2029,11 @@
          this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
  
          while (!this.integratedServer.serverIsInRunLoop()) {
@@ -360,7 +361,7 @@
              String s = this.integratedServer.getUserMessage();
              if (s != null) {
                  this.loadingScreen.displayLoadingString(I18n.format(s));
-@@ -2007,8 +2050,13 @@
+@@ -2007,8 +2051,13 @@
          SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
          NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
          networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, null));
@@ -376,7 +377,7 @@
          this.networkManager = networkmanager;
      }
  
-@@ -2019,6 +2067,8 @@
+@@ -2019,6 +2068,8 @@
  
      /** par2Str is displayed on the loading screen to the user unloads the current world first */
      public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
@@ -385,7 +386,7 @@
          if (worldClientIn == null) {
              NetHandlerPlayClient nethandlerplayclient = this.getConnection();
              if (nethandlerplayclient != null) {
-@@ -2027,6 +2077,14 @@
+@@ -2027,6 +2078,14 @@
  
              if (this.integratedServer != null && this.integratedServer.isAnvilFileSet()) {
                  this.integratedServer.initiateShutdown();
@@ -400,7 +401,7 @@
              }
  
              this.integratedServer = null;
-@@ -2047,6 +2105,7 @@
+@@ -2047,6 +2106,7 @@
              this.ingameGUI.resetPlayersOverlayFooterHeader();
              this.setServerData(null);
              this.integratedServerIsRunning = false;
@@ -408,7 +409,7 @@
          }
  
          this.soundHandler.stopSounds();
-@@ -2060,6 +2119,8 @@
+@@ -2060,6 +2120,8 @@
          }
  
          TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
@@ -417,7 +418,7 @@
          if (worldClientIn != null) {
              if (!this.integratedServerIsRunning) {
                  AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-@@ -2112,6 +2173,7 @@
+@@ -2112,6 +2174,7 @@
                  this.player == null ? new RecipeBook() : this.player.getRecipeBook()
              );
          this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
@@ -425,7 +426,7 @@
          this.player.dimension = dimension;
          this.renderViewEntity = this.player;
          this.player.preparePlayerToSpawn();
-@@ -2153,110 +2215,8 @@
+@@ -2153,110 +2216,8 @@
      /** Called when user clicked he's mouse middle button (pick block) */
      private void middleClickMouse() {
          if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) {
@@ -538,7 +539,7 @@
          }
      }
  
-@@ -2293,7 +2253,11 @@
+@@ -2293,7 +2254,11 @@
          });
          theCrash.getCategory().addDetail("OpenGL", new ICrashReportDetail<String>() {
              public String call() {
@@ -551,7 +552,7 @@
              }
          });
          theCrash.getCategory().addDetail("GL Caps", new ICrashReportDetail<String>() {
-@@ -2372,6 +2336,7 @@
+@@ -2372,6 +2337,7 @@
          return instance;
      }
  
@@ -559,7 +560,7 @@
      public ListenableFuture<Object> scheduleResourcesRefresh() {
          return this.addScheduledTask(new Runnable() {
              @Override
-@@ -2536,15 +2501,8 @@
+@@ -2536,15 +2502,8 @@
  
      /** Used in the usage snooper. */
      public static int getGLMaximumTextureSize() {
@@ -577,7 +578,7 @@
      }
  
      /** Returns whether snooping is enabled or not. */
-@@ -2658,6 +2616,9 @@
+@@ -2658,6 +2617,9 @@
          }
  
          if (this.player != null) {
@@ -587,7 +588,7 @@
              if (this.player.world.provider instanceof WorldProviderHell) {
                  return MusicTicker.MusicType.NETHER;
              } else if (this.player.world.provider instanceof WorldProviderEnd) {
-@@ -2677,9 +2638,9 @@
+@@ -2677,9 +2639,9 @@
          if (i != 0 && !Keyboard.isRepeatEvent()) {
              if (!(this.currentScreen instanceof GuiControls) || ((GuiControls)this.currentScreen).time <= getSystemTime() - 20L) {
                  if (Keyboard.getEventKeyState()) {
@@ -599,7 +600,7 @@
                          this.ingameGUI
                              .getChatGUI()
                              .printChatMessage(ScreenShotHelper.saveScreenshot(this.gameDir, this.displayWidth, this.displayHeight, this.framebuffer));
-@@ -2691,7 +2652,7 @@
+@@ -2691,7 +2653,7 @@
                              ((ScreenChatOptions)this.currentScreen).updateNarratorButton();
                          }
                      }
@@ -608,7 +609,7 @@
              }
          }
      }
-@@ -2720,7 +2681,7 @@
+@@ -2720,7 +2682,7 @@
              try {
                  return Futures.immediateFuture(callableToSchedule.call());
              } catch (Exception exception) {
@@ -617,7 +618,7 @@
              }
          } else {
              ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(callableToSchedule);
-@@ -2802,7 +2763,11 @@
+@@ -2802,7 +2764,11 @@
          return this.blockColors;
      }
  
@@ -630,7 +631,7 @@
      public boolean isReducedDebug() {
          return this.player != null && this.player.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
      }
-@@ -2814,4 +2779,8 @@
+@@ -2814,4 +2780,8 @@
      public Tutorial getTutorial() {
          return this.tutorial;
      }

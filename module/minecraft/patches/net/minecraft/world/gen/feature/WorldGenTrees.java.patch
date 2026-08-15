@@ -50,7 +50,7 @@
                                      this.setBlockAndNotifyAdequately(worldIn, blockpos, this.metaLeaves);
                                  }
                              }
-@@ -102,14 +105,17 @@
+@@ -102,15 +105,18 @@
                      }
                  }
  
@@ -65,7 +65,7 @@
 +                    for (int j3 = 0; j3 < i; j3++) {
 +                        BlockPos upN = position.up(j3);
 +                        state = worldIn.getBlockState(upN);
-+
+ 
 +                        if (state.getBlock().isAir(state, worldIn, upN) || state.getBlock().isLeaves(state, worldIn, upN) || state.getMaterial() == Material.VINE) {
 +                            this.setBlockAndNotifyAdequately(worldIn, position.up(j3), this.metaWood);
 +
@@ -73,9 +73,10 @@
 +                                if (rand.nextInt(3) > 0 && worldIn.isAirBlock(position.add(-1, j3, 0))) {
 +                                    this.addVine(worldIn, position.add(-1, j3, 0), BlockVine.EAST);
 +                                }
- 
++
                              if (rand.nextInt(3) > 0 && worldIn.isAirBlock(position.add(1, j3, 0))) {
                                  this.addVine(worldIn, position.add(1, j3, 0), BlockVine.WEST);
+                             }
 @@ -135,24 +141,25 @@
                          for (int l4 = position.getX() - k4; l4 <= position.getX() + k4; l4++) {
                              for (int i5 = position.getZ() - k4; i5 <= position.getZ() + k4; i5++) {
