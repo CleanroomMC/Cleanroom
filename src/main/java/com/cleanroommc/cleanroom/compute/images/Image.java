@@ -87,6 +87,26 @@ public sealed abstract class Image<CT> permits Image1D {
                                     @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap,
                                     @NonNull CT2 size, long... dependencies);
 
+    public abstract <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
+                                                          @NonNull CT from, int mipmap, @NonNull CT size,
+                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+                                                          boolean blocking, long... dependencies);
+    public final <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, B buffer,
+                                                       boolean blocking, long... dependencies) {
+        return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
+    }
+
+    public abstract <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           boolean blocking, long... dependencies);
+    public final <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
+                                                        @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, B buffer,
+                                                       boolean blocking, long... dependencies) {
+        return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
+    }
+
     protected static @NonNull String imageTypeName(final long val) {
         return switch((int) val) {
             case CL12.CL_MEM_OBJECT_IMAGE1D -> "image1d";
