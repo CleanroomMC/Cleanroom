@@ -175,6 +175,73 @@ public final class Image1D extends Image<Long> {
     }
 
     @Override
+    public long read(@NonNull MemoryStack stack, long commandQueue,
+                     @NonNull Long from, int mipmap, @NonNull Long size,
+                     long rowPitch, long slicePitch, short @NonNull [] array,
+                     boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
     public <B extends Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
                                          @NonNull Long from, int mipmap, @NonNull Long size,
                                          long rowPitch, long slicePitch,
@@ -202,6 +269,70 @@ public final class Image1D extends Image<Long> {
                         rowPitch, slicePitch, db, waitList, ev);
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
             });
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
+                    commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
             return ev.get(0);
         }
     }
