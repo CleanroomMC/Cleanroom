@@ -104,7 +104,7 @@ public sealed abstract class Image<CT> permits Image1D {
     }
 
     public abstract <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
-                                    @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap,
+                                    @NonNull CT from, int fromMipmap, @NonNull CT2 to, int toMipmap,
                                     @NonNull CT2 size, long... dependencies);
 
     public abstract <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
