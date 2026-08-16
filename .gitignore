@@ -5,7 +5,4 @@
 **/run/
 /module/minecraft/src/
 
-# TODO
-module/cleanroom/src/main/java/com/cleanroommc/common/CleanroomVersion.java
-
 !/.idea/icon.svg

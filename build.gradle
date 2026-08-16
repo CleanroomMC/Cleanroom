@@ -22,7 +22,6 @@ idea {
 
 cleanroom {
     loaderProject = true
-    developInitialPatches = false
     accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
 }
 
@@ -35,9 +34,22 @@ def modules = [
         'builtin/configanytime'
 ]
 
+def generatedVersionRoot = layout.buildDirectory.dir('generated/sources/version/java')
+def generateCleanroomVersion = tasks.register('generateCleanroomVersion', Copy) {
+    def shortVersion = version.toString().replaceFirst(/\+.*$/, '')
+    def fullVersion = version.toString()
+    inputs.property('shortVersion', shortVersion)
+    inputs.property('fullVersion', fullVersion)
+    from 'templates/CleanroomVersion.java'
+    into generatedVersionRoot.map { it.dir('com/cleanroommc/common') }
+    filter { it.replace('%VERSION%', shortVersion).replace('%BUILD_VERSION%', fullVersion) }
+    filteringCharset = 'UTF-8'
+}
+
 sourceSets {
     main {
-        java.srcDirs = modules.collect { "module/${it}/src/main/java" } + 'module/minecraft/injected/java'
+        java.srcDirs = modules.collect { "module/${it}/src/main/java" }
+        java.srcDir files(generatedVersionRoot).builtBy(generateCleanroomVersion)
         // Fixme: Temp
         java.exclude 'com/cleanroommc/kirino/utils/KsmlcUtils.java'
         resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
@@ -62,11 +74,19 @@ var export_arguments = [
         '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
 ]
 
-configurations.configureEach {
+def toolConfigurations = [
+        'decompiler', 'mergetool', 'mcinjector', 'installertools', 'accesstransformer'
+] as Set
+
+configurations.configureEach { configuration ->
     exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
     // patchy ships its own copy of io.netty.bootstrap.Bootstrap
     // Against 4.2 netty it shadows the real class and dies on a superclass method that no longer exists
     exclude group: 'com.mojang', module: 'patchy'
+
+    if (configuration.name in toolConfigurations) {
+        return
+    }
 
     resolutionStrategy.eachDependency { details ->
         switch ("${details.requested.group}:${details.requested.name}") {
@@ -198,6 +218,13 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.register('printVersion') {
+    group = 'help'
+    description = 'Prints the computed project version.'
+    def v = version.toString()
+    doLast { println v }
+}
+
 tasks.named('test', Test) {
     maxParallelForks = 1
     useJUnitPlatform()
@@ -205,17 +232,29 @@ tasks.named('test', Test) {
     jvmArgs open_arguments + export_arguments
 }
 
-tasks.register('printBuildInfo') {
+tasks.named('compileJava', JavaCompile).configure { compile ->
+    dependsOn generateCleanroomVersion
     def v = version.toString()
-    outputs.upToDateWhen { false }
-    doLast {
+    doFirst {
         logger.lifecycle("Cleanroom ${v}")
         logger.lifecycle("Java: ${System.getProperty('java.version')} | JVM: ${System.getProperty('java.vm.version')} | Vendor: ${System.getProperty('java.vendor')} | Arch: ${System.getProperty('os.arch')}")
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
-    dependsOn 'printBuildInfo'
     options.encoding = 'UTF-8'
     options.compilerArgs += export_arguments
+}
+
+publishing {
+    repositories {
+        maven {
+            name = 'CleanroomMaven'
+            url = 'https://repo.cleanroommc.com/releases'
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
 }
