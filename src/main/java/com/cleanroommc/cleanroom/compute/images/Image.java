@@ -19,10 +19,11 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public sealed abstract class Image<CT> implements Closeable permits Image1D, Image2D, Image3D {
+public sealed abstract class Image<CT> implements Closeable permits Image1D, Image1DArray, Image2D, Image3D {
 
     public final long handle;
     protected final Vector3L size;
+    public final long length;
     public final int mipmaps;
 
     private Image(@NonNull MemoryStack stack,
@@ -40,6 +41,7 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
                 (int) descriptor.image_depth()
         );
         this.mipmaps = descriptor.num_mip_levels();
+        this.length = descriptor.image_array_size();
 
         IntBuffer err = stack.mallocInt(1);
         this.handle = CL12.clCreateImage(
