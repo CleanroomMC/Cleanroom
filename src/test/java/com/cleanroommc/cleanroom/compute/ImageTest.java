@@ -12,11 +12,13 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -141,5 +143,10 @@ public class ImageTest {
             if (image.get() != null)
                 image.get().close();
         }
+    }
+
+    @AfterAll
+    public static void cleanup() throws IOException {
+        queue.close();
     }
 }
