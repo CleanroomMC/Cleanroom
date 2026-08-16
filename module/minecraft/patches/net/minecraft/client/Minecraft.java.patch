@@ -205,15 +205,15 @@
          if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer) {
              this.gameSettings.showDebugInfo = false;
              this.ingameGUI.getChatGUI().clearChatMessages(true);
-@@ -963,6 +978,8 @@
+@@ -962,6 +977,8 @@
+ 
              this.soundHandler.unloadSounds();
          } finally {
-             Display.destroy();
-+            com.cleanroommc.client.input.SDL.shutdown();
 +            com.cleanroommc.kirino.engine.ShutdownManager.runMainHooks();
++            com.cleanroommc.client.input.SDL.shutdown();
+             Display.destroy();
              if (!this.hasCrashed) {
                  System.exit(0);
-             }
 @@ -999,7 +1016,7 @@
          long i1 = System.nanoTime() - l;
          this.checkGLError("Pre render");
