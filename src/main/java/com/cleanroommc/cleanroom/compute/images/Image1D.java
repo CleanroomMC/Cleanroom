@@ -17,7 +17,7 @@ import java.nio.*;
 import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleEnqueueCopyImageError;
 import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleEnqueueReadWriteImageError;
 
-public final class Image1D extends Image<Long> {
+public sealed class Image1D extends Image<Long> permits Image1DBuffer{
 
     public Image1D(@NonNull MemoryStack stack,
                    @NonNull BufferFlags memoryFlags,
@@ -27,6 +27,10 @@ public final class Image1D extends Image<Long> {
                    final @NonNull ChannelOrder channelOrder,
                    @Nullable ByteBuffer hostMemory) {
         super(workaround(stack, memoryFlags, size, mipMaps, channelType, channelOrder, hostMemory));
+    }
+
+    protected Image1D(@NonNull Workaround workaround) {
+        super(workaround);
     }
 
     @Override
