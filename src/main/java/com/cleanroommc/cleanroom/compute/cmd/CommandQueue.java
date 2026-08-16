@@ -2022,6 +2022,50 @@ public class CommandQueue implements Closeable {
         return new Event(image.fill(stack, this.commandQueue, color, from, size, dependencies), stack);
     }
 
+    public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
+                                                           int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(color);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.fill(stack, this.commandQueue, color, from, size, mipmap, dependencies), stack);
+    }
+
+    public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
+                                                           int @NonNull [] color, @NonNull CT from, @NonNull CT size,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(color);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.fill(stack, this.commandQueue, color, from, size, dependencies), stack);
+    }
+
+    public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
+                                float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
+                                long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(color);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.fill(stack, this.commandQueue, color, from, size, mipmap, dependencies), stack);
+    }
+
+    public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
+                                float @NonNull [] color, @NonNull CT from, @NonNull CT size,
+                                long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(color);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.fill(stack, this.commandQueue, color, from, size, dependencies), stack);
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Image Copy">
@@ -2134,6 +2178,199 @@ public class CommandQueue implements Closeable {
         return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, short @NonNull [] array,
+                                                           boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, short @NonNull [] array,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, short @NonNull [] array,
+                                                           boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, short @NonNull [] array,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, int @NonNull [] array,
+                                                           boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, int @NonNull [] array,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, int @NonNull [] array,
+                                                           boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, int @NonNull [] array,
+                                                           long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+
     //</editor-fold>
 
     //<editor-fold desc="Image Write">
@@ -2184,8 +2421,193 @@ public class CommandQueue implements Closeable {
         return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
-    //</editor-fold>
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, short @NonNull [] array,
+                                 boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
 
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, short @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, short @NonNull [] array,
+                                 boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, short @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, int mipmap, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, int @NonNull [] array,
+                                                            boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, int mipmap, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, int @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, int @NonNull [] array,
+                                                            boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, int @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, float @NonNull [] array,
+                                 boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, float @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, float @NonNull [] array,
+                                 boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, float @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, int mipmap, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, double @NonNull [] array,
+                                                            boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, int mipmap, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, double @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, double @NonNull [] array,
+                                                            boolean blocking, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+    }
+
+    public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
+                                                            @NonNull CT from, @NonNull CT size,
+                                                            long rowPitch, long slicePitch, double @NonNull [] array, long... dependencies) {
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(image);
+        Preconditions.checkNotNull(array);
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(size);
+        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+    }
+
+    //</editor-fold>
 
     @Override
     public void close() throws IOException {
@@ -3561,6 +3983,71 @@ public class CommandQueue implements Closeable {
             return transferOwnership(next);
         }
 
+        public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
+                                        @NonNull CT from, @NonNull CT size, int mipmap,
+                                        final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageFill(stack, image, color, from, size, mipmap, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
+                                        @NonNull CT from, @NonNull CT size,
+                                        final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageFill(stack, image, color, from, size, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
+                                        @NonNull CT from, @NonNull CT size, int mipmap,
+                                        final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageFill(stack, image, color, from, size, mipmap, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
+                                        @NonNull CT from, @NonNull CT size,
+                                        final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageFill(stack, image, color, from, size, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+
         //</editor-fold>
 
         //<editor-fold desc="Image Copy">
@@ -3706,6 +4193,278 @@ public class CommandQueue implements Closeable {
             return transferOwnership(next);
         }
 
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, short @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, short @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, short @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, short @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, int @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, int @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, int @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, int @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, float @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, float @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, float @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, float @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, double @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, int mipmap, @NonNull CT size,
+                               long rowPitch, long slicePitch, double @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, double @NonNull [] array,
+                               boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event read(Image<CT> image,
+                               @NonNull CT from, @NonNull CT size,
+                               long rowPitch, long slicePitch, double @NonNull [] array,
+                               final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
         //</editor-fold>
 
         //<editor-fold desc="Image Write">
@@ -3777,6 +4536,279 @@ public class CommandQueue implements Closeable {
 
             return transferOwnership(next);
         }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, float @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, double @NonNull [] array,
+                                final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            return transferOwnership(next);
+        }
+
 
         //</editor-fold>
 
