@@ -94,9 +94,9 @@ public final class Image3D extends Image<Vector3L> {
                     commandQueue,
                     this.handle,
                     color,
-                    coordinates.slice(0,3),
-                    coordinates.slice(3,3),
-                    bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
+                    coordinates.slice(0,4),
+                    coordinates.slice(4,3),
+                    bufLen - 8 > 0 ? coordinates.slice(6, bufLen - 8) : null,
                     coordinates.slice(bufLen - 1, 1)
             ));
             return coordinates.get(bufLen - 1);
@@ -110,7 +110,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
-            int bufLen = 7;
+            int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
             PointerBuffer coordinates = makeParameterBuffer(substack, from, size, mipmap, dependencies);
@@ -118,9 +118,9 @@ public final class Image3D extends Image<Vector3L> {
                     commandQueue,
                     this.handle,
                     color,
-                    coordinates.slice(0,3),
-                    coordinates.slice(3,3),
-                    bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
+                    coordinates.slice(0,4),
+                    coordinates.slice(4,3),
+                    bufLen - 8 > 0 ? coordinates.slice(6, bufLen - 8) : null,
                     coordinates.slice(bufLen - 1, 1)
             ));
             return coordinates.get(bufLen - 1);
