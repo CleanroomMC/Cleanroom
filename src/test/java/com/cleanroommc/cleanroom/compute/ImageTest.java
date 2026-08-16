@@ -2,11 +2,9 @@ package com.cleanroommc.cleanroom.compute;
 
 import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
-import com.cleanroommc.cleanroom.compute.images.ChannelOrder;
-import com.cleanroommc.cleanroom.compute.images.ChannelType;
-import com.cleanroommc.cleanroom.compute.images.Image;
-import com.cleanroommc.cleanroom.compute.images.Image1D;
+import com.cleanroommc.cleanroom.compute.images.*;
 import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
+import com.cleanroommc.cleanroom.compute.utils.ColorUtils;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.DummyModContainer;
@@ -19,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -109,6 +109,37 @@ public class ImageTest {
                 image1.get().close();
             if (image2.get() != null)
                 image2.get().close();
+        }
+    }
+
+    @Test
+    public void image1DWriteTest() {
+        AtomicReference<Image<Long>> image = new AtomicReference<>(null);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer color = stack.callocFloat(4);
+            color.put(.5f);
+            color.rewind();
+            FloatBuffer writeBuffer = stack.callocFloat(4);
+            writeBuffer.put(.63f);
+            writeBuffer.put(.16f);
+            writeBuffer.put(.06f);
+            writeBuffer.put(.3f);
+            writeBuffer.rewind();
+            FloatBuffer imageBuffer = stack.callocFloat(10);
+            assertDoesNotThrow(() -> image.set(new Image1D(stack,
+                    BufferFlags.READ_WRITE,
+                    10L, 0,
+                    ChannelType.FLOAT, ChannelOrder.DEPTH,
+                    null))
+            );
+            assertDoesNotThrow(() -> queue.imageFill(stack, image.get(), color, 0L, 10L)
+                    .write(image.get(), 3L, 4L, 0, 0, writeBuffer)
+                    .read(image.get(), 0L, 0, 10L, 0, 0, imageBuffer).execute());
+            for (int i = 0; i < 10; i++)
+                assertEquals(((i >= 3 && i <= 6) ? writeBuffer.get((i-3)) : color.get(0)), imageBuffer.get(i));
+        } finally {
+            if (image.get() != null)
+                image.get().close();
         }
     }
 }
