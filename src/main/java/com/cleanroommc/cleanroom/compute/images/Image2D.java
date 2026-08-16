@@ -391,7 +391,6 @@ public final class Image2D extends Image<Vector2L> {
         return coordinates.rewind();
     }
 
-
     private static Workaround workaround(@NonNull MemoryStack stack,
                                          @NonNull BufferFlags memoryFlags,
                                          final long width,
