@@ -19,7 +19,7 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public sealed abstract class Image<CT> implements Closeable permits Image1D, Image1DArray, Image2D, Image3D {
+public sealed abstract class Image<CT> implements Closeable permits Image1D, Image1DArray, Image2D, Image2DArray, Image3D {
 
     public final long handle;
     protected final Vector3L size;
