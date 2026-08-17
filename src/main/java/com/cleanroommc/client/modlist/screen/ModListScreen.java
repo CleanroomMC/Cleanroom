@@ -9,6 +9,7 @@ import com.cleanroommc.client.modlist.RenderUtils;
 import com.cleanroommc.client.modlist.data.IModData;
 import com.cleanroommc.client.modlist.data.MinecraftModData;
 import com.cleanroommc.client.modlist.screen.widget.*;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
 public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
     private static final Favourites FAVOURITES = new Favourites();
+    // Creative tabs whose icon lookup threw; some mods build their icon from state that isn't available here
+    private static final Set<CreativeTabs> BROKEN_TAB_ICONS = new ReferenceOpenHashSet<>();
     private static final ResourceLocation MISSING_BANNER = ModListConstants.resource("textures/gui/missing_banner.png");
     private static final ResourceLocation MISSING_BACKGROUND = ModListConstants.resource("textures/gui/missing_background.png");
     private static final ResourceLocation MINECRAFT_LOGO = ModListConstants.resource("textures/gui/minecraft.png");
@@ -726,26 +729,38 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
             // If the mod has a creative tab, the mod list will attempt to use the tab's icon
             for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-                if (tab == null) continue;
+                if (tab == null || BROKEN_TAB_ICONS.contains(tab)) {
+                    continue;
+                }
                 ItemStack tabItem;
                 try {
                     tabItem = tab.getIcon();
-                } catch (Exception e) {
-                    ModListConstants.LOG.warn("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
+                } catch (Throwable t) {
+                    // Some mods build their creative tab icon from state that isn't available here, such as the world
+                    BROKEN_TAB_ICONS.add(tab);
+                    ModListConstants.LOG.warn("Failed to get creative tab icon from tab '{}', it will be skipped", tab.getTabLabel(), t);
                     continue;
                 }
-                if (tabItem.isEmpty()) continue;
+                if (tabItem.isEmpty()) {
+                    continue;
+                }
                 ResourceLocation resource = tabItem.getItem().getRegistryName();
-                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) {
+                    continue;
+                }
                 this.cachedData.itemIcon = tabItem;
                 return tabItem;
             }
 
             // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
             for (Item item : ForgeRegistries.ITEMS) {
-                if (item == null) continue;
+                if (item == null) {
+                    continue;
+                }
                 ResourceLocation resource = item.getRegistryName();
-                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) {
+                    continue;
+                }
                 ItemStack itemStack = new ItemStack(item);
                 this.cachedData.itemIcon = itemStack;
                 return itemStack;
