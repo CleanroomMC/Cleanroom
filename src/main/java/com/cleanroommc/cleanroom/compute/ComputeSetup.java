@@ -70,13 +70,15 @@ public class ComputeSetup {
                 }
             }
             long[] deviceArray = new long[devices.capacity()];
+            CLCapabilities[] deviceCapabilities = new CLCapabilities[deviceArray.length];
             for (int i = 0; i < deviceArray.length; i++) {
                 deviceArray[i] = devices.get(i);
+                deviceCapabilities[i] = CL.createDeviceCapabilities(deviceArray[i], platformCapabilities);
             }
             Compute.init(
                     stack,
                     LOGGER,
-                    platformCapabilities, CL.createDeviceCapabilities(devices.get(0), platformCapabilities),
+                    platformCapabilities, deviceCapabilities,
                     ctx, deviceArray
             );
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {

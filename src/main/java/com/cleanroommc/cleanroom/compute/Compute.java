@@ -22,27 +22,27 @@ public class Compute {
 
     private static Compute INSTANCE = null;
 
-    public final CLCapabilities PLATFORM_CAPABILITIES,
-            DEVICE_CAPABILITIES;
+    public final CLCapabilities PLATFORM_CAPABILITIES;
 
     public final Logger LOGGER;
 
     public final long context;
     public final long[] devices;
     public final long[][] deviceMaxItemSizes;
+    public final CLCapabilities[] deviceCapabilities;
     public final Map<ResourceLocation, Long> libraries = new Object2ObjectAVLTreeMap<>();
     public final Map<ResourceLocation, ComputeProgram> programs = new Object2ObjectAVLTreeMap<>();
     public final CommandQueueDispatch queueDispatch = new CommandQueueDispatch();
 
     private final ProgramCacheIntegrityTable programCacheIntegrityTable = new ProgramCacheIntegrityTable();
 
-    private Compute(MemoryStack stack, Logger log, CLCapabilities platformCapabilities, CLCapabilities deviceCapabilities, long context, long... devices) {
+    private Compute(MemoryStack stack, Logger log, CLCapabilities platformCapabilities, CLCapabilities[] deviceCapabilities, long context, long... devices) {
         this.LOGGER = log;
         this.PLATFORM_CAPABILITIES = platformCapabilities;
-        this.DEVICE_CAPABILITIES = deviceCapabilities;
         this.context = context;
         this.devices = devices;
         this.deviceMaxItemSizes = new long[devices.length][];
+        this.deviceCapabilities = new CLCapabilities[devices.length];
 
         Arrays.sort(this.devices);
 
@@ -52,6 +52,8 @@ public class Compute {
             int length = (int)len.get(0);
             deviceMaxItemSizes[i] = new long[length];
             CL10.clGetDeviceInfo(devices[i], CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, deviceMaxItemSizes[i], len);
+
+            this.deviceCapabilities[Arrays.binarySearch(this.devices, devices[i])] = deviceCapabilities[i];
         }
     }
 
@@ -94,10 +96,10 @@ public class Compute {
         return deviceMaxItemSizes[idx];
     }
 
-    static void init(MemoryStack stack, Logger log, CLCapabilities platform, CLCapabilities device, long context, long... devices) {
+    static void init(MemoryStack stack, Logger log, CLCapabilities platform, CLCapabilities[] deviceCapabilities, long context, long... devices) {
         if (INSTANCE != null) {
             throw new ConstructorInvocationException("Second attempt at invoking singleton constructor. ");
         }
-        INSTANCE = new Compute(stack, log, platform, device, context, devices);
+        INSTANCE = new Compute(stack, log, platform, deviceCapabilities, context, devices);
     }
 }
