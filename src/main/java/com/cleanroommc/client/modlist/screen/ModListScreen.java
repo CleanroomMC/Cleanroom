@@ -539,11 +539,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
-            return false;
-        }
-
-        @Override
         public void handleMouseInput() {
             this.hideFavourites = Mouse.getEventDWheel() != 0;
             super.handleMouseInput();
@@ -989,11 +984,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             drawRect(this.left + 1, this.top, this.left + this.width - 1, this.top + this.height, 0x77000000);
             drawRect(this.left + this.width - 1, this.top + 1, this.left + this.width, this.top + this.height - 1, 0x77000000);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
-
-        @Override
-        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
-            return false;
         }
 
         @Override
