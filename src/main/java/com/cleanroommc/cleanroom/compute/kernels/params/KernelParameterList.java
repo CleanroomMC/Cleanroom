@@ -1,6 +1,8 @@
 package com.cleanroommc.cleanroom.compute.kernels.params;
 
 import com.cleanroommc.cleanroom.compute.buffers.Buffer;
+import com.cleanroommc.cleanroom.compute.images.Image;
+import com.cleanroommc.cleanroom.compute.images.samplers.Sampler;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2d;
@@ -263,6 +265,14 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
 
     public void add(@NonNull Buffer value) {
         add(new BufferParameter(value));
+    }
+
+    public <CT> void add(@NonNull Image<CT> value) {
+        add(new ImageParameter<>(value));
+    }
+
+    public void add(@NonNull Sampler value) {
+        add(new SamplerParameter(value));
     }
 
     // </editor-fold>
