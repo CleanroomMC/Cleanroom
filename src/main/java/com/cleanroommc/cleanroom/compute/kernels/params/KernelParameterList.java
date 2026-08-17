@@ -4,6 +4,7 @@ import com.cleanroommc.cleanroom.compute.buffers.Buffer;
 import com.cleanroommc.cleanroom.compute.images.Image;
 import com.cleanroommc.cleanroom.compute.images.samplers.Sampler;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
+import com.cleanroommc.cleanroom.compute.pipes.Pipe;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
@@ -273,6 +274,10 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
 
     public void add(@NonNull Sampler value) {
         add(new SamplerParameter(value));
+    }
+
+    public void add(@NonNull Pipe value) {
+        add(new PipeParameter(value));
     }
 
     // </editor-fold>
