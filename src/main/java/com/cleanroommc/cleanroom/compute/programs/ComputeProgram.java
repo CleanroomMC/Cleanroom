@@ -48,6 +48,10 @@ public class ComputeProgram {
                         resourceLocation.getPath())))) {
             Gson gson = new GsonBuilder().create();
             metadata = gson.fromJson(stream, ProgramMetadata.class);
+            for (var kernel : metadata.kernels.entrySet()) {
+                kernel.getValue().kernelName = kernel.getKey();
+                kernel.getValue().parent = metadata;
+            }
         } catch (IOException e) {
             throw new RuntimeException(String.format("Problem loading compute program %s. ", resourceLocation));
         } catch (NullPointerException e) {
@@ -60,7 +64,7 @@ public class ComputeProgram {
     public void compile(ProgramCacheIntegrityTable cache, MemoryStack stack) {
         IntBuffer err_code = stack.mallocInt(1);
         String src = MinecraftResourceUtils.readText(new ResourceLocation(resourceLocation.getNamespace(),
-                "compute/" + resourceLocation.getPath() + ".cl"), MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
+                "compute/" + metadata.fname + ".cl"), MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
         /*if (compiledProgramBinary != null && cache.contains(resourceLocation)) {
             if (cache.compare(resourceLocation, src)) {
                 PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
@@ -305,8 +309,18 @@ public class ComputeProgram {
         return headers;
     }
 
-    static class ProgramMetadata {
+    public static class ProgramMetadata {
+        @SerializedName("file_name")
+        public String fname;
+        @SerializedName("requirements")
+        public Requirements requirements;
         @SerializedName("kernels")
         public Map<String, KernelMetadata> kernels = new Object2ObjectAVLTreeMap<>();
+
+        public static class Requirements {
+            public boolean images;
+            public boolean mipmaps;
+            public boolean pipes;
+        }
     }
 }
