@@ -62,16 +62,6 @@ public final class PlatformUtils {
         return Loader.instance().getConfigDir().toPath();
     }
 
-    public static void openFile(File file) {
-        try {
-            Class<?> oclass = Class.forName("java.awt.Desktop");
-            Object object = oclass.getMethod("getDesktop", new Class[0]).invoke(null);
-            oclass.getMethod("open", File.class).invoke(object, file);
-        } catch (Exception e) {
-            ModListConstants.LOG.error("Failed to open '{}' ", file.getAbsolutePath(), e);
-        }
-    }
-
     public static boolean isKeyCombo(int keyCode, int comboKeyCode) {
         return keyCode == comboKeyCode && GuiScreen.isCtrlKeyDown() && !GuiScreen.isShiftKeyDown() && !GuiScreen.isAltKeyDown();
     }
