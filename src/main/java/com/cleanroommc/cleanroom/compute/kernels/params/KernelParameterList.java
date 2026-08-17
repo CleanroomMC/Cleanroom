@@ -131,10 +131,6 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
         add(new BufferPointerParameter(value));
     }
 
-    public void add(@NonNull Buffer value) {
-        add(new BufferParameter(value));
-    }
-
     // </editor-fold>
 
     // <editor-fold desc="Byte vectors">
@@ -259,6 +255,14 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
     public void add(@NonNull Vector4d value) {
         Preconditions.checkNotNull(value);
         add(new Vector4dParameter(value.x, value.y, value.z, value.w));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="OpenCL Memory Objects">
+
+    public void add(@NonNull Buffer value) {
+        add(new BufferParameter(value));
     }
 
     // </editor-fold>
