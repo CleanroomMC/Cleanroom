@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.11-alpha] - 2026-08-17
+### New Features
+- [`4ba1434`](https://github.com/CleanroomMC/Cleanroom/commit/4ba1434f0b5110d8a55f08c88d92f237ed0b9ba7) - Add side annotation to Config *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`37281f3`](https://github.com/CleanroomMC/Cleanroom/commit/37281f3960318d4beb626108d5d8dda609988289) - add debounce for progress *(commit by [@baka-gourd](https://github.com/baka-gourd))*
+
+### Bug Fixes
+- [`1e33d2f`](https://github.com/CleanroomMC/Cleanroom/commit/1e33d2f7792c6bbacb20b43ea2283e580fcd03ee) - **mod-list**: query crashing when trying to find icons for mods via creative tabs *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`f8f27e4`](https://github.com/CleanroomMC/Cleanroom/commit/f8f27e444a1020889b957ef4484c110144a954d0) - **mod-list**: compatible with OptiFine once again, resolves [#600](https://github.com/CleanroomMC/Cleanroom/pull/600) *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`35bac1a`](https://github.com/CleanroomMC/Cleanroom/commit/35bac1a06d9cfdf70f6781de5af4d4d2d5e259c9) - **discovery**: add explicit support `Mod Director` and `JSON Paintings` *(PR [#610](https://github.com/CleanroomMC/Cleanroom/pull/610) by [@Ecdcaeb](https://github.com/Ecdcaeb))*
+- [`80d028f`](https://github.com/CleanroomMC/Cleanroom/commit/80d028f6da1f4afca1da905a4481bd4d678516cc) - cleanroomClient crash on macOS due to an unexpected exclusion of java-objc-bridge-1.2 *(PR [#605](https://github.com/CleanroomMC/Cleanroom/pull/605) by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Refactors
+- [`aa85df8`](https://github.com/CleanroomMC/Cleanroom/commit/aa85df87ab81e477022d81295899552e4127909a) - **ui**: unify `openFile` calls *(PR [#601](https://github.com/CleanroomMC/Cleanroom/pull/601) by [@RuiXuqi](https://github.com/RuiXuqi))*
+- [`e6ef031`](https://github.com/CleanroomMC/Cleanroom/commit/e6ef0313b38f3ab73c1ef7eee2e7eaffb279e3d4) - **discovery**: use `MetadataCollection::from` to parse `mcmod.info` files *(PR [#595](https://github.com/CleanroomMC/Cleanroom/pull/595) by [@Ecdcaeb](https://github.com/Ecdcaeb))*
+
+
 ## [0.6.10-alpha] - 2026-08-10
 ### New Features
 - [`8d4d83a`](https://github.com/CleanroomMC/Cleanroom/commit/8d4d83a081ed99249cbbb81cf953d356c3d8c9c7) - **commands**: modern suggestions, completions, argument highlighting *(PR [#557](https://github.com/CleanroomMC/Cleanroom/pull/557) by [@Rongmario](https://github.com/Rongmario))*
@@ -232,3 +248,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.7-alpha...0.6.8-alpha
 [0.6.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.8-alpha...0.6.9-alpha
 [0.6.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.9-alpha...0.6.10-alpha
+[0.6.11-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.10-alpha...0.6.11-alpha
