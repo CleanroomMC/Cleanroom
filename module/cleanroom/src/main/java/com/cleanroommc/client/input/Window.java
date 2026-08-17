@@ -50,7 +50,8 @@ public final class Window implements AutoCloseable {
     private boolean minimized;
     private boolean mouseGrabbed;
     private boolean mouseWarped;
-    private boolean closed;
+
+    private volatile boolean closed;
 
     private Window(long handle, long glContext, String title, int width, int height) {
         this.handle = handle;
@@ -79,6 +80,7 @@ public final class Window implements AutoCloseable {
     }
 
     public long handle() {
+        this.ensureOpen();
         return handle;
     }
 
@@ -88,6 +90,7 @@ public final class Window implements AutoCloseable {
      * TODO: Make compositors into an enum
      */
     public long nativeHandle() {
+        this.ensureOpen();
         int properties = SDLVideo.SDL_GetWindowProperties(handle);
         if (properties == 0) {
             return 0L;
@@ -166,12 +169,14 @@ public final class Window implements AutoCloseable {
     }
 
     public synchronized Window title(String title) {
+        this.ensureOpen();
         SDL.check(SDLVideo.SDL_SetWindowTitle(this.handle, title), "SDL_SetWindowTitle");
         this.title = title;
         return this;
     }
 
     public synchronized Window fullscreen(boolean fullscreen) {
+        this.ensureOpen();
         SDL.check(SDLVideo.SDL_SetWindowFullscreen(handle, fullscreen), "SDL_SetWindowFullscreen");
         this.fullscreen = fullscreen;
         this.refreshSize();
@@ -179,32 +184,44 @@ public final class Window implements AutoCloseable {
     }
 
     public synchronized Window borderless(boolean borderless) {
+        this.ensureOpen();
         SDL.check(SDLVideo.SDL_SetWindowBordered(this.handle, !borderless), "SDL_SetWindowBordered");
         this.borderless = borderless;
         return this;
     }
 
+    /**
+     * Sets the swap interval of whichever context is current on this thread, which SDL keys to the context rather than
+     * to the window. Make this window current first if another context may have taken over the thread.
+     */
     public Window vsync(boolean enabled) {
+        this.ensureOpen();
         SDL.check(SDLVideo.SDL_GL_SetSwapInterval(enabled ? 1 : 0), "SDL_GL_SetSwapInterval");
         return this;
     }
 
     public Window makeCurrent() {
+        this.ensureOpen();
         SDL.check(SDLVideo.SDL_GL_MakeCurrent(this.handle, this.glContext), "SDL_GL_MakeCurrent");
         return this;
     }
 
     public Window releaseContext() {
+        if (this.closed) {
+            return this;
+        }
         SDL.check(SDLVideo.SDL_GL_MakeCurrent(this.handle, 0L), "SDL_GL_MakeCurrent");
         return this;
     }
 
     public Window swapBuffers() {
+        this.ensureOpen();
         SDL.check(SDLVideo.SDL_GL_SwapWindow(this.handle), "SDL_GL_SwapWindow");
         return this;
     }
 
     public Window textInput(boolean enabled) {
+        this.ensureOpen();
         boolean active = SDLKeyboard.SDL_TextInputActive(this.handle);
         if (enabled && !active) {
             SDL.check(SDLKeyboard.SDL_StartTextInput(this.handle), "SDL_StartTextInput");
@@ -216,6 +233,7 @@ public final class Window implements AutoCloseable {
 
     /** Drains SDL's process-wide event queue exactly once for the frame. */
     public synchronized Window pump() {
+        this.ensureOpen();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             SDL_Event event = SDL_Event.malloc(stack);
             while (SDLEvents.SDL_PollEvent(event)) {
@@ -346,6 +364,15 @@ public final class Window implements AutoCloseable {
         }
     }
 
+    /**
+     * @throws IllegalStateException if the window is closed, rather than letting SDL fail on a freed handle
+     */
+    private void ensureOpen() {
+        if (this.closed) {
+            throw new IllegalStateException("Cleanroom's SDL window is closed");
+        }
+    }
+
     private void refreshSize() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer w = stack.mallocInt(1);
@@ -378,6 +405,7 @@ public final class Window implements AutoCloseable {
     }
 
     synchronized void mousePosition(float x, float y) {
+        this.ensureOpen();
         SDLMouse.SDL_WarpMouseInWindow(this.handle, x, y);
         this.mouseX = x;
         this.mouseY = y;
@@ -385,6 +413,7 @@ public final class Window implements AutoCloseable {
     }
 
     synchronized void grabMouse(boolean grab) {
+        this.ensureOpen();
         SDL.check(SDLMouse.SDL_SetWindowRelativeMouseMode(handle, grab), "SDL_SetWindowRelativeMouseMode");
         this.mouseGrabbed = grab;
     }
@@ -430,11 +459,17 @@ public final class Window implements AutoCloseable {
         Arrays.fill(this.keys, false);
         Arrays.fill(this.buttons, false);
         if (this.glContext != 0L) {
+            if (SDLVideo.SDL_GL_GetCurrentContext() == this.glContext) {
+                SDLVideo.SDL_GL_MakeCurrent(this.handle, 0L);
+                GL.setCapabilities(null);
+            }
             SDLVideo.SDL_GL_DestroyContext(this.glContext);
         }
         SDLVideo.SDL_DestroyWindow(this.handle);
-        if (main == this) {
-            main = null;
+        synchronized (Window.class) {
+            if (main == this) {
+                main = null;
+            }
         }
     }
 

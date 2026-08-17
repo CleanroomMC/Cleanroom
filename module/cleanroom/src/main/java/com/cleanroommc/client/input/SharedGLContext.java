@@ -56,7 +56,9 @@ public final class SharedGLContext implements AutoCloseable {
     }
 
     public void release() {
-        this.ensureOpen();
+        if (this.closed) {
+            return;
+        }
         SDL.check(SDLVideo.SDL_GL_MakeCurrent(surface, 0L), "SDL_GL_MakeCurrent");
         GL.setCapabilities(null);
     }
@@ -67,6 +69,10 @@ public final class SharedGLContext implements AutoCloseable {
             return;
         }
         this.closed = true;
+        if (SDLVideo.SDL_GL_GetCurrentContext() == this.context) {
+            SDLVideo.SDL_GL_MakeCurrent(this.surface, 0L);
+            GL.setCapabilities(null);
+        }
         SDLVideo.SDL_GL_DestroyContext(this.context);
         SDLVideo.SDL_DestroyWindow(this.surface);
         this.capabilities = null;
