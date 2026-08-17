@@ -29,8 +29,8 @@ public final class SDL {
         if (missing == 0) {
             return;
         }
-        check(SDLInit.SDL_InitSubSystem(missing), "SDL_InitSubSystem");
         initializedBits |= missing;
+        check(SDLInit.SDL_InitSubSystem(missing), "SDL_InitSubSystem");
     }
 
     /**
@@ -48,6 +48,7 @@ public final class SDL {
         }
         // TODO: new SDL input stack
         // Inputs.reset();
+        CleanroomWindowBridge.uninstall();
         Window.closeMain();
         SDLInit.SDL_Quit();
         initializedBits = 0;

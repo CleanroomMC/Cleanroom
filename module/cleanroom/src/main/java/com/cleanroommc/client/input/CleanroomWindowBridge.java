@@ -12,6 +12,16 @@ import java.nio.IntBuffer;
 /** Connects LWJGLY's LWJGL 2 compatibility APIs to Cleanroom's SDL window. */
 public final class CleanroomWindowBridge implements WindowBridge {
 
+    /** Installs the bridge before any call to Display, Keyboard or Mouse. */
+    public static void install(Window window) {
+        LWJGLY.setWindowBridge(new CleanroomWindowBridge(window));
+    }
+
+    /** Uninstalls the bridge, allowing LWJGLY shim to report a properly closed Display. */
+    public static void uninstall() {
+        LWJGLY.setWindowBridge(null);
+    }
+
     private static String validate(ContextRequest request) {
         PixelFormatRequest format = request.pixelFormat();
         if (format.auxiliaryBuffers() > 0) {
@@ -152,11 +162,6 @@ public final class CleanroomWindowBridge implements WindowBridge {
     private CleanroomWindowBridge(Window window) {
         this.window = window;
         this.capabilities = GL.getCapabilities();
-    }
-
-    /** Installs the bridge before any call to Display, Keyboard or Mouse. */
-    public static void install(Window window) {
-        LWJGLY.setWindowBridge(new CleanroomWindowBridge(window));
     }
 
     @Override
