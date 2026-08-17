@@ -1,13 +1,14 @@
 {
+  "file_name": "program.cl",
   "kernels": {
     "test": {
-      "name": "test",
+      "work_group_dimensions": 1,
       "arguments": {
         "vals": "float*"
       }
     },
     "byteTest": {
-      "name": "byteTest",
+      "work_group_dimensions": 2,
       "arguments": {
         "dimX": "ulong",
         "dimY": "ulong",
@@ -17,7 +18,6 @@
       }
     },
     "shortTest": {
-      "name": "shortTest",
       "arguments": {
         "p1": "short2",
         "p2": "short4",

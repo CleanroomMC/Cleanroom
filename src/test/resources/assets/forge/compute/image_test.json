@@ -1,7 +1,12 @@
 {
   "kernels": {
+    "file_name": "image_test.cl",
+    "requirements": {
+      "images": true,
+      "mipmaps": true
+    },
     "gradient1d": {
-      "name": "gradient1d",
+      "work_group_dimensions": 1,
       "arguments": {
         "image": "image1d_t"
       }
