@@ -96,6 +96,12 @@ public class Compute {
         return deviceMaxItemSizes[idx];
     }
 
+    public CLCapabilities getDeviceCapabilities(long device) {
+        int idx = Arrays.binarySearch(devices, device);
+        Preconditions.checkArgument(idx >= 0, "Device not present in array.");
+        return deviceCapabilities[idx];
+    }
+
     static void init(MemoryStack stack, Logger log, CLCapabilities platform, CLCapabilities[] deviceCapabilities, long context, long... devices) {
         if (INSTANCE != null) {
             throw new ConstructorInvocationException("Second attempt at invoking singleton constructor. ");

@@ -10,11 +10,12 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
+import org.lwjgl.opencl.CLCapabilities;
 import org.lwjgl.system.MemoryStack;
 
-public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
+public record Kernel(long kernel, ImmutableMap<String, String> arguments, int dimensionality, boolean requiresImages, boolean requiresMipmaps, boolean requiresPipes) {
     public Kernel(long program, KernelMetadata meta) {
-        this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments));
+        this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments), meta.dimensions, meta.parent.requirements.images, meta.parent.requirements.mipmaps, meta.parent.requirements.pipes);
     }
 
     private static long createKernel(long program, @NonNull KernelMetadata meta) {
@@ -37,6 +38,9 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments) {
                        final long... dependencies) {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
+        Preconditions.checkArgument(workGroupSizes.length == dimensionality);
+        CLCapabilities deviceCaps = Compute.instance().getDeviceCapabilities(device);
+        Preconditions.checkArgument(requiresMipmaps && deviceCaps.cl_khr_mipmap_image);
         int dim;
         arguments.bindAllParameters(this);
         PointerBuffer offsets, sizes, local;
