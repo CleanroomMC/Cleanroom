@@ -113,6 +113,7 @@ public class Compute {
                 browsable.push(dep);
                 dependencyGraph.putEdge(curr, dep);
             }
+            found.add(program);
         }
         return found.toArray(new Long[0]);
     }
