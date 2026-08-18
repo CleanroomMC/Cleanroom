@@ -1,7 +1,7 @@
 package com.cleanroommc.cleanroom.compute.pipes;
 
 import com.cleanroommc.cleanroom.compute.Compute;
-import com.cleanroommc.cleanroom.compute.OpenCLPrimitive;
+import com.cleanroommc.cleanroom.compute.types.OpenCLPrimitive;
 import com.cleanroommc.cleanroom.compute.errors.PipeError;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;

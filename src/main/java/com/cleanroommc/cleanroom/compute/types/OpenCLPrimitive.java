@@ -1,6 +1,6 @@
-package com.cleanroommc.cleanroom.compute;
+package com.cleanroommc.cleanroom.compute.types;
 
-public enum OpenCLPrimitive {
+public enum OpenCLPrimitive implements OpenCLType {
     BOOL(1, "bool"),
     CHAR(1, "char"),
     SHORT(2, "short"),
@@ -21,5 +21,15 @@ public enum OpenCLPrimitive {
     OpenCLPrimitive(int sizeof, String name) {
         this.sizeof = sizeof;
         this.name = name;
+    }
+
+    @Override
+    public int sizeof() {
+        return this.sizeof;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }
