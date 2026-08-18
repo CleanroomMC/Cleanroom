@@ -1,5 +1,6 @@
 package com.cleanroommc.cleanroom.compute;
 
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.opencl.CLCapabilities;
 
 public record Device(long handle,
@@ -7,5 +8,9 @@ public record Device(long handle,
                      long[] maxWorkItemSizes,
                      boolean supportsImages,
                      boolean supportsMipmaps,
-                     boolean supportsPipes) {
+                     boolean supportsPipes) implements Comparable<Device> {
+    @Override
+    public int compareTo(@NonNull Device o) {
+        return (int)(handle - o.handle);
+    }
 }

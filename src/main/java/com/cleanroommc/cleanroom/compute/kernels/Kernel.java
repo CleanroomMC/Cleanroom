@@ -50,7 +50,7 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments, int di
             Preconditions.checkArgument(workGroupSizes.length == workGroupOffsets.length);
         }
         dim = workGroupSizes.length;
-        long[] deviceSizes = Compute.instance().getDeviceItemSizes(device);
+        long[] deviceSizes = Compute.instance().getDevice(device).maxWorkItemSizes();
         offsets = stack.mallocPointer(dim);
         sizes = stack.mallocPointer(dim);
         local = stack.mallocPointer(dim);

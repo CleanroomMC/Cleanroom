@@ -92,30 +92,20 @@ public class Compute {
         return program;
     }
 
-    public long[] getDeviceItemSizes(long handle) {
-        for (Device device : devices) {
-            if (device.handle() == handle) {
-                return device.maxWorkItemSizes();
-            }
-        }
-        throw new IllegalArgumentException("Device not present.");
-    }
-
-    public CLCapabilities getDeviceCapabilities(long handle) {
-        for (Device device : devices) {
-            if (device.handle() == handle) {
-                return device.capabilities();
-            }
-        }
-        throw new IllegalArgumentException("Device not present.");
-    }
-
     public Device getDevice(long handle) {
-        for (Device device : devices) {
-            if (device.handle() == handle) {
-                return device;
-            }
-        }
+        if (devices[0].handle() == handle)
+            return devices[0];
+        int div = 2;
+        int idx = Math.clamp(devices.length / div, 1, devices.length - 1);
+        do {
+            if (devices[idx].handle() == handle)
+                return devices[idx];
+            div += 2;
+            if (devices[idx].handle() < handle)
+                idx = Math.clamp(idx - (devices.length / div), 1, devices.length - 1);
+            else
+                idx = Math.clamp(idx + (devices.length / div), 1, devices.length - 1);
+        } while (div <= devices.length);
         throw new IllegalArgumentException("Device not present.");
     }
 
