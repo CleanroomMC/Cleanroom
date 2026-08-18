@@ -416,6 +416,8 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         SDL.check(SDLMouse.SDL_SetWindowRelativeMouseMode(handle, grab), "SDL_SetWindowRelativeMouseMode");
         this.mouseGrabbed = grab;
+        this.legacy.resetDeltas();
+        this.mouseWarped = true;
     }
 
     synchronized boolean mouseGrabbed() {

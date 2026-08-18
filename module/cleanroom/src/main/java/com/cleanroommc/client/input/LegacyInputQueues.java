@@ -113,6 +113,11 @@ final class LegacyInputQueues {
         return this.mice.size();
     }
 
+    synchronized void resetDeltas() {
+        this.deltaX = 0.0;
+        this.deltaY = 0.0;
+    }
+
     synchronized float takeDeltaX() {
         float value = (float) this.deltaX;
         this.deltaX = 0.0;
