@@ -38,7 +38,7 @@ public class ImageTest {
         Bootstrap.register();
         Logger testLogger = LogManager.getLogger("TestLogger");
         Configuration.OPENCL_EXPLICIT_INIT.set(true);
-        ComputeSetup.initOpenCL(testLogger);
+        ComputeSetup.initOpenCL(testLogger, false);
         Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
         {{
             modId = "accelerate";

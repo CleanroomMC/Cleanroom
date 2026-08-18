@@ -58,7 +58,7 @@ public class FMLTweaker implements ITweaker {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
         Configuration.OPENCL_EXPLICIT_INIT.set(true);
-        ComputeSetup.initOpenCL(LogManager.getLogger("Compute"));
+        ComputeSetup.initOpenCL(LogManager.getLogger("Compute"), Launch.blackboard.get("fml.side").equals("client"));
         LogManager.getLogger("FML.TWEAK").info("Initializing Mixins...");
         MixinBootstrap.init();
         LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");

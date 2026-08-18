@@ -4,12 +4,17 @@ import com.cleanroommc.cleanroom.compute.errors.InvalidPlatformError;
 import com.cleanroommc.cleanroom.compute.errors.UnavaliableDeviceError;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CLCapabilities;
+import org.lwjgl.opencl.*;
+import org.lwjgl.opengl.CGL;
+import org.lwjgl.opengl.GLX;
+import org.lwjgl.opengl.GLX12;
+import org.lwjgl.opengl.WGL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -17,7 +22,7 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class ComputeSetup {
-    public static void initOpenCL(Logger LOGGER) {
+    public static void initOpenCL(Logger LOGGER, boolean client) {
         LOGGER.info("Initializing OpenCL");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             CL.create();
@@ -56,9 +61,13 @@ public class ComputeSetup {
             devices.rewind();
             LOGGER.info("Creating OpenCL Context");
             IntBuffer erret = stack.mallocInt(1);
-            PointerBuffer properties = stack.mallocPointer(3);
+            PointerBuffer properties = stack.mallocPointer(3 + (client ? 4 : 0));
             properties.put(CL10.CL_CONTEXT_PLATFORM);
             properties.put(platform.pointer);
+            if (client) {
+                LOGGER.info("Attaching OpenGL Context");
+                appendGLContexts(properties);
+            }
             properties.put(0);
             properties.rewind();
             final long ctx = CL10.clCreateContext(properties, devices, null, 0, erret);
@@ -108,6 +117,53 @@ public class ComputeSetup {
         ByteBuffer info = stack.malloc((int) attributeSize.get(0));
         CL10.clGetPlatformInfo(platform, attribute, info, attributeSize);
         return StandardCharsets.US_ASCII.decode(info).toString();
+    }
+
+    @SideOnly(Side.CLIENT)
+    private static void appendGLContexts(PointerBuffer properties) {
+        long ctx;
+        long display;
+        switch (org.lwjgl.system.Platform.get()) {
+            case WINDOWS:
+                ctx = WGL.wglGetCurrentContext(null);
+                if (ctx == 0) {
+                    throw new IllegalStateException("Can't acquire WGL context.");
+                }
+                display = WGL.wglGetCurrentDC();
+                if (display == 0) {
+                    throw new IllegalStateException("Can't acquire WGL display.");
+                }
+                properties.put(KHRGLSharing.CL_GL_CONTEXT_KHR);
+                properties.put(ctx);
+                properties.put(KHRGLSharing.CL_WGL_HDC_KHR);
+                properties.put(display);
+                return;
+            case LINUX, FREEBSD:
+                ctx = GLX.glXGetCurrentContext();
+                if (ctx == 0) {
+                    throw new IllegalStateException("Can't acquire GLX context.");
+                }
+                display = GLX12.glXGetCurrentDisplay();
+                if (display == 0) {
+                    throw new IllegalStateException("Can't acquire GLX display.");
+                }
+                properties.put(KHRGLSharing.CL_GL_CONTEXT_KHR);
+                properties.put(ctx);
+                properties.put(KHRGLSharing.CL_GLX_DISPLAY_KHR);
+                properties.put(display);
+                return;
+            case MACOSX:
+                ctx = CGL.CGLGetCurrentContext();
+                if (ctx == 0) {
+                    throw new IllegalStateException("Can't acquire GLX context.");
+                }
+                display = CGL.CGLGetShareGroup(ctx);
+                if (display == 0) {
+                    throw new IllegalStateException("Can't acquire GLX share group.");
+                }
+                properties.put(APPLEGLSharing.CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE);
+                properties.put(display);
+        }
     }
 
     private record Platform(long pointer, String name, int versionMajor, int versionMinor, boolean cuda) implements Comparable<Platform> {
