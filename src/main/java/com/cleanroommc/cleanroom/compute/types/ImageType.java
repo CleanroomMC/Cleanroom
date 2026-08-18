@@ -20,6 +20,6 @@ public record ImageType(int dimensions, boolean fromBuffer, boolean array, boole
 
     @Override
     public @NonNull String toString() {
-        return String.format("image%dd%s%st", dimensions, array ? "_array" : (fromBuffer ? "_buffer" : "_"), msaa ? "_msaa_" : "");
+        return String.format("image%dd%s%s%st", dimensions, array ? "_array" : (fromBuffer ? "_buffer" : "_"), msaa ? "_msaa" : "", depth ? "_depth_" : "_");
     }
 }
