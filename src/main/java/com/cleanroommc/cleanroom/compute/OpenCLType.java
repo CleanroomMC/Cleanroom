@@ -1,6 +1,6 @@
-package com.cleanroommc.cleanroom.compute.pipes;
+package com.cleanroommc.cleanroom.compute;
 
-public enum PipeField {
+public enum OpenCLType {
     CHAR(1),
     SHORT(2),
     INT(4),
@@ -40,7 +40,7 @@ public enum PipeField {
 
     public final int sizeof;
 
-    PipeField(int sizeof) {
+    OpenCLType(int sizeof) {
         this.sizeof = sizeof;
     }
 }

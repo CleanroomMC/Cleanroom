@@ -1,6 +1,7 @@
 package com.cleanroommc.cleanroom.compute.pipes;
 
 import com.cleanroommc.cleanroom.compute.Compute;
+import com.cleanroommc.cleanroom.compute.OpenCLType;
 import com.cleanroommc.cleanroom.compute.errors.PipeError;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
@@ -16,12 +17,12 @@ public class Pipe implements Closeable {
     public final int capacity;
     public final int packetSize;
 
-    public Pipe(int capacity, PipeField @NonNull ... schema) {
+    public Pipe(int capacity, OpenCLType @NonNull ... schema) {
         Preconditions.checkNotNull(schema);
         Preconditions.checkArgument(schema.length > 0);
 
         int size = 0;
-        for (PipeField field : schema)
+        for (OpenCLType field : schema)
             size += field.sizeof;
 
         this(capacity, size);
