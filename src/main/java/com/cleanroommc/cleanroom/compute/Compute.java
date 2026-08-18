@@ -4,12 +4,16 @@ import com.cleanroommc.cleanroom.compute.cmd.CommandQueueDispatch;
 import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
 import com.cleanroommc.cleanroom.compute.programs.ProgramCacheIntegrityTable;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
-import com.google.common.base.Preconditions;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
+import com.google.common.graph.Traverser;
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CLCapabilities;
 import org.lwjgl.system.MemoryStack;
@@ -17,6 +21,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 public class Compute {
 
@@ -28,6 +33,7 @@ public class Compute {
 
     public final long context;
     public final Device[] devices;
+    public final MutableGraph<ResourceLocation> dependencyGraph = GraphBuilder.directed().build();
     public final Map<ResourceLocation, Long> libraries = new Object2ObjectAVLTreeMap<>();
     public final Map<ResourceLocation, ComputeProgram> programs = new Object2ObjectAVLTreeMap<>();
     public final CommandQueueDispatch queueDispatch = new CommandQueueDispatch();
@@ -79,21 +85,36 @@ public class Compute {
         }
     }
 
-    public long getOrCreateLibrary(ResourceLocation rl, MemoryStack stack) {
+    public Long[] getOrCreateLibraries(ResourceLocation rl, MemoryStack stack) {
+        Set<Long> found = new LongArraySet();
         if (libraries.containsKey(rl)) {
-            return libraries.get(rl);
+            Traverser<ResourceLocation> dependencies = Traverser.forGraph(dependencyGraph);
+            dependencies.breadthFirst(rl).forEach(dep -> found.add(libraries.get(dep)));
+            found.add(libraries.get(rl));
+            return found.toArray(new Long[0]);
         }
-        String src = MinecraftResourceUtils.readText(new ResourceLocation(rl.getNamespace(),
-                        "compute/" + rl.getPath()),
-                MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
-        IntBuffer err_code = stack.mallocInt(1);
-        long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
-        switch(err_code.get(0)) {
-            case CL10.CL_INVALID_VALUE -> throw new NullPointerException(String.format("Source code of %s is null. ", rl));
-            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
+        Stack<ResourceLocation> browsable = new ReferenceArrayList<>();
+        browsable.push(rl);
+        while (!browsable.isEmpty()) {
+            ResourceLocation curr = browsable.pop();
+            String src = MinecraftResourceUtils.readText(new ResourceLocation(curr.getNamespace(),
+                            "compute/" + curr.getPath()),
+                    MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
+            IntBuffer err_code = stack.mallocInt(1);
+            long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
+            switch(err_code.get(0)) {
+                case CL10.CL_INVALID_VALUE -> throw new NullPointerException(String.format("Source code of %s is null. ", curr));
+                case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
+            }
+            libraries.put(curr, program);
+            dependencyGraph.addNode(curr);
+            Set<ResourceLocation> dependencies = ComputeProgram.getHeadersFromFile(src, curr);
+            for (ResourceLocation dep : dependencies) {
+                browsable.push(dep);
+                dependencyGraph.putEdge(curr, dep);
+            }
         }
-        libraries.put(rl, program);
-        return program;
+        return found.toArray(new Long[0]);
     }
 
     public Device getDevice(long handle) {
