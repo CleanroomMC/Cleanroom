@@ -44,6 +44,8 @@ public class Compute {
         this.context = context;
         this.devices = devices;
 
+        Arrays.sort(devices);
+
         boolean supportsImages = false;
         boolean supportsMipmaps = false;
         boolean supportsPipes = false;
@@ -52,6 +54,8 @@ public class Compute {
             if (device.supportsImages()) supportsImages = true;
             if (device.supportsMipmaps()) supportsMipmaps = true;
             if (device.supportsPipes()) supportsPipes = true;
+            if (supportsImages && supportsMipmaps && supportsPipes)
+                break;
         }
 
         this.supportsImages = supportsImages;
