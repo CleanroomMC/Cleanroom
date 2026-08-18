@@ -1,6 +1,7 @@
 package com.cleanroommc.cleanroom.compute.kernels;
 
 import com.cleanroommc.cleanroom.compute.Compute;
+import com.cleanroommc.cleanroom.compute.Device;
 import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.KernelError;
 import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
@@ -10,7 +11,6 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CLCapabilities;
 import org.lwjgl.system.MemoryStack;
 
 public record Kernel(long kernel, ImmutableMap<String, String> arguments, int dimensionality, boolean requiresImages, boolean requiresMipmaps, boolean requiresPipes) {
@@ -39,8 +39,10 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments, int di
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
         Preconditions.checkArgument(workGroupSizes.length == dimensionality);
-        CLCapabilities deviceCaps = Compute.instance().getDeviceCapabilities(device);
-        Preconditions.checkArgument(requiresMipmaps && deviceCaps.cl_khr_mipmap_image);
+        Device dev = Compute.instance().getDevice(device);
+        Preconditions.checkArgument(!requiresImages || dev.supportsImages(), "Device does not support images.");
+        Preconditions.checkArgument(!requiresMipmaps || dev.supportsMipmaps(), "Device does not support mipmaps.");
+        Preconditions.checkArgument(!requiresPipes || dev.supportsPipes(), "Device does not support pipes.");
         int dim;
         arguments.bindAllParameters(this);
         PointerBuffer offsets, sizes, local;
@@ -85,10 +87,14 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments, int di
         return event.get(0);
     }
 
-    public long invoke(MemoryStack stack, long commandQueue,
+    public long invoke(MemoryStack stack, long commandQueue, long device,
                        final @NonNull KernelParameterList arguments,
                        final long... dependencies) {
         Preconditions.checkNotNull(arguments);
+        Device dev = Compute.instance().getDevice(device);
+        if (requiresImages) Preconditions.checkArgument(dev.supportsImages(), "Device does not support images.");
+        if (requiresMipmaps) Preconditions.checkArgument(dev.supportsMipmaps(), "Device does not support mipmaps.");
+        if (requiresPipes) Preconditions.checkArgument(dev.supportsPipes(), "Device does not support pipes.");
         arguments.bindAllParameters(this);
         PointerBuffer eventWaitList = null;
         if (dependencies != null && dependencies.length > 0) {

@@ -1,6 +1,7 @@
 package com.cleanroommc.cleanroom.compute.programs;
 
 import com.cleanroommc.cleanroom.compute.Compute;
+import com.cleanroommc.cleanroom.compute.Device;
 import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.HeaderParsingError;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
@@ -68,7 +69,9 @@ public class ComputeProgram {
         /*if (compiledProgramBinary != null && cache.contains(resourceLocation)) {
             if (cache.compare(resourceLocation, src)) {
                 PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
-                devices.put(Compute.instance().devices);
+                for (Device device : Compute.instance().devices) {
+                    devices.put(device.handle());
+                }
                 IntBuffer status = stack.callocInt(compiledProgramBinary.length);
                 IntBuffer err = stack.callocInt(1);
                 ByteBuffer[] binaries = new ByteBuffer[compiledProgramBinary.length];
@@ -108,7 +111,9 @@ public class ComputeProgram {
             paths.flip();
         }
         PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
-        devices.put(Compute.instance().devices);
+        for (Device device : Compute.instance().devices) {
+            devices.put(device.handle());
+        }
         devices.flip();
         switch (CL12.clCompileProgram(program, devices, "", libraryHandles, paths, null, 0)) {
             case CL12.CL_COMPILER_NOT_AVAILABLE -> throw new CompilationError("Compiler unavailable.");
@@ -176,11 +181,11 @@ public class ComputeProgram {
         List<String> logs = new ObjectArrayList<>();
         try (MemoryStack substack = stack.push()) {
             PointerBuffer len = stack.mallocPointer(1);
-            for (long device : Compute.instance().devices) {
-                CL10.clGetProgramBuildInfo(program, device, CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
+            for (Device device : Compute.instance().devices) {
+                CL10.clGetProgramBuildInfo(program, device.handle(), CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
                 ByteBuffer data = stack.malloc((int) len.get(0));
                 len.rewind();
-                CL10.clGetProgramBuildInfo(program, device, CL10.CL_PROGRAM_BUILD_LOG, data, len);
+                CL10.clGetProgramBuildInfo(program, device.handle(), CL10.CL_PROGRAM_BUILD_LOG, data, len);
                 data.rewind();
                 StringBuilder builder = new StringBuilder();
                 CharBuffer dataDecoded = StandardCharsets.US_ASCII.decode(data);

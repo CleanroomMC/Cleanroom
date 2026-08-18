@@ -77,7 +77,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(arguments);
         MemoryStack stack = MemoryStack.create().push();
         try {
-            Event event = new Event(kernel.invoke(stack, this.commandQueue, arguments, dependencies), stack);
+            Event event = new Event(kernel.invoke(stack, this.commandQueue, this.device, arguments, dependencies), stack);
             event.ownsStack = true;
             return event;
         } catch (RuntimeException | Error exception) {
@@ -91,7 +91,7 @@ public class CommandQueue implements Closeable {
                                 final long... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(arguments);
-        return new Event(kernel.invoke(stack, this.commandQueue, arguments, dependencies), stack);
+        return new Event(kernel.invoke(stack, this.commandQueue, this.device, arguments, dependencies), stack);
     }
 
     //</editor-fold>

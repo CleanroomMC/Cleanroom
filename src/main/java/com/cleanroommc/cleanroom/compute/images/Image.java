@@ -31,6 +31,8 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
                     @NonNull CLImageFormat format,
                     @NonNull CLImageDesc descriptor,
                     @Nullable ByteBuffer hostMemory) {
+        Preconditions.checkState(Compute.instance().supportsImages, "Images are not supported.");
+        Preconditions.checkState(!(descriptor.num_mip_levels() > 0) || Compute.instance().supportsMipmaps, "Mipmaps are not supported.");
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(memoryFlags);
         Preconditions.checkNotNull(format);

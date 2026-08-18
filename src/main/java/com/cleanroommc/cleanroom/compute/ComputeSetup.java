@@ -69,16 +69,29 @@ public class ComputeSetup {
                     case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL context.");
                 }
             }
-            long[] deviceArray = new long[devices.capacity()];
-            CLCapabilities[] deviceCapabilities = new CLCapabilities[deviceArray.length];
+            Device[] deviceArray = new Device[devices.capacity()];
             for (int i = 0; i < deviceArray.length; i++) {
-                deviceArray[i] = devices.get(i);
-                deviceCapabilities[i] = CL.createDeviceCapabilities(deviceArray[i], platformCapabilities);
+                long deviceHandle = devices.get(i);
+                CLCapabilities deviceCapabilities = CL.createDeviceCapabilities(deviceHandle, platformCapabilities);
+
+                IntBuffer imageSupport = stack.mallocInt(1);
+                CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_IMAGE_SUPPORT, imageSupport, (PointerBuffer) null);
+
+                PointerBuffer len = stack.mallocPointer(1);
+                CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, (PointerBuffer) null, len);
+                long[] maxWorkItemSizes = new long[(int) len.get(0)];
+                CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, maxWorkItemSizes, len);
+
+                deviceArray[i] = new Device(deviceHandle,
+                        deviceCapabilities,
+                        maxWorkItemSizes,
+                        imageSupport.get(0) != 0,
+                        deviceCapabilities.cl_khr_mipmap_image,
+                        deviceCapabilities.OpenCL20);
             }
             Compute.init(
-                    stack,
                     LOGGER,
-                    platformCapabilities, deviceCapabilities,
+                    platformCapabilities,
                     ctx, deviceArray
             );
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {

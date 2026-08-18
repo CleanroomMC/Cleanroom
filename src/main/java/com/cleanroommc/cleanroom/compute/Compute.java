@@ -27,34 +27,36 @@ public class Compute {
     public final Logger LOGGER;
 
     public final long context;
-    public final long[] devices;
-    public final long[][] deviceMaxItemSizes;
-    public final CLCapabilities[] deviceCapabilities;
+    public final Device[] devices;
     public final Map<ResourceLocation, Long> libraries = new Object2ObjectAVLTreeMap<>();
     public final Map<ResourceLocation, ComputeProgram> programs = new Object2ObjectAVLTreeMap<>();
     public final CommandQueueDispatch queueDispatch = new CommandQueueDispatch();
 
+    public final boolean supportsImages;
+    public final boolean supportsMipmaps;
+    public final boolean supportsPipes;
+
     private final ProgramCacheIntegrityTable programCacheIntegrityTable = new ProgramCacheIntegrityTable();
 
-    private Compute(MemoryStack stack, Logger log, CLCapabilities platformCapabilities, CLCapabilities[] deviceCapabilities, long context, long... devices) {
+    private Compute(Logger log, CLCapabilities platformCapabilities, long context, Device[] devices) {
         this.LOGGER = log;
         this.PLATFORM_CAPABILITIES = platformCapabilities;
         this.context = context;
         this.devices = devices;
-        this.deviceMaxItemSizes = new long[devices.length][];
-        this.deviceCapabilities = new CLCapabilities[devices.length];
 
-        Arrays.sort(this.devices);
+        boolean supportsImages = false;
+        boolean supportsMipmaps = false;
+        boolean supportsPipes = false;
 
-        for (int i = 0; i < deviceMaxItemSizes.length; i++) {
-            PointerBuffer len = stack.mallocPointer(1);
-            CL10.clGetDeviceInfo(devices[i], CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, (PointerBuffer) null, len);
-            int length = (int)len.get(0);
-            deviceMaxItemSizes[i] = new long[length];
-            CL10.clGetDeviceInfo(devices[i], CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, deviceMaxItemSizes[i], len);
-
-            this.deviceCapabilities[Arrays.binarySearch(this.devices, devices[i])] = deviceCapabilities[i];
+        for (Device device : devices) {
+            if (device.supportsImages()) supportsImages = true;
+            if (device.supportsMipmaps()) supportsMipmaps = true;
+            if (device.supportsPipes()) supportsPipes = true;
         }
+
+        this.supportsImages = supportsImages;
+        this.supportsMipmaps = supportsMipmaps;
+        this.supportsPipes = supportsPipes;
     }
 
     public static Compute instance() {
@@ -90,22 +92,37 @@ public class Compute {
         return program;
     }
 
-    public long[] getDeviceItemSizes(long device) {
-        int idx = Arrays.binarySearch(devices, device);
-        Preconditions.checkArgument(idx >= 0, "Device not present in array.");
-        return deviceMaxItemSizes[idx];
+    public long[] getDeviceItemSizes(long handle) {
+        for (Device device : devices) {
+            if (device.handle() == handle) {
+                return device.maxWorkItemSizes();
+            }
+        }
+        throw new IllegalArgumentException("Device not present.");
     }
 
-    public CLCapabilities getDeviceCapabilities(long device) {
-        int idx = Arrays.binarySearch(devices, device);
-        Preconditions.checkArgument(idx >= 0, "Device not present in array.");
-        return deviceCapabilities[idx];
+    public CLCapabilities getDeviceCapabilities(long handle) {
+        for (Device device : devices) {
+            if (device.handle() == handle) {
+                return device.capabilities();
+            }
+        }
+        throw new IllegalArgumentException("Device not present.");
     }
 
-    static void init(MemoryStack stack, Logger log, CLCapabilities platform, CLCapabilities[] deviceCapabilities, long context, long... devices) {
+    public Device getDevice(long handle) {
+        for (Device device : devices) {
+            if (device.handle() == handle) {
+                return device;
+            }
+        }
+        throw new IllegalArgumentException("Device not present.");
+    }
+
+    static void init(Logger log, CLCapabilities platform, long context, Device... devices) {
         if (INSTANCE != null) {
             throw new ConstructorInvocationException("Second attempt at invoking singleton constructor. ");
         }
-        INSTANCE = new Compute(stack, log, platform, deviceCapabilities, context, devices);
+        INSTANCE = new Compute(log, platform, context, devices);
     }
 }

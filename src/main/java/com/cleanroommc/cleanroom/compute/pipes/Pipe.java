@@ -28,6 +28,7 @@ public class Pipe implements Closeable {
     }
 
     public Pipe(int capacity, int packetSize) {
+        Preconditions.checkState(Compute.instance().supportsPipes, "Pipes are not supported.");
         Preconditions.checkArgument(capacity > 0);
         Preconditions.checkArgument(packetSize > 0);
 
