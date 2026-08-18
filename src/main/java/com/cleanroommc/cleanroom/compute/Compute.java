@@ -125,4 +125,8 @@ public class Compute {
         }
         INSTANCE = new Compute(log, platform, context, devices);
     }
+
+    public static boolean isAvailable() {
+        return INSTANCE != null;
+    }
 }
