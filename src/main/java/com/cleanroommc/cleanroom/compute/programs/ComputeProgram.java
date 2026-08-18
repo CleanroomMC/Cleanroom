@@ -93,8 +93,6 @@ public class ComputeProgram implements Closeable {
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
         }
         Set<ResourceLocation> dependencies = getHeadersFromFile(src, resourceLocation);
-        @SuppressWarnings("unused")
-        List<ByteBuffer> pathList = new ObjectArrayList<>(); // This exists so that the buffers don't expire since MemoryStack auto-manages memory
         PointerBuffer paths = null;
         PointerBuffer libraryHandles = null;
         if (!dependencies.isEmpty()) {
@@ -103,7 +101,6 @@ public class ComputeProgram implements Closeable {
             for (ResourceLocation rl : dependencies) {
                 String fname = String.format("%s/%s", rl.getNamespace(), rl.getPath());
                 ByteBuffer buf = stack.UTF8(fname);
-                pathList.add(buf);
                 paths.put(buf);
                 for (long library : Compute.instance().getOrCreateLibraries(rl, stack))
                     libraryHandles.put(library);
