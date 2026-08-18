@@ -48,5 +48,6 @@ public enum ChannelOrder {
         for (int i = 0; i < CL_VALS.length; i++)
             CL_VALS[i] = values[i].order;
         Arrays.sort(CL_VALS);
+        Arrays.sort(values, (lhs, rhs) -> lhs.order - rhs.order - rhs.order);
     }
 }

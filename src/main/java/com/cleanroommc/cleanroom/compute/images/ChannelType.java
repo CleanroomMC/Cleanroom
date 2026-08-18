@@ -7,6 +7,7 @@ import org.lwjgl.opencl.CL21;
 import org.lwjgl.opencl.KHRGLDepthImages;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public enum ChannelType {
     /**
@@ -207,5 +208,6 @@ public enum ChannelType {
         for (int i = 0; i < CL_VALS.length; i++)
             CL_VALS[i] = values[i].type;
         Arrays.sort(CL_VALS);
+        Arrays.sort(values, Comparator.comparingInt(lhs -> lhs.type));
     }
 }
