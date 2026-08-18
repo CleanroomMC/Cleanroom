@@ -8,6 +8,7 @@ import org.joml.Vector2L;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
 import org.lwjgl.opencl.CLImageDesc;
 import org.lwjgl.opencl.CLImageFormat;
@@ -74,6 +75,9 @@ public final class Image2D extends Image<Vector2L> {
                 );
                 default -> throw new ImageError("How?");
             });
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return coordinates.get(bufLen - 1);
         }
     }
@@ -97,6 +101,9 @@ public final class Image2D extends Image<Vector2L> {
                     bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
                     coordinates.slice(bufLen - 1, 1)
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return coordinates.get(bufLen - 1);
         }
     }
@@ -120,6 +127,9 @@ public final class Image2D extends Image<Vector2L> {
                     bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
                     coordinates.slice(bufLen - 1, 1)
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return coordinates.get(bufLen - 1);
         }
     }
@@ -145,6 +155,9 @@ public final class Image2D extends Image<Vector2L> {
                     getRegion(substack, size),
                     deps, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -178,6 +191,9 @@ public final class Image2D extends Image<Vector2L> {
                         rowPitch, slicePitch, db, waitList, ev);
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
             });
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -198,6 +214,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -218,6 +237,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -238,6 +260,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -258,6 +283,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -291,6 +319,9 @@ public final class Image2D extends Image<Vector2L> {
                         rowPitch, slicePitch, db, waitList, ev);
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
             });
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -311,6 +342,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -331,6 +365,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -351,6 +388,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }
@@ -371,6 +411,9 @@ public final class Image2D extends Image<Vector2L> {
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
+            if (dependencies != null)
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
             return ev.get(0);
         }
     }

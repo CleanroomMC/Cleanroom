@@ -84,6 +84,8 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments, int di
             case CL10.CL_INVALID_WORK_GROUP_SIZE -> throw new KernelError("Local group size is not divisible by global group size.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
+        for (long dependency : dependencies)
+            CL10.clReleaseEvent(dependency);
         return event.get(0);
     }
 
@@ -108,6 +110,9 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments, int di
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
+        if (dependencies != null)
+            for (long dependency : dependencies)
+                CL10.clReleaseEvent(dependency);
         return event.get(0);
     }
 

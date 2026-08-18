@@ -132,6 +132,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -156,6 +159,10 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
+
             return event.get(0);
         }
     }
@@ -180,6 +187,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -204,6 +214,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -226,6 +239,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -250,6 +266,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -274,6 +293,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -298,6 +320,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -322,6 +347,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -345,6 +373,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -368,6 +399,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -391,6 +425,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -414,6 +451,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -437,6 +477,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -460,6 +503,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -483,6 +529,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -506,6 +555,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }
@@ -529,6 +581,9 @@ public class Buffer implements Closeable {
             }
             PointerBuffer event = substack.mallocPointer(1);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, dependencies, event));
+            if (events != null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
             return event.get(0);
         }
     }

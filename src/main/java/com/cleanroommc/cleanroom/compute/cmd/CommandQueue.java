@@ -4822,6 +4822,7 @@ public class CommandQueue implements Closeable {
 
             try {
                 CL10.clFlush(commandQueue);
+                CL10.clReleaseEvent(eventID);
             } finally {
                 chainable = false;
                 releaseOwnedStack();
