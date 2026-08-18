@@ -24,6 +24,7 @@ import org.lwjgl.opencl.CL12;
 import org.lwjgl.system.MemoryStack;
 
 import java.awt.*;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
@@ -33,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 
-public class ComputeProgram {
+public class ComputeProgram implements Closeable {
     private final transient ResourceLocation resourceLocation;
     private final transient ProgramMetadata metadata;
     private byte @Nullable [] @NonNull [] compiledProgramBinary;
@@ -312,6 +313,11 @@ public class ComputeProgram {
             }
         }
         return headers;
+    }
+
+    @Override
+    public void close() throws IOException {
+        CL10.clReleaseProgram(programHandle);
     }
 
     public static class ProgramMetadata {
