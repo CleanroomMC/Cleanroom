@@ -20,6 +20,7 @@ public sealed interface KernelParameter
         BufferIntParameter, BufferLongParameter,
         BufferPointerParameter, BufferParameter,
         ImageParameter, SamplerParameter,
-        PipeParameter {
+        PipeParameter,
+        CommandQueueParameter {
     void bindParameter(long kernel, int index) throws KernelError, OutOfMemoryError;
 }

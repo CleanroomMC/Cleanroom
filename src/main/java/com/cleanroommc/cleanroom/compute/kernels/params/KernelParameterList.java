@@ -1,6 +1,7 @@
 package com.cleanroommc.cleanroom.compute.kernels.params;
 
 import com.cleanroommc.cleanroom.compute.buffers.Buffer;
+import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
 import com.cleanroommc.cleanroom.compute.images.Image;
 import com.cleanroommc.cleanroom.compute.images.samplers.Sampler;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
@@ -278,6 +279,10 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
 
     public void add(@NonNull Pipe value) {
         add(new PipeParameter(value));
+    }
+
+    public void add(@NonNull CommandQueue value) {
+        add(new CommandQueueParameter(value));
     }
 
     // </editor-fold>
