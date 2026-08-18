@@ -23,7 +23,6 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
 import org.lwjgl.system.MemoryStack;
 
-import java.awt.*;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -106,7 +105,8 @@ public class ComputeProgram implements Closeable {
                 ByteBuffer buf = stack.UTF8(fname);
                 pathList.add(buf);
                 paths.put(buf);
-                libraryHandles.put(Compute.instance().getOrCreateLibrary(rl, stack));
+                for (long library : Compute.instance().getOrCreateLibraries(rl, stack))
+                    libraryHandles.put(library);
             }
             libraryHandles.flip();
             paths.flip();
