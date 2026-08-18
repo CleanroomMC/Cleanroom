@@ -38,7 +38,7 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments, int di
                        final long... dependencies) {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
-        Preconditions.checkArgument(workGroupSizes.length == dimensionality);
+        Preconditions.checkArgument(workGroupSizes.length == dimensionality, "Wrong NDRange dimensions.");
         Device dev = Compute.instance().getDevice(device);
         Preconditions.checkArgument(!requiresImages || dev.supportsImages(), "Device does not support images.");
         Preconditions.checkArgument(!requiresMipmaps || dev.supportsMipmaps(), "Device does not support mipmaps.");
@@ -91,10 +91,11 @@ public record Kernel(long kernel, ImmutableMap<String, String> arguments, int di
                        final @NonNull KernelParameterList arguments,
                        final long... dependencies) {
         Preconditions.checkNotNull(arguments);
+        Preconditions.checkState(dimensionality == 0, "Not a task.");
         Device dev = Compute.instance().getDevice(device);
-        if (requiresImages) Preconditions.checkArgument(dev.supportsImages(), "Device does not support images.");
-        if (requiresMipmaps) Preconditions.checkArgument(dev.supportsMipmaps(), "Device does not support mipmaps.");
-        if (requiresPipes) Preconditions.checkArgument(dev.supportsPipes(), "Device does not support pipes.");
+        Preconditions.checkArgument(!requiresImages || dev.supportsImages(), "Device does not support images.");
+        Preconditions.checkArgument(!requiresMipmaps || dev.supportsMipmaps(), "Device does not support mipmaps.");
+        Preconditions.checkArgument(!requiresPipes || dev.supportsPipes(), "Device does not support pipes.");
         arguments.bindAllParameters(this);
         PointerBuffer eventWaitList = null;
         if (dependencies != null && dependencies.length > 0) {
