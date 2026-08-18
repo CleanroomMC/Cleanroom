@@ -3,9 +3,13 @@ package com.cleanroommc.cleanroom.compute.types;
 public enum OpenCLPrimitive implements OpenCLType {
     BOOL(1, "bool"),
     CHAR(1, "char"),
+    UCHAR(1, "uchar"),
     SHORT(2, "short"),
+    USHORT(2, "ushort"),
     INT(4, "int"),
+    UINT(4, "uint"),
     LONG(8, "long"),
+    ULONG(8, "ulong"),
     SIZE(8, "size_t"),
     PTRDIFF(8, "ptrdiff_t"),
     INTPTR(8, "intptr_t"),

@@ -3,7 +3,7 @@ package com.cleanroommc.cleanroom.compute.types;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 
-public record VectorType(boolean unsigned, OpenCLPrimitive primitive, int sizeof) implements OpenCLType {
+public record VectorType(OpenCLPrimitive primitive, int sizeof) implements OpenCLType {
     public VectorType {
         Preconditions.checkArgument(primitive != OpenCLPrimitive.INTPTR
                         && primitive != OpenCLPrimitive.SIZE
@@ -19,6 +19,6 @@ public record VectorType(boolean unsigned, OpenCLPrimitive primitive, int sizeof
 
     @Override
     public @NonNull String toString() {
-        return unsigned ? String.format("u%s%d", primitive, sizeof) : String.format("%s%d", primitive, sizeof);
+        return String.format("%s%d", primitive, sizeof);
     }
 }
