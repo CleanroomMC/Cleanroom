@@ -6,6 +6,8 @@ import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.HeaderParsingError;
 import com.cleanroommc.cleanroom.compute.kernels.Kernel;
 import com.cleanroommc.cleanroom.compute.kernels.KernelMetadata;
+import com.cleanroommc.cleanroom.compute.types.OpenCLType;
+import com.cleanroommc.cleanroom.compute.types.OpenCLTypeDeserializer;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -47,7 +49,7 @@ public class ComputeProgram implements Closeable {
                 this.getClass().getClassLoader().getResourceAsStream(String.format("assets/%s/compute/%s.json", 
                         resourceLocation.getNamespace(), 
                         resourceLocation.getPath())))) {
-            Gson gson = new GsonBuilder().create();
+            Gson gson = new GsonBuilder().registerTypeAdapter(OpenCLType.class, new OpenCLTypeDeserializer()).create();
             metadata = gson.fromJson(stream, ProgramMetadata.class);
             for (var kernel : metadata.kernels.entrySet()) {
                 kernel.getValue().kernelName = kernel.getKey();

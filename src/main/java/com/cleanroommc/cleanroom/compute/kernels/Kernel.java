@@ -5,6 +5,7 @@ import com.cleanroommc.cleanroom.compute.Device;
 import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.KernelError;
 import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
+import com.cleanroommc.cleanroom.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import org.jspecify.annotations.NonNull;
@@ -13,7 +14,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.system.MemoryStack;
 
-public record Kernel(long kernel, ImmutableMap<String, String> arguments, int dimensionality, boolean requiresImages, boolean requiresMipmaps, boolean requiresPipes) {
+public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, int dimensionality, boolean requiresImages, boolean requiresMipmaps, boolean requiresPipes) {
     public Kernel(long program, KernelMetadata meta) {
         this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments), meta.dimensions, meta.parent.requirements.images, meta.parent.requirements.mipmaps, meta.parent.requirements.pipes);
     }

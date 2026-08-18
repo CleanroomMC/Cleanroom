@@ -1,6 +1,7 @@
 package com.cleanroommc.cleanroom.compute.kernels;
 
 import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
+import com.cleanroommc.cleanroom.compute.types.OpenCLType;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;
@@ -19,5 +20,5 @@ public class KernelMetadata {
      * Value is the type.
      */
     @SerializedName("arguments")
-    public Map<String, String> arguments;
+    public Map<String, OpenCLType> arguments;
 }
