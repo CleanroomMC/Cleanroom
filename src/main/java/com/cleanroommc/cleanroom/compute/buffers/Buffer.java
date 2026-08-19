@@ -682,6 +682,10 @@ public class Buffer implements Closeable {
         CL10.clReleaseMemObject(handle);
     }
 
+    public boolean isGLObject() {
+        return glBuffer != null;
+    }
+
     private void acquireGLObjects(MemoryStack substack, long commandQueue, PointerBuffer dependencies, PointerBuffer event, long... events) {
         CL10GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, dependencies, event);
         if (dependencies != null) {
