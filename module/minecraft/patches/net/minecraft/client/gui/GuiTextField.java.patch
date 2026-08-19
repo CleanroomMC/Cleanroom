@@ -1,18 +1,35 @@
 --- original/net/minecraft/client/gui/GuiTextField.java
 +++ modified/net/minecraft/client/gui/GuiTextField.java
-@@ -519,6 +519,11 @@
+@@ -395,7 +395,7 @@
+             int k = this.selectionEnd - this.lineScrollOffset;
+             String s = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
+             boolean flag = j >= 0 && j <= s.length();
+-            boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
++            boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag && !com.cleanroommc.client.sdl.Window.main().text().composition().active();
+             int l = this.enableBackgroundDrawing ? this.x + 4 : this.x;
+             int i1 = this.enableBackgroundDrawing ? this.y + (this.height - 8) / 2 : this.y;
+             int j1 = l;
+@@ -433,6 +433,7 @@
+                 int l1 = l + this.fontRenderer.getStringWidth(s.substring(0, k));
+                 this.drawSelectionBox(k1, i1 - 1, l1 - 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT);
+             }
++            com.cleanroommc.client.sdl.SDLHooks.textFieldDraw(this);
+         }
+     }
+ 
+@@ -519,6 +520,11 @@
          }
  
          this.isFocused = isFocusedIn;
 +        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
 +        if (window != null) {
-+            window.textInput(this.isFocused);
++            window.text().active(isFocusedIn);
 +        }
 +
          if (Minecraft.getMinecraft().currentScreen != null) {
              Minecraft.getMinecraft().currentScreen.setFocused(isFocusedIn);
          }
-@@ -592,4 +597,8 @@
+@@ -592,4 +598,8 @@
      public void setVisible(boolean isVisible) {
          this.visible = isVisible;
      }

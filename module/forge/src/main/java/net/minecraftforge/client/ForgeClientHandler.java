@@ -19,6 +19,7 @@
 
 package net.minecraftforge.client;
 
+import com.cleanroommc.client.sdl.SDLHooks;
 import com.cleanroommc.client.sdl.Window;
 import com.cleanroommc.client.modlist.LegacyModListScreen;
 import com.cleanroommc.client.modlist.ModListConfig;
@@ -26,6 +27,7 @@ import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.client.windows.TaskbarApi;
 import com.cleanroommc.client.windows.WindowsProperties;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;
@@ -38,6 +40,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeEarlyConfig;
@@ -90,6 +93,22 @@ public class ForgeClientHandler
         {
             GuiScreen opened = event.getGui();
             window.text().active(opened instanceof GuiScreenBook || opened instanceof GuiEditSign);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Post event)
+    {
+        SDLHooks.draw(event.getGui());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onGuiKeyboard(GuiScreenEvent.KeyboardInputEvent.Pre event)
+    {
+        if (SDLHooks.keyboard(event.getGui()))
+        {
+            event.setCanceled(true);
+            Minecraft.getMinecraft().dispatchKeypresses();
         }
     }
 

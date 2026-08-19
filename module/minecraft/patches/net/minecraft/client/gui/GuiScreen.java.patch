@@ -20,7 +20,7 @@
      }
  
      public List<String> getItemToolTip(ItemStack p_191927_1_) {
-@@ -138,7 +142,7 @@
+@@ -138,7 +143,7 @@
  
          for (int i = 0; i < list.size(); i++) {
              if (i == 0) {
@@ -29,7 +29,7 @@
              } else {
                  list.set(i, TextFormatting.GRAY + list.get(i));
              }
-@@ -162,7 +166,12 @@
+@@ -162,7 +167,12 @@
  
      /** Draws a List of strings as a tooltip. Every entry is drawn on a seperate line. */
      public void drawHoveringText(List<String> textLines, int x, int y) {
@@ -43,7 +43,7 @@
              GlStateManager.disableRescaleNormal();
              RenderHelper.disableStandardItemLighting();
              GlStateManager.disableLighting();
-@@ -339,9 +348,12 @@
+@@ -339,9 +349,12 @@
      }
  
      public void sendChatMessage(String msg, boolean addToChat) {
@@ -56,7 +56,7 @@
  
          this.mc.player.sendChatMessage(msg);
      }
-@@ -352,9 +364,15 @@
+@@ -352,9 +365,15 @@
              for (int i = 0; i < this.buttonList.size(); i++) {
                  GuiButton guibutton = this.buttonList.get(i);
                  if (guibutton.mousePressed(this.mc, mouseX, mouseY)) {
@@ -72,7 +72,7 @@
                  }
              }
          }
-@@ -383,8 +401,11 @@
+@@ -383,8 +402,11 @@
          this.fontRenderer = mc.fontRenderer;
          this.width = width;
          this.height = height;
@@ -84,7 +84,7 @@
      }
  
      /** Set the gui to the specified width and height */
-@@ -401,13 +422,19 @@
+@@ -401,13 +423,19 @@
      public void handleInput() throws IOException {
          if (Mouse.isCreated()) {
              while (Mouse.next()) {
@@ -104,7 +104,7 @@
              }
          }
      }
-@@ -465,6 +492,7 @@
+@@ -465,6 +493,7 @@
       */
      public void drawDefaultBackground() {
          this.drawWorldBackground(0);
