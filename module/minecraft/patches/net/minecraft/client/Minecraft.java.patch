@@ -1,6 +1,48 @@
 --- original/net/minecraft/client/Minecraft.java
 +++ modified/net/minecraft/client/Minecraft.java
-@@ -363,6 +363,7 @@
+@@ -37,9 +37,8 @@
+ import java.util.stream.Collectors;
+ import javax.annotation.Nullable;
+ import javax.imageio.ImageIO;
+-import net.minecraft.block.Block;
++
+ import net.minecraft.block.material.Material;
+-import net.minecraft.block.state.IBlockState;
+ import net.minecraft.client.audio.MusicTicker;
+ import net.minecraft.client.audio.SoundHandler;
+ import net.minecraft.client.entity.EntityPlayerSP;
+@@ -66,7 +65,6 @@
+ import net.minecraft.client.gui.recipebook.RecipeList;
+ import net.minecraft.client.gui.toasts.GuiToast;
+ import net.minecraft.client.main.GameConfiguration;
+-import net.minecraft.client.multiplayer.GuiConnecting;
+ import net.minecraft.client.multiplayer.PlayerControllerMP;
+ import net.minecraft.client.multiplayer.ServerData;
+ import net.minecraft.client.multiplayer.WorldClient;
+@@ -130,22 +128,11 @@
+ import net.minecraft.crash.ICrashReportDetail;
+ import net.minecraft.creativetab.CreativeTabs;
+ import net.minecraft.entity.Entity;
+-import net.minecraft.entity.EntityLeashKnot;
+-import net.minecraft.entity.EntityList;
+-import net.minecraft.entity.item.EntityArmorStand;
+-import net.minecraft.entity.item.EntityBoat;
+-import net.minecraft.entity.item.EntityEnderCrystal;
+-import net.minecraft.entity.item.EntityItemFrame;
+-import net.minecraft.entity.item.EntityMinecart;
+-import net.minecraft.entity.item.EntityPainting;
+ import net.minecraft.entity.player.EntityPlayer;
+-import net.minecraft.entity.player.InventoryPlayer;
+ import net.minecraft.init.Bootstrap;
+ import net.minecraft.init.Items;
+ import net.minecraft.item.Item;
+-import net.minecraft.item.ItemMonsterPlacer;
+ import net.minecraft.item.ItemStack;
+-import net.minecraft.item.crafting.IRecipe;
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.nbt.NBTTagList;
+ import net.minecraft.nbt.NBTTagString;
+@@ -363,6 +350,7 @@
  
      public Minecraft(GameConfiguration gameConfig) {
          instance = this;
@@ -8,7 +50,7 @@
          this.gameDir = gameConfig.folderInfo.gameDir;
          this.fileAssets = gameConfig.folderInfo.assetsDir;
          this.fileResourcepacks = gameConfig.folderInfo.resourcePacksDir;
-@@ -375,7 +376,6 @@
+@@ -375,7 +363,6 @@
          this.sessionService = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString()).createMinecraftSessionService();
          this.session = gameConfig.userInfo.session;
          LOGGER.info("Setting user: {}", this.session.getUsername());
@@ -16,7 +58,7 @@
          this.isDemo = gameConfig.gameInfo.isDemo;
          this.displayWidth = gameConfig.displayInfo.width > 0 ? gameConfig.displayInfo.width : 1;
          this.displayHeight = gameConfig.displayInfo.height > 0 ? gameConfig.displayInfo.height : 1;
-@@ -455,7 +455,8 @@
+@@ -455,7 +442,8 @@
              this.displayWidth = this.gameSettings.overrideWidth;
              this.displayHeight = this.gameSettings.overrideHeight;
          }
@@ -26,7 +68,7 @@
          LOGGER.info("LWJGL Version: {}", Sys.getVersion());
          this.setWindowIcon();
          this.setInitialDisplayMode();
-@@ -470,10 +471,10 @@
+@@ -470,10 +458,10 @@
          this.resourceManager = new SimpleReloadableResourceManager(this.metadataSerializer);
          this.languageManager = new LanguageManager(this.metadataSerializer, this.gameSettings.language);
          this.resourceManager.registerReloadListener(this.languageManager);
@@ -39,7 +81,7 @@
          this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
          this.saveLoader = new AnvilSaveConverter(new File(this.gameDir, "saves"), this.dataFixer);
          this.soundHandler = new SoundHandler(this.resourceManager, this.gameSettings);
-@@ -491,6 +492,8 @@
+@@ -491,6 +479,8 @@
          this.resourceManager.registerReloadListener(new GrassColorReloadListener());
          this.resourceManager.registerReloadListener(new FoliageColorReloadListener());
          this.mouseHelper = new MouseHelper();
@@ -48,7 +90,7 @@
          this.checkGLError("Pre startup");
          GlStateManager.enableTexture2D();
          GlStateManager.shadeModel(7425);
-@@ -504,19 +507,24 @@
+@@ -504,19 +494,24 @@
          GlStateManager.loadIdentity();
          GlStateManager.matrixMode(5888);
          this.checkGLError("Startup");
@@ -73,7 +115,7 @@
          this.entityRenderer = new EntityRenderer(this, this.resourceManager);
          this.resourceManager.registerReloadListener(this.entityRenderer);
          this.blockRenderDispatcher = new BlockRendererDispatcher(this.modelManager.getBlockModelShapes(), this.blockColors);
-@@ -527,18 +535,25 @@
+@@ -527,18 +522,25 @@
          this.resourceManager.registerReloadListener(this.searchTreeManager);
          GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
          this.effectRenderer = new ParticleManager(this.world, this.renderEngine);
@@ -102,7 +144,7 @@
          if (this.gameSettings.fullScreen && !this.fullscreen) {
              this.toggleFullscreen();
          }
-@@ -599,24 +614,12 @@
+@@ -599,34 +601,22 @@
  
      private void createDisplay() throws LWJGLException {
          Display.setResizable(true);
@@ -131,8 +173,33 @@
 +        net.minecraftforge.client.ForgeHooksClient.initializeTaskbarAPI();
      }
  
-     private void setInitialDisplayMode() throws LWJGLException {
-@@ -679,6 +682,7 @@
+-    private void setInitialDisplayMode() throws LWJGLException {
++    private void setInitialDisplayMode() {
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
+         if (this.fullscreen) {
+-            Display.setFullscreen(true);
+-            DisplayMode displaymode = Display.getDisplayMode();
+-            this.displayWidth = Math.max(1, displaymode.getWidth());
+-            this.displayHeight = Math.max(1, displaymode.getHeight());
++            window.fullscreen(true);
++            this.displayWidth = window.width();
++            this.displayHeight = window.height();
+         } else {
+-            Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
++            window.size(this.displayWidth, this.displayHeight);
+         }
+     }
+ 
+@@ -640,7 +630,7 @@
+                 inputstream = this.defaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_16x16.png"));
+                 inputstream1 = this.defaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_32x32.png"));
+                 if (inputstream != null && inputstream1 != null) {
+-                    Display.setIcon(new ByteBuffer[]{this.readImageToBuffer(inputstream), this.readImageToBuffer(inputstream1)});
++                    com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main().icon(ImageIO.read(inputstream), ImageIO.read(inputstream1));
+                 }
+             } catch (IOException ioexception) {
+                 LOGGER.error("Couldn't set icon", ioexception);
+@@ -679,6 +669,7 @@
      }
  
      private void startTimerHackThread() {
@@ -140,7 +207,7 @@
          Thread thread = new Thread("Timer hack thread") {
              @Override
              public void run() {
-@@ -691,6 +695,7 @@
+@@ -691,6 +682,7 @@
              }
          };
          thread.setDaemon(true);
@@ -148,7 +215,7 @@
          thread.start();
      }
  
-@@ -704,22 +709,26 @@
+@@ -704,22 +696,31 @@
          File file1 = new File(getMinecraft().gameDir, "crash-reports");
          File file2 = new File(file1, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
          Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());
@@ -167,6 +234,11 @@
 -            System.exit(-2);
 +            retVal = -2;
          }
++        try {
++            String where = crashReportIn.getFile() != null ? crashReportIn.getFile().getAbsolutePath() : (file2.isFile() ? file2.getAbsolutePath() : "the console");
++            com.cleanroommc.client.sdl.FileDialogs.error(com.cleanroommc.client.sdl.Window.main(), "Cleanroom", "The game crashed. A report was saved to:\n" + where);
++        } catch (Throwable ignored) {
++        }
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().handleExit(retVal);
      }
  
@@ -178,7 +250,7 @@
      public void refreshResources() {
          List<IResourcePack> list = Lists.newArrayList(this.defaultResourcePacks);
          if (this.integratedServer != null) {
-@@ -902,16 +911,22 @@
+@@ -902,16 +903,22 @@
       * @param guiScreenIn The {@link GuiScreen} to display. If it is {@code null}, any open GUI will be closed.
       */
      public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {
@@ -205,7 +277,7 @@
          if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer) {
              this.gameSettings.showDebugInfo = false;
              this.ingameGUI.getChatGUI().clearChatMessages(true);
-@@ -962,6 +977,8 @@
+@@ -962,6 +969,8 @@
  
              this.soundHandler.unloadSounds();
          } finally {
@@ -214,7 +286,7 @@
              Display.destroy();
              if (!this.hasCrashed) {
                  System.exit(0);
-@@ -999,7 +1016,7 @@
+@@ -999,7 +1008,7 @@
          long i1 = System.nanoTime() - l;
          this.checkGLError("Pre render");
          this.profiler.endStartSection("sound");
@@ -223,7 +295,7 @@
          this.profiler.endSection();
          this.profiler.startSection("render");
          GlStateManager.pushMatrix();
-@@ -1009,11 +1026,13 @@
+@@ -1009,11 +1018,13 @@
          GlStateManager.enableTexture2D();
          this.profiler.endSection();
          if (!this.skipRenderWorld) {
@@ -237,7 +309,7 @@
          }
  
          this.profiler.endSection();
-@@ -1308,9 +1327,9 @@
+@@ -1308,9 +1319,9 @@
          if (this.leftClickCounter <= 0 && !this.player.isHandActive()) {
              if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                  BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -250,7 +322,7 @@
                      this.player.swingArm(EnumHand.MAIN_HAND);
                  }
              } else {
-@@ -1333,7 +1352,8 @@
+@@ -1333,7 +1344,8 @@
                          break;
                      case BLOCK:
                          BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -260,7 +332,7 @@
                              this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                              break;
                          }
-@@ -1343,6 +1363,7 @@
+@@ -1343,6 +1355,7 @@
                          }
  
                          this.player.resetCooldown();
@@ -268,7 +340,7 @@
                  }
  
                  this.player.swingArm(EnumHand.MAIN_HAND);
-@@ -1399,6 +1420,7 @@
+@@ -1399,6 +1412,7 @@
                          }
                      }
  
@@ -276,7 +348,7 @@
                      if (!itemstack.isEmpty()
                          && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
                          this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
-@@ -1411,6 +1433,11 @@
+@@ -1411,6 +1425,11 @@
  
      /** Toggles fullscreen mode. */
      public void toggleFullscreen() {
@@ -288,13 +360,23 @@
          try {
              this.fullscreen = !this.fullscreen;
              this.gameSettings.fullScreen = this.fullscreen;
-@@ -1445,6 +1472,10 @@
+@@ -1444,7 +1463,19 @@
+                 this.updateFramebufferSize();
              }
  
-             Display.setFullscreen(this.fullscreen);
-+            if (!this.fullscreen && (Util.getOSType() == Util.EnumOS.WINDOWS)) { //Forge: Fix MC-68754, Screen is not resizeable after exiting fullscreen due to LWJGL bug https://github.com/LWJGL/lwjgl/issues/142 which is fixed, but not in the version MC ships
-+                Display.setResizable(false);
-+                Display.setResizable(true);
+-            Display.setFullscreen(this.fullscreen);
++            com.cleanroommc.client.sdl.Window host = com.cleanroommc.client.sdl.Window.main();
++            if (host != null) {
++                host.fullscreen(this.fullscreen);
++                if (!this.fullscreen) {
++                    host.resizable(false).resizable(true);
++                }
++            } else {
++                Display.setFullscreen(this.fullscreen);
++                if (!this.fullscreen && (Util.getOSType() == Util.EnumOS.WINDOWS)) { //Forge: Fix MC-68754, Screen is not resizeable after exiting fullscreen due to LWJGL bug https://github.com/LWJGL/lwjgl/issues/142 which is fixed, but not in the version MC ships
++                    Display.setResizable(false);
++                    Display.setResizable(true);
++                }
 +            }
              Display.setVSyncEnabled(this.gameSettings.enableVsync);
              this.updateDisplay();
