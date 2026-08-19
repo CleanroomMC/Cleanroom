@@ -72,8 +72,11 @@ public final class Text {
     private final Window window;
 
     private TextInputKind kind = TextInputKind.TEXT;
+    private Capitalization capitalization = Capitalization.SENTENCES;
     private TextComposition composition = TextComposition.NONE;
     private InputCandidates candidates = InputCandidates.NONE;
+    private boolean multiline = true;
+    private boolean autocorrect = true;
 
     /**
      * Attaches these helpers to {@code window}. Prefer {@link Window#text()}.
@@ -132,6 +135,49 @@ public final class Text {
             return this;
         }
         this.kind = kind;
+        return restartIfActive();
+    }
+
+    public synchronized Capitalization capitalization() {
+        return this.capitalization;
+    }
+
+    public synchronized Text capitalization(Capitalization capitalization) {
+        if (capitalization == null) {
+            throw new IllegalArgumentException("Capitalization cannot be null");
+        }
+        if (this.capitalization == capitalization) {
+            return this;
+        }
+        this.capitalization = capitalization;
+        return restartIfActive();
+    }
+
+    public synchronized boolean multiline() {
+        return this.multiline;
+    }
+
+    public synchronized Text multiline(boolean multiline) {
+        if (this.multiline == multiline) {
+            return this;
+        }
+        this.multiline = multiline;
+        return restartIfActive();
+    }
+
+    public synchronized boolean autocorrect() {
+        return this.autocorrect;
+    }
+
+    public synchronized Text autocorrect(boolean autocorrect) {
+        if (this.autocorrect == autocorrect) {
+            return this;
+        }
+        this.autocorrect = autocorrect;
+        return restartIfActive();
+    }
+
+    private Text restartIfActive() {
         if (this.active()) {
             this.stop();
             this.start();
@@ -238,6 +284,12 @@ public final class Text {
         try {
             SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER, this.kind.value()),
                     "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER + ")");
+            SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, this.capitalization.value()),
+                    "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER + ")");
+            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN, this.multiline),
+                    "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN + ")");
+            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, this.autocorrect),
+                    "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN + ")");
             SDL.check(SDLKeyboard.SDL_StartTextInputWithProperties(this.handle(), props), "SDL_StartTextInputWithProperties");
         } finally {
             SDLProperties.SDL_DestroyProperties(props);
