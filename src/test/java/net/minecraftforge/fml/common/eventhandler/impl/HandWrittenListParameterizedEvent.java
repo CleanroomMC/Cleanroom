@@ -11,8 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * {@code EventBus.register} could instantiate them and reach the override via virtual
  * dispatch), and without it registration must allocate an instance without a constructor
  * call so that registration and posting resolve to the same handwritten list.
- *
- * @author ZZZank
  */
 public class HandWrittenListParameterizedEvent extends Event {
 

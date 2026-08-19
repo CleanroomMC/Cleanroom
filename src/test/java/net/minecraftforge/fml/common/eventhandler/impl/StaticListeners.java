@@ -6,9 +6,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author ZZZank
- */
 public class StaticListeners {
     public static int recorded = -1;
     public static List<EventPriority> triggered = new ArrayList<>();

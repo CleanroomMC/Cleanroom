@@ -4,9 +4,6 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-/**
- * @author ZZZank
- */
 public class CancelableEvents {
 
     @Cancelable

@@ -6,9 +6,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author ZZZank
- */
 public class InstanceListeners {
     public int recorded = -1;
     public List<EventPriority> triggered = new ArrayList<>();

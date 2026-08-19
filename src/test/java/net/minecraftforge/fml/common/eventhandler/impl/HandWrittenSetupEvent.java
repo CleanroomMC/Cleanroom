@@ -11,8 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * branch), so their behavior must be identical with and without the transformer: the base
  * constructor's {@code setup()} virtual call runs the handwritten setup, and registration and
  * posting both resolve the handwritten list.
- *
- * @author ZZZank
  */
 public class HandWrittenSetupEvent extends Event {
 

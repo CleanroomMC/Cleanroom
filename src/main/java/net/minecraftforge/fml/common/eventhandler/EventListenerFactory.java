@@ -16,8 +16,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
  * be public. The lookup is anchored on the declaring class of the callback, so members of any
  * visibility (private/protected/package-private) can be accessed directly, without relying on
  * {@code EventSubscriberTransformer} publicising {@code @SubscribeEvent} methods at class load.
- *
- * @author ZZZank
  */
 class EventListenerFactory {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();

@@ -2,9 +2,6 @@ package net.minecraftforge.fml.common.eventhandler.impl;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-/**
- * @author ZZZank
- */
 public class AbnormalListeners {
 
     public static boolean nonVoid = false;

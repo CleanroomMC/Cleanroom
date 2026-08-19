@@ -3,9 +3,6 @@ package net.minecraftforge.fml.common.eventhandler.impl;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-/**
- * @author ZZZank
- */
 public class PolymorphicEvents {
 
     public static class ParentEvent extends Event {

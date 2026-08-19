@@ -9,8 +9,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * {@code getListenerList()} override. Virtual dispatch must prefer this over the
  * {@link net.minecraftforge.fml.common.eventhandler.EventCompatProbe} cache. The list is
  * static, mirroring the injected {@code LISTENER_LIST} field shared by all instances.
- *
- * @author ZZZank
  */
 public class CustomListEvent extends Event {
 

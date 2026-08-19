@@ -9,8 +9,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * {@code EventSubscriptionTransformer} used to inject a no-arg constructor into such classes
  * purely so {@code EventBus.register} could instantiate them; now registration must fall back
  * to the {@link net.minecraftforge.fml.common.eventhandler.EventCompatProbe} cache.
- *
- * @author ZZZank
  */
 public class ParameterizedEvent extends Event {
 
