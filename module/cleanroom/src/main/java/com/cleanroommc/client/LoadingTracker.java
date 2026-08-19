@@ -3,18 +3,13 @@ package com.cleanroommc.client;
 import java.io.*;
 import java.util.*;
 
-import com.cleanroommc.client.windows.TaskbarApi;
-import com.cleanroommc.client.windows.WindowsProperties;
-import com.sun.jna.platform.win32.WinDef.HWND;
-
+import com.cleanroommc.client.sdl.Window;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
-
-import org.apache.commons.lang3.SystemUtils;
 
 public class LoadingTracker {
     private static final int MAX_PROGRESS = 10000;
@@ -162,10 +157,9 @@ public class LoadingTracker {
         });
 
         if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) {
-            setTaskbarState(TaskbarApi.TBPFLAG.TBPF_NORMAL);
-            updateTaskbar(0);
+            setWindowProgress(Window.Progress.NORMAL, 0.0F);
         } else {
-            setTaskbarState(TaskbarApi.TBPFLAG.TBPF_INDETERMINATE);
+            setWindowProgress(Window.Progress.INDETERMINATE, 0.0F);
         }
     }
 
@@ -176,7 +170,7 @@ public class LoadingTracker {
             endPhaseTimer(currentPhase);
         }
 
-        updateTaskbar(MAX_PROGRESS);
+        setWindowProgress(Window.Progress.NORMAL, 1.0F);
         saveHistory();
 
         initialized = false;
@@ -265,7 +259,9 @@ public class LoadingTracker {
 
         if (progress > lastProgress) {
             lastProgress = progress;
-            updateTaskbar(progress);
+            if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) {
+                setWindowProgress(Window.Progress.NORMAL, progress / (float) MAX_PROGRESS);
+            }
         }
     }
 
@@ -276,27 +272,15 @@ public class LoadingTracker {
         }
     }
 
-    private static void setTaskbarState(TaskbarApi.TBPFLAG flag) {
-        if (!SystemUtils.IS_OS_WINDOWS) return;
-        TaskbarApi api = TaskbarApi.getInstance();
-        if (api == null || WindowsProperties.handle == Long.MIN_VALUE) return;
-        try {
-            HWND hwnd = TaskbarApi.hwnd(WindowsProperties.handle);
-            api.setProgressState(hwnd, flag);
-        } catch (Throwable t) {
-            FMLLog.log.debug("LoadingTracker: Failed to set taskbar state", t);
+    private static void setWindowProgress(Window.Progress state, float value) {
+        Window window = Window.main();
+        if (window == null) {
+            return;
         }
-    }
-
-    private static void updateTaskbar(int progress) {
-        if (!SystemUtils.IS_OS_WINDOWS || !ForgeEarlyConfig.MODERN_WINDOWS_STYLES.UPDATE_WINDOWS_TASKBAR_PROGRESS) return;
-        TaskbarApi api = TaskbarApi.getInstance();
-        if (api == null || WindowsProperties.handle == Long.MIN_VALUE) return;
         try {
-            HWND hwnd = TaskbarApi.hwnd(WindowsProperties.handle);
-            api.setProgressValue(hwnd, progress, MAX_PROGRESS);
+            window.progress(state, value);
         } catch (Throwable t) {
-            FMLLog.log.debug("LoadingTracker: Failed to update taskbar progress", t);
+            FMLLog.log.debug("LoadingTracker: Failed to set window progress", t);
         }
     }
 

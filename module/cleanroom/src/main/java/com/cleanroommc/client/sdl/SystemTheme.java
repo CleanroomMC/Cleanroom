@@ -12,7 +12,17 @@ public enum SystemTheme {
     LIGHT(SDLVideo.SDL_SYSTEM_THEME_LIGHT),
     DARK(SDLVideo.SDL_SYSTEM_THEME_DARK);
 
-    /** Notified from the window pump when the desktop theme changes. */
+    private final int value;
+
+    SystemTheme(int value) {
+        this.value = value;
+    }
+
+    public int value() {
+        return value;
+    }
+
+    @FunctionalInterface
     public interface Listener {
 
         void themeChanged(SystemTheme theme);
@@ -49,16 +59,6 @@ public enum SystemTheme {
             }
         }
         return UNKNOWN;
-    }
-
-    private final int value;
-
-    SystemTheme(int value) {
-        this.value = value;
-    }
-
-    public int value() {
-        return value;
     }
 
     public boolean dark() {

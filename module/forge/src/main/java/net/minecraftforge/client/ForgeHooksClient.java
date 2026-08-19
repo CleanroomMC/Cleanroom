@@ -38,10 +38,11 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
 import com.cleanroommc.client.LoadingTracker;
+import com.cleanroommc.client.sdl.SystemTheme;
 import com.cleanroommc.client.sdl.Window;
+import com.cleanroommc.client.sdl.WindowListener;
 import com.cleanroommc.client.windows.DwmApi;
 import com.cleanroommc.client.windows.NtDll;
-import com.cleanroommc.client.windows.TaskbarApi;
 import com.cleanroommc.client.windows.WindowsProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -986,9 +987,46 @@ public class ForgeHooksClient
         }
     }
     
+    private static boolean styleListenersRegistered = false;
+
     public static void setWindowStyle(boolean isFullScreen) {
         if (SystemUtils.IS_OS_WINDOWS) {
+            listenForStyleChanges();
             DwmApi.updateDwm(isFullScreen, WindowsProperties.handle);
+        }
+    }
+
+    /** Re-applies the window style from the window's own state. */
+    private static void updateWindowStyle() {
+        Window window = Window.main();
+        setWindowStyle(window != null && window.fullscreen());
+    }
+
+    /**
+     * Re-applies the window style whenever the desktop switches between light and dark, or the window enters
+     * or leaves fullscreen, so the title bar keeps following the system theme without a restart.
+     */
+    private static void listenForStyleChanges() {
+        if (styleListenersRegistered) {
+            return;
+        }
+        styleListenersRegistered = true;
+        SystemTheme.listen(_ -> updateWindowStyle());
+        Window window = Window.main();
+        if (window != null) {
+            window.listen(new WindowListener() {
+
+                @Override
+                public void fullscreenChanged(boolean fullscreen) {
+                    setWindowStyle(fullscreen);
+                }
+
+                @Override
+                public void borderlessChanged(boolean borderless) {
+                    updateWindowStyle();
+                }
+
+            });
         }
     }
 
@@ -996,39 +1034,32 @@ public class ForgeHooksClient
         if (SystemUtils.IS_OS_WINDOWS) {
             Window window = Window.main();
             if (window != null) {
-                NtDll.initializeWindowsInformation(window.nativeHandle());
+                com.cleanroommc.client.sdl.NativeWindow nativeWindow = window.nativeWindow();
+                if (nativeWindow.compositor() == com.cleanroommc.client.sdl.Compositor.WIN32) {
+                    NtDll.initializeWindowsInformation(nativeWindow.handle());
+                } else {
+                    NtDll.initializeWindowsInformation(window.nativeHandle());
+                }
             }
         }
     }
 
     public static void initializeTaskbarAPI() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            try {
-                TaskbarApi.create();
-            } catch (Throwable t) {
-                FMLLog.log.error("Unable to initialize Taskbar API", t);
-                TaskbarApi.clearInstance();
-            }
-        }
         LoadingTracker.init();
     }
 
-    public static void shutdownTaskbarAPI() {
-        TaskbarApi api = TaskbarApi.getInstance();
-        if (api != null) {
-            api.close();
-            TaskbarApi.clearInstance();
-        }
-    }
-    
     public static void clearTaskbarProgress() {
         LoadingTracker.finish();
-        if (SystemUtils.IS_OS_WINDOWS) {
-            var taskbar = TaskbarApi.getInstance();
-            if (taskbar != null) {
-                taskbar.clearProgress(TaskbarApi.hwnd(WindowsProperties.handle));
-            } else {
-                FMLLog.log.error("Unable to clear taskbar progress, cannot invoke a null object.");
+        Window window = Window.main();
+        if (window != null)
+        {
+            try
+            {
+                window.progress(Window.Progress.NONE);
+            }
+            catch (RuntimeException e)
+            {
+                FMLLog.log.debug("Unable to clear taskbar progress", e);
             }
         }
     }

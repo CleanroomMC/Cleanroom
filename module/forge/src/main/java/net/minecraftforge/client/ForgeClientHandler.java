@@ -25,8 +25,6 @@ import com.cleanroommc.client.modlist.LegacyModListScreen;
 import com.cleanroommc.client.modlist.ModListConfig;
 import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.screen.ModListScreen;
-import com.cleanroommc.client.windows.TaskbarApi;
-import com.cleanroommc.client.windows.WindowsProperties;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -35,7 +33,6 @@ import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.Util;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -58,6 +55,7 @@ import java.util.List;
 public class ForgeClientHandler
 {
     private static boolean played = false;
+
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
     {
@@ -124,16 +122,23 @@ public class ForgeClientHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onGuiOpenLast(GuiOpenEvent event)
     {
-        if (Util.getOSType().equals(Util.EnumOS.WINDOWS))
+        if (event.getGui() instanceof GuiMainMenu && !played)
         {
-            if (event.getGui() instanceof GuiMainMenu && !played)
+            played = true;
+            if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.DISABLE_FLASH_AFTER_LOADED)
             {
-                if (WindowsProperties.handle == Long.MIN_VALUE) return;
-                if (!ForgeEarlyConfig.MODERN_WINDOWS_STYLES.DISABLE_FLASH_AFTER_LOADED)
+                return;
+            }
+            Window window = Window.main();
+            if (window != null)
+            {
+                try
                 {
-                    TaskbarApi.flashTaskbarUntilForeground(WindowsProperties.handle);
+                    window.flash(Window.Flash.UNTIL_FOCUSED);
                 }
-                played = true;
+                catch (RuntimeException ignored)
+                {
+                }
             }
         }
     }

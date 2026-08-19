@@ -263,6 +263,7 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         SDL.check(SDLVideo.SDL_SetWindowBordered(this.handle, !borderless), "SDL_SetWindowBordered");
         this.borderless = borderless;
+        notifyListeners(listener -> listener.borderlessChanged(borderless));
         return this;
     }
 
@@ -386,8 +387,7 @@ public final class Window implements AutoCloseable {
         }
         SDL.check(SDLVideo.SDL_SetWindowProgressState(this.handle, state.value), "SDL_SetWindowProgressState");
         if (state != Progress.NONE && state != Progress.INDETERMINATE) {
-            SDL.check(SDLVideo.SDL_SetWindowProgressValue(this.handle, Math.max(0.0F, Math.min(1.0F, value))),
-                    "SDL_SetWindowProgressValue");
+            SDL.check(SDLVideo.SDL_SetWindowProgressValue(this.handle, Math.clamp(value, 0.0F, 1.0F)), "SDL_SetWindowProgressValue");
         }
         return this;
     }
@@ -577,6 +577,7 @@ public final class Window implements AutoCloseable {
                  SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN,
                  SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> window(type, event.window());
             case SDLEvents.SDL_EVENT_CLIPBOARD_UPDATE -> Clipboard.updated();
+            case SDLEvents.SDL_EVENT_SYSTEM_THEME_CHANGED -> SystemTheme.changed();
             case SDLEvents.SDL_EVENT_DROP_FILE,
                  SDLEvents.SDL_EVENT_DROP_TEXT,
                  SDLEvents.SDL_EVENT_DROP_BEGIN,
@@ -706,8 +707,14 @@ public final class Window implements AutoCloseable {
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED -> notifyListeners(WindowListener::displayChanged);
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED ->
                     notifyListeners(listener -> listener.scaleChanged(SDLVideo.SDL_GetWindowDisplayScale(this.handle)));
-            case SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN -> this.fullscreen = true;
-            case SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> this.fullscreen = false;
+            case SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN -> {
+                this.fullscreen = true;
+                notifyListeners(listener -> listener.fullscreenChanged(true));
+            }
+            case SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> {
+                this.fullscreen = false;
+                notifyListeners(listener -> listener.fullscreenChanged(false));
+            }
         }
     }
 
