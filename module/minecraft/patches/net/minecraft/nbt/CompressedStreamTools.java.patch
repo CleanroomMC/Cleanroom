@@ -1,39 +1,6 @@
 --- original/net/minecraft/nbt/CompressedStreamTools.java
 +++ modified/net/minecraft/nbt/CompressedStreamTools.java
-@@ -18,8 +18,6 @@
- import net.minecraft.crash.CrashReport;
- import net.minecraft.crash.CrashReportCategory;
- import net.minecraft.util.ReportedException;
--import net.minecraftforge.fml.relauncher.Side;
--import net.minecraftforge.fml.relauncher.SideOnly;
- 
- public class CompressedStreamTools {
-     /** Load the gzipped compound from the inputstream. */
-@@ -44,7 +42,6 @@
-         }
-     }
- 
--    @SideOnly(Side.CLIENT)
-     public static void safeWrite(NBTTagCompound compound, File fileIn) throws IOException {
-         File file1 = new File(fileIn.getAbsolutePath() + "_tmp");
-         if (file1.exists()) {
-@@ -63,7 +60,6 @@
-         file1.renameTo(fileIn);
-     }
- 
--    @SideOnly(Side.CLIENT)
-     public static void write(NBTTagCompound compound, File fileIn) throws IOException {
-         DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
- 
-@@ -75,7 +71,6 @@
-     }
- 
-     @Nullable
--    @SideOnly(Side.CLIENT)
-     public static NBTTagCompound read(File fileIn) throws IOException {
-         if (!fileIn.exists()) {
-             return null;
-@@ -119,11 +114,13 @@
+@@ -114,11 +114,13 @@
  
      private static NBTBase read(DataInput input, int depth, NBTSizeTracker accounter) throws IOException {
          byte b0 = input.readByte();

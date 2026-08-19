@@ -56,16 +56,15 @@
                  tileentity = null;
              }
          } else {
-@@ -130,8 +139,6 @@
+@@ -130,7 +139,6 @@
          }
      }
  
 -    /** Returns the square of the distance between this entity and the passed in coordinates. */
--    @SideOnly(Side.CLIENT)
      public double getDistanceSq(double x, double y, double z) {
          double d0 = this.pos.getX() + 0.5 - x;
          double d1 = this.pos.getY() + 0.5 - y;
-@@ -213,7 +220,7 @@
+@@ -212,7 +220,7 @@
  
                          try {
                              return String.format(
@@ -74,7 +73,7 @@
                              );
                          } catch (Throwable throwable) {
                              return "ID #" + i;
-@@ -267,6 +274,177 @@
+@@ -266,6 +274,177 @@
      public void mirror(Mirror mirrorIn) {
      }
  

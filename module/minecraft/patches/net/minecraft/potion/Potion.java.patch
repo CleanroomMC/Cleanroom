@@ -12,16 +12,15 @@
      private final Map<IAttribute, AttributeModifier> attributeModifierMap = Maps.newHashMap();
      /** This field indicated if the effect is 'bad' - negative - for the entity. */
      private final boolean isBadEffect;
-@@ -156,8 +155,6 @@
+@@ -156,7 +155,6 @@
          return this.statusIconIndex;
      }
  
 -    /** This method returns true if the potion effect is bad - negative - for the entity. */
--    @SideOnly(Side.CLIENT)
      public boolean isBadEffect() {
          return this.isBadEffect;
      }
-@@ -225,8 +222,116 @@
+@@ -224,8 +222,116 @@
          return modifier.getAmount() * (amplifier + 1);
      }
  

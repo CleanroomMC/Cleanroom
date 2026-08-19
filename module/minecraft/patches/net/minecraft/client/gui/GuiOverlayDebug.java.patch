@@ -16,7 +16,7 @@
  import org.lwjgl.opengl.Display;
  
  @SideOnly(Side.CLIENT)
-@@ -218,16 +220,21 @@
+@@ -218,16 +220,34 @@
          long k = Runtime.getRuntime().freeMemory();
          long l = j - k;
          List<String> list = Lists.newArrayList(
@@ -41,6 +41,19 @@
 +                                GlStateManager.glGetString(7937),
 +                                GlStateManager.glGetString(7938)
 +                            );
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
++        if (window != null) {
++            com.cleanroommc.client.sdl.video.Display display = window.display();
++            if (display != null) {
++                list.add(String.format("Monitor: %s  scale: %.2f", display.name(), window.displayScale()));
++            }
++            com.cleanroommc.client.sdl.Power power = com.cleanroommc.client.sdl.Power.query();
++            if (power.state() == com.cleanroommc.client.sdl.Power.State.ON_BATTERY
++                    || power.state() == com.cleanroommc.client.sdl.Power.State.CHARGING
++                    || power.state() == com.cleanroommc.client.sdl.Power.State.CHARGED) {
++                list.add(String.format("Power: %s %d%%", power.state(), power.percent()));
++            }
++        }
 +
 +        list.add("");
 +        list.addAll(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(false));

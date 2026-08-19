@@ -1,11 +1,7 @@
 --- original/net/minecraft/item/crafting/ShieldRecipes.java
 +++ modified/net/minecraft/item/crafting/ShieldRecipes.java
-@@ -6,11 +6,9 @@
- import net.minecraft.nbt.NBTTagCompound;
- import net.minecraft.util.NonNullList;
+@@ -8,7 +8,7 @@
  import net.minecraft.world.World;
--import net.minecraftforge.fml.relauncher.Side;
--import net.minecraftforge.fml.relauncher.SideOnly;
  
  public class ShieldRecipes {
 -    public static class Decoration implements IRecipe {
@@ -13,11 +9,3 @@
          /** Used to check if a recipe matches current crafting inventory */
          @Override
          public boolean matches(InventoryCrafting inv, World worldIn) {
-@@ -102,7 +100,6 @@
-         }
- 
-         /** Used to determine if this recipe can fit in a grid of the given width/height */
--        @SideOnly(Side.CLIENT)
-         @Override
-         public boolean canFit(int width, int height) {
-             return width * height >= 2;

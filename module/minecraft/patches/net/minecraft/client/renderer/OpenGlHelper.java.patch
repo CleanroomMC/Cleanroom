@@ -1,6 +1,23 @@
 --- original/net/minecraft/client/renderer/OpenGlHelper.java
 +++ modified/net/minecraft/client/renderer/OpenGlHelper.java
-@@ -31,8 +31,8 @@
+@@ -1,8 +1,6 @@
+ package net.minecraft.client.renderer;
+ 
+ import java.io.File;
+-import java.io.IOException;
+-import java.net.URI;
+ import java.nio.ByteBuffer;
+ import java.nio.FloatBuffer;
+ import java.nio.IntBuffer;
+@@ -10,7 +8,6 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+ import net.minecraft.client.settings.GameSettings;
+-import net.minecraft.util.Util;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+@@ -31,8 +28,8 @@
  import org.lwjgl.opengl.GL20;
  import org.lwjgl.opengl.GL30;
  import org.lwjgl.opengl.GLContext;
@@ -11,7 +28,7 @@
  
  @SideOnly(Side.CLIENT)
  public class OpenGlHelper {
-@@ -95,7 +95,10 @@
+@@ -95,7 +92,10 @@
      public static int GL_ARRAY_BUFFER;
      public static int GL_STATIC_DRAW;
  
@@ -23,7 +40,7 @@
      public static void initializeTextures() {
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
          arbMultitexture = contextcapabilities.GL_ARB_multitexture && !contextcapabilities.OpenGL13;
-@@ -263,8 +266,8 @@
+@@ -263,8 +263,8 @@
          }
  
          try {
@@ -34,7 +51,7 @@
          } catch (Throwable throwable) {
          }
      }
-@@ -303,10 +306,11 @@
+@@ -303,10 +303,11 @@
      }
  
      public static void glShaderSource(int shaderIn, ByteBuffer string) {
@@ -48,7 +65,7 @@
          }
      }
  
-@@ -364,9 +368,9 @@
+@@ -364,9 +365,9 @@
  
      public static void glUniform1(int location, IntBuffer values) {
          if (arbShaders) {
@@ -60,7 +77,7 @@
          }
      }
  
-@@ -380,81 +384,81 @@
+@@ -380,81 +381,81 @@
  
      public static void glUniform1(int location, FloatBuffer values) {
          if (arbShaders) {
@@ -162,7 +179,7 @@
          }
      }
  
-@@ -676,6 +680,11 @@
+@@ -676,6 +677,11 @@
          } else {
              GL13.glMultiTexCoord2f(target, x, y);
          }
@@ -174,3 +191,48 @@
      }
  
      public static void glBlendFunc(int sFactorRGB, int dFactorRGB, int sfactorAlpha, int dfactorAlpha) {
+@@ -727,41 +733,12 @@
+     }
+ 
+     public static void openFile(File fileIn) {
+-        String s = fileIn.getAbsolutePath();
+-        if (Util.getOSType() == Util.EnumOS.OSX) {
+-            try {
+-                LOGGER.info(s);
+-                Runtime.getRuntime().exec(new String[]{"/usr/bin/open", s});
+-                return;
+-            } catch (IOException ioexception1) {
+-                LOGGER.error("Couldn't open file", ioexception1);
+-            }
+-        } else if (Util.getOSType() == Util.EnumOS.WINDOWS) {
+-            String s1 = String.format("cmd.exe /C start \"Open file\" \"%s\"", s);
+-
+-            try {
+-                Runtime.getRuntime().exec(s1);
+-                return;
+-            } catch (IOException ioexception) {
+-                LOGGER.error("Couldn't open file", ioexception);
+-            }
+-        }
+-
+-        boolean flag = false;
+-
+         try {
+-            Class<?> oclass = Class.forName("java.awt.Desktop");
+-            Object object = oclass.getMethod("getDesktop").invoke(null);
+-            oclass.getMethod("browse", URI.class).invoke(object, fileIn.toURI());
++            com.cleanroommc.client.sdl.Desktop.open(fileIn);
+         } catch (Throwable throwable) {
+-            LOGGER.error("Couldn't open link", throwable);
+-            flag = true;
++            LOGGER.error("Couldn't open file", throwable);
++            Sys.openURL("file://" + fileIn.getAbsolutePath());
+         }
+-
+-        if (flag) {
+-            LOGGER.info("Opening via system class!");
+-            Sys.openURL("file://" + s);
+-        }
+     }
+ 
+     @SideOnly(Side.CLIENT)

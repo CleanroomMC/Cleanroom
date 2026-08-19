@@ -24,6 +24,7 @@ idea {
 cleanroom {
     mode = 'loader'
     accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
+    sideAnnotationStrippers.from file('module/cleanroom/minecraft.sas')
 }
 
 tokenEnvoy {

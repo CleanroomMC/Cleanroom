@@ -1,11 +1,8 @@
 --- original/net/minecraft/item/crafting/ShapelessRecipes.java
 +++ modified/net/minecraft/item/crafting/ShapelessRecipes.java
-@@ -10,24 +10,24 @@
- import net.minecraft.util.JsonUtils;
+@@ -11,20 +11,23 @@
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
--import net.minecraftforge.fml.relauncher.Side;
--import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class ShapelessRecipes implements IRecipe {
 -    /** Is the ItemStack that you get when craft the recipe. */
@@ -27,11 +24,10 @@
      }
  
 -    /** Recipes with equal group are combined into one button in the recipe book */
--    @SideOnly(Side.CLIENT)
      @Override
      public String getGroup() {
          return this.group;
-@@ -50,9 +50,8 @@
+@@ -47,9 +50,8 @@
  
          for (int i = 0; i < nonnulllist.size(); i++) {
              ItemStack itemstack = inv.getStackInSlot(i);
@@ -43,7 +39,7 @@
          }
  
          return nonnulllist;
-@@ -61,30 +60,30 @@
+@@ -58,30 +60,30 @@
      /** Used to check if a recipe matches current crafting inventory */
      @Override
      public boolean matches(InventoryCrafting inv, World worldIn) {
@@ -89,12 +85,11 @@
      }
  
      /** Returns an Item that is the result of this recipe */
-@@ -121,8 +120,6 @@
+@@ -118,7 +120,6 @@
          return nonnulllist;
      }
  
 -    /** Used to determine if this recipe can fit in a grid of the given width/height */
--    @SideOnly(Side.CLIENT)
      @Override
      public boolean canFit(int width, int height) {
          return width * height >= this.recipeItems.size();

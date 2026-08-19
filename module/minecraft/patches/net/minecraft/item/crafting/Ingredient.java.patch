@@ -1,11 +1,7 @@
 --- original/net/minecraft/item/crafting/Ingredient.java
 +++ modified/net/minecraft/item/crafting/Ingredient.java
-@@ -9,10 +9,10 @@
- import net.minecraft.client.util.RecipeItemHelper;
- import net.minecraft.item.Item;
+@@ -11,6 +11,8 @@
  import net.minecraft.item.ItemStack;
--import net.minecraftforge.fml.relauncher.Side;
--import net.minecraftforge.fml.relauncher.SideOnly;
  
  public class Ingredient implements Predicate<ItemStack> {
 +    // Invalidate Mojang's caches
@@ -13,7 +9,7 @@
      public static final Ingredient EMPTY = new Ingredient() {
          @Override
          public boolean apply(@Nullable ItemStack p_apply_1_) {
-@@ -20,15 +20,35 @@
+@@ -18,14 +20,35 @@
          }
      };
      private final ItemStack[] matchingStacks;
@@ -44,14 +40,13 @@
 +        Ingredient.INSTANCES.add(this);
      }
  
--    @SideOnly(Side.CLIENT)
      public ItemStack[] getMatchingStacks() {
 -        return this.matchingStacks;
 +        return this.matchingStacksExploded;
      }
  
      public boolean apply(@Nullable ItemStack p_apply_1_) {
-@@ -50,9 +70,9 @@
+@@ -47,9 +70,9 @@
  
      public IntList getValidItemStacksPacked() {
          if (this.matchingStacksPacked == null) {
@@ -63,7 +58,7 @@
                  this.matchingStacksPacked.add(RecipeItemHelper.pack(itemstack));
              }
  
-@@ -62,6 +82,16 @@
+@@ -59,6 +82,16 @@
          return this.matchingStacksPacked;
      }
  
@@ -80,7 +75,7 @@
      public static Ingredient fromItem(Item p_193367_0_) {
          return fromStacks(new ItemStack(p_193367_0_, 1, 32767));
      }
-@@ -87,4 +117,19 @@
+@@ -84,4 +117,19 @@
  
          return EMPTY;
      }

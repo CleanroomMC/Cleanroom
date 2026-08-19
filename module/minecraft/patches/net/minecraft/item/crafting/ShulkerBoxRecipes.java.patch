@@ -1,11 +1,7 @@
 --- original/net/minecraft/item/crafting/ShulkerBoxRecipes.java
 +++ modified/net/minecraft/item/crafting/ShulkerBoxRecipes.java
-@@ -8,11 +8,9 @@
- import net.minecraft.item.ItemStack;
- import net.minecraft.util.NonNullList;
+@@ -10,7 +10,7 @@
  import net.minecraft.world.World;
--import net.minecraftforge.fml.relauncher.Side;
--import net.minecraftforge.fml.relauncher.SideOnly;
  
  public class ShulkerBoxRecipes {
 -    public static class ShulkerBoxColoring implements IRecipe {
@@ -13,7 +9,7 @@
          /** Used to check if a recipe matches current crafting inventory */
          @Override
          public boolean matches(InventoryCrafting inv, World worldIn) {
-@@ -25,7 +23,7 @@
+@@ -23,7 +23,7 @@
                      if (Block.getBlockFromItem(itemstack.getItem()) instanceof BlockShulkerBox) {
                          i++;
                      } else {
@@ -22,7 +18,7 @@
                              return false;
                          }
  
-@@ -52,13 +50,13 @@
+@@ -50,13 +50,13 @@
                  if (!itemstack2.isEmpty()) {
                      if (Block.getBlockFromItem(itemstack2.getItem()) instanceof BlockShulkerBox) {
                          itemstack = itemstack2;
@@ -38,11 +34,3 @@
              if (itemstack.hasTagCompound()) {
                  itemstack3.setTagCompound(itemstack.getTagCompound().copy());
              }
-@@ -93,7 +91,6 @@
-         }
- 
-         /** Used to determine if this recipe can fit in a grid of the given width/height */
--        @SideOnly(Side.CLIENT)
-         @Override
-         public boolean canFit(int width, int height) {
-             return width * height >= 2;

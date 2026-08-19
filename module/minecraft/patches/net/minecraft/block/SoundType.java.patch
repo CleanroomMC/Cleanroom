@@ -1,18 +1,11 @@
 --- original/net/minecraft/block/SoundType.java
 +++ modified/net/minecraft/block/SoundType.java
-@@ -147,7 +147,6 @@
-         return this.pitch;
-     }
+@@ -2,6 +2,8 @@
  
--    @SideOnly(Side.CLIENT)
-     public SoundEvent getBreakSound() {
-         return this.breakSound;
-     }
-@@ -160,7 +159,6 @@
-         return this.placeSound;
-     }
+ import net.minecraft.init.SoundEvents;
+ import net.minecraft.util.SoundEvent;
++import net.minecraftforge.fml.relauncher.Side;
++import net.minecraftforge.fml.relauncher.SideOnly;
  
--    @SideOnly(Side.CLIENT)
-     public SoundEvent getHitSound() {
-         return this.hitSound;
-     }
+ public class SoundType {
+     public static final SoundType WOOD = new SoundType(

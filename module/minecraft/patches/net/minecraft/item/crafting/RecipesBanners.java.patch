@@ -1,11 +1,7 @@
 --- original/net/minecraft/item/crafting/RecipesBanners.java
 +++ modified/net/minecraft/item/crafting/RecipesBanners.java
-@@ -12,11 +12,9 @@
- import net.minecraft.tileentity.TileEntityBanner;
- import net.minecraft.util.NonNullList;
+@@ -14,7 +14,7 @@
  import net.minecraft.world.World;
--import net.minecraftforge.fml.relauncher.Side;
--import net.minecraftforge.fml.relauncher.SideOnly;
  
  public class RecipesBanners {
 -    public static class RecipeAddPattern implements IRecipe {
@@ -13,7 +9,7 @@
          /** Used to check if a recipe matches current crafting inventory */
          @Override
          public boolean matches(InventoryCrafting inv, World worldIn) {
-@@ -60,8 +58,9 @@
+@@ -58,8 +58,9 @@
  
                  for (int j = 0; j < inv.getSizeInventory(); j++) {
                      ItemStack itemstack2 = inv.getStackInSlot(j);
@@ -25,7 +21,7 @@
                          break;
                      }
                  }
-@@ -96,9 +95,7 @@
+@@ -94,9 +95,7 @@
  
              for (int i = 0; i < nonnulllist.size(); i++) {
                  ItemStack itemstack = inv.getStackInSlot(i);
@@ -36,7 +32,7 @@
              }
  
              return nonnulllist;
-@@ -116,7 +113,7 @@
+@@ -114,7 +113,7 @@
                          for (int i = 0; i < p_190933_1_.getSizeInventory() && flag; i++) {
                              ItemStack itemstack = p_190933_1_.getStackInSlot(i);
                              if (!itemstack.isEmpty() && itemstack.getItem() != Items.BANNER) {
@@ -45,7 +41,7 @@
                                      if (flag2) {
                                          flag = false;
                                          break;
-@@ -145,7 +142,7 @@
+@@ -143,7 +142,7 @@
                              int i1 = k % 3;
                              ItemStack itemstack1 = p_190933_1_.getStackInSlot(k);
                              if (!itemstack1.isEmpty() && itemstack1.getItem() != Items.BANNER) {
@@ -54,14 +50,7 @@
                                      flag = false;
                                      break;
                                  }
-@@ -186,14 +183,13 @@
-         }
- 
-         /** Used to determine if this recipe can fit in a grid of the given width/height */
--        @SideOnly(Side.CLIENT)
-         @Override
-         public boolean canFit(int width, int height) {
-             return width >= 3 && height >= 3;
+@@ -190,7 +189,7 @@
          }
      }
  
@@ -70,7 +59,7 @@
          /** Used to check if a recipe matches current crafting inventory */
          @Override
          public boolean matches(InventoryCrafting inv, World worldIn) {
-@@ -272,8 +268,8 @@
+@@ -269,8 +268,8 @@
              for (int i = 0; i < nonnulllist.size(); i++) {
                  ItemStack itemstack = inv.getStackInSlot(i);
                  if (!itemstack.isEmpty()) {
@@ -81,11 +70,3 @@
                      } else if (itemstack.hasTagCompound() && TileEntityBanner.getPatterns(itemstack) > 0) {
                          ItemStack itemstack1 = itemstack.copy();
                          itemstack1.setCount(1);
-@@ -292,7 +288,6 @@
-         }
- 
-         /** Used to determine if this recipe can fit in a grid of the given width/height */
--        @SideOnly(Side.CLIENT)
-         @Override
-         public boolean canFit(int width, int height) {
-             return width * height >= 2;

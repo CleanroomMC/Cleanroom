@@ -1,11 +1,8 @@
 --- original/net/minecraft/item/crafting/RecipeBookCloning.java
 +++ modified/net/minecraft/item/crafting/RecipeBookCloning.java
-@@ -6,11 +6,8 @@
- import net.minecraft.item.ItemWrittenBook;
+@@ -7,8 +7,7 @@
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
--import net.minecraftforge.fml.relauncher.Side;
--import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class RecipeBookCloning implements IRecipe {
 -    /** Used to check if a recipe matches current crafting inventory */
@@ -13,12 +10,11 @@
      @Override
      public boolean matches(InventoryCrafting inv, World worldIn) {
          int i = 0;
-@@ -106,8 +103,6 @@
+@@ -104,7 +103,6 @@
          return true;
      }
  
 -    /** Used to determine if this recipe can fit in a grid of the given width/height */
--    @SideOnly(Side.CLIENT)
      @Override
      public boolean canFit(int width, int height) {
          return width >= 3 && height >= 3;
