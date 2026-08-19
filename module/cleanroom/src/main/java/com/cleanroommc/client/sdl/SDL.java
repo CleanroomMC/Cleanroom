@@ -91,17 +91,17 @@ public final class SDL {
         if (logOutput != null) {
             return;
         }
-        Logger logger = LoggerFactory.getLogger("com.cleanroommc.client.sdl");
-        logOutput = SDL_LogOutputFunction.create((userdata, category, priority, message) -> {
+        Logger logger = LoggerFactory.getLogger("SDL3");
+        logOutput = SDL_LogOutputFunction.create((_, category, priority, message) -> {
             String text = MemoryUtil.memUTF8(message);
             if (priority >= SDLLog.SDL_LOG_PRIORITY_ERROR) {
-                logger.error("{}", text);
+                logger.error("[{}] {}", category, text);
             } else if (priority == SDLLog.SDL_LOG_PRIORITY_WARN) {
-                logger.warn("{}", text);
+                logger.warn("[{}] {}", category, text);
             } else if (priority == SDLLog.SDL_LOG_PRIORITY_INFO) {
-                logger.info("{}", text);
+                logger.info("[{}] {}", category, text);
             } else {
-                logger.debug("{}", text);
+                logger.debug("[{}] {}", category, text);
             }
         });
         SDLLog.SDL_SetLogOutputFunction(logOutput, 0L);
