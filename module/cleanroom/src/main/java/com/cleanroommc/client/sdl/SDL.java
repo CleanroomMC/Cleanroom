@@ -1,5 +1,6 @@
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.input.virtual.Text;
 import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLInit;
 
@@ -28,6 +29,10 @@ public final class SDL {
         int missing = flags & ~initializedBits;
         if (missing == 0) {
             return;
+        }
+        // TODO: services to load when initializing subsystem?
+        if ((missing & SDLInit.SDL_INIT_VIDEO) != 0) {
+            Text.implementIME(true, true);
         }
         initializedBits |= missing;
         check(SDLInit.SDL_InitSubSystem(missing), "SDL_InitSubSystem");

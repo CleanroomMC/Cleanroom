@@ -88,7 +88,8 @@ public class ForgeClientHandler
         Window window = Window.main();
         if (window != null)
         {
-            window.textInput(gui instanceof GuiScreenBook || gui instanceof GuiEditSign);
+            GuiScreen opened = event.getGui();
+            window.text().active(opened instanceof GuiScreenBook || opened instanceof GuiEditSign);
         }
     }
 

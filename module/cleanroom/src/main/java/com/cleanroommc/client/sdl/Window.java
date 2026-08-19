@@ -1,8 +1,8 @@
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.input.virtual.Text;
 import com.cleanroommc.lwjgly.spi.WindowBridge;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.sdl.SDLKeyboard;
 import org.lwjgl.sdl.SDLMouse;
 import org.lwjgl.sdl.SDLProperties;
 import org.lwjgl.sdl.SDLVideo;
@@ -12,6 +12,8 @@ import org.lwjgl.sdl.SDL_KeyboardEvent;
 import org.lwjgl.sdl.SDL_MouseButtonEvent;
 import org.lwjgl.sdl.SDL_MouseMotionEvent;
 import org.lwjgl.sdl.SDL_MouseWheelEvent;
+import org.lwjgl.sdl.SDL_TextEditingCandidatesEvent;
+import org.lwjgl.sdl.SDL_TextEditingEvent;
 import org.lwjgl.sdl.SDL_TextInputEvent;
 import org.lwjgl.sdl.SDL_WindowEvent;
 import org.lwjgl.system.MemoryStack;
@@ -32,6 +34,7 @@ public final class Window implements AutoCloseable {
     private final long glContext;
     private final int id;
     private final LegacyInputQueues legacy = new LegacyInputQueues();
+    private final Text text = new Text(this);
     private final boolean[] keys = new boolean[MAX_SCANCODES];
     private final boolean[] buttons = new boolean[MAX_MOUSE_BUTTONS + 1];
 
@@ -220,14 +223,12 @@ public final class Window implements AutoCloseable {
         return this;
     }
 
+    public Text text() {
+        return this.text;
+    }
+
     public Window textInput(boolean enabled) {
-        this.ensureOpen();
-        boolean active = SDLKeyboard.SDL_TextInputActive(this.handle);
-        if (enabled && !active) {
-            SDL.check(SDLKeyboard.SDL_StartTextInput(this.handle), "SDL_StartTextInput");
-        } else if (!enabled && active) {
-            SDL.check(SDLKeyboard.SDL_StopTextInput(this.handle), "SDL_StopTextInput");
-        }
+        this.text.active(enabled);
         return this;
     }
 
@@ -250,6 +251,8 @@ public final class Window implements AutoCloseable {
             case SDLEvents.SDL_EVENT_QUIT -> closeRequested = true;
             case SDLEvents.SDL_EVENT_KEY_DOWN, SDLEvents.SDL_EVENT_KEY_UP -> key(event.key());
             case SDLEvents.SDL_EVENT_TEXT_INPUT -> text(event.text());
+            case SDLEvents.SDL_EVENT_TEXT_EDITING -> editing(event.edit());
+            case SDLEvents.SDL_EVENT_TEXT_EDITING_CANDIDATES -> editingCandidates(event.edit_candidates());
             case SDLEvents.SDL_EVENT_MOUSE_MOTION -> motion(event.motion());
             case SDLEvents.SDL_EVENT_MOUSE_BUTTON_DOWN, SDLEvents.SDL_EVENT_MOUSE_BUTTON_UP -> button(event.button());
             case SDLEvents.SDL_EVENT_MOUSE_WHEEL -> wheel(event.wheel());
@@ -280,7 +283,20 @@ public final class Window implements AutoCloseable {
 
     private void text(SDL_TextInputEvent event) {
         if (event.windowID() == this.id) {
+            this.text.committed();
             this.legacy.text(event.textString(), event.timestamp());
+        }
+    }
+
+    private void editing(SDL_TextEditingEvent event) {
+        if (event.windowID() == this.id) {
+            this.text.editing(event);
+        }
+    }
+
+    private void editingCandidates(SDL_TextEditingCandidatesEvent event) {
+        if (event.windowID() == this.id) {
+            this.text.editingCandidates(event);
         }
     }
 
