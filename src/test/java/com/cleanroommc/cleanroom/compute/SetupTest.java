@@ -15,7 +15,6 @@ public class SetupTest {
         Logger testLogger = LogManager.getLogger("TestLogger");
         assertDoesNotThrow(() -> Configuration.OPENCL_EXPLICIT_INIT.set(true));
         assertDoesNotThrow(() -> ComputeSetup.initOpenCL(testLogger, false));
-        assertDoesNotThrow(CL::destroy);
     }
 
     @Test
@@ -23,7 +22,6 @@ public class SetupTest {
         Logger testLogger = LogManager.getLogger("TestLogger");
         assertDoesNotThrow(() -> Configuration.OPENCL_EXPLICIT_INIT.set(true));
         assertDoesNotThrow(() -> ComputeSetup.initOpenCL(testLogger, true));
-        assertDoesNotThrow(CL::destroy);
     }
 
     @AfterEach
