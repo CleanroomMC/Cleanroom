@@ -185,7 +185,6 @@ dependencies {
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-openal'
     api 'org.lwjgl:lwjgl-stb'
-    api 'org.lwjgl:lwjgl-tinyfd'
     api 'org.lwjgl:lwjgl-sdl'
 
     // TODO
@@ -196,7 +195,6 @@ dependencies {
     lwjglNative 'org.lwjgl:lwjgl-opengl'
     lwjglNative 'org.lwjgl:lwjgl-openal'
     lwjglNative 'org.lwjgl:lwjgl-stb'
-    lwjglNative 'org.lwjgl:lwjgl-tinyfd'
     lwjglNative 'org.lwjgl:lwjgl-sdl'
 
     // Kirino
