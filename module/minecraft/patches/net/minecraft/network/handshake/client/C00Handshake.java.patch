@@ -8,13 +8,16 @@
  
      public C00Handshake() {
      }
-@@ -25,20 +26,26 @@
+@@ -25,20 +26,29 @@
          this.requestedState = p_i47613_3_;
      }
  
 -    /** Reads the raw packet data from the data stream. */
 +    public C00Handshake(String address, int port, EnumConnectionState state, boolean addFMLMarker) {
-+        this(address, port, state);
++        this.protocolVersion = 340;
++        this.ip = address;
++        this.port = port;
++        this.requestedState = state;
 +        this.hasFMLMarker = addFMLMarker;
 +    }
 +
@@ -37,7 +40,7 @@
          buf.writeShort(this.port);
          buf.writeVarInt(this.requestedState.getId());
      }
-@@ -55,4 +62,8 @@
+@@ -55,4 +65,8 @@
      public int getProtocolVersion() {
          return this.protocolVersion;
      }

@@ -8,7 +8,8 @@
                  this.bookTotalPages = 1;
              }
          }
-@@ -300,8 +301,8 @@
+@@ -299,8 +300,8 @@
+         int j = 2;
          this.drawTexturedModalRect(i, 2, 0, 0, 192, 192);
          if (this.bookGettingSigned) {
 -            String s = this.bookTitle;
@@ -28,24 +29,28 @@
              String s2 = I18n.format("book.byAuthor", this.editingPlayer.getName());
              int i1 = this.fontRenderer.getStringWidth(s2);
              this.fontRenderer.drawString(TextFormatting.DARK_GRAY + s2, i + 36 + (116 - i1) / 2, 60, 0);
-@@ -326,13 +330,16 @@
-                 s5 = this.bookPages.getStringTagAt(this.currPage);
+@@ -326,12 +330,15 @@
              }
  
              if (this.bookIsUnsigned) {
+-                if (this.fontRenderer.getBidiFlag()) {
+-                    s5 = s5 + "_";
+-                } else if (this.updateCount / 6 % 2 == 0) {
+-                    s5 = s5 + "" + TextFormatting.BLACK + "_";
+-                } else {
+-                    s5 = s5 + "" + TextFormatting.GRAY + "_";
 +                s5 = s5 + com.cleanroommc.client.sdl.SDLHooks.compositionUnderlined();
 +                if (!com.cleanroommc.client.sdl.SDLHooks.composing()) {
-                 if (this.fontRenderer.getBidiFlag()) {
-                     s5 = s5 + "_";
-                 } else if (this.updateCount / 6 % 2 == 0) {
-                     s5 = s5 + "" + TextFormatting.BLACK + "_";
-                 } else {
-                     s5 = s5 + "" + TextFormatting.GRAY + "_";
++                    if (this.fontRenderer.getBidiFlag()) {
++                        s5 = s5 + "_";
++                    } else if (this.updateCount / 6 % 2 == 0) {
++                        s5 = s5 + "" + TextFormatting.BLACK + "_";
++                    } else {
++                        s5 = s5 + "" + TextFormatting.GRAY + "_";
++                    }
                  }
-+                }
              } else if (this.cachedPage != this.currPage) {
                  if (ItemWrittenBook.validBookTagContents(this.book.getTagCompound())) {
-                     try {
 @@ -355,6 +362,10 @@
              this.fontRenderer.drawString(s4, i - j1 + 192 - 44, 18, 0);
              if (this.cachedComponents == null) {
@@ -56,3 +61,4 @@
 +                }
              } else {
                  int k1 = Math.min(128 / this.fontRenderer.FONT_HEIGHT, this.cachedComponents.size());
+ 

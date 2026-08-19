@@ -1,6 +1,15 @@
 --- original/net/minecraft/item/ItemSnow.java
 +++ modified/net/minecraft/item/ItemSnow.java
-@@ -50,9 +50,9 @@
+@@ -14,6 +14,8 @@
+ import net.minecraft.util.math.AxisAlignedBB;
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
++import net.minecraftforge.fml.relauncher.Side;
++import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ public class ItemSnow extends ItemBlock {
+     public ItemSnow(Block block) {
+@@ -50,9 +52,9 @@
                      IBlockState iblockstate1 = iblockstate.withProperty(BlockSnow.LAYERS, i + 1);
                      AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, blockpos);
                      if (axisalignedbb != Block.NULL_AABB
@@ -13,11 +22,12 @@
                          worldIn.playSound(
                              player,
                              blockpos,
-@@ -82,4 +82,10 @@
+@@ -82,4 +84,11 @@
      public int getMetadata(int damage) {
          return damage;
      }
 +
++    @SideOnly(Side.CLIENT)
 +    @Override
 +    public boolean canPlaceBlockOnSide(World world, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack) {
 +        IBlockState state = world.getBlockState(pos);

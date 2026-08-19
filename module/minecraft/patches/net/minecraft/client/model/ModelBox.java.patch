@@ -1,14 +1,6 @@
 --- original/net/minecraft/client/model/ModelBox.java
 +++ modified/net/minecraft/client/model/ModelBox.java
-@@ -4,7 +4,6 @@
- import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
- 
--@SideOnly(Side.CLIENT)
- public class ModelBox {
-     /** The (x,y,z) vertex positions and (u,v) texture coordinates for each of the 8 points on a cube */
-     private final PositionTextureVertex[] vertexPositions;
-@@ -164,6 +163,7 @@
+@@ -164,6 +164,7 @@
          }
      }
  

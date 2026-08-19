@@ -216,7 +216,7 @@
      public SoundType getSoundType() {
          return this.blockSoundType;
      }
-@@ -969,6 +986,1256 @@
+@@ -969,6 +986,1257 @@
      public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
      }
  
@@ -1311,6 +1311,7 @@
 +     * Queries if this block should render in a given layer.
 +     * ISmartBlockModel can use {@link net.minecraftforge.client.MinecraftForgeClient#getRenderLayer()} to alter their model based on layer.
 +     */
++    @SideOnly(Side.CLIENT)
 +    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
 +        return getRenderLayer() == layer;
 +    }
@@ -1473,7 +1474,7 @@
      public static void registerBlocks() {
          registerBlock(0, AIR_ID, new BlockAir().setTranslationKey("air"));
          registerBlock(1, "stone", new BlockStone().setHardness(1.5F).setResistance(10.0F).setSoundType(SoundType.STONE).setTranslationKey("stone"));
-@@ -1520,7 +2787,7 @@
+@@ -1520,7 +2788,7 @@
              "quartz_stairs",
              new BlockStairs(block11.getDefaultState().withProperty(BlockQuartz.VARIANT, BlockQuartz.EnumType.DEFAULT)).setTranslationKey("stairsQuartz")
          );
@@ -1482,7 +1483,7 @@
          registerBlock(158, "dropper", new BlockDropper().setHardness(3.5F).setSoundType(SoundType.STONE).setTranslationKey("dropper"));
          registerBlock(
              159,
-@@ -1944,22 +3211,6 @@
+@@ -1944,22 +3212,6 @@
                  block15.useNeighborBrightness = flag;
              }
          }

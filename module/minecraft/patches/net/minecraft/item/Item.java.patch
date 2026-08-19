@@ -78,7 +78,7 @@
          CreativeTabs creativetabs = this.getCreativeTab();
          return creativetabs != null && (targetTab == CreativeTabs.SEARCH || targetTab == creativetabs);
      }
-@@ -435,11 +438,719 @@
+@@ -435,11 +438,722 @@
          return false;
      }
  
@@ -497,6 +497,7 @@
 +     * @param stack Stack to get durability from
 +     * @return A packed RGB value for the durability colour (0x00RRGGBB)
 +     */
++    @SideOnly(Side.CLIENT)
 +    public int getRGBDurabilityForDisplay(ItemStack stack) {
 +        return MathHelper.hsvToRGB(Math.max(0.0F, (float) (1.0F - getDurabilityForDisplay(stack))) / 3.0F, 1.0F, 1.0F);
 +    }
@@ -707,6 +708,7 @@
 +        return null;
 +    }
 +
++    @SideOnly(Side.CLIENT)
 +    public com.google.common.collect.ImmutableMap<String, net.minecraftforge.common.animation.ITimeValue> getAnimationParameters(final ItemStack stack, final World world, final EntityLivingBase entity) {
 +        com.google.common.collect.ImmutableMap.Builder<String, net.minecraftforge.common.animation.ITimeValue> builder = com.google.common.collect.ImmutableMap.builder();
 +        for(ResourceLocation location : properties.getKeys()) {
@@ -761,6 +763,7 @@
 +        return net.minecraft.entity.passive.HorseArmorType.getByItem(stack.getItem());
 +    }
 +
++    @SideOnly(Side.CLIENT)
 +    public String getHorseArmorTexture(net.minecraft.entity.EntityLiving wearer, ItemStack stack) {
 +        return getHorseArmorType(stack).getTextureName();
 +    }
@@ -799,7 +802,7 @@
      public static void registerItems() {
          registerItemBlock(Blocks.AIR, new ItemAir(Blocks.AIR));
          registerItemBlock(Blocks.STONE, new ItemMultiTexture(Blocks.STONE, Blocks.STONE, new ItemMultiTexture.Mapper() {
-@@ -999,6 +1710,8 @@
+@@ -999,6 +1713,8 @@
          private final float attackDamage;
          /** Defines the natural enchantability factor of the material. */
          private final int enchantability;
@@ -808,7 +811,7 @@
  
          ToolMaterial(int harvestLevel, int maxUses, float efficiency, float damageVsEntity, int enchantability) {
              this.harvestLevel = harvestLevel;
-@@ -1033,6 +1746,7 @@
+@@ -1033,6 +1749,7 @@
              return this.enchantability;
          }
  
@@ -816,7 +819,7 @@
          public Item getRepairItem() {
              if (this == WOOD) {
                  return Item.getItemFromBlock(Blocks.PLANKS);
-@@ -1046,5 +1760,19 @@
+@@ -1046,5 +1763,19 @@
                  return this == DIAMOND ? Items.DIAMOND : null;
              }
          }
