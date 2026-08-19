@@ -106,7 +106,7 @@ public class EventBus implements IEventExceptionHandler
         }
         listenerOwners.put(handler, activeModContainer);
 
-        register0(eventType, ListenerList.CACHE.get(eventType), handler, listener, priority, activeModContainer);
+        register0(eventType, EventProperties.LISTENER_LIST.get(eventType), handler, listener, priority, activeModContainer);
     }
 
     public void register(Object target)
@@ -205,7 +205,7 @@ public class EventBus implements IEventExceptionHandler
         {
             ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
 
-            register0(eventType, ListenerList.CACHE.get(eventType), target, asm, asm.getPriority(), owner);
+            register0(eventType, EventProperties.LISTENER_LIST.get(eventType), target, asm, asm.getPriority(), owner);
         }
         catch (Exception e)
         {

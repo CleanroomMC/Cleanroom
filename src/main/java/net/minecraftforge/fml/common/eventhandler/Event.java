@@ -65,7 +65,7 @@ public class Event
      */
     public boolean isCancelable()
     {
-        return false;
+        return EventProperties.CANCELLABLE.get(getClass());
     }
 
     /**
@@ -106,7 +106,7 @@ public class Event
      */
     public boolean hasResult()
     {
-        return false;
+        return EventProperties.HAS_RESULT.get(getClass());
     }
 
     /**
@@ -146,7 +146,7 @@ public class Event
      */
     public ListenerList getListenerList()
     {
-        return ListenerList.CACHE.get(this.getClass());
+        return EventProperties.LISTENER_LIST.get(this.getClass());
     }
 
     @Nullable
