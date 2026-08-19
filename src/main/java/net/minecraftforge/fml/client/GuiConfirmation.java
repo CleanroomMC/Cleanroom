@@ -47,13 +47,4 @@ public class GuiConfirmation extends GuiNotification
             FMLClientHandler.instance().showGuiScreen(null);
         }
     }
-
-    /**
-     * Called when the screen is unloaded. Used to disable keyboard repeat events
-     */
-    @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-        query.finish();
-    }
 }
