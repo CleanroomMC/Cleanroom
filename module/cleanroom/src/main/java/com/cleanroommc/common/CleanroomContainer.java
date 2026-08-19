@@ -15,13 +15,13 @@ public class CleanroomContainer extends DummyModContainer {
     public CleanroomContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
-        meta.modId = "cleanroom";
+        meta.modId = CleanroomVersion.MOD_ID;
         meta.name = "Cleanroom";
         meta.description = """
                 Cleanroom is a 1.12.2 Forge fork, providing newer toolchain, new APIs and 99% compatibility.
                 Our plan is to make 1.12.2 up-to-date with latest toolchain while adding more feature to Forge & vanilla, so we don't need to care about higher versions' X point release * Y Mod API headache.
                 """;
-        meta.version = CleanroomVersion.VERSION;
+        meta.version = CleanroomVersion.getVersion();
         meta.authorList = Arrays.asList("LexManos", "cpw", "fry", "Rongmario", "kappa_maintainer", "Li");
         meta.credits = "MrCrayFish for the Catalogue mod as base for the revamped mod list.";
         meta.url = "https://cleanroommc.com";

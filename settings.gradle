@@ -2,7 +2,7 @@ pluginManagement {
     repositories {
         maven {
             name = 'CleanroomMC'
-            url = 'https://repo.cleanroommc.com/releases'
+            url = 'https://maven.cleanroommc.com'
         }
         // MinecraftForge hosts CleanroomGradle's transitive plugin deps (srgutils + renamer-gradle).
         maven {
@@ -14,5 +14,5 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.cleanroommc.cleanroomgradle.settings' version '0.7.0'
+    id 'com.cleanroommc.cleanroomgradle.settings' version '0.8.1'
 }
