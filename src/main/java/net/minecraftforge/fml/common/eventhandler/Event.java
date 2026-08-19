@@ -49,7 +49,6 @@ public class Event
 
     private boolean isCanceled = false;
     private Result result = Result.DEFAULT;
-    private static ListenerList listeners = new ListenerList();
     private EventPriority phase = null;
 
     public Event()
@@ -147,7 +146,7 @@ public class Event
      */
     public ListenerList getListenerList()
     {
-        return listeners;
+        return ListenerList.CACHE.get(this.getClass());
     }
 
     @Nullable

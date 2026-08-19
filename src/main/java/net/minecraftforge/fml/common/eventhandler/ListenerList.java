@@ -19,15 +19,54 @@
 
 package net.minecraftforge.fml.common.eventhandler;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import net.lenni0451.reflect.accessor.UnsafeAccess;
+import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 
 
 public class ListenerList
 {
+    static final ClassValue<ListenerList> CACHE = new ClassValue<>() {
+        @Override
+        protected ListenerList computeValue(@NonNull Class<?> type) {
+            if (!Event.class.isAssignableFrom(type)) {
+                throw new IllegalArgumentException("Not event class: " + type);
+            }
+
+            if (type == Event.class) {
+                return new ListenerList();
+            }
+
+            // assignable to Event.class & not Event.class -> subclass of Event
+            @SuppressWarnings("unchecked")
+            Class<? extends Event> eventType = (Class<? extends Event>) type;
+
+            ListenerList result = null;
+            try {
+                var method_getListenerList = eventType.getMethod("getListenerList");
+
+                if (method_getListenerList.getDeclaringClass() != Event.class) {
+                    // This event implements its own .getListenerList()
+                    var instance = UnsafeAccess.allocateInstance(eventType);
+                    result = (ListenerList) method_getListenerList.invoke(instance);
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                // fall through
+            }
+
+            if (result == null) {
+                ListenerList parent = get(type.getSuperclass());
+                result = new ListenerList(parent);
+            }
+
+            return result;
+        }
+    };
+
     private static ImmutableList<ListenerList> allLists = ImmutableList.of();
     private static int maxSize = 0;
 

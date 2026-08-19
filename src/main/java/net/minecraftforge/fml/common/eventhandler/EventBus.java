@@ -158,9 +158,6 @@ public class EventBus implements IEventExceptionHandler
     {
         try
         {
-            Constructor<?> ctr = eventType.getConstructor();
-            ctr.setAccessible(true);
-            Event event = (Event)ctr.newInstance();
             final ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
 
             IEventListener listener = asm;
@@ -169,7 +166,7 @@ public class EventBus implements IEventExceptionHandler
                 listener = new ContextSetterEventListener(owner, asm);
             }
 
-            event.getListenerList().register(busID, asm.getPriority(), listener);
+            ListenerList.CACHE.get(eventType).register(busID, asm.getPriority(), listener);
 
             ArrayList<IEventListener> others = listeners.computeIfAbsent(target, k -> new ArrayList<>());
             others.add(listener);

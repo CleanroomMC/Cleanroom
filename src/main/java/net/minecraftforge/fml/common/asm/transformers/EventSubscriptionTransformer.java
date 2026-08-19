@@ -106,8 +106,6 @@ public class EventSubscriptionTransformer implements IClassTransformer, Opcodes
         private String className;
         private boolean edited;
 
-        private boolean hasSetup;
-        private boolean hasGetListenerList;
         private boolean hasDefaultCtr;
         private boolean hasCancelable;
         private boolean hasResult;
@@ -146,10 +144,8 @@ public class EventSubscriptionTransformer implements IClassTransformer, Opcodes
         @Override
         public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions)
         {
-            if (name.equals("setup") && descriptor.equals(VOID_METHOD_DESC) && (access & ACC_PROTECTED) == ACC_PROTECTED) this.hasSetup = true;
             if ((access & ACC_PUBLIC) == ACC_PUBLIC)
             {
-                if (name.equals("getListenerList") && descriptor.equals(LISTENER_LIST_METHOD_DESC)) this.hasGetListenerList = true;
                 if (name.equals("isCancelable")    && descriptor.equals(BOOLEAN_METHOD_DESC))       this.hasCancelable = true;
                 if (name.equals("hasResult")       && descriptor.equals(BOOLEAN_METHOD_DESC))       this.hasResult = true;
             }
@@ -184,15 +180,6 @@ public class EventSubscriptionTransformer implements IClassTransformer, Opcodes
                 this.addConstantTrueMethod("isCancelable");
             }
 
-            if (this.hasSetup)
-            {
-                if (!this.hasGetListenerList)
-                    throw new RuntimeException("Event class defines setup() but does not define getListenerList! " + this.className);
-
-                super.visitEnd();
-                return;
-            }
-
             //Add private static ListenerList LISTENER_LIST
             super.visitField(ACC_PRIVATE | ACC_STATIC, "LISTENER_LIST", LISTENER_LIST_DESC, null, null).visitEnd();
 
@@ -212,50 +199,6 @@ public class EventSubscriptionTransformer implements IClassTransformer, Opcodes
                 mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
-
-            /*Add:
-             *      protected void setup()
-             *      {
-             *              super.setup();
-             *              if (LISTENER_LIST != NULL)
-             *              {
-             *                      return;
-             *              }
-             *              LISTENER_LIST = new ListenerList(super.getListenerList());
-             *      }
-             */
-            MethodVisitor mv = super.visitMethod(ACC_PROTECTED, "setup", VOID_METHOD_DESC, null, null);
-            mv.visitCode();
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, this.superName, "setup", VOID_METHOD_DESC, false);
-            mv.visitFieldInsn(GETSTATIC, this.className, "LISTENER_LIST", LISTENER_LIST_DESC);
-            Label initListener = new Label();
-            mv.visitJumpInsn(IFNULL, initListener);
-            mv.visitInsn(RETURN);
-            mv.visitLabel(initListener);
-            mv.visitFrame(F_SAME, 0, null, 0, null);
-            mv.visitTypeInsn(NEW, LISTENER_LIST_INTERNAL_NAME);
-            mv.visitInsn(DUP);
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, this.superName, "getListenerList", LISTENER_LIST_METHOD_DESC, false);
-            mv.visitMethodInsn(INVOKESPECIAL, LISTENER_LIST_INTERNAL_NAME, "<init>", LISTENER_LIST_CTR_DESC, false);
-            mv.visitFieldInsn(PUTSTATIC, this.className, "LISTENER_LIST", LISTENER_LIST_DESC);
-            mv.visitInsn(RETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
-
-            /*Add:
-             *      public ListenerList getListenerList()
-             *      {
-             *              return this.LISTENER_LIST;
-             *      }
-             */
-            mv = super.visitMethod(ACC_PUBLIC, "getListenerList", LISTENER_LIST_METHOD_DESC, null, null);
-            mv.visitCode();
-            mv.visitFieldInsn(GETSTATIC, this.className, "LISTENER_LIST", LISTENER_LIST_DESC);
-            mv.visitInsn(ARETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
 
             this.edited = true;
             super.visitEnd();
