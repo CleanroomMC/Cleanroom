@@ -125,7 +125,6 @@ public final class Gamepads {
                     listener.sensor(pad, sensor, data);
                 }
             }
-            default -> { }
         }
     }
 

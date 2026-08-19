@@ -103,7 +103,6 @@ public final class Joysticks {
                     }
                 }
             }
-            default -> { }
         }
     }
 

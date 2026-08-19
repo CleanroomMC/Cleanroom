@@ -46,7 +46,6 @@ public final class Drops {
             case SDLEvents.SDL_EVENT_DROP_TEXT -> text(drop.dataString());
             case SDLEvents.SDL_EVENT_DROP_POSITION -> position(drop.x(), drop.y());
             case SDLEvents.SDL_EVENT_DROP_COMPLETE -> complete();
-            default -> { }
         }
     }
 

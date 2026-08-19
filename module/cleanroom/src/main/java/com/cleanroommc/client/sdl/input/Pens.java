@@ -84,7 +84,6 @@ public final class Pens {
                     listener.axis(axis.which(), axis.x(), axis.y(), kind, axis.value());
                 }
             }
-            default -> { }
         }
     }
 

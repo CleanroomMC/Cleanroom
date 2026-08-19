@@ -1,8 +1,15 @@
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.input.virtual.Text;
+import com.cleanroommc.common.CleanroomVersion;
 import org.lwjgl.sdl.SDLError;
+import org.lwjgl.sdl.SDLHints;
 import org.lwjgl.sdl.SDLInit;
+import org.lwjgl.sdl.SDLLog;
+import org.lwjgl.sdl.SDL_LogOutputFunction;
+import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SDL's lifecycle helpers.
@@ -10,6 +17,7 @@ import org.lwjgl.sdl.SDLInit;
 public final class SDL {
 
     private static int initializedBits;
+    private static SDL_LogOutputFunction logOutput;
 
     /**
      * Brings up the video and event subsystems, if they are not already up.
@@ -30,12 +38,33 @@ public final class SDL {
         if (missing == 0) {
             return;
         }
-        // TODO: services to load when initializing subsystem?
+        installLog();
+        prepare(missing);
+        check(SDLInit.SDL_InitSubSystem(missing), "SDL_InitSubSystem");
+        initializedBits |= missing;
+    }
+
+    /**
+     * Hints that must be set before a subsystem comes up, plus app metadata for the video path.
+     */
+    private static void prepare(int missing) {
         if ((missing & SDLInit.SDL_INIT_VIDEO) != 0) {
             Text.implementIME(true, true);
+            check(SDLInit.SDL_SetAppMetadata("Cleanroom", CleanroomVersion.VERSION, "com.cleanroommc.cleanroom"),
+                    "SDL_SetAppMetadata");
+            check(SDLInit.SDL_SetAppMetadataProperty(SDLInit.SDL_PROP_APP_METADATA_TYPE_STRING, "game"),
+                    "SDL_SetAppMetadataProperty");
         }
-        initializedBits |= missing;
-        check(SDLInit.SDL_InitSubSystem(missing), "SDL_InitSubSystem");
+    }
+
+    /**
+     * Sets an SDL hint. Some hints are ignored once the matching subsystem is up.
+     */
+    public static void hint(String name, String value) {
+        if (name == null || value == null) {
+            throw new IllegalArgumentException("Hint name and value cannot be null");
+        }
+        check(SDLHints.SDL_SetHint(name, value), "SDL_SetHint(" + name + ")");
     }
 
     /**
@@ -48,15 +77,34 @@ public final class SDL {
 
     /** Closes the host window and tears down every subsystem this class brought up. */
     public static synchronized void shutdown() {
+        Devices.reset();
+        CleanroomWindowBridge.uninstall();
+        Window.closeMain();
         if (initializedBits == 0) {
             return;
         }
-        // TODO: new SDL input stack
-        // Inputs.reset();
-        CleanroomWindowBridge.uninstall();
-        Window.closeMain();
         SDLInit.SDL_Quit();
         initializedBits = 0;
+    }
+
+    private static void installLog() {
+        if (logOutput != null) {
+            return;
+        }
+        Logger logger = LoggerFactory.getLogger("com.cleanroommc.client.sdl");
+        logOutput = SDL_LogOutputFunction.create((userdata, category, priority, message) -> {
+            String text = MemoryUtil.memUTF8(message);
+            if (priority >= SDLLog.SDL_LOG_PRIORITY_ERROR) {
+                logger.error("{}", text);
+            } else if (priority == SDLLog.SDL_LOG_PRIORITY_WARN) {
+                logger.warn("{}", text);
+            } else if (priority == SDLLog.SDL_LOG_PRIORITY_INFO) {
+                logger.info("{}", text);
+            } else {
+                logger.debug("{}", text);
+            }
+        });
+        SDLLog.SDL_SetLogOutputFunction(logOutput, 0L);
     }
 
     /**
@@ -84,13 +132,5 @@ public final class SDL {
     }
 
     private SDL() { }
-
-    public static final class SDLException extends RuntimeException {
-
-        SDLException(String message) {
-            super(message);
-        }
-
-    }
 
 }
