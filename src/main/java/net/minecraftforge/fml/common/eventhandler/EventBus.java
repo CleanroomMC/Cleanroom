@@ -19,7 +19,6 @@
 
 package net.minecraftforge.fml.common.eventhandler;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
@@ -37,7 +37,6 @@ import net.minecraftforge.fml.common.ModContainer;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.MapMaker;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import org.jspecify.annotations.NonNull;
 
@@ -62,6 +61,52 @@ public class EventBus implements IEventExceptionHandler
         this();
         Preconditions.checkNotNull(handler, "EventBus exception handler can not be null");
         exceptionHandler = handler;
+    }
+
+    public <T extends Event> void addListener(Class<T> eventType, Consumer<T> handler)
+    {
+        addListener(eventType, EventPriority.NORMAL, false, handler);
+    }
+
+    public <T extends Event> void addListener(Class<T> eventType, EventPriority priority, Consumer<T> handler)
+    {
+        addListener(eventType, priority, false, handler);
+    }
+
+    public <T extends Event> void addListener(
+        Class<T> eventType,
+        EventPriority priority,
+        boolean receiveCanceled,
+        Consumer<T> handler
+    )
+    {
+        Objects.requireNonNull(eventType, "eventType");
+        Objects.requireNonNull(priority, "priority");
+        Objects.requireNonNull(handler, "handler");
+        if (!Event.class.isAssignableFrom(eventType)) {
+            throw new IllegalArgumentException("Not an event type: " + eventType);
+        }
+        if (listeners.containsKey(handler)) {
+            return;
+        }
+
+        @SuppressWarnings("unchecked")
+        IEventListener listener = receiveCanceled
+            ? ((Consumer<Event>) handler)::accept
+            : event -> {
+                if (!event.isCancelable() || !event.isCanceled()) {
+                    handler.accept((T) event);
+                }
+            };
+
+        ModContainer activeModContainer = Loader.instance().activeModContainer();
+        if (activeModContainer == null) {
+            FMLLog.log.error("Unable to determine registrant mod for {}. This is a critical error and should be impossible", handler, new Throwable());
+            activeModContainer = Loader.instance().getMinecraftModContainer();
+        }
+        listenerOwners.put(handler, activeModContainer);
+
+        register0(eventType, ListenerList.CACHE.get(eventType), handler, listener, priority, activeModContainer);
     }
 
     public void register(Object target)
@@ -158,23 +203,32 @@ public class EventBus implements IEventExceptionHandler
     {
         try
         {
-            final ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
+            ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
 
-            IEventListener listener = asm;
-            if (IContextSetter.class.isAssignableFrom(eventType))
-            {
-                listener = new ContextSetterEventListener(owner, asm);
-            }
-
-            ListenerList.CACHE.get(eventType).register(busID, asm.getPriority(), listener);
-
-            ArrayList<IEventListener> others = listeners.computeIfAbsent(target, k -> new ArrayList<>());
-            others.add(listener);
+            register0(eventType, ListenerList.CACHE.get(eventType), target, asm, asm.getPriority(), owner);
         }
         catch (Exception e)
         {
             FMLLog.log.error("Error registering event handler: {} {} {}", owner, eventType, method, e);
         }
+    }
+
+    private void register0(
+        Class<?> eventType,
+        ListenerList listenerList,
+        Object key,
+        IEventListener listener,
+        EventPriority priority,
+        ModContainer owner
+    )
+    {
+        if (IContextSetter.class.isAssignableFrom(eventType))
+        {
+            listener = new ContextSetterEventListener(owner, listener);
+        }
+
+        listenerList.register(busID, priority, listener);
+        listeners.computeIfAbsent(key, _ -> new ArrayList<>()).add(listener);
     }
 
     public void unregister(Object object)
@@ -229,7 +283,7 @@ public class EventBus implements IEventExceptionHandler
 
     private record ContextSetterEventListener(
         ModContainer owner,
-        ASMEventHandler asm
+        IEventListener asm
     ) implements IEventListener {
 
         @Override
