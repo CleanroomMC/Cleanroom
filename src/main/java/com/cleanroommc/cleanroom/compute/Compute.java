@@ -42,9 +42,11 @@ public class Compute {
     public final boolean supportsMipmaps;
     public final boolean supportsPipes;
 
+    public final boolean glSharing;
+
     private final ProgramCacheIntegrityTable programCacheIntegrityTable = new ProgramCacheIntegrityTable();
 
-    private Compute(Logger log, CLCapabilities platformCapabilities, long context, Device[] devices) {
+    private Compute(Logger log, CLCapabilities platformCapabilities, long context, Device[] devices, boolean isClient) {
         this.LOGGER = log;
         this.PLATFORM_CAPABILITIES = platformCapabilities;
         this.context = context;
@@ -67,6 +69,8 @@ public class Compute {
         this.supportsImages = supportsImages;
         this.supportsMipmaps = supportsMipmaps;
         this.supportsPipes = supportsPipes;
+
+        this.glSharing = isClient;
     }
 
     public static Compute instance() {
@@ -135,11 +139,11 @@ public class Compute {
         throw new IllegalArgumentException("Device not present.");
     }
 
-    static void init(Logger log, CLCapabilities platform, long context, Device... devices) {
+    static void init(Logger log, CLCapabilities platform, long context, boolean isClient, Device... devices) {
         if (INSTANCE != null) {
             throw new ConstructorInvocationException("Second attempt at invoking singleton constructor. ");
         }
-        INSTANCE = new Compute(log, platform, context, devices);
+        INSTANCE = new Compute(log, platform, context, devices, isClient);
     }
 
     public static boolean isAvailable() {

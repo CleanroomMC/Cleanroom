@@ -101,7 +101,8 @@ public class ComputeSetup {
             Compute.init(
                     LOGGER,
                     platformCapabilities,
-                    ctx, deviceArray
+                    ctx, client,
+                    deviceArray
             );
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 CL10.clReleaseContext(ctx);

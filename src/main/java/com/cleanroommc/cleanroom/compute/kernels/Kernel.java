@@ -4,15 +4,20 @@ import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.Device;
 import com.cleanroommc.cleanroom.compute.errors.CompilationError;
 import com.cleanroommc.cleanroom.compute.errors.KernelError;
+import com.cleanroommc.cleanroom.compute.kernels.params.BufferParameter;
 import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
 import com.cleanroommc.cleanroom.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
+import org.lwjgl.opencl.CL10GL;
 import org.lwjgl.system.MemoryStack;
+
+import java.util.List;
 
 public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, int dimensionality, boolean requiresImages, boolean requiresMipmaps, boolean requiresPipes) {
     public Kernel(long program, KernelMetadata meta) {
@@ -75,9 +80,17 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             eventWaitList.rewind();
         }
         PointerBuffer event = stack.mallocPointer(1);
+        PointerBuffer glObjects = null;
+        if (Compute.instance().glSharing) {
+            glObjects = getGLObjects(stack, arguments);
+            CL10GL.clEnqueueAcquireGLObjects(commandQueue, glObjects, eventWaitList, event);
+            if (eventWaitList == null)
+                eventWaitList = stack.mallocPointer(1);
+            eventWaitList.put(0, event.get(0)).rewind();
+        }
         switch (CL10.clEnqueueNDRangeKernel(commandQueue, kernel,
                 dim, offsets, sizes, local,
-                eventWaitList, event)) {
+                glObjects == null ? eventWaitList : eventWaitList.getPointerBuffer(0), event)) {
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
             case CL10.CL_INVALID_WORK_DIMENSION -> throw new KernelError(String.format("Invalid work dimension %d", dim));
             case CL10.CL_INVALID_GLOBAL_WORK_SIZE -> throw new KernelError("Work group size is invalid.");
@@ -85,8 +98,16 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             case CL10.CL_INVALID_WORK_GROUP_SIZE -> throw new KernelError("Local group size is not divisible by global group size.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
-        for (long dependency : dependencies)
-            CL10.clReleaseEvent(dependency);
+        if (glObjects == null)
+            for (long dependency : dependencies)
+                CL10.clReleaseEvent(dependency);
+        else {
+            CL10.clReleaseEvent(eventWaitList.get(0));
+            eventWaitList.put(0, event.get(0)).rewind();
+            event.rewind();
+            CL10GL.clEnqueueReleaseGLObjects(commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
+            CL10.clReleaseEvent(eventWaitList.get(0));
+        }
         return event.get(0);
     }
 
@@ -107,13 +128,28 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             eventWaitList.rewind();
         }
         PointerBuffer event = stack.mallocPointer(1);
+        PointerBuffer glObjects = null;
+        if (Compute.instance().glSharing) {
+            glObjects = getGLObjects(stack, arguments);
+            CL10GL.clEnqueueAcquireGLObjects(commandQueue, glObjects, eventWaitList, event);
+            if (eventWaitList == null)
+                eventWaitList = stack.mallocPointer(1);
+            eventWaitList.put(0, event.get(0)).rewind();
+        }
         switch (CL10.clEnqueueTask(commandQueue, this.kernel, eventWaitList, event)) {
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
-        if (dependencies != null)
+        if (dependencies != null && glObjects == null)
             for (long dependency : dependencies)
                 CL10.clReleaseEvent(dependency);
+        else if (glObjects != null){
+            CL10.clReleaseEvent(eventWaitList.get(0));
+            eventWaitList.put(0, event.get(0)).rewind();
+            event.rewind();
+            CL10GL.clEnqueueReleaseGLObjects(commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
+            CL10.clReleaseEvent(eventWaitList.get(0));
+        }
         return event.get(0);
     }
 
@@ -125,5 +161,19 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             b = tmp;
         }
         return a;
+    }
+
+    private static PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters) {
+        List<BufferParameter> buffers = new ReferenceArrayList<>();
+        parameters.forEach(p -> {
+            if (p instanceof BufferParameter buffer && buffer.buffer().isGLObject()) {
+                buffers.add(buffer);
+            }
+        });
+        PointerBuffer bufferHandles = stack.mallocPointer(buffers.size());
+        for (BufferParameter buffer : buffers) {
+            bufferHandles.put(buffer.buffer().handle);
+        }
+        return bufferHandles;
     }
 }
