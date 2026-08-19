@@ -40,10 +40,6 @@ public final class Camera implements AutoCloseable {
         return id;
     }
 
-    public long handle() {
-        return handle;
-    }
-
     public String name() {
         String name = SDLCamera.SDL_GetCameraName(id);
         return name == null ? "" : name;
@@ -151,6 +147,10 @@ public final class Camera implements AutoCloseable {
         }
         SDLCamera.SDL_CloseCamera(handle);
         handle = 0L;
+    }
+
+    long handle() {
+        return handle;
     }
 
 }

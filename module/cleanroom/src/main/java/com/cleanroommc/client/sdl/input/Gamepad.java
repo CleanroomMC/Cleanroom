@@ -74,11 +74,11 @@ public final class Gamepad {
         return GamepadLabel.of(SDLGamepad.SDL_GetGamepadButtonLabel(handle, button.value()));
     }
 
-    public int playerIndex() {
+    public int player() {
         return SDLGamepad.SDL_GetGamepadPlayerIndex(handle);
     }
 
-    public Gamepad playerIndex(int index) {
+    public Gamepad player(int index) {
         SDL.check(SDLGamepad.SDL_SetGamepadPlayerIndex(handle, index), "SDL_SetGamepadPlayerIndex");
         return this;
     }
