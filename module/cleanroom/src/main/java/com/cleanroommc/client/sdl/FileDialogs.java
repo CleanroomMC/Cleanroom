@@ -1,0 +1,166 @@
+package com.cleanroommc.client.sdl;
+
+import org.lwjgl.sdl.SDLDialog;
+import org.lwjgl.sdl.SDLMessageBox;
+import org.lwjgl.sdl.SDL_DialogFileCallback;
+import org.lwjgl.sdl.SDL_DialogFileFilter;
+import org.lwjgl.sdl.SDL_MessageBoxButtonData;
+import org.lwjgl.sdl.SDL_MessageBoxData;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.IntBuffer;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+/**
+ * Native message boxes and file dialogs.
+ *
+ * <p>File dialogs complete on a later {@link Window#pump()} and invoke {@code onResult} on that thread.
+ */
+public final class FileDialogs {
+
+    public record Filter(String name, String pattern) { }
+
+    public record Button(int id, String text, boolean isDefault, boolean isEscape) {
+
+        public Button(int id, String text) {
+            this(id, text, false, false);
+        }
+
+    }
+
+    public static void error(Window window, String title, String message) {
+        box(SDLMessageBox.SDL_MESSAGEBOX_ERROR, window, title, message);
+    }
+
+    public static void warn(Window window, String title, String message) {
+        box(SDLMessageBox.SDL_MESSAGEBOX_WARNING, window, title, message);
+    }
+
+    public static void info(Window window, String title, String message) {
+        box(SDLMessageBox.SDL_MESSAGEBOX_INFORMATION, window, title, message);
+    }
+
+    /**
+     * Blocking custom button box.
+     *
+     * @return the id of the button that was pressed, or {@code -1} if the box was dismissed
+     */
+    public static int ask(Window window, String title, String message, Button... buttons) {
+        if (buttons == null || buttons.length == 0) {
+            throw new IllegalArgumentException("At least one button is required");
+        }
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            SDL_MessageBoxButtonData.Buffer nativeButtons = SDL_MessageBoxButtonData.calloc(buttons.length, stack);
+            for (int i = 0; i < buttons.length; i++) {
+                Button button = buttons[i];
+                int flags = 0;
+                if (button.isDefault()) {
+                    flags |= SDLMessageBox.SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+                }
+                if (button.isEscape()) {
+                    flags |= SDLMessageBox.SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+                }
+                nativeButtons.get(i)
+                        .flags(flags)
+                        .buttonID(button.id())
+                        .text(stack.UTF8(button.text()));
+            }
+            SDL_MessageBoxData data = SDL_MessageBoxData.calloc(stack);
+            data.flags(0)
+                    .window(handle(window))
+                    .title(stack.UTF8(title == null ? "" : title))
+                    .message(stack.UTF8(message == null ? "" : message))
+                    .buttons(nativeButtons);
+            IntBuffer pressed = stack.mallocInt(1);
+            SDL.check(SDLMessageBox.SDL_ShowMessageBox(data, pressed), "SDL_ShowMessageBox");
+            return pressed.get(0);
+        }
+    }
+
+    public static void openFile(Window window, List<Filter> filters, boolean many, Consumer<List<Path>> onResult) {
+        fileDialog(window, filters, many, null, true, false, onResult);
+    }
+
+    public static void saveFile(Window window, List<Filter> filters, String defaultLocation, Consumer<List<Path>> onResult) {
+        fileDialog(window, filters, false, defaultLocation, false, false, onResult);
+    }
+
+    public static void openFolder(Window window, boolean many, Consumer<List<Path>> onResult) {
+        fileDialog(window, List.of(), many, null, false, true, onResult);
+    }
+
+    private static void fileDialog(Window window, List<Filter> filters, boolean many, String location,
+            boolean openFile, boolean folder, Consumer<List<Path>> onResult) {
+        if (onResult == null) {
+            throw new IllegalArgumentException("onResult cannot be null");
+        }
+        SDL_DialogFileCallback[] holder = new SDL_DialogFileCallback[1];
+        holder[0] = SDL_DialogFileCallback.create((userdata, filelist, filter) -> {
+            try {
+                onResult.accept(readPaths(filelist));
+            } finally {
+                if (holder[0] != null) {
+                    holder[0].free();
+                }
+            }
+        });
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            SDL_DialogFileFilter.Buffer nativeFilters = filters == null || filters.isEmpty()
+                    ? null : SDL_DialogFileFilter.calloc(filters.size(), stack);
+            if (nativeFilters != null) {
+                for (int i = 0; i < filters.size(); i++) {
+                    Filter filter = filters.get(i);
+                    nativeFilters.get(i)
+                            .name(stack.UTF8(filter.name()))
+                            .pattern(stack.UTF8(filter.pattern()));
+                }
+            }
+            long parent = handle(window);
+            java.nio.ByteBuffer where = (location == null || location.isEmpty()) ? null : stack.UTF8(location);
+            if (folder) {
+                SDLDialog.SDL_ShowOpenFolderDialog(holder[0], 0L, parent, where, many);
+            } else if (openFile) {
+                SDLDialog.SDL_ShowOpenFileDialog(holder[0], 0L, parent, nativeFilters, where, many);
+            } else {
+                SDLDialog.SDL_ShowSaveFileDialog(holder[0], 0L, parent, nativeFilters, where);
+            }
+        }
+    }
+
+    private static List<Path> readPaths(long filelist) {
+        List<Path> paths = new ArrayList<>();
+        if (filelist == 0L) {
+            return paths;
+        }
+        int pointerSize = org.lwjgl.system.Pointer.POINTER_SIZE;
+        for (int i = 0; ; i++) {
+            long address = MemoryUtil.memGetAddress(filelist + (long) i * pointerSize);
+            if (address == 0L) {
+                break;
+            }
+            String value = MemoryUtil.memUTF8Safe(address);
+            if (value != null && !value.isEmpty()) {
+                paths.add(Path.of(value));
+            }
+        }
+        return paths;
+    }
+
+    private static void box(int flags, Window window, String title, String message) {
+        SDL.check(SDLMessageBox.SDL_ShowSimpleMessageBox(flags,
+                title == null ? "" : title,
+                message == null ? "" : message,
+                handle(window)), "SDL_ShowSimpleMessageBox");
+    }
+
+    private static long handle(Window window) {
+        return window == null ? 0L : window.handle();
+    }
+
+    private FileDialogs() { }
+
+}
