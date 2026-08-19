@@ -22,8 +22,8 @@ package net.minecraftforge.fml.client;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
-import com.cleanroommc.client.input.SharedGLContext;
-import com.cleanroommc.client.input.Window;
+import com.cleanroommc.client.sdl.SharedGLContext;
+import com.cleanroommc.client.sdl.Window;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

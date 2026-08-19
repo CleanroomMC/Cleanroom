@@ -1,4 +1,4 @@
-package com.cleanroommc.client.input;
+package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.lwjgly.LWJGLY;
 import com.cleanroommc.lwjgly.spi.WindowBridge;

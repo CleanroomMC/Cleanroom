@@ -1,4 +1,4 @@
-package com.cleanroommc.client.input;
+package com.cleanroommc.client.sdl;
 
 import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLInit;

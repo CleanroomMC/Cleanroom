@@ -4,7 +4,7 @@
          }
  
          this.isFocused = isFocusedIn;
-+        com.cleanroommc.client.input.Window window = com.cleanroommc.client.input.Window.main();
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
 +        if (window != null) {
 +            window.textInput(this.isFocused);
 +        }

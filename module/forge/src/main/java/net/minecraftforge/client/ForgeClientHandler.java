@@ -19,7 +19,7 @@
 
 package net.minecraftforge.client;
 
-import com.cleanroommc.client.input.Window;
+import com.cleanroommc.client.sdl.Window;
 import com.cleanroommc.client.modlist.LegacyModListScreen;
 import com.cleanroommc.client.modlist.ModListConfig;
 import com.cleanroommc.client.modlist.ModListConstants;

@@ -21,8 +21,8 @@
              this.displayHeight = this.gameSettings.overrideHeight;
          }
 -
-+        com.cleanroommc.client.input.Window window = com.cleanroommc.client.input.Window.builder().title("Cleanroom").size(this.displayWidth, this.displayHeight).resizable().vsync(this.gameSettings.enableVsync).openGL().build();
-+        com.cleanroommc.client.input.CleanroomWindowBridge.install(window);
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.builder().title("Cleanroom").size(this.displayWidth, this.displayHeight).resizable().vsync(this.gameSettings.enableVsync).openGL().build();
++        com.cleanroommc.client.sdl.CleanroomWindowBridge.install(window);
          LOGGER.info("LWJGL Version: {}", Sys.getVersion());
          this.setWindowIcon();
          this.setInitialDisplayMode();
@@ -210,7 +210,7 @@
              this.soundHandler.unloadSounds();
          } finally {
 +            com.cleanroommc.kirino.engine.ShutdownManager.runMainHooks();
-+            com.cleanroommc.client.input.SDL.shutdown();
++            com.cleanroommc.client.sdl.SDL.shutdown();
              Display.destroy();
              if (!this.hasCrashed) {
                  System.exit(0);
@@ -281,7 +281,7 @@
      /** Toggles fullscreen mode. */
      public void toggleFullscreen() {
 +        if (net.minecraftforge.common.ForgeEarlyConfig.WINDOW_BORDERLESS_REPLACES_FULLSCREEN) {
-+            com.cleanroommc.client.input.Window window = com.cleanroommc.client.input.Window.main();
++            com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
 +            if (window != null) window.borderless(!window.borderless());
 +            return;
 +        }

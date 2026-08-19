@@ -38,7 +38,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
 import com.cleanroommc.client.LoadingTracker;
-import com.cleanroommc.client.input.Window;
+import com.cleanroommc.client.sdl.Window;
 import com.cleanroommc.client.windows.DwmApi;
 import com.cleanroommc.client.windows.NtDll;
 import com.cleanroommc.client.windows.TaskbarApi;
@@ -149,7 +149,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.async.ThreadNameCachingStrategy;
 import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
