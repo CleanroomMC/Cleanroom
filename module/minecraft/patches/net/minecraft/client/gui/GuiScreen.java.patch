@@ -1,6 +1,17 @@
 --- original/net/minecraft/client/gui/GuiScreen.java
 +++ modified/net/minecraft/client/gui/GuiScreen.java
-@@ -68,6 +68,7 @@
+@@ -3,10 +3,6 @@
+ import com.google.common.base.Splitter;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Sets;
+-import java.awt.Toolkit;
+-import java.awt.datatransfer.DataFlavor;
+-import java.awt.datatransfer.StringSelection;
+-import java.awt.datatransfer.Transferable;
+ import java.io.File;
+ import java.io.IOException;
+ import java.net.URI;
+@@ -68,6 +64,7 @@
      private int touchValue;
      private URI clickedLinkURI;
      private boolean focused;
@@ -8,7 +19,32 @@
  
      /** Draws the screen and all the components in it. */
      public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-@@ -127,7 +128,10 @@
+@@ -104,30 +101,21 @@
+ 
+     /** Returns a string stored in the system clipboard. */
+     public static String getClipboardString() {
+-        try {
+-            Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+-            if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+-                return (String)transferable.getTransferData(DataFlavor.stringFlavor);
+-            }
+-        } catch (Exception exception) {
+-        }
+-
+-        return "";
++        return com.cleanroommc.client.sdl.Clipboard.text();
+     }
+ 
+     /** Stores the given string in the system clipboard */
+     public static void setClipboardString(String copyText) {
+         if (!StringUtils.isEmpty(copyText)) {
+-            try {
+-                StringSelection stringselection = new StringSelection(copyText);
+-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringselection, null);
+-            } catch (Exception exception) {
+-            }
++            com.cleanroommc.client.sdl.Clipboard.text(copyText);
+         }
      }
  
      protected void renderToolTip(ItemStack stack, int x, int y) {
@@ -20,7 +56,7 @@
      }
  
      public List<String> getItemToolTip(ItemStack p_191927_1_) {
-@@ -138,7 +142,7 @@
+@@ -138,7 +126,7 @@
  
          for (int i = 0; i < list.size(); i++) {
              if (i == 0) {
@@ -29,7 +65,7 @@
              } else {
                  list.set(i, TextFormatting.GRAY + list.get(i));
              }
-@@ -162,7 +166,12 @@
+@@ -162,7 +150,12 @@
  
      /** Draws a List of strings as a tooltip. Every entry is drawn on a seperate line. */
      public void drawHoveringText(List<String> textLines, int x, int y) {
@@ -43,7 +79,7 @@
              GlStateManager.disableRescaleNormal();
              RenderHelper.disableStandardItemLighting();
              GlStateManager.disableLighting();
-@@ -339,9 +348,12 @@
+@@ -339,9 +332,12 @@
      }
  
      public void sendChatMessage(String msg, boolean addToChat) {
@@ -56,7 +92,7 @@
  
          this.mc.player.sendChatMessage(msg);
      }
-@@ -352,9 +364,15 @@
+@@ -352,9 +348,15 @@
              for (int i = 0; i < this.buttonList.size(); i++) {
                  GuiButton guibutton = this.buttonList.get(i);
                  if (guibutton.mousePressed(this.mc, mouseX, mouseY)) {
@@ -72,7 +108,7 @@
                  }
              }
          }
-@@ -383,8 +401,11 @@
+@@ -383,8 +385,11 @@
          this.fontRenderer = mc.fontRenderer;
          this.width = width;
          this.height = height;
@@ -84,7 +120,7 @@
      }
  
      /** Set the gui to the specified width and height */
-@@ -401,13 +422,19 @@
+@@ -401,13 +406,19 @@
      public void handleInput() throws IOException {
          if (Mouse.isCreated()) {
              while (Mouse.next()) {
@@ -104,7 +140,7 @@
              }
          }
      }
-@@ -465,6 +492,7 @@
+@@ -465,6 +476,7 @@
       */
      public void drawDefaultBackground() {
          this.drawWorldBackground(0);
@@ -112,3 +148,19 @@
      }
  
      /**
+@@ -532,14 +544,7 @@
+     }
+ 
+     private void openWebLink(URI url) {
+-        try {
+-            Class<?> oclass = Class.forName("java.awt.Desktop");
+-            Object object = oclass.getMethod("getDesktop").invoke(null);
+-            oclass.getMethod("browse", URI.class).invoke(object, url);
+-        } catch (Throwable throwable1) {
+-            Throwable throwable = throwable1.getCause();
+-            LOGGER.error("Couldn't open link: {}", throwable == null ? "<UNKNOWN>" : throwable.getMessage());
+-        }
++        com.cleanroommc.client.sdl.Desktop.open(url);
+     }
+ 
+     /** Returns true if either windows ctrl key is down or if either mac meta key is down */
