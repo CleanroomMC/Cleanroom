@@ -21,12 +21,10 @@ package net.minecraftforge.fml.common.eventhandler;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -125,58 +123,45 @@ public class EventBus implements IEventExceptionHandler
         listenerOwners.put(target, activeModContainer);
 
         boolean isStatic;
-        Set<? extends Class<?>> supers;
         Class<?> scanTarget;
         if (target instanceof Class<?> clazz) {
             isStatic = true;
-            supers = Set.of(clazz);
             scanTarget = clazz;
         } else {
             isStatic = false;
-            supers = TypeToken.of(target.getClass()).getTypes().rawTypes();
             scanTarget = target.getClass();
         }
 
-        for (Method method : scanTarget.getMethods())
+        var methods = TypeToken.of(scanTarget)
+            // get superclass & interfaces, including self
+            .getTypes()
+            .rawTypes()
+            .stream()
+            .map(Class::getDeclaredMethods)
+            .flatMap(Arrays::stream)
+            // deduplicate by signature
+            .collect(Collectors.groupingBy(m -> Map.entry(m.getName(), Arrays.asList(m.getParameterTypes()))))
+            .values()
+            .stream()
+            .<Method>mapMulti((list, downStream) -> list.stream()
+                .filter(m -> m.isAnnotationPresent(SubscribeEvent.class))
+                // some seemingly confusing hack to keep legacy behaviour
+                // static listener: subscribed methods must be declared by the class
+                // instance listener: methods overriding a subscribed method is also valid
+                .filter(isStatic
+                    ? m -> m.getDeclaringClass() == scanTarget
+                    // private not allowed because it does not participate in inheritance
+                    : m -> !Modifier.isPrivate(m.getModifiers()))
+                .findFirst()
+                .ifPresent(downStream))
+            .toList();
+
+        for (Method method : methods)
         {
             if (isStatic != Modifier.isStatic(method.getModifiers()))
                 continue;
 
-            try {
-                // do `.getDeclaredMethod(...)` to force JVM to walk through declared methods and load their parameter
-                // types. This is for preventing shortcut below from skipping classloading
-                //
-                // mod developers should be responsible for not loading non-existent class, but :(
-                // related issue: https://github.com/CleanroomMC/Cleanroom/issues/349
-                method.getDeclaringClass().getDeclaredMethod("forceClassLoadingForDeclaredMethods", Event.class);
-            } catch (NoSuchMethodException e) {
-                // swallow this specific exception, other exceptions, like ClassNotFoundException, will fall through
-            }
-
             var parameterTypes = method.getParameterTypes();
-            var matched = supers.stream()
-                .map(cls -> {
-                    if (cls == method.getDeclaringClass()) {
-                        // shortcut for most event handler classes with no explicit superclass
-                        return method;
-                    }
-                    try {
-                        return cls.getDeclaredMethod(method.getName(), parameterTypes);
-                    } catch (NoSuchMethodException e) {
-                        // Eat the error, this is not unexpected
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .filter(m -> m.isAnnotationPresent(SubscribeEvent.class))
-                .findFirst()
-                .orElse(null);
-
-            if (matched == null)
-            {
-                continue;
-            }
-
             if (parameterTypes.length != 1)
             {
                 throw new IllegalArgumentException(
@@ -192,9 +177,7 @@ public class EventBus implements IEventExceptionHandler
                 throw new IllegalArgumentException("Method " + method + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
             }
 
-            // the method to be registered here is "matched", not "method", it should be a bug of
-            // the original event bus, since the exceptions above are all referencing "method"
-            register(eventType, target, matched, activeModContainer);
+            register(eventType, target, method, activeModContainer);
         }
     }
 
