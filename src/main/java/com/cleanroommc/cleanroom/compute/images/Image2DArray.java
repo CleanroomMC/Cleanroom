@@ -3,6 +3,8 @@ package com.cleanroommc.cleanroom.compute.images;
 import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.errors.ImageError;
 import com.cleanroommc.cleanroom.compute.utils.ErrorUtils;
+import com.cleanroommc.kirino.gl.texture.GLTexture;
+import com.cleanroommc.kirino.gl.texture.TextureType;
 import com.google.common.base.Preconditions;
 import org.joml.Vector3L;
 import org.jspecify.annotations.NonNull;
@@ -31,6 +33,16 @@ public final class Image2DArray extends Image<Vector3L> {
                    @Nullable ByteBuffer hostMemory) {
         super(workaround(stack, memoryFlags, width, height, mipmaps, arraySize, channelType, channelOrder, hostMemory));
     }
+
+    public Image2DArray(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+        Preconditions.checkArgument(texture.type == TextureType.TEX_2D_ARRAY);
+        super(texture, memoryFlags, mipLevel);
+    }
+
+    public Image2DArray(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags) {
+        this(texture, memoryFlags, 0);
+    }
+
 
     public <B extends Buffer> long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull B color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, long... dependencies) {
         Preconditions.checkArgument(color instanceof ByteBuffer

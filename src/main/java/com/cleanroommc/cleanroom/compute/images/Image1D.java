@@ -3,14 +3,13 @@ package com.cleanroommc.cleanroom.compute.images;
 import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.errors.ImageError;
 import com.cleanroommc.cleanroom.compute.utils.ErrorUtils;
+import com.cleanroommc.kirino.gl.texture.GLTexture;
+import com.cleanroommc.kirino.gl.texture.TextureType;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CLImageDesc;
-import org.lwjgl.opencl.CLImageFormat;
+import org.lwjgl.opencl.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.*;
@@ -30,6 +29,16 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         super(workaround(stack, memoryFlags, size, mipMaps, channelType, channelOrder, hostMemory));
     }
 
+    public Image1D(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+        Preconditions.checkArgument(texture.type == TextureType.TEX_1D);
+        super(texture, memoryFlags, mipLevel);
+    }
+
+    public Image1D(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags) {
+        this(texture, memoryFlags, 0);
+    }
+
+
     protected Image1D(@NonNull Workaround workaround) {
         super(workaround);
     }
@@ -46,6 +55,17 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
             PointerBuffer coordinates = makeParameterBuffer(substack, from, size, mipmap , dependencies);
+            PointerBuffer event = coordinates.slice(bufLen - 1, 1);
+            PointerBuffer waitList = bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null;
+            if (this.isGLTexture()) {
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, event);
+                if (waitList == null)
+                    waitList = substack.mallocPointer(1);
+                else
+                    for (long dependency : dependencies)
+                        CL10.clReleaseEvent(dependency);
+                waitList.put(0, event.get(0)).rewind();
+            }
             ErrorUtils.handleEnqueueFillImageError(switch (color) {
                 case ByteBuffer bb -> CL12.clEnqueueFillImage(
                         commandQueue,
@@ -53,8 +73,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                         bb,
                         coordinates.slice(0, 3),
                         coordinates.slice(3, 3),
-                        bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
-                        coordinates.slice(bufLen - 1, 1)
+                        this.isGLTexture() ? waitList.slice(0,1) : waitList,
+                        event
                 );
                 case IntBuffer ib -> CL12.clEnqueueFillImage(
                         commandQueue,
@@ -62,8 +82,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                         ib,
                         coordinates.slice(0, 3),
                         coordinates.slice(3, 3),
-                        bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
-                        coordinates.slice(bufLen - 1, 1)
+                        this.isGLTexture() ? waitList.slice(0,1) : waitList,
+                        event
                 );
                 case FloatBuffer fb -> CL12.clEnqueueFillImage(
                         commandQueue,
@@ -71,15 +91,21 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                         fb,
                         coordinates.slice(0, 3),
                         coordinates.slice(3, 3),
-                        bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
-                        coordinates.slice(bufLen - 1, 1)
+                        this.isGLTexture() ? waitList.slice(0,1) : waitList,
+                        event
                 );
                 default -> throw new ImageError("How?");
             });
-            if (dependencies != null)
+            if (dependencies != null && !this.isGLTexture())
                 for (long dependency : dependencies)
                     CL10.clReleaseEvent(dependency);
-            return coordinates.get(bufLen - 1);
+            else if (this.isGLTexture()) {
+                CL10.clReleaseEvent(waitList.get(0));
+                waitList.put(0, event.get(0)).rewind();
+                event.rewind();
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handle, waitList, event);
+            }
+            return event.get(0);
         }
     }
 
@@ -93,19 +119,36 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
             PointerBuffer coordinates = makeParameterBuffer(substack, from, size, mipmap, dependencies);
+            PointerBuffer event = coordinates.slice(bufLen - 1, 1);
+            PointerBuffer waitList = bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null;
+            if (this.isGLTexture()) {
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, event);
+                if (waitList == null)
+                    waitList = substack.mallocPointer(1);
+                else
+                    for (long dependency : dependencies)
+                        CL10.clReleaseEvent(dependency);
+                waitList.put(0, event.get(0)).rewind();
+            }
             ErrorUtils.handleEnqueueFillImageError(CL12.clEnqueueFillImage(
                     commandQueue,
                     this.handle,
                     color,
                     coordinates.slice(0,3),
                     coordinates.slice(3,3),
-                    bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
-                    coordinates.slice(bufLen - 1, 1)
+                    this.isGLTexture() ? waitList.slice(0,1) : waitList,
+                    event
             ));
-            if (dependencies != null)
+            if (dependencies != null && !this.isGLTexture())
                 for (long dependency : dependencies)
                     CL10.clReleaseEvent(dependency);
-            return coordinates.get(bufLen - 1);
+            else if (this.isGLTexture()) {
+                CL10.clReleaseEvent(waitList.get(0));
+                waitList.put(0, event.get(0)).rewind();
+                event.rewind();
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handle, waitList, event);
+            }
+            return event.get(0);
         }
     }
 
@@ -119,19 +162,36 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
             PointerBuffer coordinates = makeParameterBuffer(substack, from, size, mipmap, dependencies);
+            PointerBuffer event = coordinates.slice(bufLen - 1, 1);
+            PointerBuffer waitList = bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null;
+            if (this.isGLTexture()) {
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, event);
+                if (waitList == null)
+                    waitList = substack.mallocPointer(1);
+                else
+                    for (long dependency : dependencies)
+                        CL10.clReleaseEvent(dependency);
+                waitList.put(0, event.get(0)).rewind();
+            }
             ErrorUtils.handleEnqueueFillImageError(CL12.clEnqueueFillImage(
                     commandQueue,
                     this.handle,
                     color,
                     coordinates.slice(0,3),
                     coordinates.slice(3,3),
-                    bufLen - 7 > 0 ? coordinates.slice(6, bufLen - 7) : null,
-                    coordinates.slice(bufLen - 1, 1)
+                    this.isGLTexture() ? waitList.slice(0,1) : waitList,
+                    event
             ));
-            if (dependencies != null)
+            if (dependencies != null && !this.isGLTexture())
                 for (long dependency : dependencies)
                     CL10.clReleaseEvent(dependency);
-            return coordinates.get(bufLen - 1);
+            else if (this.isGLTexture()) {
+                CL10.clReleaseEvent(waitList.get(0));
+                waitList.put(0, event.get(0)).rewind();
+                event.rewind();
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handle, waitList, event);
+            }
+            return event.get(0);
         }
     }
 
@@ -152,6 +212,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 deps.rewind();
             }
             PointerBuffer ev = stack.mallocPointer(1);
+
             handleEnqueueCopyImageError(CL12.clEnqueueCopyImage(commandQueue,
                     this.handle, destination.handle,
                     fromBuf, getCoordinates(substack, to, toMipmap),

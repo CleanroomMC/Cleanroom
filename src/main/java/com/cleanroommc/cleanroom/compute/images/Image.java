@@ -3,16 +3,14 @@ package com.cleanroommc.cleanroom.compute.images;
 import com.cleanroommc.cleanroom.compute.Compute;
 import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.errors.ImageError;
+import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2L;
 import org.joml.Vector3L;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CLImageDesc;
-import org.lwjgl.opencl.CLImageFormat;
+import org.lwjgl.opencl.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.Closeable;
@@ -25,6 +23,7 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
     protected final Vector3L size;
     public final long length;
     public final int mipmaps;
+    public final @Nullable GLTexture texture;
 
     private Image(@NonNull MemoryStack stack,
                     @NonNull BufferFlags memoryFlags,
@@ -77,10 +76,38 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
             case CL10.CL_INVALID_OPERATION -> throw new ImageError("None of the devices support images.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL image.");
         }
+        this.texture = null;
     }
 
     protected Image(@NonNull Workaround workaround) {
         this(workaround.stack(), workaround.memoryFlags(), workaround.format(), workaround.descriptor(), workaround.hostMemory());
+    }
+
+    public Image(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+        Preconditions.checkState(Compute.instance().supportsImages, "Images are not supported.");
+        Preconditions.checkState(!(mipLevel > 0) || Compute.instance().supportsMipmaps, "Mipmaps are not supported.");
+        Preconditions.checkNotNull(texture);
+        Preconditions.checkNotNull(memoryFlags);
+        Preconditions.checkArgument(memoryFlags.ordinal() < 3, "Flag %s is not allowed for GL buffers.", memoryFlags);
+
+        this.texture = texture;
+        this.size = new Vector3L(texture.extentX(), texture.extentY(), texture.extentZ());
+        this.length = texture.layers();
+        this.mipmaps = mipLevel;
+
+        int[] err = new int[1];
+
+        this.handle = CL12GL.clCreateFromGLTexture(Compute.instance().context, memoryFlags.flags, texture.type.glValue, mipLevel, texture.textureID, err);
+
+        switch (err[0]) {
+            case CL12GL.CL_INVALID_GL_OBJECT -> throw new IllegalArgumentException("Provided OpenGL texture is invalid.");
+            case CL10.CL_INVALID_VALUE -> throw new ImageError("Host memory pointer specified for image created from memory object.");
+            case CL12.CL_INVALID_IMAGE_SIZE -> throw new ImageError("Image dimensions exceed maximum permitted dimensions of the device.");
+            case CL12.CL_IMAGE_FORMAT_NOT_SUPPORTED -> throw new ImageError("Unsupported image format.");
+            case CL10.CL_MEM_OBJECT_ALLOCATION_FAILURE -> throw new ImageError("Failed to allocate memory for image.");
+            case CL10.CL_INVALID_OPERATION -> throw new ImageError("None of the devices support images.");
+            case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL image.");
+        }
     }
 
     public final long width() {
@@ -222,6 +249,10 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
     @Override
     public final void close() {
         CL12.clReleaseMemObject(this.handle);
+    }
+
+    public final boolean isGLTexture() {
+        return this.texture != null;
     }
 
     protected static @NonNull String imageTypeName(final long val) {

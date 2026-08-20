@@ -3,6 +3,8 @@ package com.cleanroommc.cleanroom.compute.images;
 import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
 import com.cleanroommc.cleanroom.compute.errors.ImageError;
 import com.cleanroommc.cleanroom.compute.utils.ErrorUtils;
+import com.cleanroommc.kirino.gl.texture.GLTexture;
+import com.cleanroommc.kirino.gl.texture.TextureType;
 import com.google.common.base.Preconditions;
 import org.joml.Vector3L;
 import org.jspecify.annotations.NonNull;
@@ -30,6 +32,15 @@ public final class Image3D extends Image<Vector3L> {
                    final @NonNull ChannelOrder channelOrder,
                    @Nullable ByteBuffer hostMemory) {
         super(workaround(stack, memoryFlags, width, height, depth, mipmaps, channelType, channelOrder, hostMemory));
+    }
+
+    public Image3D(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+        Preconditions.checkArgument(texture.type == TextureType.TEX_3D);
+        super(texture, memoryFlags, mipLevel);
+    }
+
+    public Image3D(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags) {
+        this(texture, memoryFlags, 0);
     }
 
     @Override
