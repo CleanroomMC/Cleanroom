@@ -12,9 +12,11 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -88,6 +90,26 @@ public final class SDLHooks {
             text.clearComposition();
         }
         return true;
+    }
+
+    public static void applyDisplayMode(boolean fullscreen) {
+        Window window = Window.main();
+        if (window == null) {
+            return;
+        }
+        if (!fullscreen) {
+            window.fullscreen(false);
+            return;
+        }
+        if (ForgeEarlyConfig.WINDOW_BORDERLESS_REPLACES_FULLSCREEN) {
+            if (ForgeEarlyConfig.WINDOW_BORDERLESS_WINDOWS_COMPATIBILITY && Util.getOSType() == Util.EnumOS.WINDOWS) {
+                window.coverDisplay(true, 1);
+            } else {
+                window.fullscreenMode(null);
+            }
+            return;
+        }
+        window.exclusiveFullscreen();
     }
 
     /**

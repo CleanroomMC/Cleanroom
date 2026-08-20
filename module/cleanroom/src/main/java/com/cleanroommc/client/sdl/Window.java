@@ -64,9 +64,14 @@ public final class Window implements AutoCloseable {
     private boolean closeRequested;
     private boolean resized;
     private boolean fullscreen;
+    private boolean covering;
     private boolean borderless;
     private boolean minimized;
     private boolean maximized;
+    private int restoreX;
+    private int restoreY;
+    private int restoreWidth;
+    private int restoreHeight;
     private boolean hidden;
     private boolean resizable;
     private boolean alwaysOnTop;
@@ -211,7 +216,7 @@ public final class Window implements AutoCloseable {
     }
 
     public synchronized boolean fullscreen() {
-        return fullscreen;
+        return fullscreen || covering;
     }
 
     public synchronized boolean borderless() {
@@ -253,9 +258,15 @@ public final class Window implements AutoCloseable {
 
     public synchronized Window fullscreen(boolean fullscreen) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowFullscreen(handle, fullscreen), "SDL_SetWindowFullscreen");
+        if (!fullscreen && this.covering) {
+            return coverDisplay(false, 0);
+        }
+        if (fullscreen && this.covering) {
+            this.coverDisplay(false, 0);
+        }
+        SDL.check(SDLVideo.SDL_SetWindowFullscreen(this.handle, fullscreen), "SDL_SetWindowFullscreen");
         this.fullscreen = fullscreen;
-        this.refreshSize();
+        this.syncState();
         return this;
     }
 
@@ -449,6 +460,65 @@ public final class Window implements AutoCloseable {
         return SDLVideo.SDL_GetWindowDisplayScale(this.handle);
     }
 
+    public synchronized Window exclusiveFullscreen() {
+        this.ensureOpen();
+        Display display = this.display();
+        if (display != null) {
+            SDL_DisplayMode desktop = SDLVideo.SDL_GetDesktopDisplayMode(display.id());
+            if (desktop == null || !SDLVideo.SDL_SetWindowFullscreenMode(this.handle, desktop)) {
+                SDLVideo.SDL_SetWindowFullscreenMode(this.handle, null);
+            }
+        }
+        return fullscreen(true);
+    }
+
+    /**
+     * Covers the current display with a borderless window, or restores the previous windowed geometry.
+     * {@code heightAdjust} is added to the display height (the Windows DWM 1-pixel workaround).
+     */
+    public synchronized Window coverDisplay(boolean cover, int heightAdjust) {
+        this.ensureOpen();
+        if (cover) {
+            if (this.fullscreen) {
+                SDL.check(SDLVideo.SDL_SetWindowFullscreen(this.handle, false), "SDL_SetWindowFullscreen");
+                this.fullscreen = false;
+                this.syncState();
+            }
+            if (this.maximized) {
+                SDL.check(SDLVideo.SDL_RestoreWindow(this.handle), "SDL_RestoreWindow");
+                this.maximized = false;
+                this.syncState();
+            }
+            if (!this.covering) {
+                int[] pos = this.position();
+                this.restoreX = pos[0];
+                this.restoreY = pos[1];
+                this.restoreWidth = this.width;
+                this.restoreHeight = this.height;
+                this.covering = true;
+            }
+            Display display = this.display();
+            Display.Bounds bounds = display != null
+                    ? display.bounds()
+                    : new Display.Bounds(this.restoreX, this.restoreY, this.restoreWidth, this.restoreHeight);
+            this.borderless(true);
+            this.position(bounds.x(), bounds.y());
+            this.size(Math.max(1, bounds.width()), Math.max(1, bounds.height() + heightAdjust));
+            this.syncState();
+            notifyListeners(listener -> listener.fullscreenChanged(true));
+            return this;
+        }
+        if (this.covering) {
+            this.covering = false;
+            this.borderless(false);
+            this.position(this.restoreX, this.restoreY);
+            this.size(Math.max(1, this.restoreWidth), Math.max(1, this.restoreHeight));
+            this.syncState();
+            notifyListeners(listener -> listener.fullscreenChanged(false));
+        }
+        return this;
+    }
+
     /**
      * Exclusive fullscreen using {@code mode}, or borderless desktop fullscreen when {@code mode} is {@code null}.
      */
@@ -588,7 +658,7 @@ public final class Window implements AutoCloseable {
                  SDLEvents.SDL_EVENT_DISPLAY_MOVED,
                  SDLEvents.SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED,
                  SDLEvents.SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED,
-                 SDLEvents.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED -> Displays.handle(type, event.display().displayID());
+                 SDLEvents.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED -> { }
             default -> Devices.dispatch(event);
         }
     }
@@ -713,7 +783,9 @@ public final class Window implements AutoCloseable {
             }
             case SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> {
                 this.fullscreen = false;
-                notifyListeners(listener -> listener.fullscreenChanged(false));
+                if (!this.covering) {
+                    notifyListeners(listener -> listener.fullscreenChanged(false));
+                }
             }
         }
     }
@@ -748,7 +820,16 @@ public final class Window implements AutoCloseable {
         }
     }
 
+    private void syncState() {
+        SDLVideo.SDL_SyncWindow(this.handle);
+        this.refreshSize();
+    }
+
     private void refreshSize() {
+        int previousWidth = this.width;
+        int previousHeight = this.height;
+        int previousPixelWidth = this.pixelWidth;
+        int previousPixelHeight = this.pixelHeight;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer w = stack.mallocInt(1);
             IntBuffer h = stack.mallocInt(1);
@@ -760,6 +841,10 @@ public final class Window implements AutoCloseable {
                 this.pixelWidth = w.get(0);
                 this.pixelHeight = h.get(0);
             }
+        }
+        if (this.width != previousWidth || this.height != previousHeight
+                || this.pixelWidth != previousPixelWidth || this.pixelHeight != previousPixelHeight) {
+            this.resized = true;
         }
     }
 

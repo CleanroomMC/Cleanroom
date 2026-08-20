@@ -44,11 +44,6 @@ public final class Displays {
         return name == null ? "" : name;
     }
 
-    /** Called from the window pump when a display comes or goes. */
-    public static void handle(int eventType, int displayId) {
-        // Display lists are queried live
-    }
-
     private Displays() { }
 
 }
