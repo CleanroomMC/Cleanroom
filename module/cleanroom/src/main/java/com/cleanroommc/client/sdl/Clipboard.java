@@ -39,8 +39,7 @@ public final class Clipboard {
     }
 
     public static String text() {
-        String value = SDLClipboard.SDL_GetClipboardText();
-        String text = value == null ? "" : value;
+        String text = hasText() ? SDLClipboard.SDL_GetClipboardText() : "";
         cache(!text.isEmpty());
         return text;
     }
@@ -58,8 +57,10 @@ public final class Clipboard {
     }
 
     public static String primary() {
-        String value = SDLClipboard.SDL_GetPrimarySelectionText();
-        return value == null ? "" : value;
+        if (hasPrimary()) {
+            return SDLClipboard.SDL_GetPrimarySelectionText();
+        }
+        return "";
     }
 
     public static void primary(String value) {
@@ -135,10 +136,21 @@ public final class Clipboard {
         return textKnown;
     }
 
-    public static void reset() {
+    public static synchronized void reset() {
         textKnown = false;
         hasText = false;
+        if (imageData != null) {
+            SDLClipboard.SDL_ClearClipboardData();
+        }
         clearOffer();
+        if (imageData != null) {
+            imageData.free();
+            imageData = null;
+        }
+        if (imageCleanup != null) {
+            imageCleanup.free();
+            imageCleanup = null;
+        }
     }
 
     private static BufferedImage decode(ByteBuffer bytes, boolean png) {
@@ -186,6 +198,9 @@ public final class Clipboard {
     }
 
     private static synchronized void offer(ByteBuffer png) {
+        if (imageData != null) {
+            SDLClipboard.SDL_ClearClipboardData();
+        }
         clearOffer();
         offeredImage = png;
         if (imageData == null) {
