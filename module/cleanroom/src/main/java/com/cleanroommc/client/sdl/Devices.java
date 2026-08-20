@@ -16,6 +16,7 @@ final class Devices {
 
     static void afterPump() {
         Tray.pump();
+        FileDialogs.pump();
     }
 
     static void reset() {

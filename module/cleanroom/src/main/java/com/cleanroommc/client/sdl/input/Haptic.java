@@ -23,6 +23,7 @@ public final class Haptic implements AutoCloseable {
     private final int id;
     private final long handle;
 
+    private int leftRightEffect = -1;
     private boolean rumbleReady;
     private boolean closed;
 
@@ -78,7 +79,10 @@ public final class Haptic implements AutoCloseable {
     /**
      * Dual-motor left/right effect. Strengths are {@code 0..1}.
      *
-     * @return the SDL effect id
+     * <p>The effect is uploaded once and updated in place afterwards.
+     * since a device holds only {@link #maxEffects()} of them at a time.
+     *
+     * @return the SDL effect id, which stays the same across calls until {@link #destroy(int)}
      */
     public int leftRight(float large, float small, int durationMs) {
         ensureOpen();
@@ -90,12 +94,17 @@ public final class Haptic implements AutoCloseable {
                     .length(durationMs)
                     .large_magnitude(Gamepad.toStrength(large))
                     .small_magnitude(Gamepad.toStrength(small));
-            int id = SDLHaptic.SDL_CreateHapticEffect(handle, effect);
-            if (id < 0) {
-                throw new SDLException("SDL_CreateHapticEffect failed: " + org.lwjgl.sdl.SDLError.SDL_GetError());
+            if (this.leftRightEffect < 0) {
+                int id = SDLHaptic.SDL_CreateHapticEffect(handle, effect);
+                if (id < 0) {
+                    throw new SDLException("SDL_CreateHapticEffect failed: " + org.lwjgl.sdl.SDLError.SDL_GetError());
+                }
+                this.leftRightEffect = id;
+            } else {
+                SDL.check(SDLHaptic.SDL_UpdateHapticEffect(handle, this.leftRightEffect, effect), "SDL_UpdateHapticEffect");
             }
-            SDL.check(SDLHaptic.SDL_RunHapticEffect(handle, id, 1), "SDL_RunHapticEffect");
-            return id;
+            SDL.check(SDLHaptic.SDL_RunHapticEffect(handle, this.leftRightEffect, 1), "SDL_RunHapticEffect");
+            return this.leftRightEffect;
         }
     }
 
@@ -108,6 +117,9 @@ public final class Haptic implements AutoCloseable {
     public Haptic destroy(int effectId) {
         ensureOpen();
         SDLHaptic.SDL_DestroyHapticEffect(handle, effectId);
+        if (this.leftRightEffect == effectId) {
+            this.leftRightEffect = -1;
+        }
         return this;
     }
 
@@ -157,6 +169,7 @@ public final class Haptic implements AutoCloseable {
             return;
         }
         closed = true;
+        this.leftRightEffect = -1;
         Inputs.haptics().forget(this);
         SDLHaptic.SDL_CloseHaptic(handle);
     }

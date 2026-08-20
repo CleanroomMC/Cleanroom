@@ -108,6 +108,9 @@ public final class Tray implements AutoCloseable {
             OPEN.remove(this);
         }
         SDLTray.SDL_DestroyTray(handle);
+        for (SDL_TrayCallback callback : callbacks) {
+            callback.free();
+        }
         callbacks.clear();
     }
 

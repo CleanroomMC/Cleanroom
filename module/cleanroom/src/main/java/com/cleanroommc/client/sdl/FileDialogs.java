@@ -8,11 +8,15 @@ import org.lwjgl.sdl.SDL_MessageBoxButtonData;
 import org.lwjgl.sdl.SDL_MessageBoxData;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.Pointer;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 /**
@@ -31,6 +35,8 @@ public final class FileDialogs {
         }
 
     }
+
+    private static final Queue<Runnable> PENDING_RELEASE = new ConcurrentLinkedQueue<>();
 
     public static void error(Window window, String title, String message) {
         box(SDLMessageBox.SDL_MESSAGEBOX_ERROR, window, title, message);
@@ -93,34 +99,49 @@ public final class FileDialogs {
         fileDialog(window, List.of(), many, null, false, true, onResult);
     }
 
+    /** Releases the native memory of dialogs that completed during the last {@link Window#pump()}. */
+    static void pump() {
+        Runnable release;
+        while ((release = PENDING_RELEASE.poll()) != null) {
+            release.run();
+        }
+    }
+
     private static void fileDialog(Window window, List<Filter> filters, boolean many, String location,
             boolean openFile, boolean folder, Consumer<List<Path>> onResult) {
         if (onResult == null) {
             throw new IllegalArgumentException("onResult cannot be null");
         }
+        List<ByteBuffer> strings = new ArrayList<>();
+        SDL_DialogFileFilter.Buffer nativeFilters = null;
+        if (filters != null && !filters.isEmpty()) {
+            nativeFilters = SDL_DialogFileFilter.calloc(filters.size());
+            for (int i = 0; i < filters.size(); i++) {
+                Filter filter = filters.get(i);
+                ByteBuffer name = MemoryUtil.memUTF8(filter.name());
+                ByteBuffer pattern = MemoryUtil.memUTF8(filter.pattern());
+                strings.add(name);
+                strings.add(pattern);
+                nativeFilters.get(i).name(name).pattern(pattern);
+            }
+        }
+        ByteBuffer where = location == null || location.isEmpty() ? null : MemoryUtil.memUTF8(location);
+        if (where != null) {
+            strings.add(where);
+        }
+
+        SDL_DialogFileFilter.Buffer ownedFilters = nativeFilters;
         SDL_DialogFileCallback[] holder = new SDL_DialogFileCallback[1];
         holder[0] = SDL_DialogFileCallback.create((userdata, filelist, filter) -> {
+            SDL_DialogFileCallback callback = holder[0];
             try {
                 onResult.accept(readPaths(filelist));
             } finally {
-                if (holder[0] != null) {
-                    holder[0].free();
-                }
+                PENDING_RELEASE.add(() -> release(callback, ownedFilters, strings));
             }
         });
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            SDL_DialogFileFilter.Buffer nativeFilters = filters == null || filters.isEmpty()
-                    ? null : SDL_DialogFileFilter.calloc(filters.size(), stack);
-            if (nativeFilters != null) {
-                for (int i = 0; i < filters.size(); i++) {
-                    Filter filter = filters.get(i);
-                    nativeFilters.get(i)
-                            .name(stack.UTF8(filter.name()))
-                            .pattern(stack.UTF8(filter.pattern()));
-                }
-            }
+        try {
             long parent = handle(window);
-            java.nio.ByteBuffer where = (location == null || location.isEmpty()) ? null : stack.UTF8(location);
             if (folder) {
                 SDLDialog.SDL_ShowOpenFolderDialog(holder[0], 0L, parent, where, many);
             } else if (openFile) {
@@ -128,7 +149,23 @@ public final class FileDialogs {
             } else {
                 SDLDialog.SDL_ShowSaveFileDialog(holder[0], 0L, parent, nativeFilters, where);
             }
+        } catch (RuntimeException e) {
+            release(holder[0], nativeFilters, strings);
+            throw e;
         }
+    }
+
+    private static void release(SDL_DialogFileCallback callback, SDL_DialogFileFilter.Buffer filters, List<ByteBuffer> strings) {
+        if (callback != null) {
+            callback.free();
+        }
+        if (filters != null) {
+            filters.free();
+        }
+        for (ByteBuffer string : strings) {
+            MemoryUtil.memFree(string);
+        }
+        strings.clear();
     }
 
     private static List<Path> readPaths(long filelist) {
@@ -136,7 +173,7 @@ public final class FileDialogs {
         if (filelist == 0L) {
             return paths;
         }
-        int pointerSize = org.lwjgl.system.Pointer.POINTER_SIZE;
+        int pointerSize = Pointer.POINTER_SIZE;
         for (int i = 0; ; i++) {
             long address = MemoryUtil.memGetAddress(filelist + (long) i * pointerSize);
             if (address == 0L) {
@@ -154,7 +191,8 @@ public final class FileDialogs {
         SDL.check(SDLMessageBox.SDL_ShowSimpleMessageBox(flags,
                 title == null ? "" : title,
                 message == null ? "" : message,
-                handle(window)), "SDL_ShowSimpleMessageBox");
+                handle(window)), "SDL_ShowSimpleMessageBox"
+        );
     }
 
     private static long handle(Window window) {

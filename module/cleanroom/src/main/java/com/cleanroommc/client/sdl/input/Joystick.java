@@ -42,9 +42,10 @@ public final class Joystick {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             SDL_GUID guid = SDL_GUID.malloc(stack);
             SDLJoystick.SDL_GetJoystickGUID(handle, guid);
-            ByteBuffer text = stack.malloc(33);
+            ByteBuffer text = stack.calloc(33);
             SDLGUID.SDL_GUIDToString(guid, text);
-            return MemoryUtil.memUTF8(text);
+            String value = MemoryUtil.memUTF8Safe(MemoryUtil.memAddress(text));
+            return value == null ? "" : value;
         }
     }
 
