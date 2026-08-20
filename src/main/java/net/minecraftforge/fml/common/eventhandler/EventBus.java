@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -122,45 +123,41 @@ public class EventBus implements IEventExceptionHandler
         }
         listenerOwners.put(target, activeModContainer);
 
-        boolean isStatic;
-        Class<?> scanTarget;
+        Collection<Method> methods;
         if (target instanceof Class<?> clazz) {
-            isStatic = true;
-            scanTarget = clazz;
+            // static listener: subscribed methods must be declared by the class
+            methods = Arrays.stream(clazz.getDeclaredMethods())
+                .filter(m -> Modifier.isStatic(m.getModifiers())
+                             && m.isAnnotationPresent(SubscribeEvent.class))
+                .toList();
         } else {
-            isStatic = false;
-            scanTarget = target.getClass();
+            // instance listener: methods overriding a subscribed method is also valid
+            // In this case, we will register the subscribed parent method instead. JVM will
+            // handle it if a subclass overrides subscribed method
+            methods = TypeToken.of(target.getClass())
+                .getTypes()
+                .rawTypes()
+                // get self & superclass & interface
+                .stream()
+                .map(Class::getDeclaredMethods)
+                .flatMap(Arrays::stream)
+                .filter(m -> !m.isSynthetic()
+                             && !Modifier.isStatic(m.getModifiers())
+                             // private not allowed because it does not participate in inheritance
+                             && !Modifier.isPrivate(m.getModifiers())
+                             && m.isAnnotationPresent(SubscribeEvent.class))
+                // deduplicate by signature
+                .collect(Collectors.toMap(
+                    m -> Map.entry(m.getName(), Arrays.asList(m.getParameterTypes())),
+                    Function.identity(),
+                    (a, b) -> a,
+                    LinkedHashMap::new
+                ))
+                .values();
         }
-
-        var methods = TypeToken.of(scanTarget)
-            // get superclass & interfaces, including self
-            .getTypes()
-            .rawTypes()
-            .stream()
-            .map(Class::getDeclaredMethods)
-            .flatMap(Arrays::stream)
-            // deduplicate by signature
-            .collect(Collectors.groupingBy(m -> Map.entry(m.getName(), Arrays.asList(m.getParameterTypes()))))
-            .values()
-            .stream()
-            .<Method>mapMulti((list, downStream) -> list.stream()
-                .filter(m -> m.isAnnotationPresent(SubscribeEvent.class))
-                // some seemingly confusing hack to keep legacy behaviour
-                // static listener: subscribed methods must be declared by the class
-                // instance listener: methods overriding a subscribed method is also valid
-                .filter(isStatic
-                    ? m -> m.getDeclaringClass() == scanTarget
-                    // private not allowed because it does not participate in inheritance
-                    : m -> !Modifier.isPrivate(m.getModifiers()))
-                .findFirst()
-                .ifPresent(downStream))
-            .toList();
 
         for (Method method : methods)
         {
-            if (isStatic != Modifier.isStatic(method.getModifiers()))
-                continue;
-
             var parameterTypes = method.getParameterTypes();
             if (parameterTypes.length != 1)
             {
