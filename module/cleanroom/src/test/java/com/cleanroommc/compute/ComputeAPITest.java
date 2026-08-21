@@ -1,8 +1,8 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
-import com.cleanroommc.cleanroom.compute.errors.HeaderParsingError;
-import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
+import com.cleanroommc.compute.cmd.CommandQueue;
+import com.cleanroommc.compute.errors.HeaderParsingError;
+import com.cleanroommc.compute.programs.ComputeProgram;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.ResourceLocation;
