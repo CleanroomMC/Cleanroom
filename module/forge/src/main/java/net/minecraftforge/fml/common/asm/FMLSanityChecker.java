@@ -21,9 +21,6 @@ package net.minecraftforge.fml.common.asm;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.CodeSource;
@@ -32,6 +29,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.cleanroommc.util.patch.ClassPatchManager;
 import net.minecraftforge.fml.common.FMLLog;
 import org.apache.commons.io.IOUtils;
 
@@ -39,7 +37,6 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.CertificateHelper;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import net.minecraftforge.fml.common.patcher.ClassPatchManager;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.IFMLCallHook;
 import net.minecraftforge.fml.relauncher.Side;
@@ -187,7 +184,7 @@ public class FMLSanityChecker implements IFMLCallHook
         cl = (LaunchClassLoader) data.get("classLoader");
         File mcDir = (File)data.get("mcLocation");
         fmlLocation = (File)data.get("coremodLocation");
-        ClassPatchManager.INSTANCE.setup(FMLLaunchHandler.side());
+        ClassPatchManager.INSTANCE.setup();
         FMLDeobfuscatingRemapper.INSTANCE.setup(mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
 
     }

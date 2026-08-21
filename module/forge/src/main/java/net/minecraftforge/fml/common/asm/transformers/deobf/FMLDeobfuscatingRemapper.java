@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cleanroommc.util.patch.ClassPatchManager;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.patcher.ClassPatchManager;
 
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
