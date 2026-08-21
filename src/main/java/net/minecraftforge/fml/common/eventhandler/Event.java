@@ -88,7 +88,7 @@ public class Event
      */
     public void setCanceled(boolean cancel)
     {
-        if (!isCancelable())
+        if (!EventProperties.CANCELLABLE.get(getClass()))
         {
             throw new UnsupportedOperationException(
                 "Attempted to call Event#setCanceled() on a non-cancelable event of type: "

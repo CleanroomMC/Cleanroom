@@ -90,10 +90,10 @@ public class EventBus implements IEventExceptionHandler
         }
 
         @SuppressWarnings("unchecked")
-        IEventListener listener = receiveCanceled
+        IEventListener listener = receiveCanceled || !EventProperties.CANCELLABLE.get(eventType)
             ? ((Consumer<Event>) handler)::accept
             : event -> {
-                if (!event.isCancelable() || !event.isCanceled()) {
+                if (!event.isCanceled()) {
                     handler.accept((T) event);
                 }
             };
@@ -127,11 +127,12 @@ public class EventBus implements IEventExceptionHandler
         if (target instanceof Class<?> clazz) {
             // static listener: subscribed methods must be declared by the class
             methods = Arrays.stream(clazz.getDeclaredMethods())
-                .filter(m -> Modifier.isStatic(m.getModifiers())
+                .filter(m -> !m.isSynthetic()
+                             && Modifier.isStatic(m.getModifiers())
                              && m.isAnnotationPresent(SubscribeEvent.class))
                 .toList();
         } else {
-            // instance listener: methods overriding a subscribed method is also valid
+            // instance listener: methods overriding a subscribed method is also valid.
             // In this case, we will register the subscribed parent method instead. JVM will
             // handle it if a subclass overrides subscribed method
             methods = TypeToken.of(target.getClass())
@@ -168,7 +169,6 @@ public class EventBus implements IEventExceptionHandler
             }
 
             Class<?> eventType = parameterTypes[0];
-
             if (!Event.class.isAssignableFrom(eventType))
             {
                 throw new IllegalArgumentException("Method " + method + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
@@ -226,7 +226,8 @@ public class EventBus implements IEventExceptionHandler
     {
         if (shutdown) return false;
 
-        IEventListener[] listeners = event.getListenerList().getListeners(busID);
+        var eventType = event.getClass();
+        IEventListener[] listeners = EventProperties.LISTENER_LIST.get(eventType).getListeners(busID);
         int index = 0;
         try
         {
@@ -241,7 +242,7 @@ public class EventBus implements IEventExceptionHandler
             Throwables.throwIfUnchecked(throwable);
             throw new RuntimeException(throwable);
         }
-        return event.isCancelable() && event.isCanceled();
+        return EventProperties.CANCELLABLE.get(eventType) && event.isCanceled();
     }
 
     public void shutdown()
