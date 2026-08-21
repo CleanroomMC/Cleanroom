@@ -3,6 +3,7 @@ package com.cleanroommc.compute.images;
 import com.cleanroommc.compute.buffers.Buffer;
 import com.cleanroommc.compute.buffers.BufferFlags;
 import com.cleanroommc.compute.errors.ImageError;
+import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -26,6 +27,15 @@ public final class Image1DBuffer extends Image1D {
                          @Nullable ByteBuffer hostMemory) {
         super(workaround(stack, memoryFlags, size, buffer, channelType, channelOrder, hostMemory));
         this.parent = buffer;
+    }
+
+    public Image1DBuffer(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+        super(texture, memoryFlags, mipLevel);
+        this.parent = null;
+    }
+
+    public Image1DBuffer(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags) {
+        this(texture, memoryFlags, 0);
     }
 
     @Override
