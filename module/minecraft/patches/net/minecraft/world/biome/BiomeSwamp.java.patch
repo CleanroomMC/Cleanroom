@@ -1,0 +1,34 @@
+--- original/net/minecraft/world/biome/BiomeSwamp.java
++++ modified/net/minecraft/world/biome/BiomeSwamp.java
+@@ -41,13 +41,13 @@
+     @Override
+     public int getGrassColorAtPos(BlockPos pos) {
+         double d0 = GRASS_COLOR_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225);
+-        return d0 < -0.1 ? 5011004 : 6975545;
++        return getModdedBiomeGrassColor(d0 < -0.1 ? 5011004 : 6975545);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+     @Override
+     public int getFoliageColorAtPos(BlockPos pos) {
+-        return 6975545;
++        return getModdedBiomeFoliageColor(6975545);
+     }
+ 
+     @Override
+@@ -81,8 +81,15 @@
+     @Override
+     public void decorate(World worldIn, Random rand, BlockPos pos) {
+         super.decorate(worldIn, rand, pos);
++
++        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
+         if (rand.nextInt(64) == 0) {
+             new WorldGenFossils().generate(worldIn, rand, pos);
+         }
+     }
++
++    @Override
++    public void addDefaultFlowers() {
++        addFlower(Blocks.RED_FLOWER.getDefaultState().withProperty(Blocks.RED_FLOWER.getTypeProperty(), BlockFlower.EnumFlowerType.BLUE_ORCHID), 10);
++    }
+ }

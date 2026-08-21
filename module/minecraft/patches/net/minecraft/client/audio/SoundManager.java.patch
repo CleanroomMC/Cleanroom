@@ -1,0 +1,106 @@
+--- original/net/minecraft/client/audio/SoundManager.java
++++ modified/net/minecraft/client/audio/SoundManager.java
+@@ -77,6 +77,7 @@
+         try {
+             SoundSystemConfig.addLibrary(LibraryLWJGLOpenAL.class);
+             SoundSystemConfig.setCodec("ogg", CodecJOrbis.class);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.SoundSetupEvent(this));
+         } catch (SoundSystemException soundsystemexception) {
+             LOGGER.error(LOG_MARKER, "Error linking with the LibraryJavaSound plug-in", soundsystemexception);
+         }
+@@ -95,6 +96,7 @@
+ 
+         this.unloadSoundSystem();
+         this.loadSoundSystem();
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.SoundLoadEvent(this));
+     }
+ 
+     /** Tries to add the paulscode library and the relevant codecs. If it fails, the master volume  will be set to zero. */
+@@ -179,6 +181,7 @@
+                 this.sndSystem.stop(s);
+             }
+ 
++            this.pausedChannels.clear(); //Forge: MC-35856 Fixed paused sounds repeating when switching worlds
+             this.playingSounds.clear();
+             this.delayedSounds.clear();
+             this.tickableSounds.clear();
+@@ -278,6 +281,9 @@
+ 
+     public void playSound(ISound p_sound) {
+         if (this.loaded) {
++            p_sound = net.minecraftforge.client.ForgeHooksClient.playSound(this, p_sound);
++            if (p_sound == null) return;
++
+             SoundEventAccessor soundeventaccessor = p_sound.createAccessor(this.sndHandler);
+             ResourceLocation resourcelocation = p_sound.getSoundLocation();
+             if (soundeventaccessor == null) {
+@@ -317,32 +323,34 @@
+                             ResourceLocation resourcelocation1 = sound.getSoundAsOggLocation();
+                             if (sound.isStreaming()) {
+                                 this.sndSystem
+-                                    .newStreamingSource(
+-                                        false,
+-                                        s,
+-                                        getURLForSoundResource(resourcelocation1),
+-                                        resourcelocation1.toString(),
+-                                        flag,
+-                                        p_sound.getXPosF(),
+-                                        p_sound.getYPosF(),
+-                                        p_sound.getZPosF(),
+-                                        p_sound.getAttenuationType().getTypeInt(),
+-                                        f
+-                                    );
++                                .newStreamingSource(
++                                    false,
++                                    s,
++                                    getURLForSoundResource(resourcelocation1),
++                                    resourcelocation1.toString(),
++                                    flag,
++                                    p_sound.getXPosF(),
++                                    p_sound.getYPosF(),
++                                    p_sound.getZPosF(),
++                                    p_sound.getAttenuationType().getTypeInt(),
++                                    f
++                                );
++                                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.PlayStreamingSourceEvent(this, p_sound, s));
+                             } else {
+                                 this.sndSystem
+-                                    .newSource(
+-                                        false,
+-                                        s,
+-                                        getURLForSoundResource(resourcelocation1),
+-                                        resourcelocation1.toString(),
+-                                        flag,
+-                                        p_sound.getXPosF(),
+-                                        p_sound.getYPosF(),
+-                                        p_sound.getZPosF(),
+-                                        p_sound.getAttenuationType().getTypeInt(),
+-                                        f
+-                                    );
++                                .newSource(
++                                    false,
++                                    s,
++                                    getURLForSoundResource(resourcelocation1),
++                                    resourcelocation1.toString(),
++                                    flag,
++                                    p_sound.getXPosF(),
++                                    p_sound.getYPosF(),
++                                    p_sound.getZPosF(),
++                                    p_sound.getAttenuationType().getTypeInt(),
++                                    f
++                                );
++                                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.PlaySoundSourceEvent(this, p_sound, s));
+                             }
+ 
+                             LOGGER.debug(LOG_MARKER, "Playing sound {} for event {} as channel {}", sound.getSoundLocation(), resourcelocation, s);
+@@ -425,6 +433,10 @@
+ 
+     /** Sets the listener of sounds */
+     public void setListener(EntityPlayer player, float p_148615_2_) {
++        setListener((net.minecraft.entity.Entity) player, p_148615_2_);
++    }
++
++    public void setListener(net.minecraft.entity.Entity player, float p_148615_2_) {
+         if (this.loaded && player != null) {
+             float f = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * p_148615_2_;
+             float f1 = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * p_148615_2_;

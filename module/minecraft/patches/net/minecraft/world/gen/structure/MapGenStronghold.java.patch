@@ -1,0 +1,30 @@
+--- original/net/minecraft/world/gen/structure/MapGenStronghold.java
++++ modified/net/minecraft/world/gen/structure/MapGenStronghold.java
+@@ -15,18 +15,24 @@
+     public final List<Biome> allowedBiomes;
+     /** is spawned false and set true once the defined BiomeGenBases were compared with the present ones */
+     private boolean ranBiomeCheck;
+-    private ChunkPos[] structureCoords = new ChunkPos[128];
+-    private double distance = 32.0;
++    private ChunkPos[] structureCoords= new ChunkPos[128];
++    private double distance = 32.0D;
+     private int spread = 3;
+ 
+     public MapGenStronghold() {
+         this.allowedBiomes = Lists.newArrayList();
+ 
+         for (Biome biome : Biome.REGISTRY) {
+-            if (biome != null && biome.getBaseHeight() > 0.0F) {
++            if (biome != null && biome.getBaseHeight() > 0.0F && !net.minecraftforge.common.BiomeManager.strongHoldBiomesBlackList.contains(biome)) {
+                 this.allowedBiomes.add(biome);
+             }
+         }
++
++        for (Biome biome : net.minecraftforge.common.BiomeManager.strongHoldBiomes) {
++            if (!this.allowedBiomes.contains(biome)) {
++                this.allowedBiomes.add(biome);
++            }
++        }
+     }
+ 
+     public MapGenStronghold(Map<String, String> p_i2068_1_) {

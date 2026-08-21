@@ -1,0 +1,17 @@
+--- original/net/minecraft/nbt/CompressedStreamTools.java
++++ modified/net/minecraft/nbt/CompressedStreamTools.java
+@@ -114,11 +114,13 @@
+ 
+     private static NBTBase read(DataInput input, int depth, NBTSizeTracker accounter) throws IOException {
+         byte b0 = input.readByte();
++        accounter.read(8); // Forge: Count everything!
+         if (b0 == 0) {
+             return new NBTTagEnd();
+         }
+ 
+-        input.readUTF();
++        NBTSizeTracker.readUTF(accounter, input.readUTF()); //Forge: Count this string.
++        accounter.read(32); //Forge: 4 extra bytes for the object allocation.
+         NBTBase nbtbase = NBTBase.create(b0);
+ 
+         try {

@@ -1,0 +1,70 @@
+--- original/net/minecraft/client/renderer/GlStateManager.java
++++ modified/net/minecraft/client/renderer/GlStateManager.java
+@@ -97,11 +97,11 @@
+     }
+ 
+     public static void glLight(int light, int pname, FloatBuffer params) {
+-        GL11.glLight(light, pname, params);
++        GL11.glLightfv(light, pname, params);
+     }
+ 
+     public static void glLightModel(int pname, FloatBuffer params) {
+-        GL11.glLightModel(pname, params);
++        GL11.glLightModelfv(pname, params);
+     }
+ 
+     public static void glNormal3f(float nx, float ny, float nz) {
+@@ -242,7 +242,7 @@
+     }
+ 
+     public static void glFog(int pname, FloatBuffer param) {
+-        GL11.glFog(pname, param);
++        GL11.glFogfv(pname, param);
+     }
+ 
+     public static void glFogi(int pname, int param) {
+@@ -324,7 +324,7 @@
+     }
+ 
+     public static void texGen(GlStateManager.TexGen texGen, int pname, FloatBuffer params) {
+-        GL11.glTexGen(texGenCoord(texGen).coord, pname, params);
++        GL11.glTexGenfv(texGenCoord(texGen).coord, pname, params);
+     }
+ 
+     private static GlStateManager.TexGenCoord texGenCoord(GlStateManager.TexGen texGen) {
+@@ -358,7 +358,7 @@
+     }
+ 
+     public static void glTexEnv(int target, int parameterName, FloatBuffer parameters) {
+-        GL11.glTexEnv(target, parameterName, parameters);
++        GL11.glTexEnvfv(target, parameterName, parameters);
+     }
+ 
+     public static void glTexEnvi(int target, int parameterName, int parameter) {
+@@ -521,7 +521,7 @@
+     }
+ 
+     public static void getFloat(int pname, FloatBuffer params) {
+-        GL11.glGetFloat(pname, params);
++        GL11.glGetFloatv(pname, params);
+     }
+ 
+     public static void ortho(double left, double right, double bottom, double top, double zNear, double zFar) {
+@@ -549,7 +549,7 @@
+     }
+ 
+     public static void multMatrix(FloatBuffer matrix) {
+-        GL11.glMultMatrix(matrix);
++        GL11.glMultMatrixf(matrix);
+     }
+ 
+     public static void rotate(Quaternion quaternionIn) {
+@@ -710,7 +710,7 @@
+     }
+ 
+     public static void glGetInteger(int parameterName, IntBuffer parameters) {
+-        GL11.glGetInteger(parameterName, parameters);
++        GL11.glGetIntegerv(parameterName, parameters);
+     }
+ 
+     public static int glGetInteger(int parameterName) {

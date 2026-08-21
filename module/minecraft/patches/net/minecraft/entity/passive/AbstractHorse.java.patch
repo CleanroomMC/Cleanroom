@@ -1,0 +1,31 @@
+--- original/net/minecraft/entity/passive/AbstractHorse.java
++++ modified/net/minecraft/entity/passive/AbstractHorse.java
+@@ -296,6 +296,7 @@
+ 
+         this.horseChest.addInventoryChangeListener(this);
+         this.updateHorseSlots();
++        this.itemHandler = new net.minecraftforge.items.wrapper.InvWrapper(this.horseChest);
+     }
+ 
+     /** Updates the items in the saddle and armor slots of the horse's inventory. */
+@@ -1088,4 +1089,20 @@
+ 
+         return livingdata;
+     }
++
++    // FORGE
++    private net.minecraftforge.items.IItemHandler itemHandler = null; // Initialized by initHorseChest above.
++
++    @SuppressWarnings("unchecked")
++    @Override
++    @Nullable
++    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing) {
++        if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return (T) itemHandler;
++        return super.getCapability(capability, facing);
++    }
++
++    @Override
++    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing) {
++        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
++    }
+ }

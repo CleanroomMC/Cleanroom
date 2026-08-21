@@ -1,0 +1,15 @@
+--- original/net/minecraft/potion/PotionType.java
++++ modified/net/minecraft/potion/PotionType.java
+@@ -7,9 +7,10 @@
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraft.util.registry.RegistryNamespacedDefaultedByKey;
+ 
+-public class PotionType {
++public class PotionType extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<PotionType> {
++    @Deprecated // unused
+     private static final ResourceLocation EMPTY = new ResourceLocation("empty");
+-    public static final RegistryNamespacedDefaultedByKey<ResourceLocation, PotionType> REGISTRY = new RegistryNamespacedDefaultedByKey<>(EMPTY);
++    public static final RegistryNamespacedDefaultedByKey<ResourceLocation, PotionType> REGISTRY = net.minecraftforge.registries.GameData.getWrapperDefaulted(PotionType.class);
+     private static int nextPotionTypeId;
+     /** The unlocalized name of this PotionType. If null, the registry name is used. */
+     private final String baseName;

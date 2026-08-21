@@ -1,0 +1,30 @@
+--- original/net/minecraft/block/BlockChest.java
++++ modified/net/minecraft/block/BlockChest.java
+@@ -416,7 +416,7 @@
+             BlockPos blockpos = pos.offset(enumfacing);
+             Block block = worldIn.getBlockState(blockpos).getBlock();
+             if (block == this) {
+-                if (this.isBlocked(worldIn, blockpos)) {
++                if (!allowBlocking && this.isBlocked(worldIn, blockpos)) { // Forge: fix MC-99321
+                     return null;
+                 }
+ 
+@@ -476,7 +476,7 @@
+     }
+ 
+     private boolean isBelowSolidBlock(World worldIn, BlockPos pos) {
+-        return worldIn.getBlockState(pos.up()).isNormalCube();
++        return worldIn.getBlockState(pos.up()).doesSideBlockChestOpening(worldIn, pos.up(), EnumFacing.DOWN);
+     }
+ 
+     private boolean isOcelotSittingOnChest(World worldIn, BlockPos pos) {
+@@ -569,4 +569,9 @@
+         BASIC,
+         TRAP;
+     }
++
++    /* ======================================== FORGE START =====================================*/
++    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
++        return !isDoubleChest(world, pos) && super.rotateBlock(world, pos, axis);
++    }
+ }

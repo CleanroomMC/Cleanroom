@@ -1,0 +1,12 @@
+--- original/net/minecraft/client/renderer/entity/RenderFish.java
++++ modified/net/minecraft/client/renderer/entity/RenderFish.java
+@@ -66,7 +66,8 @@
+             GlStateManager.popMatrix();
+             int k = entityplayer.getPrimaryHand() == EnumHandSide.RIGHT ? 1 : -1;
+             ItemStack itemstack = entityplayer.getHeldItemMainhand();
+-            if (itemstack.getItem() != Items.FISHING_ROD) {
++
++            if (!(itemstack.getItem() instanceof net.minecraft.item.ItemFishingRod)) {
+                 k = -k;
+             }
+ 

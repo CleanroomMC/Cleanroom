@@ -1,0 +1,63 @@
+--- original/net/minecraft/world/WorldServerMulti.java
++++ modified/net/minecraft/world/WorldServerMulti.java
+@@ -10,11 +10,12 @@
+ 
+ public class WorldServerMulti extends WorldServer {
+     private final WorldServer delegate;
++    private IBorderListener borderListener;
+ 
+     public WorldServerMulti(MinecraftServer server, ISaveHandler saveHandlerIn, int dimensionId, WorldServer delegate, Profiler profilerIn) {
+         super(server, saveHandlerIn, new DerivedWorldInfo(delegate.getWorldInfo()), dimensionId, profilerIn);
+         this.delegate = delegate;
+-        delegate.getWorldBorder().addListener(new IBorderListener() {
++        this.borderListener = new IBorderListener() {
+             @Override
+             public void onSizeChanged(WorldBorder border, double newSize) {
+                 WorldServerMulti.this.getWorldBorder().setTransition(newSize);
+@@ -49,12 +50,14 @@
+             public void onDamageBufferChanged(WorldBorder border, double newSize) {
+                 WorldServerMulti.this.getWorldBorder().setDamageBuffer(newSize);
+             }
+-        });
++        };
++        this.delegate.getWorldBorder().addListener(this.borderListener);
+     }
+ 
+     /** Saves the chunks to disk. */
+     @Override
+     protected void saveLevel() throws MinecraftException {
++        this.perWorldStorage.saveAllData();
+     }
+ 
+     @Override
+@@ -64,19 +67,27 @@
+         this.lootTable = this.delegate.getLootTableManager();
+         this.advancementManager = this.delegate.getAdvancementManager();
+         String s = VillageCollection.fileNameForProvider(this.provider);
+-        VillageCollection villagecollection = (VillageCollection)this.mapStorage.getOrLoadData(VillageCollection.class, s);
++        VillageCollection villagecollection = (VillageCollection)this.perWorldStorage.getOrLoadData(VillageCollection.class, s);
++
+         if (villagecollection == null) {
+             this.villageCollection = new VillageCollection(this);
+-            this.mapStorage.setData(s, this.villageCollection);
++            this.perWorldStorage.setData(s, this.villageCollection);
+         } else {
+             this.villageCollection = villagecollection;
+             this.villageCollection.setWorldsForAll(this);
+         }
+ 
++        this.initCapabilities();
+         return this;
+     }
+ 
+-    /** Called during saving of a world to give children worlds a chance to save additional data. Only used to save WorldProviderEnd's data in Vanilla. */
++
++    @Override
++    public void flush() {
++        super.flush();
++        this.delegate.getWorldBorder().removeListener(this.borderListener); // Unlink ourselves, to prevent world leak.
++    }
++
+     public void saveAdditionalData() {
+         this.provider.onWorldSave();
+     }

@@ -1,0 +1,10 @@
+--- original/net/minecraft/util/ChatAllowedCharacters.java
++++ modified/net/minecraft/util/ChatAllowedCharacters.java
+@@ -33,6 +33,7 @@
+     }
+ 
+     static {
++        if (System.getProperty("io.netty.leakDetection.level") == null) // Forge: allow level to be manually specified
+         ResourceLeakDetector.setLevel(NETTY_LEAK_DETECTION);
+     }
+ }

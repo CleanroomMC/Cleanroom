@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/resources/ResourceIndex.java
++++ modified/net/minecraft/client/resources/ResourceIndex.java
+@@ -36,7 +36,7 @@
+ 
+         try {
+             bufferedreader = Files.newReader(file2, StandardCharsets.UTF_8);
+-            JsonObject jsonobject = new JsonParser().parse(bufferedreader).getAsJsonObject();
++            JsonObject jsonobject = JsonParser.parseReader(bufferedreader).getAsJsonObject();
+             JsonObject jsonobject1 = JsonUtils.getJsonObject(jsonobject, "objects", null);
+             if (jsonobject1 != null) {
+                 for (Entry<String, JsonElement> entry : jsonobject1.entrySet()) {

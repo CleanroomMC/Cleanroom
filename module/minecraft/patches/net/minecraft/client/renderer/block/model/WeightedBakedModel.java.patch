@@ -1,0 +1,14 @@
+--- original/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
++++ modified/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
+@@ -39,6 +39,11 @@
+     }
+ 
+     @Override
++    public boolean isAmbientOcclusion(IBlockState state) {
++        return this.baseModel.isAmbientOcclusion(state);
++    }
++
++    @Override
+     public boolean isGui3d() {
+         return this.baseModel.isGui3d();
+     }

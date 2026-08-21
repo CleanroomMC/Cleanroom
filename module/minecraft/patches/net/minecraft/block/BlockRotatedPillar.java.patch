@@ -1,0 +1,21 @@
+--- original/net/minecraft/block/BlockRotatedPillar.java
++++ modified/net/minecraft/block/BlockRotatedPillar.java
+@@ -29,6 +29,18 @@
+      * @deprecated call via {@link IBlockState#withRotation(Rotation)} whenever possible. Implementing/overriding is fine.
+      */
+     @Override
++    public boolean rotateBlock(net.minecraft.world.World world, BlockPos pos, EnumFacing axis) {
++        net.minecraft.block.state.IBlockState state = world.getBlockState(pos);
++        for (net.minecraft.block.properties.IProperty<?> prop : state.getProperties().keySet()) {
++            if (prop.getName().equals("axis")) {
++                world.setBlockState(pos, state.cycleProperty(prop));
++                return true;
++            }
++        }
++        return false;
++    }
++
++    @Override
+     public IBlockState withRotation(IBlockState state, Rotation rot) {
+         switch (rot) {
+             case COUNTERCLOCKWISE_90:

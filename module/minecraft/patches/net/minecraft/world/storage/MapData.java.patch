@@ -1,0 +1,41 @@
+--- original/net/minecraft/world/storage/MapData.java
++++ modified/net/minecraft/world/storage/MapData.java
+@@ -19,7 +19,7 @@
+ public class MapData extends WorldSavedData {
+     public int xCenter;
+     public int zCenter;
+-    public byte dimension;
++    public int dimension; //FML byte -> int
+     public boolean trackingPosition;
+     public boolean unlimitedTracking;
+     public byte scale;
+@@ -46,7 +46,7 @@
+     /** reads in data from the NBTTagCompound into this MapDataBase */
+     @Override
+     public void readFromNBT(NBTTagCompound nbt) {
+-        this.dimension = nbt.getByte("dimension");
++        this.dimension = nbt.getInteger("dimension");
+         this.xCenter = nbt.getInteger("xCenter");
+         this.zCenter = nbt.getInteger("zCenter");
+         this.scale = nbt.getByte("scale");
+@@ -84,7 +84,7 @@
+ 
+     @Override
+     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+-        compound.setByte("dimension", this.dimension);
++        compound.setInteger("dimension", this.dimension);
+         compound.setInteger("xCenter", this.xCenter);
+         compound.setInteger("zCenter", this.zCenter);
+         compound.setByte("scale", this.scale);
+@@ -195,8 +195,9 @@
+         if (f >= -63.0F && f1 >= -63.0F && f <= 63.0F && f1 <= 63.0F) {
+             rotationIn += rotationIn < 0.0 ? -8.0 : 8.0;
+             b2 = (byte)(rotationIn * 16.0 / 360.0);
+-            if (this.dimension < 0) {
+-                int l = (int)(worldIn.getWorldInfo().getWorldTime() / 10L);
++
++            if (worldIn.provider.shouldMapSpin(decorationName, worldX, worldZ, rotationIn)) {
++                int l = (int)(worldIn.getWorldTime() / 10L);
+                 b2 = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
+             }
+         } else {

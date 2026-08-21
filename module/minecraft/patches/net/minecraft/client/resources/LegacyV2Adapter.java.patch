@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/resources/LegacyV2Adapter.java
++++ modified/net/minecraft/client/resources/LegacyV2Adapter.java
+@@ -67,4 +67,8 @@
+     public String getPackName() {
+         return this.pack.getPackName();
+     }
++
++    public IResourcePack getUnadaptedPack() {
++        return pack;
++    }
+ }

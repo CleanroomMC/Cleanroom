@@ -1,0 +1,29 @@
+--- original/net/minecraft/world/gen/ChunkGeneratorFlat.java
++++ modified/net/minecraft/world/gen/ChunkGeneratorFlat.java
+@@ -143,6 +143,7 @@
+      */
+     @Override
+     public void populate(int x, int z) {
++        net.minecraft.block.BlockFalling.fallInstantly = true;
+         int i = x * 16;
+         int j = z * 16;
+         BlockPos blockpos = new BlockPos(i, 0, j);
+@@ -154,6 +155,8 @@
+         this.random.setSeed(x * k + z * l ^ this.world.getSeed());
+         ChunkPos chunkpos = new ChunkPos(x, z);
+ 
++        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.world, this.random, x, z, flag);
++
+         for (MapGenStructure mapgenstructure : this.structureGenerators.values()) {
+             boolean flag1 = mapgenstructure.generateStructure(this.world, this.random, chunkpos);
+             if (mapgenstructure instanceof MapGenVillage) {
+@@ -193,6 +196,9 @@
+         if (this.hasDecoration) {
+             biome.decorate(this.world, this.random, blockpos);
+         }
++
++        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.world, this.random, x, z, flag);
++        net.minecraft.block.BlockFalling.fallInstantly = false;
+     }
+ 
+     /** Called to generate additional structures after initial worldgen, used by ocean monuments */

@@ -1,0 +1,28 @@
+--- original/net/minecraft/client/renderer/entity/RenderManager.java
++++ modified/net/minecraft/client/renderer/entity/RenderManager.java
+@@ -231,8 +231,13 @@
+         this.playerRenderer = new RenderPlayer(this);
+         this.skinMap.put("default", this.playerRenderer);
+         this.skinMap.put("slim", new RenderPlayer(this, true));
++        net.minecraftforge.fml.client.registry.RenderingRegistry.loadEntityRenderers(this, this.entityRenderMap);
+     }
+ 
++    public Map<String, RenderPlayer> getSkinMap() {
++        return (Map<String, RenderPlayer>) java.util.Collections.unmodifiableMap(skinMap);
++    }
++
+     public void setRenderPosition(double renderPosXIn, double renderPosYIn, double renderPosZIn) {
+         this.renderPosX = renderPosXIn;
+         this.renderPosY = renderPosYIn;
+@@ -269,8 +274,9 @@
+         if (livingPlayerIn instanceof EntityLivingBase && ((EntityLivingBase)livingPlayerIn).isPlayerSleeping()) {
+             IBlockState iblockstate = worldIn.getBlockState(new BlockPos(livingPlayerIn));
+             Block block = iblockstate.getBlock();
+-            if (block == Blocks.BED) {
+-                int i = iblockstate.getValue(BlockBed.FACING).getHorizontalIndex();
++
++            if (block.isBed(iblockstate, worldIn, new BlockPos(livingPlayerIn), (EntityLivingBase)livingPlayerIn)) {
++                int i = block.getBedDirection(iblockstate, worldIn, new BlockPos(livingPlayerIn)).getHorizontalIndex();
+                 this.playerViewY = i * 90 + 180;
+                 this.playerViewX = 0.0F;
+             }

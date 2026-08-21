@@ -1,0 +1,254 @@
+--- original/net/minecraft/client/gui/FontRenderer.java
++++ modified/net/minecraft/client/gui/FontRenderer.java
+@@ -73,7 +73,7 @@
+         this.locationFontTexture = location;
+         this.renderEngine = textureManagerIn;
+         this.unicodeFlag = unicode;
+-        textureManagerIn.bindTexture(this.locationFontTexture);
++        bindTexture(this.locationFontTexture);
+ 
+         for (int i = 0; i < 32; i++) {
+             int j = (i >> 3 & 1) * 85;
+@@ -116,7 +116,7 @@
+ 
+         BufferedImage bufferedimage;
+         try {
+-            iresource = Minecraft.getMinecraft().getResourceManager().getResource(this.locationFontTexture);
++            iresource = getResource(this.locationFontTexture);
+             bufferedimage = TextureUtil.readBufferedImage(iresource.getInputStream());
+         } catch (IOException ioexception) {
+             throw new RuntimeException(ioexception);
+@@ -165,7 +165,7 @@
+         IResource iresource = null;
+ 
+         try {
+-            iresource = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("font/glyph_sizes.bin"));
++            iresource = getResource(new ResourceLocation("font/glyph_sizes.bin"));
+             iresource.getInputStream().read(this.glyphWidth);
+         } catch (IOException ioexception) {
+             throw new RuntimeException(ioexception);
+@@ -176,6 +176,7 @@
+ 
+     /** Render the given char */
+     private float renderChar(char ch, boolean italic) {
++        if (ch == 160) return 4.0F; // forge: display nbsp as space. MC-2595
+         if (ch == ' ') {
+             return 4.0F;
+         }
+@@ -190,7 +191,7 @@
+         int i = ch % 16 * 8;
+         int j = ch / 16 * 8;
+         int k = italic ? 1 : 0;
+-        this.renderEngine.bindTexture(this.locationFontTexture);
++        bindTexture(this.locationFontTexture);
+         int l = this.charWidth[ch];
+         float f = l - 0.01F;
+         GlStateManager.glBegin(5);
+@@ -216,7 +217,7 @@
+ 
+     /** Load one of the /font/glyph_XX.png into a new GL texture and store the texture ID in glyphTextureName array. */
+     private void loadGlyphTexture(int page) {
+-        this.renderEngine.bindTexture(this.getUnicodePageLocation(page));
++        bindTexture(this.getUnicodePageLocation(page));
+     }
+ 
+     /** Render a single Unicode character at current (posX,posY) location using one of the /font/glyph_XX.png files... */
+@@ -261,7 +262,7 @@
+ 
+     /** Draws the specified string. */
+     public int drawString(String text, float x, float y, int color, boolean dropShadow) {
+-        GlStateManager.enableAlpha();
++        enableAlpha();
+         this.resetStyles();
+         int i;
+         if (dropShadow) {
+@@ -316,7 +317,7 @@
+ 
+                     int j1 = this.colorCode[i1];
+                     this.textColor = j1;
+-                    GlStateManager.color((j1 >> 16) / 255.0F, (j1 >> 8 & 0xFF) / 255.0F, (j1 & 0xFF) / 255.0F, this.alpha);
++                    setColor((j1 >> 16) / 255.0F, (j1 >> 8 & 255) / 255.0F, (j1 & 255) / 255.0F, this.alpha);
+                 } else if (i1 == 16) {
+                     this.randomStyle = true;
+                 } else if (i1 == 17) {
+@@ -333,7 +334,7 @@
+                     this.strikethroughStyle = false;
+                     this.underlineStyle = false;
+                     this.italicStyle = false;
+-                    GlStateManager.color(this.red, this.blue, this.green, this.alpha);
++                    setColor(this.red, this.blue, this.green, this.alpha);
+                 }
+ 
+                 i++;
+@@ -357,7 +358,7 @@
+                     c0 = c1;
+                 }
+ 
+-                float f1 = this.unicodeFlag ? 0.5F : 1.0F;
++                float f1 = j == -1 || this.unicodeFlag ? 0.5f : 1f;
+                 boolean flag = (c0 == 0 || j == -1 || this.unicodeFlag) && shadow;
+                 if (flag) {
+                     this.posX -= f1;
+@@ -386,7 +387,15 @@
+ 
+                     f++;
+                 }
++                doDraw(f);
++            }
++        }
++    }
+ 
++    protected void doDraw(float f) {
++        {
++            {
++
+                 if (this.strikethroughStyle) {
+                     Tessellator tessellator = Tessellator.getInstance();
+                     BufferBuilder bufferbuilder = tessellator.getBuffer();
+@@ -451,7 +460,7 @@
+         this.blue = (color >> 8 & 0xFF) / 255.0F;
+         this.green = (color & 0xFF) / 255.0F;
+         this.alpha = (color >> 24 & 0xFF) / 255.0F;
+-        GlStateManager.color(this.red, this.blue, this.green, this.alpha);
++        setColor(this.red, this.blue, this.green, this.alpha);
+         this.posX = x;
+         this.posY = y;
+         this.renderStringAtPos(text, dropShadow);
+@@ -492,6 +501,7 @@
+ 
+     /** Returns the width of this character as rendered. */
+     public int getCharWidth(char character) {
++        if (character == 160) return 4; // forge: display nbsp as space. MC-2595
+         if (character == 167) {
+             return -1;
+         } else if (character == ' ') {
+@@ -580,7 +590,7 @@
+ 
+     /** Remove all newline characters from the end of the string */
+     private String trimStringNewline(String text) {
+-        while (text != null && text.endsWith("\n")) {
++        while (text.endsWith("\n")) {
+             text = text.substring(0, text.length() - 1);
+         }
+ 
+@@ -625,10 +635,86 @@
+ 
+     /** Breaks a string into a list of pieces where the width of each line is always less than or equal to the provided width. Formatting codes will be preserved between lines. */
+     public List<String> listFormattedStringToWidth(String str, int wrapWidth) {
+-        return Arrays.asList(this.wrapFormattedStringToWidth(str, wrapWidth).split("\n"));
++        if (str.isEmpty()) {
++            return java.util.Collections.singletonList("");
++        }
++        com.ibm.icu.segmenter.Segments segments = com.cleanroommc.cleanroom.client.ICU4JInstances.SEGMENTER.segment(str);
++        List<String> list = new java.util.ArrayList<>();
++        StringBuilder line = new StringBuilder();
++        StringBuilder current = new StringBuilder();
++        StringBuilder format = new StringBuilder();
++        StringBuilder segFormat = new StringBuilder();
++        boolean bold  = false;
++        int lineWidth = 0;
++        int segmentWidth;
++        out:
++        for (java.util.Iterator<com.ibm.icu.segmenter.Segment> it = segments.segments().iterator(); it.hasNext(); ) {
++            com.ibm.icu.segmenter.Segment segment = it.next();
++            segmentWidth = 0;
++            int size = segment.limit - segment.start;
++            CharSequence sequence = segment.getSubSequence();
++            segFormat.setLength(0);
++            segFormat.append(format);
++            for (int i = 0; i < size; i++) {
++                char c = sequence.charAt(i);
++                switch (c) {
++                    case '\n':
++                        line.append(current);
++                        current.setLength(0);
++                        list.add(line.toString());
++                        line.setLength(0);
++                        line.append(format);
++                        lineWidth = 0;
++                        continue out;
++                    case '§':
++                        if (++i < size) {
++                            char next = sequence.charAt(i);
++                            if (next == 'l' || next == 'L') {
++                                bold = true;
++                            } else if (next == 'r' || next == 'R') {
++                                bold = false;
++                                format.setLength(0);
++                            } else if (isFormatColor(next)) {
++                                bold = false;
++                            }
++                            format.append('§').append(next);
++                            current.append('§').append(next);
++                            continue;
++                        }
++                    default:
++                        int cWidth = getCharWidth(c);
++                        if (bold) cWidth++;
++                        if (lineWidth + cWidth > wrapWidth) {
++                            if (i >= current.length()) {
++                                lineWidth = 0;
++                                segmentWidth = 0;
++                                line.append(current);
++                                format.setLength(0);
++                                format.append(segFormat);
++                                current.setLength(0);
++                            } else {
++                                lineWidth = segmentWidth;
++                                line.append(current, 0, current.length() - i);
++                                current.delete(0, current.length() - i);
++                            }
++                            list.add(line.toString());
++                            line.setLength(0);
++                            line.append(format);
++                        }
++                        current.append(c);
++                        lineWidth += cWidth;
++                        segmentWidth += cWidth;
++                }
++            }
++        }
++        line.append(current);
++        if (!line.isEmpty()) {
++            list.add(line.toString());
++        }
++        return list;
+     }
+ 
+-    /** Inserts newline and formatting into a string to wrap it within the specified width. */
++    @Deprecated
+     String wrapFormattedStringToWidth(String str, int wrapWidth) {
+         int i = this.sizeStringToWidth(str, wrapWidth);
+         if (str.length() <= i) {
+@@ -642,7 +728,7 @@
+         return s + "\n" + this.wrapFormattedStringToWidth(s1, wrapWidth);
+     }
+ 
+-    /** Determines how many characters from the string will fit into the specified width. */
++    @Deprecated
+     private int sizeStringToWidth(String str, int wrapWidth) {
+         int i = str.length();
+         int j = 0;
+@@ -725,6 +811,22 @@
+         return this.bidiFlag;
+     }
+ 
++    protected void setColor(float r, float g, float b, float a) {
++        GlStateManager.color(r,g,b,a);
++    }
++
++    protected void enableAlpha() {
++        GlStateManager.enableAlpha();
++    }
++
++    protected void bindTexture(ResourceLocation location) {
++        renderEngine.bindTexture(location);
++    }
++
++    protected IResource getResource(ResourceLocation location) throws IOException {
++        return Minecraft.getMinecraft().getResourceManager().getResource(location);
++    }
++
+     public int getColorCode(char character) {
+         int i = "0123456789abcdef".indexOf(character);
+         return i >= 0 && i < this.colorCode.length ? this.colorCode[i] : -1;

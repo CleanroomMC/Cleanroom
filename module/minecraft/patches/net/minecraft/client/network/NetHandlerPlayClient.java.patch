@@ -1,0 +1,184 @@
+--- original/net/minecraft/client/network/NetHandlerPlayClient.java
++++ modified/net/minecraft/client/network/NetHandlerPlayClient.java
+@@ -302,7 +302,7 @@
+         this.world = new WorldClient(
+             this,
+             new WorldSettings(0L, packetIn.getGameType(), false, packetIn.isHardcoreMode(), packetIn.getWorldType()),
+-            packetIn.getDimension(),
++            net.minecraftforge.fml.common.network.handshake.NetworkDispatcher.get(getNetworkManager()).getOverrideDimension(packetIn),
+             packetIn.getDifficulty(),
+             this.client.profiler
+         );
+@@ -735,15 +735,16 @@
+         Chunk chunk = this.world.getChunk(packetIn.getChunkX(), packetIn.getChunkZ());
+         chunk.read(packetIn.getReadBuffer(), packetIn.getExtractedSize(), packetIn.isFullChunk());
+         this.world
+-            .markBlockRangeForRenderUpdate(
+-                packetIn.getChunkX() << 4,
+-                0,
+-                packetIn.getChunkZ() << 4,
+-                (packetIn.getChunkX() << 4) + 15,
+-                256,
+-                (packetIn.getChunkZ() << 4) + 15
+-            );
+-        if (!packetIn.isFullChunk() || !(this.world.provider instanceof WorldProviderSurface)) {
++        .markBlockRangeForRenderUpdate(
++            packetIn.getChunkX() << 4,
++            0,
++            packetIn.getChunkZ() << 4,
++            (packetIn.getChunkX() << 4) + 15,
++            256,
++            (packetIn.getChunkZ() << 4) + 15
++        );
++
++        if (!packetIn.isFullChunk() || this.world.provider.shouldClientCheckLighting()) {
+             chunk.resetRelightChecks();
+         }
+ 
+@@ -751,7 +752,7 @@
+             BlockPos blockpos = new BlockPos(nbttagcompound.getInteger("x"), nbttagcompound.getInteger("y"), nbttagcompound.getInteger("z"));
+             TileEntity tileentity = this.world.getTileEntity(blockpos);
+             if (tileentity != null) {
+-                tileentity.readFromNBT(nbttagcompound);
++                tileentity.handleUpdateTag(nbttagcompound);
+             }
+         }
+     }
+@@ -846,7 +847,9 @@
+     @Override
+     public void handleChat(SPacketChat packetIn) {
+         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
+-        this.client.ingameGUI.addChatMessage(packetIn.getType(), packetIn.getChatComponent());
++        net.minecraft.util.text.ITextComponent message = net.minecraftforge.event.ForgeEventFactory.onClientChat(packetIn.getType(), packetIn.getChatComponent());
++        if (message == null) return;
++        this.client.ingameGUI.addChatMessage(packetIn.getType(), message);
+     }
+ 
+     /** Renders a specified animation: Waking up a player, a living entity swinging its currently held item, being hurt or receiving a critical hit by normal or magical means */
+@@ -951,10 +954,7 @@
+                     if (entity1 == this.client.player && !flag) {
+                         this.client
+                             .ingameGUI
+-                            .setOverlayMessage(
+-                                I18n.format("mount.onboard", GameSettings.getKeyDisplayString(this.client.gameSettings.keyBindSneak.getKeyCode())),
+-                                false
+-                            );
++                            .setOverlayMessage(I18n.format("mount.onboard", this.client.gameSettings.keyBindSneak.getDisplayName()), false);
+                     }
+                 }
+             }
+@@ -1188,6 +1188,12 @@
+                 || i == 10 && tileentity instanceof TileEntityShulkerBox
+                 || i == 11 && tileentity instanceof TileEntityBed) {
+                 tileentity.readFromNBT(packetIn.getNbtCompound());
++            } else {
++                if(tileentity == null) {
++                    LOGGER.error("Received invalid update packet for null tile entity at {} with data: {}", packetIn.getPos(), packetIn.getNbtCompound());
++                    return;
++                }
++                tileentity.onDataPacket(netManager, packetIn);
+             }
+ 
+             if (flag && this.client.currentScreen instanceof GuiCommandBlock) {
+@@ -1279,27 +1285,27 @@
+                 this.client.displayGuiScreen(new GuiScreenDemo());
+             } else if (f == 101.0F) {
+                 this.client
+-                    .ingameGUI
+-                    .getChatGUI()
+-                    .printChatMessage(
+-                        new TextComponentTranslation(
+-                            "demo.help.movement",
+-                            GameSettings.getKeyDisplayString(gamesettings.keyBindForward.getKeyCode()),
+-                            GameSettings.getKeyDisplayString(gamesettings.keyBindLeft.getKeyCode()),
+-                            GameSettings.getKeyDisplayString(gamesettings.keyBindBack.getKeyCode()),
+-                            GameSettings.getKeyDisplayString(gamesettings.keyBindRight.getKeyCode())
+-                        )
+-                    );
++                .ingameGUI
++                .getChatGUI()
++                .printChatMessage(
++                    new TextComponentTranslation(
++                        "demo.help.movement",
++                        gamesettings.keyBindForward.getDisplayName(),
++                        gamesettings.keyBindLeft.getDisplayName(),
++                        gamesettings.keyBindBack.getDisplayName(),
++                        gamesettings.keyBindRight.getDisplayName()
++                    )
++                );
+             } else if (f == 102.0F) {
+                 this.client
+-                    .ingameGUI
+-                    .getChatGUI()
+-                    .printChatMessage(new TextComponentTranslation("demo.help.jump", GameSettings.getKeyDisplayString(gamesettings.keyBindJump.getKeyCode())));
++                .ingameGUI
++                .getChatGUI()
++                .printChatMessage(new TextComponentTranslation("demo.help.jump", gamesettings.keyBindJump.getDisplayName()));
+             } else if (f == 103.0F) {
+                 this.client
+-                    .ingameGUI
+-                    .getChatGUI()
+-                    .printChatMessage(new TextComponentTranslation("demo.help.inventory", GameSettings.getKeyDisplayString(gamesettings.keyBindInventory.getKeyCode())));
++                .ingameGUI
++                .getChatGUI()
++                .printChatMessage(new TextComponentTranslation("demo.help.inventory", gamesettings.keyBindInventory.getDisplayName()));
+             }
+         } else if (i == 6) {
+             this.world
+@@ -1440,7 +1446,8 @@
+         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
+         Entity entity = this.world.getEntityByID(packetIn.getEntityId());
+         if (entity instanceof EntityLivingBase) {
+-            Potion potion = Potion.getPotionById(packetIn.getEffectId());
++            Potion potion = Potion.getPotionById(packetIn.getEffectId() & 0xFF);
++
+             if (potion != null) {
+                 PotionEffect potioneffect = new PotionEffect(
+                     potion, packetIn.getDuration(), packetIn.getAmplifier(), packetIn.getIsAmbient(), packetIn.doesShowParticles()
+@@ -1643,7 +1650,7 @@
+                     File file2 = new File(file1, s2);
+                     if (file2.isFile()) {
+                         this.netManager.sendPacket(new CPacketResourcePackStatus(CPacketResourcePackStatus.Action.ACCEPTED));
+-                        Futures.addCallback(this.client.getResourcePackRepository().setServerResourcePack(file2), this.createDownloadCallback());
++                        Futures.addCallback(this.client.getResourcePackRepository().setServerResourcePack(file2), this.createDownloadCallback(), Runnable::run);
+                         return;
+                     }
+                 } catch (UnsupportedEncodingException unsupportedencodingexception) {
+@@ -1654,7 +1661,7 @@
+                 ServerData serverdata = this.client.getCurrentServerData();
+                 if (serverdata != null && serverdata.getResourceMode() == ServerData.ServerResourceMode.ENABLED) {
+                     this.netManager.sendPacket(new CPacketResourcePackStatus(CPacketResourcePackStatus.Action.ACCEPTED));
+-                    Futures.addCallback(this.client.getResourcePackRepository().downloadResourcePack(s, s1), this.createDownloadCallback());
++                    Futures.addCallback(this.client.getResourcePackRepository().downloadResourcePack(s, s1), this.createDownloadCallback(), Runnable::run);
+                 } else if (serverdata != null && serverdata.getResourceMode() != ServerData.ServerResourceMode.PROMPT) {
+                     this.netManager.sendPacket(new CPacketResourcePackStatus(CPacketResourcePackStatus.Action.DECLINED));
+                 } else {
+@@ -1680,7 +1687,8 @@
+                                                                 .sendPacket(new CPacketResourcePackStatus(CPacketResourcePackStatus.Action.ACCEPTED));
+                                                             Futures.addCallback(
+                                                                 NetHandlerPlayClient.this.client.getResourcePackRepository().downloadResourcePack(s, s1),
+-                                                                NetHandlerPlayClient.this.createDownloadCallback()
++                                                                NetHandlerPlayClient.this.createDownloadCallback(),
++                                                                Runnable::run
+                                                             );
+                                                         } else {
+                                                             if (serverdata1 != null) {
+@@ -1786,6 +1794,7 @@
+             } catch (IOException ioexception) {
+                 LOGGER.error("Couldn't load trade info", ioexception);
+             } finally {
++                if (false) // Forge: let packet handle releasing buffer
+                 packetbuffer.release();
+             }
+         } else if ("MC|Brand".equals(packetIn.getChannelName())) {
+@@ -1985,8 +1994,8 @@
+                 IAttributeInstance iattributeinstance = abstractattributemap.getAttributeInstanceByName(spacketentityproperties$snapshot.getName());
+                 if (iattributeinstance == null) {
+                     iattributeinstance = abstractattributemap.registerAttribute(
+-                        new RangedAttribute(null, spacketentityproperties$snapshot.getName(), 0.0, Double.MIN_NORMAL, Double.MAX_VALUE)
+-                    );
++                        new RangedAttribute(null, spacketentityproperties$snapshot.getName(), 0.0, -Double.MAX_VALUE, Double.MAX_VALUE)
++                    ); // Forge: fix invalid value range (MC-150405)
+                 }
+ 
+                 iattributeinstance.setBaseValue(spacketentityproperties$snapshot.getBaseValue());

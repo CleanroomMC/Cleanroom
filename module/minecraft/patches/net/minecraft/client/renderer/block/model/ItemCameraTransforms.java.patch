@@ -1,0 +1,45 @@
+--- original/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
++++ modified/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
+@@ -12,6 +12,9 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.lwjgl.util.vector.Quaternion;
+ 
++/*
++ * @deprecated use {@link net.minecraftforge.client.model.IPerspectiveAwareModel} instead
++ */
+ @SideOnly(Side.CLIENT)
+ public class ItemCameraTransforms {
+     public static final ItemCameraTransforms DEFAULT = new ItemCameraTransforms();
+@@ -46,6 +49,7 @@
+         );
+     }
+ 
++    @Deprecated
+     public ItemCameraTransforms(ItemCameraTransforms transforms) {
+         this.thirdperson_left = transforms.thirdperson_left;
+         this.thirdperson_right = transforms.thirdperson_right;
+@@ -57,6 +61,7 @@
+         this.fixed = transforms.fixed;
+     }
+ 
++    @Deprecated
+     public ItemCameraTransforms(
+         ItemTransformVec3f thirdperson_leftIn,
+         ItemTransformVec3f thirdperson_rightIn,
+@@ -117,6 +122,7 @@
+         return new Quaternion(f3 * f6 * f8 + f4 * f5 * f7, f4 * f5 * f8 - f3 * f6 * f7, f3 * f5 * f8 + f4 * f6 * f7, f4 * f6 * f8 - f3 * f5 * f7);
+     }
+ 
++    @Deprecated
+     public ItemTransformVec3f getTransform(ItemCameraTransforms.TransformType type) {
+         switch (type) {
+             case THIRD_PERSON_LEFT_HAND:
+@@ -184,7 +190,7 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    public enum TransformType {
++    public enum TransformType implements net.minecraftforge.common.model.IModelPart {
+         NONE,
+         THIRD_PERSON_LEFT_HAND,
+         THIRD_PERSON_RIGHT_HAND,

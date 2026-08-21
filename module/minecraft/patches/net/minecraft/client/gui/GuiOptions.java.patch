@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/gui/GuiOptions.java
++++ modified/net/minecraft/client/gui/GuiOptions.java
+@@ -74,7 +74,7 @@
+             } else {
+                 this.difficultyButton.enabled = false;
+             }
+-        } else {
++        } else if (false) { // removed realms button
+             this.buttonList
+                 .add(
+                     new GuiOptionButton(

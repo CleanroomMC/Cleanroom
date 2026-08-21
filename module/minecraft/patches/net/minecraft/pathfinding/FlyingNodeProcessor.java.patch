@@ -1,0 +1,29 @@
+--- original/net/minecraft/pathfinding/FlyingNodeProcessor.java
++++ modified/net/minecraft/pathfinding/FlyingNodeProcessor.java
+@@ -236,6 +236,7 @@
+         EnumSet<PathNodeType> enumset = EnumSet.noneOf(PathNodeType.class);
+         PathNodeType pathnodetype = PathNodeType.BLOCKED;
+         BlockPos blockpos = new BlockPos(entitylivingIn);
++        this.currentEntity = entitylivingIn;
+         pathnodetype = this.getPathNodeType(
+             blockaccessIn,
+             x,
+@@ -250,6 +251,8 @@
+             pathnodetype,
+             blockpos
+         );
++        this.currentEntity = null;
++
+         if (enumset.contains(PathNodeType.FENCE)) {
+             return PathNodeType.FENCE;
+         }
+@@ -279,7 +282,8 @@
+                 pathnodetype = PathNodeType.DAMAGE_FIRE;
+             } else if (pathnodetype1 == PathNodeType.DAMAGE_CACTUS) {
+                 pathnodetype = PathNodeType.DAMAGE_CACTUS;
+-            } else {
++            } else if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) pathnodetype = PathNodeType.DAMAGE_OTHER;
++            else {
+                 pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER
+                     ? PathNodeType.WALKABLE
+                     : PathNodeType.OPEN;

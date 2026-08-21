@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/gen/feature/WorldGenTallGrass.java
++++ modified/net/minecraft/world/gen/feature/WorldGenTallGrass.java
+@@ -18,7 +18,7 @@
+     @Override
+     public boolean generate(World worldIn, Random rand, BlockPos position) {
+         for (IBlockState iblockstate = worldIn.getBlockState(position);
+-            (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES)
++            (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position))
+                 && position.getY() > 0;
+             iblockstate = worldIn.getBlockState(position)
+         ) {

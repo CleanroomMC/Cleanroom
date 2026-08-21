@@ -1,0 +1,49 @@
+--- original/net/minecraft/entity/boss/EntityWither.java
++++ modified/net/minecraft/entity/boss/EntityWither.java
+@@ -261,15 +261,15 @@
+             int j1 = this.getInvulTime() - 1;
+             if (j1 <= 0) {
+                 this.world
+-                    .newExplosion(
+-                        this,
+-                        this.posX,
+-                        this.posY + this.getEyeHeight(),
+-                        this.posZ,
+-                        7.0F,
+-                        false,
+-                        this.world.getGameRules().getBoolean("mobGriefing")
+-                    );
++                .newExplosion(
++                    this,
++                    this.posX,
++                    this.posY + this.getEyeHeight(),
++                    this.posZ,
++                    7.0F,
++                    false,
++                    net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)
++                );
+                 this.world.playBroadcastSound(1023, new BlockPos(this), 0);
+             }
+ 
+@@ -341,7 +341,8 @@
+ 
+             if (this.blockBreakCounter > 0) {
+                 this.blockBreakCounter--;
+-                if (this.blockBreakCounter == 0 && this.world.getGameRules().getBoolean("mobGriefing")) {
++
++                if (this.blockBreakCounter == 0 && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)) {
+                     int i1 = MathHelper.floor(this.posY);
+                     int l1 = MathHelper.floor(this.posX);
+                     int i2 = MathHelper.floor(this.posZ);
+@@ -356,7 +357,10 @@
+                                 BlockPos blockpos = new BlockPos(i3, k, l);
+                                 IBlockState iblockstate = this.world.getBlockState(blockpos);
+                                 Block block = iblockstate.getBlock();
+-                                if (iblockstate.getMaterial() != Material.AIR && canDestroyBlock(block)) {
++
++                                if (!block.isAir(iblockstate, this.world, blockpos)
++                                       && block.canEntityDestroy(iblockstate, world, blockpos, this)
++                                       && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, iblockstate)) {
+                                     flag = this.world.destroyBlock(blockpos, true) || flag;
+                                 }
+                             }

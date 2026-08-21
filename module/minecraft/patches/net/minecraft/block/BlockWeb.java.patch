@@ -1,0 +1,28 @@
+--- original/net/minecraft/block/BlockWeb.java
++++ modified/net/minecraft/block/BlockWeb.java
+@@ -22,7 +22,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class BlockWeb extends Block {
++public class BlockWeb extends Block implements net.minecraftforge.common.IShearable {
+     public BlockWeb() {
+         super(Material.WEB);
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
+@@ -96,6 +96,16 @@
+      * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
+      */
+     @Override
++    public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos) {
++        return true;
++    }
++
++    @Override
++    public java.util.List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
++        return com.google.common.collect.Lists.newArrayList(new ItemStack(Item.getItemFromBlock(this)));
++    }
++
++    @Override
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+         return BlockFaceShape.UNDEFINED;
+     }

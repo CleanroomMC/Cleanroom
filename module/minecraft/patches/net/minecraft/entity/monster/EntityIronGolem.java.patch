@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/monster/EntityIronGolem.java
++++ modified/net/minecraft/entity/monster/EntityIronGolem.java
+@@ -269,7 +269,7 @@
+     @Override
+     public void onDeath(DamageSource cause) {
+         if (!this.isPlayerCreated() && this.attackingPlayer != null && this.village != null) {
+-            this.village.modifyPlayerReputation(this.attackingPlayer.getName(), -5);
++            this.village.modifyPlayerReputation(this.attackingPlayer.getUniqueID(), -5);
+         }
+ 
+         super.onDeath(cause);

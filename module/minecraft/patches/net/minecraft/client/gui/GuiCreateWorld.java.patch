@@ -1,0 +1,61 @@
+--- original/net/minecraft/client/gui/GuiCreateWorld.java
++++ modified/net/minecraft/client/gui/GuiCreateWorld.java
+@@ -220,6 +220,8 @@
+                     }
+                 }
+ 
++                WorldType.WORLD_TYPES[this.selectedIndex].onGUICreateWorldPress();
++
+                 WorldSettings worldsettings = new WorldSettings(
+                     i, GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]
+                 );
+@@ -298,11 +300,7 @@
+                 this.allowCheats = !this.allowCheats;
+                 this.updateDisplayState();
+             } else if (button.id == 8) {
+-                if (WorldType.WORLD_TYPES[this.selectedIndex] == WorldType.FLAT) {
+-                    this.mc.displayGuiScreen(new GuiCreateFlatWorld(this, this.chunkProviderSettingsJson));
+-                } else {
+-                    this.mc.displayGuiScreen(new GuiCustomizeWorldScreen(this, this.chunkProviderSettingsJson));
+-                }
++                WorldType.WORLD_TYPES[this.selectedIndex].onCustomizeButton(mc, this);
+             }
+         }
+     }
+@@ -356,11 +354,7 @@
+             this.btnBonusItems.visible = this.inMoreWorldOptionsDisplay;
+             this.btnMapType.visible = this.inMoreWorldOptionsDisplay;
+             this.btnAllowCommands.visible = this.inMoreWorldOptionsDisplay;
+-            this.btnCustomizeType.visible = this.inMoreWorldOptionsDisplay
+-                && (
+-                    WorldType.WORLD_TYPES[this.selectedIndex] == WorldType.FLAT
+-                        || WorldType.WORLD_TYPES[this.selectedIndex] == WorldType.CUSTOMIZED
+-                );
++            this.btnCustomizeType.visible = this.inMoreWorldOptionsDisplay && WorldType.WORLD_TYPES[this.selectedIndex].isCustomizable();
+         }
+ 
+         this.updateDisplayState();
+@@ -393,6 +387,23 @@
+     /** Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton */
+     @Override
+     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
++        if (this.btnMapType.mousePressed(this.mc, mouseX, mouseY)) {
++            if (mouseButton == 1) {
++
++                do {
++                    this.selectedIndex--;
++
++                    if (this.selectedIndex < 0) {
++                        this.selectedIndex = WorldType.WORLD_TYPES.length - 1;
++                    }
++                } while (!this.canSelectCurWorldType());
++
++                this.chunkProviderSettingsJson = "";
++                this.updateDisplayState();
++                this.showMoreWorldOptions(this.inMoreWorldOptionsDisplay);
++            }
++        }
++
+         super.mouseClicked(mouseX, mouseY, mouseButton);
+         if (this.inMoreWorldOptionsDisplay) {
+             this.worldSeedField.mouseClicked(mouseX, mouseY, mouseButton);

@@ -1,0 +1,238 @@
+--- original/net/minecraft/client/renderer/OpenGlHelper.java
++++ modified/net/minecraft/client/renderer/OpenGlHelper.java
+@@ -1,8 +1,6 @@
+ package net.minecraft.client.renderer;
+ 
+ import java.io.File;
+-import java.io.IOException;
+-import java.net.URI;
+ import java.nio.ByteBuffer;
+ import java.nio.FloatBuffer;
+ import java.nio.IntBuffer;
+@@ -10,7 +8,6 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+ import net.minecraft.client.settings.GameSettings;
+-import net.minecraft.util.Util;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+@@ -31,8 +28,8 @@
+ import org.lwjgl.opengl.GL20;
+ import org.lwjgl.opengl.GL30;
+ import org.lwjgl.opengl.GLContext;
+-import oshi.SystemInfo;
+-import oshi.hardware.Processor;
++import oshi.ffm.SystemInfo;
++import oshi.hardware.CentralProcessor;
+ 
+ @SideOnly(Side.CLIENT)
+ public class OpenGlHelper {
+@@ -95,7 +92,10 @@
+     public static int GL_ARRAY_BUFFER;
+     public static int GL_STATIC_DRAW;
+ 
+-    /** Initializes the texture constants to be used when rendering lightmap values */
++    /* Stores the last values sent into setLightmapTextureCoords */
++    public static float lastBrightnessX = 0.0f;
++    public static float lastBrightnessY = 0.0f;
++
+     public static void initializeTextures() {
+         ContextCapabilities contextcapabilities = GLContext.getCapabilities();
+         arbMultitexture = contextcapabilities.GL_ARB_multitexture && !contextcapabilities.OpenGL13;
+@@ -263,8 +263,8 @@
+         }
+ 
+         try {
+-            Processor[] aprocessor = new SystemInfo().getHardware().getProcessors();
+-            cpu = String.format("%dx %s", aprocessor.length, aprocessor[0]).replaceAll("\\s+", " ");
++            CentralProcessor aprocessor = (new SystemInfo()).getHardware().getProcessor();
++            cpu = String.format("%dx %s", aprocessor.getLogicalProcessorCount(), aprocessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
+         } catch (Throwable throwable) {
+         }
+     }
+@@ -303,10 +303,11 @@
+     }
+ 
+     public static void glShaderSource(int shaderIn, ByteBuffer string) {
++        CharSequence source = java.nio.charset.StandardCharsets.UTF_8.decode(string.duplicate());
+         if (arbShaders) {
+-            ARBShaderObjects.glShaderSourceARB(shaderIn, string);
++            ARBShaderObjects.glShaderSourceARB(shaderIn, source);
+         } else {
+-            GL20.glShaderSource(shaderIn, string);
++            GL20.glShaderSource(shaderIn, source);
+         }
+     }
+ 
+@@ -364,9 +365,9 @@
+ 
+     public static void glUniform1(int location, IntBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform1ARB(location, values);
++            ARBShaderObjects.glUniform1ivARB(location, values);
+         } else {
+-            GL20.glUniform1(location, values);
++            GL20.glUniform1iv(location, values);
+         }
+     }
+ 
+@@ -380,81 +381,81 @@
+ 
+     public static void glUniform1(int location, FloatBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform1ARB(location, values);
++            ARBShaderObjects.glUniform1fvARB(location, values);
+         } else {
+-            GL20.glUniform1(location, values);
++            GL20.glUniform1fv(location, values);
+         }
+     }
+ 
+     public static void glUniform2(int location, IntBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform2ARB(location, values);
++            ARBShaderObjects.glUniform2ivARB(location, values);
+         } else {
+-            GL20.glUniform2(location, values);
++            GL20.glUniform2iv(location, values);
+         }
+     }
+ 
+     public static void glUniform2(int location, FloatBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform2ARB(location, values);
++            ARBShaderObjects.glUniform2fvARB(location, values);
+         } else {
+-            GL20.glUniform2(location, values);
++            GL20.glUniform2fv(location, values);
+         }
+     }
+ 
+     public static void glUniform3(int location, IntBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform3ARB(location, values);
++            ARBShaderObjects.glUniform3ivARB(location, values);
+         } else {
+-            GL20.glUniform3(location, values);
++            GL20.glUniform3iv(location, values);
+         }
+     }
+ 
+     public static void glUniform3(int location, FloatBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform3ARB(location, values);
++            ARBShaderObjects.glUniform3fvARB(location, values);
+         } else {
+-            GL20.glUniform3(location, values);
++            GL20.glUniform3fv(location, values);
+         }
+     }
+ 
+     public static void glUniform4(int location, IntBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform4ARB(location, values);
++            ARBShaderObjects.glUniform4ivARB(location, values);
+         } else {
+-            GL20.glUniform4(location, values);
++            GL20.glUniform4iv(location, values);
+         }
+     }
+ 
+     public static void glUniform4(int location, FloatBuffer values) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniform4ARB(location, values);
++            ARBShaderObjects.glUniform4fvARB(location, values);
+         } else {
+-            GL20.glUniform4(location, values);
++            GL20.glUniform4fv(location, values);
+         }
+     }
+ 
+     public static void glUniformMatrix2(int location, boolean transpose, FloatBuffer matrices) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniformMatrix2ARB(location, transpose, matrices);
++            ARBShaderObjects.glUniformMatrix2fvARB(location, transpose, matrices);
+         } else {
+-            GL20.glUniformMatrix2(location, transpose, matrices);
++            GL20.glUniformMatrix2fv(location, transpose, matrices);
+         }
+     }
+ 
+     public static void glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniformMatrix3ARB(location, transpose, matrices);
++            ARBShaderObjects.glUniformMatrix3fvARB(location, transpose, matrices);
+         } else {
+-            GL20.glUniformMatrix3(location, transpose, matrices);
++            GL20.glUniformMatrix3fv(location, transpose, matrices);
+         }
+     }
+ 
+     public static void glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) {
+         if (arbShaders) {
+-            ARBShaderObjects.glUniformMatrix4ARB(location, transpose, matrices);
++            ARBShaderObjects.glUniformMatrix4fvARB(location, transpose, matrices);
+         } else {
+-            GL20.glUniformMatrix4(location, transpose, matrices);
++            GL20.glUniformMatrix4fv(location, transpose, matrices);
+         }
+     }
+ 
+@@ -676,6 +677,11 @@
+         } else {
+             GL13.glMultiTexCoord2f(target, x, y);
+         }
++
++        if (target == lightmapTexUnit) {
++            lastBrightnessX = x;
++            lastBrightnessY = y;
++        }
+     }
+ 
+     public static void glBlendFunc(int sFactorRGB, int dFactorRGB, int sfactorAlpha, int dfactorAlpha) {
+@@ -727,41 +733,12 @@
+     }
+ 
+     public static void openFile(File fileIn) {
+-        String s = fileIn.getAbsolutePath();
+-        if (Util.getOSType() == Util.EnumOS.OSX) {
+-            try {
+-                LOGGER.info(s);
+-                Runtime.getRuntime().exec(new String[]{"/usr/bin/open", s});
+-                return;
+-            } catch (IOException ioexception1) {
+-                LOGGER.error("Couldn't open file", ioexception1);
+-            }
+-        } else if (Util.getOSType() == Util.EnumOS.WINDOWS) {
+-            String s1 = String.format("cmd.exe /C start \"Open file\" \"%s\"", s);
+-
+-            try {
+-                Runtime.getRuntime().exec(s1);
+-                return;
+-            } catch (IOException ioexception) {
+-                LOGGER.error("Couldn't open file", ioexception);
+-            }
+-        }
+-
+-        boolean flag = false;
+-
+         try {
+-            Class<?> oclass = Class.forName("java.awt.Desktop");
+-            Object object = oclass.getMethod("getDesktop").invoke(null);
+-            oclass.getMethod("browse", URI.class).invoke(object, fileIn.toURI());
++            com.cleanroommc.client.sdl.Desktop.open(fileIn);
+         } catch (Throwable throwable) {
+-            LOGGER.error("Couldn't open link", throwable);
+-            flag = true;
++            LOGGER.error("Couldn't open file", throwable);
++            Sys.openURL("file://" + fileIn.getAbsolutePath());
+         }
+-
+-        if (flag) {
+-            LOGGER.info("Opening via system class!");
+-            Sys.openURL("file://" + s);
+-        }
+     }
+ 
+     @SideOnly(Side.CLIENT)

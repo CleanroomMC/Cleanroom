@@ -1,0 +1,10 @@
+--- original/net/minecraft/village/VillageSiege.java
++++ modified/net/minecraft/village/VillageSiege.java
+@@ -106,6 +106,7 @@
+ 
+                     Vec3d vec3d = this.findRandomSpawnPos(new BlockPos(this.spawnX, this.spawnY, this.spawnZ));
+                     if (vec3d != null) {
++                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.village.VillageSiegeEvent(this, world, entityplayer, village, vec3d))) return false;
+                         this.nextSpawnTime = 0;
+                         this.siegeCount = 20;
+                         return true;

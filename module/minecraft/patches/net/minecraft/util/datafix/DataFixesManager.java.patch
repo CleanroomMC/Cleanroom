@@ -1,0 +1,10 @@
+--- original/net/minecraft/util/datafix/DataFixesManager.java
++++ modified/net/minecraft/util/datafix/DataFixesManager.java
+@@ -162,6 +162,7 @@
+ 
+     public static DataFixer createFixer() {
+         DataFixer datafixer = new DataFixer(1343);
++        datafixer = new net.minecraftforge.common.util.CompoundDataFixer(datafixer);
+         WorldInfo.registerFixes(datafixer);
+         EntityPlayerMP.registerFixesPlayerMP(datafixer);
+         EntityPlayer.registerFixesPlayer(datafixer);

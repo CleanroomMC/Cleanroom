@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/EntityHanging.java
++++ modified/net/minecraft/entity/EntityHanging.java
+@@ -126,6 +126,8 @@
+                 int j1 = (j - 1) / -2;
+                 blockpos$mutableblockpos.setPos(blockpos).move(enumfacing, k + i1).move(EnumFacing.UP, l + j1);
+                 IBlockState iblockstate = this.world.getBlockState(blockpos$mutableblockpos);
++                if (iblockstate.isSideSolid(this.world, blockpos$mutableblockpos, this.facingDirection))
++                    continue;
+                 if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate)) {
+                     return false;
+                 }

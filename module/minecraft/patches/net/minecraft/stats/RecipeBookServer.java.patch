@@ -1,0 +1,23 @@
+--- original/net/minecraft/stats/RecipeBookServer.java
++++ modified/net/minecraft/stats/RecipeBookServer.java
+@@ -47,8 +47,7 @@
+     }
+ 
+     private void sendPacket(SPacketRecipeBook.State state, EntityPlayerMP player, List<IRecipe> recipesIn) {
+-        player.connection
+-            .sendPacket(new SPacketRecipeBook(state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable));
++        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable);
+     }
+ 
+     public NBTTagCompound write() {
+@@ -121,9 +120,6 @@
+     }
+ 
+     public void init(EntityPlayerMP player) {
+-        player.connection
+-            .sendPacket(
+-                new SPacketRecipeBook(SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable)
+-            );
++        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable);
+     }
+ }

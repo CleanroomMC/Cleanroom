@@ -1,0 +1,63 @@
+--- original/net/minecraft/client/gui/GuiOverlayDebug.java
++++ modified/net/minecraft/client/gui/GuiOverlayDebug.java
+@@ -2,6 +2,7 @@
+ 
+ import com.google.common.base.Strings;
+ import com.google.common.collect.Lists;
++import com.google.common.collect.UnmodifiableIterator;
+ import java.util.List;
+ import java.util.Map.Entry;
+ import net.minecraft.block.Block;
+@@ -25,6 +26,7 @@
+ import net.minecraft.world.chunk.Chunk;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
++import org.lwjgl.Sys;
+ import org.lwjgl.opengl.Display;
+ 
+ @SideOnly(Side.CLIENT)
+@@ -218,16 +220,34 @@
+         long k = Runtime.getRuntime().freeMemory();
+         long l = j - k;
+         List<String> list = Lists.newArrayList(
+-            String.format("Java: %s %dbit", System.getProperty("java.version"), this.mc.isJava64bit() ? 64 : 32),
+-            String.format("Mem: % 2d%% %03d/%03dMB", l * 100L / i, bytesToMb(l), bytesToMb(i)),
+-            String.format("Allocated: % 2d%% %03dMB", j * 100L / i, bytesToMb(j)),
+-            "",
+-            String.format("CPU: %s", OpenGlHelper.getCpu()),
+-            "",
+-            String.format("Display: %dx%d (%s)", Display.getWidth(), Display.getHeight(), GlStateManager.glGetString(7936)),
+-            GlStateManager.glGetString(7937),
+-            GlStateManager.glGetString(7938)
+-        );
++                                String.format("Java: %s %dbit", System.getProperty("java.version"), this.mc.isJava64bit() ? 64 : 32),
++                                "LWJGL: " + Sys.getVersion(),
++                                String.format("Mem: % 2d%% %03d/%03dMB", l * 100L / i, bytesToMb(l), bytesToMb(i)),
++                                String.format("Allocated: % 2d%% %03dMB", j * 100L / i, bytesToMb(j)),
++                                "",
++                                String.format("CPU: %s", OpenGlHelper.getCpu()),
++                                "",
++                                String.format("Display: %dx%d (%s)", Display.getWidth(), Display.getHeight(), GlStateManager.glGetString(7936)),
++                                GlStateManager.glGetString(7937),
++                                GlStateManager.glGetString(7938)
++                            );
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
++        if (window != null) {
++            com.cleanroommc.client.sdl.video.Display display = window.display();
++            if (display != null) {
++                list.add(String.format("Monitor: %s  scale: %.2f", display.name(), window.displayScale()));
++            }
++            com.cleanroommc.client.sdl.Power power = com.cleanroommc.client.sdl.Power.query();
++            if (power.state() == com.cleanroommc.client.sdl.Power.State.ON_BATTERY
++                    || power.state() == com.cleanroommc.client.sdl.Power.State.CHARGING
++                    || power.state() == com.cleanroommc.client.sdl.Power.State.CHARGED) {
++                list.add(String.format("Power: %s %d%%", power.state(), power.percent()));
++            }
++        }
++
++        list.add("");
++        list.addAll(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(false));
++
+         if (this.mc.isReducedDebug()) {
+             return list;
+         }

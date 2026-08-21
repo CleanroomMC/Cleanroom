@@ -1,0 +1,80 @@
+--- original/net/minecraft/entity/EntityLiving.java
++++ modified/net/minecraft/entity/EntityLiving.java
+@@ -169,6 +169,7 @@
+     /** Sets the active target the Task system uses for tracking */
+     public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+         this.attackTarget = entitylivingbaseIn;
++        this.attackTarget = net.minecraftforge.common.ForgeHooks.onLivingSetAttackTarget(this, entitylivingbaseIn);
+     }
+ 
+     /** Returns true if this entity can attack entities of the specified class. */
+@@ -518,7 +519,8 @@
+     public void onLivingUpdate() {
+         super.onLivingUpdate();
+         this.world.profiler.startSection("looting");
+-        if (!this.world.isRemote && this.canPickUpLoot() && !this.dead && this.world.getGameRules().getBoolean("mobGriefing")) {
++
++        if (!this.world.isRemote && this.canPickUpLoot() && !this.dead && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)) {
+             for (EntityItem entityitem : this.world.getEntitiesWithinAABB(EntityItem.class, this.getEntityBoundingBox().grow(1.0, 0.0, 1.0))) {
+                 if (!entityitem.isDead && !entityitem.getItem().isEmpty() && !entityitem.cannotPickup()) {
+                     this.updateEquipmentIfNeeded(entityitem);
+@@ -612,8 +614,15 @@
+ 
+     /** Makes the entity despawn if requirements are reached */
+     protected void despawnEntity() {
++        net.minecraftforge.fml.common.eventhandler.Event.Result result = null;
+         if (this.persistenceRequired) {
+             this.idleTime = 0;
++        } else if ((this.idleTime & 0x1F) == 0x1F && (result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this)) != net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT) {
++            if (result == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) {
++                this.idleTime = 0;
++            } else {
++                this.setDead();
++            }
+         } else {
+             Entity entity = this.world.getClosestPlayerToEntity(this, -1.0);
+             if (entity != null) {
+@@ -730,7 +739,6 @@
+             && this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this);
+     }
+ 
+-    /** Returns render size modifier */
+     public float getRenderSizeModifier() {
+         return 1.0F;
+     }
+@@ -861,6 +869,8 @@
+     }
+ 
+     public static EntityEquipmentSlot getSlotForItemStack(ItemStack stack) {
++        final EntityEquipmentSlot slot = stack.getItem().getEquipmentSlot(stack);
++        if (slot != null) return slot; // FORGE: Allow modders to set a non-default equipment slot for a stack; e.g. a non-armor chestplate-slot item
+         if (stack.getItem() == Item.getItemFromBlock(Blocks.PUMPKIN) || stack.getItem() == Items.SKULL) {
+             return EntityEquipmentSlot.HEAD;
+         } else if (stack.getItem() instanceof ItemArmor) {
+@@ -868,7 +878,7 @@
+         } else if (stack.getItem() == Items.ELYTRA) {
+             return EntityEquipmentSlot.CHEST;
+         } else {
+-            return stack.getItem() == Items.SHIELD ? EntityEquipmentSlot.OFFHAND : EntityEquipmentSlot.MAINHAND;
++            return stack.getItem().isShield(stack, null) ? EntityEquipmentSlot.OFFHAND : EntityEquipmentSlot.MAINHAND;
+         }
+     }
+ 
+@@ -1202,5 +1212,17 @@
+         ON_GROUND,
+         IN_AIR,
+         IN_WATER;
++
++        private final java.util.function.BiPredicate<net.minecraft.world.IBlockAccess, BlockPos> spawnPredicate;
++
++        SpawnPlacementType() { this.spawnPredicate = null; }
++
++        SpawnPlacementType(java.util.function.BiPredicate<net.minecraft.world.IBlockAccess, BlockPos> spawnPredicate) {
++            this.spawnPredicate = spawnPredicate;
++        }
++
++        public boolean canSpawnAt(World world, BlockPos pos) {
++            return this.spawnPredicate != null ? this.spawnPredicate.test(world, pos) : net.minecraft.world.WorldEntitySpawner.canCreatureTypeSpawnBody(this, world, pos);
++        }
+     }
+ }

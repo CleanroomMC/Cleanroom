@@ -1,0 +1,35 @@
+--- original/net/minecraft/entity/player/InventoryPlayer.java
++++ modified/net/minecraft/entity/player/InventoryPlayer.java
+@@ -258,7 +258,8 @@
+         int i = p_191973_2_.getCount();
+         ItemStack itemstack = this.getStackInSlot(p_191973_1_);
+         if (itemstack.isEmpty()) {
+-            itemstack = new ItemStack(item, 0, p_191973_2_.getMetadata());
++            itemstack = p_191973_2_.copy(); // Forge: Replace Item clone above to preserve item capabilities when picking the item up.
++            itemstack.setCount(0);
+             if (p_191973_2_.hasTagCompound()) {
+                 itemstack.setTagCompound(p_191973_2_.getTagCompound().copy());
+             }
+@@ -313,6 +314,13 @@
+                 }
+             }
+         }
++        for (ItemStack is : armorInventory) // FORGE: Tick armor on animation ticks
++        {
++            if (!is.isEmpty())
++            {
++                is.getItem().onArmorTick(player.world, player, is);
++            }
++        }
+     }
+ 
+     /** Adds the item stack to the inventory, returns false if it is impossible. */
+@@ -365,6 +373,8 @@
+             CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
+             crashreportcategory.addCrashSection("Item ID", Item.getIdFromItem(p_191971_2_.getItem()));
+             crashreportcategory.addCrashSection("Item data", p_191971_2_.getMetadata());
++            crashreportcategory.addDetail("Registry Name", () -> String.valueOf(p_191971_2_.getItem().getRegistryName()));
++            crashreportcategory.addDetail("Item Class", () -> p_191971_2_.getItem().getClass().getName());
+             crashreportcategory.addDetail("Item name", new ICrashReportDetail<String>() {
+                 public String call() throws Exception {
+                     return p_191971_2_.getDisplayName();

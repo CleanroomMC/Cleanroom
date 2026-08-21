@@ -1,0 +1,26 @@
+--- original/net/minecraft/world/biome/BiomeMesa.java
++++ modified/net/minecraft/world/biome/BiomeMesa.java
+@@ -68,13 +68,13 @@
+     @SideOnly(Side.CLIENT)
+     @Override
+     public int getFoliageColorAtPos(BlockPos pos) {
+-        return 10387789;
++        return getModdedBiomeFoliageColor(10387789);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+     @Override
+     public int getGrassColorAtPos(BlockPos pos) {
+-        return 9470285;
++        return getModdedBiomeGrassColor(9470285);
+     }
+ 
+     @Override
+@@ -266,6 +266,7 @@
+         @Override
+         protected void generateOres(World worldIn, Random random) {
+             super.generateOres(worldIn, random);
++            if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, random, goldGen, chunkPos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.GOLD))
+             this.genStandardOre1(worldIn, random, 20, this.goldGen, 32, 80);
+         }
+     }

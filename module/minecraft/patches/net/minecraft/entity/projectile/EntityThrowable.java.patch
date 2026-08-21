@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/projectile/EntityThrowable.java
++++ modified/net/minecraft/entity/projectile/EntityThrowable.java
+@@ -211,7 +211,7 @@
+             if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK
+                 && this.world.getBlockState(raytraceresult.getBlockPos()).getBlock() == Blocks.PORTAL) {
+                 this.setPortal(raytraceresult.getBlockPos());
+-            } else {
++            } else if (!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+                 this.onImpact(raytraceresult);
+             }
+         }

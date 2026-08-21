@@ -1,0 +1,70 @@
+--- original/net/minecraft/item/ItemArmor.java
++++ modified/net/minecraft/item/ItemArmor.java
+@@ -182,7 +182,9 @@
+      */
+     @Override
+     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+-        return this.material.getRepairItem() == repair.getItem() ? true : super.getIsRepairable(toRepair, repair);
++        ItemStack mat = this.material.getRepairItemStack();
++        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat,repair,false)) return true;
++        return super.getIsRepairable(toRepair, repair);
+     }
+ 
+     /** Called when the equipped item is right clicked. */
+@@ -217,6 +219,18 @@
+ 
+         return multimap;
+     }
++    /**
++     * Determines if this armor will be rendered with the secondary 'overlay' texture.
++     * If this is true, the first texture will be rendered using a tint of the color
++     * specified by getColor(ItemStack)
++     *
++     * @param stack The stack
++     * @return true/false
++     */
++    public boolean hasOverlay(ItemStack stack)
++    {
++        return this.material == ItemArmor.ArmorMaterial.LEATHER || getColor(stack) != 0x00FFFFFF;
++    }
+ 
+     public enum ArmorMaterial {
+         LEATHER("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F),
+@@ -234,6 +248,8 @@
+         private final int enchantability;
+         private final SoundEvent soundEvent;
+         private final float toughness;
++        //Added by forge for custom Armor materials.
++        public ItemStack repairMaterial = ItemStack.EMPTY;
+ 
+         ArmorMaterial(String nameIn, int maxDamageFactorIn, int[] damageReductionAmountArrayIn, int enchantabilityIn, SoundEvent soundEventIn, float toughnessIn) {
+             this.name = nameIn;
+@@ -262,6 +278,7 @@
+         public SoundEvent getSoundEvent() {
+             return this.soundEvent;
+         }
++        @Deprecated // Use getRepairItemStack below
+ 
+         /** Get a main crafting component of this Armor Material (example is Items.iron_ingot) */
+         public Item getRepairItem() {
+@@ -286,5 +303,20 @@
+         public float getToughness() {
+             return this.toughness;
+         }
++        public ArmorMaterial setRepairItem(ItemStack stack)
++        {
++            if (!this.repairMaterial.isEmpty()) throw new RuntimeException("Repair material has already been set");
++            if (this == LEATHER || this == CHAIN || this == GOLD || this == IRON || this == DIAMOND) throw new RuntimeException("Can not change vanilla armor repair materials");
++            this.repairMaterial = stack;
++            return this;
++        }
++
++        public ItemStack getRepairItemStack()
++        {
++            if (!repairMaterial.isEmpty()) return repairMaterial;
++            Item ret = this.getRepairItem();
++            if (ret != null) repairMaterial = new ItemStack(ret,1,net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE);
++            return repairMaterial;
+     }
+ }
++}

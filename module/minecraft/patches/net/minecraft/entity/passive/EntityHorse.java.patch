@@ -1,0 +1,81 @@
+--- original/net/minecraft/entity/passive/EntityHorse.java
++++ modified/net/minecraft/entity/passive/EntityHorse.java
+@@ -33,6 +33,7 @@
+     private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
+     private static final DataParameter<Integer> HORSE_VARIANT = EntityDataManager.createKey(EntityHorse.class, DataSerializers.VARINT);
+     private static final DataParameter<Integer> HORSE_ARMOR = EntityDataManager.createKey(EntityHorse.class, DataSerializers.VARINT);
++    private static final DataParameter<ItemStack> HORSE_ARMOR_STACK = EntityDataManager.createKey(EntityHorse.class, DataSerializers.ITEM_STACK);
+     private static final String[] HORSE_TEXTURES = new String[]{
+         "textures/entity/horse/horse_white.png",
+         "textures/entity/horse/horse_creamy.png",
+@@ -63,6 +64,7 @@
+         super.entityInit();
+         this.dataManager.register(HORSE_VARIANT, 0);
+         this.dataManager.register(HORSE_ARMOR, HorseArmorType.NONE.getOrdinal());
++        this.dataManager.register(HORSE_ARMOR_STACK, ItemStack.EMPTY);
+     }
+ 
+     public static void registerFixesHorse(DataFixer fixer) {
+@@ -87,7 +89,8 @@
+         this.setHorseVariant(compound.getInteger("Variant"));
+         if (compound.hasKey("ArmorItem", 10)) {
+             ItemStack itemstack = new ItemStack(compound.getCompoundTag("ArmorItem"));
+-            if (!itemstack.isEmpty() && HorseArmorType.isHorseArmor(itemstack.getItem())) {
++
++            if (!itemstack.isEmpty() && isArmor(itemstack)) {
+                 this.horseChest.setInventorySlotContents(1, itemstack);
+             }
+         }
+@@ -113,11 +116,12 @@
+         int i = this.getHorseVariant();
+         int j = (i & 0xFF) % 7;
+         int k = ((i & 0xFF00) >> 8) % 5;
+-        HorseArmorType horsearmortype = this.getHorseArmorType();
++        ItemStack armorStack = this.dataManager.get(HORSE_ARMOR_STACK);
++        String texture = !armorStack.isEmpty() ? armorStack.getItem().getHorseArmorTexture(this, armorStack) : HorseArmorType.getByOrdinal(this.dataManager.get(HORSE_ARMOR)).getTextureName(); //If armorStack is empty, the server is vanilla so the texture should be determined the vanilla way
+         this.horseTexturesArray[0] = HORSE_TEXTURES[j];
+         this.horseTexturesArray[1] = HORSE_MARKING_TEXTURES[k];
+-        this.horseTexturesArray[2] = horsearmortype.getTextureName();
+-        this.texturePrefix = "horse/" + HORSE_TEXTURES_ABBR[j] + HORSE_MARKING_TEXTURES_ABBR[k] + horsearmortype.getHash();
++        this.horseTexturesArray[2] = texture;
++        this.texturePrefix = "horse/" + HORSE_TEXTURES_ABBR[j] + HORSE_MARKING_TEXTURES_ABBR[k] + texture;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -149,6 +153,7 @@
+     public void setHorseArmorStack(ItemStack itemStackIn) {
+         HorseArmorType horsearmortype = HorseArmorType.getByItemStack(itemStackIn);
+         this.dataManager.set(HORSE_ARMOR, horsearmortype.getOrdinal());
++        this.dataManager.set(HORSE_ARMOR_STACK, itemStackIn);
+         this.resetTexturePrefix();
+         if (!this.world.isRemote) {
+             this.getEntityAttribute(SharedMonsterAttributes.ARMOR).removeModifier(ARMOR_MODIFIER_UUID);
+@@ -161,7 +166,9 @@
+     }
+ 
+     public HorseArmorType getHorseArmorType() {
+-        return HorseArmorType.getByOrdinal(this.dataManager.get(HORSE_ARMOR));
++        HorseArmorType armor = HorseArmorType.getByItemStack(this.dataManager.get(HORSE_ARMOR_STACK)); //First check the Forge armor DataParameter
++        if (armor == HorseArmorType.NONE) armor = HorseArmorType.getByOrdinal(this.dataManager.get(HORSE_ARMOR)); //If the Forge armor DataParameter returns NONE, fallback to the vanilla armor DataParameter. This is necessary to prevent issues with Forge clients connected to vanilla servers.
++        return armor;
+     }
+ 
+     /** Called by InventoryBasic.onInventoryChanged() on a array that is never filled. */
+@@ -199,6 +206,8 @@
+             this.dataManager.setClean();
+             this.resetTexturePrefix();
+         }
++        ItemStack armor = this.horseChest.getStackInSlot(1);
++        if (isArmor(armor)) armor.getItem().onHorseArmorTick(world, this, armor);
+     }
+ 
+     @Override
+@@ -336,7 +345,7 @@
+ 
+     @Override
+     public boolean isArmor(ItemStack stack) {
+-        return HorseArmorType.isHorseArmor(stack.getItem());
++        return HorseArmorType.isHorseArmor(stack);
+     }
+ 
+     /**

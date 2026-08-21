@@ -1,0 +1,65 @@
+--- original/net/minecraft/block/BlockSlab.java
++++ modified/net/minecraft/block/BlockSlab.java
+@@ -90,6 +90,18 @@
+ 
+     /** Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the IBlockstate */
+     @Override
++    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
++        if (net.minecraftforge.common.ForgeModContainer.disableStairSlabCulling)
++            return super.doesSideBlockRendering(state, world, pos, face);
++
++        if ( state.isOpaqueCube() )
++            return true;
++
++        EnumBlockHalf side = state.getValue(HALF);
++        return (side == EnumBlockHalf.TOP && face == EnumFacing.UP) || (side == EnumBlockHalf.BOTTOM && face == EnumFacing.DOWN);
++    }
++
++    @Override
+     public IBlockState getStateForPlacement(
+         World worldIn,
+         BlockPos pos,
+@@ -133,26 +145,28 @@
+ 
+         if (side != EnumFacing.UP && side != EnumFacing.DOWN && !super.shouldSideBeRendered(blockState, blockAccess, pos, side)) {
+             return false;
+-        }
+-
+-        IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
+-        boolean flag = isHalfSlab(iblockstate) && iblockstate.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
+-        boolean flag1 = isHalfSlab(blockState) && blockState.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
+-        if (flag1) {
+-            if (side == EnumFacing.DOWN) {
++        } else if (false) { // Forge: Additional logic breaks doesSideBlockRendering and is no longer useful.
++            IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
++            boolean flag = isHalfSlab(iblockstate) && iblockstate.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
++            boolean flag1 = isHalfSlab(blockState) && blockState.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
++            if (flag1) {
++                if (side == EnumFacing.DOWN) {
++                    return true;
++                } else {
++                    return side == EnumFacing.UP && super.shouldSideBeRendered(blockState, blockAccess, pos, side)
++                        ? true
++                        : !isHalfSlab(iblockstate) || !flag;
++                }
++            } else if (side == EnumFacing.UP) {
+                 return true;
+             } else {
+-                return side == EnumFacing.UP && super.shouldSideBeRendered(blockState, blockAccess, pos, side)
++                return side == EnumFacing.DOWN && super.shouldSideBeRendered(blockState, blockAccess, pos, side)
+                     ? true
+-                    : !isHalfSlab(iblockstate) || !flag;
++                    : !isHalfSlab(iblockstate) || flag;
+             }
+-        } else if (side == EnumFacing.UP) {
+-            return true;
+-        } else {
+-            return side == EnumFacing.DOWN && super.shouldSideBeRendered(blockState, blockAccess, pos, side)
+-                ? true
+-                : !isHalfSlab(iblockstate) || flag;
+         }
++
++        return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
+     }
+ 
+     @SideOnly(Side.CLIENT)
