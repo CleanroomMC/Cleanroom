@@ -28,4 +28,7 @@ public class CustomListEvent extends Event {
     public ListenerList getListenerList() {
         return custom;
     }
+
+    public static class Subclass extends CustomListEvent {
+    }
 }

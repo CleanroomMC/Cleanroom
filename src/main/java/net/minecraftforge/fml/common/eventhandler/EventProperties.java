@@ -25,13 +25,10 @@ abstract class EventProperties {
 
             ListenerList result = null;
             try {
-                var method_getListenerList = eventType.getMethod("getListenerList");
-
-                if (method_getListenerList.getDeclaringClass() != Event.class) {
-                    // This event implements its own .getListenerList()
-                    var instance = UnsafeAccess.allocateInstance(eventType);
-                    result = (ListenerList) method_getListenerList.invoke(instance);
-                }
+                var method_getListenerList = eventType.getDeclaredMethod("getListenerList");
+                // If this event implements its own .getListenerList()
+                var instance = UnsafeAccess.allocateInstance(eventType);
+                result = (ListenerList) method_getListenerList.invoke(instance);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 // fall through
             }

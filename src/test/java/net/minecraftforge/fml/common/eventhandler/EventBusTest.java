@@ -352,4 +352,16 @@ public class EventBusTest {
         bus.post(new CustomListEvent());
         Assertions.assertEquals(1, listener.calls);
     }
+
+    @Test
+    public void customListenerListAtSuperclass() {
+        Assertions.assertEquals(
+            EventProperties.LISTENER_LIST.get(CustomListEvent.class),
+            new CustomListEvent().getListenerList()
+        );
+        Assertions.assertNotEquals(
+            EventProperties.LISTENER_LIST.get(CustomListEvent.class),
+            EventProperties.LISTENER_LIST.get(CustomListEvent.Subclass.class)
+        );
+    }
 }
