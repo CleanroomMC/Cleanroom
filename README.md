@@ -81,9 +81,9 @@ Some mods are obsoleted or need extra handle. See [wiki](https://cleanroommc.com
 
 ## Development Tips:
 
-- Only modify `projects/cleanroom/src/` directory if you want to change vanilla
+- Only modify `module/minecraft/src/main/java/` directory if you want to change vanilla
 - Run `gradlew genPatches` before commit, or the changes won't exist
-- Modifications on `src/` doesn't need generating patches
+- Modifications on the other `module/` directories don't need generating patches
 - [Tips from Forge](https://github.com/MinecraftForge/MinecraftForge/wiki/If-you-want-to-contribute-to-Forge) are still apply, keep the patches clean!
 - The current patches is full of useless hunks after we switched to VineFlower, we encourage contributors to clean up these patches manually.
 

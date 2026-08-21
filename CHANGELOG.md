@@ -4,6 +4,166 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.10-alpha] - 2026-08-10
+### New Features
+- [`8d4d83a`](https://github.com/CleanroomMC/Cleanroom/commit/8d4d83a081ed99249cbbb81cf953d356c3d8c9c7) - **commands**: modern suggestions, completions, argument highlighting *(PR [#557](https://github.com/CleanroomMC/Cleanroom/pull/557) by [@Rongmario](https://github.com/Rongmario))*
+
+### Bug Fixes
+- [`90669ae`](https://github.com/CleanroomMC/Cleanroom/commit/90669ae4790d03d715e2c21d0560f6050e8740c8) - **commands**: only display visible amount of command suggestions *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`628ab32`](https://github.com/CleanroomMC/Cleanroom/commit/628ab3278ecfebe3ad29114e0ef34ebbf81e2cc4) - **cleanmix**: update to 0.7.2 to fix [#603](https://github.com/CleanroomMC/Cleanroom/pull/603) *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`67b5788`](https://github.com/CleanroomMC/Cleanroom/commit/67b57883dc0249ec7d473c273616191fbd1179dd) - **discovery**: duplicate sites on loading crl.dev.mixin configs *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Chores
+- [`6687ae9`](https://github.com/CleanroomMC/Cleanroom/commit/6687ae94d66342a9f2195859918ccbb467da79ec) - Update Gradle to 9.7.0 *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.6.9-alpha] - 2026-08-08
+### Bug Fixes
+- [`7874a07`](https://github.com/CleanroomMC/Cleanroom/commit/7874a07403d2188347720f775cfb051da62ac04e) - **os**: open files the intended way *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`f5dd105`](https://github.com/CleanroomMC/Cleanroom/commit/f5dd1055ab49173078f470e287ebd69c8851c7d5) - **discovery**: queues crl.dev.mixin configurations later, resolves [#599](https://github.com/CleanroomMC/Cleanroom/pull/599) *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`75f2065`](https://github.com/CleanroomMC/Cleanroom/commit/75f20656a99091f9f591ca1b47fe4487c2cd7244) - **console**: guard console appender from writing to a closed terminal during shutdown *(PR [#579](https://github.com/CleanroomMC/Cleanroom/pull/579) by [@mvanhorn](https://github.com/mvanhorn))*
+  - *fixes issue [#566](https://github.com/CleanroomMC/Cleanroom/issues/566) opened by [@NoDMoon](https://github.com/NoDMoon)*
+- [`41047ab`](https://github.com/CleanroomMC/Cleanroom/commit/41047ab1c3aa21b5002792b8b8461e98b6fb9f53) - **discovery**: always scan Mod annotation *(PR [#598](https://github.com/CleanroomMC/Cleanroom/pull/598) by [@friendlyhj](https://github.com/friendlyhj))*
+- [`fd78c16`](https://github.com/CleanroomMC/Cleanroom/commit/fd78c16fee1841d1765f80d738b527f3f57f7993) - patchy jar may crash cleanroomClient in some case *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`388e90f`](https://github.com/CleanroomMC/Cleanroom/commit/388e90fd856d50edfde6deec798ebda06b6ce14b) - Should fix [#576](https://github.com/CleanroomMC/Cleanroom/pull/576) can't place block agains modded grass *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`2e756de`](https://github.com/CleanroomMC/Cleanroom/commit/2e756de88838c767665cf05f1749832619040887) - **mod-list**: issues fixed pulled in due to author nagging over and over and over again *(PR [#592](https://github.com/CleanroomMC/Cleanroom/pull/592) by [@RuiXuqi](https://github.com/RuiXuqi))*
+
+### Chores
+- [`9d9ea47`](https://github.com/CleanroomMC/Cleanroom/commit/9d9ea47b03dcb9798656a092ffa6e88a78e0e694) - **cleanmix**: update to 0.7.1 *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`5fba066`](https://github.com/CleanroomMC/Cleanroom/commit/5fba06625520d52ec7248edd5dcc861eefffbb57) - Update lwjglxx to fix macos ctrl keybind *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.6.8-alpha] - 2026-07-28
+### Bug Fixes
+- [`9946eb1`](https://github.com/CleanroomMC/Cleanroom/commit/9946eb1f17a66a72d518e5e4a92d45c62c6d33fc) - **mixinextras**: allows late ME environments to register with no issue *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Performance Improvements
+- [`5df027d`](https://github.com/CleanroomMC/Cleanroom/commit/5df027d89e6ffcab116d271a3c1329dfc67811da) - Rewrite EventSubscriptionTransformer in core API *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`6956d37`](https://github.com/CleanroomMC/Cleanroom/commit/6956d37ecd1b4397de97e226272b290549239e1a) - Optimized EventSubscriptionTransformer by reading super w/ ClassReader *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Chores
+- [`bdc1436`](https://github.com/CleanroomMC/Cleanroom/commit/bdc14364564ae1fd280804e5e075a3b77c2af9a2) - Update foundation for new loading rules *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.6.7-alpha] - 2026-07-26
+### Bug Fixes
+- [`2d83b07`](https://github.com/CleanroomMC/Cleanroom/commit/2d83b071fc959a4885eb1049258bb6900d7ff4d5) - **cleanmix**: update to 0.7.0, fixes variety of issues *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Chores
+- [`74e8f02`](https://github.com/CleanroomMC/Cleanroom/commit/74e8f02b561f41bc2adaf45dfa58e3c3e03641e4) - **discovery**: more expressive logging when failing to read metadata *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.6.6-alpha] - 2026-07-24
+### Chores
+- [`75e899b`](https://github.com/CleanroomMC/Cleanroom/commit/75e899b8a56ad5f1d97dc2e9e2586bb8c69022d0) - **foundation**: update to include `com.mojang.` to classloader *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`57ded78`](https://github.com/CleanroomMC/Cleanroom/commit/57ded78b9067913c8cdcb91d890cab521c10b070) - **cleanmix**: update mixinbooter's version *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.6.5-alpha] - 2026-07-24
+### New Features
+- [`25f1c0f`](https://github.com/CleanroomMC/Cleanroom/commit/25f1c0f0640f9feb0fe6ca58b7ad85aca0489fbe) - **cleanmix**: update to 0.6.0, more effort for backwards compatibility *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Bug Fixes
+- [`dfd2bca`](https://github.com/CleanroomMC/Cleanroom/commit/dfd2bcaf4154fc660d053dfac38cc86ba7dd1f30) - **discovery**: removed unused mixin configs parameter *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`a4bc796`](https://github.com/CleanroomMC/Cleanroom/commit/a4bc796c0074168f0f72ae8680af251fab716c77) - **discovery**: unable to grab mod ids from certain metadata files *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Performance Improvements
+- [`044356b`](https://github.com/CleanroomMC/Cleanroom/commit/044356b4d7c2693cf1c97b6c7b74e97885308c6e) - **discovery**: remove additional candidate deduplication check *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`3ac1213`](https://github.com/CleanroomMC/Cleanroom/commit/3ac121329bc156367fc14093bd06f2d5c785afbb) - **discovery**: optimized deduplication checks for mod candidates *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`f35a674`](https://github.com/CleanroomMC/Cleanroom/commit/f35a674d6cb6b24686e9a8e0981f79cef11197e8) - **discovery**: faster deduplication checks when gathering mods *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`6fe1114`](https://github.com/CleanroomMC/Cleanroom/commit/6fe1114f410c22f86e2ad9cdaab9cca2d7d04f19) - **discovery**: walk directory once to find derped installations *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.6.4-alpha] - 2026-07-23
+### Bug Fixes
+- [`c001d07`](https://github.com/CleanroomMC/Cleanroom/commit/c001d07f9c41fe71347d297e5e6ee0553f4143e4) - **cleanmix**: updated to fix accessors to eagerly load their targets *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.6.3-alpha] - 2026-07-22
+### New Features
+- [`f0ef797`](https://github.com/CleanroomMC/Cleanroom/commit/f0ef79765c2dc044e07226be41dd527e2c1408ab) - **version check**: add header of cleanroom *(commit by [@baka-gourd](https://github.com/baka-gourd))*
+
+### Bug Fixes
+- [`daee859`](https://github.com/CleanroomMC/Cleanroom/commit/daee859456fc067caa1cc0beef1b4827e19e124d) - **cleanmix**: updated to fix various mixin loading bugs *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`64af19c`](https://github.com/CleanroomMC/Cleanroom/commit/64af19c3008c2533aca71260b862d85975baf6dd) - **discovery**: handle directory sources *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.6.2-alpha] - 2026-07-20
+### Bug Fixes
+- [`7e8bc27`](https://github.com/CleanroomMC/Cleanroom/commit/7e8bc270a3b0fb31161ee64976185fd3d0a0c1a0) - **discovery**: don't parse built-in mods as discovered files *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.6.1-alpha] - 2026-07-20
+### Bug Fixes
+- [`dcffd58`](https://github.com/CleanroomMC/Cleanroom/commit/dcffd580f565e0c0c310b5204f2241111c9c037e) - **mod-list**: scrollbar sensitive list width *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`568757b`](https://github.com/CleanroomMC/Cleanroom/commit/568757bd70e0813ca983534c2da2e486d1ec11ae) - **mod-list**: consider scrollbar width when trimming text *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`26bc611`](https://github.com/CleanroomMC/Cleanroom/commit/26bc6115d0cc2c41071443c4308a107bad8de7d4) - **mod-list**: set parent via `GuiModList`'s parent *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+### Chores
+- [`d7e73ca`](https://github.com/CleanroomMC/Cleanroom/commit/d7e73ca03bb3a41666766552b066de76bd5ee21b) - **cleanmix**: update MixinBooter from 11.2 to 11.5 *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.6.0-alpha] - 2026-07-19
+### New Features
+- [`ed8e356`](https://github.com/CleanroomMC/Cleanroom/commit/ed8e3564f75eeefa698766eb25ff50c136836960) - **cleanmix**: achieve parity with MixinBooter 11 *(PR [#583](https://github.com/CleanroomMC/Cleanroom/pull/583) by [@Rongmario](https://github.com/Rongmario))*
+- [`bd4f552`](https://github.com/CleanroomMC/Cleanroom/commit/bd4f552b80d3089f9e8909a323261da0b1e09aad) - **mod-list**: implemented modern mod list UI *(PR [#589](https://github.com/CleanroomMC/Cleanroom/pull/589) by [@Rongmario](https://github.com/Rongmario))*
+
+### Bug Fixes
+- [`69f118c`](https://github.com/CleanroomMC/Cleanroom/commit/69f118cb4abe123d5e3f0a3365623474ff8e751a) - **mod-list**: add `cleanmix` to default catalogue libraries *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`fbf9fc2`](https://github.com/CleanroomMC/Cleanroom/commit/fbf9fc255ed3940d0801d16b8416bd4ed9b6daaa) - **patch-mods**: check if patch mods are present outside of dev *(commit by [@Rongmario](https://github.com/Rongmario))*
+- [`e01a298`](https://github.com/CleanroomMC/Cleanroom/commit/e01a29831376f15fa8f993605a81cf135514dacd) - vanilla json using broken objc-bridge *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Performance Improvements
+- [`6b8c126`](https://github.com/CleanroomMC/Cleanroom/commit/6b8c1260fec2af78aa1ed353e720ef8e3a61511e) - **discovery**: speed up `ASMDataTable::getAnnotationsFor` (O(n^2) -> O(n)) *(PR [#582](https://github.com/CleanroomMC/Cleanroom/pull/582) by [@romanfedyniak](https://github.com/romanfedyniak))*
+
+### Refactors
+- [`a476dbe`](https://github.com/CleanroomMC/Cleanroom/commit/a476dbe805853de6af764e2d85cd66beb2303532) - **mod-list**: re-situate related event listeners *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
+## [0.5.17-alpha] - 2026-07-09
+### Bug Fixes
+- [`a436b61`](https://github.com/CleanroomMC/Cleanroom/commit/a436b61ad97099497ac8ebda48819bb66d833d86) - installer can't install server *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.5.16-alpha] - 2026-07-09
+### New Features
+- [`db96747`](https://github.com/CleanroomMC/Cleanroom/commit/db967479f558d66f3121259b82056a6a044b3258) - New installer and client.json compat w/ official launcher *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`0fff847`](https://github.com/CleanroomMC/Cleanroom/commit/0fff847600fcca3a3fd5d1a95e9aa57230233000) - allow flash can be disabled *(commit by [@baka-gourd](https://github.com/baka-gourd))*
+- [`83ea6a4`](https://github.com/CleanroomMC/Cleanroom/commit/83ea6a4b820d732f5aa6fde122a03a74002fa1c4) - early config now available in mod config menu *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Bug Fixes
+- [`c0e60dc`](https://github.com/CleanroomMC/Cleanroom/commit/c0e60dcebd3960fb871a147779d82ed78bbdf591) - fugue warning sometimes hang the game after pressed any key *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`b027c41`](https://github.com/CleanroomMC/Cleanroom/commit/b027c41715dedad0f5d7e407aafbaa2478cd1bef) - ignore relation of all built-in mods *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Chores
+- [`0d9caab`](https://github.com/CleanroomMC/Cleanroom/commit/0d9caab6d5547d86feb397872e1b39328fdcfd37) - actually call translationkey funcs in Fluid *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.5.15-alpha] - 2026-06-29
+### New Features
+- [`b5abee9`](https://github.com/CleanroomMC/Cleanroom/commit/b5abee957b17fa405f99217ff9303ce60387bde1) - Warn users if Fugue or Scalar not installed *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`e545c03`](https://github.com/CleanroomMC/Cleanroom/commit/e545c037760efb34ed029834262348749810ce52) - Warn if Fugue or Scalar not installed *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Bug Fixes
+- [`8789256`](https://github.com/CleanroomMC/Cleanroom/commit/87892564cb7763f3e512d450ed2ed5c5bf914eb7) - Not wrans right after coremod *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Chores
+- [`c7f8e4c`](https://github.com/CleanroomMC/Cleanroom/commit/c7f8e4c206495c342b087a49103161507d628750) - Improve warning *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`6c09515`](https://github.com/CleanroomMC/Cleanroom/commit/6c09515e472be5583e418a614ac8874001b2ff3b) - update early config about framebuffer *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`e4aa30a`](https://github.com/CleanroomMC/Cleanroom/commit/e4aa30a8dcad341825ab4de90b03e3acf70f9dde) - Correct colon in zh_cn.lang *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+- [`ddefbb7`](https://github.com/CleanroomMC/Cleanroom/commit/ddefbb72171261f5c7bb725cfc1d702e092c033a) - Fluid method names that fit latest mcp *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.5.14-alpha] - 2026-06-10
+### Bug Fixes
+- [`43bcf47`](https://github.com/CleanroomMC/Cleanroom/commit/43bcf475eb350be2ea6b9b8e10153d8ecbabe29e) - userdev jar is broken *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
+## [0.5.13-alpha] - 2026-06-10
+### Bug Fixes
+- [`8843e7b`](https://github.com/CleanroomMC/Cleanroom/commit/8843e7b991f3ce08a555d116469fe51fdcc08ec0) - Can't discover in-dev mod when multi-langs *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+
 ## [0.5.12-alpha] - 2026-05-09
 ### Bug Fixes
 - [`0058f2f`](https://github.com/CleanroomMC/Cleanroom/commit/0058f2fb9092c6909ca5409da1ca88dd11059f92) - lwjglxx and OpenGlHelper not using new oshi path *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -56,3 +216,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.9-alpha...0.5.10-alpha
 [0.5.11-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.10-alpha...0.5.11-alpha
 [0.5.12-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.11-alpha...0.5.12-alpha
+[0.5.13-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.12-alpha...0.5.13-alpha
+[0.5.14-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.13-alpha...0.5.14-alpha
+[0.5.15-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.14-alpha...0.5.15-alpha
+[0.5.16-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.15-alpha...0.5.16-alpha
+[0.5.17-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.16-alpha...0.5.17-alpha
+[0.6.0-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.5.17-alpha...0.6.0-alpha
+[0.6.1-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.0-alpha...0.6.1-alpha
+[0.6.2-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.1-alpha...0.6.2-alpha
+[0.6.3-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.2-alpha...0.6.3-alpha
+[0.6.4-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.3-alpha...0.6.4-alpha
+[0.6.5-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.4-alpha...0.6.5-alpha
+[0.6.6-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.5-alpha...0.6.6-alpha
+[0.6.7-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.6-alpha...0.6.7-alpha
+[0.6.8-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.7-alpha...0.6.8-alpha
+[0.6.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.8-alpha...0.6.9-alpha
+[0.6.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.9-alpha...0.6.10-alpha
