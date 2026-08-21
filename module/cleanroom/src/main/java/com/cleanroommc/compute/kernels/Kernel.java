@@ -5,6 +5,7 @@ import com.cleanroommc.compute.Device;
 import com.cleanroommc.compute.errors.CompilationError;
 import com.cleanroommc.compute.errors.KernelError;
 import com.cleanroommc.compute.kernels.params.BufferParameter;
+import com.cleanroommc.compute.kernels.params.ImageParameter;
 import com.cleanroommc.compute.kernels.params.KernelParameterList;
 import com.cleanroommc.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;
@@ -165,15 +166,21 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
 
     private static PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters) {
         List<BufferParameter> buffers = new ReferenceArrayList<>();
+        List<ImageParameter<?>> images = new ReferenceArrayList<>();
         parameters.forEach(p -> {
             if (p instanceof BufferParameter buffer && buffer.buffer().isGLObject()) {
                 buffers.add(buffer);
+            } else if  (p instanceof ImageParameter<?> image && image.image().isGLTexture()) {
+                images.add(image);
             }
         });
-        PointerBuffer bufferHandles = stack.mallocPointer(buffers.size());
+        PointerBuffer handles = stack.mallocPointer(buffers.size() + images.size());
         for (BufferParameter buffer : buffers) {
-            bufferHandles.put(buffer.buffer().handle);
+            handles.put(buffer.buffer().handle);
         }
-        return bufferHandles;
+        for (ImageParameter<?> image : images) {
+            handles.put(image.image().handle);
+        }
+        return handles;
     }
 }
