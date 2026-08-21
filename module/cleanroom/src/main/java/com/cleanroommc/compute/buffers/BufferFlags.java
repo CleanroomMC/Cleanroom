@@ -13,7 +13,7 @@ public enum BufferFlags {
     HOST_WRITE_ONLY(CL12.CL_MEM_HOST_WRITE_ONLY, false, true),
     HOST_READ_ONLY(CL12.CL_MEM_HOST_READ_ONLY, true, false),
     NO_ACCESS(CL12.CL_MEM_HOST_NO_ACCESS, false, false),
-    KERNEL_READ_WRITE(CL20.CL_MEM_KERNEL_READ_AND_WRITE, true, true);
+    KERNEL_READ_WRITE(CL20.CL_MEM_KERNEL_READ_AND_WRITE, false, false);
 
     public final long flags;
     public final boolean canRead;
