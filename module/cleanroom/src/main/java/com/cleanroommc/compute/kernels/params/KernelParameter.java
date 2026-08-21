@@ -1,6 +1,6 @@
 package com.cleanroommc.compute.kernels.params;
 
-import com.cleanroommc.cleanroom.compute.errors.KernelError;
+import com.cleanroommc.compute.errors.KernelError;
 
 public sealed interface KernelParameter
         permits ScalarByteParameter, ScalarShortParameter,

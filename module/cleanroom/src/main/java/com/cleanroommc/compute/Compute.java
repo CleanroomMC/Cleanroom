@@ -1,8 +1,8 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.cleanroom.compute.cmd.CommandQueueDispatch;
-import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
-import com.cleanroommc.cleanroom.compute.programs.ProgramCacheIntegrityTable;
+import com.cleanroommc.compute.cmd.CommandQueueDispatch;
+import com.cleanroommc.compute.programs.ComputeProgram;
+import com.cleanroommc.compute.programs.ProgramCacheIntegrityTable;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;

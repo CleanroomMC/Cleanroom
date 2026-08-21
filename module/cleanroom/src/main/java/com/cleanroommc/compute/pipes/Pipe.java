@@ -1,7 +1,6 @@
 package com.cleanroommc.compute.pipes;
 
 import com.cleanroommc.compute.Compute;
-import com.cleanroommc.compute.types.OpenCLPrimitive;
 import com.cleanroommc.compute.errors.PipeError;
 import com.cleanroommc.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;

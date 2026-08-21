@@ -182,6 +182,7 @@ dependencies {
 
     api platform('org.lwjgl:lwjgl-bom:3.4.2')
     api 'org.lwjgl:lwjgl'
+    api 'org.lwjgl:lwjgl-opencl'
     api 'org.lwjgl:lwjgl-jemalloc'
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-openal'

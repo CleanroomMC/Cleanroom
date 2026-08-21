@@ -1,8 +1,8 @@
 package com.cleanroommc.compute.images;
 
 import com.cleanroommc.compute.buffers.BufferFlags;
-import com.cleanroommc.cleanroom.compute.errors.ImageError;
-import com.cleanroommc.cleanroom.compute.utils.ErrorUtils;
+import com.cleanroommc.compute.errors.ImageError;
+import com.cleanroommc.compute.utils.ErrorUtils;
 import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.cleanroommc.kirino.gl.texture.TextureType;
 import com.google.common.base.Preconditions;
@@ -14,8 +14,8 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.*;
 
-import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleEnqueueCopyImageError;
-import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleEnqueueReadWriteImageError;
+import static com.cleanroommc.compute.utils.ErrorUtils.handleEnqueueCopyImageError;
+import static com.cleanroommc.compute.utils.ErrorUtils.handleEnqueueReadWriteImageError;
 
 public sealed class Image1D extends Image<Long> permits Image1DBuffer{
 

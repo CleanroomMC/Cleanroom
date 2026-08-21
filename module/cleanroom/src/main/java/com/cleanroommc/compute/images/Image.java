@@ -2,7 +2,7 @@ package com.cleanroommc.compute.images;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.buffers.BufferFlags;
-import com.cleanroommc.cleanroom.compute.errors.ImageError;
+import com.cleanroommc.compute.errors.ImageError;
 import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2L;

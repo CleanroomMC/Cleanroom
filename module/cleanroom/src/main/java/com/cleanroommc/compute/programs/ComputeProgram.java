@@ -2,12 +2,12 @@ package com.cleanroommc.compute.programs;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.Device;
-import com.cleanroommc.cleanroom.compute.errors.CompilationError;
-import com.cleanroommc.cleanroom.compute.errors.HeaderParsingError;
-import com.cleanroommc.cleanroom.compute.kernels.Kernel;
-import com.cleanroommc.cleanroom.compute.kernels.KernelMetadata;
-import com.cleanroommc.cleanroom.compute.types.OpenCLType;
-import com.cleanroommc.cleanroom.compute.types.OpenCLTypeDeserializer;
+import com.cleanroommc.compute.errors.CompilationError;
+import com.cleanroommc.compute.errors.HeaderParsingError;
+import com.cleanroommc.compute.kernels.Kernel;
+import com.cleanroommc.compute.kernels.KernelMetadata;
+import com.cleanroommc.compute.types.OpenCLType;
+import com.cleanroommc.compute.types.OpenCLTypeDeserializer;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;

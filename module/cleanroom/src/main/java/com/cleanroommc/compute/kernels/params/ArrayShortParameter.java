@@ -1,10 +1,10 @@
 package com.cleanroommc.compute.kernels.params;
 
-import com.cleanroommc.cleanroom.compute.errors.KernelError;
+import com.cleanroommc.compute.errors.KernelError;
 import com.google.common.base.Preconditions;
 import org.lwjgl.opencl.CL10;
 
-import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleKernelParamError;
+import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
 record ArrayShortParameter(short... values) implements KernelParameter {
 

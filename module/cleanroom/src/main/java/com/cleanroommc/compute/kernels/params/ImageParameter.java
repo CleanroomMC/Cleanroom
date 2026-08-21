@@ -1,10 +1,10 @@
 package com.cleanroommc.compute.kernels.params;
 
-import com.cleanroommc.cleanroom.compute.errors.KernelError;
-import com.cleanroommc.cleanroom.compute.images.Image;
+import com.cleanroommc.compute.errors.KernelError;
+import com.cleanroommc.compute.images.Image;
 import org.lwjgl.opencl.CL10;
 
-import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleKernelParamError;
+import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
 public record ImageParameter<CT>(Image<CT> image) implements KernelParameter {
     @Override

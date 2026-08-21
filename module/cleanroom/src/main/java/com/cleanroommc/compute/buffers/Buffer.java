@@ -1,7 +1,7 @@
 package com.cleanroommc.compute.buffers;
 
 import com.cleanroommc.compute.Compute;
-import com.cleanroommc.cleanroom.compute.errors.BufferError;
+import com.cleanroommc.compute.errors.BufferError;
 import com.cleanroommc.kirino.gl.buffer.GLBuffer;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;

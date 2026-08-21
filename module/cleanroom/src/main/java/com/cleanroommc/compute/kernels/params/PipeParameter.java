@@ -1,11 +1,11 @@
 package com.cleanroommc.compute.kernels.params;
 
-import com.cleanroommc.cleanroom.compute.errors.KernelError;
-import com.cleanroommc.cleanroom.compute.pipes.Pipe;
+import com.cleanroommc.compute.errors.KernelError;
+import com.cleanroommc.compute.pipes.Pipe;
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.opencl.CL10;
 
-import static com.cleanroommc.cleanroom.compute.utils.ErrorUtils.handleKernelParamError;
+import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
 public record PipeParameter(@NonNull Pipe pipe) implements KernelParameter {
     @Override

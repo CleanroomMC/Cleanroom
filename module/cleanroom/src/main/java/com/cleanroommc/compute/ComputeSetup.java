@@ -1,14 +1,14 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.cleanroom.compute.errors.InvalidPlatformError;
-import com.cleanroommc.cleanroom.compute.errors.UnavaliableDeviceError;
+import com.cleanroommc.compute.errors.InvalidPlatformError;
+import com.cleanroommc.compute.errors.UnavaliableDeviceError;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
+import org.lwjgl.LWJGLException;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
 import org.lwjgl.opengl.CGL;
@@ -22,7 +22,7 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class ComputeSetup {
-    public static void initOpenCL(Logger LOGGER, boolean client) {
+    public static void initOpenCL(Logger LOGGER, boolean client) throws LWJGLException {
         LOGGER.info("Initializing OpenCL");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             CL.create();

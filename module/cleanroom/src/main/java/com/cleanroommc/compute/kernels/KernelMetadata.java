@@ -1,7 +1,7 @@
 package com.cleanroommc.compute.kernels;
 
 import com.cleanroommc.compute.programs.ComputeProgram;
-import com.cleanroommc.cleanroom.compute.types.OpenCLType;
+import com.cleanroommc.compute.types.OpenCLType;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;

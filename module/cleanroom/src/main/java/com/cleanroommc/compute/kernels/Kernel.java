@@ -2,11 +2,11 @@ package com.cleanroommc.compute.kernels;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.Device;
-import com.cleanroommc.cleanroom.compute.errors.CompilationError;
-import com.cleanroommc.cleanroom.compute.errors.KernelError;
-import com.cleanroommc.cleanroom.compute.kernels.params.BufferParameter;
-import com.cleanroommc.cleanroom.compute.kernels.params.KernelParameterList;
-import com.cleanroommc.cleanroom.compute.types.OpenCLType;
+import com.cleanroommc.compute.errors.CompilationError;
+import com.cleanroommc.compute.errors.KernelError;
+import com.cleanroommc.compute.kernels.params.BufferParameter;
+import com.cleanroommc.compute.kernels.params.KernelParameterList;
+import com.cleanroommc.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;

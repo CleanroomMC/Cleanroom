@@ -1,7 +1,7 @@
 package com.cleanroommc.compute.images.samplers;
 
 import com.cleanroommc.compute.Compute;
-import com.cleanroommc.cleanroom.compute.errors.ImageError;
+import com.cleanroommc.compute.errors.ImageError;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opencl.CL10;

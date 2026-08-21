@@ -1,11 +1,11 @@
 package com.cleanroommc.compute.kernels.params;
 
-import com.cleanroommc.cleanroom.compute.buffers.Buffer;
-import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
-import com.cleanroommc.cleanroom.compute.images.Image;
-import com.cleanroommc.cleanroom.compute.images.samplers.Sampler;
+import com.cleanroommc.compute.buffers.Buffer;
+import com.cleanroommc.compute.cmd.CommandQueue;
+import com.cleanroommc.compute.images.Image;
+import com.cleanroommc.compute.images.samplers.Sampler;
 import com.cleanroommc.compute.kernels.Kernel;
-import com.cleanroommc.cleanroom.compute.pipes.Pipe;
+import com.cleanroommc.compute.pipes.Pipe;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
