@@ -1,6 +1,6 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
+import com.cleanroommc.compute.buffers.BufferFlags;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

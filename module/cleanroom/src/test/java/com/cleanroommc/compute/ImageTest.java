@@ -1,10 +1,9 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.cleanroom.compute.buffers.BufferFlags;
-import com.cleanroommc.cleanroom.compute.cmd.CommandQueue;
-import com.cleanroommc.cleanroom.compute.images.*;
-import com.cleanroommc.cleanroom.compute.programs.ComputeProgram;
-import com.cleanroommc.cleanroom.compute.utils.ColorUtils;
+import com.cleanroommc.compute.buffers.BufferFlags;
+import com.cleanroommc.compute.cmd.CommandQueue;
+import com.cleanroommc.compute.images.*;
+import com.cleanroommc.compute.programs.ComputeProgram;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.DummyModContainer;
