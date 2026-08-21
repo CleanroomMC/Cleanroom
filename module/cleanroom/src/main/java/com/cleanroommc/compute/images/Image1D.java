@@ -200,6 +200,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                            @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap,
                            @NonNull CT2 size, long... dependencies) {
         try (MemoryStack substack = stack.push()) {
+            PointerBuffer handles = null;
             PointerBuffer fromBuf = substack.mallocPointer(3);
             fromBuf.put(from);
             fromBuf.put(fromMipmap);
@@ -212,16 +213,50 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 deps.rewind();
             }
             PointerBuffer ev = stack.mallocPointer(1);
-
+            if (this.isGLTexture()) {
+                 if (destination.isGLTexture()) {
+                     handles = substack.mallocPointer(2);
+                     handles.put(destination.handle);
+                 } else {
+                     handles = substack.mallocPointer(1);
+                 }
+                 handles.put(this.handle);
+                 handles.rewind();
+                 CL12GL.clEnqueueAcquireGLObjects(commandQueue, handles, deps, ev);
+                 if (deps == null)
+                     deps = substack.mallocPointer(1);
+                 else
+                     for (long dependency : dependencies)
+                         CL10.clReleaseEvent(dependency);
+                 deps.put(0, ev.get(0));
+                 deps.rewind();
+            } else if (destination.isGLTexture()) {
+                handles = substack.mallocPointer(1);
+                handles.put(destination.handle);
+                handles.rewind();
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue, handles, deps, ev);
+                if (deps == null)
+                    deps = substack.mallocPointer(1);
+                else
+                    for (long dependency : dependencies)
+                        CL10.clReleaseEvent(dependency);
+                deps.put(0, ev.get(0));
+                deps.rewind();
+            }
             handleEnqueueCopyImageError(CL12.clEnqueueCopyImage(commandQueue,
                     this.handle, destination.handle,
                     fromBuf, getCoordinates(substack, to, toMipmap),
                     getRegion(substack, size),
-                    deps, ev
+                    handles == null ? deps : deps.slice(0,1), ev
             ));
-            if (dependencies != null)
+            if (dependencies != null && handles == null)
                 for (long dependency : dependencies)
                     CL10.clReleaseEvent(dependency);
+            else if (handles != null) {
+                deps.put(0, ev.get(0));
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handles, deps.slice(0,1), ev);
+                CL10.clReleaseEvent(deps.get(0));
+            }
             return ev.get(0);
         }
     }
