@@ -15,13 +15,15 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 
-public record Sampler(boolean normalized,
-                      @NonNull AddressingMode addressingMode,
-                      @NonNull FilteringMode filteringMode,
-                      @Nullable FilteringMode mipmapFilteringMode,
-                      float levelOfDetailMinimum,
-                      float levelOfDetailMaximum,
-                      long handle) implements Closeable {
+public final class Sampler implements Closeable {
+
+    public final boolean normalized;
+    public final @NonNull AddressingMode addressingMode;
+    public final @NonNull FilteringMode filteringMode;
+    public final @Nullable FilteringMode mipmapFilteringMode;
+    public final float levelOfDetailMinimum;
+    public final float levelOfDetailMaximum;
+    public final long handle;
 
     public Sampler(boolean normalized,
                    @NonNull AddressingMode addressingMode,
@@ -29,22 +31,12 @@ public record Sampler(boolean normalized,
                    @Nullable FilteringMode mipmapFilteringMode,
                    float levelOfDetailMinimum,
                    float levelOfDetailMaximum) {
-        this(normalized, addressingMode, filteringMode, mipmapFilteringMode, levelOfDetailMinimum, levelOfDetailMaximum, createSampler(
-                normalized, addressingMode, filteringMode, mipmapFilteringMode, levelOfDetailMinimum, levelOfDetailMaximum
-        ));
-    }
-
-    @Override
-    public void close() throws IOException {
-        CL20.clReleaseSampler(handle);
-    }
-
-    private static long createSampler(boolean normalized,
-                               @NonNull AddressingMode addressingMode,
-                               @NonNull FilteringMode filteringMode,
-                               @Nullable FilteringMode mipmapFilteringMode,
-                               float levelOfDetailMinimum,
-                               float levelOfDetailMaximum) {
+        this.normalized = normalized;
+        this.addressingMode = addressingMode;
+        this.filteringMode = filteringMode;
+        this.mipmapFilteringMode = mipmapFilteringMode;
+        this.levelOfDetailMinimum = levelOfDetailMinimum;
+        this.levelOfDetailMaximum = levelOfDetailMaximum;
         try (MemoryStack stack = MemoryStack.create(); MemoryStack substack = stack.push()) {
             LongBuffer buf = substack.callocLong(mipmapFilteringMode != null ? 6 : 3);
             buf.put(CL20.CL_SAMPLER_NORMALIZED_COORDS).put(normalized ? CL10.CL_TRUE : CL10.CL_FALSE);
@@ -63,7 +55,12 @@ public record Sampler(boolean normalized,
                 case CL10.CL_INVALID_OPERATION -> throw new ImageError("Images not supported by any device.");
                 case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources to create sampler.");
             }
-            return res;
+            this.handle = res;
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        CL20.clReleaseSampler(handle);
     }
 }
