@@ -46,7 +46,15 @@
          this.setPlayerList(new DedicatedPlayerList(this));
          long j = System.nanoTime();
          if (this.getFolderName() == null) {
-@@ -258,7 +265,8 @@
+@@ -225,6 +232,7 @@
+         TileEntitySkull.setProfileCache(this.getPlayerProfileCache());
+         TileEntitySkull.setSessionService(this.getMinecraftSessionService());
+         PlayerProfileCache.setOnlineMode(this.isServerInOnlineMode());
++        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerAboutToStart(this)) return false;
+         LOGGER.info("Preparing level \"{}\"", this.getFolderName());
+         this.loadAllWorlds(this.getFolderName(), this.getFolderName(), k, worldtype, s2);
+         long i1 = System.nanoTime() - j;
+@@ -258,7 +266,8 @@
          }
  
          Items.AIR.getSubItems(CreativeTabs.SEARCH, NonNullList.create());
@@ -56,7 +64,7 @@
      }
  
      public String loadResourcePackSHA() {
-@@ -478,7 +486,7 @@
+@@ -478,7 +487,7 @@
  
      @Override
      public boolean isBlockProtected(World worldIn, BlockPos pos, EntityPlayer playerIn) {
@@ -65,7 +73,7 @@
              return false;
          }
  
-@@ -543,6 +551,9 @@
+@@ -543,6 +552,9 @@
          return this.settings.getIntProperty("network-compression-threshold", super.getNetworkCompressionThreshold());
      }
  
