@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import com.cleanroommc.client.sdl.Window;
+import com.cleanroommc.util.CleanroomLog;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.FMLLog;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 
 public class LoadingTracker {
     private static final int MAX_PROGRESS = 10000;
+    private static final long TASKBAR_UPDATE_DEBOUNCE_NANOS = 100_000_000L;
 
     public static final class Phase {
         private static final List<Phase> REGISTRY = new ArrayList<>();
@@ -91,6 +93,7 @@ public class LoadingTracker {
 
     private static Phase currentPhase = null;
     private static int lastProgress = 0;
+    private static long lastTaskbarUpdateNanos = 0L;
     private static boolean initialized = false;
 
     private static final String TIMING_FILE_NAME = "cleanroom_load_timings.dat";
@@ -122,6 +125,7 @@ public class LoadingTracker {
         phaseDurationMs = new long[phaseCount];
         currentPhase = null;
         lastProgress = 0;
+        lastTaskbarUpdateNanos = 0L;
 
         int[] weights = loadHistory();
         if (weights == null) {
@@ -280,7 +284,7 @@ public class LoadingTracker {
         try {
             window.progress(state, value);
         } catch (Throwable t) {
-            FMLLog.log.debug("LoadingTracker: Failed to set window progress", t);
+            CleanroomLog.get().debug("LoadingTracker: Failed to set window progress", t);
         }
     }
 
