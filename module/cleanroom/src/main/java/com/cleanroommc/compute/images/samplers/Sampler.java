@@ -8,7 +8,6 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
 import org.lwjgl.opencl.KHRMipmapImage;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
