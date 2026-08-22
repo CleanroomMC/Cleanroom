@@ -85,6 +85,8 @@ public class EventBus implements IEventExceptionHandler
             methods = Arrays.stream(clazz.getDeclaredMethods())
                 .filter(m -> !m.isSynthetic()
                              && Modifier.isStatic(m.getModifiers())
+                             // private not allowed to keep legacy behaviour
+                             && !Modifier.isPrivate(m.getModifiers())
                              && m.isAnnotationPresent(SubscribeEvent.class))
                 .toList();
         } else {
