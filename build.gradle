@@ -23,8 +23,10 @@ idea {
 
 cleanroom {
     mode = 'loader'
-    accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
-    sideAnnotationStrippers.from file('module/cleanroom/minecraft.sas')
+    loader {
+        accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
+        sideAnnotationStrippers.from file('module/cleanroom/minecraft.sas')
+    }
 }
 
 tokenEnvoy {
@@ -110,7 +112,6 @@ configurations.configureEach { configuration ->
 }
 
 configurations.named('vanillaNatives') {
-    exclude group: 'ca.weblite', module: 'java-objc-bridge'
     // LWJGL 2's natives are never loaded: LWJGLY reaches LWJGL 3's instead.
     exclude group: 'org.lwjgl.lwjgl'
 }
