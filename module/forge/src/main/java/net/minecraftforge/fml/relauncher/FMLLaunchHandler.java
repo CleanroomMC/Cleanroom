@@ -81,6 +81,7 @@ public class FMLLaunchHandler
         this.classLoader.addTransformerExclusion("net.minecraftforge.classloading.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.asm.transformers.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.patcher.");
+        this.classLoader.addTransformerExclusion("com.cleanroommc.util.patch.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.repackage.");
         this.classLoader.addTransformerExclusion("LZMA.");
         this.classLoader.addTransformerExclusion("scala.");
