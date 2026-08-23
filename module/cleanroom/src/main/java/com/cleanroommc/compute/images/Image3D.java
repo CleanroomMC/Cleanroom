@@ -1,6 +1,7 @@
 package com.cleanroommc.compute.images;
 
 import com.cleanroommc.compute.buffers.BufferFlags;
+import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.ImageError;
 import com.cleanroommc.compute.utils.ErrorUtils;
 import com.cleanroommc.kirino.gl.texture.GLTexture;
@@ -41,7 +42,7 @@ public final class Image3D extends Image<Vector3L> {
     }
 
     @Override
-    public <B extends Buffer> long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull B color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, long... dependencies) {
+    public <B extends Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, long... dependencies) {
         Preconditions.checkArgument(color instanceof ByteBuffer
                 || color instanceof IntBuffer
                 || color instanceof FloatBuffer);
@@ -49,6 +50,8 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
         try (MemoryStack substack = stack.push()) {
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
@@ -57,7 +60,7 @@ public final class Image3D extends Image<Vector3L> {
             PointerBuffer event = coordinates.slice(bufLen - 1, 1);
             PointerBuffer waitList = bufLen - 8 > 0 ? coordinates.slice(7, bufLen - 8) : null;
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, event);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, event);
                 if (waitList == null)
                     waitList = substack.mallocPointer(1);
                 else
@@ -67,7 +70,7 @@ public final class Image3D extends Image<Vector3L> {
             }
             ErrorUtils.handleEnqueueFillImageError(switch (color) {
                 case ByteBuffer bb -> CL12.clEnqueueFillImage(
-                        commandQueue,
+                        commandQueue.commandQueue,
                         this.handle,
                         bb,
                         coordinates.slice(0, 4),
@@ -76,7 +79,7 @@ public final class Image3D extends Image<Vector3L> {
                         coordinates.slice(bufLen - 1, 1)
                 );
                 case IntBuffer ib -> CL12.clEnqueueFillImage(
-                        commandQueue,
+                        commandQueue.commandQueue,
                         this.handle,
                         ib,
                         coordinates.slice(0, 4),
@@ -85,7 +88,7 @@ public final class Image3D extends Image<Vector3L> {
                         coordinates.slice(bufLen - 1, 1)
                 );
                 case FloatBuffer fb -> CL12.clEnqueueFillImage(
-                        commandQueue,
+                        commandQueue.commandQueue,
                         this.handle,
                         fb,
                         coordinates.slice(0, 4),
@@ -102,18 +105,21 @@ public final class Image3D extends Image<Vector3L> {
                 CL10.clReleaseEvent(waitList.get(0));
                 waitList.put(0, event.get(0)).rewind();
                 event.rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handle, waitList, event);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, waitList, event);
             }
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
     @Override
-    public long fill(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, long... dependencies) {
+    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
         try (MemoryStack substack = stack.push()) {
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
@@ -122,7 +128,7 @@ public final class Image3D extends Image<Vector3L> {
             PointerBuffer event = coordinates.slice(bufLen - 1, 1);
             PointerBuffer waitList = bufLen - 8 > 0 ? coordinates.slice(7, bufLen - 8) : null;
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, event);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, event);
                 if (waitList == null)
                     waitList = substack.mallocPointer(1);
                 else
@@ -131,7 +137,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, event.get(0)).rewind();
             }
             ErrorUtils.handleEnqueueFillImageError(CL12.clEnqueueFillImage(
-                    commandQueue,
+                    commandQueue.commandQueue,
                     this.handle,
                     color,
                     coordinates.slice(0,4),
@@ -146,18 +152,21 @@ public final class Image3D extends Image<Vector3L> {
                 CL10.clReleaseEvent(waitList.get(0));
                 waitList.put(0, event.get(0)).rewind();
                 event.rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handle, waitList, event);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, waitList, event);
             }
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
     @Override
-    public long fill(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, long... dependencies) {
+    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
         try (MemoryStack substack = stack.push()) {
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
@@ -166,7 +175,7 @@ public final class Image3D extends Image<Vector3L> {
             PointerBuffer event = coordinates.slice(bufLen - 1, 1);
             PointerBuffer waitList = bufLen - 8 > 0 ? coordinates.slice(7, bufLen - 8) : null;
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, event);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, event);
                 if (waitList == null)
                     waitList = substack.mallocPointer(1);
                 else
@@ -175,7 +184,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, event.get(0)).rewind();
             }
             ErrorUtils.handleEnqueueFillImageError(CL12.clEnqueueFillImage(
-                    commandQueue,
+                    commandQueue.commandQueue,
                     this.handle,
                     color,
                     coordinates.slice(0,4),
@@ -190,14 +199,17 @@ public final class Image3D extends Image<Vector3L> {
                 CL10.clReleaseEvent(waitList.get(0));
                 waitList.put(0, event.get(0)).rewind();
                 event.rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handle, waitList, event);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, waitList, event);
             }
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
     @Override
-    public <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination, @NonNull Vector3L from, int fromMipmap, @NonNull CT2 to, int toMipmap, @NonNull CT2 size, long... dependencies) {
+    public <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination, @NonNull Vector3L from, int fromMipmap, @NonNull CT2 to, int toMipmap, @NonNull CT2 size, long... dependencies) {
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
         try (MemoryStack substack = stack.push()) {
             PointerBuffer handles = null;
             PointerBuffer fromBuf = substack.mallocPointer(4);
@@ -222,7 +234,7 @@ public final class Image3D extends Image<Vector3L> {
                 }
                 handles.put(this.handle);
                 handles.rewind();
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, handles, deps, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, handles, deps, ev);
                 if (deps == null)
                     deps = substack.mallocPointer(1);
                 else
@@ -234,7 +246,7 @@ public final class Image3D extends Image<Vector3L> {
                 handles = substack.mallocPointer(1);
                 handles.put(destination.handle);
                 handles.rewind();
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, handles, deps, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, handles, deps, ev);
                 if (deps == null)
                     deps = substack.mallocPointer(1);
                 else
@@ -243,7 +255,7 @@ public final class Image3D extends Image<Vector3L> {
                 deps.put(0, ev.get(0));
                 deps.rewind();
             }
-            handleEnqueueCopyImageError(CL12.clEnqueueCopyImage(commandQueue,
+            handleEnqueueCopyImageError(CL12.clEnqueueCopyImage(commandQueue.commandQueue,
                     this.handle, destination.handle,
                     fromBuf, getCoordinates(substack, to, toMipmap),
                     getRegion(substack, size),
@@ -254,19 +266,22 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else if (handles != null) {
                 deps.put(0, ev.get(0));
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, handles, deps.slice(0,1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handles, deps.slice(0,1), ev);
                 CL10.clReleaseEvent(deps.get(0));
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public <B extends Buffer> long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, long... dependencies) {
+    public <B extends Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -274,7 +289,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -283,19 +298,19 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(switch (buffer) {
-                case ByteBuffer bb -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                case ByteBuffer bb -> CL12.clEnqueueReadImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, bb, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case ShortBuffer sb -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                case ShortBuffer sb -> CL12.clEnqueueReadImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, sb, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case IntBuffer ib -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                case IntBuffer ib -> CL12.clEnqueueReadImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, ib, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case FloatBuffer fb -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                case FloatBuffer fb -> CL12.clEnqueueReadImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, fb, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case DoubleBuffer db -> CL12.clEnqueueReadImage(commandQueue, this.handle, blocking,
+                case DoubleBuffer db -> CL12.clEnqueueReadImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, db, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
@@ -305,18 +320,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -324,7 +342,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -333,7 +351,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
-                    commandQueue, this.handle, blocking,
+                    commandQueue.commandQueue, this.handle, blocking,
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
@@ -342,18 +360,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -361,7 +382,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -370,7 +391,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
-                    commandQueue, this.handle, blocking,
+                    commandQueue.commandQueue, this.handle, blocking,
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
@@ -379,18 +400,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -398,7 +422,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -407,7 +431,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
-                    commandQueue, this.handle, blocking,
+                    commandQueue.commandQueue, this.handle, blocking,
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
@@ -416,18 +440,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -435,7 +462,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -444,7 +471,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
-                    commandQueue, this.handle, blocking,
+                    commandQueue.commandQueue, this.handle, blocking,
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
@@ -453,18 +480,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public <B extends Buffer> long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, long... dependencies) {
+    public <B extends Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -472,7 +502,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -481,19 +511,19 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(switch (buffer) {
-                case ByteBuffer bb -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                case ByteBuffer bb -> CL12.clEnqueueWriteImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, bb, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case ShortBuffer sb -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                case ShortBuffer sb -> CL12.clEnqueueWriteImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, sb, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case IntBuffer ib -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                case IntBuffer ib -> CL12.clEnqueueWriteImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, ib, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case FloatBuffer fb -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                case FloatBuffer fb -> CL12.clEnqueueWriteImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, fb, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
-                case DoubleBuffer db -> CL12.clEnqueueWriteImage(commandQueue, this.handle, blocking,
+                case DoubleBuffer db -> CL12.clEnqueueWriteImage(commandQueue.commandQueue, this.handle, blocking,
                         getCoordinates(substack, from, mipmap), getRegion(substack, size),
                         rowPitch, slicePitch, db, this.isGLTexture() ? waitList.slice(0, 1) : waitList, ev);
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
@@ -503,18 +533,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -522,7 +555,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -531,7 +564,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
-                    commandQueue, this.handle, blocking,
+                    commandQueue.commandQueue, this.handle, blocking,
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
@@ -540,42 +573,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
-
-        try (MemoryStack substack = stack.push()) {
-            PointerBuffer waitList = null;
-            if (dependencies != null && dependencies.length > 0)
-                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
-            PointerBuffer ev = substack.mallocPointer(1);
-            handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
-                    commandQueue, this.handle, blocking,
-                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
-                    rowPitch, slicePitch, array, waitList, ev
-            ));
-            if (dependencies != null)
-                for (long dependency : dependencies)
-                    CL10.clReleaseEvent(dependency);
-            return ev.get(0);
-        }
-    }
-
-    @Override
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -583,7 +595,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -592,7 +604,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
-                    commandQueue, this.handle, blocking,
+                    commandQueue.commandQueue, this.handle, blocking,
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
@@ -601,18 +613,21 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
 
     @Override
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
         Preconditions.checkArgument(from.x + size.x < this.size.x);
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(from.z + size.z < this.size.z);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -620,7 +635,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
             PointerBuffer ev = substack.mallocPointer(1);
             if (this.isGLTexture()) {
-                CL12GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, waitList, ev);
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
                 if (dependencies != null)
                     for (long dependency : dependencies)
                         CL10.clReleaseEvent(dependency);
@@ -629,7 +644,7 @@ public final class Image3D extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
-                    commandQueue, this.handle, blocking,
+                    commandQueue.commandQueue, this.handle, blocking,
                     getCoordinates(substack, from, mipmap), getRegion(substack, size),
                     rowPitch, slicePitch, array, waitList, ev
             ));
@@ -638,8 +653,50 @@ public final class Image3D extends Image<Vector3L> {
                     CL10.clReleaseEvent(dependency);
             else {
                 waitList.put(0, ev.get(0)).rewind();
-                CL12GL.clEnqueueReleaseGLObjects(commandQueue, this.handle, waitList.slice(0, 1), ev);
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
             }
+            this.reference(commandQueue);
+            return ev.get(0);
+        }
+    }
+
+    @Override
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+        Preconditions.checkArgument(from.x + size.x < this.size.x);
+        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.z + size.z < this.size.z);
+        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer waitList = null;
+            if (dependencies != null && dependencies.length > 0)
+                waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
+            PointerBuffer ev = substack.mallocPointer(1);
+            if (this.isGLTexture()) {
+                CL12GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, waitList, ev);
+                if (dependencies != null)
+                    for (long dependency : dependencies)
+                        CL10.clReleaseEvent(dependency);
+                else
+                    waitList = substack.mallocPointer(1);
+                waitList.put(0, ev.get(0)).rewind();
+            }
+            handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
+                    commandQueue.commandQueue, this.handle, blocking,
+                    getCoordinates(substack, from, mipmap), getRegion(substack, size),
+                    rowPitch, slicePitch, array, waitList, ev
+            ));
+            if (dependencies != null && !this.isGLTexture())
+                for (long dependency : dependencies)
+                    CL10.clReleaseEvent(dependency);
+            else {
+                waitList.put(0, ev.get(0)).rewind();
+                CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
+                        waitList.slice(0, 1), ev);
+            }
+            this.reference(commandQueue);
             return ev.get(0);
         }
     }
