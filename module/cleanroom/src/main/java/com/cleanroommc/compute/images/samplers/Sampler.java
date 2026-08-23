@@ -2,6 +2,7 @@ package com.cleanroommc.compute.images.samplers;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.errors.ImageError;
+import com.cleanroommc.compute.smrtptr.SmartPointer;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opencl.CL10;
@@ -9,12 +10,10 @@ import org.lwjgl.opencl.CL20;
 import org.lwjgl.opencl.KHRMipmapImage;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 
-public final class Sampler implements Closeable {
+public final class Sampler extends SmartPointer {
 
     public final boolean normalized;
     public final @NonNull AddressingMode addressingMode;
@@ -30,6 +29,7 @@ public final class Sampler implements Closeable {
                    @Nullable FilteringMode mipmapFilteringMode,
                    float levelOfDetailMinimum,
                    float levelOfDetailMaximum) {
+        super();
         this.normalized = normalized;
         this.addressingMode = addressingMode;
         this.filteringMode = filteringMode;
@@ -59,7 +59,8 @@ public final class Sampler implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
+        super.close();
         CL20.clReleaseSampler(handle);
     }
 }
