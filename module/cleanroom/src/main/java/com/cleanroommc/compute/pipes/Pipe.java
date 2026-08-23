@@ -3,15 +3,15 @@ package com.cleanroommc.compute.pipes;
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.errors.PipeError;
 import com.cleanroommc.compute.types.OpenCLType;
+import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
 
-import java.io.Closeable;
 import java.io.IOException;
 
-public class Pipe implements Closeable {
+public class Pipe extends SmartPointer {
 
     public final long handle;
     public final int capacity;
@@ -29,6 +29,7 @@ public class Pipe implements Closeable {
     }
 
     public Pipe(int capacity, int packetSize) {
+        super();
         Preconditions.checkState(Compute.instance().supportsPipes, "Pipes are not supported.");
         Preconditions.checkArgument(capacity > 0);
         Preconditions.checkArgument(packetSize > 0);
@@ -50,7 +51,8 @@ public class Pipe implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
+        super.close();
         CL20.clReleaseMemObject(handle);
     }
 }
