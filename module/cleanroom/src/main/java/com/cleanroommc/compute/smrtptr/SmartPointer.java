@@ -1,8 +1,5 @@
 package com.cleanroommc.compute.smrtptr;
 
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
-
 import java.io.Closeable;
 
 public abstract class SmartPointer implements Closeable {
@@ -14,29 +11,32 @@ public abstract class SmartPointer implements Closeable {
     public SmartPointer(final short startTTL) {
         this.startTTL = startTTL;
         this.ttl = startTTL;
-        synchronized (REFERENCES) {
-            REFERENCES.addNode(this);
+        synchronized (GarbageCollector.INSTANCE.referenceGraph) {
+            GarbageCollector.INSTANCE.referenceGraph.addNode(this);
         }
     }
 
     public SmartPointer() {
-        this(START_TTL);
+        this(GarbageCollector.INSTANCE.startTTL);
     }
 
     public final void reference(SmartPointer pointer) {
-        synchronized (REFERENCES) {
-            REFERENCES.putEdge(this, pointer);
+        synchronized (GarbageCollector.INSTANCE.referenceGraph) {
+            GarbageCollector.INSTANCE.referenceGraph.putEdge(this, pointer);
         }
         this.ttl = startTTL;
     }
 
     public final void dereference(SmartPointer pointer) {
-        synchronized (REFERENCES) {
-            REFERENCES.removeEdge(this, pointer);
+        synchronized (GarbageCollector.INSTANCE.referenceGraph) {
+            GarbageCollector.INSTANCE.referenceGraph.removeEdge(this, pointer);
         }
+    }
+
+    public final void tick() {
         if (this.ttl == 0)
             this.close();
-        else if (REFERENCES.adjacentNodes(this).isEmpty()) // Only reading. Shouldn't cause data races
+        else if (GarbageCollector.INSTANCE.referenceGraph.adjacentNodes(this).isEmpty()) // Only reading. Shouldn't cause data races
             this.ttl--;
     }
 
@@ -51,11 +51,8 @@ public abstract class SmartPointer implements Closeable {
     @Override
     public void close() {
         this.isClosed = true;
-        synchronized (REFERENCES) {
-            REFERENCES.removeNode(this);
+        synchronized (GarbageCollector.INSTANCE.referenceGraph) {
+            GarbageCollector.INSTANCE.referenceGraph.removeNode(this);
         }
     }
-
-    private static final short START_TTL = 16; // TODO: Pull from config
-    private static final MutableGraph<SmartPointer> REFERENCES = GraphBuilder.undirected().allowsSelfLoops(false).build();
 }
