@@ -1,7 +1,9 @@
 package com.cleanroommc.compute.buffers;
 
 import com.cleanroommc.compute.Compute;
+import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.BufferError;
+import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.cleanroommc.kirino.gl.buffer.GLBuffer;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -22,7 +24,7 @@ import java.nio.*;
 import java.util.List;
 import java.util.Set;
 
-public class Buffer implements Closeable {
+public class Buffer extends SmartPointer {
 
     private final @Nullable Buffer parent;
     private final List<Buffer> children = new ReferenceArrayList<>();
@@ -30,7 +32,6 @@ public class Buffer implements Closeable {
     public final long size;
     private final Set<BufferFlags> flags = new ObjectArraySet<>();
     private final @Nullable GLBuffer glBuffer;
-    private boolean isClosed = false;
     public final boolean canRead;
     public final boolean canWrite;
 
@@ -39,6 +40,8 @@ public class Buffer implements Closeable {
         Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
+
+        super();
 
         long openCLFlags = 0;
         boolean canRead = false;
@@ -76,6 +79,8 @@ public class Buffer implements Closeable {
         Preconditions.checkNotNull(hostMemoryBuffer);
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
+
+        super();
 
         long openCLFlags = CL10.CL_MEM_COPY_HOST_PTR;
         boolean canRead = false;
@@ -132,6 +137,8 @@ public class Buffer implements Closeable {
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
 
+        super();
+
         long openCLFlags = 0;
         boolean canRead = false;
         boolean canWrite = false;
@@ -179,6 +186,8 @@ public class Buffer implements Closeable {
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
 
+        super();
+
         long openCLFlags = 0;
         boolean canRead = false;
         boolean canWrite = false;
@@ -214,6 +223,8 @@ public class Buffer implements Closeable {
         Preconditions.checkNotNull(hostMemoryBuffer);
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
+
+        super();
 
         long openCLFlags = CL10.CL_MEM_COPY_HOST_PTR;
         boolean canRead = false;
@@ -269,6 +280,8 @@ public class Buffer implements Closeable {
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
 
+        super();
+
         long openCLFlags = 0;
         boolean canRead = false;
         boolean canWrite = false;
@@ -317,6 +330,8 @@ public class Buffer implements Closeable {
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
         Preconditions.checkArgument(glBuffer.bufferID != 0, "Can't create buffer from a null GL buffer.");
 
+        super();
+
         long openCLFlags = 0;
         boolean canRead = false;
         boolean canWrite = false;
@@ -352,7 +367,109 @@ public class Buffer implements Closeable {
         }
     }
 
-    public long write(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 4;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
+        if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size,
+                "Attempted to write more data than the buffer can hold.");
+        Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            if (glBuffer != null)
+                acquireGLObjects(substack, commandQueue, dependencies, event);
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
+            return event.get(0);
+        }
+    }
+
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, double @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 8;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
+        if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size,
+                "Attempted to write more data than the buffer can hold.");
+        Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            if (glBuffer != null)
+                acquireGLObjects(substack, commandQueue, dependencies, event);
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
+            return event.get(0);
+        }
+    }
+
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 2;
+
+        Preconditions.checkNotNull(stack);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
+        if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
+        Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
+
+        try (MemoryStack substack = stack.push()) {
+            PointerBuffer dependencies;
+            if (events != null && events.length > 0) {
+                dependencies = substack.mallocPointer(events.length);
+                dependencies.put(events);
+                dependencies.rewind();
+            } else {
+                dependencies = null;
+            }
+            PointerBuffer event = substack.mallocPointer(1);
+            if (glBuffer != null)
+                acquireGLObjects(substack, commandQueue, dependencies, event);
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data,
+                    glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
+                for (long dependency : events)
+                    CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
+            return event.get(0);
+        }
+    }
+
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] data, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -360,6 +477,7 @@ public class Buffer implements Closeable {
         Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -373,24 +491,33 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data,
+                    glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long write(@NonNull MemoryStack stack, long commandQueue, double @NonNull [] data, boolean blocking, long offset, long... events) {
-        final int sizeof = 8;
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, byte @NonNull [] data, boolean blocking, long offset, long... events) {
+        final int sizeof = 1;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            ByteBuffer buffer = substack.malloc(data.length);
+            buffer.put(data);
+            buffer.flip();
+
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -402,20 +529,24 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, buffer, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull ByteBuffer data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull ByteBuffer data, boolean blocking, long offset, long... events) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkArgument(data.remaining() > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + data.remaining() <= size, "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -429,15 +560,18 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull ShortBuffer data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull ShortBuffer data, boolean blocking, long offset, long... events) {
         final int sizeof = 2;
 
         Preconditions.checkNotNull(stack);
@@ -445,6 +579,7 @@ public class Buffer implements Closeable {
         Preconditions.checkArgument(data.remaining() > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.remaining() * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -458,15 +593,18 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull IntBuffer data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull IntBuffer data, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -474,6 +612,7 @@ public class Buffer implements Closeable {
         Preconditions.checkArgument(data.remaining() > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.remaining() * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -487,15 +626,18 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull FloatBuffer data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull FloatBuffer data, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -503,6 +645,7 @@ public class Buffer implements Closeable {
         Preconditions.checkArgument(data.remaining() > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.remaining() * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -516,15 +659,18 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
+            else if (glBuffer != null)
+                releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long write(@NonNull MemoryStack stack, long commandQueue, @NonNull DoubleBuffer data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull DoubleBuffer data, boolean blocking, long offset, long... events) {
         final int sizeof = 8;
 
         Preconditions.checkNotNull(stack);
@@ -532,6 +678,7 @@ public class Buffer implements Closeable {
         Preconditions.checkArgument(data.remaining() > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.remaining() * sizeof) <= size, "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -545,23 +692,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull ByteBuffer target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull ByteBuffer target, boolean blocking, long offset, long... events) {
         final int sizeof = 1;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.remaining() >= sizeof, "Attempted to write to a buffer that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -575,23 +724,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull ShortBuffer target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull ShortBuffer target, boolean blocking, long offset, long... events) {
         final int sizeof = 2;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.remaining() >= sizeof, "Attempted to write to a buffer that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -605,23 +756,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull IntBuffer target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull IntBuffer target, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.remaining() >= sizeof, "Attempted to write to a buffer that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -635,23 +788,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull FloatBuffer target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull FloatBuffer target, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.remaining() >= sizeof, "Attempted to write to a buffer that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -665,23 +820,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, @NonNull DoubleBuffer target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull DoubleBuffer target, boolean blocking, long offset, long... events) {
         final int sizeof = 8;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.remaining() >= sizeof, "Attempted to write to a buffer that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -695,23 +852,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, short @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 2;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -725,23 +884,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -755,23 +916,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -785,23 +948,25 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
-    public long read(@NonNull MemoryStack stack, long commandQueue, double @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, double @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 8;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
+        Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer dependencies;
@@ -815,21 +980,22 @@ public class Buffer implements Closeable {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
                 for (long dependency : events)
                     CL10.clReleaseEvent(dependency);
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
+            this.reference(commandQueue);
             return event.get(0);
         }
     }
 
     @Override
-    public void close() throws IOException {
-        this.isClosed = true;
+    public void close() {
+        super.close();
         for(Buffer child : children) {
-            if (!child.isClosed)
+            if (child.isClosed())
                 child.close();
         }
         CL10.clReleaseMemObject(handle);
@@ -839,8 +1005,8 @@ public class Buffer implements Closeable {
         return glBuffer != null;
     }
 
-    private void acquireGLObjects(MemoryStack substack, long commandQueue, PointerBuffer dependencies, PointerBuffer event, long... events) {
-        CL10GL.clEnqueueAcquireGLObjects(commandQueue, this.handle, dependencies, event);
+    public void acquireGLObjects(MemoryStack substack, CommandQueue commandQueue, PointerBuffer dependencies, PointerBuffer event, long... events) {
+        CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, dependencies, event);
         if (dependencies != null) {
             for (long dependency : events)
                 CL10.clReleaseEvent(dependency);
@@ -852,9 +1018,9 @@ public class Buffer implements Closeable {
         dependencies.rewind();
     }
 
-    private void releaseGLObjects(long commandQueue, PointerBuffer dependencies, PointerBuffer event) {
+    public void releaseGLObjects(CommandQueue commandQueue, PointerBuffer dependencies, PointerBuffer event) {
         dependencies.put(0, event.get(0)).rewind();
-        CL10GL.clEnqueueReleaseGLObjects(commandQueue, handle, dependencies, event);
+        CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, dependencies, event);
         CL10.clReleaseEvent(dependencies.get(0));
     }
 
