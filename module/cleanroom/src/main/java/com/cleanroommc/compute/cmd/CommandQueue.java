@@ -6,6 +6,7 @@ import com.cleanroommc.compute.errors.UnavaliableDeviceError;
 import com.cleanroommc.compute.images.Image;
 import com.cleanroommc.compute.kernels.Kernel;
 import com.cleanroommc.compute.kernels.params.KernelParameterList;
+import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -13,16 +14,15 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.nio.*;
 
-public class CommandQueue implements Closeable {
+public class CommandQueue extends SmartPointer {
 
     public final long commandQueue;
     private final long device;
 
     public CommandQueue(long device) {
+        super();
         int[] err = new int[1];
         commandQueue = CL20.clCreateCommandQueueWithProperties(
                 Compute.instance().context,
@@ -108,7 +108,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -118,7 +118,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -127,7 +127,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -136,7 +136,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -214,7 +214,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -224,7 +224,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -233,7 +233,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -242,7 +242,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -324,7 +324,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -334,7 +334,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -343,7 +343,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -352,7 +352,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -430,7 +430,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -440,7 +440,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -449,7 +449,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -458,7 +458,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -540,7 +540,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -550,7 +550,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -559,7 +559,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -568,7 +568,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -650,7 +650,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -660,7 +660,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -669,7 +669,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -678,7 +678,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -756,7 +756,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -766,7 +766,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -775,7 +775,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -784,7 +784,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -866,7 +866,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -876,7 +876,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -885,7 +885,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -894,7 +894,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -972,7 +972,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -982,7 +982,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, offset, events), stack);
+        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -991,7 +991,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, blocking, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1000,7 +1000,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, commandQueue, data, true, 0, events), stack);
+        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -1086,7 +1086,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1096,7 +1096,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1106,7 +1106,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1115,7 +1115,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1126,7 +1126,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1136,7 +1136,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1146,7 +1146,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1155,7 +1155,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -1290,7 +1290,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1300,7 +1300,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1310,7 +1310,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1319,7 +1319,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1330,7 +1330,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1340,7 +1340,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1350,7 +1350,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1359,7 +1359,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -1494,7 +1494,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1504,7 +1504,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1514,7 +1514,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1523,7 +1523,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -1598,7 +1598,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1608,7 +1608,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1618,7 +1618,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1627,7 +1627,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1638,7 +1638,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1648,7 +1648,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1658,7 +1658,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1667,7 +1667,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -1802,7 +1802,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1812,7 +1812,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1822,7 +1822,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1831,7 +1831,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1842,7 +1842,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1852,7 +1852,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, offset, events), stack);
+        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1862,7 +1862,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, blocking, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -1871,7 +1871,7 @@ public class CommandQueue implements Closeable {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this.commandQueue, target, true, 0, events), stack);
+        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -2610,7 +2610,8 @@ public class CommandQueue implements Closeable {
     //</editor-fold>
 
     @Override
-    public void close() throws IOException {
+    public void close() {
+        super.close();
         CL20.clReleaseCommandQueue(commandQueue);
     }
 
