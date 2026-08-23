@@ -2,8 +2,10 @@ package com.cleanroommc.compute.images;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.buffers.BufferFlags;
+import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.ImageError;
 import com.cleanroommc.kirino.gl.texture.GLTexture;
+import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2L;
 import org.joml.Vector3L;
@@ -13,11 +15,10 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public sealed abstract class Image<CT> implements Closeable permits Image1D, Image1DArray, Image2D, Image2DArray, Image3D {
+public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Image1DArray, Image2D, Image2DArray, Image3D {
 
     public final long handle;
     protected final Vector3L size;
@@ -30,6 +31,7 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
                     @NonNull CLImageFormat format,
                     @NonNull CLImageDesc descriptor,
                     @Nullable ByteBuffer hostMemory) {
+        super();
         Preconditions.checkState(Compute.instance().supportsImages, "Images are not supported.");
         Preconditions.checkState(!(descriptor.num_mip_levels() > 0) || Compute.instance().supportsMipmaps, "Mipmaps are not supported.");
         Preconditions.checkNotNull(stack);
@@ -84,6 +86,7 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
     }
 
     public Image(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+        super();
         Preconditions.checkState(Compute.instance().supportsImages, "Images are not supported.");
         Preconditions.checkState(!(mipLevel > 0) || Compute.instance().supportsMipmaps, "Mipmaps are not supported.");
         Preconditions.checkNotNull(texture);
@@ -122,125 +125,125 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
         return this.size.z;
     }
 
-    public abstract <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
-    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
-    public abstract long fill(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
-    public final <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, long commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+    public abstract <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public final <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, long... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
-    public final long fill(@NonNull MemoryStack stack, long commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
-    public final long fill(@NonNull MemoryStack stack, long commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
 
-    public abstract <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+    public abstract <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                     @NonNull CT from, int fromMipmap, @NonNull CT2 to, int toMipmap,
                                     @NonNull CT2 size, long... dependencies);
-    public final <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+    public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                  @NonNull CT from, @NonNull CT2 to, int toMipmap,
                                  @NonNull CT2 size, long... dependencies) {
         return this.copy(stack, commandQueue, destination, from, 0, to, toMipmap, size, dependencies);
     }
-    public final <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+    public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                  @NonNull CT from, int fromMipmap, @NonNull CT2 to,
                                  @NonNull CT2 size, long... dependencies) {
         return this.copy(stack, commandQueue, destination, from, fromMipmap, to, 0, size, dependencies);
     }
-    public final <CT2> long copy(@NonNull MemoryStack stack, long commandQueue, @NonNull Image<CT2> destination,
+    public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                  @NonNull CT from, @NonNull CT2 to,
                                  @NonNull CT2 size, long... dependencies) {
         return this.copy(stack, commandQueue, destination, from, 0, to, 0, size, dependencies);
     }
 
-    public abstract <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
+    public abstract <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           boolean blocking, long... dependencies);
-    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, short @NonNull [] array,
                               boolean blocking, long... dependencies);
-    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, int @NonNull [] array,
                               boolean blocking, long... dependencies);
-    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, float @NonNull [] array,
                               boolean blocking, long... dependencies);
-    public abstract long read(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, double @NonNull [] array,
                               boolean blocking, long... dependencies);
-    public final <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, long commandQueue,
+    public final <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, long... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
-    public final long read(@NonNull MemoryStack stack, long commandQueue,
+    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, short @NonNull [] array,
                            boolean blocking, long... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
-    public final long read(@NonNull MemoryStack stack, long commandQueue,
+    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, int @NonNull [] array,
                            boolean blocking, long... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
-    public final long read(@NonNull MemoryStack stack, long commandQueue,
+    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, float @NonNull [] array,
                            boolean blocking, long... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
-    public final long read(@NonNull MemoryStack stack, long commandQueue,
+    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, double @NonNull [] array,
                            boolean blocking, long... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
 
-    public abstract <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
+    public abstract <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
                                                            boolean blocking, long... dependencies);
-    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
                                boolean blocking, long... dependencies);
-    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
                                boolean blocking, long... dependencies);
-    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
                                boolean blocking, long... dependencies);
-    public abstract long write(@NonNull MemoryStack stack, long commandQueue,
+    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
                                boolean blocking, long... dependencies);
-    public final <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, long commandQueue,
+    public final <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                                         @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, long... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
-    public final long write(@NonNull MemoryStack stack, long commandQueue,
+    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, short @NonNull [] array,
                             boolean blocking, long... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
-    public final long write(@NonNull MemoryStack stack, long commandQueue,
+    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, int @NonNull [] array,
                             boolean blocking, long... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
-    public final long write(@NonNull MemoryStack stack, long commandQueue,
+    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, float @NonNull [] array,
                             boolean blocking, long... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
-    public final long write(@NonNull MemoryStack stack, long commandQueue,
+    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, double @NonNull [] array,
                             boolean blocking, long... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
@@ -248,6 +251,7 @@ public sealed abstract class Image<CT> implements Closeable permits Image1D, Ima
 
     @Override
     public final void close() {
+        super.close();
         CL12.clReleaseMemObject(this.handle);
     }
 

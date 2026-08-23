@@ -2008,7 +2008,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(color);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.fill(stack, this.commandQueue, color, from, size, mipmap, dependencies), stack);
+        return new Event(image.fill(stack, this, color, from, size, mipmap, dependencies), stack);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2019,7 +2019,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(color);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.fill(stack, this.commandQueue, color, from, size, dependencies), stack);
+        return new Event(image.fill(stack, this, color, from, size, dependencies), stack);
     }
 
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2030,7 +2030,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(color);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.fill(stack, this.commandQueue, color, from, size, mipmap, dependencies), stack);
+        return new Event(image.fill(stack, this, color, from, size, mipmap, dependencies), stack);
     }
 
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2041,7 +2041,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(color);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.fill(stack, this.commandQueue, color, from, size, dependencies), stack);
+        return new Event(image.fill(stack, this, color, from, size, dependencies), stack);
     }
 
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2052,7 +2052,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(color);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.fill(stack, this.commandQueue, color, from, size, mipmap, dependencies), stack);
+        return new Event(image.fill(stack, this, color, from, size, mipmap, dependencies), stack);
     }
 
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2063,7 +2063,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(color);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.fill(stack, this.commandQueue, color, from, size, dependencies), stack);
+        return new Event(image.fill(stack, this, color, from, size, dependencies), stack);
     }
 
     //</editor-fold>
@@ -2081,7 +2081,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(to);
         Preconditions.checkNotNull(size);
-        return new Event(start.copy(stack, this.commandQueue, destination, from, mipmapFrom, to, mipmapTo, size, dependencies), stack);
+        return new Event(start.copy(stack, this, destination, from, mipmapFrom, to, mipmapTo, size, dependencies), stack);
     }
 
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
@@ -2095,7 +2095,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(to);
         Preconditions.checkNotNull(size);
-        return new Event(start.copy(stack, this.commandQueue, destination, from, to, mipmapTo, size, dependencies), stack);
+        return new Event(start.copy(stack, this, destination, from, to, mipmapTo, size, dependencies), stack);
     }
 
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
@@ -2109,7 +2109,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(to);
         Preconditions.checkNotNull(size);
-        return new Event(start.copy(stack, this.commandQueue, destination, from, mipmapFrom, to, size, dependencies), stack);
+        return new Event(start.copy(stack, this, destination, from, mipmapFrom, to, size, dependencies), stack);
     }
 
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
@@ -2123,7 +2123,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(to);
         Preconditions.checkNotNull(size);
-        return new Event(start.copy(stack, this.commandQueue, destination, from, to, size, dependencies), stack);
+        return new Event(start.copy(stack, this, destination, from, to, size, dependencies), stack);
     }
 
     //</editor-fold>
@@ -2139,7 +2139,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2151,7 +2151,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2163,7 +2163,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2175,7 +2175,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2187,7 +2187,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2199,7 +2199,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2211,7 +2211,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2223,7 +2223,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2235,7 +2235,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2247,7 +2247,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2259,7 +2259,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2271,7 +2271,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2283,7 +2283,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2295,7 +2295,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2307,7 +2307,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2319,7 +2319,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2331,7 +2331,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2343,7 +2343,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2355,7 +2355,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2367,7 +2367,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.read(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
 
@@ -2384,7 +2384,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2395,7 +2395,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2407,7 +2407,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2418,7 +2418,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2430,7 +2430,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2441,7 +2441,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2453,7 +2453,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2464,7 +2464,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
 
@@ -2477,7 +2477,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2488,7 +2488,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2500,7 +2500,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2511,7 +2511,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2523,7 +2523,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2534,7 +2534,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2546,7 +2546,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2557,7 +2557,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
 
@@ -2570,7 +2570,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2581,7 +2581,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2593,7 +2593,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -2604,7 +2604,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this.commandQueue, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
     //</editor-fold>
