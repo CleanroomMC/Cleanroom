@@ -18,7 +18,6 @@ import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.*;
-import java.util.Arrays;
 import java.util.Set;
 
 public class CommandQueue extends SmartPointer {
@@ -113,7 +112,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, offset, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -123,7 +122,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, offset, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -132,7 +131,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, 0, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -141,7 +140,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, 0, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -223,7 +222,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, offset, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -233,7 +232,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, offset, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -242,7 +241,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, 0, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -251,7 +250,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, 0, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -337,9 +336,12 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
 
-        return new Event(
+        return createWriteEvent(
                 buffer.write(stack, this, data, blocking, offset, events),
-                stack
+                stack,
+                buffer,
+                blocking,
+                null
         );
     }
 
@@ -439,7 +441,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, offset, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -449,7 +451,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, offset, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -458,7 +460,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, 0, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -467,7 +469,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, 0, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -549,7 +551,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, offset, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -559,7 +561,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, offset, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -568,7 +570,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, blocking, 0, events), stack, buffer, blocking, null);
     }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
@@ -577,7 +579,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
+        return createWriteEvent(buffer.write(stack, this, data, true, 0, events), stack, buffer, true, null);
     }
 
     public Event bufferWrite(@NonNull Buffer buffer,
@@ -1564,7 +1566,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1575,7 +1577,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack, image, true, null);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1587,7 +1589,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1598,7 +1600,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack, image, true, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1610,7 +1612,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1621,7 +1623,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1633,7 +1635,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1644,7 +1646,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
 
@@ -1657,7 +1659,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1668,7 +1670,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1680,7 +1682,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1691,7 +1693,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1703,7 +1705,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1714,7 +1716,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1726,7 +1728,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1737,7 +1739,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
 
@@ -1750,7 +1752,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1761,7 +1763,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1773,7 +1775,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -1784,7 +1786,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(array);
         Preconditions.checkNotNull(from);
         Preconditions.checkNotNull(size);
-        return new Event(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
+        return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
     //</editor-fold>
@@ -1793,6 +1795,16 @@ public class CommandQueue extends SmartPointer {
     public void close() {
         super.close();
         CL20.clReleaseCommandQueue(commandQueue);
+    }
+
+    private Event createWriteEvent(long eventID,
+                                   @NonNull MemoryStack stack,
+                                   @NonNull SmartPointer object,
+                                   boolean blocking,
+                                   @Nullable Set<SmartPointer> nonBlockingWrites) {
+        Event event = new Event(eventID, stack, nonBlockingWrites);
+        event.updateNonBlockingWrites(object, blocking);
+        return event;
     }
 
     public final class Event {
@@ -1809,18 +1821,13 @@ public class CommandQueue extends SmartPointer {
          */
         private boolean chainable = true;
 
-        private final @Nullable Set<SmartPointer> nonBlockingWrites;
+        private @Nullable Set<SmartPointer> nonBlockingWrites;
 
-        Event(long eventID, @NonNull MemoryStack stack, SmartPointer @Nullable ... nonBlockingWrites) {
-            this.eventID = eventID;
-            this.stack = Preconditions.checkNotNull(stack);
-            if (nonBlockingWrites != null && nonBlockingWrites.length > 0)
-                this.nonBlockingWrites = new ReferenceArraySet<>(Arrays.asList(nonBlockingWrites));
-            else
-                this.nonBlockingWrites = null;
+        Event(long eventID, @NonNull MemoryStack stack) {
+            this(eventID, stack, null);
         }
 
-        Event(long eventID, @NonNull MemoryStack stack, Set<SmartPointer> nonBlockingWrites) {
+        Event(long eventID, @NonNull MemoryStack stack, @Nullable Set<SmartPointer> nonBlockingWrites) {
             this.eventID = eventID;
             this.stack = Preconditions.checkNotNull(stack);
             this.nonBlockingWrites = nonBlockingWrites;
@@ -1835,7 +1842,10 @@ public class CommandQueue extends SmartPointer {
             Preconditions.checkNotNull(arguments);
             Preconditions.checkNotNull(workGroupSizes);
 
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -1861,7 +1871,10 @@ public class CommandQueue extends SmartPointer {
             Preconditions.checkNotNull(kernel);
             Preconditions.checkNotNull(arguments);
 
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -1887,12 +1900,15 @@ public class CommandQueue extends SmartPointer {
                                     final long offset,
                                     final boolean blocking,
                                     final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -1904,7 +1920,10 @@ public class CommandQueue extends SmartPointer {
                            final long offset,
                            final float @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -1914,6 +1933,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -1921,12 +1941,15 @@ public class CommandQueue extends SmartPointer {
                            final float @NonNull [] data,
                            final boolean blocking,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -1937,7 +1960,10 @@ public class CommandQueue extends SmartPointer {
         public Event write(@NonNull Buffer buffer,
                            final float @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -1947,6 +1973,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -1958,12 +1985,15 @@ public class CommandQueue extends SmartPointer {
                            final long offset,
                            final boolean blocking,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -1975,7 +2005,10 @@ public class CommandQueue extends SmartPointer {
                            final long offset,
                            final double @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -1985,6 +2018,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -1992,12 +2026,15 @@ public class CommandQueue extends SmartPointer {
                            final double @NonNull [] data,
                            final boolean blocking,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -2008,7 +2045,10 @@ public class CommandQueue extends SmartPointer {
         public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2018,6 +2058,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2031,19 +2072,21 @@ public class CommandQueue extends SmartPointer {
                 boolean blocking,
                 final Event... dependencies
         ) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
 
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(
+                next = createWriteEvent(
+                        buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs),
                         stack,
                         buffer,
-                        data,
-                        offset,
                         blocking,
-                        dependencyIDs
+                        nonBlockingWrites
                 );
             } finally {
                 releaseDependencies(dependencies);
@@ -2085,12 +2128,15 @@ public class CommandQueue extends SmartPointer {
                            final long offset,
                            final boolean blocking,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -2102,7 +2148,10 @@ public class CommandQueue extends SmartPointer {
                            final long offset,
                            final short @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2112,6 +2161,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2119,12 +2169,15 @@ public class CommandQueue extends SmartPointer {
                            final short @NonNull [] data,
                            final boolean blocking,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -2135,7 +2188,10 @@ public class CommandQueue extends SmartPointer {
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2145,6 +2201,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2156,12 +2213,15 @@ public class CommandQueue extends SmartPointer {
                            final long offset,
                            final boolean blocking,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -2173,7 +2233,10 @@ public class CommandQueue extends SmartPointer {
                            final long offset,
                            final int @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2183,6 +2246,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2190,12 +2254,15 @@ public class CommandQueue extends SmartPointer {
                            final int @NonNull [] data,
                            final boolean blocking,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
+                next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -2206,7 +2273,10 @@ public class CommandQueue extends SmartPointer {
         public Event write(@NonNull Buffer buffer,
                            final int @NonNull [] data,
                            final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2216,6 +2286,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2232,11 +2303,14 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
@@ -2244,6 +2318,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2251,11 +2326,12 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           float @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -2263,6 +2339,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2270,11 +2347,14 @@ public class CommandQueue extends SmartPointer {
                           float @NonNull [] target,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
@@ -2282,17 +2362,19 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
         public Event read(@NonNull Buffer buffer,
                           float @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -2300,6 +2382,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2311,11 +2394,14 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
@@ -2323,6 +2409,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2330,11 +2417,12 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           double @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -2342,6 +2430,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2349,11 +2438,14 @@ public class CommandQueue extends SmartPointer {
                           double @NonNull [] target,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
@@ -2361,17 +2453,19 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
         public Event read(@NonNull Buffer buffer,
                           double @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -2379,6 +2473,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2392,12 +2487,15 @@ public class CommandQueue extends SmartPointer {
                 boolean blocking,
                 final Event... dependencies
         ) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
 
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(
@@ -2412,6 +2510,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2448,11 +2547,14 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
@@ -2460,6 +2562,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2467,11 +2570,12 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           short @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -2479,6 +2583,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2486,7 +2591,10 @@ public class CommandQueue extends SmartPointer {
                           short @NonNull [] target,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2496,17 +2604,19 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -2514,6 +2624,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2525,11 +2636,14 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
@@ -2537,6 +2651,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2544,11 +2659,12 @@ public class CommandQueue extends SmartPointer {
                           final long offset,
                           int @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -2556,6 +2672,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2563,11 +2680,14 @@ public class CommandQueue extends SmartPointer {
                           int @NonNull [] target,
                           final boolean blocking,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(buffer);
+            if (!blocking) checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
@@ -2575,17 +2695,19 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
         public Event read(@NonNull Buffer buffer,
                           int @NonNull [] target,
                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -2593,6 +2715,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2605,7 +2728,10 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
                                                                    @NonNull CT from, @NonNull CT size, int mipmap,
                                                                    final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2621,7 +2747,10 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
                                                                    @NonNull CT from, @NonNull CT size,
                                                                    final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2637,7 +2766,10 @@ public class CommandQueue extends SmartPointer {
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size, int mipmap,
                                         final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2653,7 +2785,10 @@ public class CommandQueue extends SmartPointer {
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size,
                                         final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2669,7 +2804,10 @@ public class CommandQueue extends SmartPointer {
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size, int mipmap,
                                         final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2685,7 +2823,10 @@ public class CommandQueue extends SmartPointer {
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size,
                                         final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2707,7 +2848,10 @@ public class CommandQueue extends SmartPointer {
                                               @NonNull CT1 from, int mipmapFrom,
                                               @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
                                               final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2726,7 +2870,10 @@ public class CommandQueue extends SmartPointer {
                                               @NonNull CT1 from,
                                               @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
                                               final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2745,7 +2892,10 @@ public class CommandQueue extends SmartPointer {
                                               @NonNull CT1 from, int mipmapFrom,
                                               @NonNull CT2 to, @NonNull CT2 size,
                                               final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2764,7 +2914,10 @@ public class CommandQueue extends SmartPointer {
                                               @NonNull CT1 from,
                                               @NonNull CT2 to, @NonNull CT2 size,
                                               final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -2788,11 +2941,14 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
@@ -2800,6 +2956,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2807,11 +2964,12 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
@@ -2819,6 +2977,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2826,11 +2985,14 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
@@ -2838,6 +3000,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2845,11 +3008,12 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
@@ -2857,6 +3021,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2864,11 +3029,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -2876,6 +3044,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2883,11 +3052,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -2895,6 +3065,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2902,11 +3073,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -2914,6 +3088,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2921,11 +3096,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -2933,6 +3109,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2940,11 +3117,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -2952,6 +3132,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2959,11 +3140,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -2971,6 +3153,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2978,11 +3161,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -2990,6 +3176,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -2997,11 +3184,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -3009,6 +3197,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3016,11 +3205,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -3028,6 +3220,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3035,11 +3228,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -3047,6 +3241,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3054,11 +3249,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -3066,6 +3264,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3073,11 +3272,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -3085,6 +3285,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3092,11 +3293,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -3104,6 +3308,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3111,11 +3316,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -3123,6 +3329,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3130,11 +3337,14 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
-            checkNonBlockingWrite(image);
+            if (!blocking) checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
@@ -3142,6 +3352,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            if (blocking) clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3149,11 +3360,12 @@ public class CommandQueue extends SmartPointer {
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
                                final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
-
-            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -3161,6 +3373,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3172,12 +3385,15 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3189,7 +3405,10 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3199,6 +3418,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3206,12 +3426,15 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3223,7 +3446,10 @@ public class CommandQueue extends SmartPointer {
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
                                                           final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3233,6 +3459,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3240,12 +3467,15 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
                                 boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3257,7 +3487,10 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3267,6 +3500,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3274,12 +3508,15 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
                                 boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3291,12 +3528,36 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
                 next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+            } finally {
+                releaseDependencies(dependencies);
+            }
+
+            clearNonBlockingWrites();
+            return transferOwnership(next);
+        }
+
+        public <CT> Event write(Image<CT> image,
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                boolean blocking, final Event... dependencies) {
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+
+            try {
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3307,25 +3568,11 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, int @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public <CT> Event write(Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, int @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3335,6 +3582,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3342,12 +3590,15 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, int @NonNull [] array,
                                 boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3359,7 +3610,10 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, int @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3369,6 +3623,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3376,12 +3631,15 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
                                 boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3393,7 +3651,10 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3403,6 +3664,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3410,12 +3672,15 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
                                 boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3427,7 +3692,10 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3437,6 +3705,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3444,12 +3713,15 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
                                 boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3461,7 +3733,10 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3471,6 +3746,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3478,12 +3754,15 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
                                 boolean blocking, final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3495,7 +3774,10 @@ public class CommandQueue extends SmartPointer {
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
                                 final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
@@ -3505,6 +3787,7 @@ public class CommandQueue extends SmartPointer {
                 releaseDependencies(dependencies);
             }
 
+            clearNonBlockingWrites();
             return transferOwnership(next);
         }
 
@@ -3512,7 +3795,10 @@ public class CommandQueue extends SmartPointer {
         //</editor-fold>
 
         public Event barrier(final Event... dependencies) {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
             PointerBuffer dependenciesBuffer = PointerBuffer.allocateDirect(dependencyIDs.length + 2);
@@ -3530,6 +3816,7 @@ public class CommandQueue extends SmartPointer {
 
             releaseDependencies(dependencies);
 
+            clearNonBlockingWrites();
             return transferOwnership(new Event(dependenciesBuffer.get(0), this.stack));
         }
 
@@ -3539,7 +3826,10 @@ public class CommandQueue extends SmartPointer {
          * A caller-supplied MemoryStack is never closed by Event.
          */
         public void execute() {
-            ensureChainable();
+            Preconditions.checkState(
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
+            );
 
             try {
                 CL10.clFlush(commandQueue);
@@ -3556,6 +3846,14 @@ public class CommandQueue extends SmartPointer {
          */
         private Event transferOwnership(Event next) {
             Preconditions.checkNotNull(next);
+
+            if (next.nonBlockingWrites == null) {
+                next.nonBlockingWrites = this.nonBlockingWrites;
+            } else if (this.nonBlockingWrites != null && next.nonBlockingWrites != this.nonBlockingWrites) {
+                this.nonBlockingWrites.addAll(next.nonBlockingWrites);
+                next.nonBlockingWrites = this.nonBlockingWrites;
+            }
+
             next.ownsStack = this.ownsStack;
             this.ownsStack = false;
             this.chainable = false;
@@ -3603,11 +3901,23 @@ public class CommandQueue extends SmartPointer {
             }
         }
 
-        private void ensureChainable() {
-            Preconditions.checkState(
-                    chainable,
-                    "This Event has already transferred or released its MemoryStack."
-            );
+        private void updateNonBlockingWrites(@NonNull SmartPointer object, boolean blocking) {
+            Preconditions.checkNotNull(object);
+
+            if (blocking) {
+                clearNonBlockingWrites();
+                return;
+            }
+
+            if (nonBlockingWrites == null) {
+                nonBlockingWrites = new ReferenceArraySet<>();
+            }
+            nonBlockingWrites.add(object);
+        }
+
+        private void clearNonBlockingWrites() {
+            if (nonBlockingWrites != null)
+                nonBlockingWrites.clear();
         }
 
         private void checkNonBlockingWrite(SmartPointer object) {
