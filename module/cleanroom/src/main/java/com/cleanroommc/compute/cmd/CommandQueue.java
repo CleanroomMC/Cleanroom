@@ -11,13 +11,14 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
+import org.lwjgl.opencl.CL12;
 import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.*;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class CommandQueue extends SmartPointer {
@@ -4946,6 +4947,28 @@ public class CommandQueue extends SmartPointer {
 
 
         //</editor-fold>
+
+        public Event barrier(final Event... dependencies) {
+            ensureChainable();
+            long[] dependencyIDs = dependencyIDs(dependencies);
+            Event next;
+            PointerBuffer dependenciesBuffer = PointerBuffer.allocateDirect(dependencyIDs.length + 2);
+            dependenciesBuffer.put(0, 0);
+            dependenciesBuffer.put(1, eventID);
+            for (long dependencyID : dependencyIDs) {
+                dependenciesBuffer.put(dependencyID);
+            }
+            dependenciesBuffer.rewind();
+
+            CL12.clEnqueueBarrierWithWaitList(commandQueue,
+                    dependenciesBuffer.slice(1, dependencyIDs.length + 1),
+                    dependenciesBuffer.slice(0, 1)
+            );
+
+            releaseDependencies(dependencies);
+
+            return transferOwnership(new Event(dependenciesBuffer.get(0), this.stack));
+        }
 
         /**
          * Flushes the queue and ends this Event chain. If the stack was created
