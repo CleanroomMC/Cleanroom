@@ -71,19 +71,11 @@ var export_arguments = [
         '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
 ]
 
-def toolConfigurations = [
-        'decompiler', 'mergetool', 'mcinjector', 'installertools', 'accesstransformer'
-] as Set
-
 configurations.configureEach { configuration ->
     exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
     // patchy ships its own copy of io.netty.bootstrap.Bootstrap
     // Against 4.2 netty it shadows the real class and dies on a superclass method that no longer exists
     exclude group: 'com.mojang', module: 'patchy'
-
-    if (configuration.name in toolConfigurations) {
-        return
-    }
 
     resolutionStrategy.eachDependency { details ->
         switch ("${details.requested.group}:${details.requested.name}") {
@@ -181,7 +173,7 @@ dependencies {
     // java-objc-bridge bumped here for updated OSX arm64 natives
     api 'ca.weblite:java-objc-bridge:1.2'
 
-    api platform('org.lwjgl:lwjgl-bom:3.4.2')
+    api platform('org.lwjgl:lwjgl-bom:3.4.3')
     api 'org.lwjgl:lwjgl'
     api 'org.lwjgl:lwjgl-jemalloc'
     api 'org.lwjgl:lwjgl-opengl'
