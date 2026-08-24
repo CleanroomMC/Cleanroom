@@ -106,112 +106,6 @@ public class CommandQueue extends SmartPointer {
     //<editor-fold desc="Buffer Write Float">
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull FloatBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull FloatBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull FloatBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull FloatBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull FloatBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull FloatBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, offset, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull FloatBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull FloatBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
                              final long offset,
                              final boolean blocking,
@@ -322,112 +216,6 @@ public class CommandQueue extends SmartPointer {
     //<editor-fold desc="Buffer Write Double">
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull DoubleBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull DoubleBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull DoubleBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull DoubleBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull DoubleBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull DoubleBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, offset, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull DoubleBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull DoubleBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final double @NonNull [] data,
                              final long offset,
                              final boolean blocking,
@@ -535,57 +323,77 @@ public class CommandQueue extends SmartPointer {
 
     //</editor-fold>
 
-    //<editor-fold desc="Buffer Write Byte">
+    //<editor-fold desc="Buffer Write NIO Buffer">
 
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull ByteBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            long offset,
+            boolean blocking,
+            long... events
+    ) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
+
+        return new Event(
+                buffer.write(stack, this, data, blocking, offset, events),
+                stack
+        );
     }
 
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull ByteBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            long offset,
+            @NonNull B data,
+            long... events
+    ) {
+        return bufferWrite(stack, buffer, data, offset, true, events);
     }
 
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull ByteBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            boolean blocking,
+            long... events
+    ) {
+        return bufferWrite(stack, buffer, data, 0, blocking, events);
     }
 
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull ByteBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            long... events
+    ) {
+        return bufferWrite(stack, buffer, data, 0, true, events);
     }
 
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull ByteBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            long offset,
+            boolean blocking,
+            long... events
+    ) {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
+
         MemoryStack stack = MemoryStack.create().push();
+
         try {
-            Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
+            Event event = bufferWrite(
+                    stack,
+                    buffer,
+                    data,
+                    offset,
+                    blocking,
+                    events
+            );
+
             event.ownsStack = true;
             return event;
         } catch (RuntimeException | Error exception) {
@@ -594,164 +402,34 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull ByteBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, offset, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull Buffer buffer,
+            long offset,
+            @NonNull B data,
+            long... events
+    ) {
+        return bufferWrite(buffer, data, offset, true, events);
     }
 
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull ByteBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            boolean blocking,
+            long... events
+    ) {
+        return bufferWrite(buffer, data, 0, blocking, events);
     }
 
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull ByteBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
+    public <B extends java.nio.Buffer> Event bufferWrite(
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            long... events
+    ) {
+        return bufferWrite(buffer, data, 0, true, events);
     }
-
     //</editor-fold>
 
     //<editor-fold desc="Buffer Write Short">
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull ShortBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull ShortBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull ShortBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull ShortBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull ShortBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull ShortBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, offset, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull ShortBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull ShortBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final short @NonNull [] data,
@@ -862,112 +540,6 @@ public class CommandQueue extends SmartPointer {
     //</editor-fold>
 
     //<editor-fold desc="Buffer Write Int">
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull IntBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull IntBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, offset, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull IntBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, blocking, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final @NonNull IntBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.write(stack, this, data, true, 0, events), stack);
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull IntBuffer data,
-                             final long offset,
-                             final boolean blocking,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final long offset,
-                             final @NonNull IntBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, offset, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull IntBuffer data,
-                             final boolean blocking, final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferWrite(@NonNull Buffer buffer,
-                             final @NonNull IntBuffer data,
-                             final long... events) {
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferWrite(stack, buffer, data, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
 
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final int @NonNull [] data,
@@ -1084,46 +656,6 @@ public class CommandQueue extends SmartPointer {
     //<editor-fold desc="Buffer Read Float">
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull FloatBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull FloatBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull FloatBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull FloatBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             float @NonNull [] target,
                             final long offset,
                             final boolean blocking,
@@ -1161,66 +693,6 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
         return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull FloatBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull FloatBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, offset, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull FloatBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull FloatBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -1288,46 +760,6 @@ public class CommandQueue extends SmartPointer {
     //<editor-fold desc="Buffer Read Double">
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull DoubleBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull DoubleBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull DoubleBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull DoubleBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
                             final long offset,
                             final boolean blocking,
@@ -1365,66 +797,6 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
         return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull DoubleBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull DoubleBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, offset, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull DoubleBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull DoubleBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -1489,56 +861,77 @@ public class CommandQueue extends SmartPointer {
 
     //</editor-fold>
 
-    //<editor-fold desc="Buffer Read Byte">
+    //<editor-fold desc="Buffer Read NIO Buffer">
 
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull ByteBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            long offset,
+            boolean blocking,
+            long... events
+    ) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
+
+        return new Event(
+                buffer.read(stack, this, target, blocking, offset, events),
+                stack
+        );
     }
 
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull ByteBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            long offset,
+            @NonNull B target,
+            long... events
+    ) {
+        return bufferRead(stack, buffer, target, offset, true, events);
+    }
+
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            boolean blocking,
+            long... events
+    ) {
+        return bufferRead(stack, buffer, target, 0, blocking, events);
+    }
+
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull MemoryStack stack,
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            long... events
+    ) {
+        return bufferRead(stack, buffer, target, 0, true, events);
+    }
+
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            long offset,
+            boolean blocking,
+            long... events
+    ) {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
-    }
 
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull ByteBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull ByteBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull ByteBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
         MemoryStack stack = MemoryStack.create().push();
+
         try {
-            Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
+            Event event = bufferRead(
+                    stack,
+                    buffer,
+                    target,
+                    offset,
+                    blocking,
+                    events
+            );
+
             event.ownsStack = true;
             return event;
         } catch (RuntimeException | Error exception) {
@@ -1547,48 +940,30 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
-    public Event bufferRead(@NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull ByteBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, offset, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull Buffer buffer,
+            long offset,
+            @NonNull B target,
+            long... events
+    ) {
+        return bufferRead(buffer, target, offset, true, events);
     }
 
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull ByteBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            boolean blocking,
+            long... events
+    ) {
+        return bufferRead(buffer, target, 0, blocking, events);
     }
 
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull ByteBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
+    public <B extends java.nio.Buffer> Event bufferRead(
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            long... events
+    ) {
+        return bufferRead(buffer, target, 0, true, events);
     }
 
     //</editor-fold>
@@ -1596,46 +971,6 @@ public class CommandQueue extends SmartPointer {
     //<editor-fold desc="Buffer Read Short">
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull ShortBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull ShortBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull ShortBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull ShortBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             short @NonNull [] target,
                             final long offset,
                             final boolean blocking,
@@ -1673,66 +1008,6 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
         return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull ShortBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull ShortBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, offset, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull ShortBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull ShortBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -1800,46 +1075,6 @@ public class CommandQueue extends SmartPointer {
     //<editor-fold desc="Buffer Read Int">
 
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull IntBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull IntBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, offset, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull IntBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            @NonNull IntBuffer target,
-                            final long... events) {
-        Preconditions.checkNotNull(stack);
-        Preconditions.checkNotNull(target);
-        Preconditions.checkNotNull(buffer);
-        return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             int @NonNull [] target,
                             final long offset,
                             final boolean blocking,
@@ -1877,66 +1112,6 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
         return new Event(buffer.read(stack, this, target, true, 0, events), stack);
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull IntBuffer target,
-                            final long offset,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            final long offset,
-                            @NonNull IntBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, offset, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull IntBuffer target,
-                            final boolean blocking,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, blocking, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
-    }
-
-    public Event bufferRead(@NonNull Buffer buffer,
-                            @NonNull IntBuffer target,
-                            final long... events) {
-        MemoryStack stack = MemoryStack.create().push();
-        try {
-            Event event = this.bufferRead(stack, buffer, target, events);
-            event.ownsStack = true;
-            return event;
-        } catch (RuntimeException | Error exception) {
-            stack.close();
-            throw exception;
-        }
     }
 
     public Event bufferRead(@NonNull Buffer buffer,
@@ -2708,74 +1883,6 @@ public class CommandQueue extends SmartPointer {
         //<editor-fold desc="Buffer Write Float">
 
         public @NonNull Event write(@NonNull Buffer buffer,
-                                    final @NonNull FloatBuffer data,
-                                    final long offset,
-                                    final boolean blocking,
-                                    final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public @NonNull Event write(@NonNull Buffer buffer,
-                                    final long offset,
-                                    final @NonNull FloatBuffer data,
-                                    final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public @NonNull Event write(@NonNull Buffer buffer,
-                                    final @NonNull FloatBuffer data,
-                                    final boolean blocking,
-                                    final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public @NonNull Event write(@NonNull Buffer buffer,
-                                    final @NonNull FloatBuffer data,
-                                    final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public @NonNull Event write(@NonNull Buffer buffer,
                                     final float @NonNull [] data,
                                     final long offset,
                                     final boolean blocking,
@@ -2847,74 +1954,6 @@ public class CommandQueue extends SmartPointer {
         //<editor-fold desc="Buffer Write Double">
 
         public Event write(@NonNull Buffer buffer,
-                           final @NonNull DoubleBuffer data,
-                           final long offset,
-                           final boolean blocking,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final long offset,
-                           final @NonNull DoubleBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull DoubleBuffer data,
-                           final boolean blocking,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull DoubleBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
                            final long offset,
                            final boolean blocking,
@@ -2983,19 +2022,29 @@ public class CommandQueue extends SmartPointer {
         }
 
         //</editor-fold>
-        //<editor-fold desc="Buffer Write Byte">
+        //<editor-fold desc="Buffer Write NIO Buffer">
 
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull ByteBuffer data,
-                           final long offset,
-                           final boolean blocking,
-                           final Event... dependencies) {
+        public <B extends java.nio.Buffer> @NonNull Event write(
+                @NonNull Buffer buffer,
+                @NonNull B data,
+                long offset,
+                boolean blocking,
+                final Event... dependencies
+        ) {
             ensureChainable();
+
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
+                next = bufferWrite(
+                        stack,
+                        buffer,
+                        data,
+                        offset,
+                        blocking,
+                        dependencyIDs
+                );
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3003,126 +2052,33 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
-        public Event write(@NonNull Buffer buffer,
-                           final long offset,
-                           final @NonNull ByteBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
+        public <B extends java.nio.Buffer> @NonNull Event write(
+                @NonNull Buffer buffer,
+                long offset,
+                @NonNull B data,
+                final Event... dependencies
+        ) {
+            return write(buffer, data, offset, true, dependencies);
         }
 
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull ByteBuffer data,
-                           final boolean blocking,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
+        public <B extends java.nio.Buffer> @NonNull Event write(
+                @NonNull Buffer buffer,
+                @NonNull B data,
+                boolean blocking,
+                final Event... dependencies
+        ) {
+            return write(buffer, data, 0, blocking, dependencies);
         }
 
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull ByteBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
+        public <B extends java.nio.Buffer> @NonNull Event write(
+                @NonNull Buffer buffer,
+                @NonNull B data,
+                final Event... dependencies
+        ) {
+            return write(buffer, data, 0, true, dependencies);
         }
-
         //</editor-fold>
         //<editor-fold desc="Buffer Write Short">
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull ShortBuffer data,
-                           final long offset,
-                           final boolean blocking,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final long offset,
-                           final @NonNull ShortBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull ShortBuffer data,
-                           final boolean blocking,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull ShortBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
 
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
@@ -3194,74 +2150,6 @@ public class CommandQueue extends SmartPointer {
 
         //</editor-fold>
         //<editor-fold desc="Buffer Write Int">
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull IntBuffer data,
-                           final long offset,
-                           final boolean blocking,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final long offset,
-                           final @NonNull IntBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull IntBuffer data,
-                           final boolean blocking,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event write(@NonNull Buffer buffer,
-                           final @NonNull IntBuffer data,
-                           final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            try {
-                next = bufferWrite(stack, buffer, data, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
 
         public Event write(@NonNull Buffer buffer,
                            final int @NonNull [] data,
@@ -3338,82 +2226,6 @@ public class CommandQueue extends SmartPointer {
         //<editor-fold desc="Buffer Read">
 
         //<editor-fold desc="Buffer Read Float">
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull FloatBuffer target,
-                          final long offset,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          final long offset,
-                          @NonNull FloatBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, offset, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull FloatBuffer target,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull FloatBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
 
         public Event read(@NonNull Buffer buffer,
                           float @NonNull [] target,
@@ -3495,82 +2307,6 @@ public class CommandQueue extends SmartPointer {
         //<editor-fold desc="Buffer Read Double">
 
         public Event read(@NonNull Buffer buffer,
-                          @NonNull DoubleBuffer target,
-                          final long offset,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          final long offset,
-                          @NonNull DoubleBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, offset, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull DoubleBuffer target,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull DoubleBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
                           double @NonNull [] target,
                           final long offset,
                           final boolean blocking,
@@ -3649,19 +2385,29 @@ public class CommandQueue extends SmartPointer {
         //</editor-fold>
         //<editor-fold desc="Buffer Read Byte">
 
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull ByteBuffer target,
-                          final long offset,
-                          final boolean blocking,
-                          final Event... dependencies) {
+        public <B extends java.nio.Buffer> @NonNull Event read(
+                @NonNull Buffer buffer,
+                @NonNull B target,
+                long offset,
+                boolean blocking,
+                final Event... dependencies
+        ) {
             ensureChainable();
+
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
             checkNonBlockingWrite(buffer);
 
             try {
-                next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
+                next = bufferRead(
+                        stack,
+                        buffer,
+                        target,
+                        offset,
+                        blocking,
+                        dependencyIDs
+                );
             } finally {
                 releaseDependencies(dependencies);
             }
@@ -3669,140 +2415,33 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
-        public Event read(@NonNull Buffer buffer,
-                          final long offset,
-                          @NonNull ByteBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, offset, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
+        public <B extends java.nio.Buffer> @NonNull Event read(
+                @NonNull Buffer buffer,
+                long offset,
+                @NonNull B target,
+                final Event... dependencies
+        ) {
+            return read(buffer, target, offset, true, dependencies);
         }
 
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull ByteBuffer target,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
+        public <B extends java.nio.Buffer> @NonNull Event read(
+                @NonNull Buffer buffer,
+                @NonNull B target,
+                boolean blocking,
+                final Event... dependencies
+        ) {
+            return read(buffer, target, 0, blocking, dependencies);
         }
 
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull ByteBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
+        public <B extends java.nio.Buffer> @NonNull Event read(
+                @NonNull Buffer buffer,
+                @NonNull B target,
+                final Event... dependencies
+        ) {
+            return read(buffer, target, 0, true, dependencies);
         }
-
         //</editor-fold>
         //<editor-fold desc="Buffer Read Short">
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull ShortBuffer target,
-                          final long offset,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          final long offset,
-                          @NonNull ShortBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, offset, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull ShortBuffer target,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull ShortBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
 
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
@@ -3880,82 +2519,6 @@ public class CommandQueue extends SmartPointer {
 
         //</editor-fold>
         //<editor-fold desc="Buffer Read Int">
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull IntBuffer target,
-                          final long offset,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          final long offset,
-                          @NonNull IntBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, offset, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull IntBuffer target,
-                          final boolean blocking,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
-
-        public Event read(@NonNull Buffer buffer,
-                          @NonNull IntBuffer target,
-                          final Event... dependencies) {
-            ensureChainable();
-            long[] dependencyIDs = dependencyIDs(dependencies);
-            Event next;
-
-            checkNonBlockingWrite(buffer);
-
-            try {
-                next = bufferRead(stack, buffer, target, dependencyIDs);
-            } finally {
-                releaseDependencies(dependencies);
-            }
-
-            return transferOwnership(next);
-        }
 
         public Event read(@NonNull Buffer buffer,
                           int @NonNull [] target,
