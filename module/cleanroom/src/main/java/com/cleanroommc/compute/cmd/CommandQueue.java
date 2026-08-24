@@ -4827,6 +4827,7 @@ public class CommandQueue extends SmartPointer {
             } finally {
                 chainable = false;
                 releaseOwnedStack();
+                CommandQueue.this.refresh();
             }
         }
 
