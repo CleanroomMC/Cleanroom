@@ -8,6 +8,7 @@ import com.cleanroommc.compute.kernels.Kernel;
 import com.cleanroommc.compute.kernels.params.KernelParameterList;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opencl.CL10;
@@ -15,6 +16,9 @@ import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CommandQueue extends SmartPointer {
 
@@ -2629,9 +2633,21 @@ public class CommandQueue extends SmartPointer {
          */
         private boolean chainable = true;
 
-        Event(long eventID, @NonNull MemoryStack stack) {
+        private final @Nullable Set<SmartPointer> nonBlockingWrites;
+
+        Event(long eventID, @NonNull MemoryStack stack, SmartPointer @Nullable ... nonBlockingWrites) {
             this.eventID = eventID;
             this.stack = Preconditions.checkNotNull(stack);
+            if (nonBlockingWrites != null && nonBlockingWrites.length > 0)
+                this.nonBlockingWrites = new ReferenceArraySet<>(Arrays.asList(nonBlockingWrites));
+            else
+                this.nonBlockingWrites = null;
+        }
+
+        Event(long eventID, @NonNull MemoryStack stack, Set<SmartPointer> nonBlockingWrites) {
+            this.eventID = eventID;
+            this.stack = Preconditions.checkNotNull(stack);
+            this.nonBlockingWrites = nonBlockingWrites;
         }
 
         public @NonNull Event next(@NonNull Kernel kernel,
@@ -3331,6 +3347,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3347,6 +3365,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3365,6 +3385,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3380,6 +3402,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3399,6 +3423,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3415,6 +3441,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3433,6 +3461,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3448,6 +3478,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3470,6 +3502,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3486,6 +3520,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3504,6 +3540,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3519,6 +3557,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3538,6 +3578,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3554,6 +3596,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3572,6 +3616,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3587,6 +3633,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3609,6 +3657,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3625,6 +3675,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3643,6 +3695,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3658,6 +3712,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3680,6 +3736,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3696,6 +3754,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3714,6 +3774,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3729,6 +3791,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3748,6 +3812,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3764,6 +3830,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3797,6 +3865,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3819,6 +3889,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3835,6 +3907,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3853,6 +3927,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3868,6 +3944,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -3887,6 +3965,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
             } finally {
@@ -3903,6 +3983,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, offset, target, dependencyIDs);
@@ -3921,6 +4003,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(buffer);
+
             try {
                 next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
             } finally {
@@ -3936,6 +4020,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(buffer);
 
             try {
                 next = bufferRead(stack, buffer, target, dependencyIDs);
@@ -4061,6 +4147,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(start);
+
             try {
                 next = imageCopy(stack, start, destination, from, mipmapFrom, to, mipmapTo, size, dependencyIDs);
             } finally {
@@ -4077,6 +4165,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(start);
 
             try {
                 next = imageCopy(stack, start, destination, from, to, mipmapTo, size, dependencyIDs);
@@ -4095,6 +4185,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(start);
+
             try {
                 next = imageCopy(stack, start, destination, from, mipmapFrom, to, size, dependencyIDs);
             } finally {
@@ -4111,6 +4203,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(start);
 
             try {
                 next = imageCopy(stack, start, destination, from, to, size, dependencyIDs);
@@ -4134,6 +4228,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
             } finally {
@@ -4150,6 +4246,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
@@ -4168,6 +4266,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
             } finally {
@@ -4184,6 +4284,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
@@ -4202,6 +4304,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4218,6 +4322,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4236,6 +4342,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4252,6 +4360,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4270,6 +4380,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4286,6 +4398,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4304,6 +4418,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4320,6 +4436,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4338,6 +4456,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4354,6 +4474,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4372,6 +4494,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4388,6 +4512,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4406,6 +4532,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4422,6 +4550,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4440,6 +4570,8 @@ public class CommandQueue extends SmartPointer {
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
 
+            checkNonBlockingWrite(image);
+
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
             } finally {
@@ -4456,6 +4588,8 @@ public class CommandQueue extends SmartPointer {
             ensureChainable();
             long[] dependencyIDs = dependencyIDs(dependencies);
             Event next;
+
+            checkNonBlockingWrite(image);
 
             try {
                 next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
@@ -4888,6 +5022,12 @@ public class CommandQueue extends SmartPointer {
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
             );
+        }
+
+        private void checkNonBlockingWrite(SmartPointer object) {
+            if (nonBlockingWrites != null && nonBlockingWrites.contains(object)) {
+                Compute.instance().LOGGER.warn("Potential data race caused by operation involving {} after non-blocking write.", object instanceof Buffer ? "a buffer" : "an image");
+            }
         }
     }
 }
