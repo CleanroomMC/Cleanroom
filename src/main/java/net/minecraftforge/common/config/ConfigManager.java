@@ -121,11 +121,10 @@ public class ConfigManager
                     modid = containedMods.getFirst().getModId();
                 } else {
                     modid = CleanroomModDiscoverer.instance()
-                        .modFromSource(target.getCandidate().getModContainer())
-                        .stream().findAny()
-                        .orElseThrow(() -> new IllegalStateException(
-                                "Could not infer the modid for the early config " + target.getClassName()
-                        ));
+                        .modFromSource(target.getCandidate().getModContainer());
+                    if (modid == null) throw new IllegalStateException(
+                                "Could not infer the modid for the config " + target.getClassName()
+                        );
                 }
             }
             
