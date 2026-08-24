@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CLCapabilities;
 import org.lwjgl.system.MemoryStack;
@@ -25,7 +26,7 @@ import java.util.Set;
 
 public class Compute {
 
-    private static Compute INSTANCE = null;
+    private static @Nullable Compute INSTANCE = null;
 
     public final CLCapabilities PLATFORM_CAPABILITIES;
 
@@ -73,6 +74,7 @@ public class Compute {
         this.glSharing = isClient;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public static Compute instance() {
         return INSTANCE;
     }
