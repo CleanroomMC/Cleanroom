@@ -113,6 +113,9 @@ public class ConfigManager
         for (ASMData target : data.getAll(Config.class))
         {
             String modid = (String)target.getAnnotationInfo().get("modid");
+            if (modid == null && target.getCandidate().getContainedMods() != null) {
+                modid = target.getCandidate().getContainedMods().getModId();
+            }
             Multimap<Config.Type, ASMData> map = asm_data.computeIfAbsent(modid, k -> ArrayListMultimap.create());
 
             EnumHolder tholder = (EnumHolder)target.getAnnotationInfo().get("type");
