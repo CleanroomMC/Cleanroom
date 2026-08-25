@@ -2644,6 +2644,20 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Image Fill">
 
+    /**
+     * <p>Fill a region of an OpenCL image with a colour.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image to fill.
+     * @param color Color used to fill the image region.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                                            @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap,
                                                            long... dependencies) {
@@ -2655,6 +2669,20 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.fill(stack, this, color, from, size, mipmap, dependencies), stack);
     }
 
+    /**
+     * <p>Fill a region of an OpenCL image with a colour.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image to fill.
+     * @param color Colour used to fill the image region.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                                            @NonNull B color, @NonNull CT from, @NonNull CT size,
                                                            long... dependencies) {
@@ -2666,6 +2694,19 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.fill(stack, this, color, from, size, dependencies), stack);
     }
 
+    /**
+     * <p>Fill a region of an OpenCL image with a colour.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image to fill.
+     * @param color Colour used to fill the image region.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                                            int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
                                                            long... dependencies) {
@@ -2677,6 +2718,19 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.fill(stack, this, color, from, size, mipmap, dependencies), stack);
     }
 
+    /**
+     * <p>Fill a region of an OpenCL image with a colour.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image to fill.
+     * @param color Colour used to fill the image region.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                                            int @NonNull [] color, @NonNull CT from, @NonNull CT size,
                                                            long... dependencies) {
@@ -2688,6 +2742,19 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.fill(stack, this, color, from, size, dependencies), stack);
     }
 
+    /**
+     * <p>Fill a region of an OpenCL image with a colour.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image to fill.
+     * @param color Color used to fill the image region.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                 float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
                                 long... dependencies) {
@@ -2699,6 +2766,19 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.fill(stack, this, color, from, size, mipmap, dependencies), stack);
     }
 
+    /**
+     * <p>Fill a region of an OpenCL image with a colour.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image to fill.
+     * @param color Colour used to fill the image region.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                 float @NonNull [] color, @NonNull CT from, @NonNull CT size,
                                 long... dependencies) {
