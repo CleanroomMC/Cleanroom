@@ -3486,6 +3486,23 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Image Write">
 
+    /**
+     * <p>Write data from a NIO buffer to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Source NIO buffer containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
                                                             long rowPitch, long slicePitch, @NonNull B buffer,
@@ -3498,6 +3515,23 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a NIO buffer to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Source NIO buffer containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
                                                             long rowPitch, long slicePitch, @NonNull B buffer, long... dependencies) {
@@ -3509,6 +3543,23 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack, image, true, null);
     }
 
+    /**
+     * <p>Write data from a NIO buffer to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Source NIO buffer containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, @NonNull CT size,
                                                             long rowPitch, long slicePitch, @NonNull B buffer,
@@ -3521,6 +3572,23 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a NIO buffer to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Source NIO buffer containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, @NonNull CT size,
                                                             long rowPitch, long slicePitch, @NonNull B buffer, long... dependencies) {
@@ -3532,6 +3600,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack, image, true, null);
     }
 
+    /**
+     * <p>Write data from a short array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
                                  long rowPitch, long slicePitch, short @NonNull [] array,
@@ -3544,6 +3628,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a short array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
                                  long rowPitch, long slicePitch, short @NonNull [] array, long... dependencies) {
@@ -3555,6 +3655,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
+    /**
+     * <p>Write data from a short array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
                                  long rowPitch, long slicePitch, short @NonNull [] array,
@@ -3567,6 +3683,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a short array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
                                  long rowPitch, long slicePitch, short @NonNull [] array, long... dependencies) {
@@ -3579,6 +3711,22 @@ public class CommandQueue extends SmartPointer {
     }
 
 
+    /**
+     * <p>Write data from a int array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
                                                             long rowPitch, long slicePitch, int @NonNull [] array,
@@ -3591,6 +3739,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a int array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
                                                             long rowPitch, long slicePitch, int @NonNull [] array, long... dependencies) {
@@ -3602,6 +3766,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
+    /**
+     * <p>Write data from a int array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, @NonNull CT size,
                                                             long rowPitch, long slicePitch, int @NonNull [] array,
@@ -3614,6 +3794,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a int array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
                                  long rowPitch, long slicePitch, int @NonNull [] array, long... dependencies) {
@@ -3625,6 +3821,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
+    /**
+     * <p>Write data from a float array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
                                  long rowPitch, long slicePitch, float @NonNull [] array,
@@ -3637,6 +3849,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a float array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
                                  long rowPitch, long slicePitch, float @NonNull [] array, long... dependencies) {
@@ -3648,6 +3876,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
+    /**
+     * <p>Write data from a float array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
                                  long rowPitch, long slicePitch, float @NonNull [] array,
@@ -3660,6 +3904,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a float array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
                                  long rowPitch, long slicePitch, float @NonNull [] array, long... dependencies) {
@@ -3672,6 +3932,22 @@ public class CommandQueue extends SmartPointer {
     }
 
 
+    /**
+     * <p>Write data from a double array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
                                                             long rowPitch, long slicePitch, double @NonNull [] array,
@@ -3684,6 +3960,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a double array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
                                                             long rowPitch, long slicePitch, double @NonNull [] array, long... dependencies) {
@@ -3695,6 +3987,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack, image, true, null);
     }
 
+    /**
+     * <p>Write data from a double array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, @NonNull CT size,
                                                             long rowPitch, long slicePitch, double @NonNull [] array,
@@ -3707,6 +4015,22 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(image.write(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack, image, blocking, null);
     }
 
+    /**
+     * <p>Write data from a double array to a region of an OpenCL image.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Source array containing the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, @NonNull CT size,
                                                             long rowPitch, long slicePitch, double @NonNull [] array, long... dependencies) {
