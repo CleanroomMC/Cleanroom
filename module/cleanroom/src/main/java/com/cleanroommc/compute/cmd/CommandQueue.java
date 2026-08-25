@@ -4428,6 +4428,19 @@ public class CommandQueue extends SmartPointer {
         //</editor-fold>
         //<editor-fold desc="Buffer Write NIO Buffer">
 
+        /**
+         * Writes data from a NIO buffer to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param offset Byte offset at which the operation starts.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <B extends java.nio.Buffer> @NonNull Event write(
                 @NonNull Buffer buffer,
                 @NonNull B data,
@@ -4458,6 +4471,19 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Writes data from a NIO buffer to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param offset Byte offset at which the operation starts.
+         * @param data Data to write to the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public <B extends java.nio.Buffer> @NonNull Event write(
                 @NonNull Buffer buffer,
                 long offset,
@@ -4467,6 +4493,19 @@ public class CommandQueue extends SmartPointer {
             return write(buffer, data, offset, true, dependencies);
         }
 
+        /**
+         * Writes data from a NIO buffer to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates at offset 0.
+         */
         public <B extends java.nio.Buffer> @NonNull Event write(
                 @NonNull Buffer buffer,
                 @NonNull B data,
@@ -4476,6 +4515,19 @@ public class CommandQueue extends SmartPointer {
             return write(buffer, data, 0, blocking, dependencies);
         }
 
+        /**
+         * Writes data from a NIO buffer to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates at offset 0.
+         */
         public <B extends java.nio.Buffer> @NonNull Event write(
                 @NonNull Buffer buffer,
                 @NonNull B data,
@@ -4486,6 +4538,17 @@ public class CommandQueue extends SmartPointer {
         //</editor-fold>
         //<editor-fold desc="Buffer Write Short">
 
+        /**
+         * Writes data from a short array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param offset Byte offset at which the operation starts.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
                            final long offset,
@@ -4507,6 +4570,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Writes data from a short array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param offset Byte offset at which the operation starts.
+         * @param data Data to write to the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public Event write(@NonNull Buffer buffer,
                            final long offset,
                            final short @NonNull [] data,
@@ -4528,6 +4602,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Writes data from a short array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates at offset 0.
+         */
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
                            final boolean blocking,
@@ -4548,6 +4633,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Writes data from a short array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates at offset 0.
+         */
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
                            final Event... dependencies) {
