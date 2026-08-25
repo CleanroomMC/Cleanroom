@@ -78,7 +78,7 @@ public class CommandQueue extends SmartPointer {
                                 final @NonNull KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
                                 final long @NonNull [] workGroupSizes,
-                                final long... dependencies) {
+                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
         MemoryStack stack = MemoryStack.create().push();
@@ -108,7 +108,7 @@ public class CommandQueue extends SmartPointer {
                                 final @NonNull KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
                                 final long @NonNull [] workGroupSizes,
-                                final long... dependencies) {
+                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
@@ -126,7 +126,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event dispatchKernel(@NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
-                                final long... dependencies) {
+                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);
         MemoryStack stack = MemoryStack.create().push();
         try {
@@ -151,7 +151,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event dispatchKernel(@NonNull MemoryStack stack, @NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
-                                final long... dependencies) {
+                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(arguments);
         return new Event(kernel.invoke(stack, this.commandQueue, this.device, arguments, dependencies), stack);
@@ -187,7 +187,7 @@ public class CommandQueue extends SmartPointer {
                              final float @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -212,12 +212,12 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
-     * @apiNote This is always a blocking write.
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final float @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -246,7 +246,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -270,10 +270,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -303,7 +304,7 @@ public class CommandQueue extends SmartPointer {
                              final float @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -334,12 +335,13 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final float @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -374,7 +376,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -404,10 +406,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -422,7 +425,6 @@ public class CommandQueue extends SmartPointer {
     }
 
     //</editor-fold>
-
     //<editor-fold desc="Buffer Write Double">
 
     /**
@@ -449,7 +451,7 @@ public class CommandQueue extends SmartPointer {
                              final double @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -474,12 +476,13 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final double @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -508,7 +511,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -532,10 +535,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -565,7 +569,7 @@ public class CommandQueue extends SmartPointer {
                              final double @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -596,12 +600,13 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final double @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -636,7 +641,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -666,10 +671,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -684,7 +690,6 @@ public class CommandQueue extends SmartPointer {
     }
 
     //</editor-fold>
-
     //<editor-fold desc="Buffer Write NIO Buffer">
 
     /**
@@ -715,7 +720,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -748,6 +753,7 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
@@ -756,7 +762,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             @NonNull B data,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(stack, buffer, data, offset, true, events);
     }
 
@@ -787,7 +793,7 @@ public class CommandQueue extends SmartPointer {
             @NonNull B data,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(stack, buffer, data, 0, blocking, events);
     }
 
@@ -809,13 +815,14 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
             @NonNull B data,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(stack, buffer, data, 0, true, events);
     }
 
@@ -845,7 +852,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
 
@@ -886,6 +893,7 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
@@ -893,7 +901,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             @NonNull B data,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(buffer, data, offset, true, events);
     }
 
@@ -922,7 +930,7 @@ public class CommandQueue extends SmartPointer {
             @NonNull B data,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(buffer, data, 0, blocking, events);
     }
 
@@ -943,16 +951,16 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull Buffer buffer,
             @NonNull B data,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(buffer, data, 0, true, events);
     }
     //</editor-fold>
-
     //<editor-fold desc="Buffer Write Short">
 
     /**
@@ -979,7 +987,7 @@ public class CommandQueue extends SmartPointer {
                              final short @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1004,12 +1012,13 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final short @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1038,7 +1047,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1062,10 +1071,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1095,7 +1105,7 @@ public class CommandQueue extends SmartPointer {
                              final short @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1126,12 +1136,13 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final short @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1166,7 +1177,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1196,10 +1207,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1214,7 +1226,6 @@ public class CommandQueue extends SmartPointer {
     }
 
     //</editor-fold>
-
     //<editor-fold desc="Buffer Write Int">
 
     /**
@@ -1241,7 +1252,7 @@ public class CommandQueue extends SmartPointer {
                              final int @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1266,12 +1277,13 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final int @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1300,7 +1312,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1324,10 +1336,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1357,7 +1370,7 @@ public class CommandQueue extends SmartPointer {
                              final int @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1388,12 +1401,13 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final int @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1428,7 +1442,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final boolean blocking, final long... events) {
+                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1458,10 +1472,11 @@ public class CommandQueue extends SmartPointer {
      * the sub-buffer offset is misaligned.
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
+     * @apiNote This is always a blocking operation.
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final long... events) {
+                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1492,6 +1507,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, float[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1503,7 +1520,7 @@ public class CommandQueue extends SmartPointer {
                             float @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1518,6 +1535,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, float[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1529,7 +1548,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             float @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1544,6 +1563,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, float[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1555,7 +1576,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             float @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1569,6 +1590,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, float[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1580,7 +1603,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             float @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1595,6 +1618,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, float[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1606,7 +1631,7 @@ public class CommandQueue extends SmartPointer {
                             float @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -1625,6 +1650,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, float[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1636,7 +1663,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             float @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -1655,6 +1682,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, float[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1666,7 +1695,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             float @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -1684,6 +1713,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, float[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1695,7 +1726,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             float @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -1708,7 +1739,6 @@ public class CommandQueue extends SmartPointer {
     }
 
     //</editor-fold>
-
     //<editor-fold desc="Buffer Read Double">
 
     /**
@@ -1720,6 +1750,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, double[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1731,7 +1763,7 @@ public class CommandQueue extends SmartPointer {
                             double @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1746,6 +1778,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, double[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1757,7 +1791,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             double @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1772,6 +1806,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, double[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1783,7 +1819,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1797,6 +1833,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, double[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1808,7 +1846,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1823,6 +1861,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, double[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1834,7 +1874,7 @@ public class CommandQueue extends SmartPointer {
                             double @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -1853,6 +1893,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, double[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1864,7 +1906,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             double @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -1883,6 +1925,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, double[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1894,7 +1938,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -1912,6 +1956,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, double[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1923,7 +1969,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -1936,7 +1982,6 @@ public class CommandQueue extends SmartPointer {
     }
 
     //</editor-fold>
-
     //<editor-fold desc="Buffer Read NIO Buffer">
 
     /**
@@ -1950,6 +1995,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1964,7 +2010,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -1985,6 +2031,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, java.nio.Buffer, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -1999,7 +2046,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             @NonNull B target,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(stack, buffer, target, offset, true, events);
     }
 
@@ -2013,6 +2060,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2027,7 +2075,7 @@ public class CommandQueue extends SmartPointer {
             @NonNull B target,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(stack, buffer, target, 0, blocking, events);
     }
 
@@ -2040,6 +2088,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2054,7 +2103,7 @@ public class CommandQueue extends SmartPointer {
             @NonNull Buffer buffer,
             @NonNull B target,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(stack, buffer, target, 0, true, events);
     }
 
@@ -2068,6 +2117,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2081,7 +2131,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
 
@@ -2114,6 +2164,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, java.nio.Buffer, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2127,7 +2178,7 @@ public class CommandQueue extends SmartPointer {
             long offset,
             @NonNull B target,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(buffer, target, offset, true, events);
     }
 
@@ -2140,6 +2191,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2153,7 +2205,7 @@ public class CommandQueue extends SmartPointer {
             @NonNull B target,
             boolean blocking,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(buffer, target, 0, blocking, events);
     }
 
@@ -2165,6 +2217,7 @@ public class CommandQueue extends SmartPointer {
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
      * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2178,12 +2231,11 @@ public class CommandQueue extends SmartPointer {
             @NonNull Buffer buffer,
             @NonNull B target,
             long... events
-    ) {
+    ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(buffer, target, 0, true, events);
     }
 
     //</editor-fold>
-
     //<editor-fold desc="Buffer Read Short">
 
     /**
@@ -2195,6 +2247,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, short[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2206,7 +2260,7 @@ public class CommandQueue extends SmartPointer {
                             short @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2221,6 +2275,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, short[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2232,7 +2288,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             short @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2247,6 +2303,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, short[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2258,7 +2316,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             short @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2272,6 +2330,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, short[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2283,7 +2343,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             short @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2298,6 +2358,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, short[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2309,7 +2371,7 @@ public class CommandQueue extends SmartPointer {
                             short @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -2328,6 +2390,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, short[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2339,7 +2403,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             short @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -2358,6 +2422,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, short[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2369,7 +2435,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             short @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -2387,6 +2453,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, short[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2398,7 +2466,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             short @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -2411,7 +2479,6 @@ public class CommandQueue extends SmartPointer {
     }
 
     //</editor-fold>
-
     //<editor-fold desc="Buffer Read Int">
 
     /**
@@ -2423,6 +2490,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, int[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2434,7 +2503,7 @@ public class CommandQueue extends SmartPointer {
                             int @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2449,6 +2518,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, int[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2460,7 +2531,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             int @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2475,6 +2546,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, int[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2486,7 +2559,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             int @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2500,6 +2573,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, int[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2511,7 +2586,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             int @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2526,6 +2601,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, int[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2537,7 +2614,7 @@ public class CommandQueue extends SmartPointer {
                             int @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -2556,6 +2633,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, long, int[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2567,7 +2646,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             int @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -2586,6 +2665,8 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, int[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2597,7 +2678,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             int @NonNull [] target,
                             final boolean blocking,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -2615,6 +2696,8 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see CommandQueue.Event#read(Buffer, int[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
      * @throws IllegalStateException If the buffer does not support reading.
@@ -2626,7 +2709,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             int @NonNull [] target,
-                            final long... events) {
+                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -2656,6 +2739,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, long...)
+     * @see CommandQueue.Event#fill(Image, java.nio.Buffer, Object, Object, int, Event...)
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2680,6 +2765,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, long...)
+     * @see CommandQueue.Event#fill(Image, java.nio.Buffer, Object, Object, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -2705,6 +2792,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, long...)
+     * @see CommandQueue.Event#fill(Image, int[], Object, Object, int, Event...)
      * @author EΣrie
      */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2728,6 +2817,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, long...)
+     * @see CommandQueue.Event#fill(Image, int[], Object, Object, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -2753,6 +2844,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, long...)
+     * @see CommandQueue.Event#fill(Image, float[], Object, Object, int, Event...)
      * @author EΣrie
      */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
@@ -2776,6 +2869,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, long...)
+     * @see CommandQueue.Event#fill(Image, float[], Object, Object, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -2808,6 +2903,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, long...)
+     * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, int, Object, Event...)
      * @author EΣrie
      */
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
@@ -2837,6 +2934,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, Object, int, Object, long...)
+     * @see CommandQueue.Event#copy(Image, Image, Object, Object, int, Object, Event...)
      * @author EΣrie
      * @apiNote The source uses mipmap level 0.
      */
@@ -2867,6 +2966,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, Object, long...)
+     * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, Object, Event...)
      * @author EΣrie
      * @apiNote The destination uses mipmap level 0.
      */
@@ -2896,6 +2997,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, Object, Object, long...)
+     * @see CommandQueue.Event#copy(Image, Image, Object, Object, Object, Event...)
      * @author EΣrie
      * @apiNote Both source and destination use mipmap level 0.
      */
@@ -2932,6 +3035,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -2960,6 +3065,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -2989,6 +3096,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3017,6 +3126,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3047,6 +3158,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -3074,6 +3187,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3102,6 +3217,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3129,6 +3246,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3159,6 +3278,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -3186,6 +3307,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3214,6 +3337,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3241,6 +3366,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3271,6 +3398,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -3298,6 +3427,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3326,6 +3457,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3353,6 +3486,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3383,6 +3518,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
@@ -3410,6 +3547,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3438,6 +3577,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3465,6 +3606,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#read(Image, Object, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3501,6 +3644,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -3529,6 +3674,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3557,6 +3704,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3585,6 +3734,8 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3614,6 +3765,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -3641,6 +3794,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3668,6 +3823,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3695,6 +3852,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3725,6 +3884,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -3752,6 +3913,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3779,6 +3942,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3806,6 +3971,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3835,6 +4002,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -3862,6 +4031,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -3889,6 +4060,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -3916,6 +4089,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -3946,6 +4121,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
@@ -3973,6 +4150,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
@@ -4000,6 +4179,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
@@ -4027,6 +4208,8 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue.Event#write(Image, Object, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
@@ -4111,7 +4294,7 @@ public class CommandQueue extends SmartPointer {
                                    final @NonNull KernelParameterList arguments,
                                    final long @Nullable [] workGroupOffsets,
                                    final long @NonNull [] workGroupSizes,
-                                   final Event... dependencies) {
+                                   final Event... dependencies) throws IllegalStateException {
             Preconditions.checkNotNull(kernel);
             Preconditions.checkNotNull(arguments);
             Preconditions.checkNotNull(workGroupSizes);
@@ -4151,7 +4334,7 @@ public class CommandQueue extends SmartPointer {
          */
         public @NonNull Event next(@NonNull Kernel kernel,
                                    final @NonNull KernelParameterList arguments,
-                                   final Event... dependencies) {
+                                   final Event... dependencies) throws IllegalStateException {
             Preconditions.checkNotNull(kernel);
             Preconditions.checkNotNull(arguments);
 
@@ -4187,14 +4370,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          */
         public @NonNull Event write(@NonNull Buffer buffer,
                                     final float @NonNull [] data,
                                     final long offset,
                                     final boolean blocking,
-                                    final Event... dependencies) {
+                                    final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4218,14 +4405,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event write(@NonNull Buffer buffer,
                            final long offset,
                            final float @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4250,14 +4441,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final float @NonNull [] data,
                            final boolean blocking,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4280,14 +4475,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final float @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4316,14 +4515,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          */
         public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
                            final long offset,
                            final boolean blocking,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4347,14 +4550,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event write(@NonNull Buffer buffer,
                            final long offset,
                            final double @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4379,14 +4586,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
                            final boolean blocking,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4409,14 +4620,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4447,7 +4662,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          */
         public <B extends java.nio.Buffer> @NonNull Event write(
@@ -4456,7 +4675,7 @@ public class CommandQueue extends SmartPointer {
                 long offset,
                 boolean blocking,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4489,7 +4708,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
@@ -4498,7 +4721,7 @@ public class CommandQueue extends SmartPointer {
                 long offset,
                 @NonNull B data,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return write(buffer, data, offset, true, dependencies);
         }
 
@@ -4511,7 +4734,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
@@ -4520,7 +4747,7 @@ public class CommandQueue extends SmartPointer {
                 @NonNull B data,
                 boolean blocking,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return write(buffer, data, 0, blocking, dependencies);
         }
 
@@ -4532,7 +4759,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
@@ -4541,7 +4772,7 @@ public class CommandQueue extends SmartPointer {
                 @NonNull Buffer buffer,
                 @NonNull B data,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return write(buffer, data, 0, true, dependencies);
         }
         //</editor-fold>
@@ -4555,14 +4786,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          */
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
                            final long offset,
                            final boolean blocking,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4586,14 +4821,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event write(@NonNull Buffer buffer,
                            final long offset,
                            final short @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4618,14 +4857,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
                            final boolean blocking,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4648,14 +4891,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final short @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4684,14 +4931,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          */
         public Event write(@NonNull Buffer buffer,
                            final int @NonNull [] data,
                            final long offset,
                            final boolean blocking,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4715,14 +4966,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event write(@NonNull Buffer buffer,
                            final long offset,
                            final int @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4747,14 +5002,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final int @NonNull [] data,
                            final boolean blocking,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4777,14 +5036,18 @@ public class CommandQueue extends SmartPointer {
          * @param data Data to write to the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or data is null.
+         * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the write.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event write(@NonNull Buffer buffer,
                            final int @NonNull [] data,
-                           final Event... dependencies) {
+                           final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4818,14 +5081,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          */
         public Event read(@NonNull Buffer buffer,
                           float @NonNull [] target,
                           final long offset,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4852,14 +5119,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event read(@NonNull Buffer buffer,
                           final long offset,
                           float @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4884,14 +5155,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           float @NonNull [] target,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4917,14 +5192,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           float @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4953,14 +5232,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          */
         public Event read(@NonNull Buffer buffer,
                           double @NonNull [] target,
                           final long offset,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -4987,14 +5270,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event read(@NonNull Buffer buffer,
                           final long offset,
                           double @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5019,14 +5306,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           double @NonNull [] target,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5052,14 +5343,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           double @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5090,7 +5385,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          */
         public <B extends java.nio.Buffer> @NonNull Event read(
@@ -5099,7 +5398,7 @@ public class CommandQueue extends SmartPointer {
                 long offset,
                 boolean blocking,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5136,7 +5435,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
@@ -5145,7 +5448,7 @@ public class CommandQueue extends SmartPointer {
                 long offset,
                 @NonNull B target,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return read(buffer, target, offset, true, dependencies);
         }
 
@@ -5158,7 +5461,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
@@ -5167,7 +5474,7 @@ public class CommandQueue extends SmartPointer {
                 @NonNull B target,
                 boolean blocking,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return read(buffer, target, 0, blocking, dependencies);
         }
 
@@ -5179,7 +5486,11 @@ public class CommandQueue extends SmartPointer {
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
          * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
@@ -5188,7 +5499,7 @@ public class CommandQueue extends SmartPointer {
                 @NonNull Buffer buffer,
                 @NonNull B target,
                 final Event... dependencies
-        ) {
+        ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return read(buffer, target, 0, true, dependencies);
         }
         //</editor-fold>
@@ -5202,14 +5513,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          */
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
                           final long offset,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5236,14 +5551,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event read(@NonNull Buffer buffer,
                           final long offset,
                           short @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5268,14 +5587,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5299,14 +5622,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5335,14 +5662,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          */
         public Event read(@NonNull Buffer buffer,
                           int @NonNull [] target,
                           final long offset,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5369,14 +5700,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          */
         public Event read(@NonNull Buffer buffer,
                           final long offset,
                           int @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5401,14 +5736,18 @@ public class CommandQueue extends SmartPointer {
          * @param blocking Whether the operation blocks until the transfer is complete.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           int @NonNull [] target,
                           final boolean blocking,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5434,14 +5773,18 @@ public class CommandQueue extends SmartPointer {
          * @param target Destination for the data read from the buffer.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @throws IllegalStateException If this event can no longer be chained.
+         * @throws NullPointerException If buffer or target is null.
+         * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+         * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
+         * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+         * @throws OutOfMemoryError If there are not enough resources available to perform the read.
          * @author EΣrie
          * @apiNote This is always a blocking operation.
          * @apiNote This operates at offset 0.
          */
         public Event read(@NonNull Buffer buffer,
                           int @NonNull [] target,
-                          final Event... dependencies) {
+                          final Event... dependencies) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5481,7 +5824,7 @@ public class CommandQueue extends SmartPointer {
          */
         public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
                                                                    @NonNull CT from, @NonNull CT size, int mipmap,
-                                                                   final Event... dependencies) {
+                                                                   final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5514,7 +5857,7 @@ public class CommandQueue extends SmartPointer {
          */
         public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
                                                                    @NonNull CT from, @NonNull CT size,
-                                                                   final Event... dependencies) {
+                                                                   final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5546,7 +5889,7 @@ public class CommandQueue extends SmartPointer {
          */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size, int mipmap,
-                                        final Event... dependencies) {
+                                        final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5578,7 +5921,7 @@ public class CommandQueue extends SmartPointer {
          */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size,
-                                        final Event... dependencies) {
+                                        final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5610,7 +5953,7 @@ public class CommandQueue extends SmartPointer {
          */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size, int mipmap,
-                                        final Event... dependencies) {
+                                        final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5642,7 +5985,7 @@ public class CommandQueue extends SmartPointer {
          */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size,
-                                        final Event... dependencies) {
+                                        final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5683,7 +6026,7 @@ public class CommandQueue extends SmartPointer {
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from, int mipmapFrom,
                                               @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
-                                              final Event... dependencies) {
+                                              final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5721,7 +6064,7 @@ public class CommandQueue extends SmartPointer {
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from,
                                               @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
-                                              final Event... dependencies) {
+                                              final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5759,7 +6102,7 @@ public class CommandQueue extends SmartPointer {
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from, int mipmapFrom,
                                               @NonNull CT2 to, @NonNull CT2 size,
-                                              final Event... dependencies) {
+                                              final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5796,7 +6139,7 @@ public class CommandQueue extends SmartPointer {
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from,
                                               @NonNull CT2 to, @NonNull CT2 size,
-                                              final Event... dependencies) {
+                                              final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5840,7 +6183,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          boolean blocking, final Event... dependencies) {
+                                                          boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5880,7 +6223,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          final Event... dependencies) {
+                                                          final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5918,7 +6261,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          boolean blocking, final Event... dependencies) {
+                                                          boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5958,7 +6301,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          final Event... dependencies) {
+                                                          final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -5995,7 +6338,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6034,7 +6377,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6071,7 +6414,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6110,7 +6453,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6147,7 +6490,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6186,7 +6529,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6223,7 +6566,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6262,7 +6605,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6299,7 +6642,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6338,7 +6681,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6375,7 +6718,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6414,7 +6757,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6451,7 +6794,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6490,7 +6833,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6527,7 +6870,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
-                               boolean blocking, final Event... dependencies) {
+                               boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6566,7 +6909,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
-                               final Event... dependencies) {
+                               final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6608,7 +6951,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          boolean blocking, final Event... dependencies) {
+                                                          boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6645,7 +6988,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          final Event... dependencies) {
+                                                          final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6683,7 +7026,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          boolean blocking, final Event... dependencies) {
+                                                          boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6720,7 +7063,7 @@ public class CommandQueue extends SmartPointer {
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          final Event... dependencies) {
+                                                          final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6757,7 +7100,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6793,7 +7136,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6830,7 +7173,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6866,7 +7209,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, short @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6903,7 +7246,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, int @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6939,7 +7282,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, int @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -6976,7 +7319,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, int @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7012,7 +7355,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, int @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7049,7 +7392,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7085,7 +7428,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7122,7 +7465,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7158,7 +7501,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7195,7 +7538,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7231,7 +7574,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7268,7 +7611,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                boolean blocking, final Event... dependencies) {
+                                boolean blocking, final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7304,7 +7647,7 @@ public class CommandQueue extends SmartPointer {
         public <CT> Event write(Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                final Event... dependencies) {
+                                final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
@@ -7332,7 +7675,7 @@ public class CommandQueue extends SmartPointer {
          * @throws IllegalStateException If this event can no longer be chained.
          * @author EΣrie
          */
-        public Event barrier(final Event... dependencies) {
+        public Event barrier(final Event... dependencies) throws IllegalStateException {
             Preconditions.checkState(
                     chainable,
                     "This Event has already transferred or released its MemoryStack."
