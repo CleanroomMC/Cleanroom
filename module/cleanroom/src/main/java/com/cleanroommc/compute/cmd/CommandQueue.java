@@ -5069,8 +5069,21 @@ public class CommandQueue extends SmartPointer {
         }
 
         //</editor-fold>
-        //<editor-fold desc="Buffer Read Byte">
+        //<editor-fold desc="Buffer Read NIO Buffer">
 
+        /**
+         * Reads data from a buffer into a NIO buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param target Destination for the data read from the buffer.
+         * @param offset Byte offset at which the operation starts.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <B extends java.nio.Buffer> @NonNull Event read(
                 @NonNull Buffer buffer,
                 @NonNull B target,
@@ -5105,6 +5118,19 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads data from a buffer into a NIO buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param offset Byte offset at which the operation starts.
+         * @param target Destination for the data read from the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public <B extends java.nio.Buffer> @NonNull Event read(
                 @NonNull Buffer buffer,
                 long offset,
@@ -5114,6 +5140,19 @@ public class CommandQueue extends SmartPointer {
             return read(buffer, target, offset, true, dependencies);
         }
 
+        /**
+         * Reads data from a buffer into a NIO buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param target Destination for the data read from the buffer.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates at offset 0.
+         */
         public <B extends java.nio.Buffer> @NonNull Event read(
                 @NonNull Buffer buffer,
                 @NonNull B target,
@@ -5123,6 +5162,19 @@ public class CommandQueue extends SmartPointer {
             return read(buffer, target, 0, blocking, dependencies);
         }
 
+        /**
+         * Reads data from a buffer into a NIO buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param target Destination for the data read from the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates at offset 0.
+         */
         public <B extends java.nio.Buffer> @NonNull Event read(
                 @NonNull Buffer buffer,
                 @NonNull B target,
