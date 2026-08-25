@@ -5811,6 +5811,23 @@ public class CommandQueue extends SmartPointer {
 
         //<editor-fold desc="Image Read">
 
+        /**
+         * Reads an image region into a NIO buffer after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param buffer Destination NIO buffer for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
@@ -5834,6 +5851,23 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a NIO buffer after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param buffer Destination NIO buffer for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
@@ -5855,6 +5889,23 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a NIO buffer after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param buffer Destination NIO buffer for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
@@ -5878,6 +5929,23 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a NIO buffer after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param buffer Destination NIO buffer for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
                                                           @NonNull CT from, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
@@ -5899,6 +5967,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a short array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
@@ -5922,6 +6006,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a short array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
@@ -5943,6 +6043,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a short array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
@@ -5966,6 +6082,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a short array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
@@ -5987,6 +6119,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into an int array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
@@ -6010,6 +6158,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into an int array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
@@ -6031,6 +6195,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into an int array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
@@ -6054,6 +6234,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into an int array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
@@ -6075,6 +6271,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a float array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
@@ -6098,6 +6310,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a float array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
@@ -6119,6 +6347,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a float array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
@@ -6142,6 +6386,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a float array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
@@ -6163,6 +6423,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a double array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
@@ -6186,6 +6462,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a double array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
@@ -6207,6 +6499,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a double array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
@@ -6230,6 +6538,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads an image region into a double array after this event and returns the next event in the chain.
+         * @param image The image involved in the operation.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+         * @param array Destination array for the image data.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> Event read(Image<CT> image,
                                @NonNull CT from, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
