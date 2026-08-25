@@ -5185,6 +5185,17 @@ public class CommandQueue extends SmartPointer {
         //</editor-fold>
         //<editor-fold desc="Buffer Read Short">
 
+        /**
+         * Reads data from a buffer into a short array after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param target Destination for the data read from the buffer.
+         * @param offset Byte offset at which the operation starts.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
                           final long offset,
@@ -5209,6 +5220,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads data from a buffer into a short array after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param offset Byte offset at which the operation starts.
+         * @param target Destination for the data read from the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public Event read(@NonNull Buffer buffer,
                           final long offset,
                           short @NonNull [] target,
@@ -5230,6 +5252,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads data from a buffer into a short array after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param target Destination for the data read from the buffer.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates at offset 0.
+         */
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
                           final boolean blocking,
@@ -5251,6 +5284,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Reads data from a buffer into a short array after this event and returns the next event in the chain.
+         * @param buffer The buffer to read from.
+         * @param target Destination for the data read from the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates at offset 0.
+         */
         public Event read(@NonNull Buffer buffer,
                           short @NonNull [] target,
                           final Event... dependencies) {
