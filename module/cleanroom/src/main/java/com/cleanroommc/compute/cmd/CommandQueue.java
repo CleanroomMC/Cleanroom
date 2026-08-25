@@ -2794,6 +2794,22 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Image Copy">
 
+    /**
+     * <p>Copy a region from one OpenCL image to another.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param start Source image.
+     * @param destination Destination image.
+     * @param from Origin of the image region.
+     * @param mipmapFrom Mipmap level of the source image.
+     * @param to Origin in the destination image.
+     * @param mipmapTo Mipmap level of the destination image.
+     * @param size Size of the image region.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT1> Source image coordinate type.
+     * @param <CT2> Destination image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from, int mipmapFrom,
@@ -2808,6 +2824,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(start.copy(stack, this, destination, from, mipmapFrom, to, mipmapTo, size, dependencies), stack);
     }
 
+    /**
+     * <p>Copy a region from one OpenCL image to another.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param start Source image.
+     * @param destination Destination image.
+     * @param from Origin of the image region.
+     * @param to Origin in the destination image.
+     * @param mipmapTo Mipmap level of the destination image.
+     * @param size Size of the image region.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT1> Source image coordinate type.
+     * @param <CT2> Destination image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote The source uses mipmap level 0.
+     */
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from,
@@ -2822,6 +2854,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(start.copy(stack, this, destination, from, to, mipmapTo, size, dependencies), stack);
     }
 
+    /**
+     * <p>Copy a region from one OpenCL image to another.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param start Source image.
+     * @param destination Destination image.
+     * @param from Origin of the image region.
+     * @param mipmapFrom Mipmap level of the source image.
+     * @param to Origin in the destination image.
+     * @param size Size of the image region.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT1> Source image coordinate type.
+     * @param <CT2> Destination image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote The destination uses mipmap level 0.
+     */
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from, int mipmapFrom,
@@ -2836,6 +2884,21 @@ public class CommandQueue extends SmartPointer {
         return new Event(start.copy(stack, this, destination, from, mipmapFrom, to, size, dependencies), stack);
     }
 
+    /**
+     * <p>Copy a region from one OpenCL image to another.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param start Source image.
+     * @param destination Destination image.
+     * @param from Origin of the image region.
+     * @param to Origin in the destination image.
+     * @param size Size of the image region.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT1> Source image coordinate type.
+     * @param <CT2> Destination image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote Both source and destination use mipmap level 0.
+     */
     public <CT1, CT2> Event imageCopy(@NonNull MemoryStack stack,
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from,
