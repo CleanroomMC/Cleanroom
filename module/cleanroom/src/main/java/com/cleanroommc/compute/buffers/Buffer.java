@@ -24,17 +24,40 @@ import java.nio.*;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * OpenCL Buffer
+ * @author EΣrie
+ */
 public class Buffer extends SmartPointer {
 
     private final @Nullable Buffer parent;
     private final List<Buffer> children = new ReferenceArrayList<>();
+    /**
+     * The actual OpenCL Buffer
+     */
     public final long handle;
+    /**
+     * Size of this buffer.
+     */
     public final long size;
     private final Set<BufferFlags> flags = new ObjectArraySet<>();
     private final @Nullable GLBuffer glBuffer;
+    /**
+     * Is this Buffer readable?
+     */
     public final boolean canRead;
+    /**
+     * Is this Buffer writable?
+     */
     public final boolean canWrite;
 
+    /**
+     * Creates an OpenCL Buffer
+     * @param stack MemoryStack
+     * @param size length of the buffer in bytes
+     * @param flags {@link BufferFlags Buffer memory flags}
+     * @author EΣrie
+     */
     public Buffer(@NonNull MemoryStack stack, long size, @NonNull BufferFlags... flags) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
@@ -74,6 +97,14 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * Creates an OpenCL Buffer from host memory.
+     * @param stack MemoryStack
+     * @param hostMemoryBuffer NIO Buffer whose data will be copied to the OpenCL buffer.
+     * @param flags {@link BufferFlags Buffer memory flags}
+     * @param <B> NIO Buffer type
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Buffer(@NonNull MemoryStack stack, @NonNull B hostMemoryBuffer, @NonNull BufferFlags... flags) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(hostMemoryBuffer);
@@ -129,6 +160,15 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * Create a sub-buffer
+     * @param stack MemoryStack
+     * @param parent Parent buffer. This buffer will be divided from said parent.
+     * @param offset Offset in bytes from the beginning of the parent buffer.
+     * @param size Size in bytes of the sub-buffer.
+     * @param flags {@link BufferFlags Buffer memory flags}
+     * @author EΣrie
+     */
     public Buffer(@NonNull MemoryStack stack, @NonNull Buffer parent, long offset, long size, @NonNull BufferFlags... flags) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(parent);
@@ -181,6 +221,12 @@ public class Buffer extends SmartPointer {
         this.parent.children.add(this);
     }
 
+    /**
+     * Create an OpenCL Buffer.
+     * @param size Size of the buffer in bytes.
+     * @param flags {@link BufferFlags Buffer memory flags}
+     * @author EΣrie
+     */
     public Buffer(long size, @NonNull BufferFlags... flags) {
         Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
         Preconditions.checkNotNull(flags);
@@ -219,6 +265,13 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * Creates an OpenCL Buffer from host memory.
+     * @param hostMemoryBuffer NIO Buffer whose data will be copied to the OpenCL buffer.
+     * @param flags {@link BufferFlags Buffer memory flags}
+     * @param <B> NIO Buffer type
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Buffer(@NonNull B hostMemoryBuffer, @NonNull BufferFlags... flags) {
         Preconditions.checkNotNull(hostMemoryBuffer);
         Preconditions.checkNotNull(flags);
@@ -273,6 +326,14 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * Create a sub-buffer
+     * @param parent Parent buffer. This buffer will be divided from said parent.
+     * @param offset Offset in bytes from the beginning of the parent buffer.
+     * @param size Size in bytes of the sub-buffer.
+     * @param flags {@link BufferFlags Buffer memory flags}
+     * @author EΣrie
+     */
     public Buffer(@NonNull Buffer parent, long offset, long size, @NonNull BufferFlags... flags) {
         Preconditions.checkNotNull(parent);
         Preconditions.checkArgument(offset + size <= parent.size, "Subbuffer goes outside parent buffer.");
@@ -324,6 +385,13 @@ public class Buffer extends SmartPointer {
         this.parent.children.add(this);
     }
 
+    /**
+     * Create an OpenCL Buffer from an OpenGL buffer.
+     * This is necessary for GL sharing.
+     * @param glBuffer The OpenGL buffer.
+     * @param flags {@link BufferFlags Buffer memory flags}
+     * @author EΣrie
+     */
     public Buffer(@NonNull GLBuffer glBuffer, @NonNull BufferFlags... flags) {
         Preconditions.checkNotNull(glBuffer);
         Preconditions.checkNotNull(flags);
@@ -367,7 +435,33 @@ public class Buffer extends SmartPointer {
         }
     }
 
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] data, boolean blocking, long offset, long... events) {
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The write operation will be enqueued on this {@link CommandQueue}.
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
+                      float @NonNull [] data, boolean blocking,
+                      long offset, long... events) throws
+            NullPointerException, IllegalArgumentException,
+            IllegalStateException, BufferError, OutOfMemoryError {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -401,7 +495,33 @@ public class Buffer extends SmartPointer {
         }
     }
 
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, double @NonNull [] data, boolean blocking, long offset, long... events) {
+    /**
+     * <p>Write data to the buffer from a double array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The write operation will be enqueued on this {@link CommandQueue}.
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @author EΣrie
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     */
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
+                      double @NonNull [] data, boolean blocking,
+                      long offset, long... events) throws
+            NullPointerException, IllegalArgumentException,
+            IllegalStateException, BufferError, OutOfMemoryError {
         final int sizeof = 8;
 
         Preconditions.checkNotNull(stack);
@@ -435,6 +555,28 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Write data to the buffer from a short array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The write operation will be enqueued on this {@link CommandQueue}.
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] data, boolean blocking, long offset, long... events) {
         final int sizeof = 2;
 
@@ -469,6 +611,28 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Write data to the buffer from an int array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The write operation will be enqueued on this {@link CommandQueue}.
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] data, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
@@ -503,6 +667,7 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    // TODO: Test this one and decide if it should stay.
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, byte @NonNull [] data, boolean blocking, long offset, long... events) {
         final int sizeof = 1;
 
@@ -540,6 +705,29 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Write data to the buffer from a NIO Buffer.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The write operation will be enqueued on this {@link CommandQueue}.
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @param <B> Type of the NIO buffer this will fetch data from.
+     * @return Event of the write operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> long write(
             @NonNull MemoryStack stack,
             CommandQueue commandQueue,
@@ -640,6 +828,29 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer and write it to a NIO Buffer.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The read operation will be enqueued on this {@link CommandQueue}.
+     * @param target Buffer where data from the OpenCL buffer will be written to.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the reading.
+     * @param events What this operation depends on.
+     * @param <B> Type of the NIO buffer this will fetch data from.
+     * @return Event of the read operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If the target buffer is too small,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support reading.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to read from to the buffer.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> long read(
             @NonNull MemoryStack stack,
             CommandQueue commandQueue,
@@ -740,6 +951,28 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer and write it to a short array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The read operation will be enqueued on this {@link CommandQueue}.
+     * @param target Array where data from the OpenCL buffer will be written to.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the reading.
+     * @param events What this operation depends on.
+     * @return Event of the read operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If the target array is too small,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support reading.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
+     * @author EΣrie
+     */
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 2;
 
@@ -772,6 +1005,28 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer and write it to an int array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The read operation will be enqueued on this {@link CommandQueue}.
+     * @param target Array where data from the OpenCL buffer will be written to.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the reading.
+     * @param events What this operation depends on.
+     * @return Event of the read operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If the target array is too small,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support reading.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
+     * @author EΣrie
+     */
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
@@ -804,6 +1059,28 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer and write it to a float array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The read operation will be enqueued on this {@link CommandQueue}.
+     * @param target Array where data from the OpenCL buffer will be written to.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the reading.
+     * @param events What this operation depends on.
+     * @return Event of the read operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If the target array is too small,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support reading.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
+     * @author EΣrie
+     */
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 4;
 
@@ -836,6 +1113,28 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer and write it to a double array.</p>
+     * @param stack MemoryStack
+     * @param commandQueue The read operation will be enqueued on this {@link CommandQueue}.
+     * @param target Array where data from the OpenCL buffer will be written to.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the reading.
+     * @param events What this operation depends on.
+     * @return Event of the read operation.
+     * @apiNote Do not call directly, only call from {@link CommandQueue}
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], long, boolean, long...)
+     * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
+     * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
+     * @throws NullPointerException If stack, data or commandQueue is null.
+     * @throws IllegalArgumentException If the target array is too small,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support reading.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
+     * @author EΣrie
+     */
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, double @NonNull [] target, boolean blocking, long offset, long... events) {
         final int sizeof = 8;
 
@@ -868,6 +1167,13 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Closes the buffer and frees the memory.</p>
+     * <p>The buffer will be removed from the reference graph.</p>
+     * @implNote If the buffer has any children, they will be closed as well.
+     * @see SmartPointer#close()
+     * @author EΣrie
+     */
     @Override
     public void close() {
         super.close();
@@ -878,11 +1184,28 @@ public class Buffer extends SmartPointer {
         CL10.clReleaseMemObject(handle);
     }
 
+    /**
+     * @return Is this a GL shared buffer or not?
+     */
     public boolean isGLObject() {
         return glBuffer != null;
     }
 
-    public void acquireGLObjects(MemoryStack substack, CommandQueue commandQueue, PointerBuffer dependencies, PointerBuffer event, long... events) {
+    /**
+     * <p><i>Internal Function</i></p>
+     * <p>Used to acquire GL objects to prevent data races between OpenGL and OpenCL.</p>
+     * @param substack MemoryStack
+     * @param commandQueue CommandQueue
+     * @param dependencies dependent events, can be null
+     * @param event event of the acquisition
+     * @param events same as dependencies, just in array format for ease of use.
+     * @apiNote This is an internal function, do not use it yourself and <b>DO NOT</b> MIXIN OR ASM THIS FUNCTION OUT,
+     * IT WILL CAUSE ANY POTENTIAL USES OF COMPUTE IN RENDERING TO CRASH!!!
+     * @author EΣrie
+     */
+    private void acquireGLObjects(MemoryStack substack, CommandQueue commandQueue,
+                                  @Nullable PointerBuffer dependencies,
+                                  PointerBuffer event, long... events) {
         CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, dependencies, event);
         if (dependencies != null) {
             for (long dependency : events)
@@ -895,12 +1218,28 @@ public class Buffer extends SmartPointer {
         dependencies.rewind();
     }
 
-    public void releaseGLObjects(CommandQueue commandQueue, PointerBuffer dependencies, PointerBuffer event) {
+    /**
+     * <p><i>Internal Function</i></p>
+     * <p>Used to release GL objects to prevent data races between OpenGL and OpenCL.</p>
+     * @param commandQueue CommandQueue
+     * @param dependencies dependent events
+     * @param event buffer with the event of the previous operation.
+     * @apiNote This is an internal function, do not use it yourself and <b>DO NOT</b> MIXIN OR ASM THIS FUNCTION OUT,
+     * IT WILL CAUSE ANY POTENTIAL USES OF COMPUTE IN RENDERING TO CRASH!!!
+     * @author EΣrie
+     */
+    private void releaseGLObjects(CommandQueue commandQueue, PointerBuffer dependencies, PointerBuffer event) {
         dependencies.put(0, event.get(0)).rewind();
         CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, dependencies, event);
         CL10.clReleaseEvent(dependencies.get(0));
     }
 
+    /**
+     * <p><i>Internal Function</i></p>
+     * <p>Error check</p>
+     * @param err error code
+     * @author EΣrie
+     */
     private static void checkBufferWriteErrors(int err) {
         switch (err) {
             case CL10.CL_INVALID_MEM_OBJECT -> throw new BufferError("Buffer is not a valid memory object.");
@@ -911,6 +1250,12 @@ public class Buffer extends SmartPointer {
         }
     }
 
+    /**
+     * <p><i>Internal Function</i></p>
+     * <p>Error check</p>
+     * @param err error code
+     * @author EΣrie
+     */
     private static void checkBufferReadErrors(int err) {
         switch (err) {
             case CL10.CL_INVALID_MEM_OBJECT -> throw new BufferError("Buffer is not a valid memory object.");
@@ -921,7 +1266,14 @@ public class Buffer extends SmartPointer {
         }
     }
 
-    private static int bufferElementSize(java.nio.Buffer buffer) {
+    /**
+     * <p><i>Internal function</i></p>
+     * @param buffer NIO Buffer
+     * @return Size of a single buffer element.
+     * @throws IllegalArgumentException If the buffer is not one of: ByteBuffer, ShortBuffer,
+     * IntBuffer, FloatBuffer, DoubleBuffer.
+     */
+    private static int bufferElementSize(java.nio.Buffer buffer) throws IllegalArgumentException {
         return switch (buffer) {
             case ByteBuffer ignored -> Byte.BYTES;
             case ShortBuffer ignored -> Short.BYTES;
