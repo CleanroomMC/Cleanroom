@@ -5655,6 +5655,22 @@ public class CommandQueue extends SmartPointer {
 
         //<editor-fold desc="Image Copy">
 
+        /**
+         * Copies an image region after this event and returns the next event in the chain.
+         * @param start Source image.
+         * @param destination Destination image.
+         * @param from Origin of the image region.
+         * @param mipmapFrom Mipmap level of the source image.
+         * @param to Origin in the destination image.
+         * @param mipmapTo Mipmap level of the destination image.
+         * @param size Size of the image region.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT1> Source image coordinate type.
+         * @param <CT2> Destination image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from, int mipmapFrom,
                                               @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
@@ -5677,6 +5693,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Copies an image region after this event and returns the next event in the chain.
+         * @param start Source image.
+         * @param destination Destination image.
+         * @param from Origin of the image region.
+         * @param to Origin in the destination image.
+         * @param mipmapTo Mipmap level of the destination image.
+         * @param size Size of the image region.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT1> Source image coordinate type.
+         * @param <CT2> Destination image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote The source uses mipmap level 0.
+         */
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from,
                                               @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
@@ -5699,6 +5731,22 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Copies an image region after this event and returns the next event in the chain.
+         * @param start Source image.
+         * @param destination Destination image.
+         * @param from Origin of the image region.
+         * @param mipmapFrom Mipmap level of the source image.
+         * @param to Origin in the destination image.
+         * @param size Size of the image region.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT1> Source image coordinate type.
+         * @param <CT2> Destination image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote The destination uses mipmap level 0.
+         */
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from, int mipmapFrom,
                                               @NonNull CT2 to, @NonNull CT2 size,
@@ -5721,6 +5769,21 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Copies an image region after this event and returns the next event in the chain.
+         * @param start Source image.
+         * @param destination Destination image.
+         * @param from Origin of the image region.
+         * @param to Origin in the destination image.
+         * @param size Size of the image region.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT1> Source image coordinate type.
+         * @param <CT2> Destination image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote Both source and destination use mipmap level 0.
+         */
         public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                               @NonNull CT1 from,
                                               @NonNull CT2 to, @NonNull CT2 size,
