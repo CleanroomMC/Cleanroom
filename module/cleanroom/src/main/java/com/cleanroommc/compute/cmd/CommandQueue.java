@@ -4086,6 +4086,18 @@ public class CommandQueue extends SmartPointer {
             this.nonBlockingWrites = nonBlockingWrites;
         }
 
+        /**
+         * Queues a kernel operation after this event and returns the next event in the chain.
+         * @param kernel Kernel to enqueue.
+         * @param arguments Arguments passed to the kernel.
+         * @param workGroupOffsets Global work offsets for each dimension, or null for zero offsets.
+         * @param workGroupSizes Global work sizes for each dimension.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @see CommandQueue#dispatchKernel(Kernel, KernelParameterList, long[], long[], long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public @NonNull Event next(@NonNull Kernel kernel,
                                    final @NonNull KernelParameterList arguments,
                                    final long @Nullable [] workGroupOffsets,
@@ -4118,6 +4130,16 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Queues a kernel operation after this event and returns the next event in the chain.
+         * @param kernel Kernel to enqueue.
+         * @param arguments Arguments passed to the kernel.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @see CommandQueue#dispatchKernel(Kernel, KernelParameterList, long[], long[], long...)
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public @NonNull Event next(@NonNull Kernel kernel,
                                    final @NonNull KernelParameterList arguments,
                                    final Event... dependencies) {
