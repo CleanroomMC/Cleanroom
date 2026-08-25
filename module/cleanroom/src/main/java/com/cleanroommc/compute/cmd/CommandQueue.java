@@ -7316,6 +7316,13 @@ public class CommandQueue extends SmartPointer {
 
         //</editor-fold>
 
+        /**
+         * Queues a barrier after this event and returns the next event in the chain.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public Event barrier(final Event... dependencies) {
             Preconditions.checkState(
                     chainable,
