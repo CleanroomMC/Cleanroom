@@ -21,11 +21,10 @@ package net.minecraftforge.fml.common.registry;
 
 import java.lang.reflect.Field;
 
-import com.cleanroommc.hackery.ReflectionHackery;
-import net.lenni0451.reflect.Classes;
-import net.lenni0451.reflect.Fields;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.FMLLog;
+import zone.rong.imaginebreaker.Index;
+import zone.rong.imaginebreaker.api.ImagineBreaker;
 
 /**
  * Internal class used in tracking {@link GameRegistry.ItemStackHolder} references
@@ -46,20 +45,6 @@ class ItemStackHolderRef {
         this.itemName = itemName;
         this.meta = meta;
         this.serializednbt = serializednbt;
-        makeWritable(field);
-    }
-
-    private static void makeWritable(Field f)
-    {
-        try
-        {
-            f.setAccessible(true);
-            ReflectionHackery.stripFieldOfFinalModifier(f);
-        }
-        catch (ReflectiveOperationException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     public void apply()
@@ -75,9 +60,9 @@ class ItemStackHolderRef {
         }
         try
         {
-            Classes.ensureInitialized(field.getDeclaringClass());
-            Fields.setObject(null, field, is);
-            //field.set(null, is);
+            ImagineBreaker touma = Index.get();
+            touma.ensureInitialized(field.getDeclaringClass());
+            touma.set(null, field, is);
         }
         catch (Exception e)
         {

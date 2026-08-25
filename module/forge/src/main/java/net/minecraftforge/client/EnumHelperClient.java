@@ -19,7 +19,6 @@
 
 package net.minecraftforge.client;
 
-import com.cleanroommc.hackery.enums.EnumHackery;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.Util.EnumOS;
@@ -42,7 +41,7 @@ public class EnumHelperClient extends EnumHelper
     @Nullable
     public static GameType addGameType(String name, int id, String displayName, String shortName)
     {
-        return EnumHackery.addEnumEntry(GameType.class, name,
+        return addEnum(GameType.class, name,
                 new Class<?>[] { int.class, String.class, String.class },
                 new Object[] { id, displayName, shortName });
     }
@@ -50,7 +49,7 @@ public class EnumHelperClient extends EnumHelper
     @Nullable
     public static Options addOptions(String name, String langName, boolean isSlider, boolean isToggle)
     {
-        return EnumHackery.addEnumEntry(Options.class, name,
+        return addEnum(Options.class, name,
                 new Class<?>[] { String.class, boolean.class, boolean.class },
                 new Object[] { langName, isSlider, isToggle });
     }
@@ -58,7 +57,7 @@ public class EnumHelperClient extends EnumHelper
     @Nullable
     public static Options addOptions(String name, String langName, boolean isSlider, boolean isToggle, float valMin, float valMax, float valStep)
     {
-        return EnumHackery.addEnumEntry(Options.class, name,
+        return addEnum(Options.class, name,
                 new Class<?>[] { String.class, boolean.class, boolean.class, float.class, float.class, float.class },
                 new Object[] { langName, isSlider, isToggle, valMin, valMax, valStep });
     }
@@ -66,13 +65,13 @@ public class EnumHelperClient extends EnumHelper
     @Nullable
     public static EnumOS addOS2(String name)
     {
-        return EnumHackery.addEnumEntry(EnumOS.class, name);
+        return addEnum(EnumOS.class, name, new Class<?>[0]);
     }
 
     @Nullable
     public static MusicTicker.MusicType addMusicType(String name, SoundEvent sound, int minDelay, int maxDelay)
     {
-        return EnumHackery.addEnumEntry(MusicTicker.MusicType.class, name,
+        return addEnum(MusicTicker.MusicType.class, name,
                 new Class<?>[] { SoundEvent.class, int.class, int.class },
                 new Object[] { sound, minDelay, maxDelay });
     }

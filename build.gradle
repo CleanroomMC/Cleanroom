@@ -124,8 +124,7 @@ dependencies {
 
     api 'org.jspecify:jspecify:1.0.0'
     api 'top.outlands:foundation:0.19.11'
-    api 'net.lenni0451:Reflect:1.6.4' // FIXME
-    api 'net.lenni0451.commons:unchecked:1.9.2' // FIXME
+    api 'zone.rong:imaginebreaker:3.2'
     api 'org.javassist:javassist:3.30.2-GA' // FIXME
     api 'lzma:lzma:0.0.1'
     api 'java3d:vecmath:1.5.2' // TODO: joml
