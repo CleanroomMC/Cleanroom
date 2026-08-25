@@ -146,6 +146,26 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Buffer Write Float">
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, float[], long, boolean, Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
                              final long offset,
@@ -157,6 +177,26 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(buffer.write(stack, this, data, blocking, offset, events), stack, buffer, blocking, null);
     }
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, long, float[], Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This is always a blocking write.
+     */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final float @NonNull [] data,
@@ -167,6 +207,26 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(buffer.write(stack, this, data, true, offset, events), stack, buffer, true, null);
     }
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, float[], boolean, Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This always writes at offset 0.
+     */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
                              final boolean blocking, final long... events) {
@@ -176,6 +236,24 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(buffer.write(stack, this, data, blocking, 0, events), stack, buffer, blocking, null);
     }
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, float[], Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
                              final long... events) {
@@ -185,6 +263,25 @@ public class CommandQueue extends SmartPointer {
         return createWriteEvent(buffer.write(stack, this, data, true, 0, events), stack, buffer, true, null);
     }
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, float[], long, boolean, Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final float @NonNull [] data,
                              final long offset,
@@ -203,6 +300,25 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, long, float[], Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This is always a blocking write.
+     */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final float @NonNull [] data,
@@ -220,6 +336,25 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, float[], boolean, Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This always writes at offset 0.
+     */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final float @NonNull [] data,
                              final boolean blocking, final long... events) {
@@ -236,6 +371,23 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Write data to the buffer from a float array.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, float[], Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final float @NonNull [] data,
                              final long... events) {
