@@ -4044,6 +4044,10 @@ public class CommandQueue extends SmartPointer {
 
     //</editor-fold>
 
+    /**
+     * Releases this OpenCL command queue.
+     * @author EΣrie
+     */
     @Override
     public void close() {
         super.close();
@@ -4060,6 +4064,11 @@ public class CommandQueue extends SmartPointer {
         return event;
     }
 
+    /**
+     * An event returned by a queued OpenCL command.
+     * <p>Event instances form a chain that reuses the same MemoryStack until the chain is executed.</p>
+     * @author EΣrie
+     */
     public final class Event {
         public final long eventID;
         private final MemoryStack stack;
@@ -7409,6 +7418,10 @@ public class CommandQueue extends SmartPointer {
             return result;
         }
 
+        /**
+         * Releases ownership held by additional dependency events after they have been consumed by a chain operation.
+         * @param dependencies Dependency events consumed by the current operation.
+         */
         private void releaseDependencies(Event... dependencies) {
             for (Event dependency : dependencies) {
                 if (dependency != null && dependency != this) {
@@ -7430,6 +7443,11 @@ public class CommandQueue extends SmartPointer {
             }
         }
 
+        /**
+         * Tracks objects used by non-blocking writes and clears the tracking set on blocking operations.
+         * @param object Object written by the operation.
+         * @param blocking Whether the operation is blocking.
+         */
         private void updateNonBlockingWrites(@NonNull SmartPointer object, boolean blocking) {
             Preconditions.checkNotNull(object);
 
@@ -7444,11 +7462,18 @@ public class CommandQueue extends SmartPointer {
             nonBlockingWrites.add(object);
         }
 
+        /**
+         * Clears the set of objects with outstanding non-blocking writes.
+         */
         private void clearNonBlockingWrites() {
             if (nonBlockingWrites != null)
                 nonBlockingWrites.clear();
         }
 
+        /**
+         * Warns when an operation uses an object that still has an outstanding non-blocking write.
+         * @param object Object about to be used by another operation.
+         */
         private void checkNonBlockingWrite(SmartPointer object) {
             if (nonBlockingWrites != null && nonBlockingWrites.contains(object)) {
                 Compute.instance().LOGGER.warn("Potential data race caused by operation involving {} after non-blocking write.", object instanceof Buffer ? "a buffer" : "an image");
