@@ -1,0 +1,12 @@
+--- original/net/minecraft/world/gen/feature/WorldGenerator.java
++++ modified/net/minecraft/world/gen/feature/WorldGenerator.java
+@@ -26,7 +26,8 @@
+         if (this.doBlockNotify) {
+             worldIn.setBlockState(pos, state, 3);
+         } else {
+-            worldIn.setBlockState(pos, state, 2);
++            int flag = net.minecraftforge.common.ForgeModContainer.fixVanillaCascading ? 2| 16 : 2; //Forge: With bit 5 unset, it will notify neighbors and load adjacent chunks.
++            worldIn.setBlockState(pos, state, flag);
+         }
+     }
+ }

@@ -1,0 +1,36 @@
+--- original/net/minecraft/block/BlockStaticLiquid.java
++++ modified/net/minecraft/block/BlockStaticLiquid.java
+@@ -41,17 +41,19 @@
+ 
+                     for (int j = 0; j < i; j++) {
+                         blockpos = blockpos.add(rand.nextInt(3) - 1, 1, rand.nextInt(3) - 1);
+-                        if (blockpos.getY() >= 0 && blockpos.getY() < 256 && !worldIn.isBlockLoaded(blockpos)) {
++
++                        if (blockpos.getY() >= 0 && blockpos.getY() < worldIn.getHeight() && !worldIn.isBlockLoaded(blockpos)) {
+                             return;
+                         }
+ 
+-                        Block block = worldIn.getBlockState(blockpos).getBlock();
+-                        if (block.material == Material.AIR) {
++                        IBlockState block = worldIn.getBlockState(blockpos);
++
++                        if (block.getBlock().isAir(block, worldIn, blockpos)) {
+                             if (this.isSurroundingBlockFlammable(worldIn, blockpos)) {
+-                                worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
++                                worldIn.setBlockState(blockpos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos, pos, Blocks.FIRE.getDefaultState()));
+                                 return;
+                             }
+-                        } else if (block.material.blocksMovement()) {
++                        } else if (block.getMaterial().blocksMovement()) {
+                             return;
+                         }
+                     }
+@@ -63,7 +65,7 @@
+                         }
+ 
+                         if (worldIn.isAirBlock(blockpos1.up()) && this.getCanBlockBurn(worldIn, blockpos1)) {
+-                            worldIn.setBlockState(blockpos1.up(), Blocks.FIRE.getDefaultState());
++                            worldIn.setBlockState(blockpos1.up(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos1.up(), pos, Blocks.FIRE.getDefaultState()));
+                         }
+                     }
+                 }

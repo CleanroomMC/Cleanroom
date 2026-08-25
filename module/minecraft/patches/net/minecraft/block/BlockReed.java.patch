@@ -1,0 +1,56 @@
+--- original/net/minecraft/block/BlockReed.java
++++ modified/net/minecraft/block/BlockReed.java
+@@ -20,7 +20,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class BlockReed extends Block {
++public class BlockReed extends Block implements net.minecraftforge.common.IPlantable {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
+     protected static final AxisAlignedBB REED_AABB = new AxisAlignedBB(0.125, 0.0, 0.125, 0.875, 1.0, 0.875);
+ 
+@@ -49,12 +49,16 @@
+ 
+                 if (i < 3) {
+                     int j = state.getValue(AGE);
++
++                    if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, true)) {
+                     if (j == 15) {
+                         worldIn.setBlockState(pos.up(), this.getDefaultState());
+                         worldIn.setBlockState(pos, state.withProperty(AGE, 0), 4);
+                     } else {
+                         worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
+                     }
++                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
++                    }
+                 }
+             }
+         }
+@@ -63,7 +67,10 @@
+     /** Checks if this block can be placed exactly at the given position. */
+     @Override
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+-        Block block = worldIn.getBlockState(pos.down()).getBlock();
++        IBlockState state = worldIn.getBlockState(pos.down());
++        Block block = state.getBlock();
++        if (block.canSustainPlant(state, worldIn, pos.down(), EnumFacing.UP, this)) return true;
++
+         if (block == this) {
+             return true;
+         }
+@@ -157,6 +164,15 @@
+     }
+ 
+     @Override
++    public net.minecraftforge.common.EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
++        return net.minecraftforge.common.EnumPlantType.Beach;
++    }
++    @Override
++    public IBlockState getPlant(IBlockAccess world, BlockPos pos) {
++        return this.getDefaultState();
++    }
++
++    @Override
+     protected BlockStateContainer createBlockState() {
+         return new BlockStateContainer(this, AGE);
+     }

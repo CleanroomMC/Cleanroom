@@ -1,0 +1,64 @@
+--- original/net/minecraft/client/gui/GuiScreenBook.java
++++ modified/net/minecraft/client/gui/GuiScreenBook.java
+@@ -69,6 +69,7 @@
+             this.bookPages = nbttagcompound.getTagList("pages", 8).copy();
+             this.bookTotalPages = this.bookPages.tagCount();
+             if (this.bookTotalPages < 1) {
++                this.bookPages.appendTag(new NBTTagString("")); // Forge: fix MC-1685
+                 this.bookTotalPages = 1;
+             }
+         }
+@@ -299,8 +300,8 @@
+         int j = 2;
+         this.drawTexturedModalRect(i, 2, 0, 0, 192, 192);
+         if (this.bookGettingSigned) {
+-            String s = this.bookTitle;
+-            if (this.bookIsUnsigned) {
++            String s = this.bookTitle + com.cleanroommc.client.sdl.SDLHooks.compositionUnderlined();
++            if (this.bookIsUnsigned && !com.cleanroommc.client.sdl.SDLHooks.composing()) {
+                 if (this.updateCount / 6 % 2 == 0) {
+                     s = s + "" + TextFormatting.BLACK + "_";
+                 } else {
+@@ -313,6 +314,9 @@
+             this.fontRenderer.drawString(s1, i + 36 + (116 - k) / 2, 34, 0);
+             int l = this.fontRenderer.getStringWidth(s);
+             this.fontRenderer.drawString(s, i + 36 + (116 - l) / 2, 50, 0);
++            if (this.bookIsUnsigned) {
++                com.cleanroommc.client.sdl.SDLHooks.caret(i + 36, 50, 116, this.fontRenderer.FONT_HEIGHT, (116 - l) / 2 + l);
++            }
+             String s2 = I18n.format("book.byAuthor", this.editingPlayer.getName());
+             int i1 = this.fontRenderer.getStringWidth(s2);
+             this.fontRenderer.drawString(TextFormatting.DARK_GRAY + s2, i + 36 + (116 - i1) / 2, 60, 0);
+@@ -326,12 +330,15 @@
+             }
+ 
+             if (this.bookIsUnsigned) {
+-                if (this.fontRenderer.getBidiFlag()) {
+-                    s5 = s5 + "_";
+-                } else if (this.updateCount / 6 % 2 == 0) {
+-                    s5 = s5 + "" + TextFormatting.BLACK + "_";
+-                } else {
+-                    s5 = s5 + "" + TextFormatting.GRAY + "_";
++                s5 = s5 + com.cleanroommc.client.sdl.SDLHooks.compositionUnderlined();
++                if (!com.cleanroommc.client.sdl.SDLHooks.composing()) {
++                    if (this.fontRenderer.getBidiFlag()) {
++                        s5 = s5 + "_";
++                    } else if (this.updateCount / 6 % 2 == 0) {
++                        s5 = s5 + "" + TextFormatting.BLACK + "_";
++                    } else {
++                        s5 = s5 + "" + TextFormatting.GRAY + "_";
++                    }
+                 }
+             } else if (this.cachedPage != this.currPage) {
+                 if (ItemWrittenBook.validBookTagContents(this.book.getTagCompound())) {
+@@ -355,6 +362,10 @@
+             this.fontRenderer.drawString(s4, i - j1 + 192 - 44, 18, 0);
+             if (this.cachedComponents == null) {
+                 this.fontRenderer.drawSplitString(s5, i + 36, 34, 116, 0);
++                if (this.bookIsUnsigned) {
++                    int lines = Math.max(1, this.fontRenderer.listFormattedStringToWidth(s5, 116).size());
++                    com.cleanroommc.client.sdl.SDLHooks.caret(i + 36, 34 + (lines - 1) * this.fontRenderer.FONT_HEIGHT, 116, this.fontRenderer.FONT_HEIGHT, 0);
++                }
+             } else {
+                 int k1 = Math.min(128 / this.fontRenderer.FONT_HEIGHT, this.cachedComponents.size());
+ 

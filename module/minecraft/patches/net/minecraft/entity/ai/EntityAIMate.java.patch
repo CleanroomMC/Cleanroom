@@ -1,0 +1,22 @@
+--- original/net/minecraft/entity/ai/EntityAIMate.java
++++ modified/net/minecraft/entity/ai/EntityAIMate.java
+@@ -87,6 +87,19 @@
+     /** Spawns a baby animal of the same type. */
+     private void spawnBaby() {
+         EntityAgeable entityageable = this.animal.createChild(this.targetMate);
++
++        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(animal, targetMate, entityageable);
++        final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++        entityageable = event.getChild();
++        if (cancelled) {
++            //Reset the "inLove" state for the animals
++            this.animal.setGrowingAge(6000);
++            this.targetMate.setGrowingAge(6000);
++            this.animal.resetInLove();
++            this.targetMate.resetInLove();
++            return;
++        }
++
+         if (entityageable != null) {
+             EntityPlayerMP entityplayermp = this.animal.getLoveCause();
+             if (entityplayermp == null && this.targetMate.getLoveCause() != null) {

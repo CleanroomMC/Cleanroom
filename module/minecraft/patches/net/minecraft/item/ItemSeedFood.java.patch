@@ -1,0 +1,42 @@
+--- original/net/minecraft/item/ItemSeedFood.java
++++ modified/net/minecraft/item/ItemSeedFood.java
+@@ -8,7 +8,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
+-public class ItemSeedFood extends ItemFood {
++public class ItemSeedFood extends ItemFood implements net.minecraftforge.common.IPlantable {
+     private final Block crops;
+     /** Block ID of the soil this seed food should be planted on. */
+     private final Block soilId;
+@@ -32,10 +32,12 @@
+         float hitZ
+     ) {
+         ItemStack itemstack = player.getHeldItem(hand);
++
++        net.minecraft.block.state.IBlockState state = worldIn.getBlockState(pos);
+         if (facing == EnumFacing.UP
+-            && player.canPlayerEdit(pos.offset(facing), facing, itemstack)
+-            && worldIn.getBlockState(pos).getBlock() == this.soilId
+-            && worldIn.isAirBlock(pos.up())) {
++                && player.canPlayerEdit(pos.offset(facing), facing, itemstack)
++                && state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this)
++                && worldIn.isAirBlock(pos.up())) {
+             worldIn.setBlockState(pos.up(), this.crops.getDefaultState(), 11);
+             itemstack.shrink(1);
+             return EnumActionResult.SUCCESS;
+@@ -43,4 +45,14 @@
+             return EnumActionResult.FAIL;
+         }
+     }
++
++    @Override
++    public net.minecraftforge.common.EnumPlantType getPlantType(net.minecraft.world.IBlockAccess world, BlockPos pos) {
++        return net.minecraftforge.common.EnumPlantType.Crop;
++    }
++
++    @Override
++    public net.minecraft.block.state.IBlockState getPlant(net.minecraft.world.IBlockAccess world, BlockPos pos) {
++        return this.crops.getDefaultState();
++    }
+ }

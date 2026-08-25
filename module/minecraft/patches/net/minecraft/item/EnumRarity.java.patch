@@ -1,0 +1,26 @@
+--- original/net/minecraft/item/EnumRarity.java
++++ modified/net/minecraft/item/EnumRarity.java
+@@ -2,7 +2,7 @@
+ 
+ import net.minecraft.util.text.TextFormatting;
+ 
+-public enum EnumRarity {
++public enum EnumRarity implements net.minecraftforge.common.IRarity {
+     COMMON(TextFormatting.WHITE, "Common"),
+     UNCOMMON(TextFormatting.YELLOW, "Uncommon"),
+     RARE(TextFormatting.AQUA, "Rare"),
+@@ -17,4 +17,14 @@
+         this.color = color;
+         this.rarityName = name;
+     }
++
++    @Override
++    public TextFormatting getColor() {
++        return this.color;
++    }
++
++    @Override
++    public String getName() {
++        return this.rarityName;
++    }
+ }

@@ -1,0 +1,51 @@
+--- original/net/minecraft/block/BlockFenceGate.java
++++ modified/net/minecraft/block/BlockFenceGate.java
+@@ -57,13 +57,13 @@
+         EnumFacing.Axis enumfacing$axis = state.getValue(FACING).getAxis();
+         if (enumfacing$axis == EnumFacing.Axis.Z
+                 && (
+-                    worldIn.getBlockState(pos.west()).getBlock() == Blocks.COBBLESTONE_WALL
+-                        || worldIn.getBlockState(pos.east()).getBlock() == Blocks.COBBLESTONE_WALL
++                    worldIn.getBlockState(pos.west()).getBlock() instanceof BlockWall
++                    || worldIn.getBlockState(pos.east()).getBlock() instanceof BlockWall
+                 )
+             || enumfacing$axis == EnumFacing.Axis.X
+                 && (
+-                    worldIn.getBlockState(pos.north()).getBlock() == Blocks.COBBLESTONE_WALL
+-                        || worldIn.getBlockState(pos.south()).getBlock() == Blocks.COBBLESTONE_WALL
++                    worldIn.getBlockState(pos.north()).getBlock() instanceof BlockWall
++                    || worldIn.getBlockState(pos.south()).getBlock() instanceof BlockWall
+                 )) {
+             state = state.withProperty(IN_WALL, true);
+         }
+@@ -228,15 +228,22 @@
+         return new BlockStateContainer(this, FACING, OPEN, POWERED, IN_WALL);
+     }
+ 
+-    /**
+-     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+-     * <p>
+-     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that does not fit the other descriptions and will generally cause other things not to connect to the face.
+-     * 
+-     * @return an approximation of the form of the given face
+-     * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
+-     */
++    /* ======================================== FORGE START ======================================== */
++
+     @Override
++    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
++        IBlockState state = world.getBlockState(pos);
++        if (state.getBlock() instanceof BlockFenceGate &&
++            state.getBlockFaceShape(world, pos, facing) == BlockFaceShape.MIDDLE_POLE) {
++            Block connector = world.getBlockState(pos.offset(facing)).getBlock();
++            return connector instanceof BlockFence || connector instanceof BlockWall;
++        }
++        return false;
++    }
++
++    /* ======================================== FORGE END ======================================== */
++
++    @Override
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+         if (face != EnumFacing.UP && face != EnumFacing.DOWN) {
+             return state.getValue(FACING).getAxis() == face.rotateY().getAxis()

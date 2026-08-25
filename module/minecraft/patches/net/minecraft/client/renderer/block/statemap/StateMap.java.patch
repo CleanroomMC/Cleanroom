@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/renderer/block/statemap/StateMap.java
++++ modified/net/minecraft/client/renderer/block/statemap/StateMap.java
+@@ -32,7 +32,7 @@
+         if (this.name == null) {
+             s = Block.REGISTRY.getNameForObject(state.getBlock()).toString();
+         } else {
+-            s = this.removeName(this.name, map);
++            s = String.format("%s:%s", Block.REGISTRY.getNameForObject(state.getBlock()).getNamespace(), this.removeName(this.name, map));
+         }
+ 
+         if (this.suffix != null) {

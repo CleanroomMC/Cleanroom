@@ -1,0 +1,54 @@
+--- original/net/minecraft/world/Explosion.java
++++ modified/net/minecraft/world/Explosion.java
+@@ -44,6 +44,7 @@
+     private final List<BlockPos> affectedBlockPositions = Lists.newArrayList();
+     /** Maps players to the knockback vector applied by the explosion, to send to the client */
+     private final Map<EntityPlayer, Vec3d> playerKnockbackMap = Maps.newHashMap();
++    private final Vec3d position;
+ 
+     @SideOnly(Side.CLIENT)
+     public Explosion(
+@@ -86,6 +87,7 @@
+         this.z = z;
+         this.causesFire = causesFire;
+         this.damagesTerrain = damagesTerrain;
++        position = new Vec3d(this.x, this.y, this.z);
+     }
+ 
+     /** Does the first part of the explosion (destroy blocks) */
+@@ -115,8 +117,8 @@
+                             IBlockState iblockstate = this.world.getBlockState(blockpos);
+                             if (iblockstate.getMaterial() != Material.AIR) {
+                                 float f2 = this.exploder != null
+-                                    ? this.exploder.getExplosionResistance(this, this.world, blockpos, iblockstate)
+-                                    : iblockstate.getBlock().getExplosionResistance(null);
++                                           ? this.exploder.getExplosionResistance(this, this.world, blockpos, iblockstate)
++                                           : iblockstate.getBlock().getExplosionResistance(world, blockpos, null, this);
+                                 f -= (f2 + 0.3F) * 0.3F;
+                             }
+ 
+@@ -144,6 +146,7 @@
+         int j2 = MathHelper.floor(this.z - f3 - 1.0);
+         int j1 = MathHelper.floor(this.z + f3 + 1.0);
+         List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this.exploder, new AxisAlignedBB(k1, i2, j2, l1, i1, j1));
++        net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.world, this, list, f3);
+         Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
+ 
+         for (int k2 = 0; k2 < list.size(); k2++) {
+@@ -239,8 +242,7 @@
+                         block.dropBlockAsItemWithChance(this.world, blockpos, this.world.getBlockState(blockpos), 1.0F / this.size, 0);
+                     }
+ 
+-                    this.world.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 3);
+-                    block.onExplosionDestroy(this.world, blockpos, this);
++                    block.onBlockExploded(this.world, blockpos, this);
+                 }
+             }
+         }
+@@ -279,4 +281,6 @@
+     public List<BlockPos> getAffectedBlockPositions() {
+         return this.affectedBlockPositions;
+     }
++
++    public Vec3d getPosition(){ return this.position; }
+ }

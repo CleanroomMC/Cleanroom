@@ -1,0 +1,18 @@
+--- original/net/minecraft/command/CommandHandler.java
++++ modified/net/minecraft/command/CommandHandler.java
+@@ -45,6 +45,15 @@
+                 textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
+                 sender.sendMessage(textcomponenttranslation1);
+             } else if (icommand.checkPermission(this.getServer(), sender)) {
++                net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(icommand, sender, astring);
++                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
++                    if (event.getException() != null) {
++                        com.google.common.base.Throwables.throwIfUnchecked(event.getException());
++                    }
++                    return 1;
++                }
++                if (event.getParameters() != null) astring = event.getParameters();
++
+                 if (j > -1) {
+                     List<Entity> list = EntitySelector.matchEntities(sender, astring[j], Entity.class);
+                     String s1 = astring[j];

@@ -1,0 +1,15 @@
+--- original/net/minecraft/item/ItemAxe.java
++++ modified/net/minecraft/item/ItemAxe.java
+@@ -30,6 +30,12 @@
+         this.attackSpeed = ATTACK_SPEEDS[material.ordinal()];
+     }
+ 
++    protected ItemAxe(Item.ToolMaterial material, float damage, float speed) {
++        super(material, EFFECTIVE_ON);
++        this.attackDamage = damage;
++        this.attackSpeed = speed;
++    }
++
+     @Override
+     public float getDestroySpeed(ItemStack stack, IBlockState state) {
+         Material material = state.getMaterial();

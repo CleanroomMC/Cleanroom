@@ -1,0 +1,19 @@
+--- original/net/minecraft/entity/monster/EntityMob.java
++++ modified/net/minecraft/entity/monster/EntityMob.java
+@@ -115,12 +115,12 @@
+                 ItemStack itemstack = this.getHeldItemMainhand();
+                 ItemStack itemstack1 = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : ItemStack.EMPTY;
+                 if (!itemstack.isEmpty()
+-                    && !itemstack1.isEmpty()
+-                    && itemstack.getItem() instanceof ItemAxe
+-                    && itemstack1.getItem() == Items.SHIELD) {
++                        && !itemstack1.isEmpty()
++                        && itemstack.getItem().canDisableShield(itemstack, itemstack1, entityplayer, this)
++                        && itemstack1.getItem().isShield(itemstack1, entityplayer)) {
+                     float f1 = 0.25F + EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
+                     if (this.rand.nextFloat() < f1) {
+-                        entityplayer.getCooldownTracker().setCooldown(Items.SHIELD, 100);
++                        entityplayer.getCooldownTracker().setCooldown(itemstack1.getItem(), 100);
+                         this.world.setEntityState(entityplayer, (byte)30);
+                     }
+                 }

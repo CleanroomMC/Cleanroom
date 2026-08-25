@@ -1,0 +1,13 @@
+--- original/net/minecraft/item/ItemRedstone.java
++++ modified/net/minecraft/item/ItemRedstone.java
+@@ -32,8 +32,8 @@
+         BlockPos blockpos = flag ? pos : pos.offset(facing);
+         ItemStack itemstack = player.getHeldItem(hand);
+         if (player.canPlayerEdit(blockpos, facing, itemstack)
+-            && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, null)
+-            && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos)) {
++                && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, player)
++                && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos)) {
+             worldIn.setBlockState(blockpos, Blocks.REDSTONE_WIRE.getDefaultState());
+             if (player instanceof EntityPlayerMP) {
+                 CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, blockpos, itemstack);

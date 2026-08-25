@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/gen/feature/WorldGenGlowStone2.java
++++ modified/net/minecraft/world/gen/feature/WorldGenGlowStone2.java
+@@ -24,7 +24,7 @@
+             BlockPos blockpos = position.add(
+                 rand.nextInt(8) - rand.nextInt(8), -rand.nextInt(12), rand.nextInt(8) - rand.nextInt(8)
+             );
+-            if (worldIn.getBlockState(blockpos).getMaterial() == Material.AIR) {
++            if (worldIn.isAirBlock(blockpos)) {
+                 int j = 0;
+ 
+                 for (EnumFacing enumfacing : EnumFacing.values()) {

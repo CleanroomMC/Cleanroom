@@ -1,0 +1,11 @@
+--- original/net/minecraft/block/BlockButton.java
++++ modified/net/minecraft/block/BlockButton.java
+@@ -99,7 +99,7 @@
+         IBlockState iblockstate = worldIn.getBlockState(blockpos);
+         boolean flag = iblockstate.getBlockFaceShape(worldIn, blockpos, direction) == BlockFaceShape.SOLID;
+         Block block = iblockstate.getBlock();
+-        return direction == EnumFacing.UP ? block == Blocks.HOPPER || !isExceptionBlockForAttaching(block) && flag : !isExceptBlockForAttachWithPiston(block) && flag;
++        return direction == EnumFacing.UP ? iblockstate.isTopSolid() || !isExceptionBlockForAttaching(block) && flag : !isExceptBlockForAttachWithPiston(block) && flag;
+     }
+ 
+     /** Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the IBlockstate */

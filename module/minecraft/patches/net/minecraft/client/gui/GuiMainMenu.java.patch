@@ -1,0 +1,160 @@
+--- original/net/minecraft/client/gui/GuiMainMenu.java
++++ modified/net/minecraft/client/gui/GuiMainMenu.java
+@@ -93,6 +93,8 @@
+     private GuiScreen realmsNotification;
+     private int widthCopyright;
+     private int widthCopyrightRest;
++    private GuiButton modButton;
++    private net.minecraftforge.client.gui.NotificationModUpdateScreen modUpdateNotification;
+ 
+     public GuiMainMenu() {
+         this.splashText = "missingno";
+@@ -132,19 +134,9 @@
+ 
+     /** Is there currently a realms notification screen, and are realms notifications enabled? */
+     private boolean areRealmsNotificationsEnabled() {
+-        return Minecraft.getMinecraft().gameSettings.getOptionOrdinalValue(GameSettings.Options.REALMS_NOTIFICATIONS) && this.realmsNotification != null;
++        return false;
+     }
+ 
+-    /** Called from the main game loop to update the screen. */
+-    @Override
+-    public void updateScreen() {
+-        if (this.areRealmsNotificationsEnabled()) {
+-            this.realmsNotification.updateScreen();
+-        }
+-    }
+-
+-    /** Returns true if this GUI should pause the game when it is displayed in single-player */
+-    @Override
+     public boolean doesGuiPauseGame() {
+         return false;
+     }
+@@ -193,25 +185,15 @@
+         }
+ 
+         this.mc.setConnectedToRealms(false);
+-        if (Minecraft.getMinecraft().gameSettings.getOptionOrdinalValue(GameSettings.Options.REALMS_NOTIFICATIONS) && !this.hasCheckedForRealmsNotification) {
+-            RealmsBridge realmsbridge = new RealmsBridge();
+-            this.realmsNotification = realmsbridge.getNotificationScreen(this);
+-            this.hasCheckedForRealmsNotification = true;
+-        }
+ 
+-        if (this.areRealmsNotificationsEnabled()) {
+-            this.realmsNotification.setGuiSize(this.width, this.height);
+-            this.realmsNotification.initGui();
+-        }
++        this.modUpdateNotification = net.minecraftforge.client.gui.NotificationModUpdateScreen.init(this, this.modButton);
+     }
+ 
+     /** Adds Singleplayer and Multiplayer buttons on Main Menu for players who have bought the game. */
+     private void addSingleplayerMultiplayerButtons(int p_73969_1_, int p_73969_2_) {
+         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer")));
+         this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer")));
+-        this.realmsButton = this.addButton(
+-            new GuiButton(14, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.format("menu.online"))
+-        );
++        this.buttonList.add(this.modButton = new GuiButton(6, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.format("fml.menu.mods")));
+     }
+ 
+     /** Adds Demo buttons on Main Menu for players who are playing Demo. */
+@@ -246,14 +228,14 @@
+             this.mc.displayGuiScreen(new GuiMultiplayer(this));
+         }
+ 
+-        if (button.id == 14 && this.realmsButton.visible) {
+-            this.switchToRealms();
+-        }
+-
+         if (button.id == 4) {
+             this.mc.shutdown();
+         }
+ 
++        if (button.id == 6) {
++            this.mc.displayGuiScreen(new net.minecraftforge.fml.client.GuiModList(this));
++        }
++
+         if (button.id == 11) {
+             this.mc.launchIntegratedServer("Demo_World", "Demo_World", WorldServerDemo.DEMO_WORLD_SETTINGS);
+         }
+@@ -278,8 +260,6 @@
+     }
+ 
+     private void switchToRealms() {
+-        RealmsBridge realmsbridge = new RealmsBridge();
+-        realmsbridge.switchToRealms(this);
+     }
+ 
+     @Override
+@@ -294,9 +274,7 @@
+         } else if (id == 13) {
+             if (result) {
+                 try {
+-                    Class<?> oclass = Class.forName("java.awt.Desktop");
+-                    Object object = oclass.getMethod("getDesktop").invoke(null);
+-                    oclass.getMethod("browse", URI.class).invoke(object, new URI(this.openGLWarningLink));
++                    com.cleanroommc.client.sdl.Desktop.open(new URI(this.openGLWarningLink));
+                 } catch (Throwable throwable) {
+                     LOGGER.error("Couldn't open link", throwable);
+                 }
+@@ -482,6 +460,9 @@
+ 
+         this.mc.getTextureManager().bindTexture(field_194400_H);
+         drawModalRectWithCustomSizedTexture(j + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
++
++        this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRenderer, this.width, this.height, this.splashText);
++
+         GlStateManager.pushMatrix();
+         GlStateManager.translate(this.width / 2 + 90, 70.0F, 0.0F);
+         GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
+@@ -497,7 +478,14 @@
+             s = s + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
+         }
+ 
+-        this.drawString(this.fontRenderer, s, 2, this.height - 10, -1);
++        java.util.List<String> brandings = com.google.common.collect.Lists.reverse(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(true));
++        for (int brdline = 0; brdline < brandings.size(); brdline++) {
++            String brd = brandings.get(brdline);
++            if (!com.google.common.base.Strings.isNullOrEmpty(brd)) {
++                this.drawString(this.fontRenderer, brd, 2, this.height - ( 10 + brdline * (this.fontRenderer.FONT_HEIGHT + 1)), 16777215);
++            }
++        }
++
+         this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, -1);
+         if (mouseX > this.widthCopyrightRest
+             && mouseX < this.widthCopyrightRest + this.widthCopyright
+@@ -516,9 +504,8 @@
+         }
+ 
+         super.drawScreen(mouseX, mouseY, partialTicks);
+-        if (this.areRealmsNotificationsEnabled()) {
+-            this.realmsNotification.drawScreen(mouseX, mouseY, partialTicks);
+-        }
++
++        modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
+     }
+ 
+     /** Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton */
+@@ -538,10 +525,6 @@
+             }
+         }
+ 
+-        if (this.areRealmsNotificationsEnabled()) {
+-            this.realmsNotification.mouseClicked(mouseX, mouseY, mouseButton);
+-        }
+-
+         if (mouseX > this.widthCopyrightRest
+             && mouseX < this.widthCopyrightRest + this.widthCopyright
+             && mouseY > this.height - 10
+@@ -550,11 +533,4 @@
+         }
+     }
+ 
+-    /** Called when the screen is unloaded. Used to disable keyboard repeat events */
+-    @Override
+-    public void onGuiClosed() {
+-        if (this.realmsNotification != null) {
+-            this.realmsNotification.onGuiClosed();
+-        }
+-    }
+ }

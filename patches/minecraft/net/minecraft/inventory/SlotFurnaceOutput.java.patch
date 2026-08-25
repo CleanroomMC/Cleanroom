@@ -1,9 +1,0 @@
---- before/net/minecraft/inventory/SlotFurnaceOutput.java
-+++ after/net/minecraft/inventory/SlotFurnaceOutput.java
-@@ -94,5 +94,6 @@
-         }
- 
-         this.removeCount = 0;
-+        net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerSmeltedEvent(player, stack);
-     }
- }

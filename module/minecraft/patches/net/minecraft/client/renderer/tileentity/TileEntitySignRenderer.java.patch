@@ -1,0 +1,12 @@
+--- original/net/minecraft/client/renderer/tileentity/TileEntitySignRenderer.java
++++ modified/net/minecraft/client/renderer/tileentity/TileEntitySignRenderer.java
+@@ -81,8 +81,7 @@
+                     List<ITextComponent> list = GuiUtilRenderComponents.splitText(itextcomponent, 90, fontrenderer, false, true);
+                     String s = list != null && !list.isEmpty() ? list.get(0).getFormattedText() : "";
+                     if (j == te.lineBeingEdited) {
+-                        s = "> " + s + " <";
+-                        fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, 0);
++                        com.cleanroommc.client.sdl.SDLHooks.drawSignLineBeingEdited(fontrenderer, s, j * 10 - te.signText.length * 5);
+                     } else {
+                         fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, 0);
+                     }

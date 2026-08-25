@@ -1,0 +1,13 @@
+--- original/net/minecraft/entity/item/EntityMinecartMobSpawner.java
++++ modified/net/minecraft/entity/item/EntityMinecartMobSpawner.java
+@@ -34,6 +34,10 @@
+         public BlockPos getSpawnerPosition() {
+             return new BlockPos(EntityMinecartMobSpawner.this);
+         }
++        @Override
++        public net.minecraft.entity.Entity getSpawnerEntity() {
++            return EntityMinecartMobSpawner.this;
++        }
+     };
+ 
+     public EntityMinecartMobSpawner(World worldIn) {

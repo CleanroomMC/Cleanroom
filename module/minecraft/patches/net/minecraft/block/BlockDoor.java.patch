@@ -1,0 +1,29 @@
+--- original/net/minecraft/block/BlockDoor.java
++++ modified/net/minecraft/block/BlockDoor.java
+@@ -196,7 +196,7 @@
+                 flag1 = true;
+             }
+ 
+-            if (!worldIn.getBlockState(pos.down()).isTopSolid()) {
++            if (!worldIn.getBlockState(pos.down()).isSideSolid(worldIn,  pos.down(), EnumFacing.UP)) {
+                 worldIn.setBlockToAir(pos);
+                 flag1 = true;
+                 if (iblockstate1.getBlock() == this) {
+@@ -231,11 +231,12 @@
+     /** Checks if this block can be placed exactly at the given position. */
+     @Override
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+-        return pos.getY() >= 255
+-            ? false
+-            : worldIn.getBlockState(pos.down()).isTopSolid()
+-                && super.canPlaceBlockAt(worldIn, pos)
+-                && super.canPlaceBlockAt(worldIn, pos.up());
++        if (pos.getY() >= worldIn.getHeight() - 1) {
++            return false;
++        } else {
++            IBlockState state = worldIn.getBlockState(pos.down());
++            return (state.isTopSolid() || state.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID) && super.canPlaceBlockAt(worldIn, pos) && super.canPlaceBlockAt(worldIn, pos.up());
++        }
+     }
+ 
+     /** @deprecated call via {@link IBlockState#getMobilityFlag()} whenever possible. Implementing/overriding is fine. */

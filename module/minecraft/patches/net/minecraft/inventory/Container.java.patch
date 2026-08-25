@@ -1,0 +1,44 @@
+--- original/net/minecraft/inventory/Container.java
++++ modified/net/minecraft/inventory/Container.java
+@@ -78,9 +78,11 @@
+             ItemStack itemstack = this.inventorySlots.get(i).getStack();
+             ItemStack itemstack1 = this.inventoryItemStacks.get(i);
+             if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
++                boolean clientStackChanged = !ItemStack.areItemStacksEqualUsingNBTShareTag(itemstack1, itemstack);
+                 itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
+                 this.inventoryItemStacks.set(i, itemstack1);
+ 
++                if (clientStackChanged)
+                 for (int j = 0; j < this.listeners.size(); j++) {
+                     this.listeners.get(j).sendSlotContents(this, i, itemstack1);
+                 }
+@@ -460,14 +462,16 @@
+                     && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack.getMetadata())
+                     && ItemStack.areItemStackTagsEqual(stack, itemstack)) {
+                     int j = itemstack.getCount() + stack.getCount();
+-                    if (j <= stack.getMaxStackSize()) {
++                    int maxSize = Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
++
++                    if (j <= maxSize) {
+                         stack.setCount(0);
+                         itemstack.setCount(j);
+                         slot.onSlotChanged();
+                         flag = true;
+-                    } else if (itemstack.getCount() < stack.getMaxStackSize()) {
+-                        stack.shrink(stack.getMaxStackSize() - itemstack.getCount());
+-                        itemstack.setCount(stack.getMaxStackSize());
++                    } else if (itemstack.getCount() < maxSize) {
++                        stack.shrink(maxSize - itemstack.getCount());
++                        itemstack.setCount(maxSize);
+                         slot.onSlotChanged();
+                         flag = true;
+                     }
+@@ -561,7 +565,7 @@
+                 stack.setCount(1);
+                 break;
+             case 2:
+-                stack.setCount(stack.getItem().getItemStackLimit());
++                stack.setCount(stack.getMaxStackSize());
+         }
+ 
+         stack.grow(slotStackSize);

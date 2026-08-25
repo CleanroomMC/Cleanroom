@@ -1,0 +1,14 @@
+--- original/net/minecraft/network/play/client/CPacketCustomPayload.java
++++ modified/net/minecraft/network/play/client/CPacketCustomPayload.java
+@@ -39,7 +39,11 @@
+     @Override
+     public void writePacketData(PacketBuffer buf) throws IOException {
+         buf.writeString(this.channel);
++        synchronized(this.data) { //This may be access multiple times, from multiple threads, lets be safe.
++        this.data.markReaderIndex();
+         buf.writeBytes(this.data);
++        this.data.resetReaderIndex();
++        }
+     }
+ 
+     /** Passes this Packet on to the NetHandler for processing. */

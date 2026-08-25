@@ -1,0 +1,40 @@
+--- original/net/minecraft/item/crafting/CraftingManager.java
++++ modified/net/minecraft/item/crafting/CraftingManager.java
+@@ -33,7 +33,7 @@
+ public class CraftingManager {
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static int nextAvailableId;
+-    public static final RegistryNamespaced<ResourceLocation, IRecipe> REGISTRY = new RegistryNamespaced<>();
++    public static final RegistryNamespaced<ResourceLocation, IRecipe> REGISTRY = net.minecraftforge.registries.GameData.getWrapper(IRecipe.class);
+ 
+     public static boolean init() {
+         try {
+@@ -124,11 +124,13 @@
+         }
+     }
+ 
+-    public static void register(String name, IRecipe recipe) {
++    //Forge: Made private use GameData/Registry events!
++    private static void register(String name, IRecipe recipe) {
+         register(new ResourceLocation(name), recipe);
+     }
+ 
+-    public static void register(ResourceLocation name, IRecipe recipe) {
++    //Forge: Made private use GameData/Registry events!
++    private static void register(ResourceLocation name, IRecipe recipe) {
+         if (REGISTRY.containsKey(name)) {
+             throw new IllegalStateException("Duplicate recipe ignored with ID " + name);
+         }
+@@ -179,10 +181,12 @@
+         return REGISTRY.getObject(name);
+     }
+ 
++    @Deprecated //DO NOT USE THIS
+     public static int getIDForRecipe(IRecipe recipe) {
+         return REGISTRY.getIDForObject(recipe);
+     }
+ 
++    @Deprecated //DO NOT USE THIS
+     @Nullable
+     public static IRecipe getRecipeById(int id) {
+         return REGISTRY.getObjectById(id);

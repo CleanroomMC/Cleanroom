@@ -1,0 +1,11 @@
+--- original/net/minecraft/nbt/NBTTagString.java
++++ modified/net/minecraft/nbt/NBTTagString.java
+@@ -28,7 +28,7 @@
+     void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException {
+         sizeTracker.read(288L);
+         this.data = input.readUTF();
+-        sizeTracker.read(16 * this.data.length());
++        NBTSizeTracker.readUTF(sizeTracker, data); // Forge: Correctly read String length including header.
+     }
+ 
+     /** Gets the type byte for the tag. */

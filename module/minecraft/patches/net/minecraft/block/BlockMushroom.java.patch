@@ -1,0 +1,13 @@
+--- original/net/minecraft/block/BlockMushroom.java
++++ modified/net/minecraft/block/BlockMushroom.java
+@@ -73,8 +73,8 @@
+                 return true;
+             } else {
+                 return iblockstate.getBlock() == Blocks.DIRT && iblockstate.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.PODZOL
+-                    ? true
+-                    : worldIn.getLight(pos) < 13 && this.canSustainBush(iblockstate);
++                       ? true
++                       : worldIn.getLight(pos) < 13 && iblockstate.getBlock().canSustainPlant(iblockstate, worldIn, pos.down(), net.minecraft.util.EnumFacing.UP, this);
+             }
+         } else {
+             return false;

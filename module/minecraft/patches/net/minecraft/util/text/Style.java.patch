@@ -1,0 +1,36 @@
+--- original/net/minecraft/util/text/Style.java
++++ modified/net/minecraft/util/text/Style.java
+@@ -12,6 +12,8 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.util.text.event.ClickEvent;
+ import net.minecraft.util.text.event.HoverEvent;
++import net.minecraftforge.fml.relauncher.Side;
++import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ public class Style {
+     /** The parent of this ChatStyle.  Used for looking up values that this instance does not override. */
+@@ -155,12 +157,6 @@
+         public Style createDeepCopy() {
+             return this;
+         }
+-
+-        /**
+-         * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
+-         *  
+-         * @return A formatted string that can be combined with text to produce this style.
+-         */
+         @Override
+         public String getFormattingCode() {
+             return "";
+@@ -289,11 +285,6 @@
+         return this;
+     }
+ 
+-    /**
+-     * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
+-     *  
+-     * @return A formatted string that can be combined with text to produce this style.
+-     */
+     public String getFormattingCode() {
+         if (this.isEmpty()) {
+             return this.parentStyle != null ? this.parentStyle.getFormattingCode() : "";

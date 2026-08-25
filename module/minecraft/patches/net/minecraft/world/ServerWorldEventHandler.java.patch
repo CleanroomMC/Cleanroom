@@ -1,0 +1,56 @@
+--- original/net/minecraft/world/ServerWorldEventHandler.java
++++ modified/net/minecraft/world/ServerWorldEventHandler.java
+@@ -84,16 +84,16 @@
+         float pitch
+     ) {
+         this.server
+-            .getPlayerList()
+-            .sendToAllNearExcept(
+-                player,
+-                x,
+-                y,
+-                z,
+-                volume > 1.0F ? 16.0F * volume : 16.0,
+-                this.world.provider.getDimensionType().getId(),
+-                new SPacketSoundEffect(soundIn, category, x, y, z, volume, pitch)
+-            );
++        .getPlayerList()
++        .sendToAllNearExcept(
++            player,
++            x,
++            y,
++            z,
++            volume > 1.0F ? 16.0F * volume : 16.0,
++            this.world.provider.getDimension(),
++            new SPacketSoundEffect(soundIn, category, x, y, z, volume, pitch)
++        );
+     }
+ 
+     /** On the client, re-renders all blocks in this range, inclusive. On the server, does nothing. */
+@@ -117,16 +117,16 @@
+     @Override
+     public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data) {
+         this.server
+-            .getPlayerList()
+-            .sendToAllNearExcept(
+-                player,
+-                blockPosIn.getX(),
+-                blockPosIn.getY(),
+-                blockPosIn.getZ(),
+-                64.0,
+-                this.world.provider.getDimensionType().getId(),
+-                new SPacketEffect(type, blockPosIn, data, false)
+-            );
++        .getPlayerList()
++        .sendToAllNearExcept(
++            player,
++            blockPosIn.getX(),
++            blockPosIn.getY(),
++            blockPosIn.getZ(),
++            64.0,
++            this.world.provider.getDimension(),
++            new SPacketEffect(type, blockPosIn, data, false)
++        );
+     }
+ 
+     @Override

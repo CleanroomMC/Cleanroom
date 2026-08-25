@@ -1,0 +1,35 @@
+--- original/net/minecraft/client/resources/Locale.java
++++ modified/net/minecraft/client/resources/Locale.java
+@@ -46,23 +46,6 @@
+     }
+ 
+     private void checkUnicode() {
+-        this.unicode = false;
+-        int i = 0;
+-        int j = 0;
+-
+-        for (String s : this.properties.values()) {
+-            int k = s.length();
+-            j += k;
+-
+-            for (int l = 0; l < k; l++) {
+-                if (s.charAt(l) >= 256) {
+-                    i++;
+-                }
+-            }
+-        }
+-
+-        float f = (float)i / j;
+-        this.unicode = f > 0.1;
+     }
+ 
+     /** Loads the locale data for the list of resources. */
+@@ -79,6 +62,8 @@
+     }
+ 
+     private void loadLocaleData(InputStream inputStreamIn) throws IOException {
++        inputStreamIn = net.minecraftforge.fml.common.FMLCommonHandler.instance().loadLanguage(properties, inputStreamIn);
++        if (inputStreamIn == null) return;
+         for (String s : IOUtils.readLines(inputStreamIn, StandardCharsets.UTF_8)) {
+             if (!s.isEmpty() && s.charAt(0) != '#') {
+                 String[] astring = Iterables.toArray(SPLITTER.split(s), String.class);

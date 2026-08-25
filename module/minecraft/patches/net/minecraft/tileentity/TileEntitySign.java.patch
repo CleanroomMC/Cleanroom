@@ -1,0 +1,11 @@
+--- original/net/minecraft/tileentity/TileEntitySign.java
++++ modified/net/minecraft/tileentity/TileEntitySign.java
+@@ -76,7 +76,7 @@
+             /** Returns {@code true} if the CommandSender is allowed to execute the command, {@code false} if not */
+             @Override
+             public boolean canUseCommand(int permLevel, String commandName) {
+-                return true;
++                return permLevel <= 2; //Forge: Fixes  MC-75630 - Exploit with signs and command blocks
+             }
+ 
+             /** Get the position in the world. <b>{@code null} is not allowed!</b> If you are not an entity in the world, return the coordinates 0, 0, 0 */

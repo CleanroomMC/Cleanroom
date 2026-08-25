@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/gui/GuiGameOver.java
++++ modified/net/minecraft/client/gui/GuiGameOver.java
+@@ -64,7 +64,7 @@
+                 break;
+             case 1:
+                 if (this.mc.world.getWorldInfo().isHardcoreModeEnabled()) {
+-                    this.mc.displayGuiScreen(new GuiMainMenu());
++                    confirmClicked(true, 0); // Forge : Fix MC-30646
+                 } else {
+                     GuiYesNo guiyesno = new GuiYesNo(
+                         this,

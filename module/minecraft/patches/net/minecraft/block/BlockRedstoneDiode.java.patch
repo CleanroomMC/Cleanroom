@@ -1,0 +1,59 @@
+--- original/net/minecraft/block/BlockRedstoneDiode.java
++++ modified/net/minecraft/block/BlockRedstoneDiode.java
+@@ -41,11 +41,13 @@
+     /** Checks if this block can be placed exactly at the given position. */
+     @Override
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+-        return worldIn.getBlockState(pos.down()).isTopSolid() ? super.canPlaceBlockAt(worldIn, pos) : false;
++        IBlockState downState = worldIn.getBlockState(pos.down());
++        return (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID) && super.canPlaceBlockAt(worldIn, pos);
+     }
+ 
+     public boolean canBlockStay(World worldIn, BlockPos pos) {
+-        return worldIn.getBlockState(pos.down()).isTopSolid();
++        IBlockState downState = worldIn.getBlockState(pos.down());
++        return downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;
+     }
+ 
+     /** Called randomly when setTickRandomly is set to true (used by e.g. crops to grow, etc.) */
+@@ -213,6 +215,8 @@
+     protected void notifyNeighbors(World worldIn, BlockPos pos, IBlockState state) {
+         EnumFacing enumfacing = state.getValue(FACING);
+         BlockPos blockpos = pos.offset(enumfacing.getOpposite());
++        if(net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldIn, pos, worldIn.getBlockState(pos), java.util.EnumSet.of(enumfacing.getOpposite()), false).isCanceled())
++            return;
+         worldIn.neighborChanged(blockpos, this, pos);
+         worldIn.notifyNeighborsOfStateExcept(blockpos, this, enumfacing);
+     }
+@@ -283,15 +287,23 @@
+         return BlockRenderLayer.CUTOUT;
+     }
+ 
+-    /**
+-     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+-     * <p>
+-     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that does not fit the other descriptions and will generally cause other things not to connect to the face.
+-     * 
+-     * @return an approximation of the form of the given face
+-     * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
+-     */
++    /* ======================================== FORGE START =====================================*/
+     @Override
++    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
++        if (super.rotateBlock(world, pos, axis)) {
++            IBlockState state = world.getBlockState(pos);
++            state = getUnpoweredState(state);
++            world.setBlockState(pos, state);
++
++            if (shouldBePowered(world, pos, state)) {
++                world.scheduleUpdate(pos, this, 1);
++            }
++            return true;
++        }
++        return false;
++    }
++
++    @Override
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+         return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+     }

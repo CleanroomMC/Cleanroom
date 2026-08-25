@@ -1,0 +1,30 @@
+--- original/net/minecraft/entity/item/EntityFallingBlock.java
++++ modified/net/minecraft/entity/item/EntityFallingBlock.java
+@@ -148,6 +148,8 @@
+                     }
+                 } else {
+                     IBlockState iblockstate = this.world.getBlockState(blockpos1);
++
++                    if (this.world.isAirBlock(new BlockPos(this.posX, this.posY - 0.01F, this.posZ))) //Forge: Don't indent below.
+                     if (!flag1
+                         && BlockFalling.canFallThrough(
+                             this.world.getBlockState(new BlockPos(this.posX, this.posY - 0.01F, this.posZ))
+@@ -162,14 +164,14 @@
+                     if (iblockstate.getBlock() != Blocks.PISTON_EXTENSION) {
+                         this.setDead();
+                         if (!this.dontSetBlock) {
+-                            if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, null)
+-                                && (flag1 || !BlockFalling.canFallThrough(this.world.getBlockState(blockpos1.down())))
+-                                && this.world.setBlockState(blockpos1, this.fallTile, 3)) {
++                            if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, this)
++                                    && (flag1 || !BlockFalling.canFallThrough(this.world.getBlockState(blockpos1.down())))
++                                    && this.world.setBlockState(blockpos1, this.fallTile, 3)) {
+                                 if (block instanceof BlockFalling) {
+                                     ((BlockFalling)block).onEndFalling(this.world, blockpos1, this.fallTile, iblockstate);
+                                 }
+ 
+-                                if (this.tileEntityData != null && block instanceof ITileEntityProvider) {
++                                if (this.tileEntityData != null && block.hasTileEntity(this.fallTile)) {
+                                     TileEntity tileentity = this.world.getTileEntity(blockpos1);
+                                     if (tileentity != null) {
+                                         NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());

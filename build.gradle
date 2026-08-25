@@ -1,75 +1,237 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        maven {
-            name = "Outlands"
-            url = 'https://maven.outlands.top/releases/'
-        }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath 'top.outlands.gradle:ForgeGradle:6.0.59'
-        classpath('top.outlands:artifactural:3.0.4') {
-            transitive = false
-        }
-    }
-}
-
 plugins {
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.3"
-    //id "com.palantir.git-version" version "4.2.0"
+    id 'java-library'
+    id 'com.cleanroommc.cleanroomgradle'
+    id 'com.cleanroommc.versioning' version '2.0.0'
+    id 'com.cleanroommc.tokenenvoy' version '1.1.0'
+    id 'idea'
+    id 'maven-publish'
 }
-apply plugin: 'com.palantir.git-version' // Declared in buildSrc/build.gradle
-
-import com.cleanroommc.gradle.helpers.ProjectConstants
-import com.cleanroommc.gradle.helpers.tasks.Util
-import com.palantir.gradle.gitversion.VersionDetails
-
-
-def props = project.properties
-def sysProps = System.getProperties()
-VersionDetails details = versionDetails()
 
 group = 'com.cleanroommc'
 
-if (project.hasProperty("release")) {
-    version = details.lastTag
-} else if (!project.hasProperty("run_number")) {
-    version = "${details.lastTag}+build.${details.commitDistance}"
-} else {
-    version = "${details.lastTag}+build.${details.commitDistance}.run.${props.run_number}"
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(providers.gradleProperty('java_major').get())
+    withSourcesJar()
 }
 
-def version_txt = new File(project.projectDir, "version.txt")
-version_txt.write(version.toString())
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
 
-println "Setting up Cleanroom $version"
-if (project.hasProperty('run_number')) println("On GitHub runs #${props.run_number}")
-println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
+cleanroom {
+    mode = 'loader'
+    loader {
+        accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
+        sideAnnotationStrippers.from file('module/cleanroom/minecraft.sas')
+    }
+}
 
-// Initialize buildSrc
-Util.init()
+tokenEnvoy {
+    set 'VERSION', project.version
+    set 'ID', 'cleanroom'
+    set 'BUILD', versioning.computed
+}
+
+def modules = [
+        'minecraft',
+        'forge',
+        'cleanroom',
+        'kirino',
+        'builtin/mixinbooter',
+        'builtin/configanytime'
+]
+
+sourceSets {
+    main {
+        java.srcDirs = modules.collect { "module/${it}/src/main/java" }
+        // Fixme: Temp
+        java.exclude 'com/cleanroommc/kirino/utils/KsmlcUtils.java'
+        resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
+    }
+    test {
+        java.srcDirs = modules.collect { "module/${it}/src/test/java" }
+        // Fixme: Temp
+        java.exclude 'com/cleanroommc/test/kirino/gl/ksml/**'
+        resources.srcDirs = modules.collect { "module/${it}/src/test/resources" }
+    }
+}
+
+var open_arguments = [
+        '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
+        '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+]
+
+var export_arguments = [
+        '--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED',
+        '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
+]
+
+configurations.configureEach { configuration ->
+    exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
+    // patchy ships its own copy of io.netty.bootstrap.Bootstrap
+    // Against 4.2 netty it shadows the real class and dies on a superclass method that no longer exists
+    exclude group: 'com.mojang', module: 'patchy'
+
+    resolutionStrategy.eachDependency { details ->
+        switch ("${details.requested.group}:${details.requested.name}") {
+            case 'com.google.guava:guava':               details.useVersion '33.6.0-jre';       break
+            case 'com.google.code.gson:gson':            details.useVersion '2.14.0';           break
+            case 'it.unimi.dsi:fastutil':                details.useVersion '8.5.18';           break
+            case 'org.apache.commons:commons-lang3':     details.useVersion '3.20.0';           break
+            case 'commons-io:commons-io':                details.useVersion '2.22.0';           break
+            case 'commons-codec:commons-codec':          details.useVersion '1.22.0';           break
+            case 'org.apache.commons:commons-compress':  details.useVersion '1.28.0';           break
+            case 'commons-logging:commons-logging':      details.useVersion '1.4.0';            break
+            case 'org.apache.httpcomponents:httpclient': details.useVersion '4.5.14';           break
+            case 'org.apache.httpcomponents:httpcore':   details.useVersion '4.4.16';           break
+            case 'org.apache.logging.log4j:log4j-api':   details.useVersion '2.26.0';           break
+            case 'org.apache.logging.log4j:log4j-core':  details.useVersion '2.26.0';           break
+            case 'net.sf.jopt-simple:jopt-simple':       details.useVersion '5.0.4';            break
+            case 'net.java.dev.jna:jna':                 details.useVersion '5.19.1';           break
+            case 'net.java.jinput:jinput':               details.useVersion '2.0.10';           break
+            case 'ca.weblite:java-objc-bridge':          details.useVersion '1.2';              break
+            case 'io.netty:netty-all':                   details.useVersion '4.2.16.Final';     break
+        }
+        if (details.requested.version != details.target.version) {
+            details.because 'Cleanroom Libraries Update'
+        }
+    }
+}
+
+configurations.named('vanillaNatives') {
+    // LWJGL 2's natives are never loaded: LWJGLY reaches LWJGL 3's instead.
+    exclude group: 'org.lwjgl.lwjgl'
+}
+
+dependencies {
+    // ASM
+    def asm_version = providers.gradleProperty('asm_version').get()
+    implementation "org.ow2.asm:asm:${asm_version}"
+    implementation "org.ow2.asm:asm-commons:${asm_version}"
+    implementation "org.ow2.asm:asm-tree:${asm_version}"
+    implementation "org.ow2.asm:asm-util:${asm_version}"
+    implementation "org.ow2.asm:asm-analysis:${asm_version}"
+    implementation "org.ow2.asm:asm-deprecated:7.1"
+
+    // Mixin
+    implementation "com.cleanroommc:cleanmix:${providers.gradleProperty('cleanmix_version').get()}"
+    implementation "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
+
+    api 'org.jspecify:jspecify:1.0.0'
+    api 'top.outlands:foundation:0.19.11'
+    api 'zone.rong:imaginebreaker:3.2'
+    api 'org.javassist:javassist:3.30.2-GA' // FIXME
+    api 'lzma:lzma:0.0.1'
+    api 'java3d:vecmath:1.5.2' // TODO: joml
+    api 'net.sf.trove4j:core:3.1.0'
+    api 'net.sf.trove4j:experimental:3.1.0'
+    api 'org.apache.maven:maven-artifact:3.9.16'
+    api 'org.apache.commons:commons-text:1.15.0'
+    api 'org.tukaani:xz:1.12'
+    api 'com.ibm.icu:icu4j:78.3'
+    api 'org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0'
+    api 'org.slf4j:slf4j-api:2.0.18'
+
+    // TODO reconsider
+    // Apache HTTP 5
+    api 'org.apache.httpcomponents.core5:httpcore5:5.4.3'
+    api 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
+    api 'org.apache.httpcomponents.client5:httpclient5:5.6.1'
+
+    // Jakarta replacements for APIs that were bundled with Java 8 SE, except javax.inject.
+    // Java 8 SE packages: javax.xml.ws and javax.jws
+    api 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.3'
+    // Java 8 SE package: javax.activation
+    api 'jakarta.activation:jakarta.activation-api:2.1.4'
+    // Java 8 SE package: javax.annotation
+    api 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+    // Java 8 SE packages: javax.xml.bind and its subpackages
+    api 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.5'
+    // TODO: javax.inject was the external JSR-330 API, *NOT* part of Java 8 SE
+    api 'jakarta.inject:jakarta.inject-api:2.0.1'
+
+    // TODO reconsider
+    // Script engines / XML binding
+    api 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
+    api 'org.glassfish.jaxb:jaxb-core:4.0.9'
+    api 'com.sun.istack:istack-commons-runtime:4.2.0'
+    api 'org.glassfish.corba:glassfish-corba-omgapi:5.0.2'
+    api 'org.openjdk.nashorn:nashorn-core:15.7'
+
+    // Others
+    api 'org.jline:jline:4.1.3'
+    api 'org.jline:jline-native:4.1.3'
+    api 'com.github.oshi:oshi-core-ffm:7.3.2'
+    api 'com.github.oshi:oshi-common:7.3.2'
+    api 'net.java.dev.jna:jna-platform:5.19.1'
+    // java-objc-bridge bumped here for updated OSX arm64 natives
+    api 'ca.weblite:java-objc-bridge:1.2'
+
+    api platform('org.lwjgl:lwjgl-bom:3.4.3')
+    api 'org.lwjgl:lwjgl'
+    api 'org.lwjgl:lwjgl-jemalloc'
+    api 'org.lwjgl:lwjgl-opengl'
+    api 'org.lwjgl:lwjgl-openal'
+    api 'org.lwjgl:lwjgl-stb'
+    api 'org.lwjgl:lwjgl-sdl'
+
+    // TODO
+    compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
+    runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
+    lwjglNative 'org.lwjgl:lwjgl'
+    lwjglNative 'org.lwjgl:lwjgl-jemalloc'
+    lwjglNative 'org.lwjgl:lwjgl-opengl'
+    lwjglNative 'org.lwjgl:lwjgl-openal'
+    lwjglNative 'org.lwjgl:lwjgl-stb'
+    lwjglNative 'org.lwjgl:lwjgl-sdl'
+
+    // Kirino
+    api 'org.joml:joml:1.10.9'
+    api 'io.github.classgraph:classgraph:4.8.184'
+    api 'org.lwjgl:lwjgl-freetype'
+    lwjglNative 'org.lwjgl:lwjgl-freetype'
+
+    // Test
+    testImplementation platform('org.junit:junit-bom:6.1.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.vintage:junit-vintage-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test', Test) {
+    maxParallelForks = 1
+    useJUnitPlatform()
+    testLogging.events 'passed', 'skipped', 'failed'
+    jvmArgs open_arguments + export_arguments
+}
+
+tasks.named('compileJava', JavaCompile).configure { compile ->
+    def v = version.toString()
+    doFirst {
+        logger.lifecycle("Cleanroom ${v}")
+        logger.lifecycle("Java: ${System.getProperty('java.version')} | JVM: ${System.getProperty('java.vm.version')} | Vendor: ${System.getProperty('java.vendor')} | Arch: ${System.getProperty('os.arch')}")
+    }
+}
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs = options.compilerArgs + ProjectConstants.COMPILER_JVM_ARGUMENTS
     options.encoding = 'UTF-8'
+    options.compilerArgs += export_arguments
 }
 
-idea.project.settings.compiler.javac.javacAdditionalOptions = ProjectConstants.COMPILER_JVM_ARGUMENTS.join(' ')
-
-tasks.register('setup') {
-    group = 'setup'
-    // These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
-    dependsOn ':minecraft:extractMapped'
-    dependsOn ':cleanroom:extractMapped'
-}
-
-subprojects {
-    tasks.withType(JavaCompile).tap {
-        configureEach {
-            options.compilerArgs += ProjectConstants.COMPILER_JVM_ARGUMENTS
-            options.encoding = 'UTF-8'
+publishing {
+    repositories {
+        maven {
+            name = 'CleanroomMaven'
+            url = 'https://maven.cleanroommc.com'
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
         }
     }
 }

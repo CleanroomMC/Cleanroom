@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/item/EntityArmorStand.java
++++ modified/net/minecraft/entity/item/EntityArmorStand.java
+@@ -55,7 +55,7 @@
+     public static final DataParameter<Rotations> RIGHT_LEG_ROTATION = EntityDataManager.createKey(EntityArmorStand.class, DataSerializers.ROTATIONS);
+     private static final Predicate<Entity> IS_RIDEABLE_MINECART = new Predicate<Entity>() {
+         public boolean apply(@Nullable Entity p_apply_1_) {
+-            return p_apply_1_ instanceof EntityMinecart && ((EntityMinecart)p_apply_1_).getType() == EntityMinecart.Type.RIDEABLE;
++            return p_apply_1_ instanceof EntityMinecart && ((EntityMinecart)p_apply_1_).canBeRidden();
+         }
+     };
+     private final NonNullList<ItemStack> handItems = NonNullList.withSize(2, ItemStack.EMPTY);

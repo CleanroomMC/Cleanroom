@@ -1,0 +1,212 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016-2020.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+package net.minecraftforge.client;
+
+import com.cleanroommc.client.sdl.SDLHooks;
+import com.cleanroommc.client.sdl.Window;
+import com.cleanroommc.client.modlist.LegacyModListScreen;
+import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.client.modlist.ModListConstants;
+import com.cleanroommc.client.modlist.screen.ModListScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiScreenBook;
+import net.minecraft.client.gui.inventory.GuiEditSign;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.ForgeEarlyConfig;
+import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.List;
+
+public class ForgeClientHandler
+{
+    private static boolean played = false;
+
+    @SubscribeEvent
+    public static void registerModels(ModelRegistryEvent event)
+    {
+        // register model for the universal bucket, if it exists
+        if (FluidRegistry.isUniversalBucketEnabled())
+        {
+            ModelLoader.setBucketModelDefinition(ForgeModContainer.getInstance().universalBucket);
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerItemHandlers(ColorHandlerEvent.Item event)
+    {
+        if (FluidRegistry.isUniversalBucketEnabled())
+        {
+            event.getItemColors().registerItemColorHandler(new FluidContainerColorer(), ForgeModContainer.getInstance().universalBucket);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onGuiOpen(GuiOpenEvent event)
+    {
+        GuiScreen gui = event.getGui();
+        // Forge's mod list may get mixin in late phase, which leads to crash
+        // Use an interface to avoid this
+        if (ModListConfig.enable && gui instanceof LegacyModListScreen modList)
+        {
+            event.setGui(new ModListScreen(modList.getParent()));
+        }
+
+        Window window = Window.main();
+        if (window != null)
+        {
+            GuiScreen opened = event.getGui();
+            window.text().active(opened instanceof GuiScreenBook || opened instanceof GuiEditSign);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Post event)
+    {
+        SDLHooks.draw(event.getGui());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onGuiKeyboard(GuiScreenEvent.KeyboardInputEvent.Pre event)
+    {
+        if (SDLHooks.keyboard(event.getGui()))
+        {
+            event.setCanceled(true);
+            Minecraft.getMinecraft().dispatchKeypresses();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onConfigChanged(OnConfigChangedEvent event)
+    {
+        if (ModListConstants.OWNER_MOD_ID.equals(event.getModID()))
+        {
+            ConfigManager.sync(ModListConfig.class);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onGuiOpenLast(GuiOpenEvent event)
+    {
+        if (event.getGui() instanceof GuiMainMenu && !played)
+        {
+            played = true;
+            if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.DISABLE_FLASH_AFTER_LOADED)
+            {
+                return;
+            }
+            Window window = Window.main();
+            if (window != null)
+            {
+                try
+                {
+                    window.flash(Window.Flash.UNTIL_FOCUSED);
+                }
+                catch (RuntimeException ignored)
+                {
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void appendAdvancedTooltip(ItemTooltipEvent event) {
+        if (!ForgeModContainer.displayAdvancedTooltips || !event.getFlags().isAdvanced())
+        {
+            return;
+        }
+        List<String> list = event.getToolTip();
+        ItemStack stack = event.getItemStack();
+        
+        int limit = ForgeModContainer.maxTooltipNBTListLength;
+        list.add(I18n.translateToLocal("item.forge.advanced_shift_info"));
+        if (stack.hasTagCompound() && limit > 0) list.add(I18n.translateToLocal("item.forge.advanced_ctrl_info"));
+        String pre = TextFormatting.DARK_GRAY + "     ";
+        String head = TextFormatting.GRAY + "  -";
+        
+        int burnTime = TileEntityFurnace.getItemBurnTime(stack);
+        if (burnTime > 0)
+        {
+            list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.burn_time", burnTime, burnTime / 20));
+        }
+        
+        if (GuiScreen.isShiftKeyDown() && !stack.isEmpty())
+        {
+            list.add(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + I18n.translateToLocal("item.forge.advanced_info"));
+
+            int[] ids = OreDictionary.getOreIDs(stack);
+            if (ids.length > 0)
+            {
+                list.add(head + I18n.translateToLocal("item.forge.oredict"));
+                for (int id : ids)
+                {
+                    list.add(pre + OreDictionary.getOreName(id));
+                }
+            }
+
+            String baseName = stack.getTranslationKey();
+            if (!baseName.equals("item.null"))
+            {
+                list.add(head + I18n.translateToLocal("item.forge.translation_key"));
+                list.add(pre + baseName);
+            }
+        }
+
+        if (GuiScreen.isCtrlKeyDown() && limit > 0 && !stack.isEmpty())
+        {
+            NBTTagCompound compound = stack.getTagCompound();
+            if (compound != null && !compound.isEmpty())
+            {
+                list.add(head + I18n.translateToLocal("item.forge.nbt_list"));
+
+                String compoundStr = compound.toString();
+                int compoundStrLength = compoundStr.length();
+                String compoundDisplay;
+
+                if (compoundStrLength > limit)
+                {
+                    compoundDisplay = compoundStr.substring(0, limit) + TextFormatting.GRAY + " " + I18n.translateToLocalFormatted("item.forge.nbt_limited", limit);
+                }
+                else
+                {
+                    compoundDisplay = compoundStr;
+                }
+                list.add(pre + compoundDisplay);
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+--- original/net/minecraft/entity/monster/AbstractSkeleton.java
++++ modified/net/minecraft/entity/monster/AbstractSkeleton.java
+@@ -193,7 +193,8 @@
+             this.tasks.removeTask(this.aiAttackOnCollide);
+             this.tasks.removeTask(this.aiArrowAttack);
+             ItemStack itemstack = this.getHeldItemMainhand();
+-            if (itemstack.getItem() == Items.BOW) {
++
++            if (itemstack.getItem() instanceof net.minecraft.item.ItemBow) {
+                 int i = 20;
+                 if (this.world.getDifficulty() != EnumDifficulty.HARD) {
+                     i = 40;
+@@ -211,6 +212,8 @@
+     @Override
+     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+         EntityArrow entityarrow = this.getArrow(distanceFactor);
++        if (this.getHeldItemMainhand().getItem() instanceof net.minecraft.item.ItemBow)
++            entityarrow = ((net.minecraft.item.ItemBow) this.getHeldItemMainhand().getItem()).customizeArrow(entityarrow);
+         double d0 = target.posX - this.posX;
+         double d1 = target.getEntityBoundingBox().minY + target.height / 3.0F - entityarrow.posY;
+         double d2 = target.posZ - this.posZ;

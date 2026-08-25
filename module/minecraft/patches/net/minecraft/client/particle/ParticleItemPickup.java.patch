@@ -1,0 +1,12 @@
+--- original/net/minecraft/client/particle/ParticleItemPickup.java
++++ modified/net/minecraft/client/particle/ParticleItemPickup.java
+@@ -69,7 +69,9 @@
+         d7 -= interpPosY;
+         d8 -= interpPosZ;
+         GlStateManager.enableLighting();
++        GlStateManager.enableCull();
+         this.renderManager.renderEntity(this.item, d6, d7, d8, this.item.rotationYaw, partialTicks, false);
++        GlStateManager.disableCull();
+     }
+ 
+     @Override

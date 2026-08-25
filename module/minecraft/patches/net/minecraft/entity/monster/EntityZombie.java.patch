@@ -1,0 +1,74 @@
+--- original/net/minecraft/entity/monster/EntityZombie.java
++++ modified/net/minecraft/entity/monster/EntityZombie.java
+@@ -100,7 +100,7 @@
+         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
+         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
+         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0);
+-        this.getAttributeMap().registerAttribute(SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.rand.nextDouble() * 0.1F);
++        this.getAttributeMap().registerAttribute(SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.rand.nextDouble() * net.minecraftforge.common.ForgeModContainer.zombieSummonBaseChance);
+     }
+ 
+     @Override
+@@ -220,28 +220,42 @@
+                 entitylivingbase = (EntityLivingBase)source.getTrueSource();
+             }
+ 
+-            if (entitylivingbase != null
+-                && this.world.getDifficulty() == EnumDifficulty.HARD
+-                && this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
+-                && this.world.getGameRules().getBoolean("doMobSpawning")) {
+-                int i = MathHelper.floor(this.posX);
+-                int j = MathHelper.floor(this.posY);
+-                int k = MathHelper.floor(this.posZ);
+-                EntityZombie entityzombie = new EntityZombie(this.world);
++            int i = MathHelper.floor(this.posX);
++            int j = MathHelper.floor(this.posY);
++            int k = MathHelper.floor(this.posZ);
++            net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent summonAid
++                = net.minecraftforge.event.ForgeEventFactory.fireZombieSummonAid(
++                    this, world, i, j, k, entitylivingbase, this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
++            );
++            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return true;
+ 
++            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW
++                    || entitylivingbase != null
++                    && this.world.getDifficulty() == EnumDifficulty.HARD
++                    && this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
++                    && this.world.getGameRules().getBoolean("doMobSpawning")) {
++                EntityZombie entityzombie;
++                if (summonAid.getCustomSummonedAid() != null
++                        && summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
++                    entityzombie = summonAid.getCustomSummonedAid();
++                } else {
++                    entityzombie = new EntityZombie(this.world);
++                }
++
+                 for (int l = 0; l < 50; l++) {
+                     int i1 = i + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
+                     int j1 = j + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
+                     int k1 = k + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
+-                    if (this.world.getBlockState(new BlockPos(i1, j1 - 1, k1)).isTopSolid()
+-                        && this.world.getLightFromNeighbors(new BlockPos(i1, j1, k1)) < 10) {
++
++                    if (this.world.getBlockState(new BlockPos(i1, j1 - 1, k1)).isSideSolid(this.world, new BlockPos(i1, j1 - 1, k1), net.minecraft.util.EnumFacing.UP)
++                            && this.world.getLightFromNeighbors(new BlockPos(i1, j1, k1)) < 10) {
+                         entityzombie.setPosition(i1, j1, k1);
+                         if (!this.world.isAnyPlayerWithinRangeAt(i1, j1, k1, 7.0)
+                             && this.world.checkNoEntityCollision(entityzombie.getEntityBoundingBox(), entityzombie)
+                             && this.world.getCollisionBoxes(entityzombie, entityzombie.getEntityBoundingBox()).isEmpty()
+                             && !this.world.containsAnyLiquid(entityzombie.getEntityBoundingBox())) {
+                             this.world.spawnEntity(entityzombie);
+-                            entityzombie.setAttackTarget(entitylivingbase);
++                            if (entitylivingbase != null) entityzombie.setAttackTarget(entitylivingbase);
+                             entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), null);
+                             this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05F, 0));
+                             entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05F, 0));
+@@ -406,7 +420,7 @@
+         float f = difficulty.getClampedAdditionalDifficulty();
+         this.setCanPickUpLoot(this.rand.nextFloat() < 0.55F * f);
+         if (livingdata == null) {
+-            livingdata = new EntityZombie.GroupData(this.world.rand.nextFloat() < 0.05F);
++            livingdata = new EntityZombie.GroupData(this.world.rand.nextFloat() < net.minecraftforge.common.ForgeModContainer.zombieBabyChance);
+         }
+ 
+         if (livingdata instanceof EntityZombie.GroupData) {

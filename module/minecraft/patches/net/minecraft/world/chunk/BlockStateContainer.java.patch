@@ -1,0 +1,38 @@
+--- original/net/minecraft/world/chunk/BlockStateContainer.java
++++ modified/net/minecraft/world/chunk/BlockStateContainer.java
+@@ -26,6 +26,9 @@
+     }
+ 
+     private void setBits(int bitsIn) {
++        setBits(bitsIn, false);
++    }
++    private void setBits(int bitsIn, boolean forceBits) {
+         if (bitsIn != this.bits) {
+             this.bits = bitsIn;
+             if (this.bits <= 4) {
+@@ -36,6 +39,8 @@
+             } else {
+                 this.palette = REGISTRY_BASED_PALETTE;
+                 this.bits = MathHelper.log2DeBruijn(Block.BLOCK_STATE_IDS.size());
++                if (forceBits)
++                    this.bits = bitsIn;
+             }
+ 
+             this.palette.idFor(AIR_BLOCK_STATE);
+@@ -81,11 +86,15 @@
+     public void read(PacketBuffer buf) {
+         int i = buf.readByte();
+         if (this.bits != i) {
+-            this.setBits(i);
++            this.setBits(i, true); //Forge, Force bit density to fix network issues, resize below if needed.
+         }
+ 
+         this.palette.read(buf);
+         buf.readLongArray(this.storage.getBackingLongArray());
++
++        int regSize = MathHelper.log2DeBruijn(Block.BLOCK_STATE_IDS.size());
++        if (this.palette == REGISTRY_BASED_PALETTE && this.bits != regSize) // Resize bits to fit registry.
++            this.onResize(regSize, AIR_BLOCK_STATE);
+     }
+ 
+     public void write(PacketBuffer buf) {
