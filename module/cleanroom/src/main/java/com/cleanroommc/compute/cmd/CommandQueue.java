@@ -1711,6 +1711,22 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Buffer Read Double">
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param offset Byte offset at which the operation starts.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
                             final long offset,
@@ -1722,6 +1738,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(buffer.read(stack, this, target, blocking, offset, events), stack);
     }
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param offset Byte offset at which the operation starts.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             double @NonNull [] target,
@@ -1732,6 +1764,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(buffer.read(stack, this, target, true, offset, events), stack);
     }
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This operates at offset 0.
+     */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
                             final boolean blocking,
@@ -1742,6 +1790,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(buffer.read(stack, this, target, blocking, 0, events), stack);
     }
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates at offset 0.
+     */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
                             final long... events) {
@@ -1751,6 +1815,21 @@ public class CommandQueue extends SmartPointer {
         return new Event(buffer.read(stack, this, target, true, 0, events), stack);
     }
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param offset Byte offset at which the operation starts.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     */
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
                             final long offset,
@@ -1767,6 +1846,21 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param offset Byte offset at which the operation starts.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             double @NonNull [] target,
@@ -1782,6 +1876,21 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This operates at offset 0.
+     */
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
                             final boolean blocking,
@@ -1797,6 +1906,21 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer into a double array.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @return Event of the operation.
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates at offset 0.
+     */
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
                             final long... events) {
