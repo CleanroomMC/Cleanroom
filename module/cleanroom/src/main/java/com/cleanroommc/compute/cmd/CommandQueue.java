@@ -5456,6 +5456,20 @@ public class CommandQueue extends SmartPointer {
 
         //<editor-fold desc="Image Fill">
 
+        /**
+         * Fills an image region after this event and returns the next event in the chain.
+         * @param image The image to fill.
+         * @param color Colour used to fill the image region.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
                                                                    @NonNull CT from, @NonNull CT size, int mipmap,
                                                                    final Event... dependencies) {
@@ -5475,6 +5489,20 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Fills an image region after this event and returns the next event in the chain.
+         * @param image The image to fill.
+         * @param color Colour used to fill the image region.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @param <B> Type of NIO buffer.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
                                                                    @NonNull CT from, @NonNull CT size,
                                                                    final Event... dependencies) {
@@ -5494,6 +5522,19 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Fills an image region after this event and returns the next event in the chain.
+         * @param image The image to fill.
+         * @param color Colour used to fill the image region.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size, int mipmap,
                                         final Event... dependencies) {
@@ -5513,6 +5554,19 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Fills an image region after this event and returns the next event in the chain.
+         * @param image The image to fill.
+         * @param color Colour used to fill the image region.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size,
                                         final Event... dependencies) {
@@ -5532,6 +5586,19 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Fills an image region after this event and returns the next event in the chain.
+         * @param image The image to fill.
+         * @param color Colour used to fill the image region.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param mipmap Mipmap level of the image.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size, int mipmap,
                                         final Event... dependencies) {
@@ -5551,6 +5618,19 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Fills an image region after this event and returns the next event in the chain.
+         * @param image The image to fill.
+         * @param color Colour used to fill the image region.
+         * @param from Origin of the image region.
+         * @param size Size of the image region.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @param <CT> Image coordinate type.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates on mipmap level 0.
+         */
         public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
                                         @NonNull CT from, @NonNull CT size,
                                         final Event... dependencies) {
