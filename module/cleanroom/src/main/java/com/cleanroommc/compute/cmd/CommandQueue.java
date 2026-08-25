@@ -2917,6 +2917,23 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Image Read">
 
+    /**
+     * <p>Read a region of an OpenCL image into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Destination NIO buffer for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
@@ -2929,6 +2946,23 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Destination NIO buffer for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
@@ -2941,6 +2975,23 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Destination NIO buffer for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
@@ -2953,6 +3004,23 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, buffer, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param buffer Destination NIO buffer for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
@@ -2965,6 +3033,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, buffer, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a short array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, short @NonNull [] array,
@@ -2977,6 +3061,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a short array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, short @NonNull [] array,
@@ -2989,6 +3089,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a short array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, short @NonNull [] array,
@@ -3001,6 +3117,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a short array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, short @NonNull [] array,
@@ -3013,6 +3145,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a int array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, int @NonNull [] array,
@@ -3025,6 +3173,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a int array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, int @NonNull [] array,
@@ -3037,6 +3201,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a int array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, int @NonNull [] array,
@@ -3049,6 +3229,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a int array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, int @NonNull [] array,
@@ -3061,6 +3257,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a float array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
@@ -3073,6 +3285,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a float array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
@@ -3085,6 +3313,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a float array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
@@ -3097,6 +3341,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a float array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
@@ -3109,6 +3369,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
@@ -3121,6 +3397,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param mipmap Mipmap level of the image.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
@@ -3133,6 +3425,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, mipmap, size, rowPitch, slicePitch, array, true, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
@@ -3145,6 +3453,22 @@ public class CommandQueue extends SmartPointer {
         return new Event(image.read(stack, this, from, size, rowPitch, slicePitch, array, blocking, dependencies), stack);
     }
 
+    /**
+     * <p>Read a region of an OpenCL image into a double array.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param image The image involved in the operation.
+     * @param from Origin of the image region.
+     * @param size Size of the image region.
+     * @param rowPitch Row pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param slicePitch Slice pitch in bytes. A value of 0 lets OpenCL derive it.
+     * @param array Destination array for the image data.
+     * @param dependencies Additional events this operation depends on.
+     * @param <CT> Image coordinate type.
+     * @return Event of the operation.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates on mipmap level 0.
+     */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
