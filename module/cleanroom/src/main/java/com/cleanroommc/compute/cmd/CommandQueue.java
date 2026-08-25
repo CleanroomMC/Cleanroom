@@ -687,6 +687,27 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Buffer Write NIO Buffer">
 
+    /**
+     * <p>Write data to the buffer from a NIOBuffer.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @param <B> Type of buffer
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, long, boolean, Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -708,6 +729,27 @@ public class CommandQueue extends SmartPointer {
         );
     }
 
+    /**
+     * <p>Write data to the buffer from a NIO Buffer.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @param <B> Type of buffer
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, long, java.nio.Buffer, Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This is always a blocking write.
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -718,6 +760,27 @@ public class CommandQueue extends SmartPointer {
         return bufferWrite(stack, buffer, data, offset, true, events);
     }
 
+    /**
+     * <p>Write data to the buffer from a NIO Buffer.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param events What this operation depends on.
+     * @param <B> Type of buffer
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, boolean, Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This always writes at offset 0.
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -728,6 +791,25 @@ public class CommandQueue extends SmartPointer {
         return bufferWrite(stack, buffer, data, 0, blocking, events);
     }
 
+    /**
+     * <p>Write data to the buffer from a NIO Buffer.</p>
+     * @param stack MemoryStack
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param events What this operation depends on.
+     * @param <B> Type of buffer
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, Event...)
+     * @throws NullPointerException If stack or data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -737,6 +819,26 @@ public class CommandQueue extends SmartPointer {
         return bufferWrite(stack, buffer, data, 0, true, events);
     }
 
+    /**
+     * <p>Write data to the buffer from a NIO Buffer.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @param <B> Type of buffer
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, long, boolean, Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull Buffer buffer,
             @NonNull B data,
@@ -767,6 +869,25 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Write data to the buffer from a double array.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param offset Where to start the writing.
+     * @param events What this operation depends on.
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, long, java.nio.Buffer, Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This is always a blocking write.
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull Buffer buffer,
             long offset,
@@ -776,6 +897,26 @@ public class CommandQueue extends SmartPointer {
         return bufferWrite(buffer, data, offset, true, events);
     }
 
+    /**
+     * <p>Write data to the buffer from a NIO Buffer.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param blocking Is this a blocking operation?
+     * @param events What this operation depends on.
+     * @param <B> Type of Buffer
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, boolean, Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     * @apiNote This always writes at offset 0.
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull Buffer buffer,
             @NonNull B data,
@@ -785,6 +926,24 @@ public class CommandQueue extends SmartPointer {
         return bufferWrite(buffer, data, 0, blocking, events);
     }
 
+    /**
+     * <p>Write data to the buffer from a NIO Array.</p>
+     * @param buffer The buffer to write to
+     * @param data Data to write to the buffer.
+     * @param events What this operation depends on.
+     * @param <B> Type of Buffer
+     * @return Event of the write operation.
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, Event...)
+     * @throws NullPointerException If data is null.
+     * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
+     * the commandQueue has already been closed, or when there has been a negative value passed in events.
+     * @throws IllegalStateException When the buffer does not support writing.
+     * @throws BufferError Either when: this buffer is an invalid memory object, one or more events is invalid, or when
+     * the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Event bufferWrite(
             @NonNull Buffer buffer,
             @NonNull B data,
