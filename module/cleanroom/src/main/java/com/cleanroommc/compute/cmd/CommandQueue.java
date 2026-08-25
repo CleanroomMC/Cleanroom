@@ -46,6 +46,17 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Kernel Dispatch">
 
+    /**
+     * Queues the execution of an OpenCL Kernel over an ND-Range.
+     * @param kernel The kernel
+     * @param arguments The arguments to the kernel
+     * @param workGroupOffsets Which index will each dimension of the work group start at.
+     * @param workGroupSizes Dimensionality if the work groups.
+     * @param dependencies What does this kernel depend on?
+     * @return The chain
+     * @author EΣrie
+     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long[], long[], long...)
+     */
     public Event dispatchKernel(Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
@@ -64,6 +75,18 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * Queues the execution of an OpenCL Kernel over an ND-Range.
+     * @param stack MemoryStack
+     * @param kernel The kernel
+     * @param arguments The arguments to the kernel
+     * @param workGroupOffsets Which index will each dimension of the work group start at.
+     * @param workGroupSizes Dimensionality if the work groups.
+     * @param dependencies What does this kernel depend on?
+     * @return The chain
+     * @author EΣrie
+     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long[], long[], long...)
+     */
     public Event dispatchKernel(@NonNull MemoryStack stack, Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
@@ -75,6 +98,15 @@ public class CommandQueue extends SmartPointer {
         return new Event(kernel.invoke(stack, commandQueue, device, arguments, workGroupOffsets, workGroupSizes, dependencies), stack);
     }
 
+    /**
+     * Queues the execution of an OpenCL Kernel as a task.
+     * @param kernel The kernel
+     * @param arguments The arguments to the kernel
+     * @param dependencies What does this kernel depend on?
+     * @return The chain
+     * @author EΣrie
+     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long...)
+     */
     public Event dispatchKernel(@NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
                                 final long... dependencies) {
@@ -90,6 +122,16 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * Queues the execution of an OpenCL Kernel as a task.
+     * @param stack MemoryStack
+     * @param kernel The kernel
+     * @param arguments The arguments to the kernel
+     * @param dependencies What does this kernel depend on?
+     * @return The chain
+     * @author EΣrie
+     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long...)
+     */
     public Event dispatchKernel(@NonNull MemoryStack stack, @NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
                                 final long... dependencies) {
