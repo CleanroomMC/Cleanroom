@@ -20,12 +20,28 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.*;
 import java.util.Set;
 
+/**
+ * An OpenCL CommandQueue
+ * @apiNote This is how you should use almost everything in OpenCL.
+ * @author EΣrie
+ */
 public class CommandQueue extends SmartPointer {
 
     public final long commandQueue;
     private final long device;
 
-    public CommandQueue(long device) {
+    /**
+     * Creates a new CommandQueue for a device.
+     * @param device Commands passed via this queue will be executed on this device.
+     * @author EΣrie
+     * @throws RuntimeException If the OpenCL context is invalid or,
+     * the properties of the command queue are invalid or unsupported by the device.
+     * @throws UnavaliableDeviceError If the device is not available for the context.
+     * @throws OutOfMemoryError If there are not enough resources available to create the command queue.
+     * @see CommandQueueDispatch#dispatch(String)
+     * @see CommandQueueDispatch#dispatch(String, boolean, boolean, boolean)
+     */
+    CommandQueue(long device) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         super();
         int[] err = new int[1];
         commandQueue = CL20.clCreateCommandQueueWithProperties(
