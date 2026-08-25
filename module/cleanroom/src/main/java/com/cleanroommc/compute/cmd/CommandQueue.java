@@ -4299,6 +4299,17 @@ public class CommandQueue extends SmartPointer {
         //</editor-fold>
         //<editor-fold desc="Buffer Write Double">
 
+        /**
+         * Writes data from a double array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param offset Byte offset at which the operation starts.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         */
         public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
                            final long offset,
@@ -4320,6 +4331,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Writes data from a double array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param offset Byte offset at which the operation starts.
+         * @param data Data to write to the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         */
         public Event write(@NonNull Buffer buffer,
                            final long offset,
                            final double @NonNull [] data,
@@ -4341,6 +4363,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Writes data from a double array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param blocking Whether the operation blocks until the transfer is complete.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This operates at offset 0.
+         */
         public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
                            final boolean blocking,
@@ -4361,6 +4394,17 @@ public class CommandQueue extends SmartPointer {
             return transferOwnership(next);
         }
 
+        /**
+         * Writes data from a double array to a buffer after this event and returns the next event in the chain.
+         * @param buffer The buffer to write to.
+         * @param data Data to write to the buffer.
+         * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
+         * @return The next event in the chain.
+         * @throws IllegalStateException If this event can no longer be chained.
+         * @author EΣrie
+         * @apiNote This is always a blocking operation.
+         * @apiNote This operates at offset 0.
+         */
         public Event write(@NonNull Buffer buffer,
                            final double @NonNull [] data,
                            final Event... dependencies) {
