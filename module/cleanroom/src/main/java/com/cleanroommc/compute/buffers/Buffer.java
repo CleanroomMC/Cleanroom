@@ -446,6 +446,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, float[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, float[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, float[], boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, long, float[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, float[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -506,6 +513,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, double[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, double[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, double[], boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, long, double[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, double[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -566,6 +580,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, short[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, short[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, short[], boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, long, short[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, short[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -622,6 +643,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, int[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, int[], long, boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, int[], boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, long, int[], long...)
+     * @see CommandQueue#bufferWrite(Buffer, int[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -717,6 +745,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, long, boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#bufferWrite(Buffer, long, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -840,6 +875,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, long, boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, long, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -962,6 +1004,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, short[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], long...)
+     * @see CommandQueue#bufferRead(Buffer, short[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, short[], boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, long, short[], long...)
+     * @see CommandQueue#bufferRead(Buffer, short[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1016,6 +1065,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, int[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], long...)
+     * @see CommandQueue#bufferRead(Buffer, int[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, int[], boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, long, int[], long...)
+     * @see CommandQueue#bufferRead(Buffer, int[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1070,6 +1126,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, float[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], long...)
+     * @see CommandQueue#bufferRead(Buffer, float[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, float[], boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, long, float[], long...)
+     * @see CommandQueue#bufferRead(Buffer, float[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1124,6 +1187,13 @@ public class Buffer extends SmartPointer {
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
      * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, double[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], boolean, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], long...)
+     * @see CommandQueue#bufferRead(Buffer, double[], long, boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, double[], boolean, long...)
+     * @see CommandQueue#bufferRead(Buffer, long, double[], long...)
+     * @see CommandQueue#bufferRead(Buffer, double[], long...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
