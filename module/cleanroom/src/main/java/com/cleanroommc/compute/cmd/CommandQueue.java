@@ -1939,6 +1939,24 @@ public class CommandQueue extends SmartPointer {
 
     //<editor-fold desc="Buffer Read NIO Buffer">
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param offset Byte offset at which the operation starts.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -1957,6 +1975,24 @@ public class CommandQueue extends SmartPointer {
         );
     }
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param offset Byte offset at which the operation starts.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -1967,6 +2003,24 @@ public class CommandQueue extends SmartPointer {
         return bufferRead(stack, buffer, target, offset, true, events);
     }
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This operates at offset 0.
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -1977,6 +2031,24 @@ public class CommandQueue extends SmartPointer {
         return bufferRead(stack, buffer, target, 0, blocking, events);
     }
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param stack MemoryStack used for temporary native allocations.
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If stack, buffer, or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates at offset 0.
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull MemoryStack stack,
             @NonNull Buffer buffer,
@@ -1986,6 +2058,23 @@ public class CommandQueue extends SmartPointer {
         return bufferRead(stack, buffer, target, 0, true, events);
     }
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param offset Byte offset at which the operation starts.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull Buffer buffer,
             @NonNull B target,
@@ -2016,6 +2105,23 @@ public class CommandQueue extends SmartPointer {
         }
     }
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param offset Byte offset at which the operation starts.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull Buffer buffer,
             long offset,
@@ -2025,6 +2131,23 @@ public class CommandQueue extends SmartPointer {
         return bufferRead(buffer, target, offset, true, events);
     }
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param blocking Whether the operation blocks until the transfer is complete.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This operates at offset 0.
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull Buffer buffer,
             @NonNull B target,
@@ -2034,6 +2157,23 @@ public class CommandQueue extends SmartPointer {
         return bufferRead(buffer, target, 0, blocking, events);
     }
 
+    /**
+     * <p>Read data from the buffer into a NIO buffer.</p>
+     * @param buffer The buffer involved in the operation.
+     * @param target Destination for the data read from the buffer.
+     * @param events OpenCL event IDs this operation depends on.
+     * @param <B> Type of NIO buffer.
+     * @return Event of the operation.
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @throws NullPointerException If buffer or target is null.
+     * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
+     * @throws IllegalStateException If the buffer does not support reading.
+     * @throws BufferError If the buffer or one of the events is invalid, or the sub-buffer offset is misaligned.
+     * @throws OutOfMemoryError If there are not enough resources available to perform the read.
+     * @author EΣrie
+     * @apiNote This is always a blocking operation.
+     * @apiNote This operates at offset 0.
+     */
     public <B extends java.nio.Buffer> Event bufferRead(
             @NonNull Buffer buffer,
             @NonNull B target,
