@@ -4252,7 +4252,7 @@ public class CommandQueue extends SmartPointer {
      * <p>Event instances form a chain that reuses the same MemoryStack until the chain is executed.</p>
      * @author EΣrie
      */
-    public final class Event {
+    public final class Event extends SmartPointer {
         public final long eventID;
         private final MemoryStack stack;
 
@@ -4276,6 +4276,7 @@ public class CommandQueue extends SmartPointer {
             this.eventID = eventID;
             this.stack = Preconditions.checkNotNull(stack);
             this.nonBlockingWrites = nonBlockingWrites;
+            this.reference(CommandQueue.this);
         }
 
         /**
@@ -7720,6 +7721,16 @@ public class CommandQueue extends SmartPointer {
                 releaseOwnedStack();
                 CommandQueue.this.refresh();
             }
+        }
+
+        /**
+         * Releases Event and the MemoryStack
+         */
+        @Override
+        public void close() {
+            super.close();
+            CL10.clReleaseEvent(this.eventID);
+            releaseOwnedStack();
         }
 
         /**
