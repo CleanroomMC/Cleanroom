@@ -47,6 +47,8 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder;
 
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class ConfigManager
@@ -113,6 +115,19 @@ public class ConfigManager
         for (ASMData target : data.getAll(Config.class))
         {
             String modid = (String)target.getAnnotationInfo().get("modid");
+            if (modid == null) {
+                var containedMods = target.getCandidate().getContainedMods();
+                if (containedMods != null && containedMods.isEmpty()) {
+                    modid = containedMods.getFirst().getModId();
+                } else {
+                    modid = CleanroomModDiscoverer.instance()
+                        .modFromSource(target.getCandidate().getModContainer());
+                    if (modid == null) throw new IllegalStateException(
+                                "Could not infer the modid for the config " + target.getClassName()
+                        );
+                }
+            }
+            
             Multimap<Config.Type, ASMData> map = asm_data.computeIfAbsent(modid, k -> ArrayListMultimap.create());
 
             EnumHolder tholder = (EnumHolder)target.getAnnotationInfo().get("type");

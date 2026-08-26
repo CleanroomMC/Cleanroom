@@ -31,7 +31,7 @@ public @interface Config
     /**
     * The mod id that this configuration is associated with.
     */
-    String modid();
+    String modid() default "";
     /**
      * A user friendly name for the config file,
      * the default will be modid
