@@ -11,12 +11,31 @@ import org.lwjgl.opencl.CL20;
 
 import java.io.IOException;
 
+/**
+ * OpenCL Pipe
+ * @author EΣrie
+ */
 public class Pipe extends SmartPointer {
 
+    /**
+     * The actual OpenCL Pipe
+     */
     public final long handle;
+    /**
+     * How many packets can the pipe hold?
+     */
     public final int capacity;
+    /**
+     * Size of one packet.
+     */
     public final int packetSize;
 
+    /**
+     * Creates a new OpenCL Pipe.
+     * @param capacity how many packets can the pipe hold?
+     * @param schema Composition of a packet (this does not get stored)
+     * @author EΣrie
+     */
     public Pipe(int capacity, OpenCLType @NonNull ... schema) {
         Preconditions.checkNotNull(schema);
         Preconditions.checkArgument(schema.length > 0);
@@ -28,6 +47,12 @@ public class Pipe extends SmartPointer {
         this(capacity, size);
     }
 
+    /**
+     * Creates a new OpenCL Pipe.
+     * @param capacity how many packets can the pipe hold?
+     * @param packetSize size of one packet.
+     * @author EΣrie
+     */
     public Pipe(int capacity, int packetSize) {
         super();
         Preconditions.checkState(Compute.instance().supportsPipes, "Pipes are not supported.");
@@ -50,6 +75,10 @@ public class Pipe extends SmartPointer {
 
     }
 
+    /**
+     * Closes the pipe and releases the OpenCL memory object.
+     * @author EΣrie
+     */
     @Override
     public void close() {
         super.close();
