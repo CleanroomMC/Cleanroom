@@ -11,7 +11,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.primitives.Ints;
-import com.google.gson.*;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.classloading.FMLForgePlugin;
@@ -40,11 +39,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -71,7 +68,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return INSTANCE;
     }
 
-    private final Gson gson = new GsonBuilder().setLenient().create();
     private final List<ModContainer> builtInMods = List.of(new MixinBooterModContainer(), new ConfigAnytimeContainer());
     private final List<String> builtInModIds = builtInMods.stream().map(ModContainer::getModId).toList();
     private final SetMultimap<String, File> modIdToFiles = HashMultimap.create();
@@ -290,7 +286,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (modIds.isEmpty()) {
                 ZipEntry entry = jarFile.getEntry("mcmod.info");
                 if (entry != null) {
-                    parseMcmodInfo(file, gson, jarFile.getInputStream(entry), modIds);
+                    parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
                 }
                 scanModAnnotations(jarFile, modIds);
             }
@@ -603,9 +599,15 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return false;
     }
 
-    private void parseMcmodInfo(File file, Gson gson, InputStream stream, Set<String> ids) {
+    private void parseMcmodInfo(File file, InputStream stream, Set<String> ids) {
         try {
-            ids.addAll(MetadataCollection.from(stream, file.getName()).getIds());
+            for (String id : MetadataCollection.from(stream, file.getName()).getIds()) {
+                if (id == null || id.isBlank()) {
+                    CleanroomLog.get().warn("Skipping null/blank mod id from {}", file.getName());
+                    continue;
+                }
+                ids.add(id);
+            }
         } catch (Throwable t) {
             CleanroomLog.get().error("Failed to parse mcmod.info for {}", file.getName(), t);
         } finally {
