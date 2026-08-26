@@ -20,12 +20,40 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.List;
 
+/**
+ * Represents an OpenCL kernel, that is: a function that can be executed on a device such as a GPU.
+ * @param kernel kernel pointer/handle
+ * @param arguments A map of kernel arguments, keyed by argument name.
+ * @param dimensionality Number of dimensions of the NDRange. 0 if it's a task.
+ * @param requiresImages Is the OpenCL Image feature required?
+ * @param requiresMipmaps Is the OpenCL Mipmapped Image feature required?
+ * @param requiresPipes Is the OpenCL Pipe feature required?
+ * @author EΣrie
+ */
 public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, int dimensionality, boolean requiresImages, boolean requiresMipmaps, boolean requiresPipes) {
+    /**
+     * Create a kernel from metadata, calls {@link #createKernel(long, KernelMetadata)} internally.
+     * @param program Handle of the OpenCL program
+     * @param meta Kernel metadata
+     * @author EΣrie
+     */
     public Kernel(long program, KernelMetadata meta) {
-        this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments), meta.dimensions, meta.parent.requirements.images, meta.parent.requirements.mipmaps, meta.parent.requirements.pipes);
+        this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments), meta.dimensions,
+                meta.parent.requirements.images, meta.parent.requirements.mipmaps, meta.parent.requirements.pipes);
     }
 
-    private static long createKernel(long program, @NonNull KernelMetadata meta) {
+    /**
+     * Create a kernel from metadata.
+     * @param program Handle of the OpenCL program
+     * @param meta Kernel metadata
+     * @return Kernel handle
+     * @throws CompilationError Program has not been compiled properly.
+     * @throws KernelError Kernel does not exist in the program, or the kernal has different definitions on different devices.
+     * @throws NullPointerException Kernel name is null for the program.
+     * @throws OutOfMemoryError Not enough resources available to create OpenCL kernel.
+     * @author EΣrie
+     */
+    private static long createKernel(long program, @NonNull KernelMetadata meta) throws CompilationError, KernelError, NullPointerException, OutOfMemoryError{
         int[] err_codes = new int[1];
         long kernel = CL10.clCreateKernel(program, meta.kernelName, err_codes);
         switch(err_codes[0]) {
@@ -38,11 +66,29 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         return kernel;
     }
 
+    /**
+     * NDRange kernel invocation.
+     * @param stack MemoryStack
+     * @param commandQueue CommandQueue this will be queued on
+     * @param device Device this will be executed on
+     * @param arguments Kernel arguments
+     * @param workGroupOffsets Work group offsets. Each work group will start from this index.
+     * @param workGroupSizes Work group sizes.
+     * @param dependencies Events this depends on.
+     * @return Event of the kernel invocation.
+     * @author EΣrie
+     * @throws NullPointerException If arguments or workGroupSizes is null.\
+     * @throws IllegalArgumentException If the kernel requires images, mipmaps, or pipes, but the device does not support them.
+     * Also when the number of workGroupSizes is not equal to the number of dimensions of the NDRange.
+     * @throws KernelError If the kernel arguments, work group dimensions, work group size, or offsets are invalid.
+     * @throws OutOfMemoryError Not enough resources available to invoke OpenCL kernel.
+     */
     public long invoke(MemoryStack stack, long commandQueue, long device,
                        final @NonNull KernelParameterList arguments,
                        final long @Nullable [] workGroupOffsets,
                        final long @NonNull [] workGroupSizes,
-                       final long... dependencies) {
+                       final long... dependencies) throws NullPointerException, IllegalArgumentException,
+            KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
         Preconditions.checkArgument(workGroupSizes.length == dimensionality, "Wrong NDRange dimensions.");
@@ -112,9 +158,24 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         return event.get(0);
     }
 
+    /**
+     * Invokes the kernel as a task.
+     * @param stack MemoryStack
+     * @param commandQueue CommandQueue this will be queued on.
+     * @param device Device this will be executed on.
+     * @param arguments Kernel arguments.
+     * @param dependencies Events this depends on.
+     * @return Event of the kernel invocation.
+     * @throws NullPointerException If arguments are null.
+     * @throws IllegalStateException If the kernel is not a task.
+     * @throws IllegalArgumentException If the kernel requires images, mipmaps, or pipes, but the device does not support them.
+     * @throws KernelError If the kernel arguments are invalid.
+     * @throws OutOfMemoryError Not enough resources available to invoke OpenCL kernel.
+     */
     public long invoke(MemoryStack stack, long commandQueue, long device,
                        final @NonNull KernelParameterList arguments,
-                       final long... dependencies) {
+                       final long... dependencies) throws NullPointerException, IllegalStateException,
+            IllegalArgumentException, KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);
         Preconditions.checkState(dimensionality == 0, "Not a task.");
         Device dev = Compute.instance().getDevice(device);
@@ -154,6 +215,12 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         return event.get(0);
     }
 
+    /**
+     * Greatest common divisor of two numbers.
+     * @param a First number
+     * @param b Second number
+     * @return Greatest common divisor of a and b.
+     */
     private static long gcd(long a, long b){
         long tmp;
         while(b != 0){
@@ -164,6 +231,12 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         return a;
     }
 
+    /**
+     * Gets a list of GL objects from a KernelParameterList.
+     * @param stack MemoryStack
+     * @param parameters Kernel parameters
+     * @return List of GL objects.
+     */
     private static PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters) {
         List<BufferParameter> buffers = new ReferenceArrayList<>();
         List<ImageParameter<?>> images = new ReferenceArrayList<>();
