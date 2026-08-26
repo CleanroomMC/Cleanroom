@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common.asm.transformers;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,8 @@ public class SideTransformer implements IClassTransformer
     public byte[] transform(String name, String transformedName, byte[] bytes)
     {
         if (bytes == null) { return null; }
+
+        if (!new String(bytes, StandardCharsets.ISO_8859_1).contains("Lnet/minecraftforge/fml/relauncher/SideOnly;")) { return bytes; }
 
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
