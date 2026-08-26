@@ -112,6 +112,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * <p><i>Internal constructor</i></p>
      * @param workaround all arguments to {@link Image#Image(MemoryStack, BufferFlags, CLImageFormat, CLImageDesc, ByteBuffer)}.
      * @apiNote workaround for a problem with Java
+     * @author EΣrie
      */
     protected Image(@NonNull Workaround workaround) {
         this(workaround.stack(), workaround.memoryFlags(), workaround.format(), workaround.descriptor(), workaround.hostMemory());
@@ -122,6 +123,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param texture the OpenGL image.
      * @param memoryFlags memory access flags.
      * @param mipLevel number of mipmaps if any, otherwise 0.
+     * @author EΣrie
      */
     public Image(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
         super();
