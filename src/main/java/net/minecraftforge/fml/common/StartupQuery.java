@@ -33,7 +33,7 @@ public class StartupQuery {
     {
         StartupQuery query = new StartupQuery(text, new AtomicBoolean());
         query.execute();
-        return query.getResult();
+        return Boolean.TRUE.equals(query.getResult());
     }
 
     public static void notify(String text)
