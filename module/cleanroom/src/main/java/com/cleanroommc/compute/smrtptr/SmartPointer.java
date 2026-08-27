@@ -4,6 +4,7 @@ import com.cleanroommc.compute.cmd.CommandQueue;
 
 import java.io.Closeable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -14,11 +15,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public abstract class SmartPointer implements Closeable {
 
-    private short ttl;
+    private final AtomicInteger ttl;
     private final short startTTL;
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    protected final Lock readLock = lock.readLock();
     protected final Lock writeLock = lock.writeLock();
 
     /**
@@ -27,7 +27,7 @@ public abstract class SmartPointer implements Closeable {
      */
     public SmartPointer(final short startTTL) {
         this.startTTL = startTTL;
-        this.ttl = startTTL;
+        this.ttl = new AtomicInteger(startTTL);
         GarbageCollector.INSTANCE.add(this);
     }
 
@@ -44,12 +44,7 @@ public abstract class SmartPointer implements Closeable {
      */
     protected final void reference(SmartPointer pointer) {
         GarbageCollector.INSTANCE.reference(this, pointer);
-        try {
-            writeLock.lock();
-            this.ttl = startTTL;
-        } finally {
-            writeLock.unlock();
-        }
+        this.ttl.setRelease(startTTL);
     }
 
     /**
@@ -69,10 +64,10 @@ public abstract class SmartPointer implements Closeable {
     public final void tick() {
         try {
             writeLock.lock();
-            if (this.ttl == 0)
+            if (this.ttl.getAcquire() == 0)
                 this.close();
             else if (GarbageCollector.INSTANCE.references(this).isEmpty() || this instanceof CommandQueue) // Only reading. Shouldn't cause data races
-                this.ttl--;
+                this.ttl.decrementAndGet();
         } finally {
             writeLock.unlock();
         }
@@ -83,24 +78,14 @@ public abstract class SmartPointer implements Closeable {
      * @implSpec THIS SHOLD ONLY BE CALLED FROM {@link CommandQueue.Event#execute()}
      */
     protected final void refresh() {
-        try {
-            writeLock.lock();
-            this.ttl = startTTL;
-        } finally {
-            writeLock.unlock();
-        }
+        this.ttl.setRelease(startTTL);
     }
 
     /**
      * @return Time to live of this Smart Pointer.
      */
     public final short ttl() {
-        try {
-            readLock.lock();
-            return this.ttl;
-        } finally {
-            readLock.unlock();
-        }
+        return (short) this.ttl.getAcquire();
     }
 
     /**
