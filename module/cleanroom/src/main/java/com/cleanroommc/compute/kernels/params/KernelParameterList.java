@@ -28,6 +28,11 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 
+/**
+ * <p>This is a class used to list parameters of an OpenCL kernel.</p>
+ * <p>The functions should be self-explanatory.</p>
+ * @author EΣrie
+ */
 public final class KernelParameterList implements Iterable<KernelParameter> {
 
     private final KernelParameter[] parameters;
