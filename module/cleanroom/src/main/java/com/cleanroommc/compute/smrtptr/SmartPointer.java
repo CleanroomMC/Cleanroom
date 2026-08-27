@@ -3,6 +3,9 @@ package com.cleanroommc.compute.smrtptr;
 import com.cleanroommc.compute.cmd.CommandQueue;
 
 import java.io.Closeable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Smart Pointer class. Used to track references to OpenCL objects.
@@ -13,7 +16,10 @@ public abstract class SmartPointer implements Closeable {
 
     private short ttl;
     private final short startTTL;
-    private boolean isClosed = false;
+    private final AtomicBoolean isClosed = new AtomicBoolean(false);
+    protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    protected final Lock readLock = lock.readLock();
+    protected final Lock writeLock = lock.writeLock();
 
     /**
      * Initialises the smart pointer.
@@ -38,7 +44,12 @@ public abstract class SmartPointer implements Closeable {
      */
     protected final void reference(SmartPointer pointer) {
         GarbageCollector.INSTANCE.reference(this, pointer);
-        this.ttl = startTTL;
+        try {
+            writeLock.lock();
+            this.ttl = startTTL;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /**
@@ -56,10 +67,15 @@ public abstract class SmartPointer implements Closeable {
      * prevent unused queues from clogging up memory.
      */
     public final void tick() {
-        if (this.ttl == 0)
-            this.close();
-        else if (GarbageCollector.INSTANCE.references(this).isEmpty() || this instanceof CommandQueue) // Only reading. Shouldn't cause data races
-            this.ttl--;
+        try {
+            writeLock.lock();
+            if (this.ttl == 0)
+                this.close();
+            else if (GarbageCollector.INSTANCE.references(this).isEmpty() || this instanceof CommandQueue) // Only reading. Shouldn't cause data races
+                this.ttl--;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /**
@@ -67,21 +83,31 @@ public abstract class SmartPointer implements Closeable {
      * @implSpec THIS SHOLD ONLY BE CALLED FROM {@link CommandQueue.Event#execute()}
      */
     protected final void refresh() {
-        this.ttl = startTTL;
+        try {
+            writeLock.lock();
+            this.ttl = startTTL;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /**
      * @return Time to live of this Smart Pointer.
      */
     public final short ttl() {
-        return this.ttl;
+        try {
+            readLock.lock();
+            return this.ttl;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
      * @return Take a wild damn guess.
      */
     public final boolean isClosed() {
-        return this.isClosed;
+        return this.isClosed.getAcquire();
     }
 
     /**
@@ -90,7 +116,7 @@ public abstract class SmartPointer implements Closeable {
      */
     @Override
     public void close() {
-        this.isClosed = true;
+        this.isClosed.compareAndExchangeRelease(false, true);
         GarbageCollector.INSTANCE.remove(this);
     }
 }
