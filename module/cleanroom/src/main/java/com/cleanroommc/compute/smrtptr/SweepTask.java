@@ -10,9 +10,12 @@ public class SweepTask implements Runnable {
 
     @Override
     public void run() {
-        running.weakCompareAndSetRelease(false, true);
+        running.compareAndExchangeRelease(false, true);
         do {
-            while (!spinlock.tryLock()) {}
+            while (!spinlock.tryLock()) {
+                if (running.getAcquire())
+                    return;
+            }
             GarbageCollector.INSTANCE.sweep();
         } while (running.getAcquire());
     }
