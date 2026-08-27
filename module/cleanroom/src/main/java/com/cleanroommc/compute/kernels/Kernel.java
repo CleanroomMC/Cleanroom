@@ -2,11 +2,13 @@ package com.cleanroommc.compute.kernels;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.Device;
+import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.CompilationError;
 import com.cleanroommc.compute.errors.KernelError;
-import com.cleanroommc.compute.kernels.params.BufferParameter;
-import com.cleanroommc.compute.kernels.params.ImageParameter;
-import com.cleanroommc.compute.kernels.params.KernelParameterList;
+import com.cleanroommc.compute.images.samplers.Sampler;
+import com.cleanroommc.compute.kernels.params.*;
+import com.cleanroommc.compute.pipes.Pipe;
+import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.cleanroommc.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -18,6 +20,9 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL10GL;
 import org.lwjgl.system.MemoryStack;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.List;
 
 /**
@@ -83,7 +88,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      * @throws KernelError If the kernel arguments, work group dimensions, work group size, or offsets are invalid.
      * @throws OutOfMemoryError Not enough resources available to invoke OpenCL kernel.
      */
-    public long invoke(MemoryStack stack, long commandQueue, long device,
+    public long invoke(MemoryStack stack, CommandQueue commandQueue, long device,
                        final @NonNull KernelParameterList arguments,
                        final long @Nullable [] workGroupOffsets,
                        final long @NonNull [] workGroupSizes,
@@ -91,6 +96,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
+        Preconditions.checkNotNull(commandQueue);
         Preconditions.checkArgument(workGroupSizes.length == dimensionality, "Wrong NDRange dimensions.");
         Device dev = Compute.instance().getDevice(device);
         Preconditions.checkArgument(!requiresImages || dev.supportsImages(), "Device does not support images.");
@@ -129,13 +135,13 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         PointerBuffer event = stack.mallocPointer(1);
         PointerBuffer glObjects = null;
         if (Compute.instance().glSharing) {
-            glObjects = getGLObjects(stack, arguments);
-            CL10GL.clEnqueueAcquireGLObjects(commandQueue, glObjects, eventWaitList, event);
+            glObjects = getGLObjects(stack, arguments, commandQueue);
+            CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
             if (eventWaitList == null)
                 eventWaitList = stack.mallocPointer(1);
             eventWaitList.put(0, event.get(0)).rewind();
         }
-        switch (CL10.clEnqueueNDRangeKernel(commandQueue, kernel,
+        switch (CL10.clEnqueueNDRangeKernel(commandQueue.commandQueue, kernel,
                 dim, offsets, sizes, local,
                 glObjects == null ? eventWaitList : eventWaitList.getPointerBuffer(0), event)) {
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
@@ -152,7 +158,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
             event.rewind();
-            CL10GL.clEnqueueReleaseGLObjects(commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
+            CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
             CL10.clReleaseEvent(eventWaitList.get(0));
         }
         return event.get(0);
@@ -172,11 +178,12 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      * @throws KernelError If the kernel arguments are invalid.
      * @throws OutOfMemoryError Not enough resources available to invoke OpenCL kernel.
      */
-    public long invoke(MemoryStack stack, long commandQueue, long device,
+    public long invoke(MemoryStack stack, CommandQueue commandQueue, long device,
                        final @NonNull KernelParameterList arguments,
                        final long... dependencies) throws NullPointerException, IllegalStateException,
             IllegalArgumentException, KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);
+        Preconditions.checkNotNull(commandQueue);
         Preconditions.checkState(dimensionality == 0, "Not a task.");
         Device dev = Compute.instance().getDevice(device);
         Preconditions.checkArgument(!requiresImages || dev.supportsImages(), "Device does not support images.");
@@ -192,13 +199,13 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         PointerBuffer event = stack.mallocPointer(1);
         PointerBuffer glObjects = null;
         if (Compute.instance().glSharing) {
-            glObjects = getGLObjects(stack, arguments);
-            CL10GL.clEnqueueAcquireGLObjects(commandQueue, glObjects, eventWaitList, event);
+            glObjects = getGLObjects(stack, arguments, commandQueue);
+            CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
             if (eventWaitList == null)
                 eventWaitList = stack.mallocPointer(1);
             eventWaitList.put(0, event.get(0)).rewind();
         }
-        switch (CL10.clEnqueueTask(commandQueue, this.kernel, eventWaitList, event)) {
+        switch (CL10.clEnqueueTask(commandQueue.commandQueue, this.kernel, eventWaitList, event)) {
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
@@ -209,7 +216,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
             event.rewind();
-            CL10GL.clEnqueueReleaseGLObjects(commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
+            CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
             CL10.clReleaseEvent(eventWaitList.get(0));
         }
         return event.get(0);
@@ -232,12 +239,13 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
     }
 
     /**
-     * Gets a list of GL objects from a KernelParameterList.
+     * Gets a list of GL objects from a KernelParameterList. Also reference {@link Pipe Pipes} and {@link Sampler Samplers}.
      * @param stack MemoryStack
      * @param parameters Kernel parameters
+     * @param queue since samplers and pipes don't have functions that get queued, this is where the referencing happens.
      * @return List of GL objects.
      */
-    private static PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters) {
+    private static PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters, CommandQueue queue) {
         List<BufferParameter> buffers = new ReferenceArrayList<>();
         List<ImageParameter<?>> images = new ReferenceArrayList<>();
         parameters.forEach(p -> {
@@ -245,6 +253,10 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
                 buffers.add(buffer);
             } else if  (p instanceof ImageParameter<?> image && image.image().isGLTexture()) {
                 images.add(image);
+            } else if (p instanceof PipeParameter(Pipe pipe)) {
+                PIPE_HOLDER.reference(pipe, queue);
+            } else if (p instanceof SamplerParameter(Sampler sampler)) {
+                SAMPLER_HOLDER.reference(sampler, queue);
             }
         });
         PointerBuffer handles = stack.mallocPointer(buffers.size() + images.size());
@@ -255,5 +267,39 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             handles.put(image.image().handle);
         }
         return handles;
+    }
+
+    private final static MethodHolder<Pipe> PIPE_HOLDER;
+    private final static MethodHolder<Sampler> SAMPLER_HOLDER;
+
+    /**
+     * Stores {@link SmartPointer} functions.
+     * @param <T> {@link SmartPointer} subtype.
+     */
+    private static final class MethodHolder<T extends SmartPointer> {
+        private final MethodHandle referenceHandle;
+
+        private MethodHolder(Class<T> type) throws NoSuchMethodException, IllegalAccessException {
+            this.referenceHandle = MethodHandles.lookup().findVirtual(type, "reference", REFERENCE_TYPE);
+        }
+
+        public void reference(T pointer, SmartPointer reference) {
+            try {
+                referenceHandle.invoke(pointer, reference);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private final static MethodType REFERENCE_TYPE = MethodType.methodType(void.class, SmartPointer.class);
+    }
+
+    static {
+        try {
+            PIPE_HOLDER = new MethodHolder<>(Pipe.class);
+            SAMPLER_HOLDER = new MethodHolder<>(Sampler.class);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
