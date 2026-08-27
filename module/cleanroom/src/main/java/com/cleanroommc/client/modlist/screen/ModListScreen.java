@@ -9,10 +9,12 @@ import com.cleanroommc.client.modlist.RenderUtils;
 import com.cleanroommc.client.modlist.data.IModData;
 import com.cleanroommc.client.modlist.data.MinecraftModData;
 import com.cleanroommc.client.modlist.screen.widget.*;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
@@ -47,6 +49,8 @@ import java.util.stream.Collectors;
 public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
     private static final Favourites FAVOURITES = new Favourites();
+    // Creative tabs whose icon lookup threw; some mods build their icon from state that isn't available here
+    private static final Set<CreativeTabs> BROKEN_TAB_ICONS = new ReferenceOpenHashSet<>();
     private static final ResourceLocation MISSING_BANNER = ModListConstants.resource("textures/gui/missing_banner.png");
     private static final ResourceLocation MISSING_BACKGROUND = ModListConstants.resource("textures/gui/missing_background.png");
     private static final ResourceLocation MINECRAFT_LOGO = ModListConstants.resource("textures/gui/minecraft.png");
@@ -165,7 +169,7 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 _ -> this.mc.displayGuiScreen(this.parentScreen)));
         this.modFolderButton = this.addButton(new ModListIconButton(
                 140, this.modList.bottom + 8, 0, 0,
-                _ -> PlatformUtils.openFile(PlatformUtils.getModDirectory())));
+                _ -> OpenGlHelper.openFile(PlatformUtils.getModDirectory())));
 
         int padding = 10;
         int contentLeft = this.modList.right + 12 + padding;
@@ -538,11 +542,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
-            return false;
-        }
-
-        @Override
         public void handleMouseInput() {
             this.hideFavourites = Mouse.getEventDWheel() != 0;
             super.handleMouseInput();
@@ -730,26 +729,38 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
             // If the mod has a creative tab, the mod list will attempt to use the tab's icon
             for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-                if (tab == null) continue;
+                if (tab == null || BROKEN_TAB_ICONS.contains(tab)) {
+                    continue;
+                }
                 ItemStack tabItem;
                 try {
                     tabItem = tab.getIcon();
-                } catch (Exception e) {
-                    ModListConstants.LOG.warn("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
+                } catch (Throwable t) {
+                    // Some mods build their creative tab icon from state that isn't available here, such as the world
+                    BROKEN_TAB_ICONS.add(tab);
+                    ModListConstants.LOG.warn("Failed to get creative tab icon from tab '{}', it will be skipped", tab.getTabLabel(), t);
                     continue;
                 }
-                if (tabItem.isEmpty()) continue;
+                if (tabItem.isEmpty()) {
+                    continue;
+                }
                 ResourceLocation resource = tabItem.getItem().getRegistryName();
-                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) {
+                    continue;
+                }
                 this.cachedData.itemIcon = tabItem;
                 return tabItem;
             }
 
             // If the mod doesn't specify an item to use, the mod list will attempt to get an item from the mod
             for (Item item : ForgeRegistries.ITEMS) {
-                if (item == null) continue;
+                if (item == null) {
+                    continue;
+                }
                 ResourceLocation resource = item.getRegistryName();
-                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) continue;
+                if (resource == null || !resource.getNamespace().equals(this.data.getModId())) {
+                    continue;
+                }
                 ItemStack itemStack = new ItemStack(item);
                 this.cachedData.itemIcon = itemStack;
                 return itemStack;
@@ -988,11 +999,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             drawRect(this.left + 1, this.top, this.left + this.width - 1, this.top + this.height, 0x77000000);
             drawRect(this.left + this.width - 1, this.top + 1, this.left + this.width, this.top + this.height - 1, 0x77000000);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
-
-        @Override
-        protected boolean drawTopBottomShadow(@Nullable Tessellator tessellator) {
-            return false;
         }
 
         @Override

@@ -19,10 +19,8 @@
 
 package net.minecraftforge.client.model;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -898,13 +896,9 @@ public final class ModelLoader extends ModelBakery
         @Override
         public boolean load(IResourceManager manager, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter)
         {
-            BufferedImage image = new BufferedImage(this.getIconWidth(), this.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-            Graphics2D graphics = image.createGraphics();
-            graphics.setBackground(Color.WHITE);
-            graphics.clearRect(0, 0, this.getIconWidth(), this.getIconHeight());
             int[][] pixels = new int[Minecraft.getMinecraft().gameSettings.mipmapLevels + 1][];
-            pixels[0] = new int[image.getWidth() * image.getHeight()];
-            image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels[0], 0, image.getWidth());
+            pixels[0] = new int[this.getIconWidth() * this.getIconHeight()];
+            Arrays.fill(pixels[0], 0xFFFFFFFF);
             this.clearFramesTextureData();
             this.framesTextureData.add(pixels);
             return false;

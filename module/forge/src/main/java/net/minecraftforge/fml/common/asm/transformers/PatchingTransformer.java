@@ -19,8 +19,8 @@
 
 package net.minecraftforge.fml.common.asm.transformers;
 
+import com.cleanroommc.util.patch.ClassPatchManager;
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.fml.common.patcher.ClassPatchManager;
 
 public class PatchingTransformer implements IClassTransformer {
     @Override

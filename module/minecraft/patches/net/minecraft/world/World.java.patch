@@ -1476,7 +1476,7 @@
 +        net.minecraftforge.common.util.WorldCapabilityData data = (net.minecraftforge.common.util.WorldCapabilityData)perWorldStorage.getOrLoadData(net.minecraftforge.common.util.WorldCapabilityData.class, net.minecraftforge.common.util.WorldCapabilityData.ID);
 +        if (data == null) {
 +            capabilityData = new net.minecraftforge.common.util.WorldCapabilityData(capabilities);
-+            perWorldStorage.setData(capabilityData.mapName, capabilityData);
++            perWorldStorage.setData(net.minecraftforge.common.util.WorldCapabilityData.ID, capabilityData);
 +        } else {
 +            capabilityData = data;
 +            capabilityData.setCapabilities(provider, capabilities);

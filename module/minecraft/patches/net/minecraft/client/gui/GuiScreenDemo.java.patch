@@ -1,6 +1,17 @@
 --- original/net/minecraft/client/gui/GuiScreenDemo.java
 +++ modified/net/minecraft/client/gui/GuiScreenDemo.java
-@@ -75,23 +75,23 @@
+@@ -35,9 +35,7 @@
+                 button.enabled = false;
+ 
+                 try {
+-                    Class<?> oclass = Class.forName("java.awt.Desktop");
+-                    Object object = oclass.getMethod("getDesktop").invoke(null);
+-                    oclass.getMethod("browse", URI.class).invoke(object, new URI("http://www.minecraft.net/store?source=demo"));
++                    com.cleanroommc.client.sdl.Desktop.open(new URI("http://www.minecraft.net/store?source=demo"));
+                 } catch (Throwable throwable) {
+                     LOGGER.error("Couldn't open link", throwable);
+                 }
+@@ -75,23 +73,23 @@
          j += 12;
          GameSettings gamesettings = this.mc.gameSettings;
          this.fontRenderer

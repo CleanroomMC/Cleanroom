@@ -138,7 +138,28 @@
                  } catch (Throwable throwable) {
                      CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering screen");
                      CrashReportCategory crashreportcategory = crashreport.makeCategory("Screen render details");
-@@ -1067,7 +1090,7 @@
+@@ -1039,10 +1062,16 @@
+             }
+ 
+             try {
+-                BufferedImage bufferedimage1 = new BufferedImage(64, 64, 1);
+-                Graphics graphics = bufferedimage1.createGraphics();
+-                graphics.drawImage(bufferedimage, 0, 0, 64, 64, k, l, k + i, l + i, null);
+-                graphics.dispose();
++                BufferedImage bufferedimage1 = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
++                int[] source = bufferedimage.getRGB(k, l, i, i, null, 0, i);
++                int[] scaled = new int[64 * 64];
++                for (int y = 0; y < 64; ++y) {
++                    int sourceRow = y * i / 64 * i;
++                    for (int x = 0; x < 64; ++x) {
++                        scaled[y * 64 + x] = source[sourceRow + x * i / 64];
++                    }
++                }
++                bufferedimage1.setRGB(0, 0, 64, 64, scaled, 0, 64);
+                 ImageIO.write(bufferedimage1, "png", this.mc.getIntegratedServer().getWorldIconFile());
+             } catch (IOException ioexception) {
+                 LOGGER.warn("Couldn't save auto screenshot", ioexception);
+@@ -1067,7 +1096,7 @@
                  BlockPos blockpos = this.mc.objectMouseOver.getBlockPos();
                  Block block = this.mc.world.getBlockState(blockpos).getBlock();
                  if (this.mc.playerController.getCurrentGameType() == GameType.SPECTATOR) {
@@ -147,7 +168,7 @@
                  } else {
                      flag = !itemstack.isEmpty() && (itemstack.canDestroy(block) || itemstack.canPlaceOn(block));
                  }
-@@ -1104,6 +1127,15 @@
+@@ -1104,6 +1133,15 @@
      }
  
      private void renderWorldPass(int pass, float partialTicks, long finishTimeNano) {
@@ -163,7 +184,7 @@
          RenderGlobal renderglobal = this.mc.renderGlobal;
          ParticleManager particlemanager = this.mc.effectRenderer;
          boolean flag = this.isDrawBlockOutline();
-@@ -1114,7 +1146,7 @@
+@@ -1114,7 +1152,7 @@
          GlStateManager.clear(16640);
          this.mc.profiler.endStartSection("camera");
          this.setupCameraTransform(partialTicks, pass);
@@ -172,7 +193,7 @@
          this.mc.profiler.endStartSection("frustum");
          ClippingHelperImpl.getInstance();
          this.mc.profiler.endStartSection("culling");
-@@ -1154,6 +1186,13 @@
+@@ -1154,6 +1192,13 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
@@ -186,7 +207,7 @@
          this.mc.profiler.endStartSection("prepareterrain");
          this.setupFog(0, partialTicks);
          this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-@@ -1171,7 +1210,9 @@
+@@ -1171,7 +1216,9 @@
          GlStateManager.disableAlpha();
          renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, partialTicks, pass, entity);
          GlStateManager.enableAlpha();
@@ -196,7 +217,7 @@
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
          renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT, partialTicks, pass, entity);
          this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
-@@ -1183,7 +1224,9 @@
+@@ -1183,7 +1230,9 @@
              GlStateManager.pushMatrix();
              RenderHelper.enableStandardItemLighting();
              this.mc.profiler.endStartSection("entities");
@@ -206,7 +227,7 @@
              RenderHelper.disableStandardItemLighting();
              this.disableLightmap();
          }
-@@ -1194,6 +1237,7 @@
+@@ -1194,6 +1243,7 @@
              EntityPlayer entityplayer = (EntityPlayer)entity;
              GlStateManager.disableAlpha();
              this.mc.profiler.endStartSection("outline");
@@ -214,7 +235,7 @@
              renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
              GlStateManager.enableAlpha();
          }
-@@ -1242,8 +1286,25 @@
+@@ -1242,8 +1292,25 @@
          GlStateManager.depthMask(false);
          this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
          GlStateManager.shadeModel(7425);
@@ -240,7 +261,7 @@
          GlStateManager.shadeModel(7424);
          GlStateManager.depthMask(true);
          GlStateManager.enableCull();
-@@ -1254,11 +1315,21 @@
+@@ -1254,11 +1321,21 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
@@ -262,7 +283,7 @@
      }
  
      private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass, double x, double y, double z) {
-@@ -1376,6 +1447,12 @@
+@@ -1376,6 +1453,12 @@
  
      /** Render rain and snow */
      protected void renderRainSnow(float partialTicks) {
@@ -275,7 +296,7 @@
          float f = this.mc.world.getRainStrength(partialTicks);
          if (!(f <= 0.0F)) {
              this.enableLightmap();
-@@ -1612,22 +1689,15 @@
+@@ -1612,22 +1695,15 @@
              this.fogColorRed = (float)vec3d3.x;
              this.fogColorGreen = (float)vec3d3.y;
              this.fogColorBlue = (float)vec3d3.z;
@@ -307,7 +328,7 @@
          }
  
          float f13 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * partialTicks;
-@@ -1673,6 +1743,9 @@
+@@ -1673,6 +1749,9 @@
                  f6 = 1.0F / this.fogColorBlue;
              }
  
@@ -317,7 +338,7 @@
              this.fogColorRed = this.fogColorRed * (1.0F - f15) + this.fogColorRed * f6 * f15;
              this.fogColorGreen = this.fogColorGreen * (1.0F - f15) + this.fogColorGreen * f6 * f15;
              this.fogColorBlue = this.fogColorBlue * (1.0F - f15) + this.fogColorBlue * f6 * f15;
-@@ -1687,6 +1760,13 @@
+@@ -1687,6 +1766,13 @@
              this.fogColorBlue = f7;
          }
  
@@ -331,7 +352,7 @@
          GlStateManager.clearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
      }
  
-@@ -1697,6 +1777,9 @@
+@@ -1697,6 +1783,9 @@
          GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
@@ -341,7 +362,7 @@
          if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(MobEffects.BLINDNESS)) {
              float f1 = 5.0F;
              int i = ((EntityLivingBase)entity).getActivePotionEffect(MobEffects.BLINDNESS).getDuration();
-@@ -1753,6 +1836,7 @@
+@@ -1753,6 +1842,7 @@
                  GlStateManager.setFogStart(f * 0.05F);
                  GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
              }

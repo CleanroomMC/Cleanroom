@@ -86,7 +86,18 @@
      }
  
      @Override
-@@ -482,6 +462,9 @@
+@@ -294,9 +274,7 @@
+         } else if (id == 13) {
+             if (result) {
+                 try {
+-                    Class<?> oclass = Class.forName("java.awt.Desktop");
+-                    Object object = oclass.getMethod("getDesktop").invoke(null);
+-                    oclass.getMethod("browse", URI.class).invoke(object, new URI(this.openGLWarningLink));
++                    com.cleanroommc.client.sdl.Desktop.open(new URI(this.openGLWarningLink));
+                 } catch (Throwable throwable) {
+                     LOGGER.error("Couldn't open link", throwable);
+                 }
+@@ -482,6 +460,9 @@
  
          this.mc.getTextureManager().bindTexture(field_194400_H);
          drawModalRectWithCustomSizedTexture(j + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
@@ -96,7 +107,7 @@
          GlStateManager.pushMatrix();
          GlStateManager.translate(this.width / 2 + 90, 70.0F, 0.0F);
          GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
-@@ -497,7 +480,14 @@
+@@ -497,7 +478,14 @@
              s = s + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
          }
  
@@ -112,7 +123,7 @@
          this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, -1);
          if (mouseX > this.widthCopyrightRest
              && mouseX < this.widthCopyrightRest + this.widthCopyright
-@@ -516,9 +506,8 @@
+@@ -516,9 +504,8 @@
          }
  
          super.drawScreen(mouseX, mouseY, partialTicks);
@@ -124,7 +135,7 @@
      }
  
      /** Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton */
-@@ -538,10 +527,6 @@
+@@ -538,10 +525,6 @@
              }
          }
  
@@ -135,7 +146,7 @@
          if (mouseX > this.widthCopyrightRest
              && mouseX < this.widthCopyrightRest + this.widthCopyright
              && mouseY > this.height - 10
-@@ -550,11 +535,4 @@
+@@ -550,11 +533,4 @@
          }
      }
  

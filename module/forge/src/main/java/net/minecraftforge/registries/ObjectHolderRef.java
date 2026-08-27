@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.cleanroommc.cleanroom.hackery.ReflectionHackery;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import zone.rong.imaginebreaker.Index;
 
 import javax.annotation.Nullable;
 
@@ -82,15 +82,6 @@ class ObjectHolderRef
         {
             throw new IllegalStateException(String.format("The ObjectHolder annotation cannot apply to a field that does not map to a registry. Ensure the registry was created during the RegistryEvent.NewRegistry event. (found : %s at %s.%s)", field.getType().getName(), field.getDeclaringClass().getName(), field.getName()));
         }
-        try
-        {
-            field.setAccessible(true);
-            ReflectionHackery.stripFieldOfFinalModifier(field);
-        }
-        catch (ReflectiveOperationException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -142,7 +133,7 @@ class ObjectHolderRef
         }
         try
         {
-            ReflectionHackery.setField(field, null, thing);
+            Index.get().set(null, field, thing);
         }
         catch (IllegalArgumentException e)
         {
