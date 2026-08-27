@@ -123,7 +123,7 @@ dependencies {
     implementation "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
 
     api 'org.jspecify:jspecify:1.0.0'
-    api 'top.outlands:foundation:0.19.11'
+    api 'top.outlands:foundation:0.21.0'
     api 'zone.rong:imaginebreaker:3.2'
     api 'org.javassist:javassist:3.30.2-GA' // FIXME
     api 'lzma:lzma:0.0.1'
