@@ -21,7 +21,20 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * <p><i>Internal Class</i></p>
+ * <p>Class for static methods for initialising OpenCL.</p>
+ * @author EΣrie
+ */
 public class ComputeSetup {
+    /**
+     * Init function
+     * @param LOGGER The logger
+     * @param client Is this on client (if yes, turn on GL Sharing)
+     * @throws LWJGLException If something goes wrong. There is so much that can go wrong here that I can't describe it.
+     * I wrote this class almost three months ago (today is 27th August 2026), and I'm not even sure what I'm doing.
+     * @author EΣrie
+     */
     public static void initOpenCL(Logger LOGGER, boolean client) throws LWJGLException {
         LOGGER.info("Initializing OpenCL");
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -112,6 +125,14 @@ public class ComputeSetup {
         LOGGER.info("OpenCL Setup completed successfully");
     }
 
+    /**
+     * Gets on OpenCL platform attribute.
+     * @param attribute The attribute to get.
+     * @param platform The platform to get the attribute from.
+     * @param stack MemoryStack
+     * @return attribute value
+     * @author EΣrie
+     */
     private static @NonNull String getPlatformAttribute(int attribute, long platform, @NonNull MemoryStack stack) {
         PointerBuffer attributeSize = stack.mallocPointer(1);
         CL10.clGetPlatformInfo(platform, attribute, (ByteBuffer) null, attributeSize);
@@ -120,6 +141,11 @@ public class ComputeSetup {
         return StandardCharsets.US_ASCII.decode(info).toString();
     }
 
+    /**
+     * Adds OpenGL contexts to the OpenCL properties.
+     * @param properties The properties to add OpenGL contexts to.
+     * @author EΣrie
+     */
     @SideOnly(Side.CLIENT)
     private static void appendGLContexts(PointerBuffer properties) {
         long ctx;
@@ -167,6 +193,14 @@ public class ComputeSetup {
         }
     }
 
+    /**
+     * The platform class.
+     * @param pointer The platform pointer.
+     * @param name Name of the platform.
+     * @param versionMajor The major version of the platform.
+     * @param versionMinor The minor version of the platform.
+     * @param cuda Is this NVidia?
+     */
     private record Platform(long pointer, String name, int versionMajor, int versionMinor, boolean cuda) implements Comparable<Platform> {
 
         @Override
