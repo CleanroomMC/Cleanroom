@@ -72,7 +72,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long[], long[], long...) 
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], long...)
      */
     public Event dispatchKernel(Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
@@ -102,7 +102,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long[], long[], long...)
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], long...)
      */
     public Event dispatchKernel(@NonNull MemoryStack stack, Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
@@ -112,7 +112,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
-        return new Event(kernel.invoke(stack, commandQueue, device, arguments, workGroupOffsets, workGroupSizes, dependencies), stack);
+        return new Event(kernel.invoke(stack, this, device, arguments, workGroupOffsets, workGroupSizes, dependencies), stack);
     }
 
     /**
@@ -122,7 +122,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long...)
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long...)
      */
     public Event dispatchKernel(@NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
@@ -130,7 +130,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(arguments);
         MemoryStack stack = MemoryStack.create().push();
         try {
-            Event event = new Event(kernel.invoke(stack, this.commandQueue, this.device, arguments, dependencies), stack);
+            Event event = new Event(kernel.invoke(stack, this, this.device, arguments, dependencies), stack);
             event.ownsStack = true;
             return event;
         } catch (RuntimeException | Error exception) {
@@ -147,14 +147,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, long, long, KernelParameterList, long...)
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long...)
      */
     public Event dispatchKernel(@NonNull MemoryStack stack, @NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
                                 final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(arguments);
-        return new Event(kernel.invoke(stack, this.commandQueue, this.device, arguments, dependencies), stack);
+        return new Event(kernel.invoke(stack, this, this.device, arguments, dependencies), stack);
     }
 
     //</editor-fold>
