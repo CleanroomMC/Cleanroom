@@ -18,6 +18,7 @@ public enum GarbageCollector {
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock readLock = lock.readLock();
     private final Lock writeLock = lock.writeLock();
+    public final SweepTask sweepTask = new SweepTask();
 
     /**
      * Adds a pointer to reference tracking.
