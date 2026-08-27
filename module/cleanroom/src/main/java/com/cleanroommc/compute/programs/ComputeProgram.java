@@ -35,12 +35,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 
+/**
+ * OpenCL program; holds all the kernels.
+ * This is handled internally by the {@link Compute} class.
+ * @author EΣrie
+ */
 public class ComputeProgram implements Closeable {
     private final transient ResourceLocation resourceLocation;
     private final transient ProgramMetadata metadata;
     private transient long programHandle;
     private transient Map<String, Kernel> kernels;
 
+    /**
+     * Create a new ComputeProgram.
+     * @param resourceLocation Location of the program's JSON file.
+     * @author EΣrie
+     * @throws NullPointerException if the program doesn't exist.
+     * @throws RuntimeException if the program couldn't be loaded for any reason other than the file not being present.
+     */
     public ComputeProgram(ResourceLocation resourceLocation) {
         this.resourceLocation = resourceLocation;
 
@@ -63,6 +75,13 @@ public class ComputeProgram implements Closeable {
         }
     }
 
+    /**
+     * Compiles the program.
+     * @param cache [<i>Unused</i>] Used to check if the program matches the program in cache.
+     * @param stack MemoryStack for temporary variables.
+     * @author EΣrie
+     * @apiNote Write the fucking cache EΣrie.
+     */
     public void compile(ProgramCacheIntegrityTable cache, MemoryStack stack) {
         IntBuffer err_code = stack.mallocInt(1);
         String src = MinecraftResourceUtils.readText(new ResourceLocation(resourceLocation.getNamespace(),
@@ -169,6 +188,11 @@ public class ComputeProgram implements Closeable {
         kernels = mapBuilder.build();
     }
 
+    /**
+     * Returns a kernel
+     * @param name name of the kernel
+     * @return kernel with a name
+     */
     public Kernel kernel(@NonNull String name) {
         Preconditions.checkNotNull(name);
         Preconditions.checkArgument(kernels.containsKey(name),
@@ -176,6 +200,17 @@ public class ComputeProgram implements Closeable {
         return kernels.get(name);
     }
 
+    /**
+     * <p><i>Internal Function</i></p>
+     * <p>
+     *     Returns build logs of the program
+     * </p>
+     * @param stack MemoryStack for temporary variables.
+     * @param program the program
+     * @return logs in a list of strings.
+     * @apiNote Trim the fucking strings EΣrie
+     * @author EΣrie
+     */
     private List<String> getBuildLog(MemoryStack stack, long program) {
         List<String> logs = new ObjectArrayList<>();
         try (MemoryStack substack = stack.push()) {
@@ -197,6 +232,10 @@ public class ComputeProgram implements Closeable {
         return logs;
     }
 
+    /**
+     * <p><i>Internal Function</i></p>
+     * <p>Combines strings with a delimeter.</p>
+     */
     private String combineStrings(List<String> strings, String delimiter) {
         StringBuilder builder = new StringBuilder();
         for (String string : strings) {
@@ -206,6 +245,18 @@ public class ComputeProgram implements Closeable {
         return builder.toString();
     }
 
+    /**
+     * <p><i>Internal function</i></p>
+     * <p>
+     *     Reads all the headers from the OpenCL source file and returns their
+     *     {@link ResourceLocation ResourceLocations} as a Set.
+     * </p>
+     * @param source source code
+     * @param program RL of the program.
+     * @return all headers in a set.
+     * @author EΣrie
+     * @implSpec This has to be a finite state machine.
+     */
     public static @NonNull Set<ResourceLocation> getHeadersFromFile(@NonNull String source, ResourceLocation program) {
         final char[] INCLUDE = {'i','n','c','l','u','d','e'};
         Set<ResourceLocation> headers = new ObjectArraySet<>();
@@ -313,22 +364,50 @@ public class ComputeProgram implements Closeable {
         return headers;
     }
 
+    /**
+     * Releases the program.
+     * @author EΣrie
+     */
     @Override
-    public void close() throws IOException {
+    public void close() {
         CL10.clReleaseProgram(programHandle);
     }
 
+    /**
+     * Metadata of the program. This is what is read from the JSON file.
+     */
     public static class ProgramMetadata {
+        /**
+         * Name of the code file.
+         */
         @SerializedName("file_name")
         public String fname;
+        /**
+         * Requirements of the program in terms of OpenCL features.
+         */
         @SerializedName("requirements")
         public Requirements requirements = new Requirements();
+        /**
+         * The kernels.
+         */
         @SerializedName("kernels")
         public Map<String, KernelMetadata> kernels = new Object2ObjectAVLTreeMap<>();
 
+        /**
+         * Requirements of the program in terms of OpenCL features.
+         */
         public static class Requirements {
+            /**
+             * Does the program use images.
+             */
             public boolean images = false;
+            /**
+             * Does the program use mipmaps.
+             */
             public boolean mipmaps = false;
+            /**
+             * Does the program use pipes.
+             */
             public boolean pipes = false;
         }
     }
