@@ -8,11 +8,17 @@ import java.nio.LongBuffer;
 
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
+/**
+ * Represents a parameter that is a long buffer.
+ * @param value The long buffer to pass to the kernel.
+ * @apiNote The only types supported by this OpenCL function are: long, long2, long3, long4, long8, long16, and their unsigned variants.
+ * @author EΣrie
+ */
 record BufferLongParameter(LongBuffer value) implements KernelParameter {
 
 	public BufferLongParameter {
 		Preconditions.checkArgument((value.remaining() > 0 && value.remaining() < 5) || value.remaining() == 8 || value.remaining() == 16,
-				"The only types supported this OpenCL function are: long, long2, long3, long4, long8, long16 and their unsigned variants.");
+				"The only types supported by this OpenCL function are: long, long2, long3, long4, long8, long16, and their unsigned variants.");
 	}
 
 	@Override

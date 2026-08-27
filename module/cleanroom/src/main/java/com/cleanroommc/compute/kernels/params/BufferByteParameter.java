@@ -8,11 +8,17 @@ import java.nio.ByteBuffer;
 
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
+/**
+ * Represents a parameter that is a ByteBuffer.
+ * @param value The ByteBuffer to pass to the kernel.
+ * @apiNote The only types supported by this OpenCL function are: char, char2, char3, char4, char8, char16, and their unsigned variants.
+ * @author EΣrie
+ */
 record BufferByteParameter(ByteBuffer value) implements KernelParameter {
 
 	public BufferByteParameter {
 		Preconditions.checkArgument((value.remaining() > 0 && value.remaining() < 5) || value.remaining() == 8 || value.remaining() == 16,
-				"The only types supported this OpenCL function are: char, char2, char3, char4, char8, char16 and their unsigned variants.");
+				"The only types supported by this OpenCL function are: char, char2, char3, char4, char8, char16, and their unsigned variants.");
 
 	}
 

@@ -6,11 +6,17 @@ import org.lwjgl.opencl.CL10;
 
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
+/**
+ * Represents a parameter that is an array of doubles.
+ * @param values The values to pass to the kernel.
+ * @apiNote The only types supported by this OpenCL function are: double, double2, double3, double4, double8, and double16.
+ * @author EΣrie
+ */
 record ArrayDoubleParameter(double... values) implements KernelParameter {
 
     public ArrayDoubleParameter {
         Preconditions.checkArgument((values.length > 0 && values.length < 5) || values.length == 8 || values.length == 16,
-                "The only types supported this OpenCL function are: double, double2, double3, double4, double8 and double16.");
+                "The only types supported by this OpenCL function are: double, double2, double3, double4, double8 and double16.");
     }
 
     @Override
