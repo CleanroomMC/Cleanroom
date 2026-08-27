@@ -55,12 +55,6 @@ public class FMLTweaker implements ITweaker {
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
-        Configuration.OPENCL_EXPLICIT_INIT.set(true);
-        try {
-            ComputeSetup.initOpenCL(LogManager.getLogger("Compute"), Launch.blackboard.get("fml.side").equals("client"));
-        } catch (LWJGLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @SuppressWarnings("unchecked")
