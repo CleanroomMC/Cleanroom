@@ -38,7 +38,6 @@ import java.util.List;
 public class ComputeProgram implements Closeable {
     private final transient ResourceLocation resourceLocation;
     private final transient ProgramMetadata metadata;
-    private byte @Nullable [] @NonNull [] compiledProgramBinary;
     private transient long programHandle;
     private transient Map<String, Kernel> kernels;
 
