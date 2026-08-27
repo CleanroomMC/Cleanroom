@@ -4,6 +4,8 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Automated Garbage Collection for OpenCL objects.
@@ -13,7 +15,9 @@ public enum GarbageCollector {
 
     public final short startTTL = 16; // TODO: Pull from config
     private final MutableGraph<SmartPointer> referenceGraph = GraphBuilder.undirected().allowsSelfLoops(false).build();
-    private final Object lock = new Object();
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Lock readLock = lock.readLock();
+    private final Lock writeLock = lock.writeLock();
 
     /**
      * Adds a pointer to reference tracking.
@@ -21,10 +25,12 @@ public enum GarbageCollector {
      * @see MutableGraph#addNode(Object)
      */
     void add(SmartPointer pointer) {
-        if (referenceGraph.nodes().contains(pointer))
-            return;
-        synchronized (lock) {
+
+        try {
+            writeLock.lock();
             this.referenceGraph.addNode(pointer);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -34,10 +40,11 @@ public enum GarbageCollector {
      * @see MutableGraph#removeNode(Object)
      */
     void remove(SmartPointer pointer) {
-        if (!referenceGraph.nodes().contains(pointer))
-            return;
-        synchronized (lock) {
+        try {
+            writeLock.lock();
             this.referenceGraph.removeNode(pointer);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -48,8 +55,11 @@ public enum GarbageCollector {
      * @see MutableGraph#putEdge(Object, Object)
      */
     void reference(SmartPointer from, SmartPointer to) {
-        synchronized (lock) {
+        try {
+            writeLock.lock();
             this.referenceGraph.putEdge(from, to);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -60,8 +70,11 @@ public enum GarbageCollector {
      * @see MutableGraph#removeEdge(Object, Object)
      */
     void dereference(SmartPointer from, SmartPointer to) {
-        synchronized (lock) {
+        try {
+            writeLock.lock();
             this.referenceGraph.removeEdge(from, to);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -72,7 +85,12 @@ public enum GarbageCollector {
      * @see com.google.common.graph.Graph#adjacentNodes(Object)
      */
     Set<SmartPointer> references(SmartPointer pointer) {
-        return referenceGraph.adjacentNodes(pointer);
+        try {
+            readLock.lock();
+            return referenceGraph.adjacentNodes(pointer);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
@@ -81,9 +99,12 @@ public enum GarbageCollector {
      * @see SmartPointer#tick()
      */
     public void sweep() {
-        synchronized (lock) {
-            referenceGraph.nodes().forEach(SmartPointer::tick);
-        }
+       try {
+           writeLock.lock();
+           referenceGraph.nodes().forEach(SmartPointer::tick);
+       } finally {
+           writeLock.unlock();
+       }
     }
 
     /**
@@ -92,8 +113,12 @@ public enum GarbageCollector {
      * @see SmartPointer#close()
      */
     public void wash() {
-        synchronized (lock) {
+        try {
+            writeLock.lock();
             referenceGraph.nodes().forEach(SmartPointer::close);
+            SweepTask.running.compareAndExchangeRelease(true, false);
+        } finally {
+            writeLock.unlock();
         }
     }
 }
