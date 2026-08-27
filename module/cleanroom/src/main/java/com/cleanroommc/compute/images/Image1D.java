@@ -106,6 +106,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -162,6 +163,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -185,6 +188,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -220,6 +224,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -243,6 +249,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -278,6 +285,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -303,6 +312,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                            @NonNull CT2 size, long... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer handles = null;
             PointerBuffer fromBuf = substack.mallocPointer(3);
             fromBuf.put(from);
@@ -362,6 +372,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -391,6 +403,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -431,6 +444,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -459,6 +474,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -486,6 +502,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -511,6 +529,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -538,6 +557,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -563,6 +584,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -590,6 +612,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -615,6 +639,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -642,6 +667,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -671,6 +698,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -711,6 +739,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -736,6 +766,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -763,6 +794,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -788,6 +821,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -815,6 +849,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -840,6 +876,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -867,6 +904,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -892,6 +931,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -919,6 +959,8 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
