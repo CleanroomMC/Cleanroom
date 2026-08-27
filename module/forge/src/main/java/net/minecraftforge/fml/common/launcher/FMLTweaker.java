@@ -20,7 +20,6 @@
 package net.minecraftforge.fml.common.launcher;
 
 import com.cleanroommc.common.CleanroomEnvironment;
-import com.cleanroommc.compute.ComputeSetup;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.launchwrapper.ITweaker;
@@ -29,7 +28,6 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
-import org.lwjgl.system.Configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,8 +52,6 @@ public class FMLTweaker implements ITweaker {
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
-        Configuration.OPENCL_EXPLICIT_INIT.set(true);
-        ComputeSetup.initOpenCL(LogManager.getLogger("Compute"), Launch.blackboard.get("fml.side").equals("client"));
     }
 
     @SuppressWarnings("unchecked")
