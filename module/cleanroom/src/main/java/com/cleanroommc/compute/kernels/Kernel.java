@@ -77,7 +77,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      * @param dependencies Events this depends on.
      * @return Event of the kernel invocation.
      * @author EΣrie
-     * @throws NullPointerException If arguments or workGroupSizes is null.\
+     * @throws NullPointerException If arguments or workGroupSizes is null.
      * @throws IllegalArgumentException If the kernel requires images, mipmaps, or pipes, but the device does not support them.
      * Also when the number of workGroupSizes is not equal to the number of dimensions of the NDRange.
      * @throws KernelError If the kernel arguments, work group dimensions, work group size, or offsets are invalid.
