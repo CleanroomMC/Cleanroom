@@ -88,22 +88,57 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
 
     // <editor-fold desc="Arrays">
 
+    /**
+     * Represents a parameter that is an array of shorts.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: short, short2, short3, short4, short8, short16, and their unsigned variants.
+     * @author EΣrie
+     * @see ArrayShortParameter
+     */
     public void add(short @NonNull ... values) {
         add(new ArrayShortParameter(values));
     }
 
+    /**
+     * Represents a parameter that is an array of ints.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: int, int2, int3, int4, int8, int16, and their unsigned variants.
+     * @author EΣrie
+     * @see ArrayIntParameter
+     */
     public void add(int @NonNull ... values) {
         add(new ArrayIntParameter(values));
     }
 
+    /**
+     * Represents a parameter that is an array of longs.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: long, long2, long3, long4, long8, long16, and their unsigned variants.
+     * @author EΣrie
+     * @see ArrayLongParameter
+     */
     public void add(long @NonNull ... values) {
         add(new ArrayLongParameter(values));
     }
 
+    /**
+     * Represents a parameter that is an array of floats.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: float, float2, float3, float4, float8, and float16.
+     * @author EΣrie
+     * @see ArrayFloatParameter
+     */
     public void add(float @NonNull ... values) {
         add(new ArrayFloatParameter(values));
     }
 
+    /**
+     * Represents a parameter that is an array of doubles.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: double, double2, double3, double4, double8, and double16.
+     * @author EΣrie
+     * @see ArrayDoubleParameter
+     */
     public void add(double @NonNull ... values) {
         add(new ArrayDoubleParameter(values));
     }
@@ -112,26 +147,68 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
 
     // <editor-fold desc="NIO buffers">
 
+    /**
+     * Represents a parameter that is a ByteBuffer.
+     * @param value The ByteBuffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: char, char2, char3, char4, char8, char16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferByteParameter
+     */
     public void add(@NonNull ByteBuffer value) {
         add(new BufferByteParameter(value));
     }
 
+    /**
+     * Represents a parameter that is a buffer of shorts.
+     * @param value The buffer of shorts to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: short, short2, short3, short4, short8, short16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferShortParameter
+     */
     public void add(@NonNull ShortBuffer value) {
         add(new BufferShortParameter(value));
     }
 
+    /**
+     * Represents a parameter that is an int buffer.
+     * @param value The int buffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: int, int2, int3, int4, int8, int16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferIntParameter
+     */
     public void add(@NonNull IntBuffer value) {
         add(new BufferIntParameter(value));
     }
 
+    /**
+     * Represents a parameter that is a long buffer.
+     * @param value The long buffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: long, long2, long3, long4, long8, long16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferLongParameter
+     */
     public void add(@NonNull LongBuffer value) {
         add(new BufferLongParameter(value));
     }
 
+    /**
+     * Represents a parameter that is a float buffer.
+     * @param value The float buffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: float, float2, float3, float4, float8, and float16.
+     * @author EΣrie
+     * @see BufferFloatParameter
+     */
     public void add(@NonNull FloatBuffer value) {
         add(new BufferFloatParameter(value));
     }
 
+    /**
+     * Represents a parameter that is a {@link DoubleBuffer}.
+     * @param value The {@link DoubleBuffer} to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: double, double2, double3, double4, double8, and double16.
+     * @author EΣrie
+     * @see BufferDoubleParameter
+     */
     public void add(@NonNull DoubleBuffer value) {
         add(new BufferDoubleParameter(value));
     }
