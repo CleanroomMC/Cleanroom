@@ -24,29 +24,82 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Hub of the API.
+ * @author EΣrie
+ * @apiNote Singleton.
+ */
 public class Compute {
 
     private static @Nullable Compute INSTANCE = null;
 
+    /**
+     * Platform capabilities.
+     */
     public final CLCapabilities PLATFORM_CAPABILITIES;
 
+    /**
+     * Logging.
+     */
     public final Logger LOGGER;
 
+    /**
+     * The OpenCL context.
+     */
     public final long context;
+    /**
+     * All devices available to the platform.
+     */
     public final Device[] devices;
+    /**
+     * How all the headers depend on eachother.
+     */
     public final MutableGraph<ResourceLocation> dependencyGraph = GraphBuilder.directed().build();
+    /**
+     * Cache of all the headers.
+     */
     public final Map<ResourceLocation, Long> libraries = new Object2ObjectAVLTreeMap<>();
+    /**
+     * All programs.
+     */
     public final Map<ResourceLocation, ComputeProgram> programs = new Object2ObjectAVLTreeMap<>();
+    /**
+     * Used for dispatching queues.
+     */
     public final CommandQueueDispatch queueDispatch = new CommandQueueDispatch();
 
+    /**
+     * Is there a device that supports images?
+     */
     public final boolean supportsImages;
+    /**
+     * Is there a device that supports mipmaps?
+     */
     public final boolean supportsMipmaps;
+    /**
+     * Is there a device that supports pipes?
+     */
     public final boolean supportsPipes;
 
+    /**
+     * Is GL sharing supported?
+     */
     public final boolean glSharing;
 
+    /**
+     * Unused
+     */
     private final ProgramCacheIntegrityTable programCacheIntegrityTable = new ProgramCacheIntegrityTable();
 
+    /**
+     * Initialize Compute.
+     * @param log logger
+     * @param platformCapabilities platform capabilities
+     * @param context OpenCL context
+     * @param devices all devices
+     * @param isClient is this on the client (if yes enable gl sharing)
+     * @author EΣrie
+     */
     private Compute(Logger log, CLCapabilities platformCapabilities, long context, Device[] devices, boolean isClient) {
         this.LOGGER = log;
         this.PLATFORM_CAPABILITIES = platformCapabilities;
@@ -74,15 +127,28 @@ public class Compute {
         this.glSharing = isClient;
     }
 
+    /**
+     * @return Singleton instance.
+     * @author EΣrie
+     */
     @SuppressWarnings("DataFlowIssue")
     public static Compute instance() {
         return INSTANCE;
     }
 
+    /**
+     * Register a program for compilation.
+     * @param location Where is the program in the "assets/modid/compute/" subfolder?
+     * @author EΣrie
+     */
     public void registerProgram(ResourceLocation location) {
         programs.put(location, new ComputeProgram(location));
     }
 
+    /**
+     * Compile all programs.
+     * @author EΣrie
+     */
     void compilePrograms() {
         for (ComputeProgram program : programs.values()) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -91,6 +157,14 @@ public class Compute {
         }
     }
 
+    /**
+     * Reads headers.
+     * @param rl start header
+     * @param stack MemoryStack for temporary variables.
+     * @return OpenCL handles to all headers.
+     * @apiNote This caches headers, then puts them into a dependency graph to account for headers that include headers.
+     * @author EΣrie
+     */
     public Long[] getOrCreateLibraries(ResourceLocation rl, MemoryStack stack) {
         Set<Long> found = new LongArraySet();
         if (libraries.containsKey(rl)) {
@@ -124,6 +198,12 @@ public class Compute {
         return found.toArray(new Long[0]);
     }
 
+    /**
+     * Get a device by its handle.
+     * @param handle device handle
+     * @return {@link Device}
+     * @author EΣrie
+     */
     public Device getDevice(long handle) {
         if (devices[0].handle() == handle)
             return devices[0];
@@ -141,6 +221,16 @@ public class Compute {
         throw new IllegalArgumentException("Device not present.");
     }
 
+    /**
+     * Initialize Compute.
+     * @param log Logger
+     * @param platform Platform capabilities
+     * @param context OpenCL context
+     * @param isClient Is this on the client?
+     * @param devices All devices
+     * @apiNote Initialise the singleton.
+     * @author EΣrie
+     */
     static void init(Logger log, CLCapabilities platform, long context, boolean isClient, Device... devices) {
         if (INSTANCE != null) {
             throw new ConstructorInvocationException("Second attempt at invoking singleton constructor. ");
@@ -148,6 +238,10 @@ public class Compute {
         INSTANCE = new Compute(log, platform, context, devices, isClient);
     }
 
+    /**
+     * @return Is OpenCL available
+     * @author EΣrie
+     */
     public static boolean isAvailable() {
         return INSTANCE != null;
     }
