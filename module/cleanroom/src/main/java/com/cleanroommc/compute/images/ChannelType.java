@@ -9,6 +9,10 @@ import org.lwjgl.opencl.KHRGLDepthImages;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * Type of values in a channel.
+ * @author EΣrie
+ */
 public enum ChannelType {
     /**
      * Each channel component is a normalized signed 8-bit integer value
