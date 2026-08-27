@@ -100,6 +100,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -156,6 +157,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -179,6 +182,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -214,6 +218,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -237,6 +243,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(from.y + size.y < this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -272,6 +279,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -295,6 +304,7 @@ public final class Image2D extends Image<Vector2L> {
     public <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination, @NonNull Vector2L from, int fromMipmap, @NonNull CT2 to, int toMipmap, @NonNull CT2 size, long... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer handles = null;
             PointerBuffer fromBuf = substack.mallocPointer(3);
             fromBuf.put(from.x);
@@ -354,6 +364,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -382,6 +394,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -422,6 +435,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -449,6 +464,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -476,6 +492,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -503,6 +521,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -530,6 +549,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -557,6 +578,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -584,6 +606,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -611,6 +635,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -638,6 +663,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -666,6 +693,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -706,6 +734,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -733,6 +763,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -760,6 +791,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -787,6 +820,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -814,6 +848,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -841,6 +877,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -868,6 +905,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -895,6 +934,7 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -922,6 +962,8 @@ public final class Image2D extends Image<Vector2L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 

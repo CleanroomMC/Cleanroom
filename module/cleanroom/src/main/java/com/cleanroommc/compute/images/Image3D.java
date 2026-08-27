@@ -102,6 +102,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -158,6 +159,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -183,6 +186,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -218,6 +222,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -243,6 +249,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -278,6 +285,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return event.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -302,6 +311,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer handles = null;
             PointerBuffer fromBuf = substack.mallocPointer(4);
             fromBuf.put(from.x);
@@ -362,6 +372,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -392,6 +404,7 @@ public final class Image3D extends Image<Vector3L> {
 
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -433,6 +446,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -461,6 +476,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -489,11 +505,13 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
     /**
-     * <p>Read a region of an OpenCL image into a int array.</p>
+     * <p>Read a region of an OpenCL image into an int array.</p>
      * @param stack MemoryStack used for temporary native allocations.
      * @param commandQueue The read operation will be enqueued on this {@link CommandQueue}.
      * @param from Origin of the image region.
@@ -517,6 +535,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -545,6 +564,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -573,6 +594,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -601,6 +623,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -629,6 +653,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -657,6 +682,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -686,6 +713,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -727,6 +755,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -755,6 +785,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -783,11 +814,13 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
     /**
-     * <p>Write data from a int array to a region of an OpenCL image.</p>
+     * <p>Write data from an int array to a region of an OpenCL image.</p>
      * @param stack MemoryStack used for temporary native allocations.
      * @param commandQueue The write operation will be enqueued on this {@link CommandQueue}.
      * @param from Origin of the image region.
@@ -811,6 +844,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -839,6 +873,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -867,6 +903,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -895,6 +932,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -923,6 +962,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
+            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(dependencies).rewind();
@@ -951,6 +991,8 @@ public final class Image3D extends Image<Vector3L> {
             }
             this.reference(commandQueue);
             return ev.get(0);
+        } finally {
+            writeLock.unlock();
         }
     }
 
