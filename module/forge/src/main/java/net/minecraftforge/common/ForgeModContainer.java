@@ -19,6 +19,7 @@
 
 package net.minecraftforge.common;
 
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import static net.minecraftforge.common.config.Configuration.CATEGORY_CLIENT;
@@ -649,6 +650,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void serverStopping(FMLServerStoppingEvent evt)
     {
         WorldWorkerManager.clear();
+        GarbageCollector.INSTANCE.wash();
     }
 
     @Override
