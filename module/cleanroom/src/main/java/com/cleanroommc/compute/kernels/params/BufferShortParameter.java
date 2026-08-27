@@ -8,11 +8,17 @@ import java.nio.ShortBuffer;
 
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
+/**
+ * Represents a parameter that is a buffer of shorts.
+ * @param value The buffer of shorts to pass to the kernel.
+ * @apiNote The only types supported by this OpenCL function are: short, short2, short3, short4, short8, short16, and their unsigned variants.
+ * @author EΣrie
+ */
 record BufferShortParameter(ShortBuffer value) implements KernelParameter {
 
 	public BufferShortParameter {
 		Preconditions.checkArgument((value.remaining() > 0 && value.remaining() < 5) || value.remaining() == 8 || value.remaining() == 16,
-				"The only types supported this OpenCL function are: short, short2, short3, short4, short8, short16 and their unsigned variants.");
+				"The only types supported this by OpenCL function are: short, short2, short3, short4, short8, short16, and their unsigned variants.");
 	}
 
 	@Override

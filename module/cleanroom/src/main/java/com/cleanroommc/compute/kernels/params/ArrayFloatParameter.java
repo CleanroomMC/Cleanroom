@@ -6,6 +6,12 @@ import org.lwjgl.opencl.CL10;
 
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
+/**
+ * Represents a parameter that is an array of floats.
+ * @param values The values to pass to the kernel.
+ * @apiNote The only types supported by this OpenCL function are: float, float2, float3, float4, float8, and float16.
+ * @author EΣrie
+ */
 record ArrayFloatParameter(float... values) implements KernelParameter {
 
     public ArrayFloatParameter {
