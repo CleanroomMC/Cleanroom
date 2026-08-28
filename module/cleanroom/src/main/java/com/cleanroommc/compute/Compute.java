@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -233,7 +232,7 @@ public class Compute {
      */
     static void init(Logger log, CLCapabilities platform, long context, boolean isClient, Device... devices) {
         if (INSTANCE != null) {
-            throw new ConstructorInvocationException("Second attempt at invoking singleton constructor. ");
+            throw new RuntimeException("Second attempt at invoking singleton constructor. ");
         }
         INSTANCE = new Compute(log, platform, context, devices, isClient);
     }
