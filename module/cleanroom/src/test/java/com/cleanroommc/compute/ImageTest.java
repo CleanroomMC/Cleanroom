@@ -1,5 +1,6 @@
 package com.cleanroommc.compute;
 
+import com.cleanroommc.CleanroomTest;
 import com.cleanroommc.compute.buffers.BufferFlags;
 import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.images.*;
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@CleanroomTest
 public class ImageTest {
 
     private static CommandQueue queue;

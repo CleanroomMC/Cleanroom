@@ -1,5 +1,6 @@
 package com.cleanroommc.compute;
 
+import com.cleanroommc.CleanroomTest;
 import com.cleanroommc.compute.buffers.Buffer;
 import com.cleanroommc.compute.buffers.BufferFlags;
 import com.cleanroommc.compute.cmd.CommandQueue;
@@ -24,6 +25,7 @@ import java.nio.ByteBuffer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@CleanroomTest
 public class KernelTest {
 
     private static CommandQueue queue;
