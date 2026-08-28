@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common.launcher;
 
+import com.cleanroommc.compute.ComputeSetup;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,6 +29,8 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.system.Configuration;
 
 import java.io.File;
 import java.io.IOException;

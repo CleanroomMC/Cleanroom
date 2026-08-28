@@ -1,0 +1,421 @@
+package com.cleanroommc.compute.kernels.params;
+
+import com.cleanroommc.compute.buffers.Buffer;
+import com.cleanroommc.compute.cmd.CommandQueue;
+import com.cleanroommc.compute.images.Image;
+import com.cleanroommc.compute.images.samplers.Sampler;
+import com.cleanroommc.compute.kernels.Kernel;
+import com.cleanroommc.compute.pipes.Pipe;
+import com.google.common.base.Preconditions;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.Vector4d;
+import org.joml.Vector4f;
+import org.jspecify.annotations.NonNull;
+import org.lwjgl.PointerBuffer;
+
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Consumer;
+
+/**
+ * <p>This is a class used to list parameters of an OpenCL kernel.</p>
+ * <p>The functions should be self-explanatory.</p>
+ * @author EΣrie
+ */
+public final class KernelParameterList implements Iterable<KernelParameter> {
+
+    private final KernelParameter[] parameters;
+    private int idx;
+
+    public KernelParameterList(@NonNull Kernel kernel) {
+        Preconditions.checkNotNull(kernel);
+        this.parameters = new KernelParameter[kernel.arguments().size()];
+    }
+
+    private void add(@NonNull KernelParameter parameter) {
+        Preconditions.checkNotNull(parameter);
+        Preconditions.checkElementIndex(idx, parameters.length,
+                String.format("Too many parameters provided. Provided %d expecting %d.", idx, parameters.length));
+        parameters[idx++] = parameter;
+    }
+
+    public void bindAllParameters(@NonNull Kernel kernel) {
+        Preconditions.checkNotNull(kernel);
+        Preconditions.checkState(isComplete(), "Not all kernel arguments have been set.");
+        for (int  i = 0; i < parameters.length; i++) {
+            parameters[i].bindParameter(kernel.kernel(), i);
+        }
+    }
+
+    // <editor-fold desc="Scalars">
+
+    public void add(byte value) {
+        add(new ScalarByteParameter(value));
+    }
+
+    public void add(short value) {
+        add(new ScalarShortParameter(value));
+    }
+
+    public void add(int value) {
+        add(new ScalarIntegerParameter(value));
+    }
+
+    public void add(long value) {
+        add(new ScalarLongParameter(value));
+    }
+
+    public void add(float value) {
+        add(new ScalarFloatParameter(value));
+    }
+
+    public void add(double value) {
+        add(new ScalarDoubleParameter(value));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Arrays">
+
+    /**
+     * Represents a parameter that is an array of shorts.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: short, short2, short3, short4, short8, short16, and their unsigned variants.
+     * @author EΣrie
+     * @see ArrayShortParameter
+     */
+    public void add(short @NonNull ... values) {
+        add(new ArrayShortParameter(values));
+    }
+
+    /**
+     * Represents a parameter that is an array of ints.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: int, int2, int3, int4, int8, int16, and their unsigned variants.
+     * @author EΣrie
+     * @see ArrayIntParameter
+     */
+    public void add(int @NonNull ... values) {
+        add(new ArrayIntParameter(values));
+    }
+
+    /**
+     * Represents a parameter that is an array of longs.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: long, long2, long3, long4, long8, long16, and their unsigned variants.
+     * @author EΣrie
+     * @see ArrayLongParameter
+     */
+    public void add(long @NonNull ... values) {
+        add(new ArrayLongParameter(values));
+    }
+
+    /**
+     * Represents a parameter that is an array of floats.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: float, float2, float3, float4, float8, and float16.
+     * @author EΣrie
+     * @see ArrayFloatParameter
+     */
+    public void add(float @NonNull ... values) {
+        add(new ArrayFloatParameter(values));
+    }
+
+    /**
+     * Represents a parameter that is an array of doubles.
+     * @param values The values to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: double, double2, double3, double4, double8, and double16.
+     * @author EΣrie
+     * @see ArrayDoubleParameter
+     */
+    public void add(double @NonNull ... values) {
+        add(new ArrayDoubleParameter(values));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="NIO buffers">
+
+    /**
+     * Represents a parameter that is a ByteBuffer.
+     * @param value The ByteBuffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: char, char2, char3, char4, char8, char16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferByteParameter
+     */
+    public void add(@NonNull ByteBuffer value) {
+        add(new BufferByteParameter(value));
+    }
+
+    /**
+     * Represents a parameter that is a buffer of shorts.
+     * @param value The buffer of shorts to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: short, short2, short3, short4, short8, short16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferShortParameter
+     */
+    public void add(@NonNull ShortBuffer value) {
+        add(new BufferShortParameter(value));
+    }
+
+    /**
+     * Represents a parameter that is an int buffer.
+     * @param value The int buffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: int, int2, int3, int4, int8, int16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferIntParameter
+     */
+    public void add(@NonNull IntBuffer value) {
+        add(new BufferIntParameter(value));
+    }
+
+    /**
+     * Represents a parameter that is a long buffer.
+     * @param value The long buffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: long, long2, long3, long4, long8, long16, and their unsigned variants.
+     * @author EΣrie
+     * @see BufferLongParameter
+     */
+    public void add(@NonNull LongBuffer value) {
+        add(new BufferLongParameter(value));
+    }
+
+    /**
+     * Represents a parameter that is a float buffer.
+     * @param value The float buffer to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: float, float2, float3, float4, float8, and float16.
+     * @author EΣrie
+     * @see BufferFloatParameter
+     */
+    public void add(@NonNull FloatBuffer value) {
+        add(new BufferFloatParameter(value));
+    }
+
+    /**
+     * Represents a parameter that is a {@link DoubleBuffer}.
+     * @param value The {@link DoubleBuffer} to pass to the kernel.
+     * @apiNote The only types supported by this OpenCL function are: double, double2, double3, double4, double8, and double16.
+     * @author EΣrie
+     * @see BufferDoubleParameter
+     */
+    public void add(@NonNull DoubleBuffer value) {
+        add(new BufferDoubleParameter(value));
+    }
+
+    public void add(@NonNull PointerBuffer value) {
+        add(new BufferPointerParameter(value));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Byte vectors">
+
+    public void add(byte x, byte y) {
+        add(new Vector2bParameter(x, y));
+    }
+
+    public void add(byte x, byte y, byte z) {
+        add(new Vector4bParameter(x, y, z, (byte)0));
+    }
+
+    public void add(byte x, byte y, byte z, byte w) {
+        add(new Vector4bParameter(x, y, z, w));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Short vectors">
+
+    public void add(short x, short y) {
+        add(new Vector2sParameter(x, y));
+    }
+
+    public void add(short x, short y, short z) {
+        add(new Vector4sParameter(x, y, z, (short)0));
+    }
+
+    public void add(short x, short y, short z, short w) {
+        add(new Vector4sParameter(x, y, z, w));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Integer vectors">
+
+    public void add(int x, int y) {
+        add(new Vector2iParameter(x, y));
+    }
+
+    public void add(int x, int y, int z) {
+        add(new Vector4iParameter(x, y, z, 0));
+    }
+
+    public void add(int x, int y, int z, int w) {
+        add(new Vector4iParameter(x, y, z, w));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Long vectors">
+
+    public void add(long x, long y) {
+        add(new Vector2lParameter(x, y));
+    }
+
+    public void add(long x, long y, long z) {
+        add(new Vector4lParameter(x, y, z, 0));
+    }
+
+    public void add(long x, long y, long z, long w) {
+        add(new Vector4lParameter(x, y, z, w));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Float vectors">
+
+    public void add(float x, float y) {
+        add(new Vector2fParameter(x, y));
+    }
+
+    public void add(float x, float y, float z) {
+        add(new Vector4fParameter(x, y, z, 0));
+    }
+
+    public void add(float x, float y, float z, float w) {
+        add(new Vector4fParameter(x, y, z, w));
+    }
+
+    public void add(@NonNull Vector2f value) {
+        Preconditions.checkNotNull(value);
+        add(new Vector2fParameter(value.x, value.y));
+    }
+
+    public void add(@NonNull Vector3f value) {
+        Preconditions.checkNotNull(value);
+        add(new Vector4fParameter(value.x, value.y, value.z, 0));
+    }
+
+    public void add(@NonNull Vector4f value) {
+        Preconditions.checkNotNull(value);
+        add(new Vector4fParameter(value.x, value.y, value.z, value.w));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Double vectors">
+
+    public void add(double x, double y) {
+        add(new Vector2dParameter(x, y));
+    }
+
+    public void add(double x, double y, double z) {
+        add(new Vector4dParameter(x, y, z, 0.));
+    }
+
+    public void add(double x, double y, double z, double w) {
+        add(new Vector4dParameter(x, y, z, w));
+    }
+
+    public void add(@NonNull Vector2d value) {
+        Preconditions.checkNotNull(value);
+        add(new Vector2dParameter(value.x, value.y));
+    }
+
+    public void add(@NonNull Vector3d value) {
+        Preconditions.checkNotNull(value);
+        add(new Vector4dParameter(value.x, value.y, value.z, 0.));
+    }
+
+    public void add(@NonNull Vector4d value) {
+        Preconditions.checkNotNull(value);
+        add(new Vector4dParameter(value.x, value.y, value.z, value.w));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="OpenCL Memory Objects">
+
+    public void add(@NonNull Buffer value) {
+        add(new BufferParameter(value));
+    }
+
+    public <CT> void add(@NonNull Image<CT> value) {
+        add(new ImageParameter<>(value));
+    }
+
+    public void add(@NonNull Sampler value) {
+        add(new SamplerParameter(value));
+    }
+
+    public void add(@NonNull Pipe value) {
+        add(new PipeParameter(value));
+    }
+
+    public void add(@NonNull CommandQueue value) {
+        add(new CommandQueueParameter(value));
+    }
+
+    // </editor-fold>
+
+    public int size() {
+        return idx;
+    }
+
+    public int capacity() {
+        return parameters.length;
+    }
+
+    public boolean isComplete() {
+        return idx == parameters.length;
+    }
+
+    @Override
+    public @NonNull Iterator<KernelParameter> iterator() {
+        return new Iterator<>() {
+            private int i;
+
+            @Override
+            public boolean hasNext() {
+                return i < idx;
+            }
+
+            @Override
+            public KernelParameter next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return parameters[i++];
+            }
+        };
+    }
+
+    @Override
+    public void forEach(@NonNull Consumer<? super KernelParameter> action) {
+        Preconditions.checkNotNull(action);
+        for (int i = 0; i < idx; i++) {
+            action.accept(parameters[i]);
+        }
+    }
+
+    @Override
+    public Spliterator<KernelParameter> spliterator() {
+        return Spliterators.spliterator(
+                parameters,
+                0,
+                idx,
+                Spliterator.ORDERED | Spliterator.NONNULL
+        );
+    }
+}

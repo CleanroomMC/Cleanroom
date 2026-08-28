@@ -1,4 +1,4 @@
-package com.cleanroommc.loader.javafix;
+package com.cleanroommc.cleanroom.loader.javafix;
 
 import net.minecraftforge.fml.common.FMLLog;
 

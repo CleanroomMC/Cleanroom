@@ -2,8 +2,8 @@
 package com.cleanroommc.client.windows;
 
 import com.cleanroommc.client.sdl.SystemTheme;
-import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
 import com.sun.jna.Structure;

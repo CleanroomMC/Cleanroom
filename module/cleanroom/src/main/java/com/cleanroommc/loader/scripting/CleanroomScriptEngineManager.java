@@ -1,4 +1,4 @@
-package com.cleanroommc.loader.scripting;
+package com.cleanroommc.cleanroom.loader.scripting;
 
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 

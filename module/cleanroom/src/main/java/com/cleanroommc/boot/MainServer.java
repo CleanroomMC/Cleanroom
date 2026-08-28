@@ -1,4 +1,4 @@
-package com.cleanroommc.boot;
+package com.cleanroommc.cleanroom.boot;
 
 public class MainServer extends Main {
 

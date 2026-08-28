@@ -1,4 +1,4 @@
-package com.cleanroommc.common;
+package com.cleanroommc.cleanroom.common;
 
 import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.DummyModContainer;

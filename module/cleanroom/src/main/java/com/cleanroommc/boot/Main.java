@@ -1,4 +1,4 @@
-package com.cleanroommc.boot;
+package com.cleanroommc.cleanroom.boot;
 
 import java.io.IOException;
 import java.io.InputStream;

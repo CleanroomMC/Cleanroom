@@ -1,4 +1,4 @@
-package com.cleanroommc.loader;
+package com.cleanroommc.cleanroom.loader;
 
 import com.google.common.collect.Maps;
 import net.minecraftforge.fml.common.FMLLog;
