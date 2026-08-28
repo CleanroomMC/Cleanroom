@@ -1,21 +1,19 @@
 package com.cleanroommc.client.sdl.camera;
 
 import com.cleanroommc.client.sdl.SDL;
+import com.cleanroommc.client.sdl.events.CameraEvent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.lwjgl.sdl.SDLCamera;
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLStdinc;
+import org.lwjgl.sdl.SDLTimer;
 import org.lwjgl.sdl.SDL_CameraDeviceEvent;
 import org.lwjgl.sdl.SDL_Event;
 
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Connected cameras. First use initializes {@code SDL_INIT_CAMERA}.
@@ -42,17 +40,6 @@ public final class Cameras {
         return INSTANCE.cameras.get(id);
     }
 
-    public static void listen(CameraListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("Listener cannot be null");
-        }
-        INSTANCE.listeners.add(listener);
-    }
-
-    public static void mute(CameraListener listener) {
-        INSTANCE.listeners.remove(listener);
-    }
-
     public static void handle(SDL_Event event) {
         INSTANCE.dispatch(event);
     }
@@ -62,7 +49,6 @@ public final class Cameras {
     }
 
     private final Int2ObjectMap<Camera> cameras = new Int2ObjectArrayMap<>();
-    private final List<CameraListener> listeners = new CopyOnWriteArrayList<>();
 
     private boolean started;
 
@@ -89,35 +75,25 @@ public final class Cameras {
         int type = event.type();
         SDL_CameraDeviceEvent device = event.cdevice();
         int id = device.which();
+        long timestampNs = device.timestamp();
         switch (type) {
-            case SDLEvents.SDL_EVENT_CAMERA_DEVICE_ADDED -> {
-                Camera camera = remember(id);
-                for (CameraListener listener : listeners) {
-                    listener.added(camera);
-                }
-            }
+            case SDLEvents.SDL_EVENT_CAMERA_DEVICE_ADDED ->
+                    SDL.EVENT_BUS.post(new CameraEvent.Added(timestampNs, remember(id)));
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_REMOVED -> {
                 Camera camera = cameras.remove(id);
                 if (camera != null) {
                     camera.close();
                 }
-                for (CameraListener listener : listeners) {
-                    listener.removed(id);
-                }
+                SDL.EVENT_BUS.post(new CameraEvent.Removed(id, timestampNs));
             }
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_APPROVED -> {
                 Camera camera = cameras.get(id);
                 if (camera != null) {
-                    for (CameraListener listener : listeners) {
-                        listener.approved(camera);
-                    }
+                    SDL.EVENT_BUS.post(new CameraEvent.Approved(timestampNs, camera));
                 }
             }
-            case SDLEvents.SDL_EVENT_CAMERA_DEVICE_DENIED -> {
-                for (CameraListener listener : listeners) {
-                    listener.denied(id);
-                }
-            }
+            case SDLEvents.SDL_EVENT_CAMERA_DEVICE_DENIED ->
+                    SDL.EVENT_BUS.post(new CameraEvent.Denied(id, timestampNs));
         }
     }
 
@@ -126,17 +102,13 @@ public final class Cameras {
             camera.close();
         }
         cameras.clear();
-        listeners.clear();
         started = false;
     }
 
     synchronized Camera injectAdded(int id) {
         started = true;
         Camera camera = remember(id);
-        List<CameraListener> snapshot = new ArrayList<>(listeners);
-        for (CameraListener listener : snapshot) {
-            listener.added(camera);
-        }
+        SDL.EVENT_BUS.post(new CameraEvent.Added(SDLTimer.SDL_GetTicksNS(), camera));
         return camera;
     }
 
@@ -145,9 +117,7 @@ public final class Cameras {
         if (camera != null) {
             camera.close();
         }
-        for (CameraListener listener : listeners) {
-            listener.removed(id);
-        }
+        SDL.EVENT_BUS.post(new CameraEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
     }
 
     private void openConnected() {

@@ -1,6 +1,7 @@
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.drop.Drops;
+import com.cleanroommc.client.sdl.events.WindowEvent;
 import com.cleanroommc.client.sdl.input.virtual.Text;
 import com.cleanroommc.client.sdl.video.Display;
 import com.cleanroommc.client.sdl.video.DisplayMode;
@@ -11,6 +12,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.sdl.SDLMouse;
 import org.lwjgl.sdl.SDLProperties;
 import org.lwjgl.sdl.SDLStdinc;
+import org.lwjgl.sdl.SDLTimer;
 import org.lwjgl.sdl.SDLSurface;
 import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.sdl.SDLEvents;
@@ -31,8 +33,6 @@ import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 /** The single SDL window, OpenGL context and event pump owned by Cleanroom. */
@@ -50,7 +50,6 @@ public final class Window implements AutoCloseable {
     private final Text text = new Text(this);
     private final boolean[] keys = new boolean[MAX_SCANCODES];
     private final boolean[] buttons = new boolean[MAX_MOUSE_BUTTONS + 1];
-    private final List<WindowListener> listeners = new CopyOnWriteArrayList<>();
 
     private String title;
     private int width;
@@ -274,7 +273,7 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         SDL.check(SDLVideo.SDL_SetWindowBordered(this.handle, !borderless), "SDL_SetWindowBordered");
         this.borderless = borderless;
-        notifyListeners(listener -> listener.borderlessChanged(borderless));
+        SDL.EVENT_BUS.post(new WindowEvent.Borderless(this, SDLTimer.SDL_GetTicksNS(), borderless));
         return this;
     }
 
@@ -505,7 +504,7 @@ public final class Window implements AutoCloseable {
             this.position(bounds.x(), bounds.y());
             this.size(Math.max(1, bounds.width()), Math.max(1, bounds.height() + heightAdjust));
             this.syncState();
-            notifyListeners(listener -> listener.fullscreenChanged(true));
+            SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, SDLTimer.SDL_GetTicksNS(), true));
             return this;
         }
         if (this.covering) {
@@ -514,7 +513,7 @@ public final class Window implements AutoCloseable {
             this.position(this.restoreX, this.restoreY);
             this.size(Math.max(1, this.restoreWidth), Math.max(1, this.restoreHeight));
             this.syncState();
-            notifyListeners(listener -> listener.fullscreenChanged(false));
+            SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, SDLTimer.SDL_GetTicksNS(), false));
         }
         return this;
     }
@@ -551,19 +550,6 @@ public final class Window implements AutoCloseable {
             SDLStdinc.SDL_free(modes);
         }
         return fullscreen(true);
-    }
-
-    public Window listen(WindowListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("Listener cannot be null");
-        }
-        listeners.add(listener);
-        return this;
-    }
-
-    public Window mute(WindowListener listener) {
-        listeners.remove(listener);
-        return this;
     }
 
     /**
@@ -647,7 +633,7 @@ public final class Window implements AutoCloseable {
                  SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN,
                  SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> window(type, event.window());
             case SDLEvents.SDL_EVENT_CLIPBOARD_UPDATE -> Clipboard.updated();
-            case SDLEvents.SDL_EVENT_SYSTEM_THEME_CHANGED -> SystemTheme.changed();
+            case SDLEvents.SDL_EVENT_SYSTEM_THEME_CHANGED -> SystemTheme.changed(event.common().timestamp());
             case SDLEvents.SDL_EVENT_DROP_FILE,
                  SDLEvents.SDL_EVENT_DROP_TEXT,
                  SDLEvents.SDL_EVENT_DROP_BEGIN,
@@ -736,13 +722,13 @@ public final class Window implements AutoCloseable {
         switch (type) {
             case SDLEvents.SDL_EVENT_WINDOW_CLOSE_REQUESTED -> {
                 this.closeRequested = true;
-                notifyListeners(listener -> listener.closeRequested());
+                SDL.EVENT_BUS.post(new WindowEvent.CloseRequested(this, event.timestamp()));
             }
             case SDLEvents.SDL_EVENT_WINDOW_RESIZED -> {
                 this.width = event.data1();
                 this.height = event.data2();
                 this.resized = true;
-                notifyListeners(listener -> listener.resized(this.width, this.height));
+                SDL.EVENT_BUS.post(new WindowEvent.Resized(this, event.timestamp(), this.width, this.height));
             }
             case SDLEvents.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED -> {
                 this.pixelWidth = event.data1();
@@ -751,12 +737,12 @@ public final class Window implements AutoCloseable {
             }
             case SDLEvents.SDL_EVENT_WINDOW_FOCUS_GAINED -> {
                 this.focused = true;
-                notifyListeners(listener -> listener.focus(true));
+                SDL.EVENT_BUS.post(new WindowEvent.Focus(this, event.timestamp(), true));
             }
             case SDLEvents.SDL_EVENT_WINDOW_FOCUS_LOST -> {
                 this.focused = false;
                 this.releaseHeldInput(event.timestamp());
-                notifyListeners(listener -> listener.focus(false));
+                SDL.EVENT_BUS.post(new WindowEvent.Focus(this, event.timestamp(), false));
             }
             case SDLEvents.SDL_EVENT_WINDOW_MINIMIZED -> {
                 this.minimized = true;
@@ -774,25 +760,21 @@ public final class Window implements AutoCloseable {
             case SDLEvents.SDL_EVENT_WINDOW_HIDDEN -> this.hidden = true;
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER -> this.mouseInside = true;
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_LEAVE -> this.mouseInside = false;
-            case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED -> notifyListeners(WindowListener::displayChanged);
+            case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED ->
+                    SDL.EVENT_BUS.post(new WindowEvent.DisplayChanged(this, event.timestamp(), event.data1()));
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED ->
-                    notifyListeners(listener -> listener.scaleChanged(SDLVideo.SDL_GetWindowDisplayScale(this.handle)));
+                    SDL.EVENT_BUS.post(new WindowEvent.ScaleChanged(this, event.timestamp(),
+                            SDLVideo.SDL_GetWindowDisplayScale(this.handle)));
             case SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN -> {
                 this.fullscreen = true;
-                notifyListeners(listener -> listener.fullscreenChanged(true));
+                SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, event.timestamp(), true));
             }
             case SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> {
                 this.fullscreen = false;
                 if (!this.covering) {
-                    notifyListeners(listener -> listener.fullscreenChanged(false));
+                    SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, event.timestamp(), false));
                 }
             }
-        }
-    }
-
-    private void notifyListeners(Consumer<WindowListener> action) {
-        for (WindowListener listener : listeners) {
-            action.accept(listener);
         }
     }
 

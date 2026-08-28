@@ -2,6 +2,7 @@ package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.input.virtual.Text;
 import com.cleanroommc.common.CleanroomVersion;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLHints;
 import org.lwjgl.sdl.SDLInit;
@@ -15,6 +16,11 @@ import org.slf4j.LoggerFactory;
  * SDL's lifecycle helpers.
  */
 public final class SDL {
+
+    /**
+     * Every {@code com.cleanroommc.client.sdl.events} event is posted here, not on Forge's bus.
+     * */
+    public static final EventBus EVENT_BUS = new EventBus();
 
     private static int initializedBits;
     private static SDL_LogOutputFunction logOutput;

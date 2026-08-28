@@ -1,9 +1,7 @@
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.events.SystemThemeEvent;
 import org.lwjgl.sdl.SDLVideo;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /** Light/dark preference reported by the desktop environment. Requires the video subsystem. */
 public enum SystemTheme {
@@ -22,31 +20,9 @@ public enum SystemTheme {
         return value;
     }
 
-    @FunctionalInterface
-    public interface Listener {
-
-        void themeChanged(SystemTheme theme);
-
-    }
-
-    private static final List<Listener> LISTENERS = new CopyOnWriteArrayList<>();
-
-    public static void listen(Listener listener) {
-        if (listener != null && !LISTENERS.contains(listener)) {
-            LISTENERS.add(listener);
-        }
-    }
-
-    public static void mute(Listener listener) {
-        LISTENERS.remove(listener);
-    }
-
     /** Called from the window pump when {@code SDL_EVENT_SYSTEM_THEME_CHANGED} arrives. */
-    public static void changed() {
-        SystemTheme theme = current();
-        for (Listener listener : LISTENERS) {
-            listener.themeChanged(theme);
-        }
+    public static void changed(long timestampNs) {
+        SDL.EVENT_BUS.post(new SystemThemeEvent(current(), timestampNs));
     }
 
     /** @return the current desktop theme, or {@link #UNKNOWN} when the platform does not report one */

@@ -1,19 +1,19 @@
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
+import com.cleanroommc.client.sdl.events.GamepadEvent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLGamepad;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLStdinc;
+import org.lwjgl.sdl.SDLTimer;
 import org.lwjgl.sdl.SDL_Event;
 import org.lwjgl.sdl.SDL_GamepadDeviceEvent;
 
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Connected, mapped gamepads. First use initializes {@code SDL_INIT_GAMEPAD}.
@@ -21,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class Gamepads {
 
     private final Int2ObjectMap<Gamepad> pads = new Int2ObjectArrayMap<>();
-    private final List<GamepadListener> listeners = new CopyOnWriteArrayList<>();
 
     private boolean started;
 
@@ -51,19 +50,6 @@ public final class Gamepads {
         return pads.get(instanceId);
     }
 
-    public Gamepads listen(GamepadListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("Listener cannot be null");
-        }
-        listeners.add(listener);
-        return this;
-    }
-
-    public Gamepads mute(GamepadListener listener) {
-        listeners.remove(listener);
-        return this;
-    }
-
     /**
      * Applies a gamepad device event from the window's pump.
      */
@@ -74,13 +60,12 @@ public final class Gamepads {
         int type = event.type();
         SDL_GamepadDeviceEvent device = event.gdevice();
         int id = device.which();
+        long timestampNs = device.timestamp();
         switch (type) {
             case SDLEvents.SDL_EVENT_GAMEPAD_ADDED -> {
                 Gamepad pad = open(id);
                 if (pad != null) {
-                    for (GamepadListener listener : listeners) {
-                        listener.added(pad);
-                    }
+                    SDL.EVENT_BUS.post(new GamepadEvent.Added(timestampNs, pad));
                 }
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_REMOVED -> {
@@ -88,16 +73,12 @@ public final class Gamepads {
                 if (pad != null) {
                     SDLGamepad.SDL_CloseGamepad(pad.handle());
                 }
-                for (GamepadListener listener : listeners) {
-                    listener.removed(id);
-                }
+                SDL.EVENT_BUS.post(new GamepadEvent.Removed(id, timestampNs));
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_REMAPPED -> {
                 Gamepad pad = pads.get(id);
                 if (pad != null) {
-                    for (GamepadListener listener : listeners) {
-                        listener.remapped(pad);
-                    }
+                    SDL.EVENT_BUS.post(new GamepadEvent.Remapped(timestampNs, pad));
                 }
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN,
@@ -109,9 +90,8 @@ public final class Gamepads {
                     return;
                 }
                 boolean down = type != SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_UP;
-                for (GamepadListener listener : listeners) {
-                    listener.touchpad(pad, touch.touchpad(), touch.finger(), touch.x(), touch.y(), touch.pressure(), down);
-                }
+                SDL.EVENT_BUS.post(new GamepadEvent.Touchpad(touch.timestamp(), pad, touch.touchpad(),
+                        touch.finger(), touch.x(), touch.y(), touch.pressure(), down));
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_SENSOR_UPDATE -> {
                 org.lwjgl.sdl.SDL_GamepadSensorEvent update = event.gsensor();
@@ -121,9 +101,8 @@ public final class Gamepads {
                 }
                 SensorType sensor = SensorType.of(update.sensor());
                 float[] data = {update.data(0), update.data(1), update.data(2)};
-                for (GamepadListener listener : listeners) {
-                    listener.sensor(pad, sensor, data);
-                }
+                SDL.EVENT_BUS.post(new GamepadEvent.Sensor(update.timestamp(), pad, sensor, data,
+                        update.sensor_timestamp()));
             }
         }
     }
@@ -133,7 +112,6 @@ public final class Gamepads {
             SDLGamepad.SDL_CloseGamepad(pad.handle());
         }
         pads.clear();
-        listeners.clear();
         started = false;
     }
 
@@ -171,18 +149,13 @@ public final class Gamepads {
         started = true;
         Gamepad pad = new Gamepad(instanceId, handle);
         pads.put(instanceId, pad);
-        List<GamepadListener> snapshot = new ArrayList<>(listeners);
-        for (GamepadListener listener : snapshot) {
-            listener.added(pad);
-        }
+        SDL.EVENT_BUS.post(new GamepadEvent.Added(SDLTimer.SDL_GetTicksNS(), pad));
         return pad;
     }
 
     synchronized void injectRemoved(int instanceId) {
         pads.remove(instanceId);
-        for (GamepadListener listener : listeners) {
-            listener.removed(instanceId);
-        }
+        SDL.EVENT_BUS.post(new GamepadEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

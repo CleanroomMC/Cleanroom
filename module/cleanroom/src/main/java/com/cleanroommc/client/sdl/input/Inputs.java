@@ -102,8 +102,6 @@ public final class Inputs {
         JOYSTICKS.reset();
         HAPTICS.reset();
         SENSORS.reset();
-        TOUCHES.reset();
-        PENS.reset();
         for (Cursor cursor : List.copyOf(SYSTEM_CURSORS.values())) {
             cursor.close();
         }

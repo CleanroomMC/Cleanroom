@@ -1,95 +1,63 @@
 package com.cleanroommc.client.sdl.drop;
 
+import com.cleanroommc.client.sdl.SDL;
+import com.cleanroommc.client.sdl.events.DropEvent;
 import org.lwjgl.sdl.SDLEvents;
+import org.lwjgl.sdl.SDLTimer;
 import org.lwjgl.sdl.SDL_DropEvent;
 import org.lwjgl.sdl.SDL_Event;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Process-wide drop target. {@link com.cleanroommc.client.sdl.Window} forwards the SDL drop events here.
  */
 public final class Drops {
 
-    private static final List<DropListener> LISTENERS = new CopyOnWriteArrayList<>();
-
     private Drops() { }
 
-    public static void listen(DropListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("Listener cannot be null");
-        }
-        LISTENERS.add(listener);
-    }
-
-    public static void mute(DropListener listener) {
-        LISTENERS.remove(listener);
-    }
-
+    /** Injects a drop that did not come from SDL, so it carries no window, position or source app. */
     public static void dispatchFile(Path path) {
         if (path != null) {
-            file(path.toString());
+            file(0, SDLTimer.SDL_GetTicksNS(), 0.0F, 0.0F, null, path.toString());
         }
     }
 
     public static void dispatchText(String text) {
-        text(text);
+        text(0, SDLTimer.SDL_GetTicksNS(), 0.0F, 0.0F, null, text);
     }
 
     public static void handle(SDL_Event event) {
         SDL_DropEvent drop = event.drop();
+        int windowId = drop.windowID();
+        long timestampNs = drop.timestamp();
+        float x = drop.x();
+        float y = drop.y();
+        String source = drop.sourceString();
         switch (event.type()) {
-            case SDLEvents.SDL_EVENT_DROP_BEGIN -> begin();
-            case SDLEvents.SDL_EVENT_DROP_FILE -> file(drop.dataString());
-            case SDLEvents.SDL_EVENT_DROP_TEXT -> text(drop.dataString());
-            case SDLEvents.SDL_EVENT_DROP_POSITION -> position(drop.x(), drop.y());
-            case SDLEvents.SDL_EVENT_DROP_COMPLETE -> complete();
+            case SDLEvents.SDL_EVENT_DROP_BEGIN -> begin(windowId, timestampNs, x, y, source);
+            case SDLEvents.SDL_EVENT_DROP_FILE -> file(windowId, timestampNs, x, y, source, drop.dataString());
+            case SDLEvents.SDL_EVENT_DROP_TEXT -> text(windowId, timestampNs, x, y, source, drop.dataString());
+            case SDLEvents.SDL_EVENT_DROP_POSITION ->
+                    SDL.EVENT_BUS.post(new DropEvent.Position(windowId, timestampNs, x, y, source));
+            case SDLEvents.SDL_EVENT_DROP_COMPLETE ->
+                    SDL.EVENT_BUS.post(new DropEvent.Complete(windowId, timestampNs, x, y, source));
         }
     }
 
-    static void begin() {
-        for (DropListener listener : LISTENERS) {
-            listener.begin();
-        }
+    static void begin(int windowId, long timestampNs, float x, float y, String source) {
+        SDL.EVENT_BUS.post(new DropEvent.Begin(windowId, timestampNs, x, y, source));
     }
 
-    static void file(String data) {
+    static void file(int windowId, long timestampNs, float x, float y, String source, String data) {
         if (data == null || data.isEmpty()) {
             return;
         }
-        Path path = Path.of(data);
-        for (DropListener listener : LISTENERS) {
-            listener.file(path);
-        }
+        SDL.EVENT_BUS.post(new DropEvent.File(windowId, timestampNs, x, y, source, Path.of(data)));
     }
 
-    static void text(String data) {
-        String value = data == null ? "" : data;
-        for (DropListener listener : LISTENERS) {
-            listener.text(value);
-        }
-    }
-
-    static void position(float x, float y) {
-        for (DropListener listener : LISTENERS) {
-            listener.position(x, y);
-        }
-    }
-
-    static void complete() {
-        for (DropListener listener : LISTENERS) {
-            listener.complete();
-        }
-    }
-
-    public static void reset() {
-        LISTENERS.clear();
-    }
-
-    public static int listenerCount() {
-        return LISTENERS.size();
+    static void text(int windowId, long timestampNs, float x, float y, String source, String data) {
+        SDL.EVENT_BUS.post(new DropEvent.Text(windowId, timestampNs, x, y, source, data == null ? "" : data));
     }
 
 }

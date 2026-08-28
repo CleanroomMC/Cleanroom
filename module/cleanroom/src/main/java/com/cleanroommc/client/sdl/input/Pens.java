@@ -1,5 +1,7 @@
 package com.cleanroommc.client.sdl.input;
 
+import com.cleanroommc.client.sdl.SDL;
+import com.cleanroommc.client.sdl.events.PenEvent;
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLPen;
 import org.lwjgl.sdl.SDL_Event;
@@ -9,15 +11,10 @@ import org.lwjgl.sdl.SDL_PenMotionEvent;
 import org.lwjgl.sdl.SDL_PenProximityEvent;
 import org.lwjgl.sdl.SDL_PenTouchEvent;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 /**
  * Drawing tablets. No extra SDL subsystem as video already delivers the events.
  */
 public final class Pens {
-
-    private final List<PenListener> listeners = new CopyOnWriteArrayList<>();
 
     Pens() { }
 
@@ -25,54 +22,34 @@ public final class Pens {
         return PenType.of(SDLPen.SDL_GetPenDeviceType(pen));
     }
 
-    public Pens listen(PenListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("Listener cannot be null");
-        }
-        listeners.add(listener);
-        return this;
-    }
-
-    public Pens mute(PenListener listener) {
-        listeners.remove(listener);
-        return this;
-    }
-
     public void handle(SDL_Event event) {
-        if (listeners.isEmpty()) {
-            return;
-        }
         int type = event.type();
         switch (type) {
             case SDLEvents.SDL_EVENT_PEN_PROXIMITY_IN, SDLEvents.SDL_EVENT_PEN_PROXIMITY_OUT -> {
                 SDL_PenProximityEvent proximity = event.pproximity();
                 boolean in = type == SDLEvents.SDL_EVENT_PEN_PROXIMITY_IN;
-                for (PenListener listener : listeners) {
-                    listener.proximity(proximity.which(), in);
-                }
+                SDL.EVENT_BUS.post(new PenEvent.Proximity(proximity.which(), proximity.windowID(),
+                        proximity.timestamp(), in));
             }
             case SDLEvents.SDL_EVENT_PEN_DOWN, SDLEvents.SDL_EVENT_PEN_UP -> {
                 SDL_PenTouchEvent touch = event.ptouch();
                 boolean down = type == SDLEvents.SDL_EVENT_PEN_DOWN;
-                for (PenListener listener : listeners) {
-                    if (down) {
-                        listener.down(touch.which(), touch.x(), touch.y(), touch.eraser());
-                    } else {
-                        listener.up(touch.which(), touch.x(), touch.y(), touch.eraser());
-                    }
-                }
+                SDL.EVENT_BUS.post(down
+                        ? new PenEvent.Down(touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
+                                touch.pen_state(), touch.eraser())
+                        : new PenEvent.Up(touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
+                                touch.pen_state(), touch.eraser()));
             }
             case SDLEvents.SDL_EVENT_PEN_MOTION -> {
                 SDL_PenMotionEvent motion = event.pmotion();
-                for (PenListener listener : listeners) {
-                    listener.motion(motion.which(), motion.x(), motion.y());
-                }
+                SDL.EVENT_BUS.post(new PenEvent.Motion(motion.which(), motion.windowID(),
+                        motion.timestamp(), motion.x(), motion.y(), motion.pen_state()));
             }
             case SDLEvents.SDL_EVENT_PEN_BUTTON_DOWN, SDLEvents.SDL_EVENT_PEN_BUTTON_UP -> {
                 SDL_PenButtonEvent button = event.pbutton();
-                for (PenListener listener : listeners) {
-                    listener.button(button.which(), button.x(), button.y(), button.button() & 0xFF, button.down());
-                }
+                SDL.EVENT_BUS.post(new PenEvent.Button(button.which(), button.windowID(),
+                        button.timestamp(), button.x(), button.y(), button.pen_state(), button.button() & 0xFF,
+                        button.down()));
             }
             case SDLEvents.SDL_EVENT_PEN_AXIS -> {
                 SDL_PenAxisEvent axis = event.paxis();
@@ -80,15 +57,10 @@ public final class Pens {
                 if (kind == null) {
                     return;
                 }
-                for (PenListener listener : listeners) {
-                    listener.axis(axis.which(), axis.x(), axis.y(), kind, axis.value());
-                }
+                SDL.EVENT_BUS.post(new PenEvent.Axis(axis.which(), axis.windowID(), axis.timestamp(),
+                        axis.x(), axis.y(), axis.pen_state(), kind, axis.value()));
             }
         }
-    }
-
-    void reset() {
-        listeners.clear();
     }
 
 }

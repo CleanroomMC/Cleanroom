@@ -1,7 +1,6 @@
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.camera.Cameras;
-import com.cleanroommc.client.sdl.drop.Drops;
 import com.cleanroommc.client.sdl.hid.Hid;
 import com.cleanroommc.client.sdl.input.Inputs;
 import org.lwjgl.sdl.SDL_Event;
@@ -25,7 +24,6 @@ final class Devices {
         Hid.reset();
         Tray.reset();
         Clipboard.reset();
-        Drops.reset();
     }
 
     private Devices() { }

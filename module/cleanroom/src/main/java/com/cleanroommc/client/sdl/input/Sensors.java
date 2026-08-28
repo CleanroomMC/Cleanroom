@@ -1,19 +1,19 @@
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
+import com.cleanroommc.client.sdl.events.SensorEvent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLSensor;
 import org.lwjgl.sdl.SDLStdinc;
+import org.lwjgl.sdl.SDLTimer;
 import org.lwjgl.sdl.SDL_Event;
 import org.lwjgl.sdl.SDL_SensorEvent;
 
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Standalone sensors. First use initializes {@code SDL_INIT_SENSOR}.
@@ -21,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class Sensors {
 
     private final Int2ObjectMap<Sensor> sensors = new Int2ObjectArrayMap<>();
-    private final List<SensorListener> listeners = new CopyOnWriteArrayList<>();
 
     private boolean started;
 
@@ -46,19 +45,6 @@ public final class Sensors {
         return sensors.get(id);
     }
 
-    public Sensors listen(SensorListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("Listener cannot be null");
-        }
-        listeners.add(listener);
-        return this;
-    }
-
-    public Sensors mute(SensorListener listener) {
-        listeners.remove(listener);
-        return this;
-    }
-
     public synchronized void handle(SDL_Event event) {
         if (!started) {
             return;
@@ -71,9 +57,8 @@ public final class Sensors {
                 return;
             }
             float[] data = {update.data(0), update.data(1), update.data(2)};
-            for (SensorListener listener : listeners) {
-                listener.updated(sensor, data);
-            }
+            SDL.EVENT_BUS.post(new SensorEvent.Updated(update.timestamp(), sensor, data,
+                    update.sensor_timestamp()));
         }
         // Standalone sensors have no add/remove event
     }
@@ -83,7 +68,6 @@ public final class Sensors {
             SDLSensor.SDL_CloseSensor(sensor.handle());
         }
         sensors.clear();
-        listeners.clear();
         started = false;
     }
 
@@ -120,18 +104,13 @@ public final class Sensors {
         started = true;
         Sensor sensor = new Sensor(id, handle);
         sensors.put(id, sensor);
-        List<SensorListener> snapshot = new ArrayList<>(listeners);
-        for (SensorListener listener : snapshot) {
-            listener.added(sensor);
-        }
+        SDL.EVENT_BUS.post(new SensorEvent.Added(SDLTimer.SDL_GetTicksNS(), sensor));
         return sensor;
     }
 
     synchronized void injectRemoved(int id) {
         sensors.remove(id);
-        for (SensorListener listener : listeners) {
-            listener.removed(id);
-        }
+        SDL.EVENT_BUS.post(new SensorEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
     }
 
 }
