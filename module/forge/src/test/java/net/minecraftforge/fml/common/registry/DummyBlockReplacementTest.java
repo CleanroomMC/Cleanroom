@@ -32,21 +32,20 @@ import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.ObjectHolderRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Maps;
 
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Dummy block replacement test
  */
-@RunWith(ForgeTestRunner.class)
+@ForgeTestRunner.Isolated
 public class DummyBlockReplacementTest
 {
     private ResourceLocation myDirt = new ResourceLocation("test:dirt");
@@ -55,7 +54,7 @@ public class DummyBlockReplacementTest
 
     };
 
-    @BeforeClass
+    @BeforeAll
     public static void setup()
     {
         System.setProperty("fml.queryResult", "confirm");
@@ -78,8 +77,8 @@ public class DummyBlockReplacementTest
         final ForgeRegistry<Block> blockRegistry = (ForgeRegistry<Block>)RegistryManager.ACTIVE.getRegistry(Block.class);
         Block fnd = blockRegistry.getValue(myDirt);
 
-        assertNotEquals("Didn't find my block", fnd, testDirtBlock);
-        assertEquals("Found a default air block", fnd, Blocks.AIR);
+        assertNotEquals(fnd, testDirtBlock, "Didn't find my block");
+        assertEquals(fnd, Blocks.AIR, "Found a default air block");
 
         // Insert a dummy reference to my dirt
         snapshot.put(GameData.BLOCKS, new ForgeRegistry.Snapshot());
@@ -88,21 +87,21 @@ public class DummyBlockReplacementTest
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
 
         fnd = blockRegistry.getValue(myDirt);
-        assertNotEquals("Did not find my block", fnd, testDirtBlock);
-        assertTrue("Did not find a dummy air block", fnd.getClass().getName().endsWith("BlockDummyAir"));
+        assertNotEquals(fnd, testDirtBlock, "Did not find my block");
+        assertTrue(fnd.getClass().getName().endsWith("BlockDummyAir"), "Did not find a dummy air block");
         final Set<ResourceLocation> dummied = RegistryManager.ACTIVE.takeSnapshot(false).get(GameData.BLOCKS).dummied;
-        assertTrue("Did not find my block in the dummy list", dummied.contains(myDirt));
+        assertTrue(dummied.contains(myDirt), "Did not find my block in the dummy list");
 
         GameData.revertToFrozen();
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
         fnd = blockRegistry.getValue(myDirt);
-        assertNotEquals("Did not find my block", fnd, testDirtBlock);
-        assertEquals("Found a default air block", fnd, Blocks.AIR);
+        assertNotEquals(fnd, testDirtBlock, "Did not find my block");
+        assertEquals(fnd, Blocks.AIR, "Found a default air block");
 
         ((ForgeRegistry<Block>)RegistryManager.ACTIVE.getRegistry(Block.class)).unfreeze();
         RegistryManager.ACTIVE.getRegistry(Block.class).register(testDirtBlock.setRegistryName(myDirt));
         fnd = blockRegistry.getValue(myDirt);
-        assertEquals("Found my block", fnd, testDirtBlock);
+        assertEquals(fnd, testDirtBlock, "Found my block");
 
         // Add dummied entry in
         snapshot.get(GameData.BLOCKS).dummied.add(myDirt);
@@ -110,14 +109,14 @@ public class DummyBlockReplacementTest
         GameData.injectSnapshot(snapshot, true, true);
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
         fnd = blockRegistry.getValue(myDirt);
-        assertEquals("Found my block", fnd, testDirtBlock);
+        assertEquals(fnd, testDirtBlock, "Found my block");
         GameData.revertToFrozen();
 
         // Sent remotely, we should NOT resuscitate our block
         GameData.injectSnapshot(snapshot, false, false);
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
         fnd = blockRegistry.getValue(myDirt);
-        assertNotEquals("Did not find my block", fnd, testDirtBlock);
-        assertTrue("Found a dummy air block", fnd.getClass().getName().endsWith("BlockDummyAir"));
+        assertNotEquals(fnd, testDirtBlock, "Did not find my block");
+        assertTrue(fnd.getClass().getName().endsWith("BlockDummyAir"), "Found a dummy air block");
     }
 }

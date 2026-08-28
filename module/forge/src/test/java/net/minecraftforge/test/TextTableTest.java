@@ -22,8 +22,8 @@ package net.minecraftforge.test;
 import com.google.common.collect.Lists;
 import net.minecraftforge.common.util.TextTable;
 import net.minecraftforge.common.util.TextTable.Column;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static net.minecraftforge.common.util.TextTable.column;
 
@@ -38,12 +38,12 @@ public class TextTableTest
         Column column = column("Column", TextTable.Alignment.LEFT);
         column.fit(WIDTH_REFERENCE);
         String paddedHeader = column.formatHeader("-");
-        Assert.assertEquals("Formatted column header didn't have correct length", WIDTH_REFERENCE_LENGTH, paddedHeader.length());
-        Assert.assertEquals("Formatted column header wasn't padded properly", "Column---------", paddedHeader);
+        Assertions.assertEquals(WIDTH_REFERENCE_LENGTH, paddedHeader.length(), "Formatted column header didn't have correct length");
+        Assertions.assertEquals("Column---------", paddedHeader, "Formatted column header wasn't padded properly");
 
         String paddedReference = column.format(WIDTH_REFERENCE, "-");
-        Assert.assertEquals("Formatted width reference didn't have correct length", WIDTH_REFERENCE_LENGTH, paddedReference.length());
-        Assert.assertEquals("Formatted width reference was changed despite defining width", WIDTH_REFERENCE, paddedReference);
+        Assertions.assertEquals(WIDTH_REFERENCE_LENGTH, paddedReference.length(), "Formatted width reference didn't have correct length");
+        Assertions.assertEquals(WIDTH_REFERENCE, paddedReference, "Formatted width reference was changed despite defining width");
     }
 
     @Test
@@ -53,11 +53,11 @@ public class TextTableTest
         column.fit(WIDTH_REFERENCE);
 
         String paddedHeader = column.formatHeader("-");
-        Assert.assertEquals("Left-aligned header should be padded on the right", "Left-----------", paddedHeader);
+        Assertions.assertEquals("Left-----------", paddedHeader, "Left-aligned header should be padded on the right");
         String paddedReference = column.format(WIDTH_REFERENCE, "-");
-        Assert.assertEquals("Left-aligned reference should'nt be padded", WIDTH_REFERENCE, paddedReference);
+        Assertions.assertEquals(WIDTH_REFERENCE, paddedReference, "Left-aligned reference should'nt be padded");
         String paddedValue = column.format("Value", "-");
-        Assert.assertEquals("Left-aligned value should be padded on the right", "Value----------", paddedValue);
+        Assertions.assertEquals("Value----------", paddedValue, "Left-aligned value should be padded on the right");
     }
 
     @Test
@@ -67,13 +67,13 @@ public class TextTableTest
         column.fit(WIDTH_REFERENCE);
 
         String paddedHeader = column.formatHeader("-");
-        Assert.assertEquals("Centered header should be padded equally on both sides", "---Centered----", paddedHeader);
+        Assertions.assertEquals("---Centered----", paddedHeader, "Centered header should be padded equally on both sides");
         String paddedReference = column.format(WIDTH_REFERENCE, "-");
-        Assert.assertEquals("Centered reference should'nt be padded", WIDTH_REFERENCE, paddedReference);
+        Assertions.assertEquals(WIDTH_REFERENCE, paddedReference, "Centered reference should'nt be padded");
         String paddedValue = column.format("Value", "-");
-        Assert.assertEquals("Centered value should be padded equally on both sides", "-----Value-----", paddedValue);
+        Assertions.assertEquals("-----Value-----", paddedValue, "Centered value should be padded equally on both sides");
         String paddedOffCenter = column.format("Value1", "-");
-        Assert.assertNotEquals("Center padding should be left-biased", "-----Value1----", paddedOffCenter);
+        Assertions.assertNotEquals("-----Value1----", paddedOffCenter, "Center padding should be left-biased");
     }
 
     @Test
@@ -83,11 +83,11 @@ public class TextTableTest
         column.fit(WIDTH_REFERENCE);
 
         String paddedHeader = column.formatHeader("-");
-        Assert.assertEquals("Right-aligned header should be padded on the left", "----------Right", paddedHeader);
+        Assertions.assertEquals("----------Right", paddedHeader, "Right-aligned header should be padded on the left");
         String paddedReference = column.format(WIDTH_REFERENCE, "-");
-        Assert.assertEquals("Right-aligned reference should'nt be padded", WIDTH_REFERENCE, paddedReference);
+        Assertions.assertEquals(WIDTH_REFERENCE, paddedReference, "Right-aligned reference should'nt be padded");
         String paddedValue = column.format("Value", "-");
-        Assert.assertEquals("Right-aligned value should be padded on the left", "----------Value", paddedValue);
+        Assertions.assertEquals("----------Value", paddedValue, "Right-aligned value should be padded on the left");
     }
 
     @Test
@@ -102,18 +102,18 @@ public class TextTableTest
         table.add("Value 1", "Long Value 2", "Value 3");
         table.add("Value 1", "Value 2", "Long Value 3");
         int[] columnWidths = table.getColumns().stream().mapToInt(Column::getWidth).toArray();
-        Assert.assertArrayEquals("Column widths should adjust for long values", new int[]{12, 12, 12}, columnWidths);
+        Assertions.assertArrayEquals(new int[]{12, 12, 12}, columnWidths, "Column widths should adjust for long values");
 
         String[] result = table.build("\n").split("\n");
-        Assert.assertEquals("Header row + separator row + value rows should result in 5 lines", 5, result.length);
-        Assert.assertEquals(
-            "Column headers should be properly formatted",
+        Assertions.assertEquals(5, result.length, "Header row + separator row + value rows should result in 5 lines");
+        Assertions.assertEquals(
             "| Left         |    Center    |        Right |",
-            result[0]);
-        Assert.assertEquals(
-            "Header-body separators should contain markdown alignment information",
+            result[0],
+            "Column headers should be properly formatted");
+        Assertions.assertEquals(
             "|:------------ |:------------:| ------------:|",
-            result[1]
+            result[1],
+            "Header-body separators should contain markdown alignment information"
         );
     }
 }

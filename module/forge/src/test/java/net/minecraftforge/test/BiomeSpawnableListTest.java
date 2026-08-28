@@ -31,19 +31,18 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeTestRunner;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(ForgeTestRunner.class)
+@ForgeTestRunner.Isolated
 public class BiomeSpawnableListTest
 {
     private static EnumCreatureType creatureTypeHorse;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception
     {
         Loader.instance();
@@ -81,11 +80,11 @@ public class BiomeSpawnableListTest
         // Test 1: We can add a spawn for the non-vanilla EnumCreatureType
         EntityRegistry.addSpawn(entityClass, weightedProb, minGroupCount, maxGroupCount, creatureTypeHorse, biome);
         final boolean containsEntryAfterAdd = spawnableListContainsEntry(entityClass, weightedProb, minGroupCount, maxGroupCount, creatureTypeHorse, biome);
-        assertTrue("The SpawnListEntry wasn't added", containsEntryAfterAdd);
+        assertTrue(containsEntryAfterAdd, "The SpawnListEntry wasn't added");
 
         // Test 2: We can remove a spawn for the non-vanilla EnumCreatureType
         EntityRegistry.removeSpawn(entityClass, creatureTypeHorse, biome);
         final boolean containsEntryAfterRemove = spawnableListContainsEntry(entityClass, weightedProb, minGroupCount, maxGroupCount, creatureTypeHorse, biome);
-        assertFalse("The SpawnListEntry wasn't removed", containsEntryAfterRemove);
+        assertFalse(containsEntryAfterRemove, "The SpawnListEntry wasn't removed");
     }
 }

@@ -26,28 +26,26 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeTestRunner;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(ForgeTestRunner.class)
+@ForgeTestRunner.Isolated
 public class ConfigurationTest {
 
     private Configuration config;
     private ConfigCategory category;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass()
     {
         Loader.instance();
         Bootstrap.register();
     }
 
-    @Before
+    @BeforeEach
     public void setup()
     {
         Property enabledProperty = new Property("enabled", "true", Property.Type.BOOLEAN);
@@ -70,13 +68,13 @@ public class ConfigurationTest {
         Property enabledProperty = category.get("enabled");
         Property defaultEnabledProperty = category.get("defaultEnabled");
 
-        assertTrue("Property was not renamed", propertyRenamed);
-        assertNull("Old property was not removed", enabledProperty);
-        assertNotNull("New property was not added", defaultEnabledProperty);
-        assertEquals("The property's name was not changed", "defaultEnabled", defaultEnabledProperty.getName());
-        assertEquals("The property's value changed", "true", defaultEnabledProperty.getString());
-        assertEquals("The property's type was changed", Property.Type.BOOLEAN, defaultEnabledProperty.getType());
-        assertEquals("The property's comment was changed", "enabled property comment", defaultEnabledProperty.getComment());
+        assertTrue(propertyRenamed, "Property was not renamed");
+        assertNull(enabledProperty, "Old property was not removed");
+        assertNotNull(defaultEnabledProperty, "New property was not added");
+        assertEquals("defaultEnabled", defaultEnabledProperty.getName(), "The property's name was not changed");
+        assertEquals("true", defaultEnabledProperty.getString(), "The property's value changed");
+        assertEquals(Property.Type.BOOLEAN, defaultEnabledProperty.getType(), "The property's type was changed");
+        assertEquals("enabled property comment", defaultEnabledProperty.getComment(), "The property's comment was changed");
     }
 
     @Test
@@ -87,12 +85,12 @@ public class ConfigurationTest {
         Property enabledProperty = category.get("enabled");
         Property backgroundProperty = category.get("background");
 
-        assertTrue("Property was not renamed", propertyRenamed);
-        assertNull("Old property was not removed", enabledProperty);
-        assertNotNull("New property was not added", backgroundProperty);
-        assertEquals("The property's name was not changed", "background", backgroundProperty.getName());
-        assertEquals("The property's value changed", "true", backgroundProperty.getString());
-        assertEquals("The property's type was changed", Property.Type.BOOLEAN, backgroundProperty.getType());
-        assertEquals("The property's comment was changed", "enabled property comment", backgroundProperty.getComment());
+        assertTrue(propertyRenamed, "Property was not renamed");
+        assertNull(enabledProperty, "Old property was not removed");
+        assertNotNull(backgroundProperty, "New property was not added");
+        assertEquals("background", backgroundProperty.getName(), "The property's name was not changed");
+        assertEquals("true", backgroundProperty.getString(), "The property's value changed");
+        assertEquals(Property.Type.BOOLEAN, backgroundProperty.getType(), "The property's type was changed");
+        assertEquals("enabled property comment", backgroundProperty.getComment(), "The property's comment was changed");
     }
 }

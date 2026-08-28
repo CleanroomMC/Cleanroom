@@ -204,11 +204,29 @@ dependencies {
     testImplementation 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test', Test) {
+tasks.withType(Test).configureEach {
     maxParallelForks = 1
     useJUnitPlatform()
     testLogging.events 'passed', 'skipped', 'failed'
     jvmArgs open_arguments + export_arguments
+}
+
+tasks.register('isolatedTest', Test) {
+    description = 'Runs Forge tests that require a fresh JVM.'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    forkEvery = 1
+    useJUnitPlatform {
+        includeTags 'forge-isolated'
+    }
+}
+
+tasks.named('test', Test) {
+    dependsOn tasks.named('isolatedTest')
+    useJUnitPlatform {
+        excludeTags 'forge-isolated'
+    }
 }
 
 tasks.named('compileJava', JavaCompile).configure { compile ->

@@ -28,19 +28,18 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.registries.GameData;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test block state mappings bidirectionality
  */
-@RunWith(ForgeTestRunner.class)
+@ForgeTestRunner.Isolated
 public class BlockStateMappingsTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void setup()
     {
         System.setProperty("fml.queryResult", "confirm");
@@ -67,8 +66,8 @@ public class BlockStateMappingsTest
             IBlockState realst = bl.getStateFromMeta(meta); // The state that the block assigns to this meta
             int bsm = GameData.getBlockStateIDMap().get(realst); // The blockstateid for the meta's state
             IBlockState foundst = GameData.getBlockStateIDMap().getByValue(realbsm); // The state that is stored for the computed blockstateid
-            assertEquals("Got computed blockstate ids that match", realbsm, bsm);
-            assertEquals("Got equal states", realst, foundst);
+            assertEquals(realbsm, bsm, "Got computed blockstate ids that match");
+            assertEquals(realst, foundst, "Got equal states");
         }
     }
 

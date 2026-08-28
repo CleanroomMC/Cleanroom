@@ -28,8 +28,8 @@ import net.minecraft.init.Bootstrap;
 import net.minecraftforge.client.EnumHelperClient;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.util.EnumHelper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -90,10 +90,10 @@ public class EnumHelperTest
                 Constructor<?>[] declaredConstructors = returnType.getDeclaredConstructors();
                 Class<?>[] actualParameters = method.getParameterTypes();
 
-                Assert.assertTrue(actualParameters.length >= 1);
-                Assert.assertEquals("First parameter of add method should be String (name)",
-                        String.class,
-                        actualParameters[0]);
+                Assertions.assertTrue(actualParameters.length >= 1);
+                Assertions.assertEquals(String.class,
+                        actualParameters[0],
+                        "First parameter of add method should be String (name)");
 
                 actualParameters = Arrays.copyOfRange(actualParameters, 1, actualParameters.length); //Trim off name
                 String info =
@@ -128,13 +128,13 @@ public class EnumHelperTest
 
                     Class<?>[] expectedParameters = declaredConstructor.getParameterTypes();
 
-                    Assert.assertTrue(expectedParameters.length >= 2);
-                    Assert.assertEquals("First parameter of enum constructor should be String (name)",
-                            String.class,
-                            expectedParameters[0]);
-                    Assert.assertEquals("Second parameter of enum should be int (ordinal)",
-                            int.class,
-                            expectedParameters[1]);
+                    Assertions.assertTrue(expectedParameters.length >= 2);
+                    Assertions.assertEquals(String.class,
+                            expectedParameters[0],
+                            "First parameter of enum constructor should be String (name)");
+                    Assertions.assertEquals(int.class,
+                            expectedParameters[1],
+                            "Second parameter of enum should be int (ordinal)");
 
                     expectedParameters = Arrays.copyOfRange(expectedParameters, 2, expectedParameters.length);
 
@@ -168,15 +168,15 @@ public class EnumHelperTest
             failed = true;
         }
 
-        Assert.assertFalse(failed);
+        Assertions.assertFalse(failed);
     }
 
     @Test
     public void testEnumHelperTypes()
     {
         setBootstrap();
-        Assert.assertEquals(BiomeDictionary.Type.BEACH, BiomeDictionary.Type.getType("BEACH"));
+        Assertions.assertEquals(BiomeDictionary.Type.BEACH, BiomeDictionary.Type.getType("BEACH"));
         // This works, it's been tested, find a way to make this a unit test...
-        //Assert.assertEquals(BiomeDictionary.Type.getType("NEWTYPE"), BiomeDictionary.Type.getType("NEWTYPE"));
+        //Assertions.assertEquals(BiomeDictionary.Type.getType("NEWTYPE"), BiomeDictionary.Type.getType("NEWTYPE"));
     }
 }

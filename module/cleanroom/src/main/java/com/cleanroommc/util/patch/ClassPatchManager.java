@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,15 +125,16 @@ public final class ClassPatchManager {
     }
 
     public void setup() {
+        if (CleanroomEnvironment.isDev()) {
+            CleanroomLog.get().info("Skipping the binary patch set, as this is a development environment.");
+            return;
+        }
+
         var sidePrefix = "binpatch/%s/".formatted(CleanroomEnvironment.side().toString().toLowerCase(Locale.ENGLISH));
 
         try (InputStream resource = getClass().getResourceAsStream(RESOURCE_NAME)) {
             if (resource == null) {
-                if (!FMLLaunchHandler.isDeobfuscatedEnvironment()) {
-                    CleanroomLog.get().error("The binary patch set is missing, things are not going to work!");
-                } else {
-                    CleanroomLog.get().error("The binary patch set is missing, because you are in a development environment!");
-                }
+                CleanroomLog.get().error("The binary patch set is missing, things are not going to work!");
                 return;
             }
 
