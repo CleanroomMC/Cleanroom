@@ -25,26 +25,24 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
-import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.registries.RegistryManager;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Maps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Map;
 
 /**
  * Created by cpw on 04/07/16.
  */
-@RunWith(ForgeTestRunner.class)
+@ForgeTestRunner.Isolated
 public class FreezingTests
 {
 
@@ -71,7 +69,7 @@ public class FreezingTests
 
     public static ResourceLocation resloc = new ResourceLocation("fmltest:test");
 
-    @BeforeClass
+    @BeforeAll
     public static void setup()
     {
         Loader.instance();
@@ -122,31 +120,31 @@ public class FreezingTests
 
         //Frozen data should be the same, as there are no replacement
         ForgeRegistry<RTest> frozen = (ForgeRegistry<RTest>)RegistryManager.ACTIVE.getRegistry(RTest.class);
-        assertEquals("Frozen object not the same", r3, frozen.getValue(name));
-        assertEquals("Active object not the same", r3, active.getValue(name));
+        assertEquals(r3, frozen.getValue(name), "Frozen object not the same");
+        assertEquals(r3, active.getValue(name), "Active object not the same");
 
         // r3 is in the snapshot, so the ID SHOULD change to whats in the snapshot.
         GameData.injectSnapshot(ss, false, true); //Unlike the old system we die on missing mappings for custom registries. So we need to tell it to continue loading as if we're local
-        assertNotEquals("IDs match", r3id, active.getID(r3));
-        assertEquals("Frozen object not the same", r3, frozen.getValue(name));
-        assertEquals("Active object not the same", r3, active.getValue(name));
+        assertNotEquals(r3id, active.getID(r3), "IDs match");
+        assertEquals(r3, frozen.getValue(name), "Frozen object not the same");
+        assertEquals(r3, active.getValue(name), "Active object not the same");
 
         // Frozen has the original ID
         GameData.revertToFrozen();
-        assertEquals("IDs don't match", r3id, active.getID(r3));
-        assertEquals("Frozen object not the same", r3, frozen.getValue(name));
-        assertEquals("Active object not the same", r3, active.getValue(name));
+        assertEquals(r3id, active.getID(r3), "IDs don't match");
+        assertEquals(r3, frozen.getValue(name), "Frozen object not the same");
+        assertEquals(r3, active.getValue(name), "Active object not the same");
 
         // Make sure we have snapshot ID again
         GameData.injectSnapshot(ss, true, true);
-        assertNotEquals("IDs match", r3id, active.getID(r3));
-        assertEquals("Frozen object not the same", r3, frozen.getValue(name));
-        assertEquals("Active object not the same", r3, active.getValue(name));
+        assertNotEquals(r3id, active.getID(r3), "IDs match");
+        assertEquals(r3, frozen.getValue(name), "Frozen object not the same");
+        assertEquals(r3, active.getValue(name), "Active object not the same");
 
         //And back to the frozen ID
         GameData.revertToFrozen();
-        assertEquals("IDs don't match", r3id, active.getID(r3));
-        assertEquals("Frozen object not the same", r3, frozen.getValue(name));
-        assertEquals("Active object not the same", r3, active.getValue(name));
+        assertEquals(r3id, active.getID(r3), "IDs don't match");
+        assertEquals(r3, frozen.getValue(name), "Frozen object not the same");
+        assertEquals(r3, active.getValue(name), "Active object not the same");
     }
 }

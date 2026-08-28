@@ -36,21 +36,20 @@ import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.ObjectHolderRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nonnull;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Map;
 
 /**
  * Substitution test harness - tests that substitutions behave correctly
  */
-@RunWith(ForgeTestRunner.class)
+@ForgeTestRunner.Isolated
 public class ItemBlockSubstitutionRemoveRestoreTest
 {
     private ResourceLocation myDirt = new ResourceLocation("minecraft:dirt");
@@ -73,7 +72,7 @@ public class ItemBlockSubstitutionRemoveRestoreTest
     private static ItemMyDirt myDirtInstance;
     private static Item originalDirt;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup()
     {
         Loader.instance();
@@ -97,7 +96,7 @@ public class ItemBlockSubstitutionRemoveRestoreTest
 
         // TEST 1: Does my substitute take effect? The substitute should be found in the registry
         ItemBlock dirtitem = (ItemBlock) itemRegistry.getValue(myDirt);
-        assertEquals("ItemBlock points at my block", myDirtInstance, dirtitem);
+        assertEquals(myDirtInstance, dirtitem, "ItemBlock points at my block");
 
         // TEST 2: Does the substitute get removed when told by remote operation? The substitute should NOT be found in the registry
         /* Why should it not be found? Substitutions are no longer special cases
@@ -115,6 +114,6 @@ public class ItemBlockSubstitutionRemoveRestoreTest
         GameData.revertToFrozen();
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
         dirtitem = (ItemBlock) itemRegistry.getValue(myDirt);
-        assertEquals("ItemBlock points at my block", myDirtInstance, dirtitem);
+        assertEquals(myDirtInstance, dirtitem, "ItemBlock points at my block");
     }
 }

@@ -31,21 +31,20 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Field;
 
 /**
  * Vanilla registry tests
  */
-@RunWith(ForgeTestRunner.class)
+@ForgeTestRunner.Isolated
 public class VanillaRegistryTests
 {
-    @BeforeClass
+    @BeforeAll
     public static void setupHarness()
     {
         Loader.instance();
@@ -56,34 +55,34 @@ public class VanillaRegistryTests
     public void testSetup()
     {
         // All the blocks loaded
-        assertEquals("We have all the blocks via GameData", 254, Block.REGISTRY.getKeys().size());
+        assertEquals(254, Block.REGISTRY.getKeys().size(), "We have all the blocks via GameData");
 
         // All the items loaded
-        assertEquals("We have all the items via GameData", 411, Item.REGISTRY.getKeys().size());
+        assertEquals(411, Item.REGISTRY.getKeys().size(), "We have all the items via GameData");
 
         // Our lookups find the same stuff vanilla sees
         final IForgeRegistry<Block> blocks = RegistryManager.ACTIVE.getRegistry(Block.class);
-        assertEquals("We have a different block registry then vanilla", blocks, getDelegate(Block.REGISTRY));
+        assertEquals(blocks, getDelegate(Block.REGISTRY), "We have a different block registry then vanilla");
 
         // We can look up stuff through our APIs
         Block bl = blocks.getValue(new ResourceLocation("minecraft:air"));
-        assertEquals("We got air when we asked for it", Blocks.AIR, bl);
+        assertEquals(Blocks.AIR, bl, "We got air when we asked for it");
 
         // Default values work
         Block blch = blocks.getValue(new ResourceLocation("minecraft:cheese"));
-        assertEquals("We got air when we asked for cheese", Blocks.AIR, blch);
+        assertEquals(Blocks.AIR, blch, "We got air when we asked for cheese");
 
         // Our lookups find the same stuff vanilla sees
         final IForgeRegistry<Item> items = RegistryManager.ACTIVE.getRegistry(Item.class);
-        assertEquals("We have a different item registry then vanilla", items, getDelegate(Item.REGISTRY));
+        assertEquals(items, getDelegate(Item.REGISTRY), "We have a different item registry then vanilla");
 
         // We can look up stuff through our APIs
         Item it = items.getValue(new ResourceLocation("minecraft:bed"));
-        assertEquals("We got a bed item when we asked for it", Items.BED, it);
+        assertEquals(Items.BED, it, "We got a bed item when we asked for it");
 
         // We find nothing for a non-defaulted registry
         Item none = items.getValue(new ResourceLocation("minecraft:cheese"));
-        assertEquals("We got nothing (items) when we asked for cheese", null, none);
+        assertNull(none, "We got nothing (items) when we asked for cheese");
     }
 
     private Object getDelegate(Object obj)
@@ -106,13 +105,13 @@ public class VanillaRegistryTests
         final IForgeRegistry<Block> blocks = RegistryManager.ACTIVE.getRegistry(Block.class);
         Block myBlock = (new Block(Material.CAKE){}).setRegistryName(new ResourceLocation("minecraft:testy"));
         blocks.register(myBlock);
-        assertNotNull("Registered my block", myBlock);
+        assertNotNull(myBlock, "Registered my block");
 
         // Our lookups find the same stuff vanilla sees
-        assertEquals("We have a different block registry then vanilla", blocks, getDelegate(Block.REGISTRY));
+        assertEquals(blocks, getDelegate(Block.REGISTRY), "We have a different block registry then vanilla");
 
         Block found = blocks.getValue(new ResourceLocation("minecraft:testy"));
-        assertEquals("Registry lookup works", myBlock, found);
+        assertEquals(myBlock, found, "Registry lookup works");
     }
 
     @Test
@@ -121,18 +120,18 @@ public class VanillaRegistryTests
         final ForgeRegistry<Block> blockVanilla = (ForgeRegistry<Block>)RegistryManager.VANILLA.getRegistry(Block.class);
         final ForgeRegistry<Block> blockActive = (ForgeRegistry<Block>)RegistryManager.ACTIVE.getRegistry(Block.class);
 
-        assertNotEquals("Registry states are distinct", blockActive, blockVanilla);
+        assertNotEquals(blockActive, blockVanilla, "Registry states are distinct");
 
         final Block stoneActive = blockActive.getValue(new ResourceLocation("minecraft:stone"));
         final Block stoneVanilla = blockVanilla.getValue(new ResourceLocation("minecraft:stone"));
 
-        assertEquals("Stone from active and vanilla are the same", stoneActive, stoneVanilla);
+        assertEquals(stoneActive, stoneVanilla, "Stone from active and vanilla are the same");
 
         int activeId = blockActive.getID(stoneActive);
         int vanillaId = blockVanilla.getID(stoneVanilla);
 
-        assertEquals("Stone has correct id", 1, activeId);
-        assertEquals("Stone has correct id", 1, vanillaId);
+        assertEquals(1, activeId, "Stone has correct id");
+        assertEquals(1, vanillaId, "Stone has correct id");
     }
 
 

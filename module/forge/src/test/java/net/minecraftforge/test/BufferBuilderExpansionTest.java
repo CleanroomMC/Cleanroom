@@ -22,12 +22,12 @@ package net.minecraftforge.test;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.nio.ByteBuffer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BufferBuilderExpansionTest
 {
@@ -53,7 +53,7 @@ public class BufferBuilderExpansionTest
         }
         buffer.finishDrawing();
 
-        assertTrue("BufferBuilder's capacity didn't change.", buffer.getByteBuffer().capacity() > prevCap);
+        assertTrue(buffer.getByteBuffer().capacity() > prevCap, "BufferBuilder's capacity didn't change.");
     }
 
     @Test//Test the expansion of the buffer with endVertex.
@@ -72,7 +72,7 @@ public class BufferBuilderExpansionTest
         }
         buffer.finishDrawing();
 
-        assertTrue("BufferBuilder's capacity didn't change.", buffer.getByteBuffer().capacity() > prevCap);
+        assertTrue(buffer.getByteBuffer().capacity() > prevCap, "BufferBuilder's capacity didn't change.");
     }
 
     @Test//Test the expansion of the buffer if addVertexData fills it and pos / tex / endVertex is used.
@@ -99,7 +99,7 @@ public class BufferBuilderExpansionTest
         }
         buffer.finishDrawing();
 
-        assertTrue("BufferBuilder's capacity didn't change.", buffer.getByteBuffer().capacity() > prevCap);
+        assertTrue(buffer.getByteBuffer().capacity() > prevCap, "BufferBuilder's capacity didn't change.");
     }
 
     @Test//Test the expansion of the buffer with putBulkData
@@ -119,7 +119,7 @@ public class BufferBuilderExpansionTest
         }
         buffer.finishDrawing();
 
-        assertTrue("BufferBuilder's capacity didn't change.", buffer.getByteBuffer().capacity() > prevCap);
+        assertTrue(buffer.getByteBuffer().capacity() > prevCap, "BufferBuilder's capacity didn't change.");
     }
 
     @Test//Test the expansion of the buffer if putBulkData fills it and pos / tex / endVertex is used.
@@ -147,6 +147,6 @@ public class BufferBuilderExpansionTest
         }
         buffer.finishDrawing();
 
-        assertTrue("BufferBuilder's capacity didn't change.", buffer.getByteBuffer().capacity() > prevCap);
+        assertTrue(buffer.getByteBuffer().capacity() > prevCap, "BufferBuilder's capacity didn't change.");
     }
 }

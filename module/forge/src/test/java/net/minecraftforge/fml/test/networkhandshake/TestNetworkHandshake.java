@@ -39,11 +39,10 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -54,7 +53,7 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestNetworkHandshake
 {
@@ -67,10 +66,7 @@ public class TestNetworkHandshake
     public static NetworkManager server;
     private CyclicBarrier barrier;
 
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(10); // 10 seconds max per method tested, including setup
-
-    @BeforeClass
+    @BeforeAll
     public static void setupLogging() {
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
         builder.add(builder.newFilter("MarkerFilter", Filter.Result.ACCEPT, Filter.Result.NEUTRAL).addAttribute("marker", "NETWORK"));
@@ -80,7 +76,8 @@ public class TestNetworkHandshake
         Configurator.setRootLevel(Level.DEBUG);
     }
 
-    @Before
+    @BeforeEach
+    @Timeout(10)
     public void setup() throws IOException, NoSuchFieldException, IllegalAccessException, InterruptedException
     {
         if (true) return;
@@ -189,6 +186,7 @@ public class TestNetworkHandshake
     }
 
     @Test
+    @Timeout(10)
     public void testNetworkFlow() throws InterruptedException, BrokenBarrierException
     {
         if (true) return;
