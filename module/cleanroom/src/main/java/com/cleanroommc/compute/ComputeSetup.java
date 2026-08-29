@@ -2,8 +2,10 @@ package com.cleanroommc.compute;
 
 import com.cleanroommc.compute.errors.InvalidPlatformError;
 import com.cleanroommc.compute.errors.UnavaliableDeviceError;
+import com.cleanroommc.compute.events.RegisterComputeProgramsEvent;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
@@ -117,6 +119,8 @@ public class ComputeSetup {
                     ctx, client,
                     deviceArray
             );
+            MinecraftForge.EVENT_BUS.post(new RegisterComputeProgramsEvent());
+            Compute.instance().compilePrograms();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 CL10.clReleaseContext(ctx);
                 CL.destroy();
