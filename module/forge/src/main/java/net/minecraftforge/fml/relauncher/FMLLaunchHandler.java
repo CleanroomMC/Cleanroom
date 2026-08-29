@@ -128,7 +128,7 @@ public class FMLLaunchHandler
             CleanroomLog.get().info("Initializing MixinExtras...");
             MixinExtrasBootstrap.init();
             Configuration.OPENCL_EXPLICIT_INIT.set(true);
-            ComputeSetup.initOpenCL(LogManager.getLogger("Compute"), Launch.blackboard.get("fml.side").equals("client"));
+            ComputeSetup.initOpenCL(LogManager.getLogger("Compute"), FMLLaunchHandler.side().equals(Side.CLIENT));
             CoreModManager.handleLaunch(minecraftHome, classLoader, tweaker);
         }
         catch (Throwable t)
