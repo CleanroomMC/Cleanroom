@@ -1,6 +1,23 @@
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.audio.AudioDevices;
+import com.cleanroommc.client.sdl.audio.AudioInternal;
+import com.cleanroommc.client.sdl.camera.CameraInternal;
+import com.cleanroommc.client.sdl.camera.Cameras;
+import com.cleanroommc.client.sdl.hid.Hid;
+import com.cleanroommc.client.sdl.hid.HidInternal;
+import com.cleanroommc.client.sdl.input.Gamepads;
+import com.cleanroommc.client.sdl.input.Haptics;
+import com.cleanroommc.client.sdl.input.InputInternal;
+import com.cleanroommc.client.sdl.input.Joysticks;
+import com.cleanroommc.client.sdl.input.Keyboard;
+import com.cleanroommc.client.sdl.input.Mouse;
+import com.cleanroommc.client.sdl.input.Pens;
+import com.cleanroommc.client.sdl.input.Sensors;
+import com.cleanroommc.client.sdl.input.Touches;
 import com.cleanroommc.client.sdl.input.virtual.Text;
+import com.cleanroommc.client.sdl.video.Displays;
+import com.cleanroommc.client.sdl.video.VideoInternal;
 import com.cleanroommc.common.CleanroomVersion;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.lwjgl.sdl.SDLError;
@@ -12,18 +29,118 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
+import java.util.List;
+
 /**
- * SDL's lifecycle helpers.
+ * The way into SDL. Every device, subsystem and lifecycle call is exposed through here.
  */
 public final class SDL {
 
     /**
      * Every {@code com.cleanroommc.client.sdl.events} event is posted here, not on Forge's bus.
      * */
-    public static final EventBus EVENT_BUS = new EventBus();
+    private static final EventBus EVENT_BUS = new EventBus();
 
     private static int initializedBits;
     private static SDL_LogOutputFunction logOutput;
+
+    public static EventBus events() {
+        return EVENT_BUS;
+    }
+
+    public static Window window() {
+        return Window.main();
+    }
+
+    public static Window.Builder createWindow() {
+        return Window.builder();
+    }
+
+    public static Displays displays() {
+        return VideoInternal.displays();
+    }
+
+    public static Keyboard keyboard() {
+        return InputInternal.keyboard();
+    }
+
+    public static Mouse mouse() {
+        return InputInternal.mouse();
+    }
+
+    public static Text text() {
+        Window window = Window.main();
+        return window == null ? null : window.text();
+    }
+
+    public static Gamepads gamepads() {
+        return InputInternal.gamepads();
+    }
+
+    public static Joysticks joysticks() {
+        return InputInternal.joysticks();
+    }
+
+    public static Haptics haptics() {
+        return InputInternal.haptics();
+    }
+
+    public static Sensors sensors() {
+        return InputInternal.sensors();
+    }
+
+    public static Touches touches() {
+        return InputInternal.touches();
+    }
+
+    public static Pens pens() {
+        return InputInternal.pens();
+    }
+
+    public static Cameras cameras() {
+        return CameraInternal.cameras();
+    }
+
+    public static AudioDevices audio() {
+        return AudioInternal.audio();
+    }
+
+    public static Hid hid() {
+        return HidInternal.hid();
+    }
+
+    public static Clipboard clipboard() {
+        return Clipboard.INSTANCE;
+    }
+
+    public static FileDialogs dialogs() {
+        return FileDialogs.INSTANCE;
+    }
+
+    public static Desktop desktop() {
+        return Desktop.INSTANCE;
+    }
+
+    public static FileSystem files() {
+        return FileSystem.INSTANCE;
+    }
+
+    public static RuntimeInfo runtime() {
+        return RuntimeInfo.INSTANCE;
+    }
+
+    public static Power power() {
+        return Power.query();
+    }
+
+    public static SystemTheme theme() {
+        return SystemTheme.current();
+    }
+
+    public static Tray createTray(BufferedImage icon, String tooltip) {
+        return Tray.create(icon, tooltip);
+    }
 
     /**
      * Brings up the video and event subsystems, if they are not already up.
@@ -83,7 +200,7 @@ public final class SDL {
 
     /** Closes the host window and tears down every subsystem this class brought up. */
     public static synchronized void shutdown() {
-        Devices.reset();
+        Lifecycle.reset();
         CleanroomWindowBridge.uninstall();
         Window.closeMain();
         if (initializedBits == 0) {

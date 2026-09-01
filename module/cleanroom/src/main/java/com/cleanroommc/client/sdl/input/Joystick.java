@@ -185,7 +185,7 @@ public final class Joystick {
      * Opens this stick's haptic device, if it has one.
      */
     public Haptic haptic() {
-        return Inputs.haptics().open(this);
+        return InputInternal.haptics().open(this);
     }
 
     long handle() {

@@ -5,7 +5,7 @@
              String s = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
              boolean flag = j >= 0 && j <= s.length();
 -            boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
-+            boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag && !com.cleanroommc.client.sdl.Window.main().text().composition().active();
++            boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag && !com.cleanroommc.client.sdl.SDL.window().text().composition().active();
              int l = this.enableBackgroundDrawing ? this.x + 4 : this.x;
              int i1 = this.enableBackgroundDrawing ? this.y + (this.height - 8) / 2 : this.y;
              int j1 = l;
@@ -21,7 +21,7 @@
          }
  
          this.isFocused = isFocusedIn;
-+        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.window();
 +        if (window != null) {
 +            window.text().active(isFocusedIn);
 +        }

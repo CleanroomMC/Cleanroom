@@ -52,7 +52,7 @@ public final class Joysticks {
         return sticks.get(instanceId);
     }
 
-    public synchronized void handle(SDL_Event event) {
+    synchronized void handle(SDL_Event event) {
         if (!started) {
             return;
         }
@@ -62,7 +62,7 @@ public final class Joysticks {
                 SDL_JoyDeviceEvent device = event.jdevice();
                 Joystick stick = open(device.which());
                 if (stick != null) {
-                    SDL.EVENT_BUS.post(new JoystickEvent.Added(device.timestamp(), stick));
+                    SDL.events().post(new JoystickEvent.Added(device.timestamp(), stick));
                 }
             }
             case SDLEvents.SDL_EVENT_JOYSTICK_REMOVED -> {
@@ -72,7 +72,7 @@ public final class Joysticks {
                 if (stick != null) {
                     SDLJoystick.SDL_CloseJoystick(stick.handle());
                 }
-                SDL.EVENT_BUS.post(new JoystickEvent.Removed(id, device.timestamp()));
+                SDL.events().post(new JoystickEvent.Removed(id, device.timestamp()));
             }
             case SDLEvents.SDL_EVENT_JOYSTICK_BATTERY_UPDATED -> {
                 SDL_JoyBatteryEvent battery = event.jbattery();
@@ -80,7 +80,7 @@ public final class Joysticks {
                 if (stick != null) {
                     Power.State state = Power.State.of(battery.state());
                     int percent = battery.percent();
-                    SDL.EVENT_BUS.post(new JoystickEvent.Battery(battery.timestamp(), stick, state, percent));
+                    SDL.events().post(new JoystickEvent.Battery(battery.timestamp(), stick, state, percent));
                 }
             }
         }
@@ -127,13 +127,13 @@ public final class Joysticks {
         started = true;
         Joystick stick = new Joystick(instanceId, handle);
         sticks.put(instanceId, stick);
-        SDL.EVENT_BUS.post(new JoystickEvent.Added(SDLTimer.SDL_GetTicksNS(), stick));
+        SDL.events().post(new JoystickEvent.Added(SDLTimer.SDL_GetTicksNS(), stick));
         return stick;
     }
 
     synchronized void injectRemoved(int instanceId) {
         sticks.remove(instanceId);
-        SDL.EVENT_BUS.post(new JoystickEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
+        SDL.events().post(new JoystickEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

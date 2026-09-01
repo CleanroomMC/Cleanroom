@@ -4,8 +4,7 @@ import com.cleanroommc.client.sdl.SystemTheme;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
- * Posted on {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS} when the desktop switches between light and
- * dark, from the window pump's {@code SDL_EVENT_SYSTEM_THEME_CHANGED} handling.
+ * Posted on {@link com.cleanroommc.client.sdl.SDL#events()} when the desktop switches between light and dark.
  */
 public class SystemThemeEvent extends Event {
 

@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * Hotplug and readings for standalone sensors, posted on
- * {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS} from {@link com.cleanroommc.client.sdl.Window#pump()}.
+ * {@link com.cleanroommc.client.sdl.SDL#events()}.
  */
 public abstract class SensorEvent extends Event {
 

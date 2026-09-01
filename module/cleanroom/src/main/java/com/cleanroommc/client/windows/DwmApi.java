@@ -1,7 +1,7 @@
 /// Copyright under MIT https://github.com/LemonCaramel/Mica
 package com.cleanroommc.client.windows;
 
-import com.cleanroommc.client.sdl.SystemTheme;
+import com.cleanroommc.client.sdl.SDL;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -103,7 +103,7 @@ public interface DwmApi extends Library {
         }
 
         // DWMWA_USE_IMMERSIVE_DARK_MODE
-        final boolean useImmersiveDarkMode = ForgeEarlyConfig.MODERN_WINDOWS_STYLES.USE_IMMERSIVE_DARK_MODE && SystemTheme.current().dark();
+        final boolean useImmersiveDarkMode = ForgeEarlyConfig.MODERN_WINDOWS_STYLES.USE_IMMERSIVE_DARK_MODE && SDL.theme().dark();
         INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, new IntByReference(useImmersiveDarkMode ? BOOL_TRUE : BOOL_FALSE), INT_SIZE);
 
         // DWMWA_SYSTEMBACKDROP_TYPE

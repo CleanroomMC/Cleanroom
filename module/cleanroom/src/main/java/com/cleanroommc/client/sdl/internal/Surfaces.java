@@ -1,5 +1,7 @@
-package com.cleanroommc.client.sdl;
+package com.cleanroommc.client.sdl.internal;
 
+import com.cleanroommc.client.sdl.SDL;
+import com.cleanroommc.client.sdl.SDLException;
 import org.lwjgl.sdl.SDLPixels;
 import org.lwjgl.sdl.SDLSurface;
 import org.lwjgl.sdl.SDL_Surface;
@@ -8,7 +10,11 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/** Shared ARGB {@code SDL_Surface} helpers for icons and cursors. */
+/**
+ * Shared ARGB {@code SDL_Surface} helpers for icons and cursors.
+ *
+ * <p>Internal. Not part of the SDL API surface. Reach SDL through {@link SDL}.
+ */
 public final class Surfaces {
 
     public static SDL_Surface from(BufferedImage image) {

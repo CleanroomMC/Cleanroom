@@ -38,16 +38,16 @@ public final class FileDialogs {
 
     private static final Queue<Runnable> PENDING_RELEASE = new ConcurrentLinkedQueue<>();
 
-    public static void error(Window window, String title, String message) {
-        box(SDLMessageBox.SDL_MESSAGEBOX_ERROR, window, title, message);
+    public void error(String title, String message) {
+        box(SDLMessageBox.SDL_MESSAGEBOX_ERROR, title, message);
     }
 
-    public static void warn(Window window, String title, String message) {
-        box(SDLMessageBox.SDL_MESSAGEBOX_WARNING, window, title, message);
+    public void warn(String title, String message) {
+        box(SDLMessageBox.SDL_MESSAGEBOX_WARNING, title, message);
     }
 
-    public static void info(Window window, String title, String message) {
-        box(SDLMessageBox.SDL_MESSAGEBOX_INFORMATION, window, title, message);
+    public void info(String title, String message) {
+        box(SDLMessageBox.SDL_MESSAGEBOX_INFORMATION, title, message);
     }
 
     /**
@@ -55,7 +55,7 @@ public final class FileDialogs {
      *
      * @return the id of the button that was pressed, or {@code -1} if the box was dismissed
      */
-    public static int ask(Window window, String title, String message, Button... buttons) {
+    public int ask(String title, String message, Button... buttons) {
         if (buttons == null || buttons.length == 0) {
             throw new IllegalArgumentException("At least one button is required");
         }
@@ -77,7 +77,7 @@ public final class FileDialogs {
             }
             SDL_MessageBoxData data = SDL_MessageBoxData.calloc(stack);
             data.flags(0)
-                    .window(handle(window))
+                    .window(parentHandle())
                     .title(stack.UTF8(title == null ? "" : title))
                     .message(stack.UTF8(message == null ? "" : message))
                     .buttons(nativeButtons);
@@ -87,19 +87,19 @@ public final class FileDialogs {
         }
     }
 
-    public static void openFile(Window window, List<Filter> filters, boolean many, Consumer<List<Path>> onResult) {
-        fileDialog(window, filters, many, null, true, false, onResult);
+    public void openFile(List<Filter> filters, boolean many, Consumer<List<Path>> onResult) {
+        fileDialog(filters, many, null, true, false, onResult);
     }
 
-    public static void saveFile(Window window, List<Filter> filters, String defaultLocation, Consumer<List<Path>> onResult) {
-        fileDialog(window, filters, false, defaultLocation, false, false, onResult);
+    public void saveFile(List<Filter> filters, String defaultLocation, Consumer<List<Path>> onResult) {
+        fileDialog(filters, false, defaultLocation, false, false, onResult);
     }
 
-    public static void openFolder(Window window, boolean many, Consumer<List<Path>> onResult) {
-        fileDialog(window, List.of(), many, null, false, true, onResult);
+    public void openFolder(boolean many, Consumer<List<Path>> onResult) {
+        fileDialog(List.of(), many, null, false, true, onResult);
     }
 
-    /** Releases the native memory of dialogs that completed during the last {@link Window#pump()}. */
+    /** Releases the native memory of dialogs that completed during the last event pump. */
     static void pump() {
         Runnable release;
         while ((release = PENDING_RELEASE.poll()) != null) {
@@ -107,7 +107,7 @@ public final class FileDialogs {
         }
     }
 
-    private static void fileDialog(Window window, List<Filter> filters, boolean many, String location,
+    private static void fileDialog(List<Filter> filters, boolean many, String location,
             boolean openFile, boolean folder, Consumer<List<Path>> onResult) {
         if (onResult == null) {
             throw new IllegalArgumentException("onResult cannot be null");
@@ -141,7 +141,7 @@ public final class FileDialogs {
             }
         });
         try {
-            long parent = handle(window);
+            long parent = parentHandle();
             if (folder) {
                 SDLDialog.SDL_ShowOpenFolderDialog(holder[0], 0L, parent, where, many);
             } else if (openFile) {
@@ -187,17 +187,20 @@ public final class FileDialogs {
         return paths;
     }
 
-    private static void box(int flags, Window window, String title, String message) {
+    private static void box(int flags, String title, String message) {
         SDL.check(SDLMessageBox.SDL_ShowSimpleMessageBox(flags,
                 title == null ? "" : title,
                 message == null ? "" : message,
-                handle(window)), "SDL_ShowSimpleMessageBox"
+                parentHandle()), "SDL_ShowSimpleMessageBox"
         );
     }
 
-    private static long handle(Window window) {
+    private static long parentHandle() {
+        Window window = Window.main();
         return window == null ? 0L : window.handle();
     }
+
+    static final FileDialogs INSTANCE = new FileDialogs();
 
     private FileDialogs() { }
 

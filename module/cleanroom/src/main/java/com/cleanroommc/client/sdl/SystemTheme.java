@@ -21,12 +21,12 @@ public enum SystemTheme {
     }
 
     /** Called from the window pump when {@code SDL_EVENT_SYSTEM_THEME_CHANGED} arrives. */
-    public static void changed(long timestampNs) {
-        SDL.EVENT_BUS.post(new SystemThemeEvent(current(), timestampNs));
+    static void changed(long timestampNs) {
+        SDL.events().post(new SystemThemeEvent(current(), timestampNs));
     }
 
     /** @return the current desktop theme, or {@link #UNKNOWN} when the platform does not report one */
-    public static SystemTheme current() {
+    static SystemTheme current() {
         SDL.ensureVideo();
         int theme = SDLVideo.SDL_GetSystemTheme();
         for (SystemTheme candidate : values()) {

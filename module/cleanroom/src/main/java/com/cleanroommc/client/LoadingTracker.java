@@ -3,6 +3,7 @@ package com.cleanroommc.client;
 import java.io.*;
 import java.util.*;
 
+import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.Window;
 import com.cleanroommc.util.CleanroomLog;
 import net.minecraft.launchwrapper.Launch;
@@ -277,7 +278,7 @@ public class LoadingTracker {
     }
 
     private static void setWindowProgress(Window.Progress state, float value) {
-        Window window = Window.main();
+        Window window = SDL.window();
         if (window == null) {
             return;
         }

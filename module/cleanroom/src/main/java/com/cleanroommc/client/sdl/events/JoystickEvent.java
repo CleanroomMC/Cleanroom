@@ -5,8 +5,7 @@ import com.cleanroommc.client.sdl.input.Joystick;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
- * Hotplug and battery for raw joysticks, posted on {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS} from
- * {@link com.cleanroommc.client.sdl.Window#pump()}.
+ * Hotplug and battery for raw joysticks, posted on {@link com.cleanroommc.client.sdl.SDL#events()}.
  */
 public abstract class JoystickEvent extends Event {
 

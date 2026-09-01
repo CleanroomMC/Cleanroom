@@ -14,41 +14,32 @@ public final class Mouse {
     Mouse() { }
 
     public float x() {
-        Window window = Window.main();
+        Window window = SDL.window();
         return window == null ? 0.0F : window.mouseX();
     }
 
     public float y() {
-        Window window = Window.main();
+        Window window = SDL.window();
         return window == null ? 0.0F : window.mouseY();
     }
 
     public boolean button(MouseButton button) {
-        if (button == null) {
-            return false;
-        }
-        Window window = Window.main();
-        return window != null && window.mouseButtonDown(button.value());
+        Window window = SDL.window();
+        return button != null && window != null && window.mouseButtonDown(button.value());
     }
 
     public boolean grabbed() {
-        Window window = Window.main();
+        Window window = SDL.window();
         return window != null && window.mouseGrabbed();
     }
 
     public Mouse grabbed(boolean grab) {
-        Window window = Window.main();
-        if (window != null) {
-            window.grabMouse(grab);
-        }
+        required().grabMouse(grab);
         return this;
     }
 
     public Mouse position(float x, float y) {
-        Window window = Window.main();
-        if (window != null) {
-            window.mousePosition(x, y);
-        }
+        required().mousePosition(x, y);
         return this;
     }
 
@@ -69,7 +60,7 @@ public final class Mouse {
         if (cursor == null) {
             throw new IllegalArgumentException("Cursor cannot be null");
         }
-        Inputs.systemCursor(cursor).apply();
+        Cursor.system(cursor).apply();
         return this;
     }
 
@@ -80,6 +71,14 @@ public final class Mouse {
         }
         cursor.apply();
         return this;
+    }
+
+    private static Window required() {
+        Window window = SDL.window();
+        if (window == null) {
+            throw new IllegalStateException("There is no SDL window to point at yet");
+        }
+        return window;
     }
 
 }

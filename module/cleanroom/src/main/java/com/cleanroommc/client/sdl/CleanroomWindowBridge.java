@@ -256,7 +256,7 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public void pump() {
-        window.pump();
+        Pump.pump(window);
     }
 
     @Override

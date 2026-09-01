@@ -1,5 +1,6 @@
 package com.cleanroommc.client.sdl.input;
 
+import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.Window;
 import org.lwjgl.sdl.SDLKeyboard;
 import org.lwjgl.system.MemoryStack;
@@ -20,7 +21,7 @@ public final class Keyboard {
         if (scancode == null) {
             return false;
         }
-        Window window = Window.main();
+        Window window = SDL.window();
         return window != null && window.keyDown(scancode.value());
     }
 
@@ -34,7 +35,8 @@ public final class Keyboard {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             ShortBuffer unused = stack.mallocShort(1);
             int scancode = SDLKeyboard.SDL_GetScancodeFromKey(keycode.value(), unused);
-            return Window.main() != null && Window.main().keyDown(scancode);
+            Window window = SDL.window();
+            return window != null && window.keyDown(scancode);
         }
     }
 
@@ -42,7 +44,7 @@ public final class Keyboard {
      * @return the current modifier bits
      */
     public KeyModifier mods() {
-        if (Window.main() == null) {
+        if (SDL.window() == null) {
             return KeyModifier.none();
         }
         return KeyModifier.of(SDLKeyboard.SDL_GetModState() & 0xFFFF);

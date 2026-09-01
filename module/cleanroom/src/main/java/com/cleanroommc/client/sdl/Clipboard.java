@@ -1,5 +1,6 @@
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.internal.Surfaces;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.sdl.SDLClipboard;
 import org.lwjgl.sdl.SDLIOStream;
@@ -21,6 +22,10 @@ import java.util.Optional;
  */
 public final class Clipboard {
 
+    static final Clipboard INSTANCE = new Clipboard();
+
+    private Clipboard() { }
+
     private static final String IMAGE_PNG = "image/png";
     private static final String IMAGE_BMP = "image/bmp";
 
@@ -31,20 +36,20 @@ public final class Clipboard {
     private static SDL_ClipboardDataCallback imageData;
     private static SDL_ClipboardCleanupCallback imageCleanup;
 
-    public static boolean hasText() {
+    public boolean hasText() {
         if (textKnown) {
             return hasText;
         }
         return SDLClipboard.SDL_HasClipboardText();
     }
 
-    public static String text() {
+    public String text() {
         String text = hasText() ? SDLClipboard.SDL_GetClipboardText() : "";
         cache(!text.isEmpty());
         return text;
     }
 
-    public static void text(String value) {
+    public void text(String value) {
         if (value == null) {
             value = "";
         }
@@ -52,29 +57,29 @@ public final class Clipboard {
         cache(!value.isEmpty());
     }
 
-    public static boolean hasPrimary() {
+    public boolean hasPrimary() {
         return SDLClipboard.SDL_HasPrimarySelectionText();
     }
 
-    public static String primary() {
+    public String primary() {
         if (hasPrimary()) {
             return SDLClipboard.SDL_GetPrimarySelectionText();
         }
         return "";
     }
 
-    public static void primary(String value) {
+    public void primary(String value) {
         if (value == null) {
             value = "";
         }
         SDL.check(SDLClipboard.SDL_SetPrimarySelectionText(value), "SDL_SetPrimarySelectionText");
     }
 
-    public static boolean has(String mime) {
+    public boolean has(String mime) {
         return mime != null && SDLClipboard.SDL_HasClipboardData(mime);
     }
 
-    public static Optional<ByteBuffer> data(String mime) {
+    public Optional<ByteBuffer> data(String mime) {
         if (mime == null) {
             return Optional.empty();
         }
@@ -82,29 +87,24 @@ public final class Clipboard {
         return Optional.ofNullable(buffer);
     }
 
-    public static void free(ByteBuffer data) {
-        if (data != null) {
-            SDLStdinc.SDL_free(data);
-        }
+    public void free(ByteBuffer data) {
+        release(data);
     }
 
-    public static boolean hasImage() {
+    public boolean hasImage() {
         return has(IMAGE_PNG) || has(IMAGE_BMP);
     }
 
-    public static Optional<BufferedImage> image() {
+    public Optional<BufferedImage> image() {
         Optional<ByteBuffer> png = data(IMAGE_PNG);
         if (png.isPresent()) {
             return Optional.ofNullable(decode(png.get(), true));
         }
         Optional<ByteBuffer> bmp = data(IMAGE_BMP);
-        if (bmp.isPresent()) {
-            return Optional.ofNullable(decode(bmp.get(), false));
-        }
-        return Optional.empty();
+        return bmp.map(byteBuffer -> decode(byteBuffer, false));
     }
 
-    public static void image(BufferedImage image) {
+    public void image(BufferedImage image) {
         if (image == null) {
             throw new IllegalArgumentException("Image cannot be null");
         }
@@ -119,7 +119,7 @@ public final class Clipboard {
     }
 
     /** Called from the window pump when {@code SDL_EVENT_CLIPBOARD_UPDATE} arrives. */
-    public static void updated() {
+    static void updated() {
         textKnown = false;
     }
 
@@ -136,7 +136,7 @@ public final class Clipboard {
         return textKnown;
     }
 
-    public static synchronized void reset() {
+    static synchronized void reset() {
         textKnown = false;
         hasText = false;
         if (imageData != null) {
@@ -169,7 +169,7 @@ public final class Clipboard {
                 SDLSurface.SDL_DestroySurface(surface);
             }
         } finally {
-            free(bytes);
+            release(bytes);
         }
     }
 
@@ -231,6 +231,11 @@ public final class Clipboard {
         }
     }
 
-    private Clipboard() { }
+
+    private static void release(ByteBuffer data) {
+        if (data != null) {
+            SDLStdinc.SDL_free(data);
+        }
+    }
 
 }

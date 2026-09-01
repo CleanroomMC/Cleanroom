@@ -4,8 +4,7 @@ import com.cleanroommc.client.sdl.input.PenAxis;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
- * Drawing-tablet events, posted on {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS} from
- * {@link com.cleanroommc.client.sdl.Window#pump()}.
+ * Drawing-tablet events, posted on {@link com.cleanroommc.client.sdl.SDL#events()}.
  */
 public abstract class PenEvent extends Event {
 

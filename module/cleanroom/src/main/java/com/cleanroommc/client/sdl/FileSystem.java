@@ -17,36 +17,40 @@ import java.util.Optional;
  */
 public final class FileSystem {
 
-    public static Path base() {
+    static final FileSystem INSTANCE = new FileSystem();
+
+    private FileSystem() { }
+
+    public Path base() {
         return pathOrNull(SDLFileSystem.SDL_GetBasePath());
     }
 
-    public static Path pref(String org, String app) {
+    public Path pref(String org, String app) {
         if (org == null || app == null) {
             throw new IllegalArgumentException("org and app cannot be null");
         }
         return pathOrNull(SDLFileSystem.SDL_GetPrefPath(org, app));
     }
 
-    public static Path current() {
+    public Path current() {
         return pathOrNull(SDLFileSystem.SDL_GetCurrentDirectory());
     }
 
-    public static Path folder(Folder folder) {
+    public Path folder(Folder folder) {
         if (folder == null) {
             throw new IllegalArgumentException("Folder cannot be null");
         }
         return pathOrNull(SDLFileSystem.SDL_GetUserFolder(folder.value()));
     }
 
-    public static Optional<PathInfo> info(Path path) {
+    public Optional<PathInfo> info(Path path) {
         if (path == null) {
             return Optional.empty();
         }
         return info(path.toAbsolutePath().toString());
     }
 
-    public static Optional<PathInfo> info(String path) {
+    public Optional<PathInfo> info(String path) {
         if (path == null || path.isEmpty()) {
             return Optional.empty();
         }
@@ -65,14 +69,14 @@ public final class FileSystem {
         }
     }
 
-    public static List<Path> glob(Path directory, String pattern) {
+    public List<Path> glob(Path directory, String pattern) {
         if (directory == null) {
             throw new IllegalArgumentException("Directory cannot be null");
         }
         return glob(directory.toAbsolutePath().toString(), pattern);
     }
 
-    public static List<Path> glob(String directory, String pattern) {
+    public List<Path> glob(String directory, String pattern) {
         if (directory == null) {
             throw new IllegalArgumentException("Directory cannot be null");
         }
@@ -98,6 +102,5 @@ public final class FileSystem {
         return value == null || value.isEmpty() ? null : Path.of(value);
     }
 
-    private FileSystem() { }
 
 }

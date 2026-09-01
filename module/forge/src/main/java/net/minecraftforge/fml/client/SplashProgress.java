@@ -22,8 +22,8 @@ package net.minecraftforge.fml.client;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
+import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.SharedGLContext;
-import com.cleanroommc.client.sdl.Window;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -237,7 +237,7 @@ public class SplashProgress
 
         try
         {
-            shared = SharedGLContext.create(Window.main());
+            shared = SharedGLContext.create(SDL.window());
             Display.releaseContext();
             shared.makeCurrent();
         }

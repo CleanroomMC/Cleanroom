@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * Hotplug and pad-local input for mapped gamepads, posted on
- * {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS} from {@link com.cleanroommc.client.sdl.Window#pump()}.
+ * {@link com.cleanroommc.client.sdl.SDL#events()}.
  */
 public abstract class GamepadEvent extends Event {
 

@@ -5,8 +5,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import java.nio.file.Path;
 
 /**
- * File and text drops onto the host window, posted on {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS}
- * from {@link com.cleanroommc.client.sdl.Window#pump()}.
+ * File and text drops onto the host window, posted on {@link com.cleanroommc.client.sdl.SDL#events()}.
  */
 public abstract class DropEvent extends Event {
 

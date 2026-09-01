@@ -40,12 +40,17 @@ public final class Sensors {
         return List.copyOf(sensors.values());
     }
 
+    public Sensor first() {
+        List<Sensor> sensors = list();
+        return sensors.isEmpty() ? null : sensors.getFirst();
+    }
+
     public synchronized Sensor byId(int id) {
         ensure();
         return sensors.get(id);
     }
 
-    public synchronized void handle(SDL_Event event) {
+    synchronized void handle(SDL_Event event) {
         if (!started) {
             return;
         }
@@ -57,7 +62,7 @@ public final class Sensors {
                 return;
             }
             float[] data = {update.data(0), update.data(1), update.data(2)};
-            SDL.EVENT_BUS.post(new SensorEvent.Updated(update.timestamp(), sensor, data,
+            SDL.events().post(new SensorEvent.Updated(update.timestamp(), sensor, data,
                     update.sensor_timestamp()));
         }
         // Standalone sensors have no add/remove event
@@ -104,13 +109,13 @@ public final class Sensors {
         started = true;
         Sensor sensor = new Sensor(id, handle);
         sensors.put(id, sensor);
-        SDL.EVENT_BUS.post(new SensorEvent.Added(SDLTimer.SDL_GetTicksNS(), sensor));
+        SDL.events().post(new SensorEvent.Added(SDLTimer.SDL_GetTicksNS(), sensor));
         return sensor;
     }
 
     synchronized void injectRemoved(int id) {
         sensors.remove(id);
-        SDL.EVENT_BUS.post(new SensorEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
+        SDL.events().post(new SensorEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

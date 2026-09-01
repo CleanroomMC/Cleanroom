@@ -11,7 +11,11 @@ import java.util.List;
 /** Connected displays. Requires the video subsystem. */
 public final class Displays {
 
-    public static List<Display> all() {
+    static final Displays INSTANCE = new Displays();
+
+    private Displays() { }
+
+    public List<Display> all() {
         SDL.ensureVideo();
         IntBuffer ids = SDLVideo.SDL_GetDisplays();
         if (ids == null) {
@@ -28,22 +32,21 @@ public final class Displays {
         }
     }
 
-    public static Display primary() {
+    public Display primary() {
         SDL.ensureVideo();
         int id = SDLVideo.SDL_GetPrimaryDisplay();
         return id == 0 ? null : new Display(id);
     }
 
-    public static Display of(int id) {
+    public Display of(int id) {
         return id == 0 ? null : new Display(id);
     }
 
-    public static String driver() {
+    public String driver() {
         SDL.ensureVideo();
         String name = SDLVideo.SDL_GetCurrentVideoDriver();
         return name == null ? "" : name;
     }
 
-    private Displays() { }
 
 }

@@ -15,16 +15,19 @@ import java.util.Set;
  */
 public final class Hid {
 
-    private static final Set<HidDevice> OPEN = new HashSet<>();
-    private static boolean started;
+    static final Hid INSTANCE = new Hid();
 
     private Hid() { }
 
-    public static List<HidInfo> enumerate() {
+    private static final Set<HidDevice> OPEN = new HashSet<>();
+    private static boolean started;
+
+
+    public List<HidInfo> enumerate() {
         return enumerate(0, 0);
     }
 
-    public static List<HidInfo> enumerate(int vendor, int product) {
+    public List<HidInfo> enumerate(int vendor, int product) {
         ensure();
         SDL_hid_device_info head = SDLHIDAPI.SDL_hid_enumerate((short) vendor, (short) product);
         if (head == null) {
@@ -41,17 +44,17 @@ public final class Hid {
         }
     }
 
-    public static HidDevice open(int vendor, int product) {
+    public HidDevice open(int vendor, int product) {
         return open(vendor, product, null);
     }
 
-    public static HidDevice open(int vendor, int product, String serial) {
+    public HidDevice open(int vendor, int product, String serial) {
         ensure();
         long handle = SDLHIDAPI.SDL_hid_open((short) vendor, (short) product, serial);
         return track(handle, "SDL_hid_open");
     }
 
-    public static HidDevice openPath(String path) {
+    public HidDevice openPath(String path) {
         if (path == null || path.isEmpty()) {
             throw new IllegalArgumentException("Path cannot be empty");
         }
@@ -60,12 +63,12 @@ public final class Hid {
         return track(handle, "SDL_hid_open_path");
     }
 
-    public static int changeCount() {
+    public int changeCount() {
         ensure();
         return SDLHIDAPI.SDL_hid_device_change_count();
     }
 
-    public static synchronized void reset() {
+    static synchronized void closeAll() {
         for (HidDevice device : Set.copyOf(OPEN)) {
             device.close();
         }

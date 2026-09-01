@@ -53,7 +53,7 @@ public final class Gamepads {
     /**
      * Applies a gamepad device event from the window's pump.
      */
-    public synchronized void handle(SDL_Event event) {
+    synchronized void handle(SDL_Event event) {
         if (!started) {
             return;
         }
@@ -65,7 +65,7 @@ public final class Gamepads {
             case SDLEvents.SDL_EVENT_GAMEPAD_ADDED -> {
                 Gamepad pad = open(id);
                 if (pad != null) {
-                    SDL.EVENT_BUS.post(new GamepadEvent.Added(timestampNs, pad));
+                    SDL.events().post(new GamepadEvent.Added(timestampNs, pad));
                 }
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_REMOVED -> {
@@ -73,12 +73,12 @@ public final class Gamepads {
                 if (pad != null) {
                     SDLGamepad.SDL_CloseGamepad(pad.handle());
                 }
-                SDL.EVENT_BUS.post(new GamepadEvent.Removed(id, timestampNs));
+                SDL.events().post(new GamepadEvent.Removed(id, timestampNs));
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_REMAPPED -> {
                 Gamepad pad = pads.get(id);
                 if (pad != null) {
-                    SDL.EVENT_BUS.post(new GamepadEvent.Remapped(timestampNs, pad));
+                    SDL.events().post(new GamepadEvent.Remapped(timestampNs, pad));
                 }
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN,
@@ -90,7 +90,7 @@ public final class Gamepads {
                     return;
                 }
                 boolean down = type != SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_UP;
-                SDL.EVENT_BUS.post(new GamepadEvent.Touchpad(touch.timestamp(), pad, touch.touchpad(),
+                SDL.events().post(new GamepadEvent.Touchpad(touch.timestamp(), pad, touch.touchpad(),
                         touch.finger(), touch.x(), touch.y(), touch.pressure(), down));
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_SENSOR_UPDATE -> {
@@ -101,7 +101,7 @@ public final class Gamepads {
                 }
                 SensorType sensor = SensorType.of(update.sensor());
                 float[] data = {update.data(0), update.data(1), update.data(2)};
-                SDL.EVENT_BUS.post(new GamepadEvent.Sensor(update.timestamp(), pad, sensor, data,
+                SDL.events().post(new GamepadEvent.Sensor(update.timestamp(), pad, sensor, data,
                         update.sensor_timestamp()));
             }
         }
@@ -149,13 +149,13 @@ public final class Gamepads {
         started = true;
         Gamepad pad = new Gamepad(instanceId, handle);
         pads.put(instanceId, pad);
-        SDL.EVENT_BUS.post(new GamepadEvent.Added(SDLTimer.SDL_GetTicksNS(), pad));
+        SDL.events().post(new GamepadEvent.Added(SDLTimer.SDL_GetTicksNS(), pad));
         return pad;
     }
 
     synchronized void injectRemoved(int instanceId) {
         pads.remove(instanceId);
-        SDL.EVENT_BUS.post(new GamepadEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
+        SDL.events().post(new GamepadEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

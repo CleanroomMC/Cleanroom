@@ -19,6 +19,7 @@
 
 package net.minecraftforge.client;
 
+import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.SDLHooks;
 import com.cleanroommc.client.sdl.Window;
 import com.cleanroommc.client.modlist.LegacyModListScreen;
@@ -86,7 +87,7 @@ public class ForgeClientHandler
             event.setGui(new ModListScreen(modList.getParent()));
         }
 
-        Window window = Window.main();
+        Window window = SDL.window();
         if (window != null)
         {
             GuiScreen opened = event.getGui();
@@ -129,7 +130,7 @@ public class ForgeClientHandler
             {
                 return;
             }
-            Window window = Window.main();
+            Window window = SDL.window();
             if (window != null)
             {
                 try

@@ -41,13 +41,13 @@
 +                                GlStateManager.glGetString(7937),
 +                                GlStateManager.glGetString(7938)
 +                            );
-+        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.window();
 +        if (window != null) {
 +            com.cleanroommc.client.sdl.video.Display display = window.display();
 +            if (display != null) {
 +                list.add(String.format("Monitor: %s  scale: %.2f", display.name(), window.displayScale()));
 +            }
-+            com.cleanroommc.client.sdl.Power power = com.cleanroommc.client.sdl.Power.query();
++            com.cleanroommc.client.sdl.Power power = com.cleanroommc.client.sdl.SDL.power();
 +            if (power.state() == com.cleanroommc.client.sdl.Power.State.ON_BATTERY
 +                    || power.state() == com.cleanroommc.client.sdl.Power.State.CHARGING
 +                    || power.state() == com.cleanroommc.client.sdl.Power.State.CHARGED) {

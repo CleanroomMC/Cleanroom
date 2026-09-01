@@ -1,7 +1,7 @@
 package com.cleanroommc.client.sdl.camera;
 
 import com.cleanroommc.client.sdl.SDLException;
-import com.cleanroommc.client.sdl.Surfaces;
+import com.cleanroommc.client.sdl.internal.Surfaces;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.sdl.SDLCamera;
 import org.lwjgl.sdl.SDLStdinc;

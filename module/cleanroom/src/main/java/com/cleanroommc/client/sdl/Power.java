@@ -46,7 +46,7 @@ public record Power(State state, int seconds, int percent) {
 
     }
 
-    public static Power query() {
+    static Power query() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer seconds = stack.mallocInt(1);
             IntBuffer percent = stack.mallocInt(1);

@@ -170,7 +170,7 @@ public final class Haptic implements AutoCloseable {
         }
         closed = true;
         this.leftRightEffect = -1;
-        Inputs.haptics().forget(this);
+        InputInternal.haptics().forget(this);
         SDLHaptic.SDL_CloseHaptic(handle);
     }
 

@@ -32,7 +32,7 @@
 -        }
 -
 -        return "";
-+        return com.cleanroommc.client.sdl.Clipboard.text();
++        return com.cleanroommc.client.sdl.SDL.clipboard().text();
      }
  
      /** Stores the given string in the system clipboard */
@@ -43,7 +43,7 @@
 -                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringselection, null);
 -            } catch (Exception exception) {
 -            }
-+            com.cleanroommc.client.sdl.Clipboard.text(copyText);
++            com.cleanroommc.client.sdl.SDL.clipboard().text(copyText);
          }
      }
  
@@ -160,7 +160,7 @@
 -            Throwable throwable = throwable1.getCause();
 -            LOGGER.error("Couldn't open link: {}", throwable == null ? "<UNKNOWN>" : throwable.getMessage());
 -        }
-+        com.cleanroommc.client.sdl.Desktop.open(url);
++        com.cleanroommc.client.sdl.SDL.desktop().open(url);
      }
  
      /** Returns true if either windows ctrl key is down or if either mac meta key is down */

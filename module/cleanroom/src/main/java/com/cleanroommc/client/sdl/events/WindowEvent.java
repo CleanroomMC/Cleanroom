@@ -4,9 +4,7 @@ import com.cleanroommc.client.sdl.Window;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
- * Host-window notifications, posted on {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS}. Fired from
- * {@link Window#pump()} on the thread that pumps, except {@link Borderless}, which fires from
- * {@link Window#borderless(boolean)} because SDL reports no event for it.
+ * Host-window notifications, posted on {@link com.cleanroommc.client.sdl.SDL#events()}.
  */
 public abstract class WindowEvent extends Event {
 

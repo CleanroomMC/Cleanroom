@@ -23,13 +23,19 @@ public enum MouseButton {
     }
 
     private final int value;
+    private final int mask;
 
     MouseButton(int value) {
         this.value = value;
+        this.mask = 1 << value - 1;
     }
 
     public int value() {
         return value;
+    }
+
+    public int mask() {
+        return mask;
     }
 
 }

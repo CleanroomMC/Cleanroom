@@ -1001,7 +1001,7 @@ public class ForgeHooksClient
 
     /** Re-applies the window style from the window's own state. */
     private static void updateWindowStyle() {
-        Window window = Window.main();
+        Window window = SDL.window();
         setWindowStyle(window != null && window.fullscreen());
     }
 
@@ -1014,7 +1014,7 @@ public class ForgeHooksClient
             return;
         }
         styleListenersRegistered = true;
-        SDL.EVENT_BUS.register(new WindowStyleListener());
+        SDL.events().register(new WindowStyleListener());
     }
 
     private static final class WindowStyleListener {
@@ -1038,7 +1038,7 @@ public class ForgeHooksClient
 
     public static void initializeWindowsInformation() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            Window window = Window.main();
+            Window window = SDL.window();
             if (window != null) {
                 NativeWindow nativeWindow = window.nativeWindow();
                 if (nativeWindow.compositor() == com.cleanroommc.client.sdl.Compositor.WIN32) {
@@ -1056,7 +1056,7 @@ public class ForgeHooksClient
 
     public static void clearTaskbarProgress() {
         LoadingTracker.finish();
-        Window window = Window.main();
+        Window window = SDL.window();
         if (window != null)
         {
             try

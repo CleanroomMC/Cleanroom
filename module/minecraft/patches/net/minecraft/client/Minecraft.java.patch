@@ -63,7 +63,7 @@
              this.displayHeight = this.gameSettings.overrideHeight;
          }
 -
-+        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.builder().title("Cleanroom").size(this.displayWidth, this.displayHeight).resizable().vsync(this.gameSettings.enableVsync).openGL().build();
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.createWindow().title("Cleanroom").size(this.displayWidth, this.displayHeight).resizable().vsync(this.gameSettings.enableVsync).openGL().build();
 +        com.cleanroommc.client.sdl.CleanroomWindowBridge.install(window);
          LOGGER.info("LWJGL Version: {}", Sys.getVersion());
          this.setWindowIcon();
@@ -175,7 +175,7 @@
  
 -    private void setInitialDisplayMode() throws LWJGLException {
 +    private void setInitialDisplayMode() {
-+        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main();
++        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.window();
          if (this.fullscreen) {
 -            Display.setFullscreen(true);
 -            DisplayMode displaymode = Display.getDisplayMode();
@@ -195,7 +195,7 @@
                  inputstream1 = this.defaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_32x32.png"));
                  if (inputstream != null && inputstream1 != null) {
 -                    Display.setIcon(new ByteBuffer[]{this.readImageToBuffer(inputstream), this.readImageToBuffer(inputstream1)});
-+                    com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.Window.main().icon(ImageIO.read(inputstream), ImageIO.read(inputstream1));
++                    com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.window().icon(ImageIO.read(inputstream), ImageIO.read(inputstream1));
                  }
              } catch (IOException ioexception) {
                  LOGGER.error("Couldn't set icon", ioexception);
@@ -236,7 +236,7 @@
          }
 +        try {
 +            String where = crashReportIn.getFile() != null ? crashReportIn.getFile().getAbsolutePath() : (file2.isFile() ? file2.getAbsolutePath() : "the console");
-+            com.cleanroommc.client.sdl.FileDialogs.error(com.cleanroommc.client.sdl.Window.main(), "Cleanroom", "The game crashed. A report was saved to:\n" + where);
++            com.cleanroommc.client.sdl.SDL.dialogs().error("Cleanroom", "The game crashed. A report was saved to:\n" + where);
 +        } catch (Throwable ignored) {
 +        }
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().handleExit(retVal);
@@ -363,7 +363,7 @@
              this.fullscreen = !this.fullscreen;
              this.gameSettings.fullScreen = this.fullscreen;
 -            if (this.fullscreen) {
-+            com.cleanroommc.client.sdl.Window host = com.cleanroommc.client.sdl.Window.main();
++            com.cleanroommc.client.sdl.Window host = com.cleanroommc.client.sdl.SDL.window();
 +            if (host != null) {
 +                com.cleanroommc.client.sdl.SDLHooks.applyDisplayMode(this.fullscreen);
 +                this.displayWidth = Math.max(1, host.width());

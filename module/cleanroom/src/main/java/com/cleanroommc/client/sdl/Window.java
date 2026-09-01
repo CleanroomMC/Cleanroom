@@ -1,6 +1,7 @@
 package com.cleanroommc.client.sdl;
 
-import com.cleanroommc.client.sdl.drop.Drops;
+import com.cleanroommc.client.sdl.internal.Surfaces;
+import com.cleanroommc.client.sdl.events.MouseEvent;
 import com.cleanroommc.client.sdl.events.WindowEvent;
 import com.cleanroommc.client.sdl.input.virtual.Text;
 import com.cleanroommc.client.sdl.video.Display;
@@ -131,15 +132,15 @@ public final class Window implements AutoCloseable {
         this.pixelHeight = height;
     }
 
-    public static Builder builder() {
+    static Builder builder() {
         return new Builder();
     }
 
-    public static Window main() {
+    static Window main() {
         return main;
     }
 
-    public static void closeMain() {
+    static void closeMain() {
         Window current = main;
         if (current != null) {
             current.close();
@@ -273,7 +274,7 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         SDL.check(SDLVideo.SDL_SetWindowBordered(this.handle, !borderless), "SDL_SetWindowBordered");
         this.borderless = borderless;
-        SDL.EVENT_BUS.post(new WindowEvent.Borderless(this, SDLTimer.SDL_GetTicksNS(), borderless));
+        SDL.events().post(new WindowEvent.Borderless(this, SDLTimer.SDL_GetTicksNS(), borderless));
         return this;
     }
 
@@ -446,7 +447,7 @@ public final class Window implements AutoCloseable {
 
     public Display display() {
         this.ensureOpen();
-        return Displays.of(SDLVideo.SDL_GetDisplayForWindow(this.handle));
+        return SDL.displays().of(SDLVideo.SDL_GetDisplayForWindow(this.handle));
     }
 
     public float pixelDensity() {
@@ -504,7 +505,7 @@ public final class Window implements AutoCloseable {
             this.position(bounds.x(), bounds.y());
             this.size(Math.max(1, bounds.width()), Math.max(1, bounds.height() + heightAdjust));
             this.syncState();
-            SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, SDLTimer.SDL_GetTicksNS(), true));
+            SDL.events().post(new WindowEvent.Fullscreen(this, SDLTimer.SDL_GetTicksNS(), true));
             return this;
         }
         if (this.covering) {
@@ -513,7 +514,7 @@ public final class Window implements AutoCloseable {
             this.position(this.restoreX, this.restoreY);
             this.size(Math.max(1, this.restoreWidth), Math.max(1, this.restoreHeight));
             this.syncState();
-            SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, SDLTimer.SDL_GetTicksNS(), false));
+            SDL.events().post(new WindowEvent.Fullscreen(this, SDLTimer.SDL_GetTicksNS(), false));
         }
         return this;
     }
@@ -591,65 +592,21 @@ public final class Window implements AutoCloseable {
         return this;
     }
 
-    /** Drains SDL's process-wide event queue exactly once for the frame. */
-    public synchronized Window pump() {
+    /** Called by the pump before it drains the queue. */
+    void beginPump() {
         this.ensureOpen();
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            SDL_Event event = SDL_Event.malloc(stack);
-            while (SDLEvents.SDL_PollEvent(event)) {
-                dispatch(event);
-            }
-        }
-        Devices.afterPump();
+    }
+
+    /** Called by the pump after it drains the queue. */
+    void endPump() {
         this.mouseWarped = false;
-        return this;
     }
 
-    private void dispatch(SDL_Event event) {
-        int type = event.type();
-        switch (type) {
-            case SDLEvents.SDL_EVENT_QUIT -> closeRequested = true;
-            case SDLEvents.SDL_EVENT_KEY_DOWN, SDLEvents.SDL_EVENT_KEY_UP -> key(event.key());
-            case SDLEvents.SDL_EVENT_TEXT_INPUT -> text(event.text());
-            case SDLEvents.SDL_EVENT_TEXT_EDITING -> editing(event.edit());
-            case SDLEvents.SDL_EVENT_TEXT_EDITING_CANDIDATES -> editingCandidates(event.edit_candidates());
-            case SDLEvents.SDL_EVENT_MOUSE_MOTION -> motion(event.motion());
-            case SDLEvents.SDL_EVENT_MOUSE_BUTTON_DOWN, SDLEvents.SDL_EVENT_MOUSE_BUTTON_UP -> button(event.button());
-            case SDLEvents.SDL_EVENT_MOUSE_WHEEL -> wheel(event.wheel());
-            case SDLEvents.SDL_EVENT_WINDOW_CLOSE_REQUESTED,
-                 SDLEvents.SDL_EVENT_WINDOW_RESIZED,
-                 SDLEvents.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED,
-                 SDLEvents.SDL_EVENT_WINDOW_FOCUS_GAINED,
-                 SDLEvents.SDL_EVENT_WINDOW_FOCUS_LOST,
-                 SDLEvents.SDL_EVENT_WINDOW_MINIMIZED,
-                 SDLEvents.SDL_EVENT_WINDOW_MAXIMIZED,
-                 SDLEvents.SDL_EVENT_WINDOW_RESTORED,
-                 SDLEvents.SDL_EVENT_WINDOW_SHOWN,
-                 SDLEvents.SDL_EVENT_WINDOW_HIDDEN,
-                 SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER,
-                 SDLEvents.SDL_EVENT_WINDOW_MOUSE_LEAVE,
-                 SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED,
-                 SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED,
-                 SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN,
-                 SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> window(type, event.window());
-            case SDLEvents.SDL_EVENT_CLIPBOARD_UPDATE -> Clipboard.updated();
-            case SDLEvents.SDL_EVENT_SYSTEM_THEME_CHANGED -> SystemTheme.changed(event.common().timestamp());
-            case SDLEvents.SDL_EVENT_DROP_FILE,
-                 SDLEvents.SDL_EVENT_DROP_TEXT,
-                 SDLEvents.SDL_EVENT_DROP_BEGIN,
-                 SDLEvents.SDL_EVENT_DROP_COMPLETE,
-                 SDLEvents.SDL_EVENT_DROP_POSITION -> Drops.handle(event);
-            case SDLEvents.SDL_EVENT_DISPLAY_ADDED,
-                 SDLEvents.SDL_EVENT_DISPLAY_REMOVED,
-                 SDLEvents.SDL_EVENT_DISPLAY_MOVED,
-                 SDLEvents.SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED,
-                 SDLEvents.SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED,
-                 SDLEvents.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED -> { }
-            default -> Devices.dispatch(event);
-        }
+    void requestClose() {
+        this.closeRequested = true;
     }
 
-    private void key(SDL_KeyboardEvent event) {
+    void key(SDL_KeyboardEvent event) {
         if (event.windowID() != this.id) {
             return;
         }
@@ -660,26 +617,26 @@ public final class Window implements AutoCloseable {
         this.legacy.key(scancode, event.key(), event.down(), event.repeat(), event.timestamp());
     }
 
-    private void text(SDL_TextInputEvent event) {
+    void text(SDL_TextInputEvent event) {
         if (event.windowID() == this.id) {
             this.text.committed();
             this.legacy.text(event.textString(), event.timestamp());
         }
     }
 
-    private void editing(SDL_TextEditingEvent event) {
+    void editing(SDL_TextEditingEvent event) {
         if (event.windowID() == this.id) {
             this.text.editing(event);
         }
     }
 
-    private void editingCandidates(SDL_TextEditingCandidatesEvent event) {
+    void editingCandidates(SDL_TextEditingCandidatesEvent event) {
         if (event.windowID() == this.id) {
             this.text.editingCandidates(event);
         }
     }
 
-    private void motion(SDL_MouseMotionEvent event) {
+    void motion(SDL_MouseMotionEvent event) {
         if (event.windowID() != this.id) {
             return;
         }
@@ -689,9 +646,11 @@ public final class Window implements AutoCloseable {
         float dy = this.mouseWarped ? 0.0F : event.yrel();
         this.mouseWarped = false;
         this.legacy.motion(this.mouseX, this.mouseY, dx, dy, event.timestamp());
+        SDL.events().post(new MouseEvent.Motion(event.which(), this.id, event.timestamp(),
+                this.mouseX, this.mouseY, dx, dy, event.state()));
     }
 
-    private void button(SDL_MouseButtonEvent event) {
+    void button(SDL_MouseButtonEvent event) {
         if (event.windowID() != id) {
             return;
         }
@@ -702,33 +661,37 @@ public final class Window implements AutoCloseable {
             this.buttons[button] = event.down();
         }
         this.legacy.button(button, event.down(), this.mouseX, this.mouseY, event.timestamp());
+        SDL.events().post(new MouseEvent.Button(event.which(), this.id, event.timestamp(),
+                this.mouseX, this.mouseY, button, event.down(), event.clicks() & 0xFF));
     }
 
-    private void wheel(SDL_MouseWheelEvent event) {
+    void wheel(SDL_MouseWheelEvent event) {
         if (event.windowID() != this.id) {
             return;
         }
-        float amount = event.y();
-        if (event.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED) {
-            amount = -amount;
-        }
+        boolean flipped = event.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED;
+        int sign = flipped ? -1 : 1;
+        float amount = event.y() * sign;
         this.legacy.wheel(event.mouse_x(), event.mouse_y(), amount, event.timestamp());
+        SDL.events().post(new MouseEvent.Wheel(event.which(), this.id, event.timestamp(),
+                event.mouse_x(), event.mouse_y(), event.x() * sign, amount,
+                event.integer_x() * sign, event.integer_y() * sign, flipped));
     }
 
-    private void window(int type, SDL_WindowEvent event) {
+    void window(int type, SDL_WindowEvent event) {
         if (event.windowID() != this.id) {
             return;
         }
         switch (type) {
             case SDLEvents.SDL_EVENT_WINDOW_CLOSE_REQUESTED -> {
                 this.closeRequested = true;
-                SDL.EVENT_BUS.post(new WindowEvent.CloseRequested(this, event.timestamp()));
+                SDL.events().post(new WindowEvent.CloseRequested(this, event.timestamp()));
             }
             case SDLEvents.SDL_EVENT_WINDOW_RESIZED -> {
                 this.width = event.data1();
                 this.height = event.data2();
                 this.resized = true;
-                SDL.EVENT_BUS.post(new WindowEvent.Resized(this, event.timestamp(), this.width, this.height));
+                SDL.events().post(new WindowEvent.Resized(this, event.timestamp(), this.width, this.height));
             }
             case SDLEvents.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED -> {
                 this.pixelWidth = event.data1();
@@ -737,12 +700,12 @@ public final class Window implements AutoCloseable {
             }
             case SDLEvents.SDL_EVENT_WINDOW_FOCUS_GAINED -> {
                 this.focused = true;
-                SDL.EVENT_BUS.post(new WindowEvent.Focus(this, event.timestamp(), true));
+                SDL.events().post(new WindowEvent.Focus(this, event.timestamp(), true));
             }
             case SDLEvents.SDL_EVENT_WINDOW_FOCUS_LOST -> {
                 this.focused = false;
                 this.releaseHeldInput(event.timestamp());
-                SDL.EVENT_BUS.post(new WindowEvent.Focus(this, event.timestamp(), false));
+                SDL.events().post(new WindowEvent.Focus(this, event.timestamp(), false));
             }
             case SDLEvents.SDL_EVENT_WINDOW_MINIMIZED -> {
                 this.minimized = true;
@@ -761,18 +724,18 @@ public final class Window implements AutoCloseable {
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER -> this.mouseInside = true;
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_LEAVE -> this.mouseInside = false;
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED ->
-                    SDL.EVENT_BUS.post(new WindowEvent.DisplayChanged(this, event.timestamp(), event.data1()));
+                    SDL.events().post(new WindowEvent.DisplayChanged(this, event.timestamp(), event.data1()));
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED ->
-                    SDL.EVENT_BUS.post(new WindowEvent.ScaleChanged(this, event.timestamp(),
+                    SDL.events().post(new WindowEvent.ScaleChanged(this, event.timestamp(),
                             SDLVideo.SDL_GetWindowDisplayScale(this.handle)));
             case SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN -> {
                 this.fullscreen = true;
-                SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, event.timestamp(), true));
+                SDL.events().post(new WindowEvent.Fullscreen(this, event.timestamp(), true));
             }
             case SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> {
                 this.fullscreen = false;
                 if (!this.covering) {
-                    SDL.EVENT_BUS.post(new WindowEvent.Fullscreen(this, event.timestamp(), false));
+                    SDL.events().post(new WindowEvent.Fullscreen(this, event.timestamp(), false));
                 }
             }
         }

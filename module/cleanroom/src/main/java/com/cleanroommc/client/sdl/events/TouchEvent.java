@@ -3,8 +3,7 @@ package com.cleanroommc.client.sdl.events;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
- * Multi-touch and pinch, posted on {@link com.cleanroommc.client.sdl.SDL#EVENT_BUS} from
- * {@link com.cleanroommc.client.sdl.Window#pump()}.
+ * Multi-touch and pinch, posted on {@link com.cleanroommc.client.sdl.SDL#events()}.
  */
 public abstract class TouchEvent extends Event {
 

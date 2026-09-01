@@ -1,5 +1,6 @@
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.internal.Surfaces;
 import org.lwjgl.sdl.SDLSurface;
 import org.lwjgl.sdl.SDLTray;
 import org.lwjgl.sdl.SDL_Surface;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * One system-tray icon. Clicks arrive on the thread that {@link Window#pump() pumps}.
+ * One system-tray icon.
  */
 public final class Tray implements AutoCloseable {
 
@@ -28,7 +29,7 @@ public final class Tray implements AutoCloseable {
         this.handle = handle;
     }
 
-    public static Tray create(BufferedImage icon, String tooltip) {
+    static Tray create(BufferedImage icon, String tooltip) {
         SDL.ensureVideo();
         if (icon == null) {
             throw new IllegalArgumentException("Icon cannot be null");
@@ -83,7 +84,7 @@ public final class Tray implements AutoCloseable {
         }
     }
 
-    public static void reset() {
+    static void reset() {
         synchronized (OPEN) {
             for (Tray tray : List.copyOf(OPEN)) {
                 tray.close();

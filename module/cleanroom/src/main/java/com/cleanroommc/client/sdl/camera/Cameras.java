@@ -20,33 +20,7 @@ import java.util.List;
  */
 public final class Cameras {
 
-    private static final Cameras INSTANCE = new Cameras();
-
-    public static Cameras instance() {
-        return INSTANCE;
-    }
-
-    public static List<Camera> list() {
-        return INSTANCE.devices();
-    }
-
-    public static Camera first() {
-        List<Camera> cameras = list();
-        return cameras.isEmpty() ? null : cameras.getFirst();
-    }
-
-    public static Camera byId(int id) {
-        INSTANCE.ensure();
-        return INSTANCE.cameras.get(id);
-    }
-
-    public static void handle(SDL_Event event) {
-        INSTANCE.dispatch(event);
-    }
-
-    public static void reset() {
-        INSTANCE.clear();
-    }
+    static final Cameras INSTANCE = new Cameras();
 
     private final Int2ObjectMap<Camera> cameras = new Int2ObjectArrayMap<>();
 
@@ -54,9 +28,19 @@ public final class Cameras {
 
     private Cameras() { }
 
-    synchronized List<Camera> devices() {
+    public synchronized List<Camera> list() {
         ensure();
         return List.copyOf(cameras.values());
+    }
+
+    public Camera first() {
+        List<Camera> cameras = list();
+        return cameras.isEmpty() ? null : cameras.getFirst();
+    }
+
+    public synchronized Camera byId(int id) {
+        ensure();
+        return cameras.get(id);
     }
 
     synchronized void ensure() {
@@ -78,22 +62,22 @@ public final class Cameras {
         long timestampNs = device.timestamp();
         switch (type) {
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_ADDED ->
-                    SDL.EVENT_BUS.post(new CameraEvent.Added(timestampNs, remember(id)));
+                    SDL.events().post(new CameraEvent.Added(timestampNs, remember(id)));
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_REMOVED -> {
                 Camera camera = cameras.remove(id);
                 if (camera != null) {
                     camera.close();
                 }
-                SDL.EVENT_BUS.post(new CameraEvent.Removed(id, timestampNs));
+                SDL.events().post(new CameraEvent.Removed(id, timestampNs));
             }
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_APPROVED -> {
                 Camera camera = cameras.get(id);
                 if (camera != null) {
-                    SDL.EVENT_BUS.post(new CameraEvent.Approved(timestampNs, camera));
+                    SDL.events().post(new CameraEvent.Approved(timestampNs, camera));
                 }
             }
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_DENIED ->
-                    SDL.EVENT_BUS.post(new CameraEvent.Denied(id, timestampNs));
+                    SDL.events().post(new CameraEvent.Denied(id, timestampNs));
         }
     }
 
@@ -108,7 +92,7 @@ public final class Cameras {
     synchronized Camera injectAdded(int id) {
         started = true;
         Camera camera = remember(id);
-        SDL.EVENT_BUS.post(new CameraEvent.Added(SDLTimer.SDL_GetTicksNS(), camera));
+        SDL.events().post(new CameraEvent.Added(SDLTimer.SDL_GetTicksNS(), camera));
         return camera;
     }
 
@@ -117,7 +101,7 @@ public final class Cameras {
         if (camera != null) {
             camera.close();
         }
-        SDL.EVENT_BUS.post(new CameraEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
+        SDL.events().post(new CameraEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
     }
 
     private void openConnected() {

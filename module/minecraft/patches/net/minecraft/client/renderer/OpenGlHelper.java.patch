@@ -221,7 +221,7 @@
 -            Class<?> oclass = Class.forName("java.awt.Desktop");
 -            Object object = oclass.getMethod("getDesktop").invoke(null);
 -            oclass.getMethod("browse", URI.class).invoke(object, fileIn.toURI());
-+            com.cleanroommc.client.sdl.Desktop.open(fileIn);
++            com.cleanroommc.client.sdl.SDL.desktop().open(fileIn);
          } catch (Throwable throwable) {
 -            LOGGER.error("Couldn't open link", throwable);
 -            flag = true;
