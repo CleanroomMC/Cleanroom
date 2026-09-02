@@ -40,7 +40,6 @@ import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.common.PatchModPresentChecker;
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.cleanroommc.kirino.KirinoClientCore;
-import com.cleanroommc.kirino.KirinoCommonCore;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -244,8 +243,6 @@ public class FMLClientHandler implements IFMLSidedHandler
             haltGame("FML will not run in demo mode", new RuntimeException());
             return;
         }
-
-        KirinoCommonCore.configEvent();
 
         List<String> injectedModContainers = FMLCommonHandler.instance().beginLoading(this);
         try

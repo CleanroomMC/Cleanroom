@@ -108,8 +108,8 @@
                  long l = Math.max(1000000000 / j / 4 - k, 0L);
 -                this.renderWorld(partialTicks, System.nanoTime() + l);
 +
-+                if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnable()
-+                        && com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++                if (com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enable
++                        && com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enableRenderDelegate
 +                        && !com.cleanroommc.kirino.KirinoClientCore.isRenderUnsupported()) {
 +                    com.cleanroommc.kirino.KirinoClientCore.EntityRenderer$renderWorld(System.nanoTime() + l);
 +                } else {
@@ -172,8 +172,8 @@
      }
  
      private void renderWorldPass(int pass, float partialTicks, long finishTimeNano) {
-+        if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnable()
-+                && (!com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++        if (com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enable
++                && (!com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enableRenderDelegate
 +                || com.cleanroommc.kirino.KirinoClientCore.isRenderUnsupported())) {
 +            if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_ENGINE.isAfterFirstPrepare()) {
 +                com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.PREPARE);
@@ -197,8 +197,8 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
-+        if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnable()
-+                && (!com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++        if (com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enable
++                && (!com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enableRenderDelegate
 +                || com.cleanroommc.kirino.KirinoClientCore.isRenderUnsupported())) {
 +            com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.UPDATE);
 +            com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_OPAQUE);
@@ -240,8 +240,8 @@
          this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
          GlStateManager.shadeModel(7425);
 +
-+        if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnable()
-+                && (!com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++        if (com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enable
++                && (!com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enableRenderDelegate
 +                || com.cleanroommc.kirino.KirinoClientCore.isRenderUnsupported())) {
 +            com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_TRANSPARENT);
 +        }
@@ -274,8 +274,8 @@
              this.renderHand(partialTicks, pass);
          }
 +
-+        if (com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnable()
-+                && (!com.cleanroommc.kirino.KirinoCommonCore.KIRINO_CONFIG_HUB.isEnableRenderDelegate()
++        if (com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enable
++                && (!com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enableRenderDelegate
 +                || com.cleanroommc.kirino.KirinoClientCore.isRenderUnsupported())) {
 +            com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.POST_UPDATE);
 +            com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_OVERLAY);
