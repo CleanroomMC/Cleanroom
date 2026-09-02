@@ -41,6 +41,7 @@ import com.cleanroommc.common.PatchModPresentChecker;
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
+import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
@@ -266,6 +267,8 @@ public class FMLClientHandler implements IFMLSidedHandler
         {
             client.refreshResources();
         }
+
+        MinecraftResourceUtils.resourceManagerInitializationFinished();
 
         try
         {
