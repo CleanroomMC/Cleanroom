@@ -112,6 +112,10 @@ configurations.named('vanillaNatives') {
     exclude group: 'org.lwjgl.lwjgl'
 }
 
+configurations.named('runtimeClasspath') {
+    exclude group: 'org.lwjgl.lwjgl'
+}
+
 dependencies {
     constraints {
         library_upgrades.each { coordinate, version -> api "${coordinate}:${version}" }
