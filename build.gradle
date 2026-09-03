@@ -11,7 +11,6 @@ group = 'com.cleanroommc'
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(providers.gradleProperty('java_major').get())
-    withSourcesJar()
 }
 
 idea {
@@ -46,7 +45,7 @@ def modules = [
 
 sourceSets {
     main {
-        java.srcDirs = modules.collect { "module/${it}/src/main/java" }
+        java.srcDirs modules.collect { "module/${it}/src/main/java" }
         // Fixme: Temp
         java.exclude 'com/cleanroommc/kirino/utils/KsmlcUtils.java'
         resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
@@ -71,6 +70,26 @@ var export_arguments = [
         '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
 ]
 
+var library_upgrades = [
+        'com.google.guava:guava'              : '33.6.0-jre',
+        'com.google.code.gson:gson'           : '2.14.0',
+        'it.unimi.dsi:fastutil'               : '8.5.18',
+        'org.apache.commons:commons-lang3'    : '3.20.0',
+        'commons-io:commons-io'               : '2.22.0',
+        'commons-codec:commons-codec'         : '1.22.0',
+        'org.apache.commons:commons-compress' : '1.28.0',
+        'commons-logging:commons-logging'     : '1.4.0',
+        'org.apache.httpcomponents:httpclient': '4.5.14',
+        'org.apache.httpcomponents:httpcore'  : '4.4.16',
+        'org.apache.logging.log4j:log4j-api'  : '2.26.0',
+        'org.apache.logging.log4j:log4j-core' : '2.26.0',
+        'net.sf.jopt-simple:jopt-simple'      : '5.0.4',
+        'net.java.dev.jna:jna'                : '5.19.1',
+        'net.java.jinput:jinput'              : '2.0.10',
+        'ca.weblite:java-objc-bridge'         : '1.2',
+        'io.netty:netty-all'                  : '4.2.16.Final'
+]
+
 configurations.configureEach { configuration ->
     exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
     // patchy ships its own copy of io.netty.bootstrap.Bootstrap
@@ -78,24 +97,9 @@ configurations.configureEach { configuration ->
     exclude group: 'com.mojang', module: 'patchy'
 
     resolutionStrategy.eachDependency { details ->
-        switch ("${details.requested.group}:${details.requested.name}") {
-            case 'com.google.guava:guava':               details.useVersion '33.6.0-jre';       break
-            case 'com.google.code.gson:gson':            details.useVersion '2.14.0';           break
-            case 'it.unimi.dsi:fastutil':                details.useVersion '8.5.18';           break
-            case 'org.apache.commons:commons-lang3':     details.useVersion '3.20.0';           break
-            case 'commons-io:commons-io':                details.useVersion '2.22.0';           break
-            case 'commons-codec:commons-codec':          details.useVersion '1.22.0';           break
-            case 'org.apache.commons:commons-compress':  details.useVersion '1.28.0';           break
-            case 'commons-logging:commons-logging':      details.useVersion '1.4.0';            break
-            case 'org.apache.httpcomponents:httpclient': details.useVersion '4.5.14';           break
-            case 'org.apache.httpcomponents:httpcore':   details.useVersion '4.4.16';           break
-            case 'org.apache.logging.log4j:log4j-api':   details.useVersion '2.26.0';           break
-            case 'org.apache.logging.log4j:log4j-core':  details.useVersion '2.26.0';           break
-            case 'net.sf.jopt-simple:jopt-simple':       details.useVersion '5.0.4';            break
-            case 'net.java.dev.jna:jna':                 details.useVersion '5.19.1';           break
-            case 'net.java.jinput:jinput':               details.useVersion '2.0.10';           break
-            case 'ca.weblite:java-objc-bridge':          details.useVersion '1.2';              break
-            case 'io.netty:netty-all':                   details.useVersion '4.2.16.Final';     break
+        var version = library_upgrades["${details.requested.group}:${details.requested.name}"]
+        if (version != null) {
+            details.useVersion version
         }
         if (details.requested.version != details.target.version) {
             details.because 'Cleanroom Libraries Update'
@@ -109,6 +113,10 @@ configurations.named('vanillaNatives') {
 }
 
 dependencies {
+    constraints {
+        library_upgrades.each { coordinate, version -> api "${coordinate}:${version}" }
+    }
+
     // ASM
     def asm_version = providers.gradleProperty('asm_version').get()
     implementation "org.ow2.asm:asm:${asm_version}"
@@ -172,7 +180,8 @@ dependencies {
     // java-objc-bridge bumped here for updated OSX arm64 natives
     api 'ca.weblite:java-objc-bridge:1.2'
 
-    api platform('org.lwjgl:lwjgl-bom:3.4.3')
+    def lwjgl_version = '3.4.3'
+    api platform("org.lwjgl:lwjgl-bom:${lwjgl_version}")
     api 'org.lwjgl:lwjgl'
     api 'org.lwjgl:lwjgl-jemalloc'
     api 'org.lwjgl:lwjgl-opengl'
@@ -183,19 +192,19 @@ dependencies {
     // TODO
     compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
     runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
-    lwjglNative 'org.lwjgl:lwjgl'
-    lwjglNative 'org.lwjgl:lwjgl-jemalloc'
-    lwjglNative 'org.lwjgl:lwjgl-opengl'
-    lwjglNative 'org.lwjgl:lwjgl-openal'
-    lwjglNative 'org.lwjgl:lwjgl-stb'
-    lwjglNative 'org.lwjgl:lwjgl-sdl'
+    lwjglNative "org.lwjgl:lwjgl:${lwjgl_version}"
+    lwjglNative "org.lwjgl:lwjgl-jemalloc:${lwjgl_version}"
+    lwjglNative "org.lwjgl:lwjgl-opengl:${lwjgl_version}"
+    lwjglNative "org.lwjgl:lwjgl-openal:${lwjgl_version}"
+    lwjglNative "org.lwjgl:lwjgl-stb:${lwjgl_version}"
+    lwjglNative "org.lwjgl:lwjgl-sdl:${lwjgl_version}"
 
     // Kirino
     api 'org.joml:joml:1.10.9'
     api 'io.github.classgraph:classgraph:4.8.184'
     api 'com.cleanroommc:mcttf:0.1.0'
     api 'org.lwjgl:lwjgl-freetype'
-    lwjglNative 'org.lwjgl:lwjgl-freetype'
+    lwjglNative "org.lwjgl:lwjgl-freetype:${lwjgl_version}"
 
     // Test
     testImplementation platform('org.junit:junit-bom:6.1.0')
