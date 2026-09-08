@@ -43,7 +43,6 @@ public class GuiNotification extends GuiScreen
         if (button.enabled && button.id == 0)
         {
             FMLClientHandler.instance().showGuiScreen(null);
-            query.finish();
         }
     }
 
@@ -77,4 +76,10 @@ public class GuiNotification extends GuiScreen
     }
 
     protected final StartupQuery query;
+
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        query.finish();
+    }
 }

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.12-alpha] - 2026-08-26
+### Bug Fixes
+- [`fe78db8`](https://github.com/CleanroomMC/Cleanroom/commit/fe78db8dc4fcee47df7549230858f4c064208d73) - **startup**: query finish call `onGuiClosed` *(PR [#615](https://github.com/CleanroomMC/Cleanroom/pull/615) by [@Ecdcaeb](https://github.com/Ecdcaeb))*
+  - *fixes issue [#613](https://github.com/CleanroomMC/Cleanroom/issues/613) opened by [@ukmojb](https://github.com/ukmojb)*
+- [`ba3d776`](https://github.com/CleanroomMC/Cleanroom/commit/ba3d7766504dbace768b19e8872b80a3ce6eb194) - **startup**: update confirm method to handle null results *(PR [#614](https://github.com/CleanroomMC/Cleanroom/pull/614) by [@Ecdcaeb](https://github.com/Ecdcaeb))*
+- [`f9dd525`](https://github.com/CleanroomMC/Cleanroom/commit/f9dd525e1d06c66a92b163b8d106a5669d326bd5) - **discovery**: resolve [#620](https://github.com/CleanroomMC/Cleanroom/pull/620) by filtering null/blank mod ids *(commit by [@Rongmario](https://github.com/Rongmario))*
+
+
 ## [0.6.11-alpha] - 2026-08-17
 ### New Features
 - [`4ba1434`](https://github.com/CleanroomMC/Cleanroom/commit/4ba1434f0b5110d8a55f08c88d92f237ed0b9ba7) - Add side annotation to Config *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
@@ -249,3 +257,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.9-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.8-alpha...0.6.9-alpha
 [0.6.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.9-alpha...0.6.10-alpha
 [0.6.11-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.10-alpha...0.6.11-alpha
+[0.6.12-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.11-alpha...0.6.12-alpha

@@ -43,9 +43,8 @@ public class GuiConfirmation extends GuiNotification
     {
         if (button.enabled && (button.id == 0 || button.id == 1))
         {
-            FMLClientHandler.instance().showGuiScreen(null);
             query.setResult(button.id == 0);
-            query.finish();
+            FMLClientHandler.instance().showGuiScreen(null);
         }
     }
 }
