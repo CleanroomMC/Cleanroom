@@ -79,8 +79,8 @@ public final class Haptic implements AutoCloseable {
     /**
      * Dual-motor left/right effect. Strengths are {@code 0..1}.
      *
-     * <p>The effect is uploaded once and updated in place afterwards.
-     * since a device holds only {@link #maxEffects()} of them at a time.
+     * <p>The effect is uploaded once and updated in place afterwards, since a device holds only
+     * {@link #maxEffects()} of them at a time.
      *
      * @return the SDL effect id, which stays the same across calls until {@link #destroy(int)}
      */
