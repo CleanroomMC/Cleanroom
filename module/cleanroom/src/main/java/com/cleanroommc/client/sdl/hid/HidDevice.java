@@ -19,6 +19,7 @@ public final class HidDevice implements AutoCloseable {
     }
 
     public HidInfo info() {
+        ensureOpen();
         SDL_hid_device_info info = SDLHIDAPI.SDL_hid_get_device_info(handle);
         if (info == null) {
             return null;
