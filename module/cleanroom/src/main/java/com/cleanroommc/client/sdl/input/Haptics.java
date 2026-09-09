@@ -30,25 +30,29 @@ public final class Haptics {
         started = true;
     }
 
-    public synchronized List<Haptic> list() {
+    public synchronized int[] ids() {
         ensure();
         IntBuffer ids = SDLHaptic.SDL_GetHaptics();
         if (ids == null) {
-            return List.copyOf(devices.values());
+            return new int[0];
         }
         try {
-            while (ids.hasRemaining()) {
-                open(ids.get());
-            }
+            int[] copy = new int[ids.remaining()];
+            ids.get(copy);
+            return copy;
         } finally {
             SDLStdinc.SDL_free(ids);
         }
+    }
+
+    public synchronized List<Haptic> list() {
+        ensure();
         return List.copyOf(devices.values());
     }
 
     public Haptic first() {
-        List<Haptic> list = list();
-        return list.isEmpty() ? null : list.get(0);
+        int[] ids = ids();
+        return ids.length == 0 ? null : byId(ids[0]);
     }
 
     public synchronized Haptic byId(int id) {
