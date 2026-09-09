@@ -11,6 +11,7 @@ import com.cleanroommc.client.sdl.input.InputInternal;
 final class Lifecycle {
 
     static void reset() {
+        FileDialogs.pump();
         InputInternal.reset();
         CameraInternal.reset();
         AudioInternal.reset();
