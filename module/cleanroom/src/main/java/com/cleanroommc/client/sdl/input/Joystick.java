@@ -128,7 +128,7 @@ public final class Joystick {
     }
 
     public boolean button(int index) {
-        return index >= 0 && SDLJoystick.SDL_GetJoystickButton(handle, index);
+        return index >= 0 && index < buttons() && SDLJoystick.SDL_GetJoystickButton(handle, index);
     }
 
     public JoystickHat hat(int index) {
