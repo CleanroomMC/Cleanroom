@@ -100,7 +100,7 @@ public final class Gamepad {
     }
 
     public Gamepad led(int red, int green, int blue) {
-        SDL.check(SDLGamepad.SDL_SetGamepadLED(handle, (byte) red, (byte) green, (byte) blue), "SDL_SetGamepadLED");
+        SDL.check(SDLGamepad.SDL_SetGamepadLED(handle, channel(red), channel(green), channel(blue)), "SDL_SetGamepadLED");
         return this;
     }
 
@@ -192,6 +192,10 @@ public final class Gamepad {
     static short toStrength(float value) {
         float clamped = Math.max(0.0F, Math.min(1.0F, value));
         return (short) Math.round(clamped * 65535.0F);
+    }
+
+    private static byte channel(int value) {
+        return (byte) Math.clamp(value, 0, 255);
     }
 
 }
