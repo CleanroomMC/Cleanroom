@@ -28,6 +28,7 @@ public final class Surfaces {
             throw new SDLException("SDL_CreateSurface failed");
         }
         boolean locked = false;
+        boolean published = false;
         try {
             if (SDLSurface.SDL_MUSTLOCK(surface)) {
                 SDL.check(SDLSurface.SDL_LockSurface(surface), "SDL_LockSurface");
@@ -43,13 +44,14 @@ public final class Surfaces {
                 pixels.putInt(pixel);
             }
             pixels.flip();
+            published = true;
             return surface;
-        } catch (RuntimeException failure) {
-            SDLSurface.SDL_DestroySurface(surface);
-            throw failure;
         } finally {
             if (locked) {
                 SDLSurface.SDL_UnlockSurface(surface);
+            }
+            if (!published) {
+                SDLSurface.SDL_DestroySurface(surface);
             }
         }
     }
