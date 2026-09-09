@@ -32,7 +32,7 @@ public final class Clipboard {
     private static volatile boolean textKnown;
     private static volatile boolean hasText;
 
-    private static ByteBuffer offeredImage;
+    private static volatile ByteBuffer offeredImage;
     private static SDL_ClipboardDataCallback imageData;
     private static SDL_ClipboardCleanupCallback imageCleanup;
 
