@@ -7,7 +7,9 @@ import org.lwjgl.sdl.SDLVideo;
 /** A hidden SDL surface and GL context sharing objects with the main window. */
 public final class SharedGLContext implements AutoCloseable {
 
-    /** Creates a context sharing with the main context that is current on this thread. */
+    /**
+     * Creates a context sharing objects with {@code window}'s GL context.
+     */
     public static SharedGLContext create(Window window) {
         if (window == null) {
             throw new IllegalStateException("The SDL window does not exist");
@@ -16,6 +18,7 @@ public final class SharedGLContext implements AutoCloseable {
                 SDLVideo.SDL_WINDOW_OPENGL | SDLVideo.SDL_WINDOW_HIDDEN), "SDL_CreateWindow");
         long context = 0L;
         try {
+            window.makeCurrent();
             SDL.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1),
                     "SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT)");
             context = SDL.checkHandle(SDLVideo.SDL_GL_CreateContext(surface), "SDL_GL_CreateContext");
