@@ -115,6 +115,7 @@ public final class Haptics {
         int id = SDLHaptic.SDL_GetHapticID(handle);
         Haptic existing = devices.get(id);
         if (existing != null) {
+            SDLHaptic.SDL_CloseHaptic(handle);
             return existing;
         }
         Haptic haptic = new Haptic(id, handle);
