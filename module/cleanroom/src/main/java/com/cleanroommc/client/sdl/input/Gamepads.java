@@ -134,8 +134,7 @@ public final class Gamepads {
         if (existing != null) {
             return existing;
         }
-        long already = SDLGamepad.SDL_GetGamepadFromID(instanceId);
-        long handle = already != 0L ? already : SDLGamepad.SDL_OpenGamepad(instanceId);
+        long handle = SDLGamepad.SDL_OpenGamepad(instanceId);
         if (handle == 0L) {
             return null;
         }

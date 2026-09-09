@@ -104,8 +104,7 @@ public final class Haptics {
         if (existing != null) {
             return existing;
         }
-        long already = SDLHaptic.SDL_GetHapticFromID(id);
-        long handle = already != 0L ? already : SDLHaptic.SDL_OpenHaptic(id);
+        long handle = SDLHaptic.SDL_OpenHaptic(id);
         if (handle == 0L) {
             return null;
         }

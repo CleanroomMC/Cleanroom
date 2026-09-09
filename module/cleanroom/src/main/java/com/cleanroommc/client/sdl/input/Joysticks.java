@@ -113,8 +113,7 @@ public final class Joysticks {
         if (existing != null) {
             return existing;
         }
-        long already = SDLJoystick.SDL_GetJoystickFromID(instanceId);
-        long handle = already != 0L ? already : SDLJoystick.SDL_OpenJoystick(instanceId);
+        long handle = SDLJoystick.SDL_OpenJoystick(instanceId);
         if (handle == 0L) {
             return null;
         }

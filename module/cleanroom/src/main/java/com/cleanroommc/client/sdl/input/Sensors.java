@@ -95,8 +95,7 @@ public final class Sensors {
         if (existing != null) {
             return existing;
         }
-        long already = SDLSensor.SDL_GetSensorFromID(id);
-        long handle = already != 0L ? already : SDLSensor.SDL_OpenSensor(id);
+        long handle = SDLSensor.SDL_OpenSensor(id);
         if (handle == 0L) {
             return null;
         }
