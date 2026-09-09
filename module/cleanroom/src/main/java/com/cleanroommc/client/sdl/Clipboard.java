@@ -79,16 +79,21 @@ public final class Clipboard {
         return mime != null && SDLClipboard.SDL_HasClipboardData(mime);
     }
 
-    public Optional<ByteBuffer> data(String mime) {
+    public Optional<byte[]> data(String mime) {
         if (mime == null) {
             return Optional.empty();
         }
         ByteBuffer buffer = SDLClipboard.SDL_GetClipboardData(mime);
-        return Optional.ofNullable(buffer);
-    }
-
-    public void free(ByteBuffer data) {
-        release(data);
+        if (buffer == null) {
+            return Optional.empty();
+        }
+        try {
+            byte[] copy = new byte[buffer.remaining()];
+            buffer.get(copy);
+            return Optional.of(copy);
+        } finally {
+            release(buffer);
+        }
     }
 
     public boolean hasImage() {
@@ -96,12 +101,12 @@ public final class Clipboard {
     }
 
     public Optional<BufferedImage> image() {
-        Optional<ByteBuffer> png = data(IMAGE_PNG);
-        if (png.isPresent()) {
-            return Optional.ofNullable(decode(png.get(), true));
+        ByteBuffer png = SDLClipboard.SDL_GetClipboardData(IMAGE_PNG);
+        if (png != null) {
+            return Optional.ofNullable(decode(png, true));
         }
-        Optional<ByteBuffer> bmp = data(IMAGE_BMP);
-        return bmp.map(byteBuffer -> decode(byteBuffer, false));
+        ByteBuffer bmp = SDLClipboard.SDL_GetClipboardData(IMAGE_BMP);
+        return bmp == null ? Optional.empty() : Optional.ofNullable(decode(bmp, false));
     }
 
     public void image(BufferedImage image) {
