@@ -403,7 +403,7 @@ public final class Window implements AutoCloseable {
         return this;
     }
 
-    public Window icon(BufferedImage... images) {
+    public synchronized Window icon(BufferedImage... images) {
         this.ensureOpen();
         if (images == null || images.length == 0 || images[0] == null) {
             throw new IllegalArgumentException("At least one icon image is required");
@@ -428,7 +428,7 @@ public final class Window implements AutoCloseable {
         return this;
     }
 
-    public Window icon(Path path) {
+    public synchronized Window icon(Path path) {
         this.ensureOpen();
         if (path == null) {
             throw new IllegalArgumentException("Path cannot be null");
