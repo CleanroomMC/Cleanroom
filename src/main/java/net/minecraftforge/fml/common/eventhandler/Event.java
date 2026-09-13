@@ -49,7 +49,6 @@ public class Event
 
     private boolean isCanceled = false;
     private Result result = Result.DEFAULT;
-    private static ListenerList listeners = new ListenerList();
     private EventPriority phase = null;
 
     public Event()
@@ -66,7 +65,7 @@ public class Event
      */
     public boolean isCancelable()
     {
-        return false;
+        return EventProperties.CANCELLABLE.get(getClass());
     }
 
     /**
@@ -89,7 +88,7 @@ public class Event
      */
     public void setCanceled(boolean cancel)
     {
-        if (!isCancelable())
+        if (!EventProperties.CANCELLABLE.get(getClass()))
         {
             throw new UnsupportedOperationException(
                 "Attempted to call Event#setCanceled() on a non-cancelable event of type: "
@@ -107,7 +106,7 @@ public class Event
      */
     public boolean hasResult()
     {
-        return false;
+        return EventProperties.HAS_RESULT.get(getClass());
     }
 
     /**
@@ -147,7 +146,7 @@ public class Event
      */
     public ListenerList getListenerList()
     {
-        return listeners;
+        return EventProperties.LISTENER_LIST.get(this.getClass());
     }
 
     @Nullable

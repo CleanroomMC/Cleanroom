@@ -19,14 +19,13 @@
 
 package net.minecraftforge.fml.common.eventhandler;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -37,7 +36,6 @@ import net.minecraftforge.fml.common.ModContainer;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.MapMaker;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import org.jspecify.annotations.NonNull;
 
@@ -64,6 +62,52 @@ public class EventBus implements IEventExceptionHandler
         exceptionHandler = handler;
     }
 
+    public <T extends Event> void addListener(Class<T> eventType, Consumer<T> handler)
+    {
+        addListener(eventType, EventPriority.NORMAL, false, handler);
+    }
+
+    public <T extends Event> void addListener(Class<T> eventType, EventPriority priority, Consumer<T> handler)
+    {
+        addListener(eventType, priority, false, handler);
+    }
+
+    public <T extends Event> void addListener(
+        Class<T> eventType,
+        EventPriority priority,
+        boolean receiveCanceled,
+        Consumer<T> handler
+    )
+    {
+        Objects.requireNonNull(eventType, "eventType");
+        Objects.requireNonNull(priority, "priority");
+        Objects.requireNonNull(handler, "handler");
+        if (!Event.class.isAssignableFrom(eventType)) {
+            throw new IllegalArgumentException("Not an event type: " + eventType);
+        }
+        if (listeners.containsKey(handler)) {
+            return;
+        }
+
+        @SuppressWarnings("unchecked")
+        IEventListener listener = receiveCanceled || !EventProperties.CANCELLABLE.get(eventType)
+            ? ((Consumer<Event>) handler)::accept
+            : event -> {
+                if (!event.isCanceled()) {
+                    handler.accept((T) event);
+                }
+            };
+
+        ModContainer activeModContainer = Loader.instance().activeModContainer();
+        if (activeModContainer == null) {
+            FMLLog.log.error("Unable to determine registrant mod for {}. This is a critical error and should be impossible", handler, new Throwable());
+            activeModContainer = Loader.instance().getMinecraftModContainer();
+        }
+        listenerOwners.put(handler, activeModContainer);
+
+        register0(eventType, EventProperties.LISTENER_LIST.get(eventType), handler, listener, priority, activeModContainer);
+    }
+
     public void register(Object target)
     {
         if (listeners.containsKey(target))
@@ -79,59 +123,43 @@ public class EventBus implements IEventExceptionHandler
         }
         listenerOwners.put(target, activeModContainer);
 
-        boolean isStatic;
-        Set<? extends Class<?>> supers;
-        Class<?> scanTarget;
+        Collection<Method> methods;
         if (target instanceof Class<?> clazz) {
-            isStatic = true;
-            supers = Set.of(clazz);
-            scanTarget = clazz;
+            // static listener: subscribed methods must be declared by the class
+            methods = Arrays.stream(clazz.getDeclaredMethods())
+                .filter(m -> !m.isSynthetic()
+                             && Modifier.isStatic(m.getModifiers())
+                             && m.isAnnotationPresent(SubscribeEvent.class))
+                .toList();
         } else {
-            isStatic = false;
-            supers = TypeToken.of(target.getClass()).getTypes().rawTypes();
-            scanTarget = target.getClass();
+            // instance listener: methods overriding a subscribed method is also valid.
+            // In this case, we will register the subscribed parent method instead. JVM will
+            // handle it if a subclass overrides subscribed method
+            methods = TypeToken.of(target.getClass())
+                .getTypes()
+                .rawTypes()
+                // get self & superclass & interface
+                .stream()
+                .map(Class::getDeclaredMethods)
+                .flatMap(Arrays::stream)
+                .filter(m -> !m.isSynthetic()
+                             && !Modifier.isStatic(m.getModifiers())
+                             // private not allowed because it does not participate in inheritance
+                             && !Modifier.isPrivate(m.getModifiers())
+                             && m.isAnnotationPresent(SubscribeEvent.class))
+                // deduplicate by signature
+                .collect(Collectors.toMap(
+                    m -> Map.entry(m.getName(), Arrays.asList(m.getParameterTypes())),
+                    Function.identity(),
+                    (a, b) -> a,
+                    LinkedHashMap::new
+                ))
+                .values();
         }
 
-        for (Method method : scanTarget.getMethods())
+        for (Method method : methods)
         {
-            if (isStatic != Modifier.isStatic(method.getModifiers()))
-                continue;
-
-            try {
-                // do `.getDeclaredMethod(...)` to force JVM to walk through declared methods and load their parameter
-                // types. This is for preventing shortcut below from skipping classloading
-                //
-                // mod developers should be responsible for not loading non-existent class, but :(
-                // related issue: https://github.com/CleanroomMC/Cleanroom/issues/349
-                method.getDeclaringClass().getDeclaredMethod("forceClassLoadingForDeclaredMethods", Event.class);
-            } catch (NoSuchMethodException e) {
-                // swallow this specific exception, other exceptions, like ClassNotFoundException, will fall through
-            }
-
             var parameterTypes = method.getParameterTypes();
-            var matched = supers.stream()
-                .map(cls -> {
-                    if (cls == method.getDeclaringClass()) {
-                        // shortcut for most event handler classes with no explicit superclass
-                        return method;
-                    }
-                    try {
-                        return cls.getDeclaredMethod(method.getName(), parameterTypes);
-                    } catch (NoSuchMethodException e) {
-                        // Eat the error, this is not unexpected
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .filter(m -> m.isAnnotationPresent(SubscribeEvent.class))
-                .findFirst()
-                .orElse(null);
-
-            if (matched == null)
-            {
-                continue;
-            }
-
             if (parameterTypes.length != 1)
             {
                 throw new IllegalArgumentException(
@@ -141,15 +169,12 @@ public class EventBus implements IEventExceptionHandler
             }
 
             Class<?> eventType = parameterTypes[0];
-
             if (!Event.class.isAssignableFrom(eventType))
             {
                 throw new IllegalArgumentException("Method " + method + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
             }
 
-            // the method to be registered here is "matched", not "method", it should be a bug of
-            // the original event bus, since the exceptions above are all referencing "method"
-            register(eventType, target, matched, activeModContainer);
+            register(eventType, target, method, activeModContainer);
         }
     }
 
@@ -158,26 +183,32 @@ public class EventBus implements IEventExceptionHandler
     {
         try
         {
-            Constructor<?> ctr = eventType.getConstructor();
-            ctr.setAccessible(true);
-            Event event = (Event)ctr.newInstance();
-            final ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
+            ASMEventHandler asm = new ASMEventHandler(target, method, owner, IGenericEvent.class.isAssignableFrom(eventType));
 
-            IEventListener listener = asm;
-            if (IContextSetter.class.isAssignableFrom(eventType))
-            {
-                listener = new ContextSetterEventListener(owner, asm);
-            }
-
-            event.getListenerList().register(busID, asm.getPriority(), listener);
-
-            ArrayList<IEventListener> others = listeners.computeIfAbsent(target, k -> new ArrayList<>());
-            others.add(listener);
+            register0(eventType, EventProperties.LISTENER_LIST.get(eventType), target, asm, asm.getPriority(), owner);
         }
         catch (Exception e)
         {
             FMLLog.log.error("Error registering event handler: {} {} {}", owner, eventType, method, e);
         }
+    }
+
+    private void register0(
+        Class<?> eventType,
+        ListenerList listenerList,
+        Object key,
+        IEventListener listener,
+        EventPriority priority,
+        ModContainer owner
+    )
+    {
+        if (IContextSetter.class.isAssignableFrom(eventType))
+        {
+            listener = new ContextSetterEventListener(owner, listener);
+        }
+
+        listenerList.register(busID, priority, listener);
+        listeners.computeIfAbsent(key, _ -> new ArrayList<>()).add(listener);
     }
 
     public void unregister(Object object)
@@ -195,7 +226,8 @@ public class EventBus implements IEventExceptionHandler
     {
         if (shutdown) return false;
 
-        IEventListener[] listeners = event.getListenerList().getListeners(busID);
+        var eventType = event.getClass();
+        IEventListener[] listeners = EventProperties.LISTENER_LIST.get(eventType).getListeners(busID);
         int index = 0;
         try
         {
@@ -210,7 +242,7 @@ public class EventBus implements IEventExceptionHandler
             Throwables.throwIfUnchecked(throwable);
             throw new RuntimeException(throwable);
         }
-        return event.isCancelable() && event.isCanceled();
+        return EventProperties.CANCELLABLE.get(eventType) && event.isCanceled();
     }
 
     public void shutdown()
@@ -232,7 +264,7 @@ public class EventBus implements IEventExceptionHandler
 
     private record ContextSetterEventListener(
         ModContainer owner,
-        ASMEventHandler asm
+        IEventListener asm
     ) implements IEventListener {
 
         @Override

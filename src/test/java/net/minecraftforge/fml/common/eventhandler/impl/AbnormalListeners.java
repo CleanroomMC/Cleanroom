@@ -12,12 +12,12 @@ public class AbnormalListeners {
     static class Parent {
 
         @SubscribeEvent
-        public static void listenerParentOnly(ExampleEvent event) {
+        public static void staticParentOnly(ExampleEvent event) {
             throw new IllegalStateException("listener method only present in super class should not be registered");
         }
 
         @SubscribeEvent
-        public static void listenerParentAndSub(ExampleEvent event) {
+        public static void staticParentAndSub(ExampleEvent event) {
             throw new IllegalStateException(
                 "listener method only registered in super class should not be registered in sub class");
         }
@@ -25,7 +25,7 @@ public class AbnormalListeners {
 
     public static class Actual extends Parent {
 
-        public static void listenerParentAndSub(ExampleEvent event) {
+        public static void staticParentAndSub(ExampleEvent event) {
             throw new IllegalStateException(
                 "listener method only registered in super class should not be registered in sub class");
         }
