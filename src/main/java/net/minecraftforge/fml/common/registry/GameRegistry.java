@@ -216,14 +216,29 @@ public class GameRegistry
         FurnaceRecipes.instance().addSmeltingRecipeForBlock(input, output, xp);
     }
 
+    public static void addSmelting(Block input, @Nonnull ItemStack output, float xp, int cookTime)
+    {
+        FurnaceRecipes.instance().addSmeltingRecipeForBlock(input, output, xp, cookTime);
+    }
+
     public static void addSmelting(Item input, @Nonnull ItemStack output, float xp)
     {
         FurnaceRecipes.instance().addSmelting(input, output, xp);
     }
 
+    public static void addSmelting(Item input, @Nonnull ItemStack output, float xp, int cookTime)
+    {
+        FurnaceRecipes.instance().addSmelting(input, output, xp, cookTime);
+    }
+
     public static void addSmelting(@Nonnull ItemStack input, @Nonnull ItemStack output, float xp)
     {
         FurnaceRecipes.instance().addSmeltingRecipe(input, output, xp);
+    }
+
+    public static void addSmelting(@Nonnull ItemStack input, @Nonnull ItemStack output, float xp, int cookTime)
+    {
+        FurnaceRecipes.instance().addSmeltingRecipe(input, output, xp, cookTime);
     }
 
     @Deprecated //TODO: Remove in 1.13, Use ResourceLocation version.
