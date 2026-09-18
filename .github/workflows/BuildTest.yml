@@ -62,9 +62,6 @@ jobs:
       - name: Build Jars
         run: ./gradlew build -Prun_number=${{ github.run_number }}
 
-      - name: Get version
-        run: echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
-
       - name: Upload Universal Jar
         uses: actions/upload-artifact@v7
         with:
