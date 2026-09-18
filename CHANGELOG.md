@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.13-alpha] - 2026-09-12
+### Performance Improvements
+- [`381edb2`](https://github.com/CleanroomMC/Cleanroom/commit/381edb20f7c7c86596a3efe129dc9927da67b7f1) - **asm**: Precheck annotation in SideTransformer *(commit by [@kappa-maintainer](https://github.com/kappa-maintainer))*
+
+### Refactors
+- [`6bc8dd7`](https://github.com/CleanroomMC/Cleanroom/commit/6bc8dd7bf8d896fc715bf86770cc6b095f9212ad) - **mod-list**: clean up impl mess *(PR [#630](https://github.com/CleanroomMC/Cleanroom/pull/630) by [@RuiXuqi](https://github.com/RuiXuqi))*
+
+
 ## [0.6.12-alpha] - 2026-08-26
 ### Bug Fixes
 - [`fe78db8`](https://github.com/CleanroomMC/Cleanroom/commit/fe78db8dc4fcee47df7549230858f4c064208d73) - **startup**: query finish call `onGuiClosed` *(PR [#615](https://github.com/CleanroomMC/Cleanroom/pull/615) by [@Ecdcaeb](https://github.com/Ecdcaeb))*
@@ -258,3 +266,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.10-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.9-alpha...0.6.10-alpha
 [0.6.11-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.10-alpha...0.6.11-alpha
 [0.6.12-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.11-alpha...0.6.12-alpha
+[0.6.13-alpha]: https://github.com/CleanroomMC/Cleanroom/compare/0.6.12-alpha...0.6.13-alpha
