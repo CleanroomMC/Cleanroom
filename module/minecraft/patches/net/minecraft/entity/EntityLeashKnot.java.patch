@@ -1,0 +1,10 @@
+--- original/net/minecraft/entity/EntityLeashKnot.java
++++ modified/net/minecraft/entity/EntityLeashKnot.java
+@@ -51,6 +51,7 @@
+         this.posX = this.hangingPosition.getX() + 0.5;
+         this.posY = this.hangingPosition.getY() + 0.5;
+         this.posZ = this.hangingPosition.getZ() + 0.5;
++        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
+     }
+ 
+     /** Updates facing and bounding box based on it */

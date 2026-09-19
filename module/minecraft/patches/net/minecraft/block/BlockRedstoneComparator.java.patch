@@ -1,0 +1,24 @@
+--- original/net/minecraft/block/BlockRedstoneComparator.java
++++ modified/net/minecraft/block/BlockRedstoneComparator.java
+@@ -341,7 +341,21 @@
+             .withProperty(POWERED, false)
+             .withProperty(MODE, BlockRedstoneComparator.Mode.COMPARE);
+     }
++    @Override
++    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor)
++    {
++        if (pos.getY() == neighbor.getY() && world instanceof World && !((World) world).isRemote)
++        {
++            neighborChanged(world.getBlockState(pos), (World)world, pos, world.getBlockState(neighbor).getBlock(), neighbor);
++        }
++    }
+ 
++    @Override
++    public boolean getWeakChanges(IBlockAccess world, BlockPos pos)
++    {
++        return true;
++    }
++
+     public enum Mode implements IStringSerializable {
+         COMPARE("compare"),
+         SUBTRACT("subtract");

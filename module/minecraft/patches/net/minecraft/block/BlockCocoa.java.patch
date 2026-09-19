@@ -1,0 +1,40 @@
+--- original/net/minecraft/block/BlockCocoa.java
++++ modified/net/minecraft/block/BlockCocoa.java
+@@ -55,10 +55,12 @@
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+         if (!this.canBlockStay(worldIn, pos, state)) {
+             this.dropBlock(worldIn, pos, state);
+-        } else if (worldIn.rand.nextInt(5) == 0) {
++        } else {
+             int i = state.getValue(AGE);
+-            if (i < 2) {
++
++            if (i < 2 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt(5) == 0)) {
+                 worldIn.setBlockState(pos, state.withProperty(AGE, i + 1), 2);
++                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
+             }
+         }
+     }
+@@ -161,14 +163,20 @@
+     /** Spawns this Block's drops into the World as EntityItems. */
+     @Override
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+-        int i = state.getValue(AGE);
++        super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
++    }
++
++    @Override
++    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
++        super.getDrops(drops, world, pos, state, fortune);
++        int i = ((Integer)state.getValue(AGE)).intValue();
+         int j = 1;
+         if (i >= 2) {
+             j = 3;
+         }
+ 
+         for (int k = 0; k < j; k++) {
+-            spawnAsEntity(worldIn, pos, new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage()));
++            drops.add(new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage()));
+         }
+     }
+ 

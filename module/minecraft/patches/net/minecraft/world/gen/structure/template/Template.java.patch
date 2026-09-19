@@ -1,0 +1,19 @@
+--- original/net/minecraft/world/gen/structure/template/Template.java
++++ modified/net/minecraft/world/gen/structure/template/Template.java
+@@ -221,6 +221,8 @@
+ 
+             for (Template.BlockInfo template$blockinfo : this.blocks) {
+                 BlockPos blockpos = transformedBlockPos(placementIn, template$blockinfo.pos).add(pos);
++                // Forge: skip processing blocks outside BB to prevent cascading worldgen issues
++                if (structureboundingbox != null && !structureboundingbox.isVecInside(blockpos)) continue;
+                 Template.BlockInfo template$blockinfo1 = templateProcessor != null
+                     ? templateProcessor.processBlock(worldIn, blockpos, template$blockinfo)
+                     : template$blockinfo;
+@@ -493,6 +495,7 @@
+             nbttaglist2.appendTag(NBTUtil.writeBlockState(new NBTTagCompound(), iblockstate));
+         }
+ 
++        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt); //Moved up for MC updating reasons.
+         nbt.setTag("palette", nbttaglist2);
+         nbt.setTag("blocks", nbttaglist);
+         nbt.setTag("entities", nbttaglist1);

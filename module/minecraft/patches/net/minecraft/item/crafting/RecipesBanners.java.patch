@@ -1,0 +1,72 @@
+--- original/net/minecraft/item/crafting/RecipesBanners.java
++++ modified/net/minecraft/item/crafting/RecipesBanners.java
+@@ -14,7 +14,7 @@
+ import net.minecraft.world.World;
+ 
+ public class RecipesBanners {
+-    public static class RecipeAddPattern implements IRecipe {
++    public static class RecipeAddPattern extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+         /** Used to check if a recipe matches current crafting inventory */
+         @Override
+         public boolean matches(InventoryCrafting inv, World worldIn) {
+@@ -58,8 +58,9 @@
+ 
+                 for (int j = 0; j < inv.getSizeInventory(); j++) {
+                     ItemStack itemstack2 = inv.getStackInSlot(j);
+-                    if (itemstack2.getItem() == Items.DYE) {
+-                        k = itemstack2.getMetadata();
++                    int color = net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack2);
++                    if (color != -1) {
++                        k = color;
+                         break;
+                     }
+                 }
+@@ -94,9 +95,7 @@
+ 
+             for (int i = 0; i < nonnulllist.size(); i++) {
+                 ItemStack itemstack = inv.getStackInSlot(i);
+-                if (itemstack.getItem().hasContainerItem()) {
+-                    nonnulllist.set(i, new ItemStack(itemstack.getItem().getContainerItem()));
+-                }
++                nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+             }
+ 
+             return nonnulllist;
+@@ -114,7 +113,7 @@
+                         for (int i = 0; i < p_190933_1_.getSizeInventory() && flag; i++) {
+                             ItemStack itemstack = p_190933_1_.getStackInSlot(i);
+                             if (!itemstack.isEmpty() && itemstack.getItem() != Items.BANNER) {
+-                                if (itemstack.getItem() == Items.DYE) {
++                                if (net.minecraftforge.oredict.DyeUtils.isDye(itemstack)) {
+                                     if (flag2) {
+                                         flag = false;
+                                         break;
+@@ -143,7 +142,7 @@
+                             int i1 = k % 3;
+                             ItemStack itemstack1 = p_190933_1_.getStackInSlot(k);
+                             if (!itemstack1.isEmpty() && itemstack1.getItem() != Items.BANNER) {
+-                                if (itemstack1.getItem() != Items.DYE) {
++                                if (!net.minecraftforge.oredict.DyeUtils.isDye(itemstack1)) {
+                                     flag = false;
+                                     break;
+                                 }
+@@ -190,7 +189,7 @@
+         }
+     }
+ 
+-    public static class RecipeDuplicatePattern implements IRecipe {
++    public static class RecipeDuplicatePattern extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+         /** Used to check if a recipe matches current crafting inventory */
+         @Override
+         public boolean matches(InventoryCrafting inv, World worldIn) {
+@@ -269,8 +268,8 @@
+             for (int i = 0; i < nonnulllist.size(); i++) {
+                 ItemStack itemstack = inv.getStackInSlot(i);
+                 if (!itemstack.isEmpty()) {
+-                    if (itemstack.getItem().hasContainerItem()) {
+-                        nonnulllist.set(i, new ItemStack(itemstack.getItem().getContainerItem()));
++                    if (itemstack.getItem().hasContainerItem(itemstack)) {
++                        nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+                     } else if (itemstack.hasTagCompound() && TileEntityBanner.getPatterns(itemstack) > 0) {
+                         ItemStack itemstack1 = itemstack.copy();
+                         itemstack1.setCount(1);

@@ -1,0 +1,11 @@
+--- original/net/minecraft/tileentity/TileEntityPiston.java
++++ modified/net/minecraft/tileentity/TileEntityPiston.java
+@@ -143,7 +143,7 @@
+             AxisAlignedBB axisalignedbb = this.moveByPositionAndProgress(this.getMinMaxPiecesAABB(list));
+             List<Entity> list1 = this.world.getEntitiesWithinAABBExcludingEntity(null, this.getMovementArea(axisalignedbb, enumfacing, d0).union(axisalignedbb));
+             if (!list1.isEmpty()) {
+-                boolean flag = this.pistonState.getBlock() == Blocks.SLIME_BLOCK;
++                boolean flag = this.pistonState.getBlock().isStickyBlock(this.pistonState);
+ 
+                 for (int i = 0; i < list1.size(); i++) {
+                     Entity entity = list1.get(i);

@@ -1,0 +1,21 @@
+--- original/net/minecraft/advancements/PlayerAdvancements.java
++++ modified/net/minecraft/advancements/PlayerAdvancements.java
+@@ -161,6 +161,9 @@
+     }
+ 
+     public boolean grantCriterion(Advancement p_192750_1_, String p_192750_2_) {
++        // Forge: don't grant advancements for fake players
++        if (this.player instanceof net.minecraftforge.common.util.FakePlayer) return false;
++
+         boolean flag = false;
+         AdvancementProgress advancementprogress = this.getProgress(p_192750_1_);
+         boolean flag1 = advancementprogress.isDone();
+@@ -183,6 +186,8 @@
+                             )
+                         );
+                 }
++
++                net.minecraftforge.common.ForgeHooks.onAdvancement(this.player, p_192750_1_);
+             }
+         }
+ 

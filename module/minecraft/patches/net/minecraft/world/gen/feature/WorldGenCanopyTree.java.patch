@@ -1,0 +1,69 @@
+--- original/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
++++ modified/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
+@@ -34,8 +34,10 @@
+         int l = position.getZ();
+         if (k >= 1 && k + i + 1 < 256) {
+             BlockPos blockpos = position.down();
+-            Block block = worldIn.getBlockState(blockpos).getBlock();
+-            if (block != Blocks.GRASS && block != Blocks.DIRT) {
++            IBlockState state = worldIn.getBlockState(blockpos);
++            boolean isSoil = state.getBlock().canSustainPlant(state, worldIn, blockpos, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.SAPLING));
++
++            if (!(isSoil && position.getY() < worldIn.getHeight() - i - 1)) {
+                 return false;
+             }
+ 
+@@ -43,10 +45,10 @@
+                 return false;
+             }
+ 
+-            this.setDirtAt(worldIn, blockpos);
+-            this.setDirtAt(worldIn, blockpos.east());
+-            this.setDirtAt(worldIn, blockpos.south());
+-            this.setDirtAt(worldIn, blockpos.south().east());
++            this.onPlantGrow(worldIn, blockpos, position);
++            this.onPlantGrow(worldIn, blockpos.east(), position);
++            this.onPlantGrow(worldIn, blockpos.south(), position);
++            this.onPlantGrow(worldIn, blockpos.south().east(), position);
+             EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.random(rand);
+             int i1 = i - rand.nextInt(4);
+             int j1 = 2 - rand.nextInt(3);
+@@ -63,8 +65,8 @@
+ 
+                 int k2 = k + j2;
+                 BlockPos blockpos1 = new BlockPos(k1, k2, l1);
+-                Material material = worldIn.getBlockState(blockpos1).getMaterial();
+-                if (material == Material.AIR || material == Material.LEAVES) {
++                state = worldIn.getBlockState(blockpos1);
++                if (state.getBlock().isAir(state, worldIn, blockpos1) || state.getBlock().isLeaves(state, worldIn, blockpos1)) {
+                     this.placeLogAt(worldIn, blockpos1);
+                     this.placeLogAt(worldIn, blockpos1.east());
+                     this.placeLogAt(worldIn, blockpos1.south());
+@@ -158,7 +160,7 @@
+ 
+             for (int j1 = -i1; j1 <= i1; j1++) {
+                 for (int k1 = -i1; k1 <= i1; k1++) {
+-                    if (!this.canGrowInto(worldIn.getBlockState(blockpos$mutableblockpos.setPos(i + j1, j + l, k + k1)).getBlock())) {
++                    if (!this.isReplaceable(worldIn, blockpos$mutableblockpos.setPos(i + j1, j + l, k + k1))) {
+                         return false;
+                     }
+                 }
+@@ -176,9 +178,16 @@
+ 
+     private void placeLeafAt(World worldIn, int x, int y, int z) {
+         BlockPos blockpos = new BlockPos(x, y, z);
+-        Material material = worldIn.getBlockState(blockpos).getMaterial();
+-        if (material == Material.AIR) {
++        IBlockState state = worldIn.getBlockState(blockpos);
++
++        if (state.getBlock().isAir(state, worldIn, blockpos)) {
+             this.setBlockAndNotifyAdequately(worldIn, blockpos, DARK_OAK_LEAVES);
+         }
+     }
++
++    //Just a helper macro
++    private void onPlantGrow(World world, BlockPos pos, BlockPos source) {
++        IBlockState state = world.getBlockState(pos);
++        state.getBlock().onPlantGrow(state, world, pos, source);
++    }
+ }

@@ -1,0 +1,32 @@
+--- original/net/minecraft/item/ItemBucketMilk.java
++++ modified/net/minecraft/item/ItemBucketMilk.java
+@@ -21,6 +21,7 @@
+     /** Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using the Item before the action is complete. */
+     @Override
+     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
++        if (!worldIn.isRemote) entityLiving.curePotionEffects(stack); // FORGE - move up so stack.shrink does not turn stack into air
+         if (entityLiving instanceof EntityPlayerMP) {
+             EntityPlayerMP entityplayermp = (EntityPlayerMP)entityLiving;
+             CriteriaTriggers.CONSUME_ITEM.trigger(entityplayermp, stack);
+@@ -31,10 +32,6 @@
+             stack.shrink(1);
+         }
+ 
+-        if (!worldIn.isRemote) {
+-            entityLiving.clearActivePotions();
+-        }
+-
+         return stack.isEmpty() ? new ItemStack(Items.BUCKET) : stack;
+     }
+ 
+@@ -52,6 +49,10 @@
+ 
+     /** Called when the equipped item is right clicked. */
+     @Override
++    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, net.minecraft.nbt.NBTTagCompound nbt) {
++        return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
++    }
++
+     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+         playerIn.setActiveHand(handIn);
+         return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));

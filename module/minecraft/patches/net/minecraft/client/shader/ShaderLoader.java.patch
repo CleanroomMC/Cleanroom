@@ -1,0 +1,12 @@
+--- original/net/minecraft/client/shader/ShaderLoader.java
++++ modified/net/minecraft/client/shader/ShaderLoader.java
+@@ -50,7 +50,8 @@
+     public static ShaderLoader loadShader(IResourceManager resourceManager, ShaderLoader.ShaderType type, String filename) throws IOException {
+         ShaderLoader shaderloader = type.getLoadedShaders().get(filename);
+         if (shaderloader == null) {
+-            ResourceLocation resourcelocation = new ResourceLocation("shaders/program/" + filename + type.getShaderExtension());
++            String[] rl = ResourceLocation.splitObjectName(filename);
++            ResourceLocation resourcelocation = new ResourceLocation(rl[0], "shaders/program/" + rl[1] + type.getShaderExtension());
+             IResource iresource = resourceManager.getResource(resourcelocation);
+ 
+             try {

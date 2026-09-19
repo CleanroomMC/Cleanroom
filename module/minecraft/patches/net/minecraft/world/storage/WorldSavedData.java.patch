@@ -1,0 +1,25 @@
+--- original/net/minecraft/world/storage/WorldSavedData.java
++++ modified/net/minecraft/world/storage/WorldSavedData.java
+@@ -2,8 +2,7 @@
+ 
+ import net.minecraft.nbt.NBTTagCompound;
+ 
+-public abstract class WorldSavedData {
+-    /** The name of the map data nbt */
++public abstract class WorldSavedData implements net.minecraftforge.common.util.INBTSerializable<NBTTagCompound> {
+     public final String mapName;
+     /** Whether this MapDataBase needs saving to disk. */
+     private boolean dirty;
+@@ -31,4 +30,12 @@
+     public boolean isDirty() {
+         return this.dirty;
+     }
++
++    public void deserializeNBT(NBTTagCompound nbt) {
++        this.readFromNBT(nbt);
++    }
++
++    public NBTTagCompound serializeNBT() {
++        return this.writeToNBT(new NBTTagCompound());
++    }
+ }

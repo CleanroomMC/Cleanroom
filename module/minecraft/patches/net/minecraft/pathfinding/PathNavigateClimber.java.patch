@@ -1,0 +1,12 @@
+--- original/net/minecraft/pathfinding/PathNavigateClimber.java
++++ modified/net/minecraft/pathfinding/PathNavigateClimber.java
+@@ -47,7 +47,8 @@
+             super.onUpdateNavigation();
+         } else {
+             if (this.targetPosition != null) {
+-                double d0 = this.entity.width * this.entity.width;
++                double d0 = Math.max((this.entity.width * this.entity.width), 1.0);
++
+                 if (!(this.entity.getDistanceSqToCenter(this.targetPosition) < d0)
+                     && (
+                         !(this.entity.posY > this.targetPosition.getY())

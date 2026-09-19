@@ -1,0 +1,464 @@
+--- original/net/minecraft/world/chunk/Chunk.java
++++ modified/net/minecraft/world/chunk/Chunk.java
+@@ -41,7 +41,7 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+-public class Chunk {
++public class Chunk implements net.minecraftforge.common.capabilities.ICapabilityProvider {
+     private static final Logger LOGGER = LogManager.getLogger();
+     public static final ExtendedBlockStorage NULL_BLOCK_STORAGE = null;
+     /** Used to store block IDs, block MSBs, Sky-light maps, Block-light maps, and metadata. Each entry corresponds to a logical segment of 16x16x16 blocks, stacked vertically. */
+@@ -99,6 +99,7 @@
+ 
+         Arrays.fill(this.precipitationHeightMap, -999);
+         Arrays.fill(this.blockBiomeArray, (byte)-1);
++        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
+     }
+ 
+     public Chunk(World worldIn, ChunkPrimer primer, int x, int z) {
+@@ -171,7 +172,8 @@
+ 
+                 for (int l = i + 16; l > 0; l--) {
+                     IBlockState iblockstate = this.getBlockState(j, l - 1, k);
+-                    if (iblockstate.getLightOpacity() != 0) {
++
++                    if (this.getBlockLightOpacity(j, l - 1, k) != 0) {
+                         this.heightMap[k << 4 | j] = l;
+                         if (l < this.heightMapMinimum) {
+                             this.heightMapMinimum = l;
+@@ -378,11 +380,12 @@
+     }
+ 
+     public int getBlockLightOpacity(BlockPos pos) {
+-        return this.getBlockState(pos).getLightOpacity();
++        return this.getBlockState(pos).getLightOpacity(this.world, pos);
+     }
+ 
+     private int getBlockLightOpacity(int x, int y, int z) {
+-        return this.getBlockState(x, y, z).getLightOpacity();
++        IBlockState state = this.getBlockState(x, y, z); //Forge: Can sometimes be called before we are added to the global world list. So use the less accurate one during that. It'll be recalculated later
++        return !loaded ? state.getLightOpacity() : state.getLightOpacity(world, new BlockPos(this.x << 4 | x & 15, y, this.z << 4 | z & 15));
+     }
+ 
+     public IBlockState getBlockState(BlockPos pos) {
+@@ -430,86 +433,91 @@
+         int j = pos.getY();
+         int k = pos.getZ() & 15;
+         int l = k << 4 | i;
++
+         if (j >= this.precipitationHeightMap[l] - 1) {
+             this.precipitationHeightMap[l] = -999;
+         }
+ 
+         int i1 = this.heightMap[l];
+         IBlockState iblockstate = this.getBlockState(pos);
++
+         if (iblockstate == state) {
+             return null;
+-        }
++        } else {
++            Block block = state.getBlock();
++            Block block1 = iblockstate.getBlock();
++            int k1 = iblockstate.getLightOpacity(this.world, pos); // Relocate old light value lookup here, so that it is called before TE is removed.
++            ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4];
++            boolean flag = false;
+ 
+-        Block block = state.getBlock();
+-        Block block1 = iblockstate.getBlock();
+-        ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4];
+-        boolean flag = false;
+-        if (extendedblockstorage == NULL_BLOCK_STORAGE) {
+-            if (block == Blocks.AIR) {
+-                return null;
++            if (extendedblockstorage == NULL_BLOCK_STORAGE) {
++                if (block == Blocks.AIR) {
++                    return null;
++                }
++
++                extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, this.world.provider.hasSkyLight());
++                this.storageArrays[j >> 4] = extendedblockstorage;
++                flag = j >= i1;
+             }
+ 
+-            extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, this.world.provider.hasSkyLight());
+-            this.storageArrays[j >> 4] = extendedblockstorage;
+-            flag = j >= i1;
+-        }
++            extendedblockstorage.set(i, j & 15, k, state);
+ 
+-        extendedblockstorage.set(i, j & 15, k, state);
+-        if (block1 != block) {
+-            if (!this.world.isRemote) {
+-                block1.breakBlock(this.world, pos, iblockstate);
+-            } else if (block1 instanceof ITileEntityProvider) {
+-                this.world.removeTileEntity(pos);
++ { //if (block1 != block)
++                if (!this.world.isRemote) {
++                    if (block1 != block) //Only fire block breaks when the block changes.
++                    block1.breakBlock(this.world, pos, iblockstate);
++                    TileEntity te = this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
++                    if (te != null && te.shouldRefresh(this.world, pos, iblockstate, state)) this.world.removeTileEntity(pos);
++                } else if (block1.hasTileEntity(iblockstate)) {
++                    TileEntity te = this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
++                    if (te != null && te.shouldRefresh(this.world, pos, iblockstate, state))
++                    this.world.removeTileEntity(pos);
++                }
+             }
+-        }
+ 
+-        if (extendedblockstorage.get(i, j & 15, k).getBlock() != block) {
+-            return null;
+-        }
++            if (extendedblockstorage.get(i, j & 15, k).getBlock() != block) {
++                return null;
++            } else {
++                if (flag) {
++                    this.generateSkylightMap();
++                } else {
++                    int j1 = state.getLightOpacity(this.world, pos);
+ 
+-        if (flag) {
+-            this.generateSkylightMap();
+-        } else {
+-            int j1 = state.getLightOpacity();
+-            int k1 = iblockstate.getLightOpacity();
+-            if (j1 > 0) {
+-                if (j >= i1) {
+-                    this.relightBlock(i, j + 1, k);
++                    if (j1 > 0) {
++                        if (j >= i1) {
++                            this.relightBlock(i, j + 1, k);
++                        }
++                    } else if (j == i1 - 1) {
++                        this.relightBlock(i, j, k);
++                    }
++
++                    if (j1 != k1 && (j1 < k1 || this.getLightFor(EnumSkyBlock.SKY, pos) > 0 || this.getLightFor(EnumSkyBlock.BLOCK, pos) > 0)) {
++                        this.propagateSkylightOcclusion(i, k);
++                    }
+                 }
+-            } else if (j == i1 - 1) {
+-                this.relightBlock(i, j, k);
+-            }
+ 
+-            if (j1 != k1 && (j1 < k1 || this.getLightFor(EnumSkyBlock.SKY, pos) > 0 || this.getLightFor(EnumSkyBlock.BLOCK, pos) > 0)) {
+-                this.propagateSkylightOcclusion(i, k);
+-            }
+-        }
++                // If capturing blocks, only run block physics for TE's. Non-TE's are handled in ForgeHooks.onPlaceItemIntoWorld
++                if (!this.world.isRemote && block1 != block && (!this.world.captureBlockSnapshots || block.hasTileEntity(state))) {
++                    block.onBlockAdded(this.world, pos, state);
++                }
+ 
+-        if (block1 instanceof ITileEntityProvider) {
+-            TileEntity tileentity = this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+-            if (tileentity != null) {
+-                tileentity.updateContainingBlockInfo();
+-            }
+-        }
++                if (block.hasTileEntity(state)) {
++                    TileEntity tileentity1 = this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+ 
+-        if (!this.world.isRemote && block1 != block) {
+-            block.onBlockAdded(this.world, pos, state);
+-        }
++                    if (tileentity1 == null) {
++                        tileentity1 = block.createTileEntity(this.world, state);
++                        this.world.setTileEntity(pos, tileentity1);
++                    }
+ 
+-        if (block instanceof ITileEntityProvider) {
+-            TileEntity tileentity1 = this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+-            if (tileentity1 == null) {
+-                tileentity1 = ((ITileEntityProvider)block).createNewTileEntity(this.world, block.getMetaFromState(state));
+-                this.world.setTileEntity(pos, tileentity1);
+-            }
++                    if (tileentity1 != null) {
++                        tileentity1.updateContainingBlockInfo();
++                    }
++                }
+ 
+-            if (tileentity1 != null) {
+-                tileentity1.updateContainingBlockInfo();
++                this.dirty = true;
++                return iblockstate;
+             }
+         }
+-
+-        this.dirty = true;
+-        return iblockstate;
+     }
+ 
+     public int getLightFor(EnumSkyBlock type, BlockPos pos) {
+@@ -587,11 +595,13 @@
+             k = this.entityLists.length - 1;
+         }
+ 
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityEvent.EnteringChunk(entityIn, this.x, this.z, entityIn.chunkCoordX, entityIn.chunkCoordZ));
+         entityIn.addedToChunk = true;
+         entityIn.chunkCoordX = this.x;
+         entityIn.chunkCoordY = k;
+         entityIn.chunkCoordZ = this.z;
+         this.entityLists[k].add(entityIn);
++        this.markDirty(); // Forge - ensure chunks are marked to save after an entity add
+     }
+ 
+     /** removes entity using its y chunk coordinate as its index */
+@@ -610,6 +620,7 @@
+         }
+ 
+         this.entityLists[index].remove(entityIn);
++        this.markDirty(); // Forge - ensure chunks are marked to save after entity removals
+     }
+ 
+     public boolean canSeeSky(BlockPos pos) {
+@@ -623,24 +634,27 @@
+     private TileEntity createNewTileEntity(BlockPos pos) {
+         IBlockState iblockstate = this.getBlockState(pos);
+         Block block = iblockstate.getBlock();
+-        return !block.hasTileEntity()
+-            ? null
+-            : ((ITileEntityProvider)block).createNewTileEntity(this.world, iblockstate.getBlock().getMetaFromState(iblockstate));
++        return !block.hasTileEntity(iblockstate)
++               ? null
++               : block.createTileEntity(this.world, iblockstate);
+     }
+ 
+     @Nullable
+     public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType creationMode) {
+         TileEntity tileentity = this.tileEntities.get(pos);
++
++        if (tileentity != null && tileentity.isInvalid()) {
++            tileEntities.remove(pos);
++            tileentity = null;
++        }
++
+         if (tileentity == null) {
+             if (creationMode == Chunk.EnumCreateEntityType.IMMEDIATE) {
+                 tileentity = this.createNewTileEntity(pos);
+                 this.world.setTileEntity(pos, tileentity);
+             } else if (creationMode == Chunk.EnumCreateEntityType.QUEUED) {
+-                this.tileEntityPosQueue.add(pos);
++                this.tileEntityPosQueue.add(pos.toImmutable());
+             }
+-        } else if (tileentity.isInvalid()) {
+-            this.tileEntities.remove(pos);
+-            return null;
+         }
+ 
+         return tileentity;
+@@ -654,9 +668,11 @@
+     }
+ 
+     public void addTileEntity(BlockPos pos, TileEntity tileEntityIn) {
++        if (tileEntityIn.getWorld() != this.world) //Forge don't call unless it's changed, could screw up bad mods.
+         tileEntityIn.setWorld(this.world);
+         tileEntityIn.setPos(pos);
+-        if (this.getBlockState(pos).getBlock() instanceof ITileEntityProvider) {
++
++        if (this.getBlockState(pos).getBlock().hasTileEntity(this.getBlockState(pos))) {
+             if (this.tileEntities.containsKey(pos)) {
+                 this.tileEntities.get(pos).invalidate();
+             }
+@@ -681,12 +697,14 @@
+         this.world.addTileEntities(this.tileEntities.values());
+ 
+         for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists) {
+-            this.world.loadEntities(classinheritancemultimap);
++            this.world.loadEntities(com.google.common.collect.ImmutableList.copyOf(classinheritancemultimap));
+         }
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Load(this));
+     }
+ 
+     /** Called when this Chunk is unloaded by the ChunkProvider */
+     public void onUnload() {
++        java.util.Arrays.stream(entityLists).forEach(multimap -> com.google.common.collect.Lists.newArrayList(multimap.getByClass(net.minecraft.entity.player.EntityPlayer.class)).forEach(player -> world.updateEntityWithOptionalForce(player, false))); // FORGE - Fix for MC-92916
+         this.loaded = false;
+ 
+         for (TileEntity tileentity : this.tileEntities.values()) {
+@@ -696,6 +714,7 @@
+         for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists) {
+             this.world.unloadEntities(classinheritancemultimap);
+         }
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Unload(this));
+     }
+ 
+     /** Sets the isModified flag for this Chunk */
+@@ -705,8 +724,8 @@
+ 
+     /** Fills the given list of all entities that intersect within the given bounding box that aren't the passed entity. */
+     public void getEntitiesWithinAABBForEntity(@Nullable Entity entityIn, AxisAlignedBB aabb, List<Entity> listToFill, Predicate<? super Entity> filter) {
+-        int i = MathHelper.floor((aabb.minY - 2.0) / 16.0);
+-        int j = MathHelper.floor((aabb.maxY + 2.0) / 16.0);
++        int i = MathHelper.floor((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0);
++        int j = MathHelper.floor((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0);
+         i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
+         j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
+ 
+@@ -739,8 +758,8 @@
+     public <T extends Entity> void getEntitiesOfTypeWithinAABB(
+         Class<? extends T> entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate<? super T> filter
+     ) {
+-        int i = MathHelper.floor((aabb.minY - 2.0) / 16.0);
+-        int j = MathHelper.floor((aabb.maxY + 2.0) / 16.0);
++        int i = MathHelper.floor((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0);
++        int j = MathHelper.floor((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0);
+         i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
+         j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
+ 
+@@ -807,6 +826,9 @@
+     }
+ 
+     protected void populate(IChunkGenerator generator) {
++        if (populating != null && net.minecraftforge.common.ForgeModContainer.logCascadingWorldGeneration) logCascadingWorldGeneration();
++        ChunkPos prev = populating;
++        populating = this.getPos();
+         if (this.isTerrainPopulated()) {
+             if (generator.generateStructures(this, this.x, this.z)) {
+                 this.markDirty();
+@@ -814,8 +836,10 @@
+         } else {
+             this.checkLight();
+             generator.populate(this.x, this.z);
++            net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.x, this.z, this.world, generator, this.world.getChunkProvider());
+             this.markDirty();
+         }
++        populating = prev;
+     }
+ 
+     public BlockPos getPrecipitationHeight(BlockPos pos) {
+@@ -856,7 +880,8 @@
+ 
+         while (!this.tileEntityPosQueue.isEmpty()) {
+             BlockPos blockpos = this.tileEntityPosQueue.poll();
+-            if (this.getTileEntity(blockpos, Chunk.EnumCreateEntityType.CHECK) == null && this.getBlockState(blockpos).getBlock().hasTileEntity()) {
++
++            if (this.getTileEntity(blockpos, Chunk.EnumCreateEntityType.CHECK) == null && this.getBlockState(blockpos).getBlock().hasTileEntity(this.getBlockState(blockpos))) {
+                 TileEntity tileentity = this.createNewTileEntity(blockpos);
+                 this.world.setTileEntity(blockpos, tileentity);
+                 this.world.markBlockRangeForRenderUpdate(blockpos, blockpos);
+@@ -912,6 +937,12 @@
+      */
+     @SideOnly(Side.CLIENT)
+     public void read(PacketBuffer buf, int availableSections, boolean groundUpContinuous) {
++        for(TileEntity tileEntity : tileEntities.values()) {
++            tileEntity.updateContainingBlockInfo();
++            tileEntity.getBlockMetadata();
++            tileEntity.getBlockType();
++        }
++
+         boolean flag = this.world.provider.hasSkyLight();
+ 
+         for (int i = 0; i < this.storageArrays.length; i++) {
+@@ -948,9 +979,15 @@
+         this.isTerrainPopulated = true;
+         this.generateHeightMap();
+ 
++        List<TileEntity> invalidList = new java.util.ArrayList<>();
++
+         for (TileEntity tileentity : this.tileEntities.values()) {
++            if (tileentity.shouldRefresh(this.world, tileentity.getPos(), tileentity.getBlockType().getStateFromMeta(tileentity.getBlockMetadata()), getBlockState(tileentity.getPos())))
++                invalidList.add(tileentity);
+             tileentity.updateContainingBlockInfo();
+         }
++
++        for (TileEntity te : invalidList) te.invalidate();
+     }
+ 
+     public Biome getBiome(BlockPos pos, BiomeProvider provider) {
+@@ -958,7 +995,12 @@
+         int j = pos.getZ() & 15;
+         int k = this.blockBiomeArray[j << 4 | i] & 255;
+         if (k == 255) {
+-            Biome biome = provider.getBiome(pos, Biomes.PLAINS);
++            // Forge: checking for client ensures that biomes are only generated on integrated server
++            // in singleplayer. Generating biomes on the client may corrupt the biome ID arrays on
++            // the server while they are being generated because IntCache can't be thread safe,
++            // so client and server may end up filling the same array.
++            // This is not necessary in 1.13 and newer versions.
++            Biome biome = world.isRemote ? Biomes.PLAINS : provider.getBiome(pos, Biomes.PLAINS);
+             k = Biome.getIdForBiome(biome);
+             this.blockBiomeArray[j << 4 | i] = (byte)(k & 0xFF);
+         }
+@@ -1005,10 +1047,11 @@
+                     BlockPos blockpos1 = blockpos.add(k, (j << 4) + i1, l);
+                     boolean flag = i1 == 0 || i1 == 15 || k == 0 || k == 15 || l == 0 || l == 15;
+                     if (this.storageArrays[j] == NULL_BLOCK_STORAGE && flag
+-                        || this.storageArrays[j] != NULL_BLOCK_STORAGE && this.storageArrays[j].get(k, i1, l).getMaterial() == Material.AIR) {
++                            || this.storageArrays[j] != NULL_BLOCK_STORAGE && this.storageArrays[j].get(k, i1, l).getBlock().isAir(this.storageArrays[j].get(k, i1, l), this.world, blockpos1)) {
+                         for (EnumFacing enumfacing : EnumFacing.values()) {
+                             BlockPos blockpos2 = blockpos1.offset(enumfacing);
+-                            if (this.world.getBlockState(blockpos2).getLightValue() > 0) {
++
++                            if (this.world.getBlockState(blockpos2).getLightValue(this.world, blockpos2) > 0) {
+                                 this.world.checkLight(blockpos2);
+                             }
+                         }
+@@ -1104,7 +1147,8 @@
+ 
+         for (int l = blockpos$mutableblockpos.getY(); l > 0; l--) {
+             blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), l, blockpos$mutableblockpos.getZ());
+-            if (this.getBlockState(blockpos$mutableblockpos).getLightValue() > 0) {
++
++            if (this.getBlockState(blockpos$mutableblockpos).getLightValue(this.world, blockpos$mutableblockpos) > 0) {
+                 this.world.checkLight(blockpos$mutableblockpos);
+             }
+         }
+@@ -1134,6 +1178,7 @@
+             LOGGER.warn("Could not set level chunk heightmap, array length is {} instead of {}", newHeightMap.length, this.heightMap.length);
+         } else {
+             System.arraycopy(newHeightMap, 0, this.heightMap, 0, this.heightMap.length);
++            this.heightMapMinimum = com.google.common.primitives.Ints.min(this.heightMap); // Forge: fix MC-117412
+         }
+     }
+ 
+@@ -1190,4 +1235,48 @@
+         QUEUED,
+         CHECK;
+     }
++
++    /* ======================================== FORGE START =====================================*/
++    /**
++     * Removes the tile entity at the specified position, only if it's
++     * marked as invalid.
++     */
++    public void removeInvalidTileEntity(BlockPos pos) {
++        if (loaded) {
++            TileEntity entity = (TileEntity)tileEntities.get(pos);
++            if (entity != null && entity.isInvalid()) {
++                tileEntities.remove(pos);
++            }
++        }
++    }
++
++    private static ChunkPos populating = null; // keep track of cascading chunk generation during chunk population
++
++    private void logCascadingWorldGeneration() {
++        net.minecraftforge.fml.common.ModContainer activeModContainer = net.minecraftforge.fml.common.Loader.instance().activeModContainer();
++        String format = "{} loaded a new chunk {} in dimension {} ({}) while populating chunk {}, causing cascading worldgen lag.";
++
++        if (activeModContainer == null) { // vanilla minecraft has problems too (MC-114332), log it at a quieter level.
++            net.minecraftforge.fml.common.FMLLog.log.debug(format, "Minecraft", this.getPos(), this.world.provider.getDimension(), this.world.provider.getDimensionType().getName(), populating);
++            net.minecraftforge.fml.common.FMLLog.log.debug("Consider setting 'fixVanillaCascading' to 'true' in the Forge config to fix many cases where this occurs in the base game.");
++        } else {
++            net.minecraftforge.fml.common.FMLLog.log.warn(format, activeModContainer.getName(), this.getPos(), this.world.provider.getDimension(), this.world.provider.getDimensionType().getName(), populating);
++            net.minecraftforge.fml.common.FMLLog.log.warn("Please report this to the mod's issue tracker. This log can be disabled in the Forge config.");
++        }
++    }
++
++    private final net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
++    @Nullable
++    public net.minecraftforge.common.capabilities.CapabilityDispatcher getCapabilities() {
++        return capabilities;
++    }
++    @Override
++    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable EnumFacing facing) {
++        return capabilities == null ? false : capabilities.hasCapability(capability, facing);
++    }
++    @Override
++    @Nullable
++    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable EnumFacing facing) {
++        return capabilities == null ? null : capabilities.getCapability(capability, facing);
++    }
+ }

@@ -1,0 +1,17 @@
+--- original/net/minecraft/entity/item/EntityItemFrame.java
++++ modified/net/minecraft/entity/item/EntityItemFrame.java
+@@ -128,12 +128,13 @@
+     /** Removes the dot representing this frame's position from the map when the item frame is broken. */
+     private void removeFrameFromMap(ItemStack stack) {
+         if (!stack.isEmpty()) {
+-            if (stack.getItem() == Items.FILLED_MAP) {
++            if (stack.getItem() instanceof net.minecraft.item.ItemMap) {
+                 MapData mapdata = ((ItemMap)stack.getItem()).getMapData(stack, this.world);
+                 mapdata.mapDecorations.remove("frame-" + this.getEntityId());
+             }
+ 
+             stack.setItemFrame(null);
++            this.setDisplayedItem(ItemStack.EMPTY); //Forge: Fix MC-124833 Pistons duplicating Items.
+         }
+     }
+ 

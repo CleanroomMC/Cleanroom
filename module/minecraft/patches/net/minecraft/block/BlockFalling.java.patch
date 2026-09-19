@@ -1,0 +1,25 @@
+--- original/net/minecraft/block/BlockFalling.java
++++ modified/net/minecraft/block/BlockFalling.java
+@@ -44,18 +44,19 @@
+     }
+ 
+     private void checkFallable(World worldIn, BlockPos pos) {
+-        if (canFallThrough(worldIn.getBlockState(pos.down())) && pos.getY() >= 0) {
++        if ((worldIn.isAirBlock(pos.down()) || canFallThrough(worldIn.getBlockState(pos.down()))) && pos.getY() >= 0) {
+             int i = 32;
+             if (fallInstantly || !worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32))) {
++                IBlockState state = worldIn.getBlockState(pos);
+                 worldIn.setBlockToAir(pos);
+                 BlockPos blockpos = pos.down();
+ 
+-                while (canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0) {
++                while ((worldIn.isAirBlock(blockpos) || canFallThrough(worldIn.getBlockState(blockpos))) && blockpos.getY() > 0) {
+                     blockpos = blockpos.down();
+                 }
+ 
+                 if (blockpos.getY() > 0) {
+-                    worldIn.setBlockState(blockpos.up(), this.getDefaultState());
++                    worldIn.setBlockState(blockpos.up(), state); //Forge: Fix loss of state information during world gen.
+                 }
+             } else if (!worldIn.isRemote) {
+                 EntityFallingBlock entityfallingblock = new EntityFallingBlock(

@@ -1,0 +1,17 @@
+--- original/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
++++ modified/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
+@@ -38,9 +38,13 @@
+     private Multipart multipart;
+ 
+     public static ModelBlockDefinition parseFromReader(Reader reader) {
+-        return JsonUtils.fromJson(GSON, reader, ModelBlockDefinition.class);
++        return parseFromReader(reader, null);
+     }
+ 
++    public static ModelBlockDefinition parseFromReader(Reader reader, net.minecraft.util.ResourceLocation location) {
++        return net.minecraftforge.client.model.BlockStateLoader.load(reader, location, GSON);
++    }
++
+     public ModelBlockDefinition(Map<String, VariantList> variants, Multipart multipartIn) {
+         this.multipart = multipartIn;
+         this.mapVariants.putAll(variants);

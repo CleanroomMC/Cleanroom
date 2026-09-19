@@ -1,0 +1,23 @@
+--- original/net/minecraft/entity/ai/EntityAIHarvestFarmland.java
++++ modified/net/minecraft/entity/ai/EntityAIHarvestFarmland.java
+@@ -29,7 +29,7 @@
+     @Override
+     public boolean shouldExecute() {
+         if (this.runDelay <= 0) {
+-            if (!this.villager.world.getGameRules().getBoolean("mobGriefing")) {
++            if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.villager.world, this.villager)) {
+                 return false;
+             }
+ 
+@@ -86,6 +86,11 @@
+                         } else if (itemstack.getItem() == Items.BEETROOT_SEEDS) {
+                             world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
+                             flag = true;
++                        } else if (itemstack.getItem() instanceof net.minecraftforge.common.IPlantable) {
++                            if(((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlantType(world,blockpos) == net.minecraftforge.common.EnumPlantType.Crop) {
++                                world.setBlockState(blockpos, ((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlant(world,blockpos),3);
++                                flag = true;
++                            }
+                         }
+                     }
+ 

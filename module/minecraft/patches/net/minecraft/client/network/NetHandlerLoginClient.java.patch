@@ -1,0 +1,14 @@
+--- original/net/minecraft/client/network/NetHandlerLoginClient.java
++++ modified/net/minecraft/client/network/NetHandlerLoginClient.java
+@@ -101,7 +101,10 @@
+     public void handleLoginSuccess(SPacketLoginSuccess packetIn) {
+         this.gameProfile = packetIn.getProfile();
+         this.networkManager.setConnectionState(EnumConnectionState.PLAY);
+-        this.networkManager.setNetHandler(new NetHandlerPlayClient(this.mc, this.previousGuiScreen, this.networkManager, this.gameProfile));
++        NetHandlerPlayClient nhpc = new NetHandlerPlayClient(this.mc, this.previousGuiScreen, this.networkManager, this.gameProfile);
++        this.networkManager.setNetHandler(nhpc);
++        net.minecraftforge.fml.client.FMLClientHandler.instance().setPlayClient(nhpc);
++        net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.fmlClientHandshake(this.networkManager);
+     }
+ 
+     /** Invoked when disconnecting, the parameter is a ChatComponent describing the reason for termination */

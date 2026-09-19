@@ -1,0 +1,13 @@
+--- original/net/minecraft/world/gen/feature/WorldGenBush.java
++++ modified/net/minecraft/world/gen/feature/WorldGenBush.java
+@@ -21,8 +21,8 @@
+                 rand.nextInt(8) - rand.nextInt(8)
+             );
+             if (worldIn.isAirBlock(blockpos)
+-                && (!worldIn.provider.isNether() || blockpos.getY() < 255)
+-                && this.block.canBlockStay(worldIn, blockpos, this.block.getDefaultState())) {
++                    && (!worldIn.provider.isNether() || blockpos.getY() < worldIn.getHeight() - 1)
++                    && this.block.canBlockStay(worldIn, blockpos, this.block.getDefaultState())) {
+                 worldIn.setBlockState(blockpos, this.block.getDefaultState(), 2);
+             }
+         }

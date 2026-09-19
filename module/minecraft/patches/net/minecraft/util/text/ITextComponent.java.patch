@@ -1,0 +1,19 @@
+--- original/net/minecraft/util/text/ITextComponent.java
++++ modified/net/minecraft/util/text/ITextComponent.java
+@@ -17,6 +17,8 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.util.EnumTypeAdapterFactory;
+ import net.minecraft.util.JsonUtils;
++import net.minecraftforge.fml.relauncher.Side;
++import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ public interface ITextComponent extends Iterable<ITextComponent> {
+     /** Sets the style of this component and updates the parent style of all of the sibling components. */
+@@ -51,7 +53,6 @@
+     /** Gets the text of this component <em>and all sibling components</em>, without any formatting codes. */
+     String getUnformattedText();
+ 
+-    /** Gets the text of this component <em>and all sibling components</em>, with formatting codes added for rendering. */
+     String getFormattedText();
+ 
+     /** Gets the sibling components of this one. */

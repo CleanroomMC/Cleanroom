@@ -1,0 +1,61 @@
+--- original/net/minecraft/block/BlockFlowerPot.java
++++ modified/net/minecraft/block/BlockFlowerPot.java
+@@ -157,13 +157,15 @@
+     /** Checks if this block can be placed exactly at the given position. */
+     @Override
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+-        return super.canPlaceBlockAt(worldIn, pos) && worldIn.getBlockState(pos.down()).isTopSolid();
++        IBlockState downState = worldIn.getBlockState(pos.down());
++        return super.canPlaceBlockAt(worldIn, pos) && (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID);
+     }
+ 
+     /** Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid block, etc. */
+     @Override
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+-        if (!worldIn.getBlockState(pos.down()).isTopSolid()) {
++        IBlockState downState = worldIn.getBlockState(pos.down());
++        if (!downState.isTopSolid() && downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) != BlockFaceShape.SOLID) {
+             this.dropBlockAsItem(worldIn, pos, state, 0);
+             worldIn.setBlockToAir(pos);
+         }
+@@ -172,11 +174,6 @@
+     /** Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated */
+     @Override
+     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+-        TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
+-        if (tileentityflowerpot != null && tileentityflowerpot.getFlowerPotItem() != null) {
+-            spawnAsEntity(worldIn, pos, new ItemStack(tileentityflowerpot.getFlowerPotItem(), 1, tileentityflowerpot.getFlowerPotData()));
+-        }
+-
+         super.breakBlock(worldIn, pos, state);
+     }
+ 
+@@ -388,6 +385,28 @@
+         return BlockFaceShape.UNDEFINED;
+     }
+ 
++    /*============================FORGE START=====================================*/
++    @Override
++    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
++        super.getDrops(drops, world, pos, state, fortune);
++        TileEntityFlowerPot te = world.getTileEntity(pos) instanceof TileEntityFlowerPot ? (TileEntityFlowerPot)world.getTileEntity(pos) : null;
++        if (te != null && te.getFlowerPotItem() != null)
++            drops.add(new ItemStack(te.getFlowerPotItem(), 1, te.getFlowerPotData()));
++    }
++
++    @Override
++    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
++        if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
++        return super.removedByPlayer(state, world, pos, player, willHarvest);
++    }
++
++    @Override
++    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool) {
++        super.harvestBlock(world, player, pos, state, te, tool);
++        world.setBlockToAir(pos);
++    }
++    /*===========================FORGE END==========================================*/
++
+     public enum EnumFlowerType implements IStringSerializable {
+         EMPTY("empty"),
+         POPPY("rose"),

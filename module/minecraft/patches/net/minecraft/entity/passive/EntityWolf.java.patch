@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/passive/EntityWolf.java
++++ modified/net/minecraft/entity/passive/EntityWolf.java
+@@ -388,7 +388,7 @@
+             }
+ 
+             if (!this.world.isRemote) {
+-                if (this.rand.nextInt(3) == 0) {
++                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
+                     this.setTamedBy(player);
+                     this.navigator.clearPath();
+                     this.setAttackTarget(null);

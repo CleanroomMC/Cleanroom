@@ -1,94 +1,96 @@
-# Cleanroom Minecraft
+# Cleanroom
 
-## Features
-### Implemented
+Cleanroom is an ecosystem for Minecraft 1.12.2, built on a continuation of MinecraftForge.
+- Runs on modern Java versions (25+)
+- LWJGL 3 + SDL 3 rendering and input stack
+- Compatible with almost all Forge mods, with edge cases handled by [Fugue](https://github.com/CleanroomMC/Fugue)
 
-- 1.12.2 on Java 25+
-- *Latest* LWJGL3
-- A working *mod development template/kit*
-- Patches for loading incompatible mods
-- Built-in Mixin w/ handy bootstrapping
-- Develop using Scala 3 + Kotlin 2
-- Compatibility to 99% of Forge mods
+If you want to...
+- Play or make modpacks? Jump to [Installation](#installation).
+- Write mods? See [For Mod Developers](#for-mod-developers).
 
-### Planning
+## Runtime
 
-- CleanroomGradle to replace ForgeGradle
-- Actually useful APIs (See [here](https://github.com/orgs/CleanroomMC/projects/4/))
-- Optimized
+- Java 25
+- LWJGL 3, with LWJGLY shim for LWJGL 2 APIs
+- Foundation, powerful LaunchWrapper replacement
+- CleanMix, Mixin fork with proper bootstrapping and more features
+- ImagineBreaker
+- Netty 4.2, Guava 33, Apache HttpClient 5, Jakarta APIs and more
 
-## Components:
+## Kirino Engine
 
-- Minecraft Coder Pack
-- CleanroomLoader (Continuation + Revamp of ForgeModLoader)
-- Cleanroom Minecraft (Continuation + Revamp of MinecraftForge)
-- Customized Mixin with improved bootstraps
-- [Foundation](https://github.com/kappa-maintainer/Foundation/), a LaunchWrapper replacement with better debug logging.
-- Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
-- [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue), a mod patches many incompatible mods.
-- [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
-- [Forgelin-Continuous](https://www.curseforge.com/minecraft/mc-mods/forgelin-continuous) and [LibrarianLib-Continuous](https://www.curseforge.com/minecraft/mc-mods/librarianlib-continuous)
+[Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine) ships as a module of this repository and is wired into the loader lifecycle.
 
-## Download & Installation:
+It is a work-in-progress rendering engine that replaces Minecraft's implicit render state with an explicit structure, and gives mod authors a real rendering API instead of another layer of mixins.
 
-- For MultiMC-based launchers (PolyMC, PrismLauncher), download the MMC instance from [release](https://github.com/CleanroomMC/Cleanroom/releases), import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
-- For regular launcher (official launcher, AT launcher, FTB, HMCL), install the [relauncher](https://www.curseforge.com/minecraft/mc-mods/cleanroom-relauncher), launch the game and follow instructions.
-- **WARNING:** Only MultiMC-based launchers are officially supported. This is because of the limit on removing vanilla libraries in other launchers.
-- **Remember to install [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue)!**
-- **And [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy)!**
-- If you were told to use **action builds**, download them here: [Cleanroom](https://github.com/CleanroomMC/Cleanroom/actions), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
-- You need to log in your GitHub account to download action artifacts. 
+## Installation
 
-## Cleanroom on Server
+> [!IMPORTANT]
+> Follow [our guide over at our website](https://cleanroommc.com/wiki/end-user-guide/preparing-your-modpack)!
+> It explains steps needed to take to port existing modpacks, and also informs you of the latest and greatest mods to use and to update to.
 
-- Cleanroom can be installed on server.
-- Just use the installer mentioned in previous section, and run the jar with `--installServer`. See [this page](https://minecraft.fandom.com/wiki/Tutorials/Setting_up_a_Minecraft_Forge_server) for more detail. 
+### Client
 
-## Pack-making with Cleanroom
+- **MultiMC-based Launchers (PrismLauncher, PolyMC etc)**: download the .zip (MMC instance) and import it.
+  - Alternatively, unzip and move the patches directory into your existing 1.12 instance (same level as the `.minecraft` directory).
+- **Minecraft Official Launcher**: follow instructions when launching the installer jar. Or launch it with cli.
+- **Other Launchers (ATLauncher, HMCL etc):** install the [relauncher](https://www.curseforge.com/minecraft/mc-mods/cleanroom-relauncher), and follow instructions in the pop-up GUI.
 
-### Steps of Making Your Pack Cleanroom Ready
+> [!NOTE]
+> Direct downloads can be found in GitHub Actions, Releases & the [CleanroomMC Download Page](https://download.cleanroommc.com/).
+> Action builds require logging into GitHub before downloading.
 
-1. Add Scalar and Fugue in your pack.
-2. Add Relauncher (optional, this will make your pack a full Cleanroom pack)
-3. Test launching and remove incompatible mods
+### Server
 
-### Steps of Migrating Your Pack Fully to Cleanroom
+- Follow instructions when launching the installer jar. Or launch it with cli.
 
-1. Make your pack Cleanroom ready.
-2. Install relauncher to your pack. There are 3 variants available: [official](https://www.curseforge.com/minecraft/mc-mods/cleanroom-relauncher), [unofficial](https://www.curseforge.com/minecraft/mc-mods/cleanroom-relauncher-unofficial), [improved](https://www.curseforge.com/minecraft/mc-mods/improved-cleanroom-relauncher)
-3. Configure the relauncher. All variants have their pros and cons, choose what you need.
+## For Mod Developers
 
-### About Cross-compat Between Forge and Cleanroom
+- The official template is [CleanroomModTemplate](https://github.com/CleanroomMC/CleanroomModTemplate). A porting guide is in the [Cleanroom wiki](https://cleanroommc.com/wiki/cleanroom-mod-development/introduction) (WIP).
 
-- Cleanroom mods (Fugue, Scalar) will be ignored by Forge, so then won't crash Forge
-- Jar of Cleanroom integrated mods (MixinBooter, ConfigAnyTime) will be ignored by Cleanroom, then won't crash under Cleanroom
-- The version of built-in MixinBooter is configurable in forge_early.cfg
+- Scala 3 and Kotlin 2 are both usable for mod code, through Scalar and Forgelin-Continuous.
 
-### Prepare Your Mods for Cleanroom
+## Development & Build System
 
-Some mods are obsoleted or need extra handle. See [wiki](https://cleanroommc.com/wiki/end-user-guide/preparing-your-modpack#incompatible-problematic-mods-on-cleanroom-launcher)
+1. Clone repository
+2. `git submodule update --init`
+3. Install a Java 25 JDK
+4. Import `build.gradle`
+5. `./gradlew setup`
+6. `./gradlew build`
 
-## Build Instructions:
+**Run `git submodule update` every time you fetch upstream.**
 
-1. Clone this repository
-2. `git submodule init` then `git submodule update`
-3. Import the `build.gradle` into your IDE (most preferably IntelliJ IDEA)
-4. Once the import has finished, run `gradlew setup`
-5. Run `gradlew --stop` to stop the daemon and prevent ForgeGradle gone wrong 
-6. Build with `gradlew build`
+| Directory          | Contents                                                                                                            |
+|--------------------|---------------------------------------------------------------------------------------------------------------------|
+| `module/minecraft` | Patched Minecraft. Sources are generated by `setup` and are untracked, only `module/minecraft/patches` is committed |
+| `module/forge`     | Continuation of MinecraftForge                                                                                      |
+| `module/cleanroom` | Cleanroom ecosystem: Boot/Loader/API/Implementations                                                                |
+| `module/kirino`    | Kirino Engine, WIP rendering backbone of Cleanroom                                                                  |
+| `module/builtin`   | Mods integrated into Cleanroom itself                                                                               |
 
-**Remember to run `git submodule update` after everytime you fetched upstream!**
+### Patches, ATs and SAS
 
-## Development Tips:
+- Change vanilla behavior by editing `module/minecraft/src/main/java/` only.
+- Run `gradlew generateMinecraftDiffs` before committing, or the changes will not exist. Patches are written to `module/minecraft/patches`.
+- Run `gradlew applyMinecraftDiffs` to rebuild `module/minecraft/src` from the committed patches.
+  - Such as after pulling from upstream, to properly update patched minecraft's sources.
+- Keep patches small:
+  - Prefer one or two line calls into a hook class over logic inside Minecraft.
+  - Do not import classes, rather fully qualify your references for patches.
+- Access transformers live in `module/forge/src/main/resources/forge_at.cfg`
+- Side annotation strippers in `module/cleanroom/minecraft.sas`.
+  - Use SAS to strip side annotations rather than patch out a `@SideOnly`.
 
-- Only modify `projects/cleanroom/src/` directory if you want to change vanilla
-- Run `gradlew genPatches` before commit, or the changes won't exist
-- Modifications on `src/` doesn't need generating patches
-- [Tips from Forge](https://github.com/MinecraftForge/MinecraftForge/wiki/If-you-want-to-contribute-to-Forge) are still apply, keep the patches clean!
-- The current patches is full of useless hunks after we switched to VineFlower, we encourage contributors to clean up these patches manually.
+### Main Tasks
 
-## Mod Development:
-
-Official template is here: [template](https://github.com/CleanroomMC/CleanroomModTemplate)
-
-A porting guide is available in [Cleanroom wiki](https://cleanroommc.com/wiki/cleanroom-mod-development/introduction) (WIP).
+| Task                                        | Behavior                                                              |
+|---------------------------------------------|-----------------------------------------------------------------------|
+| `setup`                                     | Workspace setup (chain of tasks)                                      |
+| `runCleanroomClient` / `runCleanroomServer` | Launches the game from the development environment                    |
+| `runVanillaClient` / `runVanillaServer`     | Launches unmodified Minecraft, to compare behavior                    |
+| `generateMinecraftDiffs`                    | Regenerates the patch set from edited Minecraft sources               |
+| `applyMinecraftDiffs`                       | Recreates the Minecraft sources from the committed patch set          |
+| `build`                                     | Builds the universal, installer, userdev and MMC pack artifacts       |
+| `cleanroomInfo`                             | Prints the effective CleanroomGradle mode, versions, caches and tools |

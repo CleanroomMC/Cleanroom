@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/resources/FallbackResourceManager.java
++++ modified/net/minecraft/client/resources/FallbackResourceManager.java
+@@ -124,6 +124,7 @@
+             this.isClosed = true;
+         }
+ 
++        @SuppressWarnings("removal")
+         @Override
+         protected void finalize() throws Throwable {
+             if (!this.isClosed) {

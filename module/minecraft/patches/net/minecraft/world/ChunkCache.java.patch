@@ -1,0 +1,72 @@
+--- original/net/minecraft/world/ChunkCache.java
++++ modified/net/minecraft/world/ChunkCache.java
+@@ -55,13 +55,14 @@
+     @Nullable
+     @Override
+     public TileEntity getTileEntity(BlockPos pos) {
+-        return this.getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
++        return this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK); // Forge: don't modify world from other threads
+     }
+ 
+     @Nullable
+     public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType createType) {
+         int i = (pos.getX() >> 4) - this.chunkX;
+         int j = (pos.getZ() >> 4) - this.chunkZ;
++        if (!withinBounds(i, j)) return null;
+         return this.chunkArray[i][j].getTileEntity(pos, createType);
+     }
+ 
+@@ -98,6 +99,7 @@
+     public Biome getBiome(BlockPos pos) {
+         int i = (pos.getX() >> 4) - this.chunkX;
+         int j = (pos.getZ() >> 4) - this.chunkZ;
++        if (!withinBounds(i, j)) return net.minecraft.init.Biomes.PLAINS;
+         return this.chunkArray[i][j].getBiome(pos, this.world.getBiomeProvider());
+     }
+ 
+@@ -126,6 +128,7 @@
+             } else {
+                 int i = (pos.getX() >> 4) - this.chunkX;
+                 int j = (pos.getZ() >> 4) - this.chunkZ;
++                if (!withinBounds(i, j)) return type.defaultLightValue;
+                 return this.chunkArray[i][j].getLightFor(type, pos);
+             }
+         } else {
+@@ -136,7 +139,8 @@
+     /** Checks to see if an air block exists at the provided location. Note that this only checks to see if the blocks material is set to air, meaning it is possible for non-vanilla blocks to still pass this check. */
+     @Override
+     public boolean isAirBlock(BlockPos pos) {
+-        return this.getBlockState(pos).getMaterial() == Material.AIR;
++        IBlockState state = this.getBlockState(pos);
++        return state.getBlock().isAir(state, this, pos);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -144,6 +148,7 @@
+         if (pos.getY() >= 0 && pos.getY() < 256) {
+             int i = (pos.getX() >> 4) - this.chunkX;
+             int j = (pos.getZ() >> 4) - this.chunkZ;
++            if (!withinBounds(i, j)) return type.defaultLightValue;
+             return this.chunkArray[i][j].getLightFor(type, pos);
+         } else {
+             return type.defaultLightValue;
+@@ -160,4 +165,19 @@
+     public WorldType getWorldType() {
+         return this.world.getWorldType();
+     }
++
++    @Override
++    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
++        int x = (pos.getX() >> 4) - this.chunkX;
++        int z = (pos.getZ() >> 4) - this.chunkZ;
++        if (pos.getY() < 0 || pos.getY() >= 256) return _default;
++        if (!withinBounds(x, z)) return _default;
++
++        IBlockState state = getBlockState(pos);
++        return state.getBlock().isSideSolid(state, this, pos, side);
++    }
++
++    private boolean withinBounds(int x, int z) {
++        return x >= 0 && x < chunkArray.length && z >= 0 && z < chunkArray[x].length && chunkArray[x][z] != null;
++    }
+ }

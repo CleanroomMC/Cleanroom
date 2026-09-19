@@ -1,0 +1,12 @@
+--- original/net/minecraft/entity/passive/EntityLlama.java
++++ modified/net/minecraft/entity/passive/EntityLlama.java
+@@ -428,6 +428,9 @@
+ 
+     @Override
+     public void fall(float distance, float damageMultiplier) {
++        float[] ret = net.minecraftforge.common.ForgeHooks.onLivingFall(this, distance, damageMultiplier);
++        if (ret == null) return;
++        distance = ret[0]; damageMultiplier = ret[1];
+         int i = MathHelper.ceil((distance * 0.5F - 3.0F) * damageMultiplier);
+         if (i > 0) {
+             if (distance >= 6.0F) {

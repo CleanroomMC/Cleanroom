@@ -1,0 +1,42 @@
+--- original/net/minecraft/client/renderer/entity/RenderItemFrame.java
++++ modified/net/minecraft/client/renderer/entity/RenderItemFrame.java
+@@ -46,7 +46,8 @@
+         BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
+         ModelManager modelmanager = blockrendererdispatcher.getBlockModelShapes().getModelManager();
+         IBakedModel ibakedmodel;
+-        if (entity.getDisplayedItem().getItem() == Items.FILLED_MAP) {
++
++        if (entity.getDisplayedItem().getItem() instanceof net.minecraft.item.ItemMap) {
+             ibakedmodel = modelmanager.getModel(this.mapModel);
+         } else {
+             ibakedmodel = modelmanager.getModel(this.itemFrameModel);
+@@ -88,16 +89,19 @@
+         if (!itemstack.isEmpty()) {
+             GlStateManager.pushMatrix();
+             GlStateManager.disableLighting();
+-            boolean flag = itemstack.getItem() == Items.FILLED_MAP;
++            boolean flag = itemstack.getItem() instanceof net.minecraft.item.ItemMap;
+             int i = flag ? itemFrame.getRotation() % 4 * 2 : itemFrame.getRotation();
+             GlStateManager.rotate(i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
++
++            net.minecraftforge.client.event.RenderItemInFrameEvent event = new net.minecraftforge.client.event.RenderItemInFrameEvent(itemFrame, this);
++            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
+             if (flag) {
+                 this.renderManager.renderEngine.bindTexture(MAP_BACKGROUND_TEXTURES);
+                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+                 float f = 0.0078125F;
+                 GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
+                 GlStateManager.translate(-64.0F, -64.0F, 0.0F);
+-                MapData mapdata = Items.FILLED_MAP.getMapData(itemstack, itemFrame.world);
++                MapData mapdata = ((net.minecraft.item.ItemMap) itemstack.getItem()).getMapData(itemstack, itemFrame.world);
+                 GlStateManager.translate(0.0F, 0.0F, -1.0F);
+                 if (mapdata != null) {
+                     this.mc.entityRenderer.getMapItemRenderer().renderMap(mapdata, true);
+@@ -110,6 +114,7 @@
+                 RenderHelper.disableStandardItemLighting();
+                 GlStateManager.popAttrib();
+             }
++            }
+ 
+             GlStateManager.enableLighting();
+             GlStateManager.popMatrix();

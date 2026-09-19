@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/gui/GuiListWorldSelectionEntry.java
++++ modified/net/minecraft/client/gui/GuiListWorldSelectionEntry.java
+@@ -240,7 +240,7 @@
+     private void loadWorld() {
+         this.client.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+         if (this.client.getSaveLoader().canLoadWorld(this.worldSummary.getFileName())) {
+-            this.client.launchIntegratedServer(this.worldSummary.getFileName(), this.worldSummary.getDisplayName(), null);
++            net.minecraftforge.fml.client.FMLClientHandler.instance().tryLoadExistingWorld(worldSelScreen, this.worldSummary);
+         }
+     }
+ 

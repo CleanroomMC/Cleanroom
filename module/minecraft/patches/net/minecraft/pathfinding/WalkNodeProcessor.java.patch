@@ -1,0 +1,68 @@
+--- original/net/minecraft/pathfinding/WalkNodeProcessor.java
++++ modified/net/minecraft/pathfinding/WalkNodeProcessor.java
+@@ -22,6 +22,7 @@
+ 
+ public class WalkNodeProcessor extends NodeProcessor {
+     protected float avoidsWater;
++    protected EntityLiving currentEntity;
+ 
+     @Override
+     public void init(IBlockAccess sourceIn, EntityLiving mob) {
+@@ -282,6 +283,7 @@
+         PathNodeType pathnodetype = PathNodeType.BLOCKED;
+         double d0 = entitylivingIn.width / 2.0;
+         BlockPos blockpos = new BlockPos(entitylivingIn);
++        this.currentEntity = entitylivingIn;
+         pathnodetype = this.getPathNodeType(
+             blockaccessIn,
+             x,
+@@ -296,6 +298,8 @@
+             pathnodetype,
+             blockpos
+         );
++        this.currentEntity = null;
++
+         if (enumset.contains(PathNodeType.FENCE)) {
+             return PathNodeType.FENCE;
+         }
+@@ -400,6 +404,8 @@
+             if (pathnodetype1 == PathNodeType.DAMAGE_CACTUS) {
+                 pathnodetype = PathNodeType.DAMAGE_CACTUS;
+             }
++
++            if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) pathnodetype = PathNodeType.DAMAGE_OTHER;
+         }
+ 
+         return this.checkNeighborBlocks(blockaccessIn, x, y, z, pathnodetype);
+@@ -411,13 +417,15 @@
+             for (int i = -1; i <= 1; i++) {
+                 for (int j = -1; j <= 1; j++) {
+                     if (i != 0 || j != 0) {
+-                        Block block = p_193578_1_.getBlockState(blockpos$pooledmutableblockpos.setPos(i + p_193578_2_, p_193578_3_, j + p_193578_4_))
+-                            .getBlock();
+-                        if (block == Blocks.CACTUS) {
++                        IBlockState state = p_193578_1_.getBlockState(blockpos$pooledmutableblockpos.setPos(i + p_193578_2_, p_193578_3_, j + p_193578_4_));
++                        Block block = state.getBlock();
++                        PathNodeType type = block.getAiPathNodeType(state, p_193578_1_, blockpos$pooledmutableblockpos, this.currentEntity);
++
++                        if (block == Blocks.CACTUS || type == PathNodeType.DAMAGE_CACTUS) {
+                             p_193578_5_ = PathNodeType.DANGER_CACTUS;
+-                        } else if (block == Blocks.FIRE) {
++                        } else if (block == Blocks.FIRE || type == PathNodeType.DAMAGE_FIRE) {
+                             p_193578_5_ = PathNodeType.DANGER_FIRE;
+-                        }
++                        } else if (type == PathNodeType.DAMAGE_OTHER) p_193578_5_ = PathNodeType.DANGER_OTHER;
+                     }
+                 }
+             }
+@@ -432,6 +440,10 @@
+         IBlockState iblockstate = p_189553_1_.getBlockState(blockpos);
+         Block block = iblockstate.getBlock();
+         Material material = iblockstate.getMaterial();
++
++        PathNodeType type = block.getAiPathNodeType(iblockstate, p_189553_1_, blockpos, this.currentEntity);
++        if (type != null) return type;
++
+         if (material == Material.AIR) {
+             return PathNodeType.OPEN;
+         }

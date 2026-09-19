@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/NpcMerchant.java
++++ modified/net/minecraft/entity/NpcMerchant.java
+@@ -42,7 +42,7 @@
+     @Nullable
+     @Override
+     public MerchantRecipeList getRecipes(EntityPlayer player) {
+-        return this.recipeList;
++        return net.minecraftforge.event.ForgeEventFactory.listTradeOffers(this, player, this.recipeList);
+     }
+ 
+     @Override

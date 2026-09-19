@@ -1,0 +1,16 @@
+--- original/net/minecraft/entity/monster/EntitySpider.java
++++ modified/net/minecraft/entity/monster/EntitySpider.java
+@@ -140,7 +140,12 @@
+ 
+     @Override
+     public boolean isPotionApplicable(PotionEffect potioneffectIn) {
+-        return potioneffectIn.getPotion() == MobEffects.POISON ? false : super.isPotionApplicable(potioneffectIn);
++        if(potioneffectIn.getPotion() == MobEffects.POISON) {
++            net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent event = new net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent(this, potioneffectIn);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++            return event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
++        }
++        return super.isPotionApplicable(potioneffectIn);
+     }
+ 
+     /** Returns true if the WatchableObject (Byte) is 0x01 otherwise returns false. The WatchableObject is updated using setBesideClimableBlock. */

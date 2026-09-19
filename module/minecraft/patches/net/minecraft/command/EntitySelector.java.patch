@@ -1,0 +1,43 @@
+--- original/net/minecraft/command/EntitySelector.java
++++ modified/net/minecraft/command/EntitySelector.java
+@@ -115,6 +115,10 @@
+ 
+     /** Returns all entities of the given class that matches the given at-token in a list. */
+     public static <T extends Entity> List<T> matchEntities(ICommandSender sender, String token, Class<? extends T> targetClass) throws CommandException {
++        return net.minecraftforge.common.command.SelectorHandlerManager.matchEntities(sender, token, targetClass);
++    }
++
++    public static <T extends Entity> List<T> matchEntitiesDefault(ICommandSender sender, String token, Class <? extends T > targetClass) throws CommandException {
+         Matcher matcher = TOKEN_PATTERN.matcher(token);
+         if (matcher.matches() && sender.canUseCommand(1, "@")) {
+             Map<String, String> map = getArgumentMap(matcher.group(2));
+@@ -140,6 +144,7 @@
+                     list2.addAll(getTagPredicates(map));
+                     list2.addAll(getRadiusPredicates(map, vec3d));
+                     list2.addAll(getRotationsPredicates(map));
++                        list2.addAll(net.minecraftforge.fml.common.registry.GameRegistry.createEntitySelectors(map, s, sender, vec3d));
+                     if ("s".equalsIgnoreCase(s)) {
+                         Entity entity = sender.getCommandSenderEntity();
+                         if (entity != null && targetClass.isAssignableFrom(entity.getClass())) {
+@@ -622,6 +627,10 @@
+ 
+     /** Returns whether the given pattern can match more than one player. */
+     public static boolean matchesMultiplePlayers(String selectorStr) throws CommandException {
++        return net.minecraftforge.common.command.SelectorHandlerManager.matchesMultiplePlayers(selectorStr);
++    }
++
++    public static boolean matchesMultiplePlayersDefault(String selectorStr) throws CommandException {
+         Matcher matcher = TOKEN_PATTERN.matcher(selectorStr);
+         if (!matcher.matches()) {
+             return false;
+@@ -635,6 +644,10 @@
+ 
+     /** Returns whether the given string represents a selector. */
+     public static boolean isSelector(String selectorStr) {
++        return net.minecraftforge.common.command.SelectorHandlerManager.isSelector(selectorStr);
++    }
++
++    public static boolean isSelectorDefault(String selectorStr) {
+         return TOKEN_PATTERN.matcher(selectorStr).matches();
+     }
+ 

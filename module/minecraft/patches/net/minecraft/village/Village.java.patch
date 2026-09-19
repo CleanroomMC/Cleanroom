@@ -1,0 +1,187 @@
+--- original/net/minecraft/village/Village.java
++++ modified/net/minecraft/village/Village.java
+@@ -26,7 +26,7 @@
+ import net.minecraft.util.math.Vec3d;
+ import net.minecraft.world.World;
+ 
+-public class Village {
++public class Village implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound> {
+     private World world;
+     /** list of VillageDoorInfo objects */
+     private final List<VillageDoorInfo> villageDoorInfoList = Lists.newArrayList();
+@@ -40,16 +40,17 @@
+     private int numVillagers;
+     /** Timestamp of tick count when villager last bred */
+     private int noBreedTicks;
+-    /** List of player reputations with this village */
+-    private final Map<String, Integer> playerReputation = Maps.newHashMap();
++    private final Map<UUID, Integer> playerReputation = Maps.newHashMap();
+     private final List<Village.VillageAggressor> villageAgressors = Lists.newArrayList();
+     private int numIronGolems;
+ 
+     public Village() {
++        this.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
+     }
+ 
+     public Village(World worldIn) {
+         this.world = worldIn;
++        this.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
+     }
+ 
+     public void setWorld(World worldIn) {
+@@ -302,9 +303,10 @@
+         double d0 = Double.MAX_VALUE;
+         EntityPlayer entityplayer = null;
+ 
+-        for (String s : this.playerReputation.keySet()) {
++        for (UUID s : this.playerReputation.keySet()) {
+             if (this.isPlayerReputationTooLow(s)) {
+-                EntityPlayer entityplayer1 = this.world.getPlayerEntityByName(s);
++                EntityPlayer entityplayer1 = this.world.getPlayerEntityByUUID(s);
++
+                 if (entityplayer1 != null) {
+                     double d1 = entityplayer1.getDistanceSq(villageDefender);
+                     if (!(d1 > d0)) {
+@@ -340,6 +342,7 @@
+                 villagedoorinfo.resetDoorOpeningRestrictionCounter();
+             }
+ 
++            if (world.isBlockLoaded(villagedoorinfo.getDoorBlockPos())) // Forge: check that the door block is loaded to avoid loading chunks
+             if (!this.isWoodDoor(villagedoorinfo.getDoorBlockPos()) || Math.abs(this.tickCounter - villagedoorinfo.getLastActivityTimestamp()) > 1200) {
+                 this.centerHelper = this.centerHelper.subtract(villagedoorinfo.getDoorBlockPos());
+                 flag = true;
+@@ -378,25 +381,44 @@
+         }
+     }
+ 
+-    /** Return the village reputation for a player */
++    @Deprecated //Hasn't worked since 1.9, use UUID version below.
+     public int getPlayerReputation(String playerName) {
++        return this.getPlayerReputation(findUUID(playerName));
++    }
++
++    public int getPlayerReputation(UUID playerName) {
+         Integer integer = this.playerReputation.get(playerName);
+         return integer == null ? 0 : integer;
+     }
+ 
+-    /** Modify a players reputation in the village. Use positive values to increase reputation and negative values to decrease. <br>Note that a players reputation is clamped between -30 and 10 */
++    private UUID findUUID(String name) {
++        if (this.world == null || this.world.getMinecraftServer() == null)
++            return EntityPlayer.getOfflineUUID(name);
++        GameProfile profile = this.world.getMinecraftServer().getPlayerProfileCache().getGameProfileForUsername(name);
++        return profile == null ? EntityPlayer.getOfflineUUID(name) : profile.getId();
++    }
++
++    @Deprecated //Hasn't worked since 1.9, use UUID version below.
+     public int modifyPlayerReputation(String playerName, int reputation) {
++        return this.modifyPlayerReputation(findUUID(playerName), reputation);
++    }
++
++    public int modifyPlayerReputation(UUID playerName, int reputation) {
+         int i = this.getPlayerReputation(playerName);
+         int j = MathHelper.clamp(i + reputation, -30, 10);
+         this.playerReputation.put(playerName, j);
+         return j;
+     }
+ 
+-    /** Return whether this player has a too low reputation with this village. */
++    @Deprecated //Hasn't worked since 1.9, use UUID version below.
+     public boolean isPlayerReputationTooLow(String playerName) {
+-        return this.getPlayerReputation(playerName) <= -15;
++        return this.isPlayerReputationTooLow(findUUID(playerName));
+     }
+ 
++    public boolean isPlayerReputationTooLow(UUID uuid) {
++        return this.getPlayerReputation(uuid) <= -15;
++    }
++
+     /** Read this village's data from NBT. */
+     public void readVillageDataFromNBT(NBTTagCompound compound) {
+         this.numVillagers = compound.getInteger("PopSize");
+@@ -424,16 +446,15 @@
+ 
+         for (int j = 0; j < nbttaglist1.tagCount(); j++) {
+             NBTTagCompound nbttagcompound1 = nbttaglist1.getCompoundTagAt(j);
+-            if (nbttagcompound1.hasKey("UUID") && this.world != null && this.world.getMinecraftServer() != null) {
+-                PlayerProfileCache playerprofilecache = this.world.getMinecraftServer().getPlayerProfileCache();
+-                GameProfile gameprofile = playerprofilecache.getProfileByUUID(UUID.fromString(nbttagcompound1.getString("UUID")));
+-                if (gameprofile != null) {
+-                    this.playerReputation.put(gameprofile.getName(), nbttagcompound1.getInteger("S"));
+-                }
++
++            if (nbttagcompound1.hasKey("UUID")) {
++                this.playerReputation.put(UUID.fromString(nbttagcompound1.getString("UUID")), nbttagcompound1.getInteger("S"));
+             } else {
+-                this.playerReputation.put(nbttagcompound1.getString("Name"), nbttagcompound1.getInteger("S"));
++                //World is never set here, so this will always be offline UUIDs, sadly there is no way to convert this.
++                this.playerReputation.put(findUUID(nbttagcompound1.getString("Name")), nbttagcompound1.getInteger("S"));
+             }
+         }
++        if (this.capabilities != null && compound.hasKey("ForgeCaps")) this.capabilities.deserializeNBT(compound.getCompoundTag("ForgeCaps"));
+     }
+ 
+     /** Write this village's data to NBT. */
+@@ -466,14 +487,12 @@
+         compound.setTag("Doors", nbttaglist);
+         NBTTagList nbttaglist1 = new NBTTagList();
+ 
+-        for (String s : this.playerReputation.keySet()) {
++        for (UUID s : this.playerReputation.keySet()) {
+             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+-            PlayerProfileCache playerprofilecache = this.world.getMinecraftServer().getPlayerProfileCache();
+ 
+             try {
+-                GameProfile gameprofile = playerprofilecache.getGameProfileForUsername(s);
+-                if (gameprofile != null) {
+-                    nbttagcompound1.setString("UUID", gameprofile.getId().toString());
++                {
++                    nbttagcompound1.setString("UUID", s.toString());
+                     nbttagcompound1.setInteger("S", this.playerReputation.get(s));
+                     nbttaglist1.appendTag(nbttagcompound1);
+                 }
+@@ -482,6 +501,7 @@
+         }
+ 
+         compound.setTag("Players", nbttaglist1);
++        if (this.capabilities != null) compound.setTag("ForgeCaps", this.capabilities.serializeNBT());
+     }
+ 
+     /** Prevent villager breeding for a fixed interval of time */
+@@ -495,7 +515,7 @@
+     }
+ 
+     public void setDefaultPlayerReputation(int defaultReputation) {
+-        for (String s : this.playerReputation.keySet()) {
++        for (UUID s : this.playerReputation.keySet()) {
+             this.modifyPlayerReputation(s, defaultReputation);
+         }
+     }
+@@ -509,4 +529,27 @@
+             this.agressionTime = agressionTimeIn;
+         }
+     }
++
++    /* ======================================== FORGE START =====================================*/
++    private net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
++    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing) {
++        return capabilities == null ? false : capabilities.hasCapability(capability, facing);
++    }
++
++    @Nullable
++    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing) {
++        return capabilities == null ? null : capabilities.getCapability(capability, facing);
++    }
++
++    public void deserializeNBT(NBTTagCompound nbt) {
++        this.readVillageDataFromNBT(nbt);;
++    }
++
++    public NBTTagCompound serializeNBT() {
++        NBTTagCompound ret = new NBTTagCompound();
++        this.writeVillageDataToNBT(ret);
++        return ret;
++    }
++
++    /* ========================================= FORGE END ======================================*/
+ }

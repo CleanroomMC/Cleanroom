@@ -1,0 +1,13 @@
+--- original/net/minecraft/advancements/DisplayInfo.java
++++ modified/net/minecraft/advancements/DisplayInfo.java
+@@ -120,7 +120,9 @@
+ 
+         Item item = JsonUtils.getItem(object, "item");
+         int i = JsonUtils.getInt(object, "data", 0);
+-        return new ItemStack(item, 1, i);
++        ItemStack ret = new ItemStack(item, 1, i);
++        ret.setTagCompound(net.minecraftforge.common.util.JsonUtils.readNBT(object, "nbt"));
++        return ret;
+     }
+ 
+     public void write(PacketBuffer buf) {

@@ -1,0 +1,23 @@
+--- original/net/minecraft/entity/boss/EntityDragon.java
++++ modified/net/minecraft/entity/boss/EntityDragon.java
+@@ -498,15 +498,12 @@
+                     BlockPos blockpos = new BlockPos(k1, l1, i2);
+                     IBlockState iblockstate = this.world.getBlockState(blockpos);
+                     Block block = iblockstate.getBlock();
+-                    if (iblockstate.getMaterial() != Material.AIR && iblockstate.getMaterial() != Material.FIRE) {
+-                        if (!this.world.getGameRules().getBoolean("mobGriefing")) {
++
++                    if (!block.isAir(iblockstate, this.world, blockpos) && iblockstate.getMaterial() != Material.FIRE) {
++                        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)) {
+                             flag = true;
+-                        } else if (block == Blocks.BARRIER
+-                            || block == Blocks.OBSIDIAN
+-                            || block == Blocks.END_STONE
+-                            || block == Blocks.BEDROCK
+-                            || block == Blocks.END_PORTAL
+-                            || block == Blocks.END_PORTAL_FRAME) {
++                        } else if (!block.canEntityDestroy(iblockstate, this.world, blockpos, this)
++                            || !net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, iblockstate)) {
+                             flag = true;
+                         } else if (block != Blocks.COMMAND_BLOCK
+                             && block != Blocks.REPEATING_COMMAND_BLOCK

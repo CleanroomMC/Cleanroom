@@ -1,0 +1,19 @@
+--- original/net/minecraft/block/BlockSapling.java
++++ modified/net/minecraft/block/BlockSapling.java
+@@ -50,6 +50,8 @@
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+         if (!worldIn.isRemote) {
+             super.updateTick(worldIn, pos, state, rand);
++
++            if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+             if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0) {
+                 this.grow(worldIn, pos, state, rand);
+             }
+@@ -65,6 +67,7 @@
+     }
+ 
+     public void generateTree(World worldIn, BlockPos pos, IBlockState state, Random rand) {
++        if (!net.minecraftforge.event.terraingen.TerrainGen.saplingGrowTree(worldIn, rand, pos)) return;
+         WorldGenerator worldgenerator = rand.nextInt(10) == 0 ? new WorldGenBigTree(true) : new WorldGenTrees(true);
+         int i = 0;
+         int j = 0;

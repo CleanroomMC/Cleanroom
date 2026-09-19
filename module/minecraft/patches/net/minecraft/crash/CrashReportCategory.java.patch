@@ -1,0 +1,25 @@
+--- original/net/minecraft/crash/CrashReportCategory.java
++++ modified/net/minecraft/crash/CrashReportCategory.java
+@@ -107,8 +107,11 @@
+             return 0;
+         }
+ 
+-        this.stackTrace = new StackTraceElement[astacktraceelement.length - 3 - size];
+-        System.arraycopy(astacktraceelement, 3 + size, this.stackTrace, 0, this.stackTrace.length);
++        int len = astacktraceelement.length - 3 - size;
++        // Really Mojang, Still, god damn...
++        if (len <= 0) len = astacktraceelement.length;
++        this.stackTrace = new StackTraceElement[len];
++        System.arraycopy(astacktraceelement, astacktraceelement.length - len, this.stackTrace, 0, this.stackTrace.length);
+         return this.stackTrace.length;
+     }
+ 
+@@ -175,7 +178,7 @@
+         category.addDetail("Block type", new ICrashReportDetail<String>() {
+             public String call() throws Exception {
+                 try {
+-                    return String.format("ID #%d (%s // %s)", i, blockIn.getTranslationKey(), blockIn.getClass().getCanonicalName());
++                    return String.format("ID #%d (%s // %s // %s)", i, blockIn.getTranslationKey(), blockIn.getClass().getName(), blockIn.getRegistryName());
+                 } catch (Throwable throwable) {
+                     return "ID #" + i;
+                 }

@@ -1,0 +1,34 @@
+--- original/net/minecraft/block/BlockPistonMoving.java
++++ modified/net/minecraft/block/BlockPistonMoving.java
+@@ -131,13 +131,14 @@
+     /** Spawns this Block's drops into the World as EntityItems. */
+     @Override
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+-        if (!worldIn.isRemote) {
++        if (false && !worldIn.isRemote) { // Forge: Noop this out
+             TileEntityPiston tileentitypiston = this.getTilePistonAt(worldIn, pos);
+             if (tileentitypiston != null) {
+                 IBlockState iblockstate = tileentitypiston.getPistonState();
+                 iblockstate.getBlock().dropBlockAsItem(worldIn, pos, iblockstate, 0);
+             }
+         }
++        super.dropBlockAsItemWithChance(worldIn, pos, state, 1, fortune); // mimic vanilla behavior from above and ignore chance
+     }
+ 
+     /**
+@@ -253,6 +254,15 @@
+      * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
+      */
+     @Override
++    public void getDrops(net.minecraft.util.NonNullList<net.minecraft.item.ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
++        TileEntityPiston tileentitypiston = this.getTilePistonAt(world, pos);
++        if (tileentitypiston != null) {
++            IBlockState pushed = tileentitypiston.getPistonState();
++            drops.addAll(pushed.getBlock().getDrops(world, pos, pushed, fortune)); // use the old method until it gets removed, for backward compatibility
++        }
++    }
++
++    @Override
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+         return BlockFaceShape.UNDEFINED;
+     }

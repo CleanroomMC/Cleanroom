@@ -1,0 +1,25 @@
+--- original/net/minecraft/client/renderer/entity/RenderVillager.java
++++ modified/net/minecraft/client/renderer/entity/RenderVillager.java
+@@ -28,21 +28,7 @@
+ 
+     /** Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture. */
+     protected ResourceLocation getEntityTexture(EntityVillager entity) {
+-        switch (entity.getProfession()) {
+-            case 0:
+-                return FARMER_VILLAGER_TEXTURES;
+-            case 1:
+-                return LIBRARIAN_VILLAGER_TEXTURES;
+-            case 2:
+-                return PRIEST_VILLAGER_TEXTURES;
+-            case 3:
+-                return SMITH_VILLAGER_TEXTURES;
+-            case 4:
+-                return BUTCHER_VILLAGER_TEXTURES;
+-            case 5:
+-            default:
+-                return VILLAGER_TEXTURES;
+-        }
++        return entity.getProfessionForge().getSkin();
+     }
+ 
+     /** Allows the render to do state modifications necessary before the model is rendered. */

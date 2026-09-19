@@ -1,0 +1,43 @@
+--- original/net/minecraft/entity/item/EntityEnderPearl.java
++++ modified/net/minecraft/entity/item/EntityEnderPearl.java
+@@ -89,8 +89,11 @@
+             if (entitylivingbase instanceof EntityPlayerMP) {
+                 EntityPlayerMP entityplayermp = (EntityPlayerMP)entitylivingbase;
+                 if (entityplayermp.connection.getNetworkManager().isChannelOpen()
+-                    && entityplayermp.world == this.world
+-                    && !entityplayermp.isPlayerSleeping()) {
++                        && entityplayermp.world == this.world
++                        && !entityplayermp.isPlayerSleeping()) {
++                    net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(entityplayermp, this.posX, this.posY, this.posZ, 5.0F);
++                    if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
++                    { // Don't indent to lower patch size
+                     if (this.rand.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
+                         EntityEndermite entityendermite = new EntityEndermite(this.world);
+                         entityendermite.setSpawnedByPlayer(true);
+@@ -108,9 +111,10 @@
+                         entitylivingbase.dismountRidingEntity();
+                     }
+ 
+-                    entitylivingbase.setPositionAndUpdate(this.posX, this.posY, this.posZ);
++                    entitylivingbase.setPositionAndUpdate(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+                     entitylivingbase.fallDistance = 0.0F;
+-                    entitylivingbase.attackEntityFrom(DamageSource.FALL, 5.0F);
++                    entitylivingbase.attackEntityFrom(DamageSource.FALL, event.getAttackDamage());
++                    }
+                 }
+             } else if (entitylivingbase != null) {
+                 entitylivingbase.setPositionAndUpdate(this.posX, this.posY, this.posZ);
+@@ -134,11 +138,11 @@
+ 
+     @Nullable
+     @Override
+-    public Entity changeDimension(int dimensionIn) {
++    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter) {
+         if (this.thrower.dimension != dimensionIn) {
+             this.thrower = null;
+         }
+ 
+-        return super.changeDimension(dimensionIn);
++        return super.changeDimension(dimensionIn, teleporter);
+     }
+ }

@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/monster/EntityEvoker.java
++++ modified/net/minecraft/entity/monster/EntityEvoker.java
+@@ -345,7 +345,7 @@
+                 return false;
+             }
+ 
+-            if (!EntityEvoker.this.world.getGameRules().getBoolean("mobGriefing")) {
++            if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(EntityEvoker.this.world, EntityEvoker.this)) {
+                 return false;
+             }
+ 

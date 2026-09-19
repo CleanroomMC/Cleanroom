@@ -1,0 +1,22 @@
+--- original/net/minecraft/server/gui/MinecraftServerGui.java
++++ modified/net/minecraft/server/gui/MinecraftServerGui.java
+@@ -65,6 +65,7 @@
+                 System.exit(0);
+             }
+         });
++        minecraftservergui.latch.countDown();
+     }
+ 
+     public MinecraftServerGui(DedicatedServer serverIn) {
+@@ -137,7 +138,11 @@
+         return jpanel;
+     }
+ 
++    private java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+     public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line) {
++        try {
++            latch.await();
++        } catch (InterruptedException e){} //Prevent logging until after constructor has ended.
+         if (!SwingUtilities.isEventDispatchThread()) {
+             SwingUtilities.invokeLater(new Runnable() {
+                 @Override

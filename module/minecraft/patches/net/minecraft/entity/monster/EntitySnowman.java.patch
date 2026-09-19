@@ -1,0 +1,48 @@
+--- original/net/minecraft/entity/monster/EntitySnowman.java
++++ modified/net/minecraft/entity/monster/EntitySnowman.java
+@@ -31,7 +31,7 @@
+ import net.minecraft.world.World;
+ import net.minecraft.world.storage.loot.LootTableList;
+ 
+-public class EntitySnowman extends EntityGolem implements IRangedAttackMob {
++public class EntitySnowman extends EntityGolem implements IRangedAttackMob, net.minecraftforge.common.IShearable {
+     private static final DataParameter<Byte> PUMPKIN_EQUIPPED = EntityDataManager.createKey(EntitySnowman.class, DataSerializers.BYTE);
+ 
+     public EntitySnowman(World worldIn) {
+@@ -97,7 +97,7 @@
+                 this.attackEntityFrom(DamageSource.ON_FIRE, 1.0F);
+             }
+ 
+-            if (!this.world.getGameRules().getBoolean("mobGriefing")) {
++            if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)) {
+                 return;
+             }
+ 
+@@ -143,7 +143,8 @@
+     @Override
+     protected boolean processInteract(EntityPlayer player, EnumHand hand) {
+         ItemStack itemstack = player.getHeldItem(hand);
+-        if (itemstack.getItem() == Items.SHEARS && this.isPumpkinEquipped() && !this.world.isRemote) {
++
++        if (false && itemstack.getItem() == Items.SHEARS && this.isPumpkinEquipped() && !this.world.isRemote) { //Forge: Moved to onSheared
+             this.setPumpkinEquipped(false);
+             itemstack.damageItem(1, player);
+         }
+@@ -183,6 +184,17 @@
+     }
+ 
+     @Override
++    public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos) {
++        return this.isPumpkinEquipped();
++    }
++
++    @Override
++    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune) {
++        this.setPumpkinEquipped(false);
++        return com.google.common.collect.Lists.newArrayList();
++    }
++
++    @Override
+     public void setSwingingArms(boolean swingingArms) {
+     }
+ }

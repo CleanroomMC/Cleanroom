@@ -1,0 +1,42 @@
+--- original/net/minecraft/world/storage/loot/LootEntryItem.java
++++ modified/net/minecraft/world/storage/loot/LootEntryItem.java
+@@ -17,8 +17,8 @@
+     protected final Item item;
+     protected final LootFunction[] functions;
+ 
+-    public LootEntryItem(Item itemIn, int weightIn, int qualityIn, LootFunction[] functionsIn, LootCondition[] conditionsIn) {
+-        super(weightIn, qualityIn, conditionsIn);
++    public LootEntryItem(Item itemIn, int weightIn, int qualityIn, LootFunction[] functionsIn, LootCondition[] conditionsIn, String entryName) {
++        super(weightIn, qualityIn, conditionsIn, entryName);
+         this.item = itemIn;
+         this.functions = functionsIn;
+     }
+@@ -34,7 +34,7 @@
+         }
+ 
+         if (!itemstack.isEmpty()) {
+-            if (itemstack.getCount() < this.item.getItemStackLimit()) {
++            if (itemstack.getCount() < this.item.getItemStackLimit(itemstack)) {
+                 stacks.add(itemstack);
+             } else {
+                 int i = itemstack.getCount();
+@@ -64,8 +64,9 @@
+     }
+ 
+     public static LootEntryItem deserialize(
+-        JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn
+-    ) {
++            JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn
++        ) {
++        String name = net.minecraftforge.common.ForgeHooks.readLootEntryName(object, "item");
+         Item item = JsonUtils.getItem(object, "name");
+         LootFunction[] alootfunction;
+         if (object.has("functions")) {
+@@ -74,6 +75,6 @@
+             alootfunction = new LootFunction[0];
+         }
+ 
+-        return new LootEntryItem(item, weightIn, qualityIn, alootfunction, conditionsIn);
++        return new LootEntryItem(item, weightIn, qualityIn, alootfunction, conditionsIn, name);
+     }
+ }

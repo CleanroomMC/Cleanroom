@@ -1,0 +1,26 @@
+--- original/net/minecraft/nbt/NBTTagCompound.java
++++ modified/net/minecraft/nbt/NBTTagCompound.java
+@@ -75,6 +75,7 @@
+ 
+     /** Stores the given tag into the map with the given string key. This is mostly used to store tag lists. */
+     public void setTag(String key, NBTBase value) {
++        if (value == null) throw new IllegalArgumentException("Invalid null NBT value with key " + key);
+         this.tagMap.put(key, value);
+     }
+ 
+@@ -394,6 +395,7 @@
+     }
+ 
+     private static byte readType(DataInput input, NBTSizeTracker sizeTracker) throws IOException {
++        sizeTracker.read(8);
+         return input.readByte();
+     }
+ 
+@@ -402,6 +404,7 @@
+     }
+ 
+     static NBTBase readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException {
++        sizeTracker.read(32); //Forge: 4 extra bytes for the object allocation.
+         NBTBase nbtbase = NBTBase.create(id);
+ 
+         try {

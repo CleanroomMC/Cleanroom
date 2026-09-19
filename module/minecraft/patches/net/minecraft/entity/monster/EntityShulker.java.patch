@@ -1,0 +1,23 @@
+--- original/net/minecraft/entity/monster/EntityShulker.java
++++ modified/net/minecraft/entity/monster/EntityShulker.java
+@@ -435,6 +435,12 @@
+                     }
+ 
+                     if (flag) {
++                        net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ(), 0);
++                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) flag = false;
++                        blockpos1 = new BlockPos(event.getTargetX(), event.getTargetY(), event.getTargetZ());
++                    }
++
++                    if (flag) {
+                         this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
+                         this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(blockpos1));
+                         this.dataManager.set(PEEK_TICK, (byte)0);
+@@ -476,6 +482,7 @@
+                 this.posX = blockpos.getX() + 0.5;
+                 this.posY = blockpos.getY();
+                 this.posZ = blockpos.getZ() + 0.5;
++                if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
+                 this.prevPosX = this.posX;
+                 this.prevPosY = this.posY;
+                 this.prevPosZ = this.posZ;

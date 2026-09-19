@@ -1,0 +1,13 @@
+--- original/net/minecraft/world/gen/feature/WorldGenMinable.java
++++ modified/net/minecraft/world/gen/feature/WorldGenMinable.java
+@@ -60,7 +60,9 @@
+                                 double d14 = (j2 + 0.5 - d8) / (d10 / 2.0);
+                                 if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0) {
+                                     BlockPos blockpos = new BlockPos(l1, i2, j2);
+-                                    if (this.predicate.apply(worldIn.getBlockState(blockpos))) {
++
++                                    IBlockState state = worldIn.getBlockState(blockpos);
++                                    if (state.getBlock().isReplaceableOreGen(state, worldIn, blockpos, this.predicate)) {
+                                         worldIn.setBlockState(blockpos, this.oreBlock, 2);
+                                     }
+                                 }

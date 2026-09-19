@@ -1,0 +1,17 @@
+--- original/net/minecraft/world/storage/loot/conditions/LootConditionManager.java
++++ modified/net/minecraft/world/storage/loot/conditions/LootConditionManager.java
+@@ -36,6 +36,14 @@
+         CLASS_TO_SERIALIZER_MAP.put(oclass, condition);
+     }
+ 
++    public static boolean testAllConditions(Iterable<LootCondition> conditions, Random rand, LootContext context) {
++        if (conditions == null) return true;
++        for (LootCondition cond : conditions)
++           if (!cond.testCondition(rand, context))
++                return false;
++        return true;
++    }
++
+     public static boolean testAllConditions(@Nullable LootCondition[] conditions, Random rand, LootContext context) {
+         if (conditions == null) {
+             return true;

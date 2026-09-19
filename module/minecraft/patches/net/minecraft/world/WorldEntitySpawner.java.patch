@@ -1,0 +1,101 @@
+--- original/net/minecraft/world/WorldEntitySpawner.java
++++ modified/net/minecraft/world/WorldEntitySpawner.java
+@@ -68,13 +68,15 @@
+             if ((!enumcreaturetype.getPeacefulCreature() || spawnPeacefulMobs)
+                 && (enumcreaturetype.getPeacefulCreature() || spawnHostileMobs)
+                 && (!enumcreaturetype.getAnimal() || spawnOnSetTickRate)) {
+-                int k4 = worldServerIn.countEntities(enumcreaturetype.getCreatureClass());
++                int k4 = worldServerIn.countEntities(enumcreaturetype, true);
+                 int l4 = enumcreaturetype.getMaxNumberOfCreature() * i / MOB_COUNT_DIV;
+                 if (k4 <= l4) {
++                    java.util.ArrayList<ChunkPos> shuffled = com.google.common.collect.Lists.newArrayList(this.eligibleChunksForSpawning);
++                    java.util.Collections.shuffle(shuffled);
+                     BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+                     label134:
+-                    for (ChunkPos chunkpos1 : this.eligibleChunksForSpawning) {
++                    for (ChunkPos chunkpos1 : shuffled) {
+                         BlockPos blockpos = getRandomChunkPosition(worldServerIn, chunkpos1.x, chunkpos1.z);
+                         int k1 = blockpos.getX();
+                         int l1 = blockpos.getY();
+@@ -133,7 +135,7 @@
+                                                     entityliving.setDead();
+                                                 }
+ 
+-                                                if (j2 >= entityliving.getMaxSpawnedInChunk()) {
++                                                if (j2 >= net.minecraftforge.event.ForgeEventFactory.getMaxSpawnPackSize(entityliving)) {
+                                                     continue label134;
+                                                 }
+                                             }
+@@ -166,31 +168,42 @@
+             return false;
+         } else if (state.canProvidePower()) {
+             return false;
++        } else if (state.getMaterial().isLiquid()) {
++            return false;
+         } else {
+-            return state.getMaterial().isLiquid() ? false : !BlockRailBase.isRailBlock(state);
++            return !BlockRailBase.isRailBlock(state);
+         }
+     }
+ 
+     public static boolean canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType spawnPlacementTypeIn, World worldIn, BlockPos pos) {
+         if (!worldIn.getWorldBorder().contains(pos)) {
+             return false;
++        } else {
++            return spawnPlacementTypeIn.canSpawnAt(worldIn, pos);
+         }
++    }
+ 
+-        IBlockState iblockstate = worldIn.getBlockState(pos);
+-        if (spawnPlacementTypeIn == EntityLiving.SpawnPlacementType.IN_WATER) {
+-            return iblockstate.getMaterial() == Material.WATER
+-                && worldIn.getBlockState(pos.down()).getMaterial() == Material.WATER
+-                && !worldIn.getBlockState(pos.up()).isNormalCube();
+-        }
++    public static boolean canCreatureTypeSpawnBody(EntityLiving.SpawnPlacementType spawnPlacementTypeIn, World worldIn, BlockPos pos) {
++        {
++            IBlockState iblockstate = worldIn.getBlockState(pos);
+ 
+-        BlockPos blockpos = pos.down();
+-        if (!worldIn.getBlockState(blockpos).isTopSolid()) {
+-            return false;
+-        }
++            if (spawnPlacementTypeIn == EntityLiving.SpawnPlacementType.IN_WATER) {
++                return iblockstate.getMaterial() == Material.WATER
++                       && worldIn.getBlockState(pos.down()).getMaterial() == Material.WATER
++                       && !worldIn.getBlockState(pos.up()).isNormalCube();
++            } else {
++                BlockPos blockpos = pos.down();
++                IBlockState state = worldIn.getBlockState(blockpos);
+ 
+-        Block block = worldIn.getBlockState(blockpos).getBlock();
+-        boolean flag = block != Blocks.BEDROCK && block != Blocks.BARRIER;
+-        return flag && isValidEmptySpawnBlock(iblockstate) && isValidEmptySpawnBlock(worldIn.getBlockState(pos.up()));
++                if (!state.getBlock().canCreatureSpawn(state, worldIn, blockpos, spawnPlacementTypeIn)) {
++                    return false;
++                } else {
++                    Block block = worldIn.getBlockState(blockpos).getBlock();
++                    boolean flag = block != Blocks.BEDROCK && block != Blocks.BARRIER;
++                    return flag && isValidEmptySpawnBlock(iblockstate) && isValidEmptySpawnBlock(worldIn.getBlockState(pos.up()));
++                }
++            }
++        }
+     }
+ 
+     /**
+@@ -221,12 +234,13 @@
+                         if (canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, worldIn, blockpos)) {
+                             EntityLiving entityliving;
+                             try {
+-                                entityliving = biome$spawnlistentry.entityClass.getConstructor(World.class).newInstance(worldIn);
++                                entityliving = biome$spawnlistentry.newInstance(worldIn);
+                             } catch (Exception exception) {
+                                 exception.printStackTrace();
+                                 continue;
+                             }
+ 
++                            if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldIn, j + 0.5f, (float) blockpos.getY(), k +0.5f, false) == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) continue;
+                             entityliving.setLocationAndAngles(j + 0.5F, blockpos.getY(), k + 0.5F, randomIn.nextFloat() * 360.0F, 0.0F);
+                             worldIn.spawnEntity(entityliving);
+                             ientitylivingdata = entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
