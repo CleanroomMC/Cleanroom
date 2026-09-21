@@ -2,15 +2,13 @@ package net.minecraftforge.fml.common.eventhandler;
 
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.eventhandler.impl.AbnormalListeners;
-import net.minecraftforge.fml.common.eventhandler.impl.ExampleEvent;
-import net.minecraftforge.fml.common.eventhandler.impl.InstanceListeners;
-import net.minecraftforge.fml.common.eventhandler.impl.StaticListeners;
+import net.minecraftforge.fml.common.eventhandler.impl.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author ZZZank
@@ -85,5 +83,33 @@ public class EventBusTest {
         bus.post(event);
 
         Assertions.assertEquals(event.id, listener.captured);
+    }
+
+    @Test
+    public void registerNonPublic() {
+        var bus = new EventBus();
+
+        // static
+        {
+            bus.register(NonPublicListeners.class);
+
+            var event = new ExampleEvent();
+            bus.post(event);
+            Assertions.assertEquals(Set.of("packaged static", "protected static"), event.sink);
+
+            bus.unregister(NonPublicListeners.class);
+        }
+
+        // instance
+        {
+            var listener = new NonPublicListeners.OverrideWithNoSub();
+            bus.register(listener);
+
+            var event = new ExampleEvent();
+            bus.post(event);
+            Assertions.assertEquals(Set.of("packaged", "protected (subclass)"), event.sink);
+
+            bus.unregister(listener);
+        }
     }
 }
