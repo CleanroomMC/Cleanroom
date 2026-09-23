@@ -1,0 +1,24 @@
+--- original/net/minecraft/block/BlockPotato.java
++++ modified/net/minecraft/block/BlockPotato.java
+@@ -35,7 +35,8 @@
+     @Override
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
+-        if (!worldIn.isRemote) {
++
++        if (false && !worldIn.isRemote) { //Forge: Moved to getDrops
+             if (this.isMaxAge(state) && worldIn.rand.nextInt(50) == 0) {
+                 spawnAsEntity(worldIn, pos, new ItemStack(Items.POISONOUS_POTATO));
+             }
+@@ -47,4 +48,11 @@
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+         return POTATO_AABB[state.getValue(this.getAgeProperty())];
+     }
++
++    @Override
++    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
++        super.getDrops(drops, world, pos, state, fortune);
++        if (this.isMaxAge(state) && RANDOM.nextInt(50) == 0)
++            drops.add(new ItemStack(Items.POISONOUS_POTATO));
++    }
+ }

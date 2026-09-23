@@ -1,0 +1,20 @@
+--- original/net/minecraft/world/storage/loot/LootTableManager.java
++++ modified/net/minecraft/world/storage/loot/LootTableManager.java
+@@ -94,7 +94,7 @@
+                     }
+ 
+                     try {
+-                        return JsonUtils.gsonDeserialize(LootTableManager.GSON_INSTANCE, s, LootTable.class);
++                        return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.GSON_INSTANCE, resource, s, true, LootTableManager.this);
+                     } catch (JsonParseException | IllegalArgumentException runtimeexception) {
+                         LootTableManager.LOGGER.error("Couldn't load loot table {} from {}", resource, file1, runtimeexception);
+                         return LootTable.EMPTY_LOOT_TABLE;
+@@ -121,7 +121,7 @@
+                 }
+ 
+                 try {
+-                    return JsonUtils.gsonDeserialize(LootTableManager.GSON_INSTANCE, s, LootTable.class);
++                    return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.GSON_INSTANCE, resource, s, false, LootTableManager.this);
+                 } catch (JsonParseException jsonparseexception) {
+                     LootTableManager.LOGGER.error("Couldn't load loot table {} from {}", resource, url, jsonparseexception);
+                     return LootTable.EMPTY_LOOT_TABLE;

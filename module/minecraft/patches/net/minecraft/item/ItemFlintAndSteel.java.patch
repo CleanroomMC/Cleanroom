@@ -1,0 +1,11 @@
+--- original/net/minecraft/item/ItemFlintAndSteel.java
++++ modified/net/minecraft/item/ItemFlintAndSteel.java
+@@ -39,7 +39,7 @@
+             return EnumActionResult.FAIL;
+         }
+ 
+-        if (worldIn.getBlockState(pos).getMaterial() == Material.AIR) {
++        if (worldIn.isAirBlock(pos)) {
+             worldIn.playSound(
+                 player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, itemRand.nextFloat() * 0.4F + 0.8F
+             );

@@ -1,0 +1,12 @@
+--- original/net/minecraft/command/CommandBase.java
++++ modified/net/minecraft/command/CommandBase.java
+@@ -294,7 +294,8 @@
+                 itextcomponent.appendText(" ");
+             }
+ 
+-            ITextComponent itextcomponent1 = new TextComponentString(args[i]);
++            ITextComponent itextcomponent1 = net.minecraftforge.common.ForgeHooks.newChatWithLinks(args[i]); // Forge: links for messages
++
+             if (p_147176_3_) {
+                 ITextComponent itextcomponent2 = EntitySelector.matchEntitiesToTextComponent(sender, args[i]);
+                 if (itextcomponent2 == null) {

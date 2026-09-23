@@ -1,0 +1,39 @@
+--- original/net/minecraft/item/ItemBlockSpecial.java
++++ modified/net/minecraft/item/ItemBlockSpecial.java
+@@ -44,10 +44,11 @@
+ 
+         ItemStack itemstack = player.getHeldItem(hand);
+         if (!itemstack.isEmpty()
+-            && player.canPlayerEdit(pos, facing, itemstack)
+-            && worldIn.mayPlace(this.block, pos, false, facing, null)) {
++                && player.canPlayerEdit(pos, facing, itemstack)
++                && worldIn.mayPlace(this.block, pos, false, facing, player)) {
+             IBlockState iblockstate1 = this.block
+-                .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player);
++                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, player, hand);
++
+             if (!worldIn.setBlockState(pos, iblockstate1, 11)) {
+                 return EnumActionResult.FAIL;
+             }
+@@ -61,7 +62,7 @@
+                 }
+             }
+ 
+-            SoundType soundtype = this.block.getSoundType();
++            SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
+             worldIn.playSound(
+                 player,
+                 pos,
+@@ -76,4 +77,12 @@
+             return EnumActionResult.FAIL;
+         }
+     }
++
++    public Block getBlock() {
++        return this.getBlockRaw() == null ? null : this.getBlockRaw().delegate.get();
++    }
++
++    private Block getBlockRaw() {
++        return this.block;
++    }
+ }

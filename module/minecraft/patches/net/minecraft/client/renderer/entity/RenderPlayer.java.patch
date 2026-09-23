@@ -1,0 +1,45 @@
+--- original/net/minecraft/client/renderer/entity/RenderPlayer.java
++++ modified/net/minecraft/client/renderer/entity/RenderPlayer.java
+@@ -53,6 +53,7 @@
+ 
+     /** Renders the desired {@code T} type Entity. */
+     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
++        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Pre(entity, this, partialTicks, x, y, z))) return;
+         if (!entity.isUser() || this.renderManager.renderViewEntity == entity) {
+             double d0 = y;
+             if (entity.isSneaking()) {
+@@ -64,6 +65,7 @@
+             super.doRender(entity, x, d0, z, entityYaw, partialTicks);
+             GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
+         }
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Post(entity, this, partialTicks, x, y, z));
+     }
+ 
+     private void setModelVisibilities(AbstractClientPlayer clientPlayer) {
+@@ -104,6 +106,10 @@
+                     if (enumaction1 == EnumAction.BLOCK) {
+                         modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
+                     }
++                    // FORGE: fix MC-88356 allow offhand to use bow and arrow animation
++                    else if (enumaction1 == EnumAction.BOW) {
++                        modelbiped$armpose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
++                    }
+                 }
+             }
+ 
+@@ -150,6 +156,7 @@
+     }
+ 
+     public void renderRightArm(AbstractClientPlayer clientPlayer) {
++        if (net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(this, clientPlayer, EnumHandSide.RIGHT)) return;
+         float f = 1.0F;
+         GlStateManager.color(1.0F, 1.0F, 1.0F);
+         float f1 = 0.0625F;
+@@ -167,6 +174,7 @@
+     }
+ 
+     public void renderLeftArm(AbstractClientPlayer clientPlayer) {
++        if (net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(this, clientPlayer, EnumHandSide.LEFT)) return;
+         float f = 1.0F;
+         GlStateManager.color(1.0F, 1.0F, 1.0F);
+         float f1 = 0.0625F;

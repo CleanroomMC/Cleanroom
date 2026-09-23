@@ -1,0 +1,44 @@
+--- original/net/minecraft/item/ItemMap.java
++++ modified/net/minecraft/item/ItemMap.java
+@@ -39,7 +39,7 @@
+         worldIn.setData(s, mapdata);
+         mapdata.scale = scale;
+         mapdata.calculateMapCenter(worldX, worldZ, mapdata.scale);
+-        mapdata.dimension = (byte)worldIn.provider.getDimensionType().getId();
++        mapdata.dimension = worldIn.provider.getDimension();
+         mapdata.trackingPosition = trackingPosition;
+         mapdata.unlimitedTracking = unlimitedTracking;
+         mapdata.markDirty();
+@@ -63,7 +63,7 @@
+             mapdata = new MapData(s);
+             mapdata.scale = 3;
+             mapdata.calculateMapCenter(worldIn.getWorldInfo().getSpawnX(), worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);
+-            mapdata.dimension = (byte)worldIn.provider.getDimensionType().getId();
++            mapdata.dimension = worldIn.provider.getDimension();
+             mapdata.markDirty();
+             worldIn.setData(s, mapdata);
+         }
+@@ -72,7 +72,7 @@
+     }
+ 
+     public void updateMapData(World worldIn, Entity viewer, MapData data) {
+-        if (worldIn.provider.getDimensionType().getId() == data.dimension && viewer instanceof EntityPlayer) {
++        if (worldIn.provider.getDimension() == data.dimension && viewer instanceof EntityPlayer) {
+             int i = 1 << data.scale;
+             int j = data.xCenter;
+             int k = data.zCenter;
+@@ -206,10 +206,11 @@
+ 
+     /** Draws ambiguous landmasses representing unexplored terrain onto a treasure map */
+     public static void renderBiomePreviewMap(World worldIn, ItemStack map) {
+-        if (map.getItem() == Items.FILLED_MAP) {
+-            MapData mapdata = Items.FILLED_MAP.getMapData(map, worldIn);
++        if (map.getItem() instanceof ItemMap) {
++            MapData mapdata = ((ItemMap) map.getItem()).getMapData(map, worldIn);
++
+             if (mapdata != null) {
+-                if (worldIn.provider.getDimensionType().getId() == mapdata.dimension) {
++                if (worldIn.provider.getDimension() == mapdata.dimension) {
+                     int i = 1 << mapdata.scale;
+                     int j = mapdata.xCenter;
+                     int k = mapdata.zCenter;

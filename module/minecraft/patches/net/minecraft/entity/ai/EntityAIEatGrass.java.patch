@@ -1,0 +1,20 @@
+--- original/net/minecraft/entity/ai/EntityAIEatGrass.java
++++ modified/net/minecraft/entity/ai/EntityAIEatGrass.java
+@@ -72,7 +72,7 @@
+         if (this.eatingGrassTimer == 4) {
+             BlockPos blockpos = new BlockPos(this.grassEaterEntity.posX, this.grassEaterEntity.posY, this.grassEaterEntity.posZ);
+             if (IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos))) {
+-                if (this.entityWorld.getGameRules().getBoolean("mobGriefing")) {
++                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity)) {
+                     this.entityWorld.destroyBlock(blockpos, false);
+                 }
+ 
+@@ -80,7 +80,7 @@
+             } else {
+                 BlockPos blockpos1 = blockpos.down();
+                 if (this.entityWorld.getBlockState(blockpos1).getBlock() == Blocks.GRASS) {
+-                    if (this.entityWorld.getGameRules().getBoolean("mobGriefing")) {
++                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity)) {
+                         this.entityWorld.playEvent(2001, blockpos1, Block.getIdFromBlock(Blocks.GRASS));
+                         this.entityWorld.setBlockState(blockpos1, Blocks.DIRT.getDefaultState(), 2);
+                     }

@@ -1,0 +1,16 @@
+--- original/net/minecraft/world/gen/structure/MapGenStructure.java
++++ modified/net/minecraft/world/gen/structure/MapGenStructure.java
+@@ -123,10 +123,11 @@
+ 
+     protected void initializeStructureData(World worldIn) {
+         if (this.structureData == null && worldIn != null) {
+-            this.structureData = (MapGenStructureData)worldIn.loadData(MapGenStructureData.class, this.getStructureName());
++            this.structureData = (MapGenStructureData)worldIn.getPerWorldStorage().getOrLoadData(MapGenStructureData.class, this.getStructureName());
++
+             if (this.structureData == null) {
+                 this.structureData = new MapGenStructureData(this.getStructureName());
+-                worldIn.setData(this.getStructureName(), this.structureData);
++                worldIn.getPerWorldStorage().setData(this.getStructureName(), this.structureData);
+             } else {
+                 NBTTagCompound nbttagcompound = this.structureData.getTagCompound();
+ 

@@ -1,0 +1,113 @@
+--- original/net/minecraft/inventory/ContainerRepair.java
++++ modified/net/minecraft/inventory/ContainerRepair.java
+@@ -70,45 +70,51 @@
+                 }
+ 
+                 @Override
+-                public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack) {
+-                    if (!thePlayer.capabilities.isCreativeMode) {
+-                        thePlayer.addExperienceLevel(-ContainerRepair.this.maximumCost);
+-                    }
++            public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack) {
++                if (!thePlayer.capabilities.isCreativeMode) {
++                    thePlayer.addExperienceLevel(-ContainerRepair.this.maximumCost);
++                }
+ 
+-                    ContainerRepair.this.inputSlots.setInventorySlotContents(0, ItemStack.EMPTY);
+-                    if (ContainerRepair.this.materialCost > 0) {
+-                        ItemStack itemstack = ContainerRepair.this.inputSlots.getStackInSlot(1);
+-                        if (!itemstack.isEmpty() && itemstack.getCount() > ContainerRepair.this.materialCost) {
+-                            itemstack.shrink(ContainerRepair.this.materialCost);
+-                            ContainerRepair.this.inputSlots.setInventorySlotContents(1, itemstack);
+-                        } else {
+-                            ContainerRepair.this.inputSlots.setInventorySlotContents(1, ItemStack.EMPTY);
+-                        }
++                float breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(thePlayer, stack, ContainerRepair.this.inputSlots.getStackInSlot(0), ContainerRepair.this.inputSlots.getStackInSlot(1));
++
++                ContainerRepair.this.inputSlots.setInventorySlotContents(0, ItemStack.EMPTY);
++
++                if (ContainerRepair.this.materialCost > 0) {
++                    ItemStack itemstack = ContainerRepair.this.inputSlots.getStackInSlot(1);
++
++                    if (!itemstack.isEmpty() && itemstack.getCount() > ContainerRepair.this.materialCost) {
++                        itemstack.shrink(ContainerRepair.this.materialCost);
++                        ContainerRepair.this.inputSlots.setInventorySlotContents(1, itemstack);
+                     } else {
+                         ContainerRepair.this.inputSlots.setInventorySlotContents(1, ItemStack.EMPTY);
+                     }
++                } else {
++                    ContainerRepair.this.inputSlots.setInventorySlotContents(1, ItemStack.EMPTY);
++                }
+ 
+-                    ContainerRepair.this.maximumCost = 0;
+-                    IBlockState iblockstate = worldIn.getBlockState(blockPosIn);
+-                    if (!thePlayer.capabilities.isCreativeMode
++                ContainerRepair.this.maximumCost = 0;
++                IBlockState iblockstate = worldIn.getBlockState(blockPosIn);
++
++                if (!thePlayer.capabilities.isCreativeMode
+                         && !worldIn.isRemote
+                         && iblockstate.getBlock() == Blocks.ANVIL
+-                        && thePlayer.getRNG().nextFloat() < 0.12F) {
+-                        int l = iblockstate.getValue(BlockAnvil.DAMAGE);
+-                        if (++l > 2) {
+-                            worldIn.setBlockToAir(blockPosIn);
+-                            worldIn.playEvent(1029, blockPosIn, 0);
+-                        } else {
+-                            worldIn.setBlockState(blockPosIn, iblockstate.withProperty(BlockAnvil.DAMAGE, l), 2);
+-                            worldIn.playEvent(1030, blockPosIn, 0);
+-                        }
+-                    } else if (!worldIn.isRemote) {
++                        && thePlayer.getRNG().nextFloat() < breakChance) {
++                    int l = iblockstate.getValue(BlockAnvil.DAMAGE);
++
++                    if (++l > 2) {
++                        worldIn.setBlockToAir(blockPosIn);
++                        worldIn.playEvent(1029, blockPosIn, 0);
++                    } else {
++                        worldIn.setBlockState(blockPosIn, iblockstate.withProperty(BlockAnvil.DAMAGE, l), 2);
+                         worldIn.playEvent(1030, blockPosIn, 0);
+                     }
+-
+-                    return stack;
++                } else if (!worldIn.isRemote) {
++                    worldIn.playEvent(1030, blockPosIn, 0);
+                 }
++
++                return stack;
+             }
++            }
+         );
+ 
+         for (int i = 0; i < 3; i++) {
+@@ -147,8 +153,12 @@
+             Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
+             j += itemstack.getRepairCost() + (itemstack2.isEmpty() ? 0 : itemstack2.getRepairCost());
+             this.materialCost = 0;
++            boolean flag = false;
++
+             if (!itemstack2.isEmpty()) {
+-                boolean flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !ItemEnchantedBook.getEnchantments(itemstack2).isEmpty();
++                if (!net.minecraftforge.common.ForgeHooks.onAnvilChange(this, itemstack, itemstack2, outputSlot, repairedItemName, j, player)) return;
++                flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !ItemEnchantedBook.getEnchantments(itemstack2).isEmpty();
++
+                 if (itemstack1.isItemStackDamageable() && itemstack1.getItem().getIsRepairable(itemstack, itemstack2)) {
+                     int l2 = Math.min(itemstack1.getItemDamage(), itemstack1.getMaxDamage() / 4);
+                     if (l2 <= 0) {
+@@ -183,7 +193,7 @@
+                             l1 = 0;
+                         }
+ 
+-                        if (l1 < itemstack1.getMetadata()) {
++                        if (l1 < itemstack1.getItemDamage()) { // vanilla uses metadata here instead of damage.
+                             itemstack1.setItemDamage(l1);
+                             i += 2;
+                         }
+@@ -265,6 +275,7 @@
+                 i += k;
+                 itemstack1.setStackDisplayName(this.repairedItemName);
+             }
++            if (flag && !itemstack1.getItem().isBookEnchantable(itemstack1, itemstack2)) itemstack1 = ItemStack.EMPTY;
+ 
+             this.maximumCost = j + i;
+             if (i <= 0) {

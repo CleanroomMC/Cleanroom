@@ -1,0 +1,51 @@
+--- original/net/minecraft/world/gen/feature/WorldGenBigTree.java
++++ modified/net/minecraft/world/gen/feature/WorldGenBigTree.java
+@@ -82,8 +82,9 @@
+             for (int k = -i; k <= i; k++) {
+                 if (Math.pow(Math.abs(j) + 0.5, 2.0) + Math.pow(Math.abs(k) + 0.5, 2.0) <= p_181631_2_ * p_181631_2_) {
+                     BlockPos blockpos = pos.add(j, 0, k);
+-                    Material material = this.world.getBlockState(blockpos).getMaterial();
+-                    if (material == Material.AIR || material == Material.LEAVES) {
++                    IBlockState state = this.world.getBlockState(blockpos);
++
++                    if (state.getBlock().isAir(state, world, blockpos) || state.getBlock().isLeaves(state, world, blockpos)) {
+                         this.setBlockAndNotifyAdequately(this.world, blockpos, p_181631_3_);
+                     }
+                 }
+@@ -217,7 +218,7 @@
+ 
+         for (int j = 0; j <= i; j++) {
+             BlockPos blockpos1 = posOne.add(0.5F + j * f, 0.5F + j * f1, 0.5F + j * f2);
+-            if (!this.canGrowInto(this.world.getBlockState(blockpos1).getBlock())) {
++            if (!this.isReplaceable(world, blockpos1)) {
+                 return j;
+             }
+         }
+@@ -240,6 +241,7 @@
+         }
+ 
+         if (!this.validTreeLocation()) {
++            this.world = null; //Fix vanilla Mem leak, holds latest world
+             return false;
+         }
+ 
+@@ -247,13 +249,17 @@
+         this.generateLeaves();
+         this.generateTrunk();
+         this.generateLeafNodeBases();
++        this.world = null; //Fix vanilla Mem leak, holds latest world
+         return true;
+     }
+ 
+     /** Returns a boolean indicating whether or not the current location for the tree, spanning basePos to to the height limit, is valid. */
+     private boolean validTreeLocation() {
+-        Block block = this.world.getBlockState(this.basePos.down()).getBlock();
+-        if (block != Blocks.DIRT && block != Blocks.GRASS && block != Blocks.FARMLAND) {
++        BlockPos down = this.basePos.down();
++        net.minecraft.block.state.IBlockState state = this.world.getBlockState(down);
++        boolean isSoil = state.getBlock().canSustainPlant(state, this.world, down, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.SAPLING));
++
++        if (!isSoil) {
+             return false;
+         }
+ 

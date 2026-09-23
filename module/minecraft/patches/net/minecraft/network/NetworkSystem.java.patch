@@ -1,0 +1,93 @@
+--- original/net/minecraft/network/NetworkSystem.java
++++ modified/net/minecraft/network/NetworkSystem.java
+@@ -37,6 +37,7 @@
+ import net.minecraft.util.LazyLoadBase;
+ import net.minecraft.util.ReportedException;
+ import net.minecraft.util.text.TextComponentString;
++import net.minecraftforge.fml.common.thread.SidedThreadGroups;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+@@ -46,17 +47,17 @@
+     private static final Logger LOGGER = LogManager.getLogger();
+     public static final LazyLoadBase<NioEventLoopGroup> SERVER_NIO_EVENTLOOP = new LazyLoadBase<NioEventLoopGroup>() {
+         protected NioEventLoopGroup load() {
+-            return new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build());
++            return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER).build());
+         }
+     };
+     public static final LazyLoadBase<EpollEventLoopGroup> SERVER_EPOLL_EVENTLOOP = new LazyLoadBase<EpollEventLoopGroup>() {
+         protected EpollEventLoopGroup load() {
+-            return new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build());
++            return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER).build());
+         }
+     };
+     public static final LazyLoadBase<LocalEventLoopGroup> SERVER_LOCAL_EVENTLOOP = new LazyLoadBase<LocalEventLoopGroup>() {
+         protected LocalEventLoopGroup load() {
+-            return new LocalEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
++            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).setThreadFactory(SidedThreadGroups.SERVER).build());
+         }
+     };
+     /** Reference to the MinecraftServer object. */
+@@ -75,6 +76,7 @@
+ 
+     /** Adds a channel that listens on publicly accessible network ports */
+     public void addEndpoint(InetAddress address, int port) throws IOException {
++        if (address instanceof java.net.Inet6Address) System.setProperty("java.net.preferIPv4Stack", "false");
+         synchronized (this.endpoints) {
+             Class<? extends ServerSocketChannel> oclass;
+             LazyLoadBase<? extends EventLoopGroup> lazyloadbase;
+@@ -101,25 +103,25 @@
+                                     } catch (ChannelException channelexception) {
+                                     }
+ 
+-                                    p_initChannel_1_.pipeline()
+-                                        .addLast("timeout", new ReadTimeoutHandler(30))
+-                                        .addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this))
+-                                        .addLast("splitter", new NettyVarint21FrameDecoder())
+-                                        .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND))
+-                                        .addLast("prepender", new NettyVarint21FrameEncoder())
+-                                        .addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.CLIENTBOUND));
+-                                    NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.SERVERBOUND);
+-                                    NetworkSystem.this.networkManagers.add(networkmanager);
+-                                    p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
+-                                    networkmanager.setNetHandler(new NetHandlerHandshakeTCP(NetworkSystem.this.server, networkmanager));
+-                                }
+-                            }
+-                        )
+-                        .group(lazyloadbase.getValue())
+-                        .localAddress(address, port)
+-                        .bind()
+-                        .syncUninterruptibly()
+-                );
++                    p_initChannel_1_.pipeline()
++                    .addLast("timeout", new ReadTimeoutHandler(net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.READ_TIMEOUT))
++                    .addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this))
++                    .addLast("splitter", new NettyVarint21FrameDecoder())
++                    .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND))
++                    .addLast("prepender", new NettyVarint21FrameEncoder())
++                    .addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.CLIENTBOUND));
++                    NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.SERVERBOUND);
++                    NetworkSystem.this.networkManagers.add(networkmanager);
++                    p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
++                    networkmanager.setNetHandler(new NetHandlerHandshakeTCP(NetworkSystem.this.server, networkmanager));
++                }
++            }
++                )
++                .group(lazyloadbase.getValue())
++                .localAddress(address, port)
++                .bind()
++                .syncUninterruptibly()
++            );
+         }
+     }
+ 
+@@ -136,7 +138,7 @@
+                     NetworkSystem.this.networkManagers.add(networkmanager);
+                     p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
+                 }
+-            }).group(SERVER_NIO_EVENTLOOP.getValue()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
++            }).group(SERVER_LOCAL_EVENTLOOP.getValue()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
+             this.endpoints.add(channelfuture);
+         }
+ 

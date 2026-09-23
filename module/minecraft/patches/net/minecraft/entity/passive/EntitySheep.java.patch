@@ -1,0 +1,47 @@
+--- original/net/minecraft/entity/passive/EntitySheep.java
++++ modified/net/minecraft/entity/passive/EntitySheep.java
+@@ -46,7 +46,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class EntitySheep extends EntityAnimal {
++public class EntitySheep extends EntityAnimal implements net.minecraftforge.common.IShearable {
+     private static final DataParameter<Byte> DYE_COLOR = EntityDataManager.createKey(EntitySheep.class, DataSerializers.BYTE);
+     /** Internal crafting inventory used to check the result of mixing dyes corresponding to the fleece color when breeding sheep. */
+     private final InventoryCrafting inventoryCrafting = new InventoryCrafting(new Container() {
+@@ -202,7 +202,8 @@
+     @Override
+     public boolean processInteract(EntityPlayer player, EnumHand hand) {
+         ItemStack itemstack = player.getHeldItem(hand);
+-        if (itemstack.getItem() == Items.SHEARS && !this.getSheared() && !this.isChild()) {
++
++        if (false && itemstack.getItem() == Items.SHEARS && !this.getSheared() && !this.isChild()) { //Forge: Moved to onSheared
+             if (!this.world.isRemote) {
+                 this.setSheared(true);
+                 int i = 1 + this.rand.nextInt(3);
+@@ -340,7 +341,24 @@
+         return livingdata;
+     }
+ 
+-    /** Attempts to mix both parent sheep to come up with a mixed dye color. */
++    @Override
++    public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos) {
++        return !this.getSheared() && !this.isChild();
++    }
++
++    @Override
++    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune) {
++        this.setSheared(true);
++        int i = 1 + this.rand.nextInt(3);
++
++        java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
++        for (int j = 0; j < i; ++j)
++            ret.add(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, this.getFleeceColor().getMetadata()));
++
++        this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
++        return ret;
++    }
++
+     private EnumDyeColor getDyeColorMixFromParents(EntityAnimal father, EntityAnimal mother) {
+         int i = ((EntitySheep)father).getFleeceColor().getDyeDamage();
+         int j = ((EntitySheep)mother).getFleeceColor().getDyeDamage();

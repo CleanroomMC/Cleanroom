@@ -1,0 +1,11 @@
+--- original/net/minecraft/block/SoundType.java
++++ modified/net/minecraft/block/SoundType.java
+@@ -2,6 +2,8 @@
+ 
+ import net.minecraft.init.SoundEvents;
+ import net.minecraft.util.SoundEvent;
++import net.minecraftforge.fml.relauncher.Side;
++import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ public class SoundType {
+     public static final SoundType WOOD = new SoundType(

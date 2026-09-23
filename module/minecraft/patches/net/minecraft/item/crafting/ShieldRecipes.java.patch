@@ -1,0 +1,11 @@
+--- original/net/minecraft/item/crafting/ShieldRecipes.java
++++ modified/net/minecraft/item/crafting/ShieldRecipes.java
+@@ -8,7 +8,7 @@
+ import net.minecraft.world.World;
+ 
+ public class ShieldRecipes {
+-    public static class Decoration implements IRecipe {
++    public static class Decoration extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+         /** Used to check if a recipe matches current crafting inventory */
+         @Override
+         public boolean matches(InventoryCrafting inv, World worldIn) {

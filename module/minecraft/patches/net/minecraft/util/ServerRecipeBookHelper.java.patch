@@ -1,0 +1,28 @@
+--- original/net/minecraft/util/ServerRecipeBookHelper.java
++++ modified/net/minecraft/util/ServerRecipeBookHelper.java
+@@ -46,6 +46,9 @@
+             } else if (container instanceof ContainerPlayer) {
+                 this.field_194335_f = ((ContainerPlayer)container).craftResult;
+                 this.field_194336_g = ((ContainerPlayer)container).craftMatrix;
++            } else if (container instanceof net.minecraftforge.common.crafting.IRecipeContainer) {
++                this.field_194335_f = ((net.minecraftforge.common.crafting.IRecipeContainer)container).getCraftResult();
++                this.field_194336_g = ((net.minecraftforge.common.crafting.IRecipeContainer)container).getCraftMatrix();
+             }
+ 
+             if (this.field_194335_f != null && this.field_194336_g != null) {
+@@ -153,10 +156,11 @@
+     private void func_194323_a(int p_194323_1_, IntList p_194323_2_) {
+         int i = this.field_194336_g.getWidth();
+         int j = this.field_194336_g.getHeight();
+-        if (this.field_194333_d instanceof ShapedRecipes) {
+-            ShapedRecipes shapedrecipes = (ShapedRecipes)this.field_194333_d;
+-            i = shapedrecipes.getWidth();
+-            j = shapedrecipes.getHeight();
++
++        if (this.field_194333_d instanceof net.minecraftforge.common.crafting.IShapedRecipe) {
++            net.minecraftforge.common.crafting.IShapedRecipe shapedrecipes = (net.minecraftforge.common.crafting.IShapedRecipe)this.field_194333_d;
++            i = shapedrecipes.getRecipeWidth();
++            j = shapedrecipes.getRecipeHeight();
+         }
+ 
+         int j1 = 1;

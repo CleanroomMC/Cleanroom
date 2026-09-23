@@ -1,0 +1,94 @@
+--- original/net/minecraft/tileentity/TileEntityFurnace.java
++++ modified/net/minecraft/tileentity/TileEntityFurnace.java
+@@ -146,9 +146,9 @@
+         super.readFromNBT(compound);
+         this.furnaceItemStacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+         ItemStackHelper.loadAllItems(compound, this.furnaceItemStacks);
+-        this.furnaceBurnTime = compound.getShort("BurnTime");
+-        this.cookTime = compound.getShort("CookTime");
+-        this.totalCookTime = compound.getShort("CookTimeTotal");
++        this.furnaceBurnTime = compound.getInteger("BurnTime");
++        this.cookTime = compound.getInteger("CookTime");
++        this.totalCookTime = compound.getInteger("CookTimeTotal");
+         this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks.get(1));
+         if (compound.hasKey("CustomName", 8)) {
+             this.furnaceCustomName = compound.getString("CustomName");
+@@ -158,9 +158,9 @@
+     @Override
+     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+         super.writeToNBT(compound);
+-        compound.setShort("BurnTime", (short)this.furnaceBurnTime);
+-        compound.setShort("CookTime", (short)this.cookTime);
+-        compound.setShort("CookTimeTotal", (short)this.totalCookTime);
++        compound.setInteger("BurnTime", (short)this.furnaceBurnTime);
++        compound.setInteger("CookTime", (short)this.cookTime);
++        compound.setInteger("CookTimeTotal", (short)this.totalCookTime);
+         ItemStackHelper.saveAllItems(compound, this.furnaceItemStacks);
+         if (this.hasCustomName()) {
+             compound.setString("CustomName", this.furnaceCustomName);
+@@ -206,8 +206,8 @@
+                             Item item = itemstack.getItem();
+                             itemstack.shrink(1);
+                             if (itemstack.isEmpty()) {
+-                                Item item1 = item.getContainerItem();
+-                                this.furnaceItemStacks.set(1, item1 == null ? ItemStack.EMPTY : new ItemStack(item1));
++                                ItemStack item1 = item.getContainerItem(itemstack);
++                                this.furnaceItemStacks.set(1, item1);
+                             }
+                         }
+                     }
+@@ -257,10 +257,10 @@
+                     return true;
+                 } else if (!itemstack1.isItemEqual(itemstack)) {
+                     return false;
++                } else if (itemstack1.getCount() + itemstack.getCount() <= this.getInventoryStackLimit() && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize()) { // Forge fix: make furnace respect stack sizes in furnace recipes
++                    return true;
+                 } else {
+-                    return itemstack1.getCount() < this.getInventoryStackLimit() && itemstack1.getCount() < itemstack1.getMaxStackSize()
+-                        ? true
+-                        : itemstack1.getCount() < itemstack.getMaxStackSize();
++                    return itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize(); // Forge fix: make furnace respect stack sizes in furnace recipes
+                 }
+             }
+         }
+@@ -275,7 +275,7 @@
+             if (itemstack2.isEmpty()) {
+                 this.furnaceItemStacks.set(2, itemstack1.copy());
+             } else if (itemstack2.getItem() == itemstack1.getItem()) {
+-                itemstack2.grow(1);
++                itemstack2.grow(itemstack1.getCount());
+             }
+ 
+             if (itemstack.getItem() == Item.getItemFromBlock(Blocks.SPONGE)
+@@ -294,6 +294,8 @@
+         if (stack.isEmpty()) {
+             return 0;
+         } else {
++            int burnTime = net.minecraftforge.event.ForgeEventFactory.getItemBurnTime(stack);
++            if (burnTime >= 0) return burnTime;
+             Item item = stack.getItem();
+             if (item == Item.getItemFromBlock(Blocks.WOODEN_SLAB)) {
+                 return 150;
+@@ -457,4 +459,22 @@
+     public void clear() {
+         this.furnaceItemStacks.clear();
+     }
++
++    net.minecraftforge.items.IItemHandler handlerTop = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.UP);
++    net.minecraftforge.items.IItemHandler handlerBottom = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.DOWN);
++    net.minecraftforge.items.IItemHandler handlerSide = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.WEST);
++
++    @SuppressWarnings("unchecked")
++    @Override
++    @javax.annotation.Nullable
++    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing) {
++        if (facing != null && capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
++            if (facing == EnumFacing.DOWN)
++                return (T) handlerBottom;
++            else if (facing == EnumFacing.UP)
++                return (T) handlerTop;
++            else
++                return (T) handlerSide;
++        return super.getCapability(capability, facing);
++    }
+ }

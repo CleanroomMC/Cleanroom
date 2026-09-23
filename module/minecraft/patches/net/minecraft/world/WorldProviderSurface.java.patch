@@ -1,0 +1,10 @@
+--- original/net/minecraft/world/WorldProviderSurface.java
++++ modified/net/minecraft/world/WorldProviderSurface.java
+@@ -9,6 +9,6 @@
+     /** Called to determine if the chunk at the given chunk coordinates within the provider's world can be dropped. Used in WorldProviderSurface to prevent spawn chunks from being unloaded. */
+     @Override
+     public boolean canDropChunk(int x, int z) {
+-        return !this.world.isSpawnChunk(x, z);
++        return !this.world.isSpawnChunk(x, z) || !this.world.provider.getDimensionType().shouldLoadSpawn();
+     }
+ }

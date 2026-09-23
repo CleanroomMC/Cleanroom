@@ -1,0 +1,11 @@
+--- original/net/minecraft/server/network/NetHandlerHandshakeTCP.java
++++ modified/net/minecraft/server/network/NetHandlerHandshakeTCP.java
+@@ -21,6 +21,8 @@
+     /** There are two recognized intentions for initiating a handshake: logging in and acquiring server status. The NetworkManager's protocol will be reconfigured according to the specified intention, although a login-intention must pass a versioncheck or receive a disconnect otherwise */
+     @Override
+     public void processHandshake(C00Handshake packetIn) {
++        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager)) return;
++
+         switch (packetIn.getRequestedState()) {
+             case LOGIN:
+                 this.networkManager.setConnectionState(EnumConnectionState.LOGIN);

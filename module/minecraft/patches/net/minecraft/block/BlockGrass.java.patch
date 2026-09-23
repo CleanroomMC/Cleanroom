@@ -1,0 +1,42 @@
+--- original/net/minecraft/block/BlockGrass.java
++++ modified/net/minecraft/block/BlockGrass.java
+@@ -35,7 +35,8 @@
+     @Override
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+         if (!worldIn.isRemote) {
+-            if (worldIn.getLightFromNeighbors(pos.up()) < 4 && worldIn.getBlockState(pos.up()).getLightOpacity() > 2) {
++            if (!worldIn.isAreaLoaded(pos, 3)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
++            if (worldIn.getLightFromNeighbors(pos.up()) < 4 && worldIn.getBlockState(pos.up()).getLightOpacity(worldIn, pos.up()) > 2) {
+                 worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
+             } else {
+                 if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
+@@ -48,9 +49,9 @@
+                         IBlockState iblockstate = worldIn.getBlockState(blockpos.up());
+                         IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
+                         if (iblockstate1.getBlock() == Blocks.DIRT
+-                            && iblockstate1.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
+-                            && worldIn.getLightFromNeighbors(blockpos.up()) >= 4
+-                            && iblockstate.getLightOpacity() <= 2) {
++                                && iblockstate1.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
++                                && worldIn.getLightFromNeighbors(blockpos.up()) >= 4
++                                && iblockstate.getLightOpacity(worldIn, pos.up()) <= 2) {
+                             worldIn.setBlockState(blockpos, Blocks.GRASS.getDefaultState());
+                         }
+                     }
+@@ -95,14 +96,9 @@
+                 }
+             }
+ 
+-            if (worldIn.getBlockState(blockpos1).getBlock().material == Material.AIR) {
++            if (worldIn.isAirBlock(blockpos1)) {
+                 if (rand.nextInt(8) == 0) {
+-                    BlockFlower.EnumFlowerType blockflower$enumflowertype = worldIn.getBiome(blockpos1).pickRandomFlower(rand, blockpos1);
+-                    BlockFlower blockflower = blockflower$enumflowertype.getBlockType().getBlock();
+-                    IBlockState iblockstate = blockflower.getDefaultState().withProperty(blockflower.getTypeProperty(), blockflower$enumflowertype);
+-                    if (blockflower.canBlockStay(worldIn, blockpos1, iblockstate)) {
+-                        worldIn.setBlockState(blockpos1, iblockstate, 3);
+-                    }
++                    worldIn.getBiome(blockpos1).plantFlower(worldIn, rand, blockpos1);
+                 } else {
+                     IBlockState iblockstate1 = Blocks.TALLGRASS
+                         .getDefaultState()

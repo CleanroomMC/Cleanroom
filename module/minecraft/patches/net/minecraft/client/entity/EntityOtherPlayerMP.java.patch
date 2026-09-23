@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/entity/EntityOtherPlayerMP.java
++++ modified/net/minecraft/client/entity/EntityOtherPlayerMP.java
+@@ -41,6 +41,7 @@
+     /** Called when the entity is attacked. */
+     @Override
+     public boolean attackEntityFrom(DamageSource source, float amount) {
++        net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, source, amount);
+         return true;
+     }
+ 

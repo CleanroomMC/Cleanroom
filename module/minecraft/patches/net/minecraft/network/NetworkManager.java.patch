@@ -1,0 +1,58 @@
+--- original/net/minecraft/network/NetworkManager.java
++++ modified/net/minecraft/network/NetworkManager.java
+@@ -85,6 +85,10 @@
+         this.direction = packetDirection;
+     }
+ 
++    public EnumPacketDirection getDirection() {
++        return this.direction;
++    }
++
+     @Override
+     public void channelActive(ChannelHandlerContext p_channelActive_1_) throws Exception {
+         super.channelActive(p_channelActive_1_);
+@@ -178,13 +182,14 @@
+     private void dispatchPacket(final Packet<?> inPacket, @Nullable final GenericFutureListener<? extends Future<? super Void>>[] futureListeners) {
+         final EnumConnectionState enumconnectionstate = EnumConnectionState.getFromPacket(inPacket);
+         final EnumConnectionState enumconnectionstate1 = this.channel.attr(PROTOCOL_ATTRIBUTE_KEY).get();
+-        if (enumconnectionstate1 != enumconnectionstate) {
++
++        if (enumconnectionstate1 != enumconnectionstate && !( inPacket instanceof net.minecraftforge.fml.common.network.internal.FMLProxyPacket)) {
+             LOGGER.debug("Disabled auto read");
+             this.channel.config().setAutoRead(false);
+         }
+ 
+         if (this.channel.eventLoop().inEventLoop()) {
+-            if (enumconnectionstate != enumconnectionstate1) {
++            if (enumconnectionstate != enumconnectionstate1 && !( inPacket instanceof net.minecraftforge.fml.common.network.internal.FMLProxyPacket)) {
+                 this.setConnectionState(enumconnectionstate);
+             }
+ 
+@@ -198,7 +203,7 @@
+             this.channel.eventLoop().execute(new Runnable() {
+                 @Override
+                 public void run() {
+-                    if (enumconnectionstate != enumconnectionstate1) {
++                    if (enumconnectionstate != enumconnectionstate1  && !( inPacket instanceof net.minecraftforge.fml.common.network.internal.FMLProxyPacket)) {
+                         NetworkManager.this.setConnectionState(enumconnectionstate);
+                     }
+ 
+@@ -264,6 +269,7 @@
+     /** Create a new NetworkManager from the server host and connect it to the server */
+     @SideOnly(Side.CLIENT)
+     public static NetworkManager createNetworkManagerAndConnect(InetAddress address, int serverPort, boolean useNativeTransport) {
++        if (address instanceof java.net.Inet6Address) System.setProperty("java.net.preferIPv4Stack", "false");
+         final NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.CLIENTBOUND);
+         Class<? extends SocketChannel> oclass;
+         LazyLoadBase<? extends EventLoopGroup> lazyloadbase;
+@@ -390,6 +396,10 @@
+         }
+     }
+ 
++    public Channel channel() {
++        return channel;
++    }
++
+     static class InboundHandlerTuplePacketListener {
+         private final Packet<?> packet;
+         private final GenericFutureListener<? extends Future<? super Void>>[] futureListeners;

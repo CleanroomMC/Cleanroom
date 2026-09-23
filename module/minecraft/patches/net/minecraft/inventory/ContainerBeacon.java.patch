@@ -1,0 +1,25 @@
+--- original/net/minecraft/inventory/ContainerBeacon.java
++++ modified/net/minecraft/inventory/ContainerBeacon.java
+@@ -78,10 +78,8 @@
+                 }
+ 
+                 slot.onSlotChange(itemstack1, itemstack);
+-            } else if (!this.beaconSlot.getHasStack() && this.beaconSlot.isItemValid(itemstack1) && itemstack1.getCount() == 1) {
+-                if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
+-                    return ItemStack.EMPTY;
+-                }
++            } else if (this.mergeItemStack(itemstack1, 0, 1, false)) { //Forge Fix Shift Clicking in beacons with stacks larger then 1.
++                return ItemStack.EMPTY;
+             } else if (index >= 1 && index < 28) {
+                 if (!this.mergeItemStack(itemstack1, 28, 37, false)) {
+                     return ItemStack.EMPTY;
+@@ -118,8 +116,7 @@
+         /** Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel. */
+         @Override
+         public boolean isItemValid(ItemStack stack) {
+-            Item item = stack.getItem();
+-            return item == Items.EMERALD || item == Items.DIAMOND || item == Items.GOLD_INGOT || item == Items.IRON_INGOT;
++            return stack.getItem().isBeaconPayment(stack);
+         }
+ 
+         /** Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in the case of armor slots) */

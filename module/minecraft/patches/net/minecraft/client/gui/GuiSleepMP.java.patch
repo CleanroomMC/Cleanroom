@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/gui/GuiSleepMP.java
++++ modified/net/minecraft/client/gui/GuiSleepMP.java
+@@ -26,7 +26,7 @@
+         } else {
+             String s = this.inputField.getText().trim();
+             if (!s.isEmpty()) {
+-                this.mc.player.sendChatMessage(s);
++                this.sendChatMessage(s); // Forge: fix vanilla not adding messages to the sent list while sleeping
+             }
+ 
+             this.inputField.setText("");

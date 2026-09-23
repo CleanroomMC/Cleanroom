@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/projectile/EntityLargeFireball.java
++++ modified/net/minecraft/entity/projectile/EntityLargeFireball.java
+@@ -36,7 +36,7 @@
+                 this.applyEnchantments(this.shootingEntity, result.entityHit);
+             }
+ 
+-            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
++            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
+             this.world.newExplosion(null, this.posX, this.posY, this.posZ, this.explosionPower, flag, flag);
+             this.setDead();
+         }

@@ -1,0 +1,13 @@
+--- original/net/minecraft/block/BlockBed.java
++++ modified/net/minecraft/block/BlockBed.java
+@@ -88,7 +88,9 @@
+             }
+         }
+ 
+-        if (worldIn.provider.canRespawnHere() && worldIn.getBiome(pos) != Biomes.HELL) {
++        net.minecraft.world.WorldProvider.WorldSleepResult sleepResult = worldIn.provider.canSleepAt(playerIn, pos);
++        if (sleepResult != net.minecraft.world.WorldProvider.WorldSleepResult.BED_EXPLODES) {
++            if (sleepResult == net.minecraft.world.WorldProvider.WorldSleepResult.DENY) return true;
+             if (state.getValue(OCCUPIED)) {
+                 EntityPlayer entityplayer = this.getPlayerInBed(worldIn, pos);
+                 if (entityplayer != null) {

@@ -1,0 +1,332 @@
+--- original/net/minecraft/client/multiplayer/PlayerControllerMP.java
++++ modified/net/minecraft/client/multiplayer/PlayerControllerMP.java
+@@ -112,6 +112,7 @@
+ 
+             if (!this.mc.player.isAllowEdit()) {
+                 ItemStack itemstack = this.mc.player.getHeldItemMainhand();
++
+                 if (itemstack.isEmpty()) {
+                     return false;
+                 }
+@@ -122,42 +123,49 @@
+             }
+         }
+ 
+-        if (this.currentGameType.isCreative()
+-            && !this.mc.player.getHeldItemMainhand().isEmpty()
+-            && this.mc.player.getHeldItemMainhand().getItem() instanceof ItemSword) {
++        ItemStack stack = mc.player.getHeldItemMainhand();
++        if (!stack.isEmpty() && stack.getItem().onBlockStartBreak(stack, pos, mc.player)) {
+             return false;
+         }
+ 
+-        World world = this.mc.world;
+-        IBlockState iblockstate = world.getBlockState(pos);
+-        Block block = iblockstate.getBlock();
+-        if ((block instanceof BlockCommandBlock || block instanceof BlockStructure) && !this.mc.player.canUseCommandBlock()) {
++        if (this.currentGameType.isCreative() && !stack.isEmpty() && !stack.getItem().canDestroyBlockInCreative(mc.world, pos, stack, mc.player)) {
+             return false;
+-        }
++        } else {
++            World world = this.mc.world;
++            IBlockState iblockstate = world.getBlockState(pos);
++            Block block = iblockstate.getBlock();
+ 
+-        if (iblockstate.getMaterial() == Material.AIR) {
+-            return false;
+-        }
++            if ((block instanceof BlockCommandBlock || block instanceof BlockStructure) && !this.mc.player.canUseCommandBlock()) {
++                return false;
++            } else if (iblockstate.getMaterial() == Material.AIR) {
++                return false;
++            } else {
++                world.playEvent(2001, pos, Block.getStateId(iblockstate));
+ 
+-        world.playEvent(2001, pos, Block.getStateId(iblockstate));
+-        block.onBlockHarvested(world, pos, iblockstate, this.mc.player);
+-        boolean flag = world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
+-        if (flag) {
+-            block.onPlayerDestroy(world, pos, iblockstate);
+-        }
++                this.currentBlock = new BlockPos(this.currentBlock.getX(), -1, this.currentBlock.getZ());
+ 
+-        this.currentBlock = new BlockPos(this.currentBlock.getX(), -1, this.currentBlock.getZ());
+-        if (!this.currentGameType.isCreative()) {
+-            ItemStack itemstack1 = this.mc.player.getHeldItemMainhand();
+-            if (!itemstack1.isEmpty()) {
+-                itemstack1.onBlockDestroyed(world, iblockstate, pos, this.mc.player);
+-                if (itemstack1.isEmpty()) {
+-                    this.mc.player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
++                if (!this.currentGameType.isCreative()) {
++                    ItemStack itemstack1 = this.mc.player.getHeldItemMainhand();
++                    ItemStack copyBeforeUse = itemstack1.copy();
++
++                    if (!itemstack1.isEmpty()) {
++                        itemstack1.onBlockDestroyed(world, iblockstate, pos, this.mc.player);
++
++                        if (itemstack1.isEmpty()) {
++                            net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.mc.player, copyBeforeUse, EnumHand.MAIN_HAND);
++                            this.mc.player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
++                        }
++                    }
+                 }
++
++                boolean flag = block.removedByPlayer(iblockstate, world, pos, mc.player, false);
++
++                if (flag) {
++                    block.onPlayerDestroy(world, pos, iblockstate);
++                }
++                return flag;
+             }
+         }
+-
+-        return flag;
+     }
+ 
+     /** Called when the player is hitting a block with an item. */
+@@ -188,30 +196,34 @@
+                 .getTutorial()
+                 .onHitBlock(this.mc.world, loc, this.mc.world.getBlockState(loc), 1.0F);
+             this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
++            if (!net.minecraftforge.common.ForgeHooks.onLeftClickBlock(this.mc.player, loc, face, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(this.mc.player, getBlockReachDistance() + 1)).isCanceled())
+             clickBlockCreative(this.mc, this, loc, face);
+             this.blockHitDelay = 5;
+         } else if (!this.isHittingBlock || !this.isHittingPosition(loc)) {
+             if (this.isHittingBlock) {
+                 this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.currentBlock, face));
+             }
++                net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.minecraftforge.common.ForgeHooks.onLeftClickBlock(this.mc.player, loc, face, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(this.mc.player, getBlockReachDistance() + 1));
+ 
+             IBlockState iblockstate = this.mc.world.getBlockState(loc);
+             this.mc.getTutorial().onHitBlock(this.mc.world, loc, iblockstate, 0.0F);
+             this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
+             boolean flag = iblockstate.getMaterial() != Material.AIR;
+             if (flag && this.curBlockDamageMP == 0.0F) {
++                if (event.getUseBlock() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
+                 iblockstate.getBlock().onBlockClicked(this.mc.world, loc, this.mc.player);
+             }
+ 
+-            if (flag && iblockstate.getPlayerRelativeBlockHardness(this.mc.player, this.mc.player.world, loc) >= 1.0F) {
+-                this.onPlayerDestroyBlock(loc);
+-            } else {
+-                this.isHittingBlock = true;
+-                this.currentBlock = loc;
+-                this.currentItemHittingBlock = this.mc.player.getHeldItemMainhand();
+-                this.curBlockDamageMP = 0.0F;
+-                this.stepSoundTickCounter = 0.0F;
+-                this.mc
++                if (event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return true;
++                if (flag && iblockstate.getPlayerRelativeBlockHardness(this.mc.player, this.mc.player.world, loc) >= 1.0F) {
++                    this.onPlayerDestroyBlock(loc);
++                } else {
++                    this.isHittingBlock = true;
++                    this.currentBlock = loc;
++                    this.currentItemHittingBlock = this.mc.player.getHeldItemMainhand();
++                    this.curBlockDamageMP = 0.0F;
++                    this.stepSoundTickCounter = 0.0F;
++                    this.mc
+                     .world
+                     .sendBlockBreakProgress(this.mc.player.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
+             }
+@@ -264,7 +276,7 @@
+             this.curBlockDamageMP = this.curBlockDamageMP
+                 + iblockstate.getPlayerRelativeBlockHardness(this.mc.player, this.mc.player.world, posBlock);
+             if (this.stepSoundTickCounter % 4.0F == 0.0F) {
+-                SoundType soundtype = block.getSoundType();
++                SoundType soundtype = block.getSoundType(iblockstate, mc.world, posBlock, mc.player);
+                 this.mc
+                     .getSoundHandler()
+                     .playSound(
+@@ -302,7 +314,8 @@
+ 
+     /** player reach distance = 4F */
+     public float getBlockReachDistance() {
+-        return this.currentGameType.isCreative() ? 5.0F : 4.5F;
++        float attrib = (float) mc.player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
++        return this.currentGameType.isCreative() ? attrib : attrib - 0.5F;
+     }
+ 
+     public void updateController() {
+@@ -318,9 +331,7 @@
+         ItemStack itemstack = this.mc.player.getHeldItemMainhand();
+         boolean flag = this.currentItemHittingBlock.isEmpty() && itemstack.isEmpty();
+         if (!this.currentItemHittingBlock.isEmpty() && !itemstack.isEmpty()) {
+-            flag = itemstack.getItem() == this.currentItemHittingBlock.getItem()
+-                && ItemStack.areItemStackTagsEqual(itemstack, this.currentItemHittingBlock)
+-                && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.currentItemHittingBlock.getMetadata());
++            flag = !net.minecraftforge.client.ForgeHooksClient.shouldCauseBlockBreakReset(this.currentItemHittingBlock, itemstack);
+         }
+ 
+         return pos.equals(this.currentBlock) && flag;
+@@ -344,77 +355,110 @@
+         float f1 = (float)(vec.y - pos.getY());
+         float f2 = (float)(vec.z - pos.getZ());
+         boolean flag = false;
++
+         if (!this.mc.world.getWorldBorder().contains(pos)) {
+             return EnumActionResult.FAIL;
+-        }
+-
+-        if (this.currentGameType != GameType.SPECTATOR) {
+-            IBlockState iblockstate = worldIn.getBlockState(pos);
+-            if ((!player.isSneaking() || player.getHeldItemMainhand().isEmpty() && player.getHeldItemOffhand().isEmpty())
+-                && iblockstate.getBlock().onBlockActivated(worldIn, pos, iblockstate, player, hand, direction, f, f1, f2)) {
+-                flag = true;
++        } else {
++            net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks
++                    .onRightClickBlock(player, hand, pos, direction, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, getBlockReachDistance() + 1));
++            if (event.isCanceled()) {
++                // Give the server a chance to fire event as well. That way server event is not dependant on client event.
++                this.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f1, f2));
++                return event.getCancellationResult();
+             }
++            EnumActionResult result = EnumActionResult.PASS;
+ 
+-            if (!flag && itemstack.getItem() instanceof ItemBlock) {
+-                ItemBlock itemblock = (ItemBlock)itemstack.getItem();
+-                if (!itemblock.canPlaceBlockOnSide(worldIn, pos, direction, player, itemstack)) {
+-                    return EnumActionResult.FAIL;
++            if (this.currentGameType != GameType.SPECTATOR) {
++                EnumActionResult ret = itemstack.onItemUseFirst(player, worldIn, pos, hand, direction, f, f1, f2);
++                if (ret != EnumActionResult.PASS) {
++                    // The server needs to process the item use as well. Otherwise onItemUseFirst won't ever be called on the server without causing weird bugs
++                    this.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f1, f2));
++                    return ret;
+                 }
++
++                IBlockState iblockstate = worldIn.getBlockState(pos);
++                boolean bypass = player.getHeldItemMainhand().doesSneakBypassUse(worldIn, pos, player) && player.getHeldItemOffhand().doesSneakBypassUse(worldIn, pos, player);
++
++                if ((!player.isSneaking() || bypass || event.getUseBlock() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)) {
++                    if (event.getUseBlock() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
++                    flag = iblockstate.getBlock().onBlockActivated(worldIn, pos, iblockstate, player, hand, direction, f, f1, f2);
++                    if (flag) result = EnumActionResult.SUCCESS;
++                }
++
++                if (!flag && itemstack.getItem() instanceof ItemBlock) {
++                    ItemBlock itemblock = (ItemBlock)itemstack.getItem();
++
++                    if (!itemblock.canPlaceBlockOnSide(worldIn, pos, direction, player, itemstack)) {
++                        return EnumActionResult.FAIL;
++                    }
++                }
+             }
+-        }
+ 
+-        this.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f1, f2));
+-        if (flag || this.currentGameType == GameType.SPECTATOR) {
+-            return EnumActionResult.SUCCESS;
+-        }
++            this.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f1, f2));
+ 
+-        if (itemstack.isEmpty()) {
+-            return EnumActionResult.PASS;
+-        }
++            if ((flag || this.currentGameType == GameType.SPECTATOR) && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
++                return EnumActionResult.SUCCESS;
++            } else if (itemstack.isEmpty()) {
++                return EnumActionResult.PASS;
++            } else if (player.getCooldownTracker().hasCooldown(itemstack.getItem())) {
++                return EnumActionResult.PASS;
++            } else {
++                if (itemstack.getItem() instanceof ItemBlock && !player.canUseCommandBlock()) {
++                    Block block = ((ItemBlock)itemstack.getItem()).getBlock();
+ 
+-        if (player.getCooldownTracker().hasCooldown(itemstack.getItem())) {
+-            return EnumActionResult.PASS;
+-        }
++                    if (block instanceof BlockCommandBlock || block instanceof BlockStructure) {
++                        return EnumActionResult.FAIL;
++                    }
++                }
+ 
+-        if (itemstack.getItem() instanceof ItemBlock && !player.canUseCommandBlock()) {
+-            Block block = ((ItemBlock)itemstack.getItem()).getBlock();
+-            if (block instanceof BlockCommandBlock || block instanceof BlockStructure) {
+-                return EnumActionResult.FAIL;
++                if (this.currentGameType.isCreative()) {
++                    int i = itemstack.getMetadata();
++                    int j = itemstack.getCount();
++                    if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) {
++                    EnumActionResult enumactionresult = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
++                    itemstack.setItemDamage(i);
++                    itemstack.setCount(j);
++                    return enumactionresult;
++                    } else return result;
++                } else {
++                    ItemStack copyForUse = itemstack.copy();
++                    if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
++                        result = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
++                    if (itemstack.isEmpty())
++                        net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyForUse, hand);
++                    return result;
++                }
+             }
+         }
+-
+-        if (this.currentGameType.isCreative()) {
+-            int i = itemstack.getMetadata();
+-            int j = itemstack.getCount();
+-            EnumActionResult enumactionresult = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
+-            itemstack.setItemDamage(i);
+-            itemstack.setCount(j);
+-            return enumactionresult;
+-        } else {
+-            return itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
+-        }
+     }
+ 
+     public EnumActionResult processRightClick(EntityPlayer player, World worldIn, EnumHand hand) {
+         if (this.currentGameType == GameType.SPECTATOR) {
+             return EnumActionResult.PASS;
+-        }
++        } else {
++            this.syncCurrentPlayItem();
++            this.connection.sendPacket(new CPacketPlayerTryUseItem(hand));
++            ItemStack itemstack = player.getHeldItem(hand);
+ 
+-        this.syncCurrentPlayItem();
+-        this.connection.sendPacket(new CPacketPlayerTryUseItem(hand));
+-        ItemStack itemstack = player.getHeldItem(hand);
+-        if (player.getCooldownTracker().hasCooldown(itemstack.getItem())) {
+-            return EnumActionResult.PASS;
+-        }
++            if (player.getCooldownTracker().hasCooldown(itemstack.getItem())) {
++                return EnumActionResult.PASS;
++            } else {
++                EnumActionResult cancelResult = net.minecraftforge.common.ForgeHooks.onItemRightClick(player, hand);
++                if (cancelResult != null) return cancelResult;
++                int i = itemstack.getCount();
++                ActionResult<ItemStack> actionresult = itemstack.useItemRightClick(worldIn, player, hand);
++                ItemStack itemstack1 = actionresult.getResult();
+ 
+-        int i = itemstack.getCount();
+-        ActionResult<ItemStack> actionresult = itemstack.useItemRightClick(worldIn, player, hand);
+-        ItemStack itemstack1 = actionresult.getResult();
+-        if (itemstack1 != itemstack || itemstack1.getCount() != i) {
+-            player.setHeldItem(hand, itemstack1);
+-        }
++                if (itemstack1 != itemstack || itemstack1.getCount() != i) {
++                    player.setHeldItem(hand, itemstack1);
++                    if (itemstack1.isEmpty()) {
++                        net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, itemstack, hand);
++                    }
++                }
+ 
+-        return actionresult.getType();
++                return actionresult.getType();
++            }
++        }
+     }
+ 
+     public EntityPlayerSP createPlayer(World p_192830_1_, StatisticsManager p_192830_2_, RecipeBook p_192830_3_) {
+@@ -447,6 +491,9 @@
+             ray.hitVec.z - target.posZ
+         );
+         this.connection.sendPacket(new CPacketUseEntity(target, hand, vec3d));
++        if (this.currentGameType == GameType.SPECTATOR) return EnumActionResult.PASS; // don't fire for spectators to match non-specific EntityInteract
++        EnumActionResult cancelResult = net.minecraftforge.common.ForgeHooks.onInteractEntityAt(player, target, ray, hand);
++        if(cancelResult != null) return cancelResult;
+         return this.currentGameType == GameType.SPECTATOR ? EnumActionResult.PASS : target.applyPlayerInteraction(player, vec3d, hand);
+     }
+ 

@@ -1,0 +1,20 @@
+--- original/net/minecraft/client/gui/inventory/GuiEditSign.java
++++ modified/net/minecraft/client/gui/inventory/GuiEditSign.java
+@@ -12,6 +12,7 @@
+ import net.minecraft.network.play.client.CPacketUpdateSign;
+ import net.minecraft.tileentity.TileEntitySign;
+ import net.minecraft.util.ChatAllowedCharacters;
++import net.minecraft.util.text.ITextComponent;
+ import net.minecraft.util.text.TextComponentString;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+@@ -135,7 +136,9 @@
+             this.tileSign.lineBeingEdited = this.editLine;
+         }
+ 
++        ITextComponent line = com.cleanroommc.client.sdl.SDLHooks.lendComposition(this.tileSign, this.editLine);
+         TileEntityRendererDispatcher.instance.render(this.tileSign, -0.5, -0.75, -0.5, 0.0F);
++        com.cleanroommc.client.sdl.SDLHooks.takeComposition(this.tileSign, this.editLine, line);
+         this.tileSign.lineBeingEdited = -1;
+         GlStateManager.popMatrix();
+         super.drawScreen(mouseX, mouseY, partialTicks);

@@ -1,0 +1,43 @@
+--- original/net/minecraft/client/resources/SimpleReloadableResourceManager.java
++++ modified/net/minecraft/client/resources/SimpleReloadableResourceManager.java
+@@ -79,6 +79,7 @@
+     /** Releases all current resource packs, loads the given list, then triggers all listeners */
+     @Override
+     public void reloadResources(List<IResourcePack> resourcesPacksList) {
++        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resources", resourcesPacksList.size()+1, true);
+         this.clearResources();
+         LOGGER.info("Reloading ResourceManager: {}", JOINER_RESOURCE_PACKS.join(Iterables.transform(resourcesPacksList, new Function<IResourcePack, String>() {
+             public String apply(@Nullable IResourcePack p_apply_1_) {
+@@ -87,22 +88,32 @@
+         })));
+ 
+         for (IResourcePack iresourcepack : resourcesPacksList) {
++            resReload.step(iresourcepack.getPackName());
+             this.reloadResourcePack(iresourcepack);
+         }
+ 
++        resReload.step("Reloading listeners");
+         this.notifyReloadListeners();
++        net.minecraftforge.fml.common.ProgressManager.pop(resReload);
+     }
+ 
+     /** Registers a listener to be invoked every time the resource manager reloads. NOTE: The listener is immediately invoked once when it is registered. */
+     @Override
+     public void registerReloadListener(IResourceManagerReloadListener reloadListener) {
++        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resource", 1);
++        resReload.step(reloadListener.getClass());
+         this.reloadListeners.add(reloadListener);
+         reloadListener.onResourceManagerReload(this);
++        net.minecraftforge.fml.common.ProgressManager.pop(resReload);
+     }
+ 
+     private void notifyReloadListeners() {
++        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Reloading", this.reloadListeners.size());
+         for (IResourceManagerReloadListener iresourcemanagerreloadlistener : this.reloadListeners) {
++            resReload.step(iresourcemanagerreloadlistener.getClass());
++            if (!net.minecraftforge.client.ForgeHooksClient.shouldUseVanillaReloadableListener(iresourcemanagerreloadlistener)) continue; // Forge: Selective reloading for vanilla listeners
+             iresourcemanagerreloadlistener.onResourceManagerReload(this);
+         }
++        net.minecraftforge.fml.common.ProgressManager.pop(resReload);
+     }
+ }

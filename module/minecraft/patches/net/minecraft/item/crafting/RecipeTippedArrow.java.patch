@@ -1,0 +1,20 @@
+--- original/net/minecraft/item/crafting/RecipeTippedArrow.java
++++ modified/net/minecraft/item/crafting/RecipeTippedArrow.java
+@@ -8,8 +8,7 @@
+ import net.minecraft.util.NonNullList;
+ import net.minecraft.world.World;
+ 
+-public class RecipeTippedArrow implements IRecipe {
+-    /** Used to check if a recipe matches current crafting inventory */
++public class RecipeTippedArrow extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+     @Override
+     public boolean matches(InventoryCrafting inv, World worldIn) {
+         if (inv.getWidth() == 3 && inv.getHeight() == 3) {
+@@ -68,7 +67,6 @@
+         return true;
+     }
+ 
+-    /** Used to determine if this recipe can fit in a grid of the given width/height */
+     @Override
+     public boolean canFit(int width, int height) {
+         return width >= 2 && height >= 2;

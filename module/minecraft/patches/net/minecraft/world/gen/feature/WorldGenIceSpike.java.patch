@@ -1,0 +1,29 @@
+--- original/net/minecraft/world/gen/feature/WorldGenIceSpike.java
++++ modified/net/minecraft/world/gen/feature/WorldGenIceSpike.java
+@@ -40,7 +40,7 @@
+                         && (i1 != -l && i1 != l && j1 != -l && j1 != l || !(rand.nextFloat() > 0.75F))) {
+                         IBlockState iblockstate = worldIn.getBlockState(position.add(i1, k, j1));
+                         Block block = iblockstate.getBlock();
+-                        if (iblockstate.getMaterial() == Material.AIR
++                        if (iblockstate.getBlock().isAir(iblockstate, worldIn, position.add(i1, k, j1))
+                             || block == Blocks.DIRT
+                             || block == Blocks.SNOW
+                             || block == Blocks.ICE) {
+@@ -50,7 +50,7 @@
+                         if (k != 0 && l > 1) {
+                             iblockstate = worldIn.getBlockState(position.add(i1, -k, j1));
+                             block = iblockstate.getBlock();
+-                            if (iblockstate.getMaterial() == Material.AIR
++                            if (iblockstate.getBlock().isAir(iblockstate, worldIn, position.add(i1, -k, j1))
+                                 || block == Blocks.DIRT
+                                 || block == Blocks.SNOW
+                                 || block == Blocks.ICE) {
+@@ -80,7 +80,7 @@
+                 while (blockpos.getY() > 50) {
+                     IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
+                     Block block1 = iblockstate1.getBlock();
+-                    if (iblockstate1.getMaterial() != Material.AIR
++                    if (!iblockstate1.getBlock().isAir(iblockstate1, worldIn, blockpos)
+                         && block1 != Blocks.DIRT
+                         && block1 != Blocks.SNOW
+                         && block1 != Blocks.ICE

@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/renderer/entity/RenderZombieVillager.java
++++ modified/net/minecraft/client/renderer/entity/RenderZombieVillager.java
+@@ -23,6 +23,7 @@
+ 
+     /** Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture. */
+     protected ResourceLocation getEntityTexture(EntityZombieVillager entity) {
++        if (true) return entity.getForgeProfession().getZombieSkin();
+         switch (entity.getProfession()) {
+             case 0:
+                 return ZOMBIE_VILLAGER_FARMER_LOCATION;

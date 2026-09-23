@@ -1,10 +1,15 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'CleanroomMC'
+            url = 'https://maven.cleanroommc.com'
+        }
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id 'com.cleanroommc.cleanroomgradle.settings' version '0.17.1'
+}
+
 rootProject.name = 'Cleanroom'
-
-include ':mcp'
-include ':minecraft'
-include ':cleanroom'
-
-project(":mcp").projectDir = file("projects/mcp")
-project(":minecraft").projectDir = file("projects/minecraft")
-project(":cleanroom").projectDir = file("projects/cleanroom")
-

@@ -1,0 +1,29 @@
+--- original/net/minecraft/server/network/NetHandlerLoginServer.java
++++ modified/net/minecraft/server/network/NetHandlerLoginServer.java
+@@ -64,7 +64,7 @@
+             EntityPlayerMP entityplayermp = this.server.getPlayerList().getPlayerByUUID(this.loginGameProfile.getId());
+             if (entityplayermp == null) {
+                 this.currentLoginState = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
+-                this.server.getPlayerList().initializeConnectionToPlayer(this.networkManager, this.player);
++                net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.fmlServerHandshake(this.server.getPlayerList(), this.networkManager, this.player);
+                 this.player = null;
+             }
+         }
+@@ -108,7 +108,7 @@
+                 this.currentLoginState = NetHandlerLoginServer.LoginState.DELAY_ACCEPT;
+                 this.player = this.server.getPlayerList().createPlayerForUser(this.loginGameProfile);
+             } else {
+-                this.server.getPlayerList().initializeConnectionToPlayer(this.networkManager, this.server.getPlayerList().createPlayerForUser(this.loginGameProfile));
++                net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.fmlServerHandshake(this.server.getPlayerList(), this.networkManager, this.server.getPlayerList().createPlayerForUser(this.loginGameProfile));
+             }
+         }
+     }
+@@ -148,7 +148,7 @@
+         this.secretKey = packetIn.getSecretKey(privatekey);
+         this.currentLoginState = NetHandlerLoginServer.LoginState.AUTHENTICATING;
+         this.networkManager.enableEncryption(this.secretKey);
+-        (new Thread("User Authenticator #" + AUTHENTICATOR_THREAD_ID.incrementAndGet()) {
++        (new Thread(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER, "User Authenticator #" + AUTHENTICATOR_THREAD_ID.incrementAndGet()) {
+                 @Override
+                 public void run() {
+                     GameProfile gameprofile = NetHandlerLoginServer.this.loginGameProfile;

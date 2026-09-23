@@ -1,0 +1,78 @@
+--- original/net/minecraft/entity/item/EntityBoat.java
++++ modified/net/minecraft/entity/item/EntityBoat.java
+@@ -413,6 +413,11 @@
+                     for (int i2 = i1; i2 < j1; i2++) {
+                         blockpos$pooledmutableblockpos.setPos(l1, k1, i2);
+                         IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
++                        Boolean result = iblockstate.getBlock().isAABBInsideMaterial(world, blockpos$pooledmutableblockpos, new AxisAlignedBB(blockpos$pooledmutableblockpos), Material.WATER);
++                        if (result != null) {
++                            if (!result) continue;
++                            f = Math.max(f, iblockstate.getBlock().getBlockLiquidHeight(world, blockpos$pooledmutableblockpos, iblockstate, Material.WATER) + blockpos$pooledmutableblockpos.getY());
++                        }
+                         if (iblockstate.getMaterial() == Material.WATER) {
+                             f = Math.max(f, BlockLiquid.getBlockLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos));
+                         }
+@@ -467,7 +472,7 @@
+                                 IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
+                                 iblockstate.addCollisionBoxToList(this.world, blockpos$pooledmutableblockpos, axisalignedbb1, list, this, false);
+                                 if (!list.isEmpty()) {
+-                                    f += iblockstate.getBlock().slipperiness;
++                                    f += iblockstate.getBlock().getSlipperiness(iblockstate, this.world, blockpos$pooledmutableblockpos, this);
+                                     k1++;
+                                 }
+ 
+@@ -502,6 +507,14 @@
+                     for (int i2 = i1; i2 < j1; i2++) {
+                         blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
+                         IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
++                        Boolean result = iblockstate.getBlock().isAABBInsideMaterial(world, blockpos$pooledmutableblockpos, axisalignedbb, Material.WATER);
++                        if (result != null) {
++                            if (!result) continue;
++
++                            float f = iblockstate.getBlock().getBlockLiquidHeight(world, blockpos$pooledmutableblockpos, iblockstate, Material.WATER) + blockpos$pooledmutableblockpos.getY();
++                            this.waterLevel = Math.max(f, this.waterLevel);
++                            flag |= axisalignedbb.minY < (double)f;
++                        }
+                         if (iblockstate.getMaterial() == Material.WATER) {
+                             float f = BlockLiquid.getLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos);
+                             this.waterLevel = Math.max(f, this.waterLevel);
+@@ -537,6 +550,17 @@
+                     for (int i2 = i1; i2 < j1; i2++) {
+                         blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
+                         IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
++                        Boolean result = iblockstate.getBlock().isAABBInsideMaterial(world, blockpos$pooledmutableblockpos, axisalignedbb, Material.WATER);
++                        if (result != null) {
++                            if (!result) continue;
++
++                            if(iblockstate.getBlock().getBlockLiquidHeight(world, blockpos$pooledmutableblockpos, iblockstate, Material.WATER) > 0)
++                            {
++                                blockpos$pooledmutableblockpos.release();
++                                return EntityBoat.Status.UNDER_FLOWING_WATER;
++                            } else
++                                continue;
++                        }
+                         if (iblockstate.getMaterial() == Material.WATER
+                             && d0 < BlockLiquid.getLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos)) {
+                             if (iblockstate.getValue(BlockLiquid.LEVEL) != 0) {
+@@ -803,6 +827,21 @@
+         this.forwardInputDown = p_184442_3_;
+         this.backInputDown = p_184442_4_;
+     }
++    // Forge: Fix MC-119811 by instantly completing lerp on board
++    @Override
++    protected void addPassenger(Entity passenger)
++    {
++        super.addPassenger(passenger);
++        if(this.canPassengerSteer() && this.lerpSteps > 0)
++        {
++            this.lerpSteps = 0;
++            this.posX = this.lerpX;
++            this.posY = this.lerpY;
++            this.posZ = this.lerpZ;
++            this.rotationYaw = (float)this.lerpYaw;
++            this.rotationPitch = (float)this.lerpPitch;
++        }
++    }
+ 
+     public enum Status {
+         IN_WATER,

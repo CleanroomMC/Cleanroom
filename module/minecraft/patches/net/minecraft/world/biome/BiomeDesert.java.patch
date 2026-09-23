@@ -1,0 +1,19 @@
+--- original/net/minecraft/world/biome/BiomeDesert.java
++++ modified/net/minecraft/world/biome/BiomeDesert.java
+@@ -41,6 +41,8 @@
+     @Override
+     public void decorate(World worldIn, Random rand, BlockPos pos) {
+         super.decorate(worldIn, rand, pos);
++
++        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.DESERT_WELL))
+         if (rand.nextInt(1000) == 0) {
+             int i = rand.nextInt(16) + 8;
+             int j = rand.nextInt(16) + 8;
+@@ -48,6 +50,7 @@
+             new WorldGenDesertWells().generate(worldIn, rand, blockpos);
+         }
+ 
++        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
+         if (rand.nextInt(64) == 0) {
+             new WorldGenFossils().generate(worldIn, rand, pos);
+         }

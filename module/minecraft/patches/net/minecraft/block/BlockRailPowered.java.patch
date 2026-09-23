@@ -1,0 +1,28 @@
+--- original/net/minecraft/block/BlockRailPowered.java
++++ modified/net/minecraft/block/BlockRailPowered.java
+@@ -27,8 +27,15 @@
+     );
+     public static final PropertyBool POWERED = PropertyBool.create("powered");
+ 
++    private final boolean isActivator;
++
+     protected BlockRailPowered() {
++        this(false);
++    }
++
++    protected BlockRailPowered(boolean isActivator) {
+         super(true);
++        this.isActivator = isActivator;
+         this.setDefaultState(
+             this.blockState.getBaseState().withProperty(SHAPE, BlockRailBase.EnumRailDirection.NORTH_SOUTH).withProperty(POWERED, false)
+         );
+@@ -111,7 +118,8 @@
+ 
+     protected boolean isSameRailWithPower(World worldIn, BlockPos pos, boolean p_176567_3_, int distance, BlockRailBase.EnumRailDirection p_176567_5_) {
+         IBlockState iblockstate = worldIn.getBlockState(pos);
+-        if (iblockstate.getBlock() != this) {
++
++        if (!(iblockstate.getBlock() instanceof BlockRailPowered) || isActivator != ((BlockRailPowered)iblockstate.getBlock()).isActivator) {
+             return false;
+         }
+ 

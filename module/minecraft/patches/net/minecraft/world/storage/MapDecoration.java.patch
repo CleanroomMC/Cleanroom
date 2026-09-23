@@ -1,0 +1,19 @@
+--- original/net/minecraft/world/storage/MapDecoration.java
++++ modified/net/minecraft/world/storage/MapDecoration.java
+@@ -67,6 +67,16 @@
+         i = 31 * i + this.y;
+         return 31 * i + this.rotation;
+     }
++    /**
++     * Renders this decoration, useful for custom sprite sheets.
++     * @param index The index of this icon in the MapData's list. Used by vanilla to offset the Z-coordinate to prevent Z-fighting
++     * @return false to run vanilla logic for this decoration, true to skip it
++     */
++    @SideOnly(Side.CLIENT)
++    public boolean render(int index)
++    {
++        return false;
++    }
+ 
+     public enum Type {
+         PLAYER(false),

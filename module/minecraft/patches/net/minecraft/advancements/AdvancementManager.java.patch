@@ -1,0 +1,10 @@
+--- original/net/minecraft/advancements/AdvancementManager.java
++++ modified/net/minecraft/advancements/AdvancementManager.java
+@@ -69,6 +69,7 @@
+         ADVANCEMENT_LIST.clear();
+         Map<ResourceLocation, Advancement.Builder> map = this.loadCustomAdvancements();
+         this.loadBuiltInAdvancements(map);
++        this.hasErrored |= net.minecraftforge.common.ForgeHooks.loadAdvancements(map);
+         ADVANCEMENT_LIST.loadAdvancements(map);
+ 
+         for (Advancement advancement : ADVANCEMENT_LIST.getRoots()) {

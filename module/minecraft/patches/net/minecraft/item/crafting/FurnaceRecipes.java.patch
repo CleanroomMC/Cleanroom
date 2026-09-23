@@ -1,0 +1,20 @@
+--- original/net/minecraft/item/crafting/FurnaceRecipes.java
++++ modified/net/minecraft/item/crafting/FurnaceRecipes.java
+@@ -119,6 +119,7 @@
+ 
+     /** Adds a smelting recipe using an ItemStack as the input for the recipe. */
+     public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience) {
++        if (getSmeltingResult(input) != ItemStack.EMPTY) { net.minecraftforge.fml.common.FMLLog.log.info("Ignored smelting recipe with conflicting input: {} = {}", input, stack); return; }
+         this.smeltingList.put(input, stack);
+         this.experienceList.put(stack, experience);
+     }
+@@ -145,6 +146,9 @@
+     }
+ 
+     public float getSmeltingExperience(ItemStack stack) {
++        float ret = stack.getItem().getSmeltingExperience(stack);
++        if (ret != -1) return ret;
++
+         for (Entry<ItemStack, Float> entry : this.experienceList.entrySet()) {
+             if (this.compareItemStacks(stack, entry.getKey())) {
+                 return entry.getValue();
