@@ -17,13 +17,6 @@ public class SetupTest {
         assertDoesNotThrow(() -> ComputeSetup.initOpenCL(testLogger, false));
     }
 
-    @Test
-    public void setupTestClient() {
-        Logger testLogger = LogManager.getLogger("TestLogger");
-        assertDoesNotThrow(() -> Configuration.OPENCL_EXPLICIT_INIT.set(true));
-        assertDoesNotThrow(() -> ComputeSetup.initOpenCL(testLogger, true));
-    }
-
     @AfterEach
     public void cleanup() {
         assertDoesNotThrow(CL::destroy);

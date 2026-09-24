@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
@@ -24,6 +25,7 @@ import java.nio.ByteBuffer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(OpenCLTest.class)
 public class KernelTest {
 
     private static CommandQueue queue;
@@ -31,15 +33,6 @@ public class KernelTest {
 
     @BeforeAll
     public static void setup() throws Exception {
-        Loader.instance();
-        Bootstrap.register();
-        Logger testLogger = LogManager.getLogger("TestLogger");
-        Configuration.OPENCL_EXPLICIT_INIT.set(true);
-        ComputeSetup.initOpenCL(testLogger, false);
-        Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
-        {{
-            modId = "accelerate";
-        }}));
         queue = Compute.instance().queueDispatch.dispatch("queue");
         Compute.instance().registerProgram(new ResourceLocation("forge", "program"));
         Compute.instance().compilePrograms();

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.lwjgl.system.Configuration;
 
 import java.util.Set;
@@ -20,21 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(OpenCLTest.class)
 public class ComputeAPITest {
-
-    @BeforeAll
-    public static void setup() throws Exception {
-        Loader.instance();
-        Bootstrap.register();
-        Logger testLogger = LogManager.getLogger("TestLogger");
-        Configuration.OPENCL_EXPLICIT_INIT.set(true);
-        ComputeSetup.initOpenCL(testLogger, false);
-        Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
-        {{
-            modId = "accelerate";
-        }}));
-    }
-
     @Test
     public void headerGetTest() {
         final String good = """
