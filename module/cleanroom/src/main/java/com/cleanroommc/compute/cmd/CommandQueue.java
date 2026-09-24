@@ -28,6 +28,18 @@ import java.util.Set;
  */
 public class CommandQueue extends SmartPointer {
 
+    /** Converts dependency events to the native event wait list. */
+    public static long[] eventIDs(Event... dependencies) {
+        Preconditions.checkNotNull(dependencies);
+        long[] ids = new long[dependencies.length];
+        for (int i = 0; i < dependencies.length; i++) {
+            Event dependency = Preconditions.checkNotNull(dependencies[i]);
+            Preconditions.checkState(!dependency.isClosed(), "Dependency event has already been closed.");
+            ids[i] = dependency.eventID;
+        }
+        return ids;
+    }
+
     public final long commandQueue;
     private final long device;
 
@@ -39,17 +51,17 @@ public class CommandQueue extends SmartPointer {
      * the properties of the command queue are invalid or unsupported by the device.
      * @throws UnavaliableDeviceError If the device is not available for the context.
      * @throws OutOfMemoryError If there are not enough resources available to create the command queue.
-     * @see CommandQueueDispatch#dispatch(String) 
-     * @see CommandQueueDispatch#dispatch(String, boolean, boolean, boolean) 
+     * @see CommandQueueDispatch#dispatch(String)
+     * @see CommandQueueDispatch#dispatch(String, boolean, boolean, boolean)
      */
     CommandQueue(long device) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         super();
         int[] err = new int[1];
         commandQueue = CL20.clCreateCommandQueueWithProperties(
-                Compute.instance().context,
-                device,
-                null,
-                err
+            Compute.instance().context,
+            device,
+            null,
+            err
         );
         this.device = device;
         switch (err[0]) {
@@ -72,13 +84,13 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], long...)
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], Event...)
      */
     public Event dispatchKernel(Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
                                 final long @NonNull [] workGroupSizes,
-                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
+                                final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
         MemoryStack stack = MemoryStack.create().push();
@@ -102,13 +114,13 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], long...)
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], Event...)
      */
     public Event dispatchKernel(@NonNull MemoryStack stack, Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
                                 final long @NonNull [] workGroupSizes,
-                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
+                                final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
@@ -127,11 +139,11 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long...)
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, Event...)
      */
     public Event dispatchKernel(@NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
-                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
+                                final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);
         MemoryStack stack = MemoryStack.create().push();
         try {
@@ -155,11 +167,11 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies What does this kernel depend on?
      * @return The chain
      * @author EΣrie
-     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long...)
+     * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, Event...)
      */
     public Event dispatchKernel(@NonNull MemoryStack stack, @NonNull Kernel kernel,
                                 final @NonNull KernelParameterList arguments,
-                                final long... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
+                                final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(arguments);
         try {
@@ -185,7 +197,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, float[], long, boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -200,7 +212,7 @@ public class CommandQueue extends SmartPointer {
                              final float @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -220,7 +232,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, float[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -235,7 +247,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final float @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -255,7 +267,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, float[], boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -269,7 +281,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -288,7 +300,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, float[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -302,7 +314,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -322,7 +334,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, float[], long, boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -337,7 +349,7 @@ public class CommandQueue extends SmartPointer {
                              final float @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -358,7 +370,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, float[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -374,7 +386,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final float @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -395,7 +407,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, float[], boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -409,7 +421,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -429,7 +441,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, float[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -443,7 +455,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final float @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -469,7 +481,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, double[], long, boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -484,7 +496,7 @@ public class CommandQueue extends SmartPointer {
                              final double @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -504,7 +516,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, double[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -520,7 +532,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final double @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -540,7 +552,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, double[], boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -554,7 +566,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -573,7 +585,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, double[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -587,7 +599,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -607,7 +619,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, double[], long, boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -622,7 +634,7 @@ public class CommandQueue extends SmartPointer {
                              final double @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -643,7 +655,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, double[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -659,7 +671,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final double @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -680,7 +692,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, double[], boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -694,7 +706,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -714,7 +726,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, double[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -728,7 +740,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final double @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -755,7 +767,7 @@ public class CommandQueue extends SmartPointer {
      * @param events What this operation depends on.
      * @param <B> Type of buffer
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, long, boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -767,12 +779,12 @@ public class CommandQueue extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            @NonNull B data,
-            long offset,
-            boolean blocking,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        @NonNull B data,
+        long offset,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
@@ -781,11 +793,11 @@ public class CommandQueue extends SmartPointer {
             Preconditions.checkNotNull(buffer);
 
             return createWriteEvent(
-                    buffer.write(stack, this, data, blocking, offset, events),
-                    stack,
-                    buffer,
-                    blocking,
-                    null
+                buffer.write(stack, this, data, blocking, offset, events),
+                stack,
+                buffer,
+                blocking,
+                null
             );
         } finally {
             writeLock.unlock();
@@ -801,7 +813,7 @@ public class CommandQueue extends SmartPointer {
      * @param events What this operation depends on.
      * @param <B> Type of buffer
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, java.nio.Buffer, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -815,11 +827,11 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This is always a blocking write.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            long offset,
-            @NonNull B data,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        long offset,
+        @NonNull B data,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(stack, buffer, data, offset, true, events);
     }
@@ -833,7 +845,7 @@ public class CommandQueue extends SmartPointer {
      * @param events What this operation depends on.
      * @param <B> Type of buffer
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -846,11 +858,11 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This always writes at offset 0.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            @NonNull B data,
-            boolean blocking,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        @NonNull B data,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(stack, buffer, data, 0, blocking, events);
     }
@@ -863,7 +875,7 @@ public class CommandQueue extends SmartPointer {
      * @param events What this operation depends on.
      * @param <B> Type of buffer
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -876,10 +888,10 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            @NonNull B data,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        @NonNull B data,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(stack, buffer, data, 0, true, events);
     }
@@ -893,7 +905,7 @@ public class CommandQueue extends SmartPointer {
      * @param events What this operation depends on.
      * @param <B> Type of buffer
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, long, boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -905,11 +917,11 @@ public class CommandQueue extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull Buffer buffer,
-            @NonNull B data,
-            long offset,
-            boolean blocking,
-            long... events
+        @NonNull Buffer buffer,
+        @NonNull B data,
+        long offset,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -918,12 +930,12 @@ public class CommandQueue extends SmartPointer {
 
         try {
             Event event = bufferWrite(
-                    stack,
-                    buffer,
-                    data,
-                    offset,
-                    blocking,
-                    events
+                stack,
+                buffer,
+                data,
+                offset,
+                blocking,
+                events
             );
 
             event.ownsStack = true;
@@ -941,7 +953,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, java.nio.Buffer, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -955,10 +967,10 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This is always a blocking write.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull Buffer buffer,
-            long offset,
-            @NonNull B data,
-            long... events
+        @NonNull Buffer buffer,
+        long offset,
+        @NonNull B data,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(buffer, data, offset, true, events);
     }
@@ -971,7 +983,7 @@ public class CommandQueue extends SmartPointer {
      * @param events What this operation depends on.
      * @param <B> Type of Buffer
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -984,10 +996,10 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This always writes at offset 0.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull Buffer buffer,
-            @NonNull B data,
-            boolean blocking,
-            long... events
+        @NonNull Buffer buffer,
+        @NonNull B data,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(buffer, data, 0, blocking, events);
     }
@@ -999,7 +1011,7 @@ public class CommandQueue extends SmartPointer {
      * @param events What this operation depends on.
      * @param <B> Type of Buffer
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, java.nio.Buffer, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1012,9 +1024,9 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event bufferWrite(
-            @NonNull Buffer buffer,
-            @NonNull B data,
-            long... events
+        @NonNull Buffer buffer,
+        @NonNull B data,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferWrite(buffer, data, 0, true, events);
     }
@@ -1030,7 +1042,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, short[], long, boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1045,7 +1057,7 @@ public class CommandQueue extends SmartPointer {
                              final short @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1065,7 +1077,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, short[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1081,7 +1093,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final short @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1101,7 +1113,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, short[], boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1115,7 +1127,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1134,7 +1146,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, short[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1148,7 +1160,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1168,7 +1180,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, short[], long, boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1183,7 +1195,7 @@ public class CommandQueue extends SmartPointer {
                              final short @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1204,7 +1216,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, short[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1220,7 +1232,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final short @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1241,7 +1253,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, short[], boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1255,7 +1267,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1275,7 +1287,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, short[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1289,7 +1301,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final short @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1315,7 +1327,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, int[], long, boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1330,7 +1342,7 @@ public class CommandQueue extends SmartPointer {
                              final int @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1350,7 +1362,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, int[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1366,7 +1378,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final long offset,
                              final int @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1386,7 +1398,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, int[], boolean, Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1400,7 +1412,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1419,7 +1431,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, int[], Event...)
      * @throws NullPointerException If stack or data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1433,7 +1445,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1453,7 +1465,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, int[], long, boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1468,7 +1480,7 @@ public class CommandQueue extends SmartPointer {
                              final int @NonNull [] data,
                              final long offset,
                              final boolean blocking,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1489,7 +1501,7 @@ public class CommandQueue extends SmartPointer {
      * @param offset Where to start the writing.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, long, int[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1505,7 +1517,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferWrite(@NonNull Buffer buffer,
                              final long offset,
                              final int @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1526,7 +1538,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Is this a blocking operation?
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, int[], boolean, Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1540,7 +1552,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final boolean blocking, final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1560,7 +1572,7 @@ public class CommandQueue extends SmartPointer {
      * @param data Data to write to the buffer.
      * @param events What this operation depends on.
      * @return Event of the write operation.
-     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#write(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#write(Buffer, int[], Event...)
      * @throws NullPointerException If data is null.
      * @throws IllegalArgumentException If data is empty, an attempt to write data beyond the buffer's end is made,
@@ -1574,7 +1586,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferWrite(@NonNull Buffer buffer,
                              final int @NonNull [] data,
-                             final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
         MemoryStack stack = MemoryStack.create().push();
@@ -1605,7 +1617,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, float[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1618,7 +1630,7 @@ public class CommandQueue extends SmartPointer {
                             float @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1638,7 +1650,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, float[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1651,7 +1663,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             float @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1671,7 +1683,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, float[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1684,7 +1696,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             float @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1703,7 +1715,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, float[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1716,7 +1728,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             float @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1736,7 +1748,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, float[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1749,7 +1761,7 @@ public class CommandQueue extends SmartPointer {
                             float @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -1768,7 +1780,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, float[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1781,7 +1793,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             float @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -1800,7 +1812,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, float[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1813,7 +1825,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             float @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -1831,7 +1843,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, float[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, float[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1844,7 +1856,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             float @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -1868,7 +1880,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, double[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1881,7 +1893,7 @@ public class CommandQueue extends SmartPointer {
                             double @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1901,7 +1913,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, double[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1914,7 +1926,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             double @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1934,7 +1946,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, double[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1947,7 +1959,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1966,7 +1978,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, double[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -1979,7 +1991,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             double @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -1999,7 +2011,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, double[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2012,7 +2024,7 @@ public class CommandQueue extends SmartPointer {
                             double @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -2031,7 +2043,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, double[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2044,7 +2056,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             double @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -2063,7 +2075,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, double[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2076,7 +2088,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -2094,7 +2106,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, double[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, double[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2107,7 +2119,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -2132,7 +2144,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2142,12 +2154,12 @@ public class CommandQueue extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            @NonNull B target,
-            long offset,
-            boolean blocking,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        @NonNull B target,
+        long offset,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
@@ -2156,8 +2168,8 @@ public class CommandQueue extends SmartPointer {
             Preconditions.checkNotNull(buffer);
 
             return new Event(
-                    buffer.read(stack, this, target, blocking, offset, events),
-                    stack
+                buffer.read(stack, this, target, blocking, offset, events),
+                stack
             );
         } finally {
             writeLock.unlock();
@@ -2173,7 +2185,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, java.nio.Buffer, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2184,11 +2196,11 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            long offset,
-            @NonNull B target,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        long offset,
+        @NonNull B target,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(stack, buffer, target, offset, true, events);
     }
@@ -2202,7 +2214,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2213,11 +2225,11 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            @NonNull B target,
-            boolean blocking,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        @NonNull B target,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(stack, buffer, target, 0, blocking, events);
     }
@@ -2230,7 +2242,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2242,10 +2254,10 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull MemoryStack stack,
-            @NonNull Buffer buffer,
-            @NonNull B target,
-            long... events
+        @NonNull MemoryStack stack,
+        @NonNull Buffer buffer,
+        @NonNull B target,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(stack, buffer, target, 0, true, events);
     }
@@ -2259,7 +2271,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2269,11 +2281,11 @@ public class CommandQueue extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull Buffer buffer,
-            @NonNull B target,
-            long offset,
-            boolean blocking,
-            long... events
+        @NonNull Buffer buffer,
+        @NonNull B target,
+        long offset,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
@@ -2282,12 +2294,12 @@ public class CommandQueue extends SmartPointer {
 
         try {
             Event event = bufferRead(
-                    stack,
-                    buffer,
-                    target,
-                    offset,
-                    blocking,
-                    events
+                stack,
+                buffer,
+                target,
+                offset,
+                blocking,
+                events
             );
 
             event.ownsStack = true;
@@ -2306,7 +2318,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, java.nio.Buffer, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2317,10 +2329,10 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull Buffer buffer,
-            long offset,
-            @NonNull B target,
-            long... events
+        @NonNull Buffer buffer,
+        long offset,
+        @NonNull B target,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(buffer, target, offset, true, events);
     }
@@ -2333,7 +2345,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2344,10 +2356,10 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull Buffer buffer,
-            @NonNull B target,
-            boolean blocking,
-            long... events
+        @NonNull Buffer buffer,
+        @NonNull B target,
+        boolean blocking,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(buffer, target, 0, blocking, events);
     }
@@ -2359,7 +2371,7 @@ public class CommandQueue extends SmartPointer {
      * @param events OpenCL event IDs this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, java.nio.Buffer, boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, java.nio.Buffer, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2371,9 +2383,9 @@ public class CommandQueue extends SmartPointer {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event bufferRead(
-            @NonNull Buffer buffer,
-            @NonNull B target,
-            long... events
+        @NonNull Buffer buffer,
+        @NonNull B target,
+        Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return bufferRead(buffer, target, 0, true, events);
     }
@@ -2390,7 +2402,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, short[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2403,7 +2415,7 @@ public class CommandQueue extends SmartPointer {
                             short @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2423,7 +2435,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, short[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2436,7 +2448,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             short @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2456,7 +2468,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, short[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2469,7 +2481,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             short @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2488,7 +2500,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, short[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2501,7 +2513,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             short @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2521,7 +2533,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, short[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2534,7 +2546,7 @@ public class CommandQueue extends SmartPointer {
                             short @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -2553,7 +2565,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, short[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2566,7 +2578,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             short @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -2585,7 +2597,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, short[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2598,7 +2610,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             short @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -2616,7 +2628,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, short[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, short[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2629,7 +2641,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             short @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -2653,7 +2665,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, int[], long, boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2666,7 +2678,7 @@ public class CommandQueue extends SmartPointer {
                             int @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2686,7 +2698,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, int[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2699,7 +2711,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             final long offset,
                             int @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2719,7 +2731,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, int[], boolean, Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2732,7 +2744,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             int @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2751,7 +2763,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, int[], Event...)
      * @throws NullPointerException If stack, buffer, or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2764,7 +2776,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull MemoryStack stack, @NonNull Buffer buffer,
                             int @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2784,7 +2796,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, int[], long, boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2797,7 +2809,7 @@ public class CommandQueue extends SmartPointer {
                             int @NonNull [] target,
                             final long offset,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
@@ -2816,7 +2828,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, long, int[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2829,7 +2841,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             final long offset,
                             int @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
@@ -2848,7 +2860,7 @@ public class CommandQueue extends SmartPointer {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, int[], boolean, Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2861,7 +2873,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             int @NonNull [] target,
                             final boolean blocking,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
@@ -2879,7 +2891,7 @@ public class CommandQueue extends SmartPointer {
      * @param target Destination for the data read from the buffer.
      * @param events OpenCL event IDs this operation depends on.
      * @return Event of the operation.
-     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, long...)
+     * @see Buffer#read(MemoryStack, CommandQueue, int[], boolean, long, Event...)
      * @see CommandQueue.Event#read(Buffer, int[], Event...)
      * @throws NullPointerException If buffer or target is null.
      * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
@@ -2892,7 +2904,7 @@ public class CommandQueue extends SmartPointer {
      */
     public Event bufferRead(@NonNull Buffer buffer,
                             int @NonNull [] target,
-                            final long... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
+                            final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create().push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
@@ -2922,13 +2934,13 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, Event...)
      * @see CommandQueue.Event#fill(Image, java.nio.Buffer, Object, Object, int, Event...)
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                                            @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap,
-                                                           long... dependencies) {
+                                                           Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2953,14 +2965,14 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, Event...)
      * @see CommandQueue.Event#fill(Image, java.nio.Buffer, Object, Object, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
     public <CT, B extends java.nio.Buffer> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                                            @NonNull B color, @NonNull CT from, @NonNull CT size,
-                                                           long... dependencies) {
+                                                           Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -2985,13 +2997,13 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, Event...)
      * @see CommandQueue.Event#fill(Image, int[], Object, Object, int, Event...)
      * @author EΣrie
      */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                                           int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
-                                                           long... dependencies) {
+                                int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3015,14 +3027,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, Event...)
      * @see CommandQueue.Event#fill(Image, int[], Object, Object, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                                           int @NonNull [] color, @NonNull CT from, @NonNull CT size,
-                                                           long... dependencies) {
+                                int @NonNull [] color, @NonNull CT from, @NonNull CT size,
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3047,13 +3059,13 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, Event...)
      * @see CommandQueue.Event#fill(Image, float[], Object, Object, int, Event...)
      * @author EΣrie
      */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                 float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
-                                long... dependencies) {
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3077,14 +3089,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, Event...)
      * @see CommandQueue.Event#fill(Image, float[], Object, Object, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageFill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
                                 float @NonNull [] color, @NonNull CT from, @NonNull CT size,
-                                long... dependencies) {
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3116,7 +3128,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, long...)
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, int, Object, Event...)
      * @author EΣrie
      */
@@ -3124,7 +3136,7 @@ public class CommandQueue extends SmartPointer {
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from, int mipmapFrom,
                                       @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
-                                      long... dependencies) {
+                                      Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3152,7 +3164,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, Object, int, Object, long...)
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, Object, int, Object, Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, Object, int, Object, Event...)
      * @author EΣrie
      * @apiNote The source uses mipmap level 0.
@@ -3161,7 +3173,7 @@ public class CommandQueue extends SmartPointer {
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from,
                                       @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
-                                      long... dependencies) {
+                                      Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3189,7 +3201,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, Object, long...)
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, Object, Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, Object, Event...)
      * @author EΣrie
      * @apiNote The destination uses mipmap level 0.
@@ -3198,7 +3210,7 @@ public class CommandQueue extends SmartPointer {
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from, int mipmapFrom,
                                       @NonNull CT2 to, @NonNull CT2 size,
-                                      long... dependencies) {
+                                      Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3225,7 +3237,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT1> Source image coordinate type.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, Object, Object, long...)
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, Object, Object, Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, Object, Object, Event...)
      * @author EΣrie
      * @apiNote Both source and destination use mipmap level 0.
@@ -3234,7 +3246,7 @@ public class CommandQueue extends SmartPointer {
                                       @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
                                       @NonNull CT1 from,
                                       @NonNull CT2 to, @NonNull CT2 size,
-                                      long... dependencies) {
+                                      Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3268,14 +3280,14 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
-                                                           boolean blocking, long... dependencies) {
+                                                           boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3303,7 +3315,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -3311,7 +3323,7 @@ public class CommandQueue extends SmartPointer {
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
-                                                           long... dependencies) {
+                                                           Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3339,7 +3351,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
@@ -3347,7 +3359,7 @@ public class CommandQueue extends SmartPointer {
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
-                                                           boolean blocking, long... dependencies) {
+                                                           boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3374,7 +3386,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -3383,7 +3395,7 @@ public class CommandQueue extends SmartPointer {
     public <CT, B extends java.nio.Buffer> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                                            @NonNull CT from, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
-                                                           long... dependencies) {
+                                                           Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3411,14 +3423,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, int mipmap, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, short @NonNull [] array,
-                                                           boolean blocking, long... dependencies) {
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3445,15 +3457,15 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, int mipmap, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, short @NonNull [] array,
-                                                           long... dependencies) {
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3480,15 +3492,15 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, short @NonNull [] array,
-                                                           boolean blocking, long... dependencies) {
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3514,16 +3526,16 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, short @NonNull [] array,
-                                                           long... dependencies) {
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, short @NonNull [] array,
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3551,14 +3563,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, int mipmap, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, int @NonNull [] array,
-                                                           boolean blocking, long... dependencies) {
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3585,15 +3597,15 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, int mipmap, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, int @NonNull [] array,
-                                                           long... dependencies) {
+                                @NonNull CT from, int mipmap, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3620,15 +3632,15 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, int @NonNull [] array,
-                                                           boolean blocking, long... dependencies) {
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3654,16 +3666,16 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, int @NonNull [] array,
-                                                           long... dependencies) {
+                                @NonNull CT from, @NonNull CT size,
+                                long rowPitch, long slicePitch, int @NonNull [] array,
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3691,14 +3703,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                boolean blocking, long... dependencies) {
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3725,7 +3737,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -3733,7 +3745,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                long... dependencies) {
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3760,7 +3772,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
@@ -3768,7 +3780,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                boolean blocking, long... dependencies) {
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3794,7 +3806,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -3803,7 +3815,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, float @NonNull [] array,
-                                long... dependencies) {
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3831,14 +3843,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                boolean blocking, long... dependencies) {
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3865,7 +3877,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -3873,7 +3885,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, int mipmap, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                long... dependencies) {
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3900,7 +3912,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
@@ -3908,7 +3920,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                boolean blocking, long... dependencies) {
+                                boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3934,7 +3946,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -3943,7 +3955,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageRead(@NonNull MemoryStack stack, Image<CT> image,
                                 @NonNull CT from, @NonNull CT size,
                                 long rowPitch, long slicePitch, double @NonNull [] array,
-                                long... dependencies) {
+                                Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -3977,14 +3989,14 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
                                                             long rowPitch, long slicePitch, @NonNull B buffer,
-                                                            boolean blocking, long... dependencies) {
+                                                            boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4012,14 +4024,14 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, int mipmap, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, @NonNull B buffer, long... dependencies) {
+                                                            long rowPitch, long slicePitch, @NonNull B buffer, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4047,7 +4059,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
@@ -4055,7 +4067,7 @@ public class CommandQueue extends SmartPointer {
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, @NonNull CT size,
                                                             long rowPitch, long slicePitch, @NonNull B buffer,
-                                                            boolean blocking, long... dependencies) {
+                                                            boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4082,7 +4094,7 @@ public class CommandQueue extends SmartPointer {
      * @param <CT> Image coordinate type.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, java.nio.Buffer, Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -4090,7 +4102,7 @@ public class CommandQueue extends SmartPointer {
      */
     public <CT, B extends java.nio.Buffer> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                                             @NonNull CT from, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, @NonNull B buffer, long... dependencies) {
+                                                            long rowPitch, long slicePitch, @NonNull B buffer, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4118,14 +4130,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
                                  long rowPitch, long slicePitch, short @NonNull [] array,
-                                 boolean blocking, long... dependencies) {
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4152,14 +4164,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, short @NonNull [] array, long... dependencies) {
+                                 long rowPitch, long slicePitch, short @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4186,7 +4198,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
@@ -4194,7 +4206,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
                                  long rowPitch, long slicePitch, short @NonNull [] array,
-                                 boolean blocking, long... dependencies) {
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4220,7 +4232,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, short[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, short[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -4228,7 +4240,7 @@ public class CommandQueue extends SmartPointer {
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, short @NonNull [] array, long... dependencies) {
+                                 long rowPitch, long slicePitch, short @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4257,14 +4269,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, int mipmap, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, int @NonNull [] array,
-                                                            boolean blocking, long... dependencies) {
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, int @NonNull [] array,
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4291,14 +4303,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, int mipmap, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, int @NonNull [] array, long... dependencies) {
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, int @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4325,15 +4337,15 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, int @NonNull [] array,
-                                                            boolean blocking, long... dependencies) {
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, int @NonNull [] array,
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4359,7 +4371,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, int[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, int[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -4367,7 +4379,7 @@ public class CommandQueue extends SmartPointer {
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, int @NonNull [] array, long... dependencies) {
+                                 long rowPitch, long slicePitch, int @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4395,14 +4407,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
                                  long rowPitch, long slicePitch, float @NonNull [] array,
-                                 boolean blocking, long... dependencies) {
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4429,14 +4441,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, float @NonNull [] array, long... dependencies) {
+                                 long rowPitch, long slicePitch, float @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4463,7 +4475,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
@@ -4471,7 +4483,7 @@ public class CommandQueue extends SmartPointer {
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
                                  long rowPitch, long slicePitch, float @NonNull [] array,
-                                 boolean blocking, long... dependencies) {
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4497,7 +4509,7 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, float[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, float[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
@@ -4505,7 +4517,7 @@ public class CommandQueue extends SmartPointer {
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
                                  @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, float @NonNull [] array, long... dependencies) {
+                                 long rowPitch, long slicePitch, float @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4534,14 +4546,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, int mipmap, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, double @NonNull [] array,
-                                                            boolean blocking, long... dependencies) {
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, double @NonNull [] array,
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4568,14 +4580,14 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, int mipmap, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, double @NonNull [] array, long... dependencies) {
+                                 @NonNull CT from, int mipmap, @NonNull CT size,
+                                 long rowPitch, long slicePitch, double @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4602,15 +4614,15 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, double @NonNull [] array,
-                                                            boolean blocking, long... dependencies) {
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, double @NonNull [] array,
+                                 boolean blocking, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4636,15 +4648,15 @@ public class CommandQueue extends SmartPointer {
      * @param dependencies Additional events this operation depends on.
      * @param <CT> Image coordinate type.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, Object, long, long, double[], boolean, Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, double[], Event...)
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event imageWrite(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, double @NonNull [] array, long... dependencies) {
+                                 @NonNull CT from, @NonNull CT size,
+                                 long rowPitch, long slicePitch, double @NonNull [] array, Event... dependencies) {
         try {
             writeLock.lock();
             Preconditions.checkNotNull(stack);
@@ -4691,11 +4703,12 @@ public class CommandQueue extends SmartPointer {
 
         /** True only when this chain created the stack itself. */
         private boolean ownsStack;
+        private boolean stackTransferPending;
+        private boolean closePending;
 
         /**
          * A chained Event transfers its stack ownership to the next Event.
-         * The old Event may still be used as an OpenCL dependency (eventID),
-         * but it may no longer append commands to the chain.
+         * The previous Event is closed once its stack has moved to the next Event.
          */
         private boolean chainable = true;
 
@@ -4720,7 +4733,7 @@ public class CommandQueue extends SmartPointer {
          * @param workGroupSizes Global work sizes for each dimension.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @see CommandQueue#dispatchKernel(Kernel, KernelParameterList, long[], long[], long...)
+         * @see CommandQueue#dispatchKernel(Kernel, KernelParameterList, long[], long[], Event...)
          * @throws IllegalStateException If this event can no longer be chained.
          * @author EΣrie
          */
@@ -4736,20 +4749,20 @@ public class CommandQueue extends SmartPointer {
                 Preconditions.checkNotNull(workGroupSizes);
 
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
                     next = dispatchKernel(
-                            stack,
-                            kernel,
-                            arguments,
-                            workGroupOffsets,
-                            workGroupSizes,
-                            dependencyIDs
+                        stack,
+                        kernel,
+                        arguments,
+                        workGroupOffsets,
+                        workGroupSizes,
+                        dependencyEvents
                     );
                 } finally {
                     releaseDependencies(dependencies);
@@ -4757,6 +4770,11 @@ public class CommandQueue extends SmartPointer {
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -4767,7 +4785,7 @@ public class CommandQueue extends SmartPointer {
          * @param arguments Arguments passed to the kernel.
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @return The next event in the chain.
-         * @see CommandQueue#dispatchKernel(Kernel, KernelParameterList, long[], long[], long...)
+         * @see CommandQueue#dispatchKernel(Kernel, KernelParameterList, long[], long[], Event...)
          * @throws IllegalStateException If this event can no longer be chained.
          * @author EΣrie
          */
@@ -4780,17 +4798,17 @@ public class CommandQueue extends SmartPointer {
                 Preconditions.checkNotNull(arguments);
 
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
                     next = dispatchKernel(stack,
-                            kernel,
-                            arguments,
-                            dependencyIDs
+                        kernel,
+                        arguments,
+                        dependencyEvents
                     );
                 } finally {
                     releaseDependencies(dependencies);
@@ -4798,6 +4816,11 @@ public class CommandQueue extends SmartPointer {
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -4829,20 +4852,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -4869,14 +4897,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, offset, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -4884,6 +4912,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -4910,20 +4943,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -4949,14 +4987,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -4964,6 +5002,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -4994,20 +5037,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5034,14 +5082,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, offset, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5049,6 +5097,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5075,20 +5128,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5114,14 +5172,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5129,6 +5187,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5145,7 +5208,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or data is null.
          * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
@@ -5154,29 +5217,29 @@ public class CommandQueue extends SmartPointer {
          * @author EΣrie
          */
         public <B extends java.nio.Buffer> @NonNull Event write(
-                @NonNull Buffer buffer,
-                @NonNull B data,
-                long offset,
-                boolean blocking,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            long offset,
+            boolean blocking,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
 
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
                     next = createWriteEvent(
-                            buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs),
-                            stack,
-                            buffer,
-                            blocking,
-                            nonBlockingWrites
+                        buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyEvents),
+                        stack,
+                        buffer,
+                        blocking,
+                        nonBlockingWrites
                     );
                 } finally {
                     releaseDependencies(dependencies);
@@ -5184,6 +5247,11 @@ public class CommandQueue extends SmartPointer {
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5196,7 +5264,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or data is null.
          * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
@@ -5206,10 +5274,10 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This is always a blocking operation.
          */
         public <B extends java.nio.Buffer> @NonNull Event write(
-                @NonNull Buffer buffer,
-                long offset,
-                @NonNull B data,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            long offset,
+            @NonNull B data,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return write(buffer, data, offset, true, dependencies);
         }
@@ -5222,7 +5290,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or data is null.
          * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
@@ -5232,10 +5300,10 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This operates at offset 0.
          */
         public <B extends java.nio.Buffer> @NonNull Event write(
-                @NonNull Buffer buffer,
-                @NonNull B data,
-                boolean blocking,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            boolean blocking,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return write(buffer, data, 0, blocking, dependencies);
         }
@@ -5247,7 +5315,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or data is null.
          * @throws IllegalArgumentException If data is empty, the write exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support writing.
@@ -5258,9 +5326,9 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This operates at offset 0.
          */
         public <B extends java.nio.Buffer> @NonNull Event write(
-                @NonNull Buffer buffer,
-                @NonNull B data,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            @NonNull B data,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return write(buffer, data, 0, true, dependencies);
         }
@@ -5290,20 +5358,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5330,14 +5403,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, offset, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5345,6 +5418,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5371,20 +5449,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5410,14 +5493,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5425,6 +5508,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5455,20 +5543,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, offset, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5495,14 +5588,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, offset, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, offset, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5510,6 +5603,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5536,20 +5634,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyIDs), stack, buffer, blocking, nonBlockingWrites);
+                    next = createWriteEvent(buffer.write(stack, CommandQueue.this, data, blocking, 0, dependencyEvents), stack, buffer, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5575,14 +5678,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferWrite(stack, buffer, data, dependencyIDs);
+                    next = bufferWrite(stack, buffer, data, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5590,6 +5693,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5625,16 +5733,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
-                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5642,6 +5750,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5668,14 +5781,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, offset, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, offset, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5683,6 +5796,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5709,16 +5827,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
-                    next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5726,6 +5844,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5751,14 +5874,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5766,6 +5889,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5796,16 +5924,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
-                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5813,6 +5941,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5839,14 +5972,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, offset, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, offset, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5854,6 +5987,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5880,16 +6018,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
-                    next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5897,6 +6035,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5922,14 +6065,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -5937,6 +6080,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -5953,7 +6101,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or target is null.
          * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
@@ -5962,32 +6110,32 @@ public class CommandQueue extends SmartPointer {
          * @author EΣrie
          */
         public <B extends java.nio.Buffer> @NonNull Event read(
-                @NonNull Buffer buffer,
-                @NonNull B target,
-                long offset,
-                boolean blocking,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            long offset,
+            boolean blocking,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
 
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
                     next = bufferRead(
-                            stack,
-                            buffer,
-                            target,
-                            offset,
-                            blocking,
-                            dependencyIDs
+                        stack,
+                        buffer,
+                        target,
+                        offset,
+                        blocking,
+                        dependencyEvents
                     );
                 } finally {
                     releaseDependencies(dependencies);
@@ -5996,6 +6144,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6008,7 +6161,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or target is null.
          * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
@@ -6018,10 +6171,10 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This is always a blocking operation.
          */
         public <B extends java.nio.Buffer> @NonNull Event read(
-                @NonNull Buffer buffer,
-                long offset,
-                @NonNull B target,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            long offset,
+            @NonNull B target,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return read(buffer, target, offset, true, dependencies);
         }
@@ -6034,7 +6187,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or target is null.
          * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
@@ -6044,10 +6197,10 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This operates at offset 0.
          */
         public <B extends java.nio.Buffer> @NonNull Event read(
-                @NonNull Buffer buffer,
-                @NonNull B target,
-                boolean blocking,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            boolean blocking,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return read(buffer, target, 0, blocking, dependencies);
         }
@@ -6059,7 +6212,7 @@ public class CommandQueue extends SmartPointer {
          * @param dependencies Additional events this operation depends on. They are consumed by this chain step.
          * @param <B> Type of NIO buffer.
          * @return The next event in the chain.
-         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
+         * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, Event...)
          * @throws NullPointerException If buffer or target is null.
          * @throws IllegalArgumentException If the target is empty, the read exceeds the buffer, the command queue is closed, or an event ID is negative.
          * @throws IllegalStateException If this event can no longer be chained or the buffer does not support reading.
@@ -6070,9 +6223,9 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This operates at offset 0.
          */
         public <B extends java.nio.Buffer> @NonNull Event read(
-                @NonNull Buffer buffer,
-                @NonNull B target,
-                final Event... dependencies
+            @NonNull Buffer buffer,
+            @NonNull B target,
+            final Event... dependencies
         ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
             return read(buffer, target, 0, true, dependencies);
         }
@@ -6102,16 +6255,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
-                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6119,6 +6272,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6145,14 +6303,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, offset, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, offset, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6160,6 +6318,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6186,14 +6349,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6201,6 +6364,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6226,14 +6394,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6241,6 +6409,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6271,16 +6444,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
-                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, offset, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6288,6 +6461,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6314,14 +6492,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, offset, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, offset, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6329,6 +6507,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6355,16 +6538,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(buffer);
 
                 try {
-                    next = bufferRead(stack, buffer, target, blocking, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6372,6 +6555,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6397,14 +6585,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = bufferRead(stack, buffer, target, dependencyIDs);
+                    next = bufferRead(stack, buffer, target, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6412,6 +6600,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6442,20 +6635,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageFill(stack, image, color, from, size, mipmap, dependencyIDs);
+                    next = imageFill(stack, image, color, from, size, mipmap, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6480,20 +6678,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageFill(stack, image, color, from, size, dependencyIDs);
+                    next = imageFill(stack, image, color, from, size, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6517,20 +6720,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageFill(stack, image, color, from, size, mipmap, dependencyIDs);
+                    next = imageFill(stack, image, color, from, size, mipmap, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6554,20 +6762,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageFill(stack, image, color, from, size, dependencyIDs);
+                    next = imageFill(stack, image, color, from, size, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6591,20 +6804,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageFill(stack, image, color, from, size, mipmap, dependencyIDs);
+                    next = imageFill(stack, image, color, from, size, mipmap, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6628,20 +6846,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageFill(stack, image, color, from, size, dependencyIDs);
+                    next = imageFill(stack, image, color, from, size, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6674,22 +6897,27 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 checkNonBlockingWrite(start);
 
                 try {
-                    next = imageCopy(stack, start, destination, from, mipmapFrom, to, mipmapTo, size, dependencyIDs);
+                    next = imageCopy(stack, start, destination, from, mipmapFrom, to, mipmapTo, size, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6717,22 +6945,27 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 checkNonBlockingWrite(start);
 
                 try {
-                    next = imageCopy(stack, start, destination, from, to, mipmapTo, size, dependencyIDs);
+                    next = imageCopy(stack, start, destination, from, to, mipmapTo, size, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6760,22 +6993,27 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 checkNonBlockingWrite(start);
 
                 try {
-                    next = imageCopy(stack, start, destination, from, mipmapFrom, to, size, dependencyIDs);
+                    next = imageCopy(stack, start, destination, from, mipmapFrom, to, size, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6802,22 +7040,27 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 checkNonBlockingWrite(start);
 
                 try {
-                    next = imageCopy(stack, start, destination, from, to, size, dependencyIDs);
+                    next = imageCopy(stack, start, destination, from, to, size, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6851,16 +7094,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6868,6 +7111,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6896,14 +7144,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6911,6 +7159,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6939,16 +7192,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6956,6 +7209,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -6984,14 +7242,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -6999,6 +7257,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7026,16 +7289,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7043,6 +7306,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7070,14 +7338,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7085,6 +7353,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7112,16 +7385,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7129,6 +7402,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7156,14 +7434,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7171,6 +7449,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7198,16 +7481,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7215,6 +7498,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7242,14 +7530,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7257,6 +7545,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7284,16 +7577,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7301,6 +7594,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7328,14 +7626,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7343,6 +7641,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7370,16 +7673,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7387,6 +7690,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7414,14 +7722,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7429,6 +7737,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7456,16 +7769,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7473,6 +7786,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7500,14 +7818,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7515,6 +7833,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7542,16 +7865,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7559,6 +7882,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7586,14 +7914,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7601,6 +7929,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7628,16 +7961,16 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 if (!blocking) checkNonBlockingWrite(image);
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7645,6 +7978,11 @@ public class CommandQueue extends SmartPointer {
                 if (blocking) clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7672,14 +8010,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageRead(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7687,6 +8025,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7713,26 +8056,31 @@ public class CommandQueue extends SmartPointer {
          * @author EΣrie
          */
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                          @NonNull CT from, int mipmap, @NonNull CT size,
-                                                          long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          boolean blocking, final Event... dependencies) throws IllegalStateException {
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           boolean blocking, final Event... dependencies) throws IllegalStateException {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7755,20 +8103,20 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This is always a blocking operation.
          */
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                          @NonNull CT from, int mipmap, @NonNull CT size,
-                                                          long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          final Event... dependencies) throws IllegalStateException {
+                                                           @NonNull CT from, int mipmap, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           final Event... dependencies) throws IllegalStateException {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, buffer, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7776,6 +8124,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7798,26 +8151,31 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This operates on mipmap level 0.
          */
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                          @NonNull CT from, @NonNull CT size,
-                                                          long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          boolean blocking, final Event... dependencies) throws IllegalStateException {
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           boolean blocking, final Event... dependencies) throws IllegalStateException {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, buffer, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, buffer, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7840,20 +8198,20 @@ public class CommandQueue extends SmartPointer {
          * @apiNote This operates on mipmap level 0.
          */
         public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                          @NonNull CT from, @NonNull CT size,
-                                                          long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          final Event... dependencies) throws IllegalStateException {
+                                                           @NonNull CT from, @NonNull CT size,
+                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+                                                           final Event... dependencies) throws IllegalStateException {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, buffer, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7861,6 +8219,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7888,20 +8251,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7929,14 +8297,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -7944,6 +8312,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -7971,20 +8344,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8012,14 +8390,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -8027,6 +8405,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8054,20 +8437,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8095,14 +8483,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -8110,6 +8498,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8137,20 +8530,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8178,14 +8576,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -8193,6 +8591,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8220,20 +8623,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8261,14 +8669,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -8276,6 +8684,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8303,20 +8716,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8344,14 +8762,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -8359,6 +8777,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8386,20 +8809,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8427,14 +8855,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, mipmap, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -8442,6 +8870,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8469,20 +8902,25 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyIDs), stack, image, blocking, nonBlockingWrites);
+                    next = createWriteEvent(image.write(stack, CommandQueue.this, from, size, rowPitch, slicePitch, array, blocking, dependencyEvents), stack, image, blocking, nonBlockingWrites);
                 } finally {
                     releaseDependencies(dependencies);
                 }
 
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8510,14 +8948,14 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
                 Event next;
 
                 try {
-                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyIDs);
+                    next = imageWrite(stack, image, from, size, rowPitch, slicePitch, array, true, dependencyEvents);
                 } finally {
                     releaseDependencies(dependencies);
                 }
@@ -8525,6 +8963,11 @@ public class CommandQueue extends SmartPointer {
                 clearNonBlockingWrites();
                 return transferOwnership(next);
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8543,29 +8986,34 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
-                long[] dependencyIDs = dependencyIDs(dependencies);
-                Event next;
-                PointerBuffer dependenciesBuffer = PointerBuffer.allocateDirect(dependencyIDs.length + 2);
+                Event[] dependencyEvents = dependencyEvents(dependencies);
+                long[] ids = CommandQueue.eventIDs(dependencyEvents);
+                PointerBuffer dependenciesBuffer = stack.mallocPointer(ids.length + 1);
                 dependenciesBuffer.put(0, 0);
-                dependenciesBuffer.put(1, eventID);
-                for (long dependencyID : dependencyIDs) {
-                    dependenciesBuffer.put(dependencyID);
-                }
+                for (int i = 0; i < ids.length; i++)
+                    dependenciesBuffer.put(i + 1, ids[i]);
                 dependenciesBuffer.rewind();
 
                 CL12.clEnqueueBarrierWithWaitList(commandQueue,
-                        dependenciesBuffer.slice(1, dependencyIDs.length + 1),
-                        dependenciesBuffer.slice(0, 1)
+                    dependenciesBuffer.slice(1, ids.length),
+                    dependenciesBuffer.slice(0, 1)
                 );
 
+                for (Event dependency : dependencyEvents)
+                    dependency.close();
                 releaseDependencies(dependencies);
 
                 clearNonBlockingWrites();
                 return transferOwnership(new Event(dependenciesBuffer.get(0), this.stack));
             } finally {
+                if (stackTransferPending) {
+                    stackTransferPending = false;
+                    if (closePending)
+                        close();
+                }
                 writeLock.unlock();
             }
         }
@@ -8579,13 +9027,13 @@ public class CommandQueue extends SmartPointer {
             try {
                 writeLock.lock();
                 Preconditions.checkState(
-                        chainable,
-                        "This Event has already transferred or released its MemoryStack."
+                    chainable,
+                    "This Event has already transferred or released its MemoryStack."
                 );
 
                 try {
                     CL10.clFlush(commandQueue);
-                    CL10.clReleaseEvent(eventID);
+                    close();
                 } finally {
                     chainable = false;
                     releaseOwnedStack();
@@ -8600,9 +9048,16 @@ public class CommandQueue extends SmartPointer {
          * Releases Event and the MemoryStack
          */
         @Override
-        public void close() {
+        public synchronized void close() {
+            if (stackTransferPending) {
+                closePending = true;
+                return;
+            }
+            if (isClosed())
+                return;
             super.close();
-            CL10.clReleaseEvent(this.eventID);
+            CL10.clReleaseEvent(eventID);
+            chainable = false;
             releaseOwnedStack();
         }
 
@@ -8622,26 +9077,26 @@ public class CommandQueue extends SmartPointer {
             next.ownsStack = this.ownsStack;
             this.ownsStack = false;
             this.chainable = false;
+            this.stackTransferPending = false;
+            if (closePending)
+                close();
             return next;
         }
 
         /**
          * The current event is always the first OpenCL dependency.
          */
-        private long[] dependencyIDs(Event... dependencies) {
+        private Event[] dependencyEvents(Event... dependencies) {
             Preconditions.checkNotNull(dependencies);
-            long[] result = new long[dependencies.length + 1];
-            result[0] = eventID;
-
+            Event[] result = new CommandQueue.Event[dependencies.length + 1];
+            result[0] = this;
             for (int i = 0; i < dependencies.length; i++) {
                 Event dependency = Preconditions.checkNotNull(dependencies[i]);
-                Preconditions.checkArgument(
-                        dependency != this,
-                        "The current Event is already an implicit dependency."
-                );
-                result[i + 1] = dependency.eventID;
+                Preconditions.checkArgument(dependency != this,
+                    "The current Event is already an implicit dependency.");
+                result[i + 1] = dependency;
             }
-
+            stackTransferPending = true;
             return result;
         }
 
