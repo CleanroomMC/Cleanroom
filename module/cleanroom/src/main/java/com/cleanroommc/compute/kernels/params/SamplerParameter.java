@@ -9,6 +9,6 @@ import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 public record SamplerParameter(Sampler sampler) implements KernelParameter {
     @Override
     public void bindParameter(long kernel, int index) throws KernelError, OutOfMemoryError {
-        handleKernelParamError(CL10.clSetKernelArg1p(kernel, index, sampler.handle()), index, sampler);
+        handleKernelParamError(CL10.clSetKernelArg1p(kernel, index, sampler.handle), index, sampler);
     }
 }
