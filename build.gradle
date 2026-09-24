@@ -1,24 +1,12 @@
 plugins {
     id 'java-library'
     id 'com.cleanroommc.cleanroomgradle'
-    id 'com.cleanroommc.tokenenvoy' version '1.1.0'
-    id 'idea'
+    id 'com.cleanroommc.conventions.base' version '1.1.6'
+    id 'com.cleanroommc.tokenenvoy' version '2.0.0'
     id 'maven-publish'
 }
 
-group = 'com.cleanroommc'
 base.archivesName = 'cleanroom'
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(providers.gradleProperty('java_major').get())
-}
-
-idea {
-    module {
-        downloadSources = true
-        downloadJavadoc = true
-    }
-}
 
 cleanroom {
     mode = 'loader'
@@ -250,14 +238,13 @@ tasks.named('compileJava', JavaCompile).configure { compile ->
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
     options.compilerArgs += export_arguments
 }
 
 publishing {
     repositories {
         maven {
-            name = 'CleanroomMaven'
+            name = 'Cleanroom'
             url = 'https://maven.cleanroommc.com'
             credentials(PasswordCredentials)
             authentication {

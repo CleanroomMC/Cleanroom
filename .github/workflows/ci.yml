@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'develop/**'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, review_requested]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: CleanroomMC/Conventions/.github/workflows/build.yml@1.1.6
+    with:
+      artifact-path: |
+        build/libs/*-universal.jar
+        build/libs/*-installer.jar
+        build/libs/*.zip
+      submodules: recursive
+      release-branch: main
+      timeout-minutes: 60
