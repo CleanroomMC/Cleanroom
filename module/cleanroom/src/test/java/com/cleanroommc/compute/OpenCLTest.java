@@ -15,6 +15,12 @@ import org.lwjgl.system.Configuration;
 public class OpenCLTest implements BeforeAllCallback, AfterAllCallback {
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
+        GarbageCollector.INSTANCE.wash();
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+
         Loader.instance();
         Bootstrap.register();
         Logger testLogger = LogManager.getLogger("TestLogger");
@@ -24,10 +30,5 @@ public class OpenCLTest implements BeforeAllCallback, AfterAllCallback {
         {{
             modId = "accelerate";
         }}));
-    }
-
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
-        GarbageCollector.INSTANCE.wash();
     }
 }
