@@ -1,9 +1,15 @@
 --- original/net/minecraft/entity/EntityList.java
 +++ modified/net/minecraft/entity/EntityList.java
-@@ -112,20 +112,8 @@
-      * @deprecated DO NOT USE. This field does not exist under forge, and mods using it will break if forge is installed. Directly use the equivalent methods in this class instead.
-      */
-     public static final RegistryNamespaced<ResourceLocation, Class<? extends Entity>> REGISTRY = new RegistryNamespaced<>();
+@@ -106,26 +106,8 @@
+     public static final ResourceLocation LIGHTNING_BOLT = new ResourceLocation("lightning_bolt");
+     private static final ResourceLocation PLAYER = new ResourceLocation("player");
+     private static final Logger LOGGER = LogManager.getLogger();
+-    /**
+-     * A registry containing all entities by name and ID.
+-     *  
+-     * @deprecated DO NOT USE. This field does not exist under forge, and mods using it will break if forge is installed. Directly use the equivalent methods in this class instead.
+-     */
+-    public static final RegistryNamespaced<ResourceLocation, Class<? extends Entity>> REGISTRY = new RegistryNamespaced<>();
 -    /** This is a HashMap of the Creative Entity Eggs/Spawners. */
      public static final Map<ResourceLocation, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.newLinkedHashMap();
 -    /**
@@ -22,7 +28,12 @@
  
      /** Gets the {@link ResourceLocation} that identifies the given entity's type. */
      @Nullable
-@@ -140,7 +128,8 @@
+@@ -136,11 +118,12 @@
+     /**
+      * Gets the {@link ResourceLocation} that identifies the given entity's type.
+      *  
+-     * @return The resource location, or null if the {@link #REGISTRY} does not contain a mapping for that class.
++     * @return The resource location, or null if the entity registry does not contain a mapping for that class.
       */
      @Nullable
      public static ResourceLocation getKey(Class<? extends Entity> entityIn) {
@@ -32,7 +43,7 @@
      }
  
      /**
-@@ -150,8 +139,8 @@
+@@ -150,8 +133,8 @@
       */
      @Nullable
      public static String getEntityString(Entity entityIn) {
@@ -43,7 +54,7 @@
      }
  
      /**
-@@ -163,8 +152,8 @@
+@@ -163,8 +146,8 @@
       */
      @Nullable
      public static String getTranslationName(@Nullable ResourceLocation entityType) {
@@ -54,7 +65,7 @@
      }
  
      /**
-@@ -177,14 +166,25 @@
+@@ -177,14 +160,25 @@
      @Nullable
      @SideOnly(Side.CLIENT)
      public static Class<? extends Entity> getClassFromID(int entityID) {
@@ -82,7 +93,16 @@
  
      /**
       * Creates a new entity of the given type in the given world.
-@@ -213,7 +213,8 @@
+@@ -198,6 +192,8 @@
+         }
+ 
+         try {
++            net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(clazz);
++            if (entry != null) return entry.newInstance(worldIn);
+             return clazz.getConstructor(World.class).newInstance(worldIn);
+         } catch (Exception exception) {
+             exception.printStackTrace();
+@@ -213,7 +209,8 @@
      @Nullable
      @SideOnly(Side.CLIENT)
      public static Entity createEntityByID(int entityID, World worldIn) {
@@ -92,7 +112,7 @@
      }
  
      /**
-@@ -223,7 +224,8 @@
+@@ -223,7 +220,8 @@
       */
      @Nullable
      public static Entity createEntityByIDFromName(ResourceLocation name, World worldIn) {
@@ -102,7 +122,7 @@
      }
  
      /**
-@@ -240,7 +242,13 @@
+@@ -240,7 +238,13 @@
          if (entity == null) {
              LOGGER.warn("Skipping Entity with id {}", resourcelocation);
          } else {
@@ -116,7 +136,7 @@
          }
  
          return entity;
-@@ -252,7 +260,7 @@
+@@ -252,7 +256,7 @@
       * @return A collection of all known entity types. Do not modify this collection.
       */
      public static Set<ResourceLocation> getEntityNameList() {
@@ -125,7 +145,7 @@
      }
  
      /**
-@@ -418,7 +426,7 @@
+@@ -418,7 +422,7 @@
          addSpawnInfo("zombie_horse", 3232308, 9945732);
          addSpawnInfo("zombie_pigman", 15373203, 5009705);
          addSpawnInfo("zombie_villager", 5651507, 7969893);
@@ -134,7 +154,7 @@
      }
  
      private static void register(int id, String name, Class<? extends Entity> clazz, String oldName) {
-@@ -433,19 +441,15 @@
+@@ -433,19 +437,15 @@
          }
  
          ResourceLocation resourcelocation = new ResourceLocation(name);
@@ -159,7 +179,7 @@
      }
  
      public static class EntityEggInfo {
-@@ -465,5 +469,15 @@
+@@ -465,5 +465,15 @@
              this.killEntityStat = StatList.getStatKillEntity(this);
              this.entityKilledByStat = StatList.getStatEntityKilledBy(this);
          }
