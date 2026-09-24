@@ -423,10 +423,10 @@ public class Buffer extends SmartPointer {
         int[] err = new int[1];
 
         this.handle = CL10GL.clCreateFromGLBuffer(
-                Compute.instance().context,
-                openCLFlags,
-                glBuffer.bufferID,
-                err
+            Compute.instance().context,
+            openCLFlags,
+            glBuffer.bufferID,
+            err
         );
 
         switch (err[0]) {
@@ -445,14 +445,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, float[], long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, float[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, float[], boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, long, float[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, float[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, float[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, float[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, long, float[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, float[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -466,16 +466,16 @@ public class Buffer extends SmartPointer {
      */
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                       float @NonNull [] data, boolean blocking,
-                      long offset, long... events) throws
-            NullPointerException, IllegalArgumentException,
-            IllegalStateException, BufferError, OutOfMemoryError {
+                      long offset, CommandQueue.Event... events) throws
+        NullPointerException, IllegalArgumentException,
+        IllegalStateException, BufferError, OutOfMemoryError {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size,
-                "Attempted to write more data than the buffer can hold.");
+            "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -484,18 +484,18 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -515,14 +515,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, double[], long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, double[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, double[], boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, long, double[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, double[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, double[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, double[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, long, double[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, double[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -536,16 +536,16 @@ public class Buffer extends SmartPointer {
      */
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                       double @NonNull [] data, boolean blocking,
-                      long offset, long... events) throws
-            NullPointerException, IllegalArgumentException,
-            IllegalStateException, BufferError, OutOfMemoryError {
+                      long offset, CommandQueue.Event... events) throws
+        NullPointerException, IllegalArgumentException,
+        IllegalStateException, BufferError, OutOfMemoryError {
         final int sizeof = 8;
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
         Preconditions.checkArgument(data.length > 0, "Attempted to write data of size 0.");
         if (glBuffer == null) Preconditions.checkArgument(offset + ((long) data.length * sizeof) <= size,
-                "Attempted to write more data than the buffer can hold.");
+            "Attempted to write more data than the buffer can hold.");
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -554,18 +554,18 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -585,14 +585,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, short[], long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, short[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, short[], boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, long, short[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, short[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, short[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, short[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, long, short[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, short[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -604,7 +604,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] data, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 2;
 
         Preconditions.checkNotNull(stack);
@@ -619,19 +619,19 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data,
-                    glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+                glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -651,14 +651,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, int[], long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, int[], long, boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, int[], boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, long, int[], long...)
-     * @see CommandQueue#bufferWrite(Buffer, int[], long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, int[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, int[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, long, int[], CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, int[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -670,7 +670,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] data, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -685,19 +685,19 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data,
-                    glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+                glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -708,7 +708,7 @@ public class Buffer extends SmartPointer {
     }
 
     // TODO: Test this one and decide if it should stay.
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, byte @NonNull [] data, boolean blocking, long offset, long... events) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, byte @NonNull [] data, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 1;
 
         Preconditions.checkNotNull(stack);
@@ -727,18 +727,18 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, buffer, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -759,14 +759,14 @@ public class Buffer extends SmartPointer {
      * @param <B> Type of the NIO buffer this will fetch data from.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, long, boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, java.nio.Buffer, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, boolean, long...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, long...)
-     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, boolean, long...)
-     * @see CommandQueue#bufferWrite(Buffer, long, java.nio.Buffer, long...)
-     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -779,12 +779,12 @@ public class Buffer extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> long write(
-            @NonNull MemoryStack stack,
-            CommandQueue commandQueue,
-            @NonNull B data,
-            boolean blocking,
-            long offset,
-            long... events
+        @NonNull MemoryStack stack,
+        CommandQueue commandQueue,
+        @NonNull B data,
+        boolean blocking,
+        long offset,
+        CommandQueue.Event... events
     ) {
         final int sizeof = bufferElementSize(data);
 
@@ -792,8 +792,8 @@ public class Buffer extends SmartPointer {
         Preconditions.checkNotNull(data);
         Preconditions.checkArgument(data.remaining() > 0, "Attempted to write data of size 0.");
         Preconditions.checkArgument(
-                glBuffer == null || offset + ((long) data.remaining() * sizeof) <= size,
-                "Attempted to write more data than the buffer can hold."
+            glBuffer == null || offset + ((long) data.remaining() * sizeof) <= size,
+            "Attempted to write more data than the buffer can hold."
         );
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
@@ -802,74 +802,74 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null) {
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             }
             PointerBuffer waitList = glBuffer == null
-                    ? dependencies
-                    : dependencies.getPointerBuffer(1);
+                ? dependencies
+                : dependencies.getPointerBuffer(1);
             checkBufferWriteErrors(switch (data) {
                 case ByteBuffer buffer ->
-                        CL10.clEnqueueWriteBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueWriteBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case ShortBuffer buffer ->
-                        CL10.clEnqueueWriteBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueWriteBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case IntBuffer buffer ->
-                        CL10.clEnqueueWriteBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueWriteBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case FloatBuffer buffer ->
-                        CL10.clEnqueueWriteBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueWriteBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case DoubleBuffer buffer ->
-                        CL10.clEnqueueWriteBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueWriteBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
             });
             if (events != null && glBuffer == null) {
-                for (long dependency : events) {
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events) {
+                    dependency.close();
                 }
             } else if (glBuffer != null) {
                 releaseGLObjects(commandQueue, dependencies, event);
@@ -892,14 +892,14 @@ public class Buffer extends SmartPointer {
      * @param <B> Type of the NIO buffer this will fetch data from.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, long, boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, java.nio.Buffer, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, long...)
-     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, long, java.nio.Buffer, long...)
-     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -912,20 +912,20 @@ public class Buffer extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> long read(
-            @NonNull MemoryStack stack,
-            CommandQueue commandQueue,
-            @NonNull B target,
-            boolean blocking,
-            long offset,
-            long... events
+        @NonNull MemoryStack stack,
+        CommandQueue commandQueue,
+        @NonNull B target,
+        boolean blocking,
+        long offset,
+        CommandQueue.Event... events
     ) {
         final int sizeof = bufferElementSize(target);
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(
-                target.remaining() >= sizeof,
-                "Attempted to write to a buffer that is too small."
+            target.remaining() >= sizeof,
+            "Attempted to write to a buffer that is too small."
         );
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
@@ -935,74 +935,74 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null) {
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             }
             PointerBuffer waitList = glBuffer == null
-                    ? dependencies
-                    : dependencies.getPointerBuffer(1);
+                ? dependencies
+                : dependencies.getPointerBuffer(1);
             checkBufferReadErrors(switch (target) {
                 case ByteBuffer buffer ->
-                        CL10.clEnqueueReadBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueReadBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case ShortBuffer buffer ->
-                        CL10.clEnqueueReadBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueReadBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case IntBuffer buffer ->
-                        CL10.clEnqueueReadBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueReadBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case FloatBuffer buffer ->
-                        CL10.clEnqueueReadBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueReadBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 case DoubleBuffer buffer ->
-                        CL10.clEnqueueReadBuffer(
-                                commandQueue.commandQueue,
-                                handle,
-                                blocking,
-                                offset,
-                                buffer,
-                                waitList,
-                                event
-                        );
+                    CL10.clEnqueueReadBuffer(
+                        commandQueue.commandQueue,
+                        handle,
+                        blocking,
+                        offset,
+                        buffer,
+                        waitList,
+                        event
+                    );
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
             });
             if (events != null && glBuffer == null) {
-                for (long dependency : events) {
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events) {
+                    dependency.close();
                 }
             } else if (glBuffer != null) {
                 releaseGLObjects(commandQueue, dependencies, event);
@@ -1024,14 +1024,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, short[], long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], long...)
-     * @see CommandQueue#bufferRead(Buffer, short[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, short[], boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, long, short[], long...)
-     * @see CommandQueue#bufferRead(Buffer, short[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, short[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, short[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, long, short[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, short[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1043,7 +1043,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 2;
 
         Preconditions.checkNotNull(stack);
@@ -1057,18 +1057,18 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -1088,14 +1088,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, int[], long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], long...)
-     * @see CommandQueue#bufferRead(Buffer, int[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, int[], boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, long, int[], long...)
-     * @see CommandQueue#bufferRead(Buffer, int[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, int[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, int[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, long, int[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, int[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1107,7 +1107,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -1121,18 +1121,18 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -1152,14 +1152,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, float[], long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], long...)
-     * @see CommandQueue#bufferRead(Buffer, float[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, float[], boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, long, float[], long...)
-     * @see CommandQueue#bufferRead(Buffer, float[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, float[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, float[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, long, float[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, float[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1171,7 +1171,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -1185,18 +1185,18 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -1216,14 +1216,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, double[], long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], boolean, long...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], long...)
-     * @see CommandQueue#bufferRead(Buffer, double[], long, boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, double[], boolean, long...)
-     * @see CommandQueue#bufferRead(Buffer, long, double[], long...)
-     * @see CommandQueue#bufferRead(Buffer, double[], long...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, double[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, double[], boolean, CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, long, double[], CommandQueue.Event...)
+     * @see CommandQueue#bufferRead(Buffer, double[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1235,7 +1235,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, double @NonNull [] target, boolean blocking, long offset, long... events) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, double @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 8;
 
         Preconditions.checkNotNull(stack);
@@ -1249,18 +1249,18 @@ public class Buffer extends SmartPointer {
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
-                dependencies.put(events);
+                dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
             } else {
                 dependencies = null;
             }
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
-                acquireGLObjects(substack, commandQueue, dependencies, event);
+                acquireGLObjects(substack, commandQueue, dependencies, event, events);
             checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
             if (events != null && glBuffer == null)
-                for (long dependency : events)
-                    CL10.clReleaseEvent(dependency);
+                for (CommandQueue.Event dependency : events)
+                    dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
@@ -1308,11 +1308,11 @@ public class Buffer extends SmartPointer {
      */
     private void acquireGLObjects(MemoryStack substack, CommandQueue commandQueue,
                                   @Nullable PointerBuffer dependencies,
-                                  PointerBuffer event, long... events) {
+                                  PointerBuffer event, CommandQueue.Event... events) {
         CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, this.handle, dependencies, event);
         if (dependencies != null) {
-            for (long dependency : events)
-                CL10.clReleaseEvent(dependency);
+            for (CommandQueue.Event dependency : events)
+                dependency.close();
             dependencies.put(0, event.get(0));
         } else {
             dependencies = substack.mallocPointer(1);
