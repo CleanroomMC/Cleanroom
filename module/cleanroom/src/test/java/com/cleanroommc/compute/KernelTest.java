@@ -36,9 +36,9 @@ public class KernelTest {
     @BeforeAll
     public static void setup() throws Exception {
         queue = Compute.instance().queueDispatch.dispatch("queue");
-        Compute.instance().registerProgram(new ResourceLocation("forge", "program"));
+        Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program"));
         Compute.instance().compilePrograms();
-        program = Compute.instance().programs.get(new ResourceLocation("forge", "program"));
+        program = Compute.instance().programs.get(new ResourceLocation("cleanroom", "program"));
     }
 
     @Test

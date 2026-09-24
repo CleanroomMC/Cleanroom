@@ -58,13 +58,13 @@ public class ComputeAPITest {
 
     @Test
     public void compileTest() {
-        assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("forge", "program")));
+        assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program")));
         assertDoesNotThrow(() -> Compute.instance().compilePrograms());
     }
 
     @Test
     public void commandQueueTest() {
-        assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("forge", "program")));
+        assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program")));
         assertDoesNotThrow(() -> Compute.instance().compilePrograms());
         AtomicReference<CommandQueue> tmp = new AtomicReference<>();
         assertDoesNotThrow(() -> tmp.set(Compute.instance().queueDispatch.dispatch("queue")));

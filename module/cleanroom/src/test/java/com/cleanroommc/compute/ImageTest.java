@@ -36,9 +36,9 @@ public class ImageTest {
     @BeforeAll
     public static void setup() throws Exception {
         queue = Compute.instance().queueDispatch.dispatch("queue");
-        Compute.instance().registerProgram(new ResourceLocation("forge", "image_test"));
+        Compute.instance().registerProgram(new ResourceLocation("cleanroom", "image_test"));
         Compute.instance().compilePrograms();
-        program = Compute.instance().programs.get(new ResourceLocation("forge", "image_test"));
+        program = Compute.instance().programs.get(new ResourceLocation("cleanroom", "image_test"));
     }
 
     @Test
