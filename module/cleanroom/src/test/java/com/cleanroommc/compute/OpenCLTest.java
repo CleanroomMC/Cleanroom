@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.lwjgl.opencl.CL;
 import org.lwjgl.system.Configuration;
 
 public class OpenCLTest implements BeforeAllCallback, AfterAllCallback {
@@ -30,6 +29,5 @@ public class OpenCLTest implements BeforeAllCallback, AfterAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         GarbageCollector.INSTANCE.wash();
-        CL.destroy();
     }
 }
