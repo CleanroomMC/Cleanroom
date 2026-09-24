@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.registry.ForgeTestRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lwjgl.system.Configuration;
 
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @ExtendWith(GLTestExtension.class)
 public class ClientSetupTest {
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void setupTestClient() {
         GLTestExtension.assumeInitialized();
         GLTestExtension.submit(() -> {

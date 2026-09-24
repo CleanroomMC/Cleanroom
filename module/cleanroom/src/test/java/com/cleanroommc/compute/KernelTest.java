@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
@@ -42,6 +43,7 @@ public class KernelTest {
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void testSingleExecution() {
         final float[] values = new float[]{
                 1.f,2.f,3.f,4.f,5.f,6.f,2.f,3.f,1.f,6.f,7.f
@@ -64,6 +66,7 @@ public class KernelTest {
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void testConsequentExecution() {
         final float[] values = new float[]{
                 1.f,2.f,3.f,4.f,5.f,6.f,2.f,3.f,1.f,6.f,7.f
@@ -88,6 +91,7 @@ public class KernelTest {
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void testSingleExecutionStackless() {
         final float[] values = new float[]{
                 1.f,2.f,3.f,4.f,5.f,6.f,2.f,3.f,1.f,6.f,7.f
@@ -108,6 +112,7 @@ public class KernelTest {
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void testConsequentExecutionStackless() {
         final float[] values = new float[]{
                 1.f,2.f,3.f,4.f,5.f,6.f,2.f,3.f,1.f,6.f,7.f
@@ -130,6 +135,7 @@ public class KernelTest {
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void testByteArguments2D() {
         final byte[] vals1 = new byte[] {
                 1,2,3,2,4,5,1,3,2,6,7,1,8,9,10
@@ -173,6 +179,7 @@ public class KernelTest {
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void testShortArgumentTaskVectors() {
         final short arg1x = 5;
         final short arg1y = 6;

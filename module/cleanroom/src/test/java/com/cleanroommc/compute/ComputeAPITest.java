@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lwjgl.system.Configuration;
 
@@ -57,12 +58,14 @@ public class ComputeAPITest {
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void compileTest() {
         assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program")));
         assertDoesNotThrow(() -> Compute.instance().compilePrograms());
     }
 
     @Test
+    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void commandQueueTest() {
         assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program")));
         assertDoesNotThrow(() -> Compute.instance().compilePrograms());
