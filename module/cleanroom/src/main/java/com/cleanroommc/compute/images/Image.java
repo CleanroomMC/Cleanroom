@@ -190,10 +190,10 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see CommandQueue#imageFill(MemoryStack, Image, Buffer, Object, Object, int, long...)
+     * @see CommandQueue#imageFill(MemoryStack, Image, Buffer, Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public abstract <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap, CommandQueue.Event... dependencies);
     /**
      * <p>Fill a region of an OpenCL image with a colour.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -204,10 +204,10 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param mipmap Mipmap level of the image.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageFill(MemoryStack, Image, int[], Object, Object, int, long...)
+     * @see CommandQueue#imageFill(MemoryStack, Image, int[], Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, CommandQueue.Event... dependencies);
     /**
      * <p>Fill a region of an OpenCL image with a colour.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -218,10 +218,10 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param mipmap Mipmap level of the image.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageFill(MemoryStack, Image, float[], Object, Object, int, long...)
+     * @see CommandQueue#imageFill(MemoryStack, Image, float[], Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, long... dependencies);
+    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, CommandQueue.Event... dependencies);
     /**
      * <p>Fill a region of an OpenCL image with a colour.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -232,11 +232,11 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see CommandQueue#imageFill(MemoryStack, Image, Buffer, Object, Object, long...)
+     * @see CommandQueue#imageFill(MemoryStack, Image, Buffer, Object, Object, CommandQueue.Event...)
      * @apiNote Mipmap is always zero as this is a function for non-mipmapped images.
      * @author EΣrie
      */
-    public final <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+    public final <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, CommandQueue.Event... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
     /**
@@ -248,11 +248,11 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param size Size of the image region.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageFill(MemoryStack, Image, int[], Object, Object, long...)
+     * @see CommandQueue#imageFill(MemoryStack, Image, int[], Object, Object, CommandQueue.Event...)
      * @apiNote Mipmap is always zero as this is a function for non-mipmapped images.
      * @author EΣrie
      */
-    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, CommandQueue.Event... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
     /**
@@ -264,11 +264,11 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param size Size of the image region.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageFill(MemoryStack, Image, float[], Object, Object, long...)
+     * @see CommandQueue#imageFill(MemoryStack, Image, float[], Object, Object, CommandQueue.Event...)
      * @apiNote Mipmap is always zero as this is a function for non-mipmapped images.
      * @author EΣrie
      */
-    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, long... dependencies) {
+    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, CommandQueue.Event... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
 
@@ -285,13 +285,13 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, long...)
+     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                     @NonNull CT from, int fromMipmap, @NonNull CT2 to, int toMipmap,
-                                    @NonNull CT2 size, long... dependencies);
+                                    @NonNull CT2 size, CommandQueue.Event... dependencies);
     /**
      * <p>Copy a region from one OpenCL image to another.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -304,14 +304,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, long...)
+     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as copying from mipmap 0.
      */
     public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                  @NonNull CT from, @NonNull CT2 to, int toMipmap,
-                                 @NonNull CT2 size, long... dependencies) {
+                                 @NonNull CT2 size, CommandQueue.Event... dependencies) {
         return this.copy(stack, commandQueue, destination, from, 0, to, toMipmap, size, dependencies);
     }
     /**
@@ -326,14 +326,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, long...)
+     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as copying to mipmap 0.
      */
     public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                  @NonNull CT from, int fromMipmap, @NonNull CT2 to,
-                                 @NonNull CT2 size, long... dependencies) {
+                                 @NonNull CT2 size, CommandQueue.Event... dependencies) {
         return this.copy(stack, commandQueue, destination, from, fromMipmap, to, 0, size, dependencies);
     }
     /**
@@ -347,14 +347,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, long...)
+     * @see CommandQueue#imageCopy(MemoryStack, Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @see CommandQueue.Event#copy(Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as copying from mipmap 0 to mipmap 0.
      */
     public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
                                  @NonNull CT from, @NonNull CT2 to,
-                                 @NonNull CT2 size, long... dependencies) {
+                                 @NonNull CT2 size, CommandQueue.Event... dependencies) {
         return this.copy(stack, commandQueue, destination, from, 0, to, 0, size, dependencies);
     }
 
@@ -372,14 +372,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                                           @NonNull CT from, int mipmap, @NonNull CT size,
                                                           long rowPitch, long slicePitch, @NonNull B buffer,
-                                                          boolean blocking, long... dependencies);
+                                                          boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a short array.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -393,14 +393,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, short @NonNull [] array,
-                              boolean blocking, long... dependencies);
+                              boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into an int array.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -414,14 +414,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, int @NonNull [] array,
-                              boolean blocking, long... dependencies);
+                              boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a float array.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -435,14 +435,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, float @NonNull [] array,
-                              boolean blocking, long... dependencies);
+                              boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a double array.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -456,14 +456,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                               @NonNull CT from, int mipmap, @NonNull CT size,
                               long rowPitch, long slicePitch, double @NonNull [] array,
-                              boolean blocking, long... dependencies);
+                              boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a NIO buffer.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -477,14 +477,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
     public final <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, B buffer,
-                                                       boolean blocking, long... dependencies) {
+                                                       boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
     /**
@@ -499,14 +499,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
     public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, short @NonNull [] array,
-                           boolean blocking, long... dependencies) {
+                           boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
     /**
@@ -521,14 +521,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
     public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, int @NonNull [] array,
-                           boolean blocking, long... dependencies) {
+                           boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
     /**
@@ -543,14 +543,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
     public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, float @NonNull [] array,
-                           boolean blocking, long... dependencies) {
+                           boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
     /**
@@ -565,14 +565,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageRead(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#read(Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
     public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, double @NonNull [] array,
-                           boolean blocking, long... dependencies) {
+                           boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
 
@@ -590,14 +590,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                                            @NonNull CT from, int mipmap, @NonNull CT size,
                                                            long rowPitch, long slicePitch, @NonNull B buffer,
-                                                           boolean blocking, long... dependencies);
+                                                           boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a short array to a region of an OpenCL image.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -611,14 +611,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, short @NonNull [] array,
-                               boolean blocking, long... dependencies);
+                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from an int array to a region of an OpenCL image.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -632,14 +632,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, int @NonNull [] array,
-                               boolean blocking, long... dependencies);
+                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a float array to a region of an OpenCL image.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -653,14 +653,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, float @NonNull [] array,
-                               boolean blocking, long... dependencies);
+                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a double array to a region of an OpenCL image.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -674,14 +674,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                @NonNull CT from, int mipmap, @NonNull CT size,
                                long rowPitch, long slicePitch, double @NonNull [] array,
-                               boolean blocking, long... dependencies);
+                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a NIO buffer to a region of an OpenCL image.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -695,14 +695,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
     public final <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                                                         @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, B buffer,
-                                                       boolean blocking, long... dependencies) {
+                                                       boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
     /**
@@ -717,14 +717,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, short[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
     public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, short @NonNull [] array,
-                            boolean blocking, long... dependencies) {
+                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
     /**
@@ -739,14 +739,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, int[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
     public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, int @NonNull [] array,
-                            boolean blocking, long... dependencies) {
+                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
     /**
@@ -761,14 +761,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, float[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
     public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, float @NonNull [] array,
-                            boolean blocking, long... dependencies) {
+                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
     /**
@@ -783,14 +783,14 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, double[], boolean, long...)
+     * @see CommandQueue#imageWrite(MemoryStack, Image, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @see CommandQueue.Event#write(Image, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
     public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
                             @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, double @NonNull [] array,
-                            boolean blocking, long... dependencies) {
+                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
 
