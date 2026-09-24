@@ -1,0 +1,77 @@
+--- original/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
++++ modified/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
+@@ -20,6 +20,7 @@
+ @SideOnly(Side.CLIENT)
+ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabCompleter {
+     private GuiTextField commandField;
++    private com.cleanroommc.client.chat.suggestion.CommandSuggestions suggestions;
+     private GuiTextField previousEdit;
+     private final CommandBlockBaseLogic commandBlockLogic;
+     private GuiButton doneButton;
+@@ -68,6 +69,7 @@
+                 return GuiEditCommandBlockMinecart.this.commandBlockLogic.getPosition();
+             }
+         };
++        this.suggestions = new com.cleanroommc.client.chat.suggestion.CommandSuggestions(this.commandField, this.tabCompleter, true);
+     }
+ 
+     /** Called when the screen is unloaded. Used to disable keyboard repeat events */
+@@ -106,6 +108,7 @@
+     @Override
+     protected void keyTyped(char typedChar, int keyCode) throws IOException {
+         this.tabCompleter.resetRequested();
++        if (this.suggestions.keyTyped(keyCode)) return;
+         if (keyCode == 15) {
+             this.tabCompleter.complete();
+         } else {
+@@ -114,6 +117,7 @@
+ 
+         this.commandField.textboxKeyTyped(typedChar, keyCode);
+         this.previousEdit.textboxKeyTyped(typedChar, keyCode);
++        this.suggestions.refresh();
+         this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
+         if (keyCode == 28 || keyCode == 156) {
+             this.actionPerformed(this.doneButton);
+@@ -125,18 +129,26 @@
+     /** Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton */
+     @Override
+     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
++        if (this.suggestions.mouseClicked(mouseX, mouseY, mouseButton)) return;
+         super.mouseClicked(mouseX, mouseY, mouseButton);
+         this.commandField.mouseClicked(mouseX, mouseY, mouseButton);
+         this.previousEdit.mouseClicked(mouseX, mouseY, mouseButton);
++        this.suggestions.refresh();
+     }
+ 
++    @Override
++    public void handleMouseInput() throws IOException {
++        super.handleMouseInput();
++        this.suggestions.handleMouseInput(this);
++    }
++
+     /** Draws the screen and all the components in it. */
+     @Override
+     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+         this.drawDefaultBackground();
+         this.drawCenteredString(this.fontRenderer, I18n.format("advMode.setCommand"), this.width / 2, 20, 16777215);
+         this.drawString(this.fontRenderer, I18n.format("advMode.command"), this.width / 2 - 150, 40, 10526880);
+-        this.commandField.drawTextBox();
++        this.suggestions.drawTextBox();
+         int i = 75;
+         int j = 0;
+         this.drawString(
+@@ -172,6 +184,7 @@
+             this.previousEdit.drawTextBox();
+         }
+ 
++        this.suggestions.drawDropdown(mouseX, mouseY);
+         super.drawScreen(mouseX, mouseY, partialTicks);
+     }
+ 
+@@ -191,5 +204,6 @@
+     @Override
+     public void setCompletions(String... newCompletions) {
+         this.tabCompleter.setCompletions(newCompletions);
++        this.suggestions.setCompletions(newCompletions);
+     }
+ }
