@@ -24,7 +24,7 @@
      }
  
      /**
-@@ -77,16 +79,60 @@
+@@ -77,27 +79,73 @@
          }
      }
  
@@ -86,7 +86,12 @@
          }
  
          public JsonElement serialize(LootPool p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_) {
-@@ -97,7 +143,7 @@
+             JsonObject jsonobject = new JsonObject();
++            if (p_serialize_1_.name != null && !p_serialize_1_.name.startsWith("custom#"))
++                jsonobject.addProperty("name", p_serialize_1_.name);
+             jsonobject.add("entries", p_serialize_3_.serialize(p_serialize_1_.lootEntries));
+             jsonobject.add("rolls", p_serialize_3_.serialize(p_serialize_1_.rolls));
+             if (p_serialize_1_.bonusRolls.getMin() != 0.0F && p_serialize_1_.bonusRolls.getMax() != 0.0F) {
                  jsonobject.add("bonus_rolls", p_serialize_3_.serialize(p_serialize_1_.bonusRolls));
              }
  
