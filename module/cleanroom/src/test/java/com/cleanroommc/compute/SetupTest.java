@@ -1,6 +1,5 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.CleanroomTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
@@ -10,7 +9,6 @@ import org.lwjgl.system.Configuration;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-@CleanroomTest
 public class SetupTest {
     @Test
     public void setupTest() {

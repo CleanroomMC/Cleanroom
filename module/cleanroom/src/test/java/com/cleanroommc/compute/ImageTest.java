@@ -1,6 +1,5 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.CleanroomTest;
 import com.cleanroommc.compute.buffers.BufferFlags;
 import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.images.*;
@@ -19,15 +18,12 @@ import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@CleanroomTest
 public class ImageTest {
 
     private static CommandQueue queue;

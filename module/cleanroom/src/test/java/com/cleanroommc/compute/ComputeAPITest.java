@@ -1,6 +1,5 @@
 package com.cleanroommc.compute;
 
-import com.cleanroommc.CleanroomTest;
 import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.HeaderParsingError;
 import com.cleanroommc.compute.programs.ComputeProgram;
@@ -21,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@CleanroomTest
 public class ComputeAPITest {
 
     @BeforeAll
