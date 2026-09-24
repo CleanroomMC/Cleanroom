@@ -42,4 +42,62 @@ public class OpenCLTest implements BeforeAllCallback, AfterAllCallback, Invocati
         else
             invocation.skip();
     }
+
+    @Override
+    public void interceptBeforeAllMethod(Invocation<@Nullable Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            invocation.proceed();
+        else
+            invocation.skip();
+    }
+
+    @Override
+    public void interceptBeforeEachMethod(Invocation<@Nullable Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            invocation.proceed();
+        else
+            invocation.skip();
+    }
+
+    @Override
+    public <T> T interceptTestFactoryMethod(Invocation<T> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            return invocation.proceed();
+        else {
+            invocation.skip();
+            return null;
+        }
+    }
+
+    @Override
+    public void interceptTestTemplateMethod(Invocation<@Nullable Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            invocation.proceed();
+        else
+            invocation.skip();
+    }
+
+    @Override
+    public void interceptDynamicTest(Invocation<@Nullable Void> invocation, DynamicTestInvocationContext invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            invocation.proceed();
+        else
+            invocation.skip();
+    }
+
+    @Override
+    public void interceptAfterEachMethod(Invocation<@Nullable Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            invocation.proceed();
+        else
+            invocation.skip();
+    }
+
+    @Override
+    public void interceptAfterAllMethod(Invocation<@Nullable Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            invocation.proceed();
+        else
+            invocation.skip();
+    }
 }
