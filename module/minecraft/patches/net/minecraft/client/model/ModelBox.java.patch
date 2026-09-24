@@ -1,10 +1,10 @@
 --- original/net/minecraft/client/model/ModelBox.java
 +++ modified/net/minecraft/client/model/ModelBox.java
-@@ -164,6 +164,7 @@
+@@ -161,6 +161,7 @@
          }
      }
  
-+    @SideOnly(Side.CLIENT)
++    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
      public void render(BufferBuilder renderer, float scale) {
          for (TexturedQuad texturedquad : this.quadList) {
              texturedquad.draw(renderer, scale);

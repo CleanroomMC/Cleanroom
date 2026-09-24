@@ -3,6 +3,11 @@
 # Format: <class> [<member> [<descriptor>]] (SRG names, '.' or '/' separated)
 
 # Whole Classes
+net/minecraft/client/model/ModelBase
+net/minecraft/client/model/ModelBox
+net/minecraft/client/model/ModelRenderer
+net/minecraft/client/model/PositionTextureVertex
+net/minecraft/client/model/TexturedQuad
 net/minecraft/client/renderer/block/model/ModelResourceLocation
 net/minecraft/util/BlockRenderLayer
 net/minecraft/util/math/Vec2f
