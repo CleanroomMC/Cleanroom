@@ -50,7 +50,7 @@ body:
     attributes:
       label: Guidelines
       description: |
-          View the guidelines here: [Cleanroom Feature Proposal Guidelines](../blob/main/CFP_GUIDELINES.md)
+          View the guidelines here: [Cleanroom Feature Proposal Guidelines](https://github.com/CleanroomMC/Cleanroom/discussions/63#discussion-6236162)
       options:
         - label: I have and will continue to adhere to the guidelines
           required: true

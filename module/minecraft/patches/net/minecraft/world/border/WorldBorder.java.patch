@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/border/WorldBorder.java
++++ modified/net/minecraft/world/border/WorldBorder.java
+@@ -232,4 +232,8 @@
+             iborderlistener.onWarningDistanceChanged(this, warningDistance);
+         }
+     }
++
++    public void removeListener(IBorderListener listener) {
++        this.listeners.remove(listener);
++    }
+ }

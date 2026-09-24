@@ -1,0 +1,47 @@
+--- original/net/minecraft/client/audio/SoundHandler.java
++++ modified/net/minecraft/client/audio/SoundHandler.java
+@@ -68,6 +68,7 @@
+     public void onResourceManagerReload(IResourceManager resourceManager) {
+         this.soundRegistry.clearMap();
+ 
++        java.util.List<net.minecraft.util.Tuple<ResourceLocation, SoundList>> resources = new java.util.LinkedList<>();
+         for (String s : resourceManager.getResourceDomains()) {
+             try {
+                 for (IResource iresource : resourceManager.getAllResources(new ResourceLocation(s, "sounds.json"))) {
+@@ -75,7 +76,7 @@
+                         Map<String, SoundList> map = this.getSoundMap(iresource.getInputStream());
+ 
+                         for (Entry<String, SoundList> entry : map.entrySet()) {
+-                            this.loadSoundResource(new ResourceLocation(s, entry.getKey()), entry.getValue());
++                            resources.add(new net.minecraft.util.Tuple<>(new ResourceLocation(s, entry.getKey()), entry.getValue()));
+                         }
+                     } catch (RuntimeException runtimeexception) {
+                         LOGGER.warn("Invalid sounds.json", runtimeexception);
+@@ -85,6 +86,16 @@
+             }
+         }
+ 
++        net.minecraftforge.fml.common.ProgressManager.ProgressBar resourcesBar = net.minecraftforge.fml.common.ProgressManager.push("Loading sounds", resources.size());
++        resources.forEach(entry -> {
++            resourcesBar.step(entry.getFirst().toString());
++            try {
++                this.loadSoundResource(entry.getFirst(), entry.getSecond());
++            } catch (RuntimeException e) {
++                LOGGER.warn("Invalid sounds.json", e);
++            }
++        });
++        net.minecraftforge.fml.common.ProgressManager.pop(resourcesBar);
+         for (ResourceLocation resourcelocation : this.soundRegistry.getKeys()) {
+             SoundEventAccessor soundeventaccessor = this.soundRegistry.getObject(resourcelocation);
+             if (soundeventaccessor.getSubtitle() instanceof TextComponentTranslation) {
+@@ -209,6 +220,10 @@
+         this.sndManager.setListener(player, p_147691_2_);
+     }
+ 
++    public void setListener(net.minecraft.entity.Entity entity, float partialTicks) {
++        this.sndManager.setListener(entity, partialTicks);
++    }
++
+     public void pauseSounds() {
+         this.sndManager.pauseAllSounds();
+     }

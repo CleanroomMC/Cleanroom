@@ -1,0 +1,36 @@
+--- original/net/minecraft/entity/EntityTracker.java
++++ modified/net/minecraft/entity/EntityTracker.java
+@@ -75,6 +75,8 @@
+     }
+ 
+     public void track(Entity entityIn) {
++        if (net.minecraftforge.fml.common.registry.EntityRegistry.instance().tryTrackingEntity(this, entityIn)) return;
++
+         if (entityIn instanceof EntityPlayerMP) {
+             this.track(entityIn, 512, 2);
+             EntityPlayerMP entityplayermp = (EntityPlayerMP)entityIn;
+@@ -250,6 +252,24 @@
+         }
+     }
+ 
++    /* ======================================== FORGE START =====================================*/
++
++    // don't expose the EntityTrackerEntry directly so mods can't mess with the data in there as easily
++    /**
++     * Get all players tracking the given Entity. The Entity must be part of the World that this Tracker belongs to.
++     * @param entity the Entity
++     * @return all players tracking the Entity
++     */
++    public Set<? extends net.minecraft.entity.player.EntityPlayer> getTrackingPlayers(Entity entity) {
++        EntityTrackerEntry entry = (EntityTrackerEntry) trackedEntityHashTable.lookup(entity.getEntityId());
++        if (entry == null)
++            return java.util.Collections.emptySet();
++        else
++            return java.util.Collections.unmodifiableSet(entry.trackingPlayers);
++    }
++
++    /* ======================================== FORGE END   =====================================*/
++
+     public void sendToTrackingAndSelf(Entity entityIn, Packet<?> packetIn) {
+         EntityTrackerEntry entitytrackerentry = this.trackedEntityHashTable.lookup(entityIn.getEntityId());
+         if (entitytrackerentry != null) {

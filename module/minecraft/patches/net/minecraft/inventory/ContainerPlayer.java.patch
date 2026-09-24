@@ -1,0 +1,11 @@
+--- original/net/minecraft/inventory/ContainerPlayer.java
++++ modified/net/minecraft/inventory/ContainerPlayer.java
+@@ -45,7 +45,7 @@
+                     /** Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel. */
+                     @Override
+                     public boolean isItemValid(ItemStack stack) {
+-                        return entityequipmentslot == EntityLiving.getSlotForItemStack(stack);
++                        return stack.getItem().isValidArmor(stack, entityequipmentslot, player);
+                     }
+ 
+                     /** Return whether this slot's stack can be taken from this slot. */

@@ -1,0 +1,10 @@
+--- original/net/minecraft/util/MouseHelper.java
++++ modified/net/minecraft/util/MouseHelper.java
+@@ -14,6 +14,7 @@
+ 
+     /** Grabs the mouse cursor it doesn't move and isn't seen. */
+     public void grabMouseCursor() {
++        if (Boolean.parseBoolean(System.getProperty("fml.noGrab","false"))) return;
+         Mouse.setGrabbed(true);
+         this.deltaX = 0;
+         this.deltaY = 0;

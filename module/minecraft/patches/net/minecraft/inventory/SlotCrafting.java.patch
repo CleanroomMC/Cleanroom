@@ -1,0 +1,20 @@
+--- original/net/minecraft/inventory/SlotCrafting.java
++++ modified/net/minecraft/inventory/SlotCrafting.java
+@@ -54,6 +54,7 @@
+     protected void onCrafting(ItemStack stack) {
+         if (this.amountCrafted > 0) {
+             stack.onCrafting(this.player.world, this.player, this.amountCrafted);
++            net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(this.player, stack, craftMatrix);
+         }
+ 
+         this.amountCrafted = 0;
+@@ -68,7 +69,9 @@
+     @Override
+     public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack) {
+         this.onCrafting(stack);
++        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(thePlayer);
+         NonNullList<ItemStack> nonnulllist = CraftingManager.getRemainingItems(this.craftMatrix, thePlayer.world);
++        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
+ 
+         for (int i = 0; i < nonnulllist.size(); i++) {
+             ItemStack itemstack = this.craftMatrix.getStackInSlot(i);

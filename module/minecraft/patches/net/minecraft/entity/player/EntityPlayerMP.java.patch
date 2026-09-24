@@ -1,0 +1,143 @@
+--- original/net/minecraft/entity/player/EntityPlayerMP.java
++++ modified/net/minecraft/entity/player/EntityPlayerMP.java
+@@ -173,8 +173,9 @@
+         super(worldIn, profile);
+         interactionManagerIn.player = this;
+         this.interactionManager = interactionManagerIn;
+-        BlockPos blockpos = worldIn.getSpawnPoint();
+-        if (worldIn.provider.hasSkyLight() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE) {
++        BlockPos blockpos = worldIn.provider.getRandomizedSpawnPoint();
++
++        if (false && worldIn.provider.hasSkyLight() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE) {
+             int i = Math.max(0, server.getSpawnRadius(worldIn));
+             int j = MathHelper.floor(worldIn.getWorldBorder().getClosestDistance(blockpos.getX(), blockpos.getZ()));
+             if (j < i) {
+@@ -319,7 +320,8 @@
+         }
+ 
+         this.openContainer.detectAndSendChanges();
+-        if (!this.world.isRemote && !this.openContainer.canInteractWith(this)) {
++
++        if (!this.world.isRemote && this.openContainer != null && !this.openContainer.canInteractWith(this)) {
+             this.closeScreen();
+             this.openContainer = this.inventoryContainer;
+         }
+@@ -439,6 +441,7 @@
+     /** Called when the mob's health reaches 0. */
+     @Override
+     public void onDeath(DamageSource cause) {
++        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, cause)) return;
+         boolean flag = this.world.getGameRules().getBoolean("showDeathMessages");
+         this.connection.sendPacket(new SPacketCombatEvent(this.getCombatTracker(), SPacketCombatEvent.Event.ENTITY_DIED, flag));
+         if (flag) {
+@@ -454,8 +457,18 @@
+ 
+         this.spawnShoulderEntities();
+         if (!this.world.getGameRules().getBoolean("keepInventory") && !this.isSpectator()) {
++            captureDrops = true;
++            capturedDrops.clear();
+             this.destroyVanishingCursedItems();
+             this.inventory.dropAllItems();
++
++            captureDrops = false;
++            net.minecraftforge.event.entity.player.PlayerDropsEvent event = new net.minecraftforge.event.entity.player.PlayerDropsEvent(this, cause, capturedDrops, recentlyHit > 0);
++            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
++                for (net.minecraft.entity.item.EntityItem item : capturedDrops) {
++                    this.world.spawnEntity(item);
++                }
++            }
+         }
+ 
+         for (ScoreObjective scoreobjective : this.world.getScoreboard().getObjectivesFromCriteria(IScoreCriteria.DEATH_COUNT)) {
+@@ -568,7 +581,8 @@
+ 
+     @Nullable
+     @Override
+-    public Entity changeDimension(int dimensionIn) {
++    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter) {
++        if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, dimensionIn)) return this;
+         this.invulnerableDimensionChange = true;
+         if (this.dimension == 0 && dimensionIn == -1) {
+             this.enteredNetherPosition = new Vec3d(this.posX, this.posY, this.posZ);
+@@ -576,7 +590,7 @@
+             this.enteredNetherPosition = null;
+         }
+ 
+-        if (this.dimension == 1 && dimensionIn == 1) {
++        if (this.dimension == 1 && dimensionIn == 1 && teleporter.isVanilla()) {
+             this.world.removeEntity(this);
+             if (!this.queuedEndExit) {
+                 this.queuedEndExit = true;
+@@ -590,7 +604,7 @@
+                 dimensionIn = 1;
+             }
+ 
+-            this.server.getPlayerList().changePlayerDimension(this, dimensionIn);
++            this.server.getPlayerList().transferPlayerToDimension(this, dimensionIn, teleporter);
+             this.connection.sendPacket(new SPacketEffect(1032, BlockPos.ORIGIN, 0, false));
+             this.lastExperience = -1;
+             this.lastHealth = -1.0F;
+@@ -702,7 +716,8 @@
+         int k = MathHelper.floor(this.posZ);
+         BlockPos blockpos = new BlockPos(i, j, k);
+         IBlockState iblockstate = this.world.getBlockState(blockpos);
+-        if (iblockstate.getMaterial() == Material.AIR) {
++
++        if (iblockstate.getBlock().isAir(iblockstate, this.world, blockpos)) {
+             BlockPos blockpos1 = blockpos.down();
+             IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
+             Block block = iblockstate1.getBlock();
+@@ -736,6 +751,7 @@
+             this.openContainer = guiOwner.createContainer(this.inventory, this);
+             this.openContainer.windowId = this.currentWindowId;
+             this.openContainer.addListener(this);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
+         }
+     }
+ 
+@@ -781,6 +797,7 @@
+ 
+             this.openContainer.windowId = this.currentWindowId;
+             this.openContainer.addListener(this);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
+         }
+     }
+ 
+@@ -790,6 +807,7 @@
+         this.openContainer = new ContainerMerchant(this.inventory, villager, this.world);
+         this.openContainer.windowId = this.currentWindowId;
+         this.openContainer.addListener(this);
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
+         IInventory iinventory = ((ContainerMerchant)this.openContainer).getMerchantInventory();
+         ITextComponent itextcomponent = villager.getDisplayName();
+         this.connection.sendPacket(new SPacketOpenWindow(this.currentWindowId, "minecraft:villager", itextcomponent, iinventory.getSizeInventory()));
+@@ -891,6 +909,7 @@
+     /** Closes the container the player currently has open. */
+     public void closeContainer() {
+         this.openContainer.onContainerClosed(this);
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Close(this, this.openContainer));
+         this.openContainer = this.inventoryContainer;
+     }
+ 
+@@ -1016,6 +1035,21 @@
+         this.enteredNetherPosition = that.enteredNetherPosition;
+         this.setLeftShoulderEntity(that.getLeftShoulderEntity());
+         this.setRightShoulderEntity(that.getRightShoulderEntity());
++
++        this.spawnChunkMap = that.spawnChunkMap;
++        this.spawnForcedMap = that.spawnForcedMap;
++        if(that.dimension != 0) {
++            this.spawnPos = that.spawnPos;
++            this.spawnForced = that.spawnForced;
++        }
++
++        //Copy over a section of the Entity Data from the old player.
++        //Allows mods to specify data that persists after players respawn.
++        NBTTagCompound old = that.getEntityData();
++        if (old.hasKey(PERSISTED_NBT_TAG)) {
++            getEntityData().setTag(PERSISTED_NBT_TAG, old.getCompoundTag(PERSISTED_NBT_TAG));
++        }
++        net.minecraftforge.event.ForgeEventFactory.onPlayerClone(this, that, !keepEverything);
+     }
+ 
+     @Override

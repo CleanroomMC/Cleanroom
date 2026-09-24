@@ -1,0 +1,13 @@
+--- original/net/minecraft/block/BlockPumpkin.java
++++ modified/net/minecraft/block/BlockPumpkin.java
+@@ -131,8 +131,8 @@
+     /** Checks if this block can be placed exactly at the given position. */
+     @Override
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+-        return worldIn.getBlockState(pos).getBlock().material.isReplaceable()
+-            && worldIn.getBlockState(pos.down()).isTopSolid();
++        return worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos)
++               && worldIn.isSideSolid(pos.down(), EnumFacing.UP);
+     }
+ 
+     /**

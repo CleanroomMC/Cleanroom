@@ -1,0 +1,33 @@
+--- original/net/minecraft/world/biome/BiomeProvider.java
++++ modified/net/minecraft/world/biome/BiomeProvider.java
+@@ -23,7 +23,8 @@
+     /** The biome list. */
+     private final BiomeCache biomeCache = new BiomeCache(this);
+     /** A list of biomes that the player can spawn in. */
+-    private final List<Biome> biomesToSpawnIn = Lists.newArrayList(
++    private final List<Biome> biomesToSpawnIn = Lists.newArrayList(allowedBiomes);
++    public static List<Biome> allowedBiomes = Lists.newArrayList(
+         Biomes.FOREST,
+         Biomes.PLAINS,
+         Biomes.TAIGA,
+@@ -43,6 +44,7 @@
+         }
+ 
+         GenLayer[] agenlayer = GenLayer.initializeAllBiomeGenerators(seed, worldTypeIn, this.settings);
++        agenlayer = getModdedBiomeGenerators(worldTypeIn, seed, agenlayer);
+         this.genBiomes = agenlayer[0];
+         this.biomeIndexLayer = agenlayer[1];
+     }
+@@ -186,6 +188,12 @@
+     public void cleanupCache() {
+         this.biomeCache.cleanupCache();
+     }
++    public GenLayer[] getModdedBiomeGenerators(WorldType worldType, long seed, GenLayer[] original)
++    {
++        net.minecraftforge.event.terraingen.WorldTypeEvent.InitBiomeGens event = new net.minecraftforge.event.terraingen.WorldTypeEvent.InitBiomeGens(worldType, seed, original);
++        net.minecraftforge.common.MinecraftForge.TERRAIN_GEN_BUS.post(event);
++        return event.getNewBiomeGens();
++    }
+ 
+     public boolean isFixedBiome() {
+         return this.settings != null && this.settings.fixedBiome >= 0;

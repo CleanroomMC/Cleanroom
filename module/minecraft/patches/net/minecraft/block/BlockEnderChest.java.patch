@@ -1,0 +1,11 @@
+--- original/net/minecraft/block/BlockEnderChest.java
++++ modified/net/minecraft/block/BlockEnderChest.java
+@@ -133,7 +133,7 @@
+             return true;
+         }
+ 
+-        if (worldIn.getBlockState(pos.up()).isNormalCube()) {
++        if (worldIn.getBlockState(pos.up()).doesSideBlockChestOpening(worldIn, pos.up(), EnumFacing.DOWN)) {
+             return true;
+         }
+ 

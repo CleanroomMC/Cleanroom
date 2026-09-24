@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/monster/EntityCreeper.java
++++ modified/net/minecraft/entity/monster/EntityCreeper.java
+@@ -258,7 +258,7 @@
+     /** Creates an explosion as determined by this creeper's power and explosion radius. */
+     private void explode() {
+         if (!this.world.isRemote) {
+-            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
++            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this);
+             float f = this.getPowered() ? 2.0F : 1.0F;
+             this.dead = true;
+             this.world.createExplosion(this, this.posX, this.posY, this.posZ, this.explosionRadius * f, flag);

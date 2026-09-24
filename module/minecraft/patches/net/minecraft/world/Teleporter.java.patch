@@ -1,0 +1,24 @@
+--- original/net/minecraft/world/Teleporter.java
++++ modified/net/minecraft/world/Teleporter.java
+@@ -15,7 +15,7 @@
+ import net.minecraft.util.math.ChunkPos;
+ import net.minecraft.util.math.MathHelper;
+ 
+-public class Teleporter {
++public class Teleporter implements net.minecraftforge.common.util.ITeleporter {
+     protected final WorldServer world;
+     /** A private Random() function in Teleporter */
+     protected final Random random;
+@@ -365,4 +365,12 @@
+             this.lastUpdateTime = lastUpdate;
+         }
+     }
++
++    @Override
++    public void placeEntity(World world, Entity entity, float yaw) {
++        if (entity instanceof EntityPlayerMP)
++            placeInPortal(entity, yaw);
++        else
++            placeInExistingPortal(entity, yaw);
++    }
+ }

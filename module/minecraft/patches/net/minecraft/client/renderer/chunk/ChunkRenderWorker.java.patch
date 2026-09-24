@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
++++ modified/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
+@@ -189,7 +189,7 @@
+                             Minecraft.getMinecraft().crashed(CrashReport.makeCrashReport(p_onFailure_1_, "Rendering chunk"));
+                         }
+                     }
+-                }
++                }, Runnable::run
+             );
+         }
+     }

@@ -1,0 +1,46 @@
+--- original/net/minecraft/tileentity/TileEntityChest.java
++++ modified/net/minecraft/tileentity/TileEntityChest.java
+@@ -130,6 +130,7 @@
+     public void updateContainingBlockInfo() {
+         super.updateContainingBlockInfo();
+         this.adjacentChestChecked = false;
++        doubleChestHandler = null;
+     }
+ 
+     private void setNeighbor(TileEntityChest chestTe, EnumFacing side) {
+@@ -163,6 +164,7 @@
+     /** Performs the check for adjacent chests to determine if this chest is double or not. */
+     public void checkForAdjacentChests() {
+         if (!this.adjacentChestChecked) {
++            if (this.world == null || !this.world.isAreaLoaded(this.pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbors
+             this.adjacentChestChecked = true;
+             this.adjacentChestXNeg = this.getAdjacentChest(EnumFacing.WEST);
+             this.adjacentChestXPos = this.getAdjacentChest(EnumFacing.EAST);
+@@ -319,8 +321,26 @@
+         }
+     }
+ 
+-    /** invalidates a tile entity */
++    public net.minecraftforge.items.VanillaDoubleChestItemHandler doubleChestHandler;
++
++    @SuppressWarnings("unchecked")
+     @Override
++    @Nullable
++    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing) {
++        if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
++            if(doubleChestHandler == null || doubleChestHandler.needsRefresh())
++                doubleChestHandler = net.minecraftforge.items.VanillaDoubleChestItemHandler.get(this);
++            if (doubleChestHandler != null && doubleChestHandler != net.minecraftforge.items.VanillaDoubleChestItemHandler.NO_ADJACENT_CHESTS_INSTANCE)
++                return (T) doubleChestHandler;
++        }
++        return super.getCapability(capability, facing);
++    }
++
++    public net.minecraftforge.items.IItemHandler getSingleChestHandler() {
++        return super.getCapability(net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
++    }
++
++    @Override
+     public void invalidate() {
+         super.invalidate();
+         this.updateContainingBlockInfo();

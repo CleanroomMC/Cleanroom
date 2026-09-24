@@ -1,0 +1,339 @@
+--- original/net/minecraft/world/WorldServer.java
++++ modified/net/minecraft/world/WorldServer.java
+@@ -107,27 +107,37 @@
+     private int blockEventCacheIndex;
+     private final List<NextTickListEntry> pendingTickListEntriesThisTick = Lists.newArrayList();
+ 
++    /** Stores the recently processed (lighting) chunks */
++    protected Set<ChunkPos> doneChunks = new java.util.HashSet<>();
++    public List<Teleporter> customTeleporters = new ArrayList<>();
++
+     public WorldServer(MinecraftServer server, ISaveHandler saveHandlerIn, WorldInfo info, int dimensionId, Profiler profilerIn) {
+-        super(saveHandlerIn, info, DimensionType.getById(dimensionId).createDimension(), profilerIn, false);
++        super(saveHandlerIn, info, net.minecraftforge.common.DimensionManager.createProviderFor(dimensionId), profilerIn, false);
+         this.server = server;
+         this.entityTracker = new EntityTracker(this);
+         this.playerChunkMap = new PlayerChunkMap(this);
++        // Guarantee the dimension ID was not reset by the provider
++        int providerDim = this.provider.getDimension();
+         this.provider.setWorld(this);
++        this.provider.setDimension(providerDim);
+         this.chunkProvider = this.createChunkProvider();
++        perWorldStorage = new MapStorage(new net.minecraftforge.common.WorldSpecificSaveHandler(this, saveHandlerIn));
+         this.worldTeleporter = new Teleporter(this);
+         this.calculateInitialSkylight();
+         this.calculateInitialWeather();
+         this.getWorldBorder().setSize(server.getMaxWorldSize());
++        net.minecraftforge.common.DimensionManager.setWorld(dimensionId, this, server);
+     }
+ 
+     @Override
+     public World init() {
+         this.mapStorage = new MapStorage(this.saveHandler);
+         String s = VillageCollection.fileNameForProvider(this.provider);
+-        VillageCollection villagecollection = (VillageCollection)this.mapStorage.getOrLoadData(VillageCollection.class, s);
++        VillageCollection villagecollection = (VillageCollection)this.perWorldStorage.getOrLoadData(VillageCollection.class, s);
++
+         if (villagecollection == null) {
+             this.villageCollection = new VillageCollection(this);
+-            this.mapStorage.setData(s, this.villageCollection);
++            this.perWorldStorage.setData(s, this.villageCollection);
+         } else {
+             this.villageCollection = villagecollection;
+             this.villageCollection.setWorldsForAll(this);
+@@ -156,6 +166,7 @@
+             this.getWorldBorder().setTransition(this.worldInfo.getBorderSize());
+         }
+ 
++        this.initCapabilities();
+         return this;
+     }
+ 
+@@ -170,8 +181,8 @@
+         this.provider.getBiomeProvider().cleanupCache();
+         if (this.areAllPlayersAsleep()) {
+             if (this.getGameRules().getBoolean("doDaylightCycle")) {
+-                long i = this.worldInfo.getWorldTime() + 24000L;
+-                this.worldInfo.setWorldTime(i - i % 24000L);
++                long i = this.getWorldTime() + 24000L;
++                this.setWorldTime(i - i % 24000L);
+             }
+ 
+             this.wakeAllPlayers();
+@@ -191,7 +202,7 @@
+ 
+         this.worldInfo.setWorldTotalTime(this.worldInfo.getWorldTotalTime() + 1L);
+         if (this.getGameRules().getBoolean("doDaylightCycle")) {
+-            this.worldInfo.setWorldTime(this.worldInfo.getWorldTime() + 1L);
++            this.setWorldTime(this.getWorldTime() + 1L);
+         }
+ 
+         this.profiler.endStartSection("tickPending");
+@@ -205,6 +216,9 @@
+         this.villageSiege.tick();
+         this.profiler.endStartSection("portalForcer");
+         this.worldTeleporter.removeStalePortalLocations(this.getTotalWorldTime());
++        for (Teleporter tele : customTeleporters) {
++            tele.removeStalePortalLocations(getTotalWorldTime());
++        }
+         this.profiler.endSection();
+         this.sendQueuedBlockEvents();
+     }
+@@ -212,11 +226,13 @@
+     @Nullable
+     public Biome.SpawnListEntry getSpawnListEntryForTypeAt(EnumCreatureType creatureType, BlockPos pos) {
+         List<Biome.SpawnListEntry> list = this.getChunkProvider().getPossibleCreatures(creatureType, pos);
++        list = net.minecraftforge.event.ForgeEventFactory.getPotentialSpawns(this, creatureType, pos, list);
+         return list != null && !list.isEmpty() ? WeightedRandom.getRandomItem(this.rand, list) : null;
+     }
+ 
+     public boolean canCreatureTypeSpawnHere(EnumCreatureType creatureType, Biome.SpawnListEntry spawnListEntry, BlockPos pos) {
+         List<Biome.SpawnListEntry> list = this.getChunkProvider().getPossibleCreatures(creatureType, pos);
++        list = net.minecraftforge.event.ForgeEventFactory.getPotentialSpawns(this, creatureType, pos, list);
+         return list != null && !list.isEmpty() ? list.contains(spawnListEntry) : false;
+     }
+ 
+@@ -254,10 +270,7 @@
+ 
+     /** Clears the current rain and thunder weather states. */
+     private void resetRainAndThunder() {
+-        this.worldInfo.setRainTime(0);
+-        this.worldInfo.setRaining(false);
+-        this.worldInfo.setThunderTime(0);
+-        this.worldInfo.setThundering(false);
++        this.provider.resetRainAndThunder();
+     }
+ 
+     /** Checks if all players in this world are sleeping. */
+@@ -333,7 +346,7 @@
+             boolean flag1 = this.isThundering();
+             this.profiler.startSection("pollingChunks");
+ 
+-            for (Iterator<Chunk> iterator = this.playerChunkMap.getChunkIterator(); iterator.hasNext(); this.profiler.endSection()) {
++            for (Iterator<Chunk> iterator = getPersistentChunkIterable(this.playerChunkMap.getChunkIterator()); iterator.hasNext(); this.profiler.endSection()) {
+                 this.profiler.startSection("getChunk");
+                 Chunk chunk = iterator.next();
+                 int j = chunk.x * 16;
+@@ -343,7 +356,8 @@
+                 this.profiler.endStartSection("tickChunk");
+                 chunk.onTick(false);
+                 this.profiler.endStartSection("thunder");
+-                if (flag && flag1 && this.rand.nextInt(100000) == 0) {
++
++                if (this.provider.canDoLightning(chunk) && flag && flag1 && this.rand.nextInt(100000) == 0) {
+                     this.updateLCG = this.updateLCG * 3 + 1013904223;
+                     int l = this.updateLCG >> 2;
+                     BlockPos blockpos = this.adjustPosToNearbyEntity(new BlockPos(j + (l & 15), 0, k + (l >> 8 & 15)));
+@@ -365,11 +379,14 @@
+                 }
+ 
+                 this.profiler.endStartSection("iceandsnow");
+-                if (this.rand.nextInt(16) == 0) {
++
++                if (this.provider.canDoRainSnowIce(chunk) && this.rand.nextInt(16) == 0) {
+                     this.updateLCG = this.updateLCG * 3 + 1013904223;
+                     int j2 = this.updateLCG >> 2;
+                     BlockPos blockpos1 = this.getPrecipitationHeight(new BlockPos(j + (j2 & 15), 0, k + (j2 >> 8 & 15)));
+                     BlockPos blockpos2 = blockpos1.down();
++
++                    if (this.isAreaLoaded(blockpos2, 1)) // Forge: check area to avoid loading neighbors in unloaded chunks
+                     if (this.canBlockFreezeNoWater(blockpos2)) {
+                         this.setBlockState(blockpos2, Blocks.ICE.getDefaultState());
+                     }
+@@ -456,7 +473,10 @@
+         Material material = blockIn.getDefaultState().getMaterial();
+         if (this.scheduledUpdatesAreImmediate && material != Material.AIR) {
+             if (blockIn.requiresUpdates()) {
+-                if (this.isAreaLoaded(pos.add(-8, -8, -8), pos.add(8, 8, 8))) {
++                //Keeping here as a note for future when it may be restored.
++                boolean isForced = getPersistentChunks().containsKey(new ChunkPos(pos));
++                int range = isForced ? 0 : 8;
++                if (this.isAreaLoaded(pos.add(-range, -range, -range), pos.add(range, range, range))) {
+                     IBlockState iblockstate = this.getBlockState(pos);
+                     if (iblockstate.getMaterial() != Material.AIR && iblockstate.getBlock() == blockIn) {
+                         iblockstate.getBlock().updateTick(this, pos, iblockstate, this.rand);
+@@ -486,6 +506,7 @@
+     /** Called by CommandClone and AnvilChunkLoader to force a block update. */
+     @Override
+     public void scheduleBlockUpdate(BlockPos pos, Block blockIn, int delay, int priority) {
++        if (blockIn == null) return; //Forge: Prevent null blocks from ticking, can happen if blocks are removed in old worlds. TODO: Fix real issue causing block to be null.
+         NextTickListEntry nextticklistentry = new NextTickListEntry(pos, blockIn);
+         nextticklistentry.setPriority(priority);
+         Material material = blockIn.getDefaultState().getMaterial();
+@@ -502,7 +523,7 @@
+     /** Updates (and cleans up) entities and tile entities */
+     @Override
+     public void updateEntities() {
+-        if (this.playerEntities.isEmpty()) {
++        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty()) {
+             if (this.updateEntityTick++ >= 300) {
+                 return;
+             }
+@@ -600,6 +621,9 @@
+         while (iterator.hasNext()) {
+             NextTickListEntry nextticklistentry1 = iterator.next();
+             iterator.remove();
++            //Keeping here as a note for future when it may be restored.
++            //boolean isForced = getPersistentChunks().containsKey(new ChunkPos(nextticklistentry.xCoord >> 4, nextticklistentry.zCoord >> 4));
++            //byte b0 = isForced ? 0 : 8;
+             int k = 0;
+             if (this.isAreaLoaded(nextticklistentry1.position.add(0, 0, 0), nextticklistentry1.position.add(0, 0, 0))) {
+                 IBlockState iblockstate = this.getBlockState(nextticklistentry1.position);
+@@ -706,6 +730,9 @@
+ 
+     @Override
+     public boolean isBlockModifiable(EntityPlayer player, BlockPos pos) {
++        return super.isBlockModifiable(player, pos);
++    }
++    public boolean canMineBlockBody(EntityPlayer player, BlockPos pos) {
+         return !this.server.isBlockProtected(this, pos, player) && this.getWorldBorder().contains(pos);
+     }
+ 
+@@ -755,6 +782,7 @@
+         } else if (this.worldInfo.getTerrainType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
+             this.worldInfo.setSpawn(BlockPos.ORIGIN.up());
+         } else {
++            if (net.minecraftforge.event.ForgeEventFactory.onCreateWorldSpawn(this, settings)) return;
+             this.findingSpawnPoint = true;
+             BiomeProvider biomeprovider = this.provider.getBiomeProvider();
+             List<Biome> list = biomeprovider.getBiomesToSpawnIn();
+@@ -822,6 +850,7 @@
+             }
+ 
+             chunkproviderserver.saveChunks(all);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Save(this));
+ 
+             for (Chunk chunk : Lists.newArrayList(chunkproviderserver.getLoadedChunks())) {
+                 if (chunk != null && !this.playerChunkMap.contains(chunk.x, chunk.z)) {
+@@ -860,6 +889,7 @@
+         this.worldInfo.setBorderLerpTime(this.getWorldBorder().getTimeUntilTarget());
+         this.saveHandler.saveWorldInfoWithPlayer(this.worldInfo, this.server.getPlayerList().getHostPlayerData());
+         this.mapStorage.saveAllData();
++        this.perWorldStorage.saveAllData();
+     }
+ 
+     /** Called when an entity is spawned in the world. This includes players. */
+@@ -871,7 +901,7 @@
+     @Override
+     public void loadEntities(Collection<Entity> entityCollection) {
+         for (Entity entity : Lists.newArrayList(entityCollection)) {
+-            if (this.canAddEntity(entity)) {
++            if (this.canAddEntity(entity) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
+                 this.loadedEntityList.add(entity);
+                 this.onEntityAdded(entity);
+             }
+@@ -935,16 +965,16 @@
+     public boolean addWeatherEffect(Entity entityIn) {
+         if (super.addWeatherEffect(entityIn)) {
+             this.server
+-                .getPlayerList()
+-                .sendToAllNearExcept(
+-                    null,
+-                    entityIn.posX,
+-                    entityIn.posY,
+-                    entityIn.posZ,
+-                    512.0,
+-                    this.provider.getDimensionType().getId(),
+-                    new SPacketSpawnGlobalEntity(entityIn)
+-                );
++            .getPlayerList()
++            .sendToAllNearExcept(
++                null,
++                entityIn.posX,
++                entityIn.posY,
++                entityIn.posZ,
++                512.0,
++                this.provider.getDimension(),
++                new SPacketSpawnGlobalEntity(entityIn)
++            );
+             return true;
+         } else {
+             return false;
+@@ -968,6 +998,7 @@
+         @Nullable Entity entityIn, double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain
+     ) {
+         Explosion explosion = new Explosion(this, entityIn, x, y, z, strength, causesFire, damagesTerrain);
++        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this, explosion)) return explosion;
+         explosion.doExplosionA();
+         explosion.doExplosionB(false);
+         if (!damagesTerrain) {
+@@ -1010,18 +1041,18 @@
+             for (BlockEventData blockeventdata : this.blockEventQueue[i]) {
+                 if (this.fireBlockEvent(blockeventdata)) {
+                     this.server
+-                        .getPlayerList()
+-                        .sendToAllNearExcept(
+-                            null,
+-                            blockeventdata.getPosition().getX(),
+-                            blockeventdata.getPosition().getY(),
+-                            blockeventdata.getPosition().getZ(),
+-                            64.0,
+-                            this.provider.getDimensionType().getId(),
+-                            new SPacketBlockAction(
+-                                blockeventdata.getPosition(), blockeventdata.getBlock(), blockeventdata.getEventID(), blockeventdata.getEventParameter()
+-                            )
+-                        );
++                    .getPlayerList()
++                    .sendToAllNearExcept(
++                        null,
++                        blockeventdata.getPosition().getX(),
++                        blockeventdata.getPosition().getY(),
++                        blockeventdata.getPosition().getZ(),
++                        64.0,
++                        this.provider.getDimension(),
++                        new SPacketBlockAction(
++                            blockeventdata.getPosition(), blockeventdata.getBlock(), blockeventdata.getEventID(), blockeventdata.getEventParameter()
++                        )
++                    );
+                 }
+             }
+ 
+@@ -1048,25 +1079,29 @@
+         super.updateWeather();
+         if (this.prevRainingStrength != this.rainingStrength) {
+             this.server
+-                .getPlayerList()
+-                .sendPacketToAllPlayersInDimension(new SPacketChangeGameState(7, this.rainingStrength), this.provider.getDimensionType().getId());
++            .getPlayerList()
++            .sendPacketToAllPlayersInDimension(new SPacketChangeGameState(7, this.rainingStrength), this.provider.getDimension());
+         }
+ 
+         if (this.prevThunderingStrength != this.thunderingStrength) {
+             this.server
+-                .getPlayerList()
+-                .sendPacketToAllPlayersInDimension(new SPacketChangeGameState(8, this.thunderingStrength), this.provider.getDimensionType().getId());
++            .getPlayerList()
++            .sendPacketToAllPlayersInDimension(new SPacketChangeGameState(8, this.thunderingStrength), this.provider.getDimension());
+         }
+ 
++        /* The function in use here has been replaced in order to only send the weather info to players in the correct dimension,
++         * rather than to all players on the server. This is what causes the client-side rain, as the
++         * client believes that it has started raining locally, rather than in another dimension.
++         */
+         if (flag != this.isRaining()) {
+             if (flag) {
+-                this.server.getPlayerList().sendPacketToAllPlayers(new SPacketChangeGameState(2, 0.0F));
++                this.server.getPlayerList().sendPacketToAllPlayersInDimension(new SPacketChangeGameState(2, 0.0F), this.provider.getDimension());
+             } else {
+-                this.server.getPlayerList().sendPacketToAllPlayers(new SPacketChangeGameState(1, 0.0F));
++                this.server.getPlayerList().sendPacketToAllPlayersInDimension(new SPacketChangeGameState(1, 0.0F), this.provider.getDimension());
+             }
+ 
+-            this.server.getPlayerList().sendPacketToAllPlayers(new SPacketChangeGameState(7, this.rainingStrength));
+-            this.server.getPlayerList().sendPacketToAllPlayers(new SPacketChangeGameState(8, this.thunderingStrength));
++            this.server.getPlayerList().sendPacketToAllPlayersInDimension(new SPacketChangeGameState(7, this.rainingStrength), this.provider.getDimension());
++            this.server.getPlayerList().sendPacketToAllPlayersInDimension(new SPacketChangeGameState(8, this.thunderingStrength), this.provider.getDimension());
+         }
+     }
+ 
+@@ -1215,6 +1250,10 @@
+         return this.functionManager;
+     }
+ 
++    public java.io.File getChunkSaveLocation() {
++        return ((net.minecraft.world.chunk.storage.AnvilChunkLoader)getChunkProvider().chunkLoader).chunkSaveLocation;
++    }
++
+     static class ServerBlockEventList extends ArrayList<BlockEventData> {
+         private ServerBlockEventList() {
+         }

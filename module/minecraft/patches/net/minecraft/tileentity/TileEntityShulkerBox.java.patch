@@ -1,0 +1,11 @@
+--- original/net/minecraft/tileentity/TileEntityShulkerBox.java
++++ modified/net/minecraft/tileentity/TileEntityShulkerBox.java
+@@ -393,4 +393,8 @@
+         OPENED,
+         CLOSING;
+     }
++
++    protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
++        return new net.minecraftforge.items.wrapper.SidedInvWrapper(this, EnumFacing.UP);
++    }
+ }

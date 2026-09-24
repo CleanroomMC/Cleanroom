@@ -1,0 +1,24 @@
+--- original/net/minecraft/world/storage/SaveFormatOld.java
++++ modified/net/minecraft/world/storage/SaveFormatOld.java
+@@ -93,7 +93,20 @@
+         }
+     }
+ 
+-    /** Renames the world by storing the new name in level.dat. It does *not* rename the directory containing the world data. */
++    //Forge: Special version of the above that runs during actual world loading and not metadata gathering.
++    public static WorldInfo loadAndFix(File file, DataFixer fixer, SaveHandler save) {
++        try {
++            NBTTagCompound nbt = CompressedStreamTools.readCompressed(new FileInputStream(file));
++            WorldInfo info = new WorldInfo(fixer.process(FixTypes.LEVEL, nbt.getCompoundTag("Data")));
++            net.minecraftforge.fml.common.FMLCommonHandler.instance().handleWorldDataLoad(save, info, nbt);
++            return info;
++        } catch (net.minecraftforge.fml.common.StartupQuery.AbortedException e) { throw e; }
++        catch (Exception exception) {
++            LOGGER.error((String)("Exception reading " + file), (Throwable)exception);
++            return null;
++        }
++    }
++
+     @SideOnly(Side.CLIENT)
+     @Override
+     public void renameWorld(String dirName, String newName) {

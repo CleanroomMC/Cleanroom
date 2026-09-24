@@ -1,0 +1,28 @@
+--- original/net/minecraft/command/CommandFill.java
++++ modified/net/minecraft/command/CommandFill.java
+@@ -81,11 +81,12 @@
+                 }
+             }
+ 
+-            NBTTagCompound nbttagcompound = new NBTTagCompound();
+-            boolean flag = false;
+-            if (args.length >= 10 && block.hasTileEntity()) {
+-                String s = buildString(args, 9);
++                NBTTagCompound nbttagcompound = new NBTTagCompound();
++                boolean flag = false;
+ 
++                if (args.length >= 10 && block.hasTileEntity(iblockstate)) {
++                    String s = buildString(args, 9);
++
+                 try {
+                     nbttagcompound = JsonToNBT.getTagFromJson(s);
+                     flag = true;
+@@ -109,7 +110,7 @@
+                                     if (!world.isAirBlock(blockpos4)) {
+                                         continue;
+                                     }
+-                                } else if ("replace".equals(args[8]) && !block.hasTileEntity() && args.length > 9) {
++                                } else if ("replace".equals(args[8]) && !block.hasTileEntity(iblockstate) && args.length > 9) {
+                                     Block block1 = CommandBase.getBlockByText(sender, args[9]);
+                                     if (world.getBlockState(blockpos4).getBlock() != block1
+                                         || args.length > 10

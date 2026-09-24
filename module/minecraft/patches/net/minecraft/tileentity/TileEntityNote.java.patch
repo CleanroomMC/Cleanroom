@@ -1,0 +1,12 @@
+--- original/net/minecraft/tileentity/TileEntityNote.java
++++ modified/net/minecraft/tileentity/TileEntityNote.java
+@@ -33,7 +33,9 @@
+ 
+     /** change pitch by -> (currentPitch + 1) % 25 */
+     public void changePitch() {
++        byte old = note;
+         this.note = (byte)((this.note + 1) % 25);
++        if (!net.minecraftforge.common.ForgeHooks.onNoteChange(this, old)) return;
+         this.markDirty();
+     }
+ 

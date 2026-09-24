@@ -1,0 +1,32 @@
+--- original/net/minecraft/item/crafting/IRecipe.java
++++ modified/net/minecraft/item/crafting/IRecipe.java
+@@ -5,7 +5,7 @@
+ import net.minecraft.util.NonNullList;
+ import net.minecraft.world.World;
+ 
+-public interface IRecipe {
++public interface IRecipe extends net.minecraftforge.registries.IForgeRegistryEntry<IRecipe> {
+     /** Used to check if a recipe matches current crafting inventory */
+     boolean matches(InventoryCrafting var1, World var2);
+ 
+@@ -18,7 +18,9 @@
+     /** Get the result of this recipe, usually for display purposes (e.g. recipe book). If your recipe has more than one possible result (e.g. it's dynamic and depends on its inputs), then return an empty stack. */
+     ItemStack getRecipeOutput();
+ 
+-    NonNullList<ItemStack> getRemainingItems(InventoryCrafting var1);
++    default NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
++        return net.minecraftforge.common.ForgeHooks.defaultRecipeGetRemainingItems(inv);
++    }
+ 
+     default NonNullList<Ingredient> getIngredients() {
+         return NonNullList.create();
+@@ -29,8 +31,7 @@
+         return false;
+     }
+ 
+-    /** Recipes with equal group are combined into one button in the recipe book */
+-    default String getGroup() {
++default String getGroup() {
+         return "";
+     }
+ }

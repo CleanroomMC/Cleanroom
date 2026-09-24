@@ -1,0 +1,18 @@
+--- original/net/minecraft/enchantment/EnumEnchantmentType.java
++++ modified/net/minecraft/enchantment/EnumEnchantmentType.java
+@@ -108,6 +108,14 @@
+     EnumEnchantmentType() {
+     }
+ 
++    private com.google.common.base.Predicate<Item> delegate = null;
++
++    private EnumEnchantmentType(com.google.common.base.Predicate<Item> delegate) {
++        this.delegate = delegate;
++    }
++
+     /** Return true if the item passed can be enchanted by a enchantment of this type. */
+-    public abstract boolean canEnchantItem(Item var1);
++    public boolean canEnchantItem(Item itemIn) {
++        return this.delegate == null ? false : this.delegate.apply(itemIn);
++    }
+ }

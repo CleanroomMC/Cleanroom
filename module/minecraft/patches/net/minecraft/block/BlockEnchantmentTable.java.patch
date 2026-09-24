@@ -1,0 +1,12 @@
+--- original/net/minecraft/block/BlockEnchantmentTable.java
++++ modified/net/minecraft/block/BlockEnchantmentTable.java
+@@ -59,7 +59,8 @@
+                 if (rand.nextInt(16) == 0) {
+                     for (int k = 0; k <= 1; k++) {
+                         BlockPos blockpos = pos.add(i, k, j);
+-                        if (worldIn.getBlockState(blockpos).getBlock() == Blocks.BOOKSHELF) {
++
++                        if (net.minecraftforge.common.ForgeHooks.getEnchantPower(worldIn, blockpos) > 0) {
+                             if (!worldIn.isAirBlock(pos.add(i / 2, 0, j / 2))) {
+                                 break;
+                             }

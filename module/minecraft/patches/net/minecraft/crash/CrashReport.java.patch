@@ -1,0 +1,26 @@
+--- original/net/minecraft/crash/CrashReport.java
++++ modified/net/minecraft/crash/CrashReport.java
+@@ -103,6 +103,7 @@
+                 return IntCache.getCacheSizes();
+             }
+         });
++        net.minecraftforge.fml.common.FMLCommonHandler.instance().enhanceCrashReport(this, this.systemDetailsCategory);
+     }
+ 
+     /** Returns the description of the Crash Report. */
+@@ -171,13 +172,14 @@
+             IOUtils.closeQuietly(printwriter);
+         }
+ 
+-        return s;
++        return s + com.cleanroommc.cleanmix.CleanMixHooks.addMixinMetadataToCrashReport(throwable);
+     }
+ 
+     /** Gets the complete report with headers, stack trace, and different sections as a string. */
+     public String getCompleteReport() {
+         StringBuilder stringbuilder = new StringBuilder();
+         stringbuilder.append("---- Minecraft Crash Report ----\n");
++        net.minecraftforge.fml.relauncher.CoreModManager.onCrash(stringbuilder);
+         stringbuilder.append("// ");
+         stringbuilder.append(getWittyComment());
+         stringbuilder.append("\n\n");

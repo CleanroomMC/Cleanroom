@@ -1,0 +1,33 @@
+--- original/net/minecraft/world/end/DragonFightManager.java
++++ modified/net/minecraft/world/end/DragonFightManager.java
+@@ -82,6 +82,8 @@
+ 
+             this.dragonKilled = compound.getBoolean("DragonKilled");
+             this.previouslyKilled = compound.getBoolean("PreviouslyKilled");
++            this.scanForLegacyFight = !compound.getBoolean("LegacyScanPerformed"); // Forge: fix MC-105080
++
+             if (compound.getBoolean("IsRespawning")) {
+                 this.respawnState = DragonSpawnManager.START;
+             }
+@@ -123,6 +125,8 @@
+ 
+         nbttagcompound.setBoolean("DragonKilled", this.dragonKilled);
+         nbttagcompound.setBoolean("PreviouslyKilled", this.previouslyKilled);
++        nbttagcompound.setBoolean("LegacyScanPerformed", !this.scanForLegacyFight); // Forge: fix MC-105080
++
+         if (this.exitPortalLocation != null) {
+             nbttagcompound.setTag("ExitPortalLocation", NBTUtil.createPosTag(this.exitPortalLocation));
+         }
+@@ -481,4 +485,12 @@
+             }
+         }
+     }
++
++    public void addPlayer(EntityPlayerMP player) {
++        this.bossInfo.addPlayer(player);
++    }
++
++    public void removePlayer(EntityPlayerMP player) {
++        this.bossInfo.removePlayer(player);
++    }
+ }

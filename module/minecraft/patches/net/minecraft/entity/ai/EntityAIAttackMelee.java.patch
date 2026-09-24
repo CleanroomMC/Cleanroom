@@ -1,0 +1,54 @@
+--- original/net/minecraft/entity/ai/EntityAIAttackMelee.java
++++ modified/net/minecraft/entity/ai/EntityAIAttackMelee.java
+@@ -24,6 +24,8 @@
+     private double targetY;
+     private double targetZ;
+     protected final int attackInterval = 20;
++    private int failedPathFindingPenalty = 0;
++    private boolean canPenalize = false;
+ 
+     public EntityAIAttackMelee(EntityCreature creature, double speedIn, boolean useLongMemory) {
+         this.attacker = creature;
+@@ -45,6 +47,19 @@
+             return false;
+         }
+ 
++        if (canPenalize)
++        {
++            if (--this.delayCounter <= 0)
++            {
++                this.path = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
++                this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
++                return this.path != null;
++            }
++            else
++            {
++                return true;
++            }
++        }
+         this.path = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
+         return this.path != null
+             ? true
+@@ -110,6 +125,22 @@
+             this.targetY = entitylivingbase.getEntityBoundingBox().minY;
+             this.targetZ = entitylivingbase.posZ;
+             this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
++            if (this.canPenalize)
++            {
++                this.delayCounter += failedPathFindingPenalty;
++                if (this.attacker.getNavigator().getPath() != null)
++                {
++                    net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
++                    if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
++                        failedPathFindingPenalty = 0;
++                    else
++                        failedPathFindingPenalty += 10;
++                }
++                else
++                {
++                    failedPathFindingPenalty += 10;
++                }
++            }
+             if (d0 > 1024.0) {
+                 this.delayCounter += 10;
+             } else if (d0 > 256.0) {

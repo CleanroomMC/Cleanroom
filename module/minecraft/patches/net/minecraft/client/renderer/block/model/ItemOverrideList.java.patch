@@ -1,0 +1,29 @@
+--- original/net/minecraft/client/renderer/block/model/ItemOverrideList.java
++++ modified/net/minecraft/client/renderer/block/model/ItemOverrideList.java
+@@ -25,6 +25,7 @@
+     }
+ 
+     @Nullable
++    @Deprecated
+     public ResourceLocation applyOverride(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
+         if (!this.overrides.isEmpty()) {
+             for (ItemOverride itemoverride : this.overrides) {
+@@ -36,4 +37,18 @@
+ 
+         return null;
+     }
++
++    public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
++        if (!stack.isEmpty() && stack.getItem().hasCustomProperties()) {
++            ResourceLocation location = applyOverride(stack, world, entity);
++            if (location != null) {
++                return net.minecraft.client.Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(net.minecraftforge.client.model.ModelLoader.getInventoryVariant(location.toString()));
++            }
++        }
++        return originalModel;
++    }
++
++    public com.google.common.collect.ImmutableList<ItemOverride> getOverrides() {
++        return com.google.common.collect.ImmutableList.copyOf(overrides);
++    }
+ }

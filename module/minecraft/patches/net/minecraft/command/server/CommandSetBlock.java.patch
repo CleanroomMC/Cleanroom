@@ -1,0 +1,11 @@
+--- original/net/minecraft/command/server/CommandSetBlock.java
++++ modified/net/minecraft/command/server/CommandSetBlock.java
+@@ -63,7 +63,7 @@
+ 
+         NBTTagCompound nbttagcompound = new NBTTagCompound();
+         boolean flag = false;
+-        if (args.length >= 7 && block.hasTileEntity()) {
++        if (args.length >= 7 && block.hasTileEntity(iblockstate)) {
+             String s = buildString(args, 6);
+ 
+             try {

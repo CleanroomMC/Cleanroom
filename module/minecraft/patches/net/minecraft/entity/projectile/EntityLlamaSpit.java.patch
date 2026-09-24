@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/projectile/EntityLlamaSpit.java
++++ modified/net/minecraft/entity/projectile/EntityLlamaSpit.java
+@@ -80,7 +80,7 @@
+             raytraceresult = new RayTraceResult(entity);
+         }
+ 
+-        if (raytraceresult != null) {
++        if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+             this.onHit(raytraceresult);
+         }
+ 

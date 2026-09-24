@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/passive/EntityRabbit.java
++++ modified/net/minecraft/entity/passive/EntityRabbit.java
+@@ -499,7 +499,7 @@
+         @Override
+         public boolean shouldExecute() {
+             if (this.runDelay <= 0) {
+-                if (!this.rabbit.world.getGameRules().getBoolean("mobGriefing")) {
++                if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.rabbit.world, this.rabbit)) {
+                     return false;
+                 }
+ 

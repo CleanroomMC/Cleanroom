@@ -1,0 +1,137 @@
+--- original/net/minecraft/block/state/BlockStateContainer.java
++++ modified/net/minecraft/block/state/BlockStateContainer.java
+@@ -54,6 +54,16 @@
+     private final ImmutableList<IBlockState> validStates;
+ 
+     public BlockStateContainer(Block blockIn, IProperty<?>... properties) {
++        this(blockIn, properties, null);
++    }
++
++    protected StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<net.minecraftforge.common.property.IUnlistedProperty<?>, java.util.Optional<?>> unlistedProperties)
++    {
++        return new StateImplementation(block, properties);
++    }
++
++    protected BlockStateContainer(Block blockIn, IProperty<?>[] properties, ImmutableMap<net.minecraftforge.common.property.IUnlistedProperty<?>, java.util.Optional<?>> unlistedProperties)
++    {
+         this.block = blockIn;
+         Map<String, IProperty<?>> map = Maps.newHashMap();
+ 
+@@ -68,9 +78,7 @@
+ 
+         for (List<Comparable<?>> list : Cartesian.cartesianProduct(this.getAllowedValues())) {
+             Map<IProperty<?>, Comparable<?>> map1 = MapPopulator.createMap(this.properties.values(), list);
+-            BlockStateContainer.StateImplementation blockstatecontainer$stateimplementation = new BlockStateContainer.StateImplementation(
+-                blockIn, ImmutableMap.copyOf(map1)
+-            );
++            BlockStateContainer.StateImplementation blockstatecontainer$stateimplementation = createState(blockIn, ImmutableMap.copyOf(map1), unlistedProperties);
+             map2.put(map1, blockstatecontainer$stateimplementation);
+             list1.add(blockstatecontainer$stateimplementation);
+         }
+@@ -148,6 +156,13 @@
+             this.block = blockIn;
+             this.properties = propertiesIn;
+         }
++            
++        protected StateImplementation(Block blockIn, ImmutableMap<IProperty<?>, Comparable<?>> propertiesIn, ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> propertyValueTable)
++        {
++            this.block = blockIn;
++            this.properties = propertiesIn;
++            this.propertyValueTable = propertyValueTable;
++        }
+ 
+         /** Get the names of all properties defined for this BlockState */
+         @Override
+@@ -458,5 +473,92 @@
+         public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
+             return this.block.getBlockFaceShape(worldIn, this, pos, facing);
+         }
++        //Forge Start
++        @Override
++        public ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> getPropertyValueTable()
++        {
++            return propertyValueTable;
++        }
++
++        @Override
++        public int getLightOpacity(IBlockAccess world, BlockPos pos)
++        {
++            return this.block.getLightOpacity(this, world, pos);
++        }
++
++        @Override
++        public int getLightValue(IBlockAccess world, BlockPos pos)
++        {
++            return this.block.getLightValue(this, world, pos);
++        }
++
++        @Override
++        public boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side)
++        {
++            return this.block.isSideSolid(this, world, pos, side);
++        }
++
++        @Override
++        public boolean doesSideBlockChestOpening(IBlockAccess world, BlockPos pos, EnumFacing side)
++        {
++            return this.block.doesSideBlockChestOpening(this, world, pos, side);
++        }
++
++        @Override
++        public boolean doesSideBlockRendering(IBlockAccess world, BlockPos pos, EnumFacing side)
++        {
++            return this.block.doesSideBlockRendering(this, world, pos, side);
+     }
+ }
++    /**
++     * Forge added class to make building things easier.
++     * Will return an instance of BlockStateContainer appropriate for
++     * the list of properties passed in.
++     *
++     * Example usage:
++     *
++     *   protected BlockStateContainer createBlockState()
++     *   {
++     *       return (new BlockStateContainer.Builder(this)).add(FACING).add(SOME_UNLISTED).build();
++     *   }
++     *
++     */
++    public static class Builder
++    {
++        private final Block block;
++        private final List<IProperty<?>> listed = Lists.newArrayList();
++        private final List<net.minecraftforge.common.property.IUnlistedProperty<?>> unlisted = Lists.newArrayList();
++
++        public Builder(Block block)
++        {
++            this.block = block;
++        }
++
++        public Builder add(IProperty<?>... props)
++        {
++            for (IProperty<?> prop : props)
++                this.listed.add(prop);
++            return this;
++        }
++
++        public Builder add(net.minecraftforge.common.property.IUnlistedProperty<?>... props)
++        {
++            for (net.minecraftforge.common.property.IUnlistedProperty<?> prop : props)
++                this.unlisted.add(prop);
++            return this;
++        }
++
++        public BlockStateContainer build()
++        {
++            IProperty<?>[] listed = new IProperty[this.listed.size()];
++            listed = this.listed.toArray(listed);
++            if (this.unlisted.size() == 0)
++                return new BlockStateContainer(this.block, listed);
++
++            net.minecraftforge.common.property.IUnlistedProperty<?>[] unlisted = new net.minecraftforge.common.property.IUnlistedProperty[this.unlisted.size()];
++            unlisted = this.unlisted.toArray(unlisted);
++
++            return new net.minecraftforge.common.property.ExtendedBlockState(this.block, listed, unlisted);
++        }
++    }
++}

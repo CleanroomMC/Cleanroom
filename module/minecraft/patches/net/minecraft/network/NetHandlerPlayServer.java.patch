@@ -1,0 +1,115 @@
+--- original/net/minecraft/network/NetHandlerPlayServer.java
++++ modified/net/minecraft/network/NetHandlerPlayServer.java
+@@ -351,9 +351,11 @@
+                 }
+ 
+                 entity.setPositionAndRotation(d3, d4, d5, f, f1);
++                this.player.setPositionAndRotation(d3, d4, d5, this.player.rotationYaw, this.player.rotationPitch); // Forge - Resync player position on vehicle moving
+                 boolean flag2 = worldserver.getCollisionBoxes(entity, entity.getEntityBoundingBox().shrink(0.0625)).isEmpty();
+                 if (flag && (flag1 || !flag2)) {
+                     entity.setPositionAndRotation(d0, d1, d2, f, f1);
++                    this.player.setPositionAndRotation(d0, d1, d2, this.player.rotationYaw, this.player.rotationPitch); // Forge - Resync player position on vehicle moving
+                     this.netManager.sendPacket(new SPacketMoveVehicle(entity));
+                     return;
+                 }
+@@ -649,7 +651,11 @@
+                 double d1 = this.player.posY - (blockpos.getY() + 0.5) + 1.5;
+                 double d2 = this.player.posZ - (blockpos.getZ() + 0.5);
+                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+-                if (d3 > 36.0) {
++
++                double dist = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue() + 1;
++                dist *= dist;
++
++                if (d3 > dist) {
+                     return;
+                 } else if (blockpos.getY() >= this.server.getBuildLimit()) {
+                     return;
+@@ -690,11 +696,13 @@
+         EnumFacing enumfacing = packetIn.getDirection();
+         this.player.markPlayerActive();
+         if (blockpos.getY() < this.server.getBuildLimit() - 1
+-            || enumfacing != EnumFacing.UP && blockpos.getY() < this.server.getBuildLimit()) {
++                || enumfacing != EnumFacing.UP && blockpos.getY() < this.server.getBuildLimit()) {
++            double dist = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue() + 3;
++            dist *= dist;
+             if (this.targetPos == null
+-                && this.player.getDistanceSq(blockpos.getX() + 0.5, blockpos.getY() + 0.5, blockpos.getZ() + 0.5) < 64.0
+-                && !this.server.isBlockProtected(worldserver, blockpos, this.player)
+-                && worldserver.getWorldBorder().contains(blockpos)) {
++                    && this.player.getDistanceSq(blockpos.getX() + 0.5, blockpos.getY() + 0.5, blockpos.getZ() + 0.5) < dist
++                    && !this.server.isBlockProtected(worldserver, blockpos, this.player)
++                    && worldserver.getWorldBorder().contains(blockpos)) {
+                 this.player
+                     .interactionManager
+                     .processRightClickBlock(
+@@ -752,18 +760,19 @@
+                 this.player.dismountRidingEntity();
+                 if (entity.world == this.player.world) {
+                     this.player.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
+-                } else {
++                } else if (net.minecraftforge.common.ForgeHooks.onTravelToDimension(this.player, entity.dimension)) {
++                    int prevDimension = this.player.dimension;
+                     WorldServer worldserver1 = this.player.getServerWorld();
+                     WorldServer worldserver2 = (WorldServer)entity.world;
+                     this.player.dimension = entity.dimension;
+                     this.sendPacket(
+                         new SPacketRespawn(
+                             this.player.dimension,
+-                            worldserver1.getDifficulty(),
+-                            worldserver1.getWorldInfo().getTerrainType(),
++                            worldserver2.getDifficulty(),
++                            worldserver2.getWorldInfo().getTerrainType(),
+                             this.player.interactionManager.getGameType()
+                         )
+-                    );
++                    ); // Forge: Use new dimensions information
+                     this.server.getPlayerList().updatePermissionLevel(this.player);
+                     worldserver1.removeEntityDangerously(this.player);
+                     this.player.isDead = false;
+@@ -781,6 +790,7 @@
+                     this.player.interactionManager.setWorld(worldserver2);
+                     this.server.getPlayerList().updateTimeAndWeatherForPlayer(this.player, worldserver2);
+                     this.server.getPlayerList().syncPlayerInventory(this.player);
++                    net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerChangedDimensionEvent(this.player, prevDimension, this.player.dimension);
+                 }
+             }
+         }
+@@ -877,7 +887,9 @@
+             if (s.startsWith("/")) {
+                 this.handleSlashCommand(s);
+             } else {
+-                ITextComponent itextcomponent = new TextComponentTranslation("chat.type.text", this.player.getDisplayName(), s);
++                ITextComponent itextcomponent = new TextComponentTranslation("chat.type.text", this.player.getDisplayName(), net.minecraftforge.common.ForgeHooks.newChatWithLinks(s));
++                itextcomponent = net.minecraftforge.common.ForgeHooks.onServerChatEvent(this, s, itextcomponent);
++                if (itextcomponent == null) return;
+                 this.server.getPlayerList().sendMessage(itextcomponent, false);
+             }
+ 
+@@ -982,6 +994,7 @@
+                     this.player.interactOn(entity, enumhand);
+                 } else if (packetIn.getAction() == CPacketUseEntity.Action.INTERACT_AT) {
+                     EnumHand enumhand1 = packetIn.getHand();
++                    if(net.minecraftforge.common.ForgeHooks.onInteractEntityAt(player, entity, packetIn.getHitVec(), enumhand1) != null) return;
+                     entity.applyPlayerInteraction(this.player, packetIn.getHitVec(), enumhand1);
+                 } else if (packetIn.getAction() == CPacketUseEntity.Action.ATTACK) {
+                     if (entity instanceof EntityItem || entity instanceof EntityXPOrb || entity instanceof EntityArrow || entity == this.player) {
+@@ -1013,7 +1026,8 @@
+                         return;
+                     }
+ 
+-                    this.player = this.server.getPlayerList().recreatePlayerEntity(this.player, 0, false);
++                    this.player = this.server.getPlayerList().recreatePlayerEntity(this.player, player.dimension, false);
++
+                     if (this.server.isHardcore()) {
+                         this.player.setGameType(GameType.SPECTATOR);
+                         this.player.getServerWorld().getGameRules().setOrCreateGameRule("spectatorsGenerateChunks", "false");
+@@ -1051,7 +1065,7 @@
+                 ItemStack itemstack2 = this.player
+                     .openContainer
+                     .slotClick(packetIn.getSlotId(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
+-                if (ItemStack.areItemStacksEqual(packetIn.getClickedItem(), itemstack2)) {
++                if (ItemStack.areItemStacksEqualUsingNBTShareTag(packetIn.getClickedItem(), itemstack2)) {
+                     this.player
+                         .connection
+                         .sendPacket(new SPacketConfirmTransaction(packetIn.getWindowId(), packetIn.getActionNumber(), true));

@@ -1,0 +1,525 @@
+package com.cleanroommc.client.sdl.input;
+
+import org.lwjgl.sdl.SDLScancode;
+
+/**
+ * SDL scancodes, so callers do not import <code>org.lwjgl.sdl</code>.
+ */
+public enum Scancode {
+
+    UNKNOWN(SDLScancode.SDL_SCANCODE_UNKNOWN),
+    A(SDLScancode.SDL_SCANCODE_A),
+    B(SDLScancode.SDL_SCANCODE_B),
+    C(SDLScancode.SDL_SCANCODE_C),
+    D(SDLScancode.SDL_SCANCODE_D),
+    E(SDLScancode.SDL_SCANCODE_E),
+    F(SDLScancode.SDL_SCANCODE_F),
+    G(SDLScancode.SDL_SCANCODE_G),
+    H(SDLScancode.SDL_SCANCODE_H),
+    I(SDLScancode.SDL_SCANCODE_I),
+    J(SDLScancode.SDL_SCANCODE_J),
+    K(SDLScancode.SDL_SCANCODE_K),
+    L(SDLScancode.SDL_SCANCODE_L),
+    M(SDLScancode.SDL_SCANCODE_M),
+    N(SDLScancode.SDL_SCANCODE_N),
+    O(SDLScancode.SDL_SCANCODE_O),
+    P(SDLScancode.SDL_SCANCODE_P),
+    Q(SDLScancode.SDL_SCANCODE_Q),
+    R(SDLScancode.SDL_SCANCODE_R),
+    S(SDLScancode.SDL_SCANCODE_S),
+    T(SDLScancode.SDL_SCANCODE_T),
+    U(SDLScancode.SDL_SCANCODE_U),
+    V(SDLScancode.SDL_SCANCODE_V),
+    W(SDLScancode.SDL_SCANCODE_W),
+    X(SDLScancode.SDL_SCANCODE_X),
+    Y(SDLScancode.SDL_SCANCODE_Y),
+    Z(SDLScancode.SDL_SCANCODE_Z),
+    DIGIT_1(SDLScancode.SDL_SCANCODE_1),
+    DIGIT_2(SDLScancode.SDL_SCANCODE_2),
+    DIGIT_3(SDLScancode.SDL_SCANCODE_3),
+    DIGIT_4(SDLScancode.SDL_SCANCODE_4),
+    DIGIT_5(SDLScancode.SDL_SCANCODE_5),
+    DIGIT_6(SDLScancode.SDL_SCANCODE_6),
+    DIGIT_7(SDLScancode.SDL_SCANCODE_7),
+    DIGIT_8(SDLScancode.SDL_SCANCODE_8),
+    DIGIT_9(SDLScancode.SDL_SCANCODE_9),
+    DIGIT_0(SDLScancode.SDL_SCANCODE_0),
+    RETURN(SDLScancode.SDL_SCANCODE_RETURN),
+    ESCAPE(SDLScancode.SDL_SCANCODE_ESCAPE),
+    BACKSPACE(SDLScancode.SDL_SCANCODE_BACKSPACE),
+    TAB(SDLScancode.SDL_SCANCODE_TAB),
+    SPACE(SDLScancode.SDL_SCANCODE_SPACE),
+    MINUS(SDLScancode.SDL_SCANCODE_MINUS),
+    EQUALS(SDLScancode.SDL_SCANCODE_EQUALS),
+    LEFTBRACKET(SDLScancode.SDL_SCANCODE_LEFTBRACKET),
+    RIGHTBRACKET(SDLScancode.SDL_SCANCODE_RIGHTBRACKET),
+    BACKSLASH(SDLScancode.SDL_SCANCODE_BACKSLASH),
+    NONUSHASH(SDLScancode.SDL_SCANCODE_NONUSHASH),
+    SEMICOLON(SDLScancode.SDL_SCANCODE_SEMICOLON),
+    APOSTROPHE(SDLScancode.SDL_SCANCODE_APOSTROPHE),
+    GRAVE(SDLScancode.SDL_SCANCODE_GRAVE),
+    COMMA(SDLScancode.SDL_SCANCODE_COMMA),
+    PERIOD(SDLScancode.SDL_SCANCODE_PERIOD),
+    SLASH(SDLScancode.SDL_SCANCODE_SLASH),
+    CAPSLOCK(SDLScancode.SDL_SCANCODE_CAPSLOCK),
+    F1(SDLScancode.SDL_SCANCODE_F1),
+    F2(SDLScancode.SDL_SCANCODE_F2),
+    F3(SDLScancode.SDL_SCANCODE_F3),
+    F4(SDLScancode.SDL_SCANCODE_F4),
+    F5(SDLScancode.SDL_SCANCODE_F5),
+    F6(SDLScancode.SDL_SCANCODE_F6),
+    F7(SDLScancode.SDL_SCANCODE_F7),
+    F8(SDLScancode.SDL_SCANCODE_F8),
+    F9(SDLScancode.SDL_SCANCODE_F9),
+    F10(SDLScancode.SDL_SCANCODE_F10),
+    F11(SDLScancode.SDL_SCANCODE_F11),
+    F12(SDLScancode.SDL_SCANCODE_F12),
+    PRINTSCREEN(SDLScancode.SDL_SCANCODE_PRINTSCREEN),
+    SCROLLLOCK(SDLScancode.SDL_SCANCODE_SCROLLLOCK),
+    PAUSE(SDLScancode.SDL_SCANCODE_PAUSE),
+    INSERT(SDLScancode.SDL_SCANCODE_INSERT),
+    HOME(SDLScancode.SDL_SCANCODE_HOME),
+    PAGEUP(SDLScancode.SDL_SCANCODE_PAGEUP),
+    DELETE(SDLScancode.SDL_SCANCODE_DELETE),
+    END(SDLScancode.SDL_SCANCODE_END),
+    PAGEDOWN(SDLScancode.SDL_SCANCODE_PAGEDOWN),
+    RIGHT(SDLScancode.SDL_SCANCODE_RIGHT),
+    LEFT(SDLScancode.SDL_SCANCODE_LEFT),
+    DOWN(SDLScancode.SDL_SCANCODE_DOWN),
+    UP(SDLScancode.SDL_SCANCODE_UP),
+    NUMLOCKCLEAR(SDLScancode.SDL_SCANCODE_NUMLOCKCLEAR),
+    KP_DIVIDE(SDLScancode.SDL_SCANCODE_KP_DIVIDE),
+    KP_MULTIPLY(SDLScancode.SDL_SCANCODE_KP_MULTIPLY),
+    KP_MINUS(SDLScancode.SDL_SCANCODE_KP_MINUS),
+    KP_PLUS(SDLScancode.SDL_SCANCODE_KP_PLUS),
+    KP_ENTER(SDLScancode.SDL_SCANCODE_KP_ENTER),
+    KP_1(SDLScancode.SDL_SCANCODE_KP_1),
+    KP_2(SDLScancode.SDL_SCANCODE_KP_2),
+    KP_3(SDLScancode.SDL_SCANCODE_KP_3),
+    KP_4(SDLScancode.SDL_SCANCODE_KP_4),
+    KP_5(SDLScancode.SDL_SCANCODE_KP_5),
+    KP_6(SDLScancode.SDL_SCANCODE_KP_6),
+    KP_7(SDLScancode.SDL_SCANCODE_KP_7),
+    KP_8(SDLScancode.SDL_SCANCODE_KP_8),
+    KP_9(SDLScancode.SDL_SCANCODE_KP_9),
+    KP_0(SDLScancode.SDL_SCANCODE_KP_0),
+    KP_PERIOD(SDLScancode.SDL_SCANCODE_KP_PERIOD),
+    NONUSBACKSLASH(SDLScancode.SDL_SCANCODE_NONUSBACKSLASH),
+    APPLICATION(SDLScancode.SDL_SCANCODE_APPLICATION),
+    POWER(SDLScancode.SDL_SCANCODE_POWER),
+    KP_EQUALS(SDLScancode.SDL_SCANCODE_KP_EQUALS),
+    F13(SDLScancode.SDL_SCANCODE_F13),
+    F14(SDLScancode.SDL_SCANCODE_F14),
+    F15(SDLScancode.SDL_SCANCODE_F15),
+    F16(SDLScancode.SDL_SCANCODE_F16),
+    F17(SDLScancode.SDL_SCANCODE_F17),
+    F18(SDLScancode.SDL_SCANCODE_F18),
+    F19(SDLScancode.SDL_SCANCODE_F19),
+    F20(SDLScancode.SDL_SCANCODE_F20),
+    F21(SDLScancode.SDL_SCANCODE_F21),
+    F22(SDLScancode.SDL_SCANCODE_F22),
+    F23(SDLScancode.SDL_SCANCODE_F23),
+    F24(SDLScancode.SDL_SCANCODE_F24),
+    EXECUTE(SDLScancode.SDL_SCANCODE_EXECUTE),
+    HELP(SDLScancode.SDL_SCANCODE_HELP),
+    MENU(SDLScancode.SDL_SCANCODE_MENU),
+    SELECT(SDLScancode.SDL_SCANCODE_SELECT),
+    STOP(SDLScancode.SDL_SCANCODE_STOP),
+    AGAIN(SDLScancode.SDL_SCANCODE_AGAIN),
+    UNDO(SDLScancode.SDL_SCANCODE_UNDO),
+    CUT(SDLScancode.SDL_SCANCODE_CUT),
+    COPY(SDLScancode.SDL_SCANCODE_COPY),
+    PASTE(SDLScancode.SDL_SCANCODE_PASTE),
+    FIND(SDLScancode.SDL_SCANCODE_FIND),
+    MUTE(SDLScancode.SDL_SCANCODE_MUTE),
+    VOLUMEUP(SDLScancode.SDL_SCANCODE_VOLUMEUP),
+    VOLUMEDOWN(SDLScancode.SDL_SCANCODE_VOLUMEDOWN),
+    KP_COMMA(SDLScancode.SDL_SCANCODE_KP_COMMA),
+    KP_EQUALSAS400(SDLScancode.SDL_SCANCODE_KP_EQUALSAS400),
+    INTERNATIONAL1(SDLScancode.SDL_SCANCODE_INTERNATIONAL1),
+    INTERNATIONAL2(SDLScancode.SDL_SCANCODE_INTERNATIONAL2),
+    INTERNATIONAL3(SDLScancode.SDL_SCANCODE_INTERNATIONAL3),
+    INTERNATIONAL4(SDLScancode.SDL_SCANCODE_INTERNATIONAL4),
+    INTERNATIONAL5(SDLScancode.SDL_SCANCODE_INTERNATIONAL5),
+    INTERNATIONAL6(SDLScancode.SDL_SCANCODE_INTERNATIONAL6),
+    INTERNATIONAL7(SDLScancode.SDL_SCANCODE_INTERNATIONAL7),
+    INTERNATIONAL8(SDLScancode.SDL_SCANCODE_INTERNATIONAL8),
+    INTERNATIONAL9(SDLScancode.SDL_SCANCODE_INTERNATIONAL9),
+    LANG1(SDLScancode.SDL_SCANCODE_LANG1),
+    LANG2(SDLScancode.SDL_SCANCODE_LANG2),
+    LANG3(SDLScancode.SDL_SCANCODE_LANG3),
+    LANG4(SDLScancode.SDL_SCANCODE_LANG4),
+    LANG5(SDLScancode.SDL_SCANCODE_LANG5),
+    LANG6(SDLScancode.SDL_SCANCODE_LANG6),
+    LANG7(SDLScancode.SDL_SCANCODE_LANG7),
+    LANG8(SDLScancode.SDL_SCANCODE_LANG8),
+    LANG9(SDLScancode.SDL_SCANCODE_LANG9),
+    ALTERASE(SDLScancode.SDL_SCANCODE_ALTERASE),
+    SYSREQ(SDLScancode.SDL_SCANCODE_SYSREQ),
+    CANCEL(SDLScancode.SDL_SCANCODE_CANCEL),
+    CLEAR(SDLScancode.SDL_SCANCODE_CLEAR),
+    PRIOR(SDLScancode.SDL_SCANCODE_PRIOR),
+    RETURN2(SDLScancode.SDL_SCANCODE_RETURN2),
+    SEPARATOR(SDLScancode.SDL_SCANCODE_SEPARATOR),
+    OUT(SDLScancode.SDL_SCANCODE_OUT),
+    OPER(SDLScancode.SDL_SCANCODE_OPER),
+    CLEARAGAIN(SDLScancode.SDL_SCANCODE_CLEARAGAIN),
+    CRSEL(SDLScancode.SDL_SCANCODE_CRSEL),
+    EXSEL(SDLScancode.SDL_SCANCODE_EXSEL),
+    KP_00(SDLScancode.SDL_SCANCODE_KP_00),
+    KP_000(SDLScancode.SDL_SCANCODE_KP_000),
+    THOUSANDSSEPARATOR(SDLScancode.SDL_SCANCODE_THOUSANDSSEPARATOR),
+    DECIMALSEPARATOR(SDLScancode.SDL_SCANCODE_DECIMALSEPARATOR),
+    CURRENCYUNIT(SDLScancode.SDL_SCANCODE_CURRENCYUNIT),
+    CURRENCYSUBUNIT(SDLScancode.SDL_SCANCODE_CURRENCYSUBUNIT),
+    KP_LEFTPAREN(SDLScancode.SDL_SCANCODE_KP_LEFTPAREN),
+    KP_RIGHTPAREN(SDLScancode.SDL_SCANCODE_KP_RIGHTPAREN),
+    KP_LEFTBRACE(SDLScancode.SDL_SCANCODE_KP_LEFTBRACE),
+    KP_RIGHTBRACE(SDLScancode.SDL_SCANCODE_KP_RIGHTBRACE),
+    KP_TAB(SDLScancode.SDL_SCANCODE_KP_TAB),
+    KP_BACKSPACE(SDLScancode.SDL_SCANCODE_KP_BACKSPACE),
+    KP_A(SDLScancode.SDL_SCANCODE_KP_A),
+    KP_B(SDLScancode.SDL_SCANCODE_KP_B),
+    KP_C(SDLScancode.SDL_SCANCODE_KP_C),
+    KP_D(SDLScancode.SDL_SCANCODE_KP_D),
+    KP_E(SDLScancode.SDL_SCANCODE_KP_E),
+    KP_F(SDLScancode.SDL_SCANCODE_KP_F),
+    KP_XOR(SDLScancode.SDL_SCANCODE_KP_XOR),
+    KP_POWER(SDLScancode.SDL_SCANCODE_KP_POWER),
+    KP_PERCENT(SDLScancode.SDL_SCANCODE_KP_PERCENT),
+    KP_LESS(SDLScancode.SDL_SCANCODE_KP_LESS),
+    KP_GREATER(SDLScancode.SDL_SCANCODE_KP_GREATER),
+    KP_AMPERSAND(SDLScancode.SDL_SCANCODE_KP_AMPERSAND),
+    KP_DBLAMPERSAND(SDLScancode.SDL_SCANCODE_KP_DBLAMPERSAND),
+    KP_VERTICALBAR(SDLScancode.SDL_SCANCODE_KP_VERTICALBAR),
+    KP_DBLVERTICALBAR(SDLScancode.SDL_SCANCODE_KP_DBLVERTICALBAR),
+    KP_COLON(SDLScancode.SDL_SCANCODE_KP_COLON),
+    KP_HASH(SDLScancode.SDL_SCANCODE_KP_HASH),
+    KP_SPACE(SDLScancode.SDL_SCANCODE_KP_SPACE),
+    KP_AT(SDLScancode.SDL_SCANCODE_KP_AT),
+    KP_EXCLAM(SDLScancode.SDL_SCANCODE_KP_EXCLAM),
+    KP_MEMSTORE(SDLScancode.SDL_SCANCODE_KP_MEMSTORE),
+    KP_MEMRECALL(SDLScancode.SDL_SCANCODE_KP_MEMRECALL),
+    KP_MEMCLEAR(SDLScancode.SDL_SCANCODE_KP_MEMCLEAR),
+    KP_MEMADD(SDLScancode.SDL_SCANCODE_KP_MEMADD),
+    KP_MEMSUBTRACT(SDLScancode.SDL_SCANCODE_KP_MEMSUBTRACT),
+    KP_MEMMULTIPLY(SDLScancode.SDL_SCANCODE_KP_MEMMULTIPLY),
+    KP_MEMDIVIDE(SDLScancode.SDL_SCANCODE_KP_MEMDIVIDE),
+    KP_PLUSMINUS(SDLScancode.SDL_SCANCODE_KP_PLUSMINUS),
+    KP_CLEAR(SDLScancode.SDL_SCANCODE_KP_CLEAR),
+    KP_CLEARENTRY(SDLScancode.SDL_SCANCODE_KP_CLEARENTRY),
+    KP_BINARY(SDLScancode.SDL_SCANCODE_KP_BINARY),
+    KP_OCTAL(SDLScancode.SDL_SCANCODE_KP_OCTAL),
+    KP_DECIMAL(SDLScancode.SDL_SCANCODE_KP_DECIMAL),
+    KP_HEXADECIMAL(SDLScancode.SDL_SCANCODE_KP_HEXADECIMAL),
+    LCTRL(SDLScancode.SDL_SCANCODE_LCTRL),
+    LSHIFT(SDLScancode.SDL_SCANCODE_LSHIFT),
+    LALT(SDLScancode.SDL_SCANCODE_LALT),
+    LGUI(SDLScancode.SDL_SCANCODE_LGUI),
+    RCTRL(SDLScancode.SDL_SCANCODE_RCTRL),
+    RSHIFT(SDLScancode.SDL_SCANCODE_RSHIFT),
+    RALT(SDLScancode.SDL_SCANCODE_RALT),
+    RGUI(SDLScancode.SDL_SCANCODE_RGUI),
+    MODE(SDLScancode.SDL_SCANCODE_MODE),
+    SLEEP(SDLScancode.SDL_SCANCODE_SLEEP),
+    WAKE(SDLScancode.SDL_SCANCODE_WAKE),
+    CHANNEL_INCREMENT(SDLScancode.SDL_SCANCODE_CHANNEL_INCREMENT),
+    CHANNEL_DECREMENT(SDLScancode.SDL_SCANCODE_CHANNEL_DECREMENT),
+    MEDIA_PLAY(SDLScancode.SDL_SCANCODE_MEDIA_PLAY),
+    MEDIA_PAUSE(SDLScancode.SDL_SCANCODE_MEDIA_PAUSE),
+    MEDIA_RECORD(SDLScancode.SDL_SCANCODE_MEDIA_RECORD),
+    MEDIA_FAST_FORWARD(SDLScancode.SDL_SCANCODE_MEDIA_FAST_FORWARD),
+    MEDIA_REWIND(SDLScancode.SDL_SCANCODE_MEDIA_REWIND),
+    MEDIA_NEXT_TRACK(SDLScancode.SDL_SCANCODE_MEDIA_NEXT_TRACK),
+    MEDIA_PREVIOUS_TRACK(SDLScancode.SDL_SCANCODE_MEDIA_PREVIOUS_TRACK),
+    MEDIA_STOP(SDLScancode.SDL_SCANCODE_MEDIA_STOP),
+    MEDIA_EJECT(SDLScancode.SDL_SCANCODE_MEDIA_EJECT),
+    MEDIA_PLAY_PAUSE(SDLScancode.SDL_SCANCODE_MEDIA_PLAY_PAUSE),
+    MEDIA_SELECT(SDLScancode.SDL_SCANCODE_MEDIA_SELECT),
+    AC_NEW(SDLScancode.SDL_SCANCODE_AC_NEW),
+    AC_OPEN(SDLScancode.SDL_SCANCODE_AC_OPEN),
+    AC_CLOSE(SDLScancode.SDL_SCANCODE_AC_CLOSE),
+    AC_EXIT(SDLScancode.SDL_SCANCODE_AC_EXIT),
+    AC_SAVE(SDLScancode.SDL_SCANCODE_AC_SAVE),
+    AC_PRINT(SDLScancode.SDL_SCANCODE_AC_PRINT),
+    AC_PROPERTIES(SDLScancode.SDL_SCANCODE_AC_PROPERTIES),
+    AC_SEARCH(SDLScancode.SDL_SCANCODE_AC_SEARCH),
+    AC_HOME(SDLScancode.SDL_SCANCODE_AC_HOME),
+    AC_BACK(SDLScancode.SDL_SCANCODE_AC_BACK),
+    AC_FORWARD(SDLScancode.SDL_SCANCODE_AC_FORWARD),
+    AC_STOP(SDLScancode.SDL_SCANCODE_AC_STOP),
+    AC_REFRESH(SDLScancode.SDL_SCANCODE_AC_REFRESH),
+    AC_BOOKMARKS(SDLScancode.SDL_SCANCODE_AC_BOOKMARKS),
+    SOFTLEFT(SDLScancode.SDL_SCANCODE_SOFTLEFT),
+    SOFTRIGHT(SDLScancode.SDL_SCANCODE_SOFTRIGHT),
+    CALL(SDLScancode.SDL_SCANCODE_CALL),
+    ENDCALL(SDLScancode.SDL_SCANCODE_ENDCALL),
+    RESERVED(SDLScancode.SDL_SCANCODE_RESERVED);
+
+    /** @return the named scancode, or null when SDL has no name for value */
+    public static Scancode of(int value) {
+        return switch (value) {
+            case SDLScancode.SDL_SCANCODE_UNKNOWN -> UNKNOWN;
+            case SDLScancode.SDL_SCANCODE_A -> A;
+            case SDLScancode.SDL_SCANCODE_B -> B;
+            case SDLScancode.SDL_SCANCODE_C -> C;
+            case SDLScancode.SDL_SCANCODE_D -> D;
+            case SDLScancode.SDL_SCANCODE_E -> E;
+            case SDLScancode.SDL_SCANCODE_F -> F;
+            case SDLScancode.SDL_SCANCODE_G -> G;
+            case SDLScancode.SDL_SCANCODE_H -> H;
+            case SDLScancode.SDL_SCANCODE_I -> I;
+            case SDLScancode.SDL_SCANCODE_J -> J;
+            case SDLScancode.SDL_SCANCODE_K -> K;
+            case SDLScancode.SDL_SCANCODE_L -> L;
+            case SDLScancode.SDL_SCANCODE_M -> M;
+            case SDLScancode.SDL_SCANCODE_N -> N;
+            case SDLScancode.SDL_SCANCODE_O -> O;
+            case SDLScancode.SDL_SCANCODE_P -> P;
+            case SDLScancode.SDL_SCANCODE_Q -> Q;
+            case SDLScancode.SDL_SCANCODE_R -> R;
+            case SDLScancode.SDL_SCANCODE_S -> S;
+            case SDLScancode.SDL_SCANCODE_T -> T;
+            case SDLScancode.SDL_SCANCODE_U -> U;
+            case SDLScancode.SDL_SCANCODE_V -> V;
+            case SDLScancode.SDL_SCANCODE_W -> W;
+            case SDLScancode.SDL_SCANCODE_X -> X;
+            case SDLScancode.SDL_SCANCODE_Y -> Y;
+            case SDLScancode.SDL_SCANCODE_Z -> Z;
+            case SDLScancode.SDL_SCANCODE_1 -> DIGIT_1;
+            case SDLScancode.SDL_SCANCODE_2 -> DIGIT_2;
+            case SDLScancode.SDL_SCANCODE_3 -> DIGIT_3;
+            case SDLScancode.SDL_SCANCODE_4 -> DIGIT_4;
+            case SDLScancode.SDL_SCANCODE_5 -> DIGIT_5;
+            case SDLScancode.SDL_SCANCODE_6 -> DIGIT_6;
+            case SDLScancode.SDL_SCANCODE_7 -> DIGIT_7;
+            case SDLScancode.SDL_SCANCODE_8 -> DIGIT_8;
+            case SDLScancode.SDL_SCANCODE_9 -> DIGIT_9;
+            case SDLScancode.SDL_SCANCODE_0 -> DIGIT_0;
+            case SDLScancode.SDL_SCANCODE_RETURN -> RETURN;
+            case SDLScancode.SDL_SCANCODE_ESCAPE -> ESCAPE;
+            case SDLScancode.SDL_SCANCODE_BACKSPACE -> BACKSPACE;
+            case SDLScancode.SDL_SCANCODE_TAB -> TAB;
+            case SDLScancode.SDL_SCANCODE_SPACE -> SPACE;
+            case SDLScancode.SDL_SCANCODE_MINUS -> MINUS;
+            case SDLScancode.SDL_SCANCODE_EQUALS -> EQUALS;
+            case SDLScancode.SDL_SCANCODE_LEFTBRACKET -> LEFTBRACKET;
+            case SDLScancode.SDL_SCANCODE_RIGHTBRACKET -> RIGHTBRACKET;
+            case SDLScancode.SDL_SCANCODE_BACKSLASH -> BACKSLASH;
+            case SDLScancode.SDL_SCANCODE_NONUSHASH -> NONUSHASH;
+            case SDLScancode.SDL_SCANCODE_SEMICOLON -> SEMICOLON;
+            case SDLScancode.SDL_SCANCODE_APOSTROPHE -> APOSTROPHE;
+            case SDLScancode.SDL_SCANCODE_GRAVE -> GRAVE;
+            case SDLScancode.SDL_SCANCODE_COMMA -> COMMA;
+            case SDLScancode.SDL_SCANCODE_PERIOD -> PERIOD;
+            case SDLScancode.SDL_SCANCODE_SLASH -> SLASH;
+            case SDLScancode.SDL_SCANCODE_CAPSLOCK -> CAPSLOCK;
+            case SDLScancode.SDL_SCANCODE_F1 -> F1;
+            case SDLScancode.SDL_SCANCODE_F2 -> F2;
+            case SDLScancode.SDL_SCANCODE_F3 -> F3;
+            case SDLScancode.SDL_SCANCODE_F4 -> F4;
+            case SDLScancode.SDL_SCANCODE_F5 -> F5;
+            case SDLScancode.SDL_SCANCODE_F6 -> F6;
+            case SDLScancode.SDL_SCANCODE_F7 -> F7;
+            case SDLScancode.SDL_SCANCODE_F8 -> F8;
+            case SDLScancode.SDL_SCANCODE_F9 -> F9;
+            case SDLScancode.SDL_SCANCODE_F10 -> F10;
+            case SDLScancode.SDL_SCANCODE_F11 -> F11;
+            case SDLScancode.SDL_SCANCODE_F12 -> F12;
+            case SDLScancode.SDL_SCANCODE_PRINTSCREEN -> PRINTSCREEN;
+            case SDLScancode.SDL_SCANCODE_SCROLLLOCK -> SCROLLLOCK;
+            case SDLScancode.SDL_SCANCODE_PAUSE -> PAUSE;
+            case SDLScancode.SDL_SCANCODE_INSERT -> INSERT;
+            case SDLScancode.SDL_SCANCODE_HOME -> HOME;
+            case SDLScancode.SDL_SCANCODE_PAGEUP -> PAGEUP;
+            case SDLScancode.SDL_SCANCODE_DELETE -> DELETE;
+            case SDLScancode.SDL_SCANCODE_END -> END;
+            case SDLScancode.SDL_SCANCODE_PAGEDOWN -> PAGEDOWN;
+            case SDLScancode.SDL_SCANCODE_RIGHT -> RIGHT;
+            case SDLScancode.SDL_SCANCODE_LEFT -> LEFT;
+            case SDLScancode.SDL_SCANCODE_DOWN -> DOWN;
+            case SDLScancode.SDL_SCANCODE_UP -> UP;
+            case SDLScancode.SDL_SCANCODE_NUMLOCKCLEAR -> NUMLOCKCLEAR;
+            case SDLScancode.SDL_SCANCODE_KP_DIVIDE -> KP_DIVIDE;
+            case SDLScancode.SDL_SCANCODE_KP_MULTIPLY -> KP_MULTIPLY;
+            case SDLScancode.SDL_SCANCODE_KP_MINUS -> KP_MINUS;
+            case SDLScancode.SDL_SCANCODE_KP_PLUS -> KP_PLUS;
+            case SDLScancode.SDL_SCANCODE_KP_ENTER -> KP_ENTER;
+            case SDLScancode.SDL_SCANCODE_KP_1 -> KP_1;
+            case SDLScancode.SDL_SCANCODE_KP_2 -> KP_2;
+            case SDLScancode.SDL_SCANCODE_KP_3 -> KP_3;
+            case SDLScancode.SDL_SCANCODE_KP_4 -> KP_4;
+            case SDLScancode.SDL_SCANCODE_KP_5 -> KP_5;
+            case SDLScancode.SDL_SCANCODE_KP_6 -> KP_6;
+            case SDLScancode.SDL_SCANCODE_KP_7 -> KP_7;
+            case SDLScancode.SDL_SCANCODE_KP_8 -> KP_8;
+            case SDLScancode.SDL_SCANCODE_KP_9 -> KP_9;
+            case SDLScancode.SDL_SCANCODE_KP_0 -> KP_0;
+            case SDLScancode.SDL_SCANCODE_KP_PERIOD -> KP_PERIOD;
+            case SDLScancode.SDL_SCANCODE_NONUSBACKSLASH -> NONUSBACKSLASH;
+            case SDLScancode.SDL_SCANCODE_APPLICATION -> APPLICATION;
+            case SDLScancode.SDL_SCANCODE_POWER -> POWER;
+            case SDLScancode.SDL_SCANCODE_KP_EQUALS -> KP_EQUALS;
+            case SDLScancode.SDL_SCANCODE_F13 -> F13;
+            case SDLScancode.SDL_SCANCODE_F14 -> F14;
+            case SDLScancode.SDL_SCANCODE_F15 -> F15;
+            case SDLScancode.SDL_SCANCODE_F16 -> F16;
+            case SDLScancode.SDL_SCANCODE_F17 -> F17;
+            case SDLScancode.SDL_SCANCODE_F18 -> F18;
+            case SDLScancode.SDL_SCANCODE_F19 -> F19;
+            case SDLScancode.SDL_SCANCODE_F20 -> F20;
+            case SDLScancode.SDL_SCANCODE_F21 -> F21;
+            case SDLScancode.SDL_SCANCODE_F22 -> F22;
+            case SDLScancode.SDL_SCANCODE_F23 -> F23;
+            case SDLScancode.SDL_SCANCODE_F24 -> F24;
+            case SDLScancode.SDL_SCANCODE_EXECUTE -> EXECUTE;
+            case SDLScancode.SDL_SCANCODE_HELP -> HELP;
+            case SDLScancode.SDL_SCANCODE_MENU -> MENU;
+            case SDLScancode.SDL_SCANCODE_SELECT -> SELECT;
+            case SDLScancode.SDL_SCANCODE_STOP -> STOP;
+            case SDLScancode.SDL_SCANCODE_AGAIN -> AGAIN;
+            case SDLScancode.SDL_SCANCODE_UNDO -> UNDO;
+            case SDLScancode.SDL_SCANCODE_CUT -> CUT;
+            case SDLScancode.SDL_SCANCODE_COPY -> COPY;
+            case SDLScancode.SDL_SCANCODE_PASTE -> PASTE;
+            case SDLScancode.SDL_SCANCODE_FIND -> FIND;
+            case SDLScancode.SDL_SCANCODE_MUTE -> MUTE;
+            case SDLScancode.SDL_SCANCODE_VOLUMEUP -> VOLUMEUP;
+            case SDLScancode.SDL_SCANCODE_VOLUMEDOWN -> VOLUMEDOWN;
+            case SDLScancode.SDL_SCANCODE_KP_COMMA -> KP_COMMA;
+            case SDLScancode.SDL_SCANCODE_KP_EQUALSAS400 -> KP_EQUALSAS400;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL1 -> INTERNATIONAL1;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL2 -> INTERNATIONAL2;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL3 -> INTERNATIONAL3;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL4 -> INTERNATIONAL4;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL5 -> INTERNATIONAL5;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL6 -> INTERNATIONAL6;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL7 -> INTERNATIONAL7;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL8 -> INTERNATIONAL8;
+            case SDLScancode.SDL_SCANCODE_INTERNATIONAL9 -> INTERNATIONAL9;
+            case SDLScancode.SDL_SCANCODE_LANG1 -> LANG1;
+            case SDLScancode.SDL_SCANCODE_LANG2 -> LANG2;
+            case SDLScancode.SDL_SCANCODE_LANG3 -> LANG3;
+            case SDLScancode.SDL_SCANCODE_LANG4 -> LANG4;
+            case SDLScancode.SDL_SCANCODE_LANG5 -> LANG5;
+            case SDLScancode.SDL_SCANCODE_LANG6 -> LANG6;
+            case SDLScancode.SDL_SCANCODE_LANG7 -> LANG7;
+            case SDLScancode.SDL_SCANCODE_LANG8 -> LANG8;
+            case SDLScancode.SDL_SCANCODE_LANG9 -> LANG9;
+            case SDLScancode.SDL_SCANCODE_ALTERASE -> ALTERASE;
+            case SDLScancode.SDL_SCANCODE_SYSREQ -> SYSREQ;
+            case SDLScancode.SDL_SCANCODE_CANCEL -> CANCEL;
+            case SDLScancode.SDL_SCANCODE_CLEAR -> CLEAR;
+            case SDLScancode.SDL_SCANCODE_PRIOR -> PRIOR;
+            case SDLScancode.SDL_SCANCODE_RETURN2 -> RETURN2;
+            case SDLScancode.SDL_SCANCODE_SEPARATOR -> SEPARATOR;
+            case SDLScancode.SDL_SCANCODE_OUT -> OUT;
+            case SDLScancode.SDL_SCANCODE_OPER -> OPER;
+            case SDLScancode.SDL_SCANCODE_CLEARAGAIN -> CLEARAGAIN;
+            case SDLScancode.SDL_SCANCODE_CRSEL -> CRSEL;
+            case SDLScancode.SDL_SCANCODE_EXSEL -> EXSEL;
+            case SDLScancode.SDL_SCANCODE_KP_00 -> KP_00;
+            case SDLScancode.SDL_SCANCODE_KP_000 -> KP_000;
+            case SDLScancode.SDL_SCANCODE_THOUSANDSSEPARATOR -> THOUSANDSSEPARATOR;
+            case SDLScancode.SDL_SCANCODE_DECIMALSEPARATOR -> DECIMALSEPARATOR;
+            case SDLScancode.SDL_SCANCODE_CURRENCYUNIT -> CURRENCYUNIT;
+            case SDLScancode.SDL_SCANCODE_CURRENCYSUBUNIT -> CURRENCYSUBUNIT;
+            case SDLScancode.SDL_SCANCODE_KP_LEFTPAREN -> KP_LEFTPAREN;
+            case SDLScancode.SDL_SCANCODE_KP_RIGHTPAREN -> KP_RIGHTPAREN;
+            case SDLScancode.SDL_SCANCODE_KP_LEFTBRACE -> KP_LEFTBRACE;
+            case SDLScancode.SDL_SCANCODE_KP_RIGHTBRACE -> KP_RIGHTBRACE;
+            case SDLScancode.SDL_SCANCODE_KP_TAB -> KP_TAB;
+            case SDLScancode.SDL_SCANCODE_KP_BACKSPACE -> KP_BACKSPACE;
+            case SDLScancode.SDL_SCANCODE_KP_A -> KP_A;
+            case SDLScancode.SDL_SCANCODE_KP_B -> KP_B;
+            case SDLScancode.SDL_SCANCODE_KP_C -> KP_C;
+            case SDLScancode.SDL_SCANCODE_KP_D -> KP_D;
+            case SDLScancode.SDL_SCANCODE_KP_E -> KP_E;
+            case SDLScancode.SDL_SCANCODE_KP_F -> KP_F;
+            case SDLScancode.SDL_SCANCODE_KP_XOR -> KP_XOR;
+            case SDLScancode.SDL_SCANCODE_KP_POWER -> KP_POWER;
+            case SDLScancode.SDL_SCANCODE_KP_PERCENT -> KP_PERCENT;
+            case SDLScancode.SDL_SCANCODE_KP_LESS -> KP_LESS;
+            case SDLScancode.SDL_SCANCODE_KP_GREATER -> KP_GREATER;
+            case SDLScancode.SDL_SCANCODE_KP_AMPERSAND -> KP_AMPERSAND;
+            case SDLScancode.SDL_SCANCODE_KP_DBLAMPERSAND -> KP_DBLAMPERSAND;
+            case SDLScancode.SDL_SCANCODE_KP_VERTICALBAR -> KP_VERTICALBAR;
+            case SDLScancode.SDL_SCANCODE_KP_DBLVERTICALBAR -> KP_DBLVERTICALBAR;
+            case SDLScancode.SDL_SCANCODE_KP_COLON -> KP_COLON;
+            case SDLScancode.SDL_SCANCODE_KP_HASH -> KP_HASH;
+            case SDLScancode.SDL_SCANCODE_KP_SPACE -> KP_SPACE;
+            case SDLScancode.SDL_SCANCODE_KP_AT -> KP_AT;
+            case SDLScancode.SDL_SCANCODE_KP_EXCLAM -> KP_EXCLAM;
+            case SDLScancode.SDL_SCANCODE_KP_MEMSTORE -> KP_MEMSTORE;
+            case SDLScancode.SDL_SCANCODE_KP_MEMRECALL -> KP_MEMRECALL;
+            case SDLScancode.SDL_SCANCODE_KP_MEMCLEAR -> KP_MEMCLEAR;
+            case SDLScancode.SDL_SCANCODE_KP_MEMADD -> KP_MEMADD;
+            case SDLScancode.SDL_SCANCODE_KP_MEMSUBTRACT -> KP_MEMSUBTRACT;
+            case SDLScancode.SDL_SCANCODE_KP_MEMMULTIPLY -> KP_MEMMULTIPLY;
+            case SDLScancode.SDL_SCANCODE_KP_MEMDIVIDE -> KP_MEMDIVIDE;
+            case SDLScancode.SDL_SCANCODE_KP_PLUSMINUS -> KP_PLUSMINUS;
+            case SDLScancode.SDL_SCANCODE_KP_CLEAR -> KP_CLEAR;
+            case SDLScancode.SDL_SCANCODE_KP_CLEARENTRY -> KP_CLEARENTRY;
+            case SDLScancode.SDL_SCANCODE_KP_BINARY -> KP_BINARY;
+            case SDLScancode.SDL_SCANCODE_KP_OCTAL -> KP_OCTAL;
+            case SDLScancode.SDL_SCANCODE_KP_DECIMAL -> KP_DECIMAL;
+            case SDLScancode.SDL_SCANCODE_KP_HEXADECIMAL -> KP_HEXADECIMAL;
+            case SDLScancode.SDL_SCANCODE_LCTRL -> LCTRL;
+            case SDLScancode.SDL_SCANCODE_LSHIFT -> LSHIFT;
+            case SDLScancode.SDL_SCANCODE_LALT -> LALT;
+            case SDLScancode.SDL_SCANCODE_LGUI -> LGUI;
+            case SDLScancode.SDL_SCANCODE_RCTRL -> RCTRL;
+            case SDLScancode.SDL_SCANCODE_RSHIFT -> RSHIFT;
+            case SDLScancode.SDL_SCANCODE_RALT -> RALT;
+            case SDLScancode.SDL_SCANCODE_RGUI -> RGUI;
+            case SDLScancode.SDL_SCANCODE_MODE -> MODE;
+            case SDLScancode.SDL_SCANCODE_SLEEP -> SLEEP;
+            case SDLScancode.SDL_SCANCODE_WAKE -> WAKE;
+            case SDLScancode.SDL_SCANCODE_CHANNEL_INCREMENT -> CHANNEL_INCREMENT;
+            case SDLScancode.SDL_SCANCODE_CHANNEL_DECREMENT -> CHANNEL_DECREMENT;
+            case SDLScancode.SDL_SCANCODE_MEDIA_PLAY -> MEDIA_PLAY;
+            case SDLScancode.SDL_SCANCODE_MEDIA_PAUSE -> MEDIA_PAUSE;
+            case SDLScancode.SDL_SCANCODE_MEDIA_RECORD -> MEDIA_RECORD;
+            case SDLScancode.SDL_SCANCODE_MEDIA_FAST_FORWARD -> MEDIA_FAST_FORWARD;
+            case SDLScancode.SDL_SCANCODE_MEDIA_REWIND -> MEDIA_REWIND;
+            case SDLScancode.SDL_SCANCODE_MEDIA_NEXT_TRACK -> MEDIA_NEXT_TRACK;
+            case SDLScancode.SDL_SCANCODE_MEDIA_PREVIOUS_TRACK -> MEDIA_PREVIOUS_TRACK;
+            case SDLScancode.SDL_SCANCODE_MEDIA_STOP -> MEDIA_STOP;
+            case SDLScancode.SDL_SCANCODE_MEDIA_EJECT -> MEDIA_EJECT;
+            case SDLScancode.SDL_SCANCODE_MEDIA_PLAY_PAUSE -> MEDIA_PLAY_PAUSE;
+            case SDLScancode.SDL_SCANCODE_MEDIA_SELECT -> MEDIA_SELECT;
+            case SDLScancode.SDL_SCANCODE_AC_NEW -> AC_NEW;
+            case SDLScancode.SDL_SCANCODE_AC_OPEN -> AC_OPEN;
+            case SDLScancode.SDL_SCANCODE_AC_CLOSE -> AC_CLOSE;
+            case SDLScancode.SDL_SCANCODE_AC_EXIT -> AC_EXIT;
+            case SDLScancode.SDL_SCANCODE_AC_SAVE -> AC_SAVE;
+            case SDLScancode.SDL_SCANCODE_AC_PRINT -> AC_PRINT;
+            case SDLScancode.SDL_SCANCODE_AC_PROPERTIES -> AC_PROPERTIES;
+            case SDLScancode.SDL_SCANCODE_AC_SEARCH -> AC_SEARCH;
+            case SDLScancode.SDL_SCANCODE_AC_HOME -> AC_HOME;
+            case SDLScancode.SDL_SCANCODE_AC_BACK -> AC_BACK;
+            case SDLScancode.SDL_SCANCODE_AC_FORWARD -> AC_FORWARD;
+            case SDLScancode.SDL_SCANCODE_AC_STOP -> AC_STOP;
+            case SDLScancode.SDL_SCANCODE_AC_REFRESH -> AC_REFRESH;
+            case SDLScancode.SDL_SCANCODE_AC_BOOKMARKS -> AC_BOOKMARKS;
+            case SDLScancode.SDL_SCANCODE_SOFTLEFT -> SOFTLEFT;
+            case SDLScancode.SDL_SCANCODE_SOFTRIGHT -> SOFTRIGHT;
+            case SDLScancode.SDL_SCANCODE_CALL -> CALL;
+            case SDLScancode.SDL_SCANCODE_ENDCALL -> ENDCALL;
+            case SDLScancode.SDL_SCANCODE_RESERVED -> RESERVED;
+            default -> null;
+        };
+    }
+
+    private final int value;
+
+    Scancode(int value) {
+        this.value = value;
+    }
+
+    /** @return the SDL_SCANCODE_* value */
+    public int value() {
+        return this.value;
+    }
+
+}

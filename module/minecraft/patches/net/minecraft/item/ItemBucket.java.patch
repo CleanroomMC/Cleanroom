@@ -1,0 +1,26 @@
+--- original/net/minecraft/item/ItemBucket.java
++++ modified/net/minecraft/item/ItemBucket.java
+@@ -40,6 +40,9 @@
+         boolean flag = this.containedBlock == Blocks.AIR;
+         ItemStack itemstack = playerIn.getHeldItem(handIn);
+         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, flag);
++        ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onBucketUse(playerIn, worldIn, itemstack, raytraceresult);
++        if (ret != null) return ret;
++
+         if (raytraceresult == null) {
+             return new ActionResult<>(EnumActionResult.PASS, itemstack);
+         }
+@@ -153,4 +156,13 @@
+ 
+         return true;
+     }
++
++    @Override
++    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.NBTTagCompound nbt) {
++        if (this.getClass() == ItemBucket.class) {
++            return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
++        } else {
++            return super.initCapabilities(stack, nbt);
++        }
++    }
+ }

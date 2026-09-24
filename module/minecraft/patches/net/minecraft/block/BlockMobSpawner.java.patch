@@ -1,0 +1,18 @@
+--- original/net/minecraft/block/BlockMobSpawner.java
++++ modified/net/minecraft/block/BlockMobSpawner.java
+@@ -42,10 +42,13 @@
+     @Override
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
+-        int i = 15 + worldIn.rand.nextInt(15) + worldIn.rand.nextInt(15);
+-        this.dropXpOnBlockBreak(worldIn, pos, i);
+     }
+ 
++    @Override
++    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune) {
++        return 15 + RANDOM.nextInt(15) + RANDOM.nextInt(15);
++    }
++
+     /**
+      * Used to determine ambient occlusion and culling when rebuilding chunks for render
+      * @deprecated call via {@link IBlockState#isOpaqueCube()} whenever possible. Implementing/overriding is fine.

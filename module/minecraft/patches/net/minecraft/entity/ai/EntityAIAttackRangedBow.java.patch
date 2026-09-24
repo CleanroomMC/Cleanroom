@@ -1,0 +1,11 @@
+--- original/net/minecraft/entity/ai/EntityAIAttackRangedBow.java
++++ modified/net/minecraft/entity/ai/EntityAIAttackRangedBow.java
+@@ -37,7 +37,7 @@
+     }
+ 
+     protected boolean isBowInMainhand() {
+-        return !this.entity.getHeldItemMainhand().isEmpty() && this.entity.getHeldItemMainhand().getItem() == Items.BOW;
++        return !this.entity.getHeldItemMainhand().isEmpty() && this.entity.getHeldItemMainhand().getItem() instanceof ItemBow;
+     }
+ 
+     /** Returns whether an in-progress EntityAIBase should continue executing */

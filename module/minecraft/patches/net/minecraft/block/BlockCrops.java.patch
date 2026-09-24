@@ -1,0 +1,74 @@
+--- original/net/minecraft/block/BlockCrops.java
++++ modified/net/minecraft/block/BlockCrops.java
+@@ -71,12 +71,16 @@
+     @Override
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+         super.updateTick(worldIn, pos, state, rand);
++
++        if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+         if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
+             int i = this.getAge(state);
+             if (i < this.getMaxAge()) {
+                 float f = getGrowthChance(this, worldIn, pos);
+-                if (rand.nextInt((int)(25.0F / f) + 1) == 0) {
++
++                if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0)) {
+                     worldIn.setBlockState(pos, this.withAge(i + 1), 2);
++                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
+                 }
+             }
+         }
+@@ -104,9 +108,11 @@
+             for (int j = -1; j <= 1; j++) {
+                 float f1 = 0.0F;
+                 IBlockState iblockstate = worldIn.getBlockState(blockpos.add(i, 0, j));
+-                if (iblockstate.getBlock() == Blocks.FARMLAND) {
++
++                if (iblockstate.getBlock().canSustainPlant(iblockstate, worldIn, blockpos.add(i, 0, j), net.minecraft.util.EnumFacing.UP, (net.minecraftforge.common.IPlantable)blockIn)) {
+                     f1 = 1.0F;
+-                    if (iblockstate.getValue(BlockFarmland.MOISTURE) > 0) {
++
++                    if (iblockstate.getBlock().isFertile(worldIn, blockpos.add(i, 0, j))) {
+                         f1 = 3.0F;
+                     }
+                 }
+@@ -144,8 +150,8 @@
+ 
+     @Override
+     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
+-        return (worldIn.getLight(pos) >= 8 || worldIn.canSeeSky(pos))
+-            && this.canSustainBush(worldIn.getBlockState(pos.down()));
++        IBlockState soil = worldIn.getBlockState(pos.down());
++        return (worldIn.getLight(pos) >= 8 || worldIn.canSeeSky(pos)) && soil.getBlock().canSustainPlant(soil, worldIn, pos.down(), net.minecraft.util.EnumFacing.UP, this);
+     }
+ 
+     protected Item getSeed() {
+@@ -158,9 +164,26 @@
+ 
+     /** Spawns this Block's drops into the World as EntityItems. */
+     @Override
++    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
++        super.getDrops(drops, world, pos, state, 0);
++        int age = getAge(state);
++        Random rand = world instanceof World ? ((World)world).rand : new Random();
++
++        if (age >= getMaxAge()) {
++            int k = 3 + fortune;
++
++            for (int i = 0; i < 3 + fortune; ++i) {
++                if (rand.nextInt(2 * getMaxAge()) <= age) {
++                    drops.add(new ItemStack(this.getSeed(), 1, 0));
++                }
++            }
++        }
++    }
++
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+-        super.dropBlockAsItemWithChance(worldIn, pos, state, chance, 0);
+-        if (!worldIn.isRemote) {
++        super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
++
++        if (false && !worldIn.isRemote) { // Forge: NOP all this.
+             int i = this.getAge(state);
+             if (i >= this.getMaxAge()) {
+                 int j = 3 + fortune;

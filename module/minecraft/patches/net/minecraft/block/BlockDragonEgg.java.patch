@@ -1,0 +1,38 @@
+--- original/net/minecraft/block/BlockDragonEgg.java
++++ modified/net/minecraft/block/BlockDragonEgg.java
+@@ -48,7 +48,7 @@
+     }
+ 
+     private void checkFall(World worldIn, BlockPos pos) {
+-        if (BlockFalling.canFallThrough(worldIn.getBlockState(pos.down())) && pos.getY() >= 0) {
++        if (worldIn.isAirBlock(pos.down()) && BlockFalling.canFallThrough(worldIn.getBlockState(pos.down())) && pos.getY() >= 0) {
+             int i = 32;
+             if (!BlockFalling.fallInstantly && worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32))) {
+                 worldIn.spawnEntity(
+@@ -60,7 +60,7 @@
+                 worldIn.setBlockToAir(pos);
+                 BlockPos blockpos = pos;
+ 
+-                while (BlockFalling.canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0) {
++                while (worldIn.isAirBlock(blockpos) && BlockFalling.canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0) {
+                     blockpos = blockpos.down();
+                 }
+ 
+@@ -98,11 +98,12 @@
+         if (iblockstate.getBlock() == this) {
+             for (int i = 0; i < 1000; i++) {
+                 BlockPos blockpos = pos.add(
+-                    worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16),
+-                    worldIn.rand.nextInt(8) - worldIn.rand.nextInt(8),
+-                    worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16)
+-                );
+-                if (worldIn.getBlockState(blockpos).getBlock().material == Material.AIR) {
++                                        worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16),
++                                        worldIn.rand.nextInt(8) - worldIn.rand.nextInt(8),
++                                        worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16)
++                                    );
++
++                if (worldIn.isAirBlock(blockpos)) {
+                     if (worldIn.isRemote) {
+                         for (int j = 0; j < 128; j++) {
+                             double d0 = worldIn.rand.nextDouble();

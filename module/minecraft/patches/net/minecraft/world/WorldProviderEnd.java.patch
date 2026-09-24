@@ -1,0 +1,39 @@
+--- original/net/minecraft/world/WorldProviderEnd.java
++++ modified/net/minecraft/world/WorldProviderEnd.java
+@@ -24,7 +24,7 @@
+     @Override
+     public void init() {
+         this.biomeProvider = new BiomeProviderSingle(Biomes.SKY);
+-        NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(DimensionType.THE_END);
++        NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(this.world.provider.getDimension());
+         this.dragonFightManager = this.world instanceof WorldServer
+             ? new DragonFightManager((WorldServer)this.world, nbttagcompound.getCompoundTag("DragonFight"))
+             : null;
+@@ -128,7 +128,7 @@
+             nbttagcompound.setTag("DragonFight", this.dragonFightManager.getCompound());
+         }
+ 
+-        this.world.getWorldInfo().setDimensionData(DimensionType.THE_END, nbttagcompound);
++        this.world.getWorldInfo().setDimensionData(this.world.provider.getDimension(), nbttagcompound);
+     }
+ 
+     /** Called when the world is updating entities. Only used in WorldProviderEnd to update the DragonFightManager in Vanilla. */
+@@ -143,4 +143,18 @@
+     public DragonFightManager getDragonFightManager() {
+         return this.dragonFightManager;
+     }
++
++    @Override
++    public void onPlayerAdded(net.minecraft.entity.player.EntityPlayerMP player) {
++        if (this.dragonFightManager != null) {
++            this.dragonFightManager.addPlayer(player);
++        }
++    }
++
++    @Override
++    public void onPlayerRemoved(net.minecraft.entity.player.EntityPlayerMP player) {
++        if (this.dragonFightManager != null) {
++            this.dragonFightManager.removePlayer(player);
++        }
++    }
+ }

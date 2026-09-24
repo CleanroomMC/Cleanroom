@@ -1,0 +1,54 @@
+--- original/net/minecraft/item/crafting/RecipesArmorDyes.java
++++ modified/net/minecraft/item/crafting/RecipesArmorDyes.java
+@@ -10,8 +10,7 @@
+ import net.minecraft.util.NonNullList;
+ import net.minecraft.world.World;
+ 
+-public class RecipesArmorDyes implements IRecipe {
+-    /** Used to check if a recipe matches current crafting inventory */
++public class RecipesArmorDyes extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+     @Override
+     public boolean matches(InventoryCrafting inv, World worldIn) {
+         ItemStack itemstack = ItemStack.EMPTY;
+@@ -28,7 +27,7 @@
+ 
+                     itemstack = itemstack1;
+                 } else {
+-                    if (itemstack1.getItem() != Items.DYE) {
++                    if (!net.minecraftforge.oredict.DyeUtils.isDye(itemstack1)) {
+                         return false;
+                     }
+ 
+@@ -72,11 +71,11 @@
+                         j++;
+                     }
+                 } else {
+-                    if (itemstack1.getItem() != Items.DYE) {
++                    if (!net.minecraftforge.oredict.DyeUtils.isDye(itemstack1)) {
+                         return ItemStack.EMPTY;
+                     }
+ 
+-                    float[] afloat = EnumDyeColor.byDyeDamage(itemstack1.getMetadata()).getColorComponentValues();
++                    float[] afloat = net.minecraftforge.oredict.DyeUtils.colorFromStack(itemstack1).get().getColorComponentValues();
+                     int l1 = (int)(afloat[0] * 255.0F);
+                     int i2 = (int)(afloat[1] * 255.0F);
+                     int j2 = (int)(afloat[2] * 255.0F);
+@@ -120,9 +119,7 @@
+ 
+         for (int i = 0; i < nonnulllist.size(); i++) {
+             ItemStack itemstack = inv.getStackInSlot(i);
+-            if (itemstack.getItem().hasContainerItem()) {
+-                nonnulllist.set(i, new ItemStack(itemstack.getItem().getContainerItem()));
+-            }
++            nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+         }
+ 
+         return nonnulllist;
+@@ -134,7 +131,6 @@
+         return true;
+     }
+ 
+-    /** Used to determine if this recipe can fit in a grid of the given width/height */
+     @Override
+     public boolean canFit(int width, int height) {
+         return width * height >= 2;

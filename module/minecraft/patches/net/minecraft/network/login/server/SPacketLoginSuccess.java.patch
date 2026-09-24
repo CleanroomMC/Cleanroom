@@ -1,0 +1,11 @@
+--- original/net/minecraft/network/login/server/SPacketLoginSuccess.java
++++ modified/net/minecraft/network/login/server/SPacketLoginSuccess.java
+@@ -24,7 +24,7 @@
+     public void readPacketData(PacketBuffer buf) throws IOException {
+         String s = buf.readString(36);
+         String s1 = buf.readString(16);
+-        UUID uuid = UUID.fromString(s);
++        UUID uuid = s.length() > 0 ? UUID.fromString(s) : null;
+         this.profile = new GameProfile(uuid, s1);
+     }
+ 

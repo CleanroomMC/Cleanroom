@@ -1,0 +1,29 @@
+--- original/net/minecraft/block/BlockIce.java
++++ modified/net/minecraft/block/BlockIce.java
+@@ -42,8 +42,14 @@
+     ) {
+         player.addStat(StatList.getBlockStats(this));
+         player.addExhaustion(0.005F);
+-        if (this.canSilkHarvest() && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
+-            spawnAsEntity(worldIn, pos, this.getSilkTouchDrop(state));
++
++        if (this.canSilkHarvest(worldIn, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
++            java.util.List<ItemStack> items = new java.util.ArrayList<ItemStack>();
++            items.add(this.getSilkTouchDrop(state));
++
++            net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(items, worldIn, pos, state, 0, 1.0f, true, player);
++            for (ItemStack is : items)
++                spawnAsEntity(worldIn, pos, is);
+         } else {
+             if (worldIn.provider.doesWaterVaporize()) {
+                 worldIn.setBlockToAir(pos);
+@@ -51,7 +57,9 @@
+             }
+ 
+             int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
++            harvesters.set(player);
+             this.dropBlockAsItem(worldIn, pos, state, i);
++            harvesters.set(null);
+             Material material = worldIn.getBlockState(pos.down()).getMaterial();
+             if (material.blocksMovement() || material.isLiquid()) {
+                 worldIn.setBlockState(pos, Blocks.FLOWING_WATER.getDefaultState());

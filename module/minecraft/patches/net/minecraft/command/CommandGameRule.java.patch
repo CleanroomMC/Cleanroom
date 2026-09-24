@@ -1,0 +1,10 @@
+--- original/net/minecraft/command/CommandGameRule.java
++++ modified/net/minecraft/command/CommandGameRule.java
+@@ -67,6 +67,7 @@
+                 entityplayermp.connection.sendPacket(new SPacketEntityStatus(entityplayermp, b0));
+             }
+         }
++        net.minecraftforge.event.ForgeEventFactory.onGameRuleChange(rules, p_184898_1_, server);
+     }
+ 
+     /** Get a list of options for when the user presses the TAB key */

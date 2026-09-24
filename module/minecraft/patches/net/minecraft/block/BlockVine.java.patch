@@ -1,0 +1,64 @@
+--- original/net/minecraft/block/BlockVine.java
++++ modified/net/minecraft/block/BlockVine.java
+@@ -27,7 +27,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public class BlockVine extends Block {
++public class BlockVine extends Block implements net.minecraftforge.common.IShearable {
+     public static final PropertyBool UP = PropertyBool.create("up");
+     public static final PropertyBool NORTH = PropertyBool.create("north");
+     public static final PropertyBool EAST = PropertyBool.create("east");
+@@ -195,7 +195,7 @@
+     @Override
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+         if (!worldIn.isRemote) {
+-            if (worldIn.rand.nextInt(4) == 0) {
++            if (worldIn.rand.nextInt(4) == 0 && worldIn.isAreaLoaded(pos, 4)) { // Forge: check area to prevent loading unloaded chunks
+                 int i = 4;
+                 int j = 5;
+                 boolean flag = false;
+@@ -236,7 +236,7 @@
+                         BlockPos blockpos4 = pos.down();
+                         IBlockState iblockstate2 = worldIn.getBlockState(blockpos4);
+                         Block block1 = iblockstate2.getBlock();
+-                        if (block1.material == Material.AIR) {
++                        if (block1.isAir(iblockstate2, worldIn, blockpos4)) {
+                             IBlockState iblockstate3 = state;
+ 
+                             for (EnumFacing enumfacing4 : EnumFacing.Plane.HORIZONTAL) {
+@@ -273,7 +273,8 @@
+                     BlockPos blockpos3 = pos.offset(enumfacing2);
+                     IBlockState iblockstate = worldIn.getBlockState(blockpos3);
+                     Block block = iblockstate.getBlock();
+-                    if (block.material == Material.AIR) {
++
++                    if (block.isAir(iblockstate, worldIn, blockpos3)) {
+                         EnumFacing enumfacing = enumfacing2.rotateY();
+                         EnumFacing enumfacing1 = enumfacing2.rotateYCCW();
+                         boolean flag1 = state.getValue(getPropertyFor(enumfacing));
+@@ -462,15 +463,16 @@
+         return i;
+     }
+ 
+-    /**
+-     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+-     * <p>
+-     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that does not fit the other descriptions and will generally cause other things not to connect to the face.
+-     * 
+-     * @return an approximation of the form of the given face
+-     * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
+-     */
++    /*************************FORGE START***********************************/
++    @Override public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity){ return true; }
++    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
+     @Override
++    public java.util.List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
++        return java.util.Arrays.asList(new ItemStack(this, 1));
++    }
++    /*************************FORGE END***********************************/
++
++    @Override
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+         return BlockFaceShape.UNDEFINED;
+     }
