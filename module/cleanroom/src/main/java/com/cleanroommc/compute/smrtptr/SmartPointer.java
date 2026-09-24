@@ -65,7 +65,7 @@ public abstract class SmartPointer implements Closeable {
         try {
             writeLock.lock();
             if (this.ttl.getAcquire() == 0)
-                this.close();
+                GarbageCollector.INSTANCE.deletionQueue.enqueue(this);
             else if (GarbageCollector.INSTANCE.references(this).isEmpty() || this instanceof CommandQueue) // Only reading. Shouldn't cause data races
                 this.ttl.decrementAndGet();
         } finally {

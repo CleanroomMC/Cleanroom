@@ -2,6 +2,8 @@ package com.cleanroommc.compute.smrtptr;
 
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
+import it.unimi.dsi.fastutil.PriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -19,6 +21,7 @@ public enum GarbageCollector {
     private final Lock readLock = lock.readLock();
     private final Lock writeLock = lock.writeLock();
     public final SweepTask sweepTask = new SweepTask();
+    final PriorityQueue<SmartPointer> deletionQueue = new ObjectArrayFIFOQueue<>();
 
     /**
      * Adds a pointer to reference tracking.
@@ -116,8 +119,22 @@ public enum GarbageCollector {
     public void wash() {
         try {
             writeLock.lock();
-            referenceGraph.nodes().forEach(SmartPointer::close);
             SweepTask.running.compareAndExchangeRelease(true, false);
+            referenceGraph.nodes().forEach(SmartPointer::close);
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * Remove all objects marked for deletion.
+     */
+    public void deleteAllSweptObjects() {
+        try {
+            writeLock.lock();
+            SweepTask.running.compareAndExchangeRelease(true, false);
+            while (!deletionQueue.isEmpty())
+                deletionQueue.dequeue().close();
         } finally {
             writeLock.unlock();
         }
