@@ -36,14 +36,14 @@ public class CommandSuggestions {
             this.updater.refresh();
         } else {
             // Chat opened with "/" keeps Up and Down on history until the user edits, like vanilla
-            this.updater.setPaused(true);
+            this.updater.pause();
+            this.updater.pinPausedText();
         }
     }
 
     public boolean keyTyped(int keyCode) {
-        if (keyCode != Keyboard.KEY_UP && keyCode != Keyboard.KEY_DOWN) {
-            this.updater.setPaused(false);
-        }
+        // A recalled history entry is in the field by now
+        this.updater.pinPausedText();
         if (keyCode != Keyboard.KEY_TAB) {
             this.cycling = false;
         }
@@ -54,11 +54,15 @@ public class CommandSuggestions {
                     return false;
                 }
                 if (this.cycling || this.list.getSelected() == null) {
-                    this.list.selectNext();
-                    // Wraps past the "no selection" slot back to the first suggestion
-                    if (this.list.getSelected() == null) {
-                        this.list.selectNext();
-                    }
+                    boolean backward = GuiScreen.isShiftKeyDown();
+                    // Runs twice when it lands on the "no selection" slot, wrapping to the other end
+                    do {
+                        if (backward) {
+                            this.list.selectPrev();
+                        } else {
+                            this.list.selectNext();
+                        }
+                    } while (this.list.getSelected() == null);
                 }
                 this.cycling = true;
                 // Detach the responder, or the edit would request new completions and replace the list being cycled
@@ -84,7 +88,7 @@ public class CommandSuggestions {
             case Keyboard.KEY_UP, Keyboard.KEY_DOWN -> {
                 if (this.list.isInvisible()) {
                     // The screen recalls history, keep the dropdown from popping up over the recalled text
-                    this.updater.setPaused(true);
+                    this.updater.pause();
                     return false;
                 }
                 if (keyCode == Keyboard.KEY_UP) {
