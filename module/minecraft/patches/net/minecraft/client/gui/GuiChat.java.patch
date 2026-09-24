@@ -1,0 +1,107 @@
+--- original/net/minecraft/client/gui/GuiChat.java
++++ modified/net/minecraft/client/gui/GuiChat.java
+@@ -28,6 +28,7 @@
+     protected GuiTextField inputField;
+     /** is the text that appears when you press the chat key and the input box appears pre-filled */
+     private String defaultInputFieldText = "";
++    private com.cleanroommc.client.chat.suggestion.CommandSuggestions suggestions;
+ 
+     public GuiChat() {
+     }
+@@ -48,6 +49,7 @@
+         this.inputField.setText(this.defaultInputFieldText);
+         this.inputField.setCanLoseFocus(false);
+         this.tabCompleter = new GuiChat.ChatTabCompleter(this.inputField);
++        this.suggestions = new com.cleanroommc.client.chat.suggestion.CommandSuggestions(this.inputField, this.tabCompleter, false);
+     }
+ 
+     /** Called when the screen is unloaded. Used to disable keyboard repeat events */
+@@ -67,6 +69,7 @@
+     @Override
+     protected void keyTyped(char typedChar, int keyCode) throws IOException {
+         this.tabCompleter.resetRequested();
++        if (this.suggestions.keyTyped(keyCode)) return;
+         if (keyCode == 15) {
+             this.tabCompleter.complete();
+         } else {
+@@ -92,6 +95,7 @@
+             this.mc.ingameGUI.getChatGUI().scroll(-this.mc.ingameGUI.getChatGUI().getLineCount() + 1);
+         } else {
+             this.inputField.textboxKeyTyped(typedChar, keyCode);
++            this.suggestions.refresh();
+         }
+     }
+ 
+@@ -99,6 +103,7 @@
+     @Override
+     public void handleMouseInput() throws IOException {
+         super.handleMouseInput();
++        if (this.suggestions.handleMouseInput(this)) return;
+         int i = Mouse.getEventDWheel();
+         if (i != 0) {
+             if (i > 1) {
+@@ -120,6 +125,7 @@
+     /** Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton */
+     @Override
+     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
++        if (this.suggestions.mouseClicked(mouseX, mouseY, mouseButton)) return;
+         if (mouseButton == 0) {
+             ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
+             if (itextcomponent != null && this.handleComponentClick(itextcomponent)) {
+@@ -128,6 +134,7 @@
+         }
+ 
+         this.inputField.mouseClicked(mouseX, mouseY, mouseButton);
++        this.suggestions.refresh();
+         super.mouseClicked(mouseX, mouseY, mouseButton);
+     }
+ 
+@@ -165,12 +172,13 @@
+     @Override
+     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+         drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
+-        this.inputField.drawTextBox();
++        this.suggestions.drawTextBox();
+         ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
+         if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
+             this.handleComponentHover(itextcomponent, mouseX, mouseY);
+         }
+ 
++        this.suggestions.drawDropdown(mouseX, mouseY);
+         super.drawScreen(mouseX, mouseY, partialTicks);
+     }
+ 
+@@ -184,6 +192,7 @@
+     @Override
+     public void setCompletions(String... newCompletions) {
+         this.tabCompleter.setCompletions(newCompletions);
++        this.suggestions.setCompletions(newCompletions);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -195,25 +204,6 @@
+             super(p_i46749_1_, false);
+         }
+ 
+-        /** Called when tab key pressed. If it's the first time we tried to complete this string, we ask the server for completions. When the server responds, this method gets called again (via setCompletions). */
+-        @Override
+-        public void complete() {
+-            super.complete();
+-            if (this.completions.size() > 1) {
+-                StringBuilder stringbuilder = new StringBuilder();
+-
+-                for (String s : this.completions) {
+-                    if (stringbuilder.length() > 0) {
+-                        stringbuilder.append(", ");
+-                    }
+-
+-                    stringbuilder.append(s);
+-                }
+-
+-                this.client.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new TextComponentString(stringbuilder.toString()), 1);
+-            }
+-        }
+-
+         @Nullable
+         @Override
+         public BlockPos getTargetBlockPos() {
