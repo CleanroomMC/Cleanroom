@@ -120,7 +120,7 @@ public enum GarbageCollector {
         try {
             writeLock.lock();
             SweepTask.running.compareAndExchangeRelease(true, false);
-            referenceGraph.nodes().forEach(SmartPointer::close);
+            referenceGraph.nodes().forEach(ptr -> {if (!ptr.isClosed()) ptr.close();});
         } finally {
             writeLock.unlock();
         }
@@ -134,7 +134,7 @@ public enum GarbageCollector {
             writeLock.lock();
             SweepTask.running.compareAndExchangeRelease(true, false);
             while (!deletionQueue.isEmpty())
-                deletionQueue.dequeue().close();
+                if (!deletionQueue.first().isClosed()) deletionQueue.dequeue().close();
         } finally {
             writeLock.unlock();
         }
