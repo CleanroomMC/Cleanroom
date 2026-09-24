@@ -19,6 +19,8 @@
 
 package net.minecraftforge.common;
 
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
+import com.cleanroommc.compute.smrtptr.SweepTask;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import static net.minecraftforge.common.config.Configuration.CATEGORY_CLIENT;
@@ -32,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 
 import net.minecraftforge.client.GuiIngameForge;
 import org.apache.commons.io.IOUtils;
@@ -643,11 +646,14 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void serverStarting(FMLServerStartingEvent evt)
     {
         evt.registerServerCommand(new ForgeCommand());
+        GarbageCollector.INSTANCE.sweepTask.spinlock.lock();
+        ForkJoinPool.commonPool().execute(GarbageCollector.INSTANCE.sweepTask);
     }
 
     @Subscribe
     public void serverStopping(FMLServerStoppingEvent evt)
     {
+        GarbageCollector.INSTANCE.wash();
         WorldWorkerManager.clear();
     }
 

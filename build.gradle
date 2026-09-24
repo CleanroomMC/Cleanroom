@@ -180,6 +180,7 @@ dependencies {
     api 'org.lwjgl:lwjgl-openal'
     api 'org.lwjgl:lwjgl-stb'
     api 'org.lwjgl:lwjgl-sdl'
+    api 'org.lwjgl:lwjgl-opencl' // OpenCL does not have natives
 
     // TODO
     compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
