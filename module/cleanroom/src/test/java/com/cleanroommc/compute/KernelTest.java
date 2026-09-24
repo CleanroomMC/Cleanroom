@@ -156,7 +156,7 @@ public class KernelTest {
                 ByteBuffer out = stack.malloc(results.length);
                 CommandQueue.Event wv1 = queue.bufferWrite(v1, 0, bv1);
                 CommandQueue.Event wv2 = queue.bufferWrite(v2, 0, bv2);
-                queue.dispatchKernel(kernel, paramList, null, new long[]{vals1.length, vals2.length}, wv1.eventID, wv2.eventID)
+                queue.dispatchKernel(kernel, paramList, null, new long[]{vals1.length, vals2.length}, wv1, wv2)
                         .read(output, out).execute();
                 out.rewind();
                 for (int i = 0; i < results.length; i++)
