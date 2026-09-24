@@ -63,13 +63,13 @@ public abstract class SmartPointer implements Closeable {
      */
     public final void tick() {
         try {
-            writeLock.lock();
+            GarbageCollector.INSTANCE.writeLock.lock();
             if (this.ttl.getAcquire() == 0)
                 GarbageCollector.INSTANCE.deletionQueue.enqueue(this);
             else if (GarbageCollector.INSTANCE.references(this).isEmpty() || this instanceof CommandQueue) // Only reading. Shouldn't cause data races
                 this.ttl.decrementAndGet();
         } finally {
-            writeLock.unlock();
+            GarbageCollector.INSTANCE.writeLock.unlock();
         }
     }
 

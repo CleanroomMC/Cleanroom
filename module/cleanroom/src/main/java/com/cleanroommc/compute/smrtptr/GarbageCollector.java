@@ -18,8 +18,8 @@ public enum GarbageCollector {
     public final short startTTL = 16; // TODO: Pull from config
     private final MutableGraph<SmartPointer> referenceGraph = GraphBuilder.undirected().allowsSelfLoops(false).build();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Lock readLock = lock.readLock();
-    private final Lock writeLock = lock.writeLock();
+    final Lock readLock = lock.readLock();
+    final Lock writeLock = lock.writeLock();
     public final SweepTask sweepTask = new SweepTask();
     final PriorityQueue<SmartPointer> deletionQueue = new ObjectArrayFIFOQueue<>();
 
