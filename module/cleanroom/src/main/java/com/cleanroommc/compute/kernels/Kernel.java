@@ -22,7 +22,6 @@ import org.lwjgl.system.MemoryStack;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      */
     public Kernel(long program, KernelMetadata meta) {
         this(createKernel(program, meta), ImmutableMap.copyOf(meta.arguments), meta.dimensions,
-                meta.parent.requirements.images, meta.parent.requirements.mipmaps, meta.parent.requirements.pipes);
+            meta.parent.requirements.images, meta.parent.requirements.mipmaps, meta.parent.requirements.pipes);
     }
 
     /**
@@ -93,8 +92,8 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
                        final @NonNull KernelParameterList arguments,
                        final long @Nullable [] workGroupOffsets,
                        final long @NonNull [] workGroupSizes,
-                       final long... dependencies) throws NullPointerException, IllegalArgumentException,
-            KernelError, OutOfMemoryError {
+                       final CommandQueue.Event... dependencies) throws NullPointerException, IllegalArgumentException,
+        KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
         Preconditions.checkNotNull(commandQueue);
@@ -130,7 +129,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         PointerBuffer eventWaitList = null;
         if (dependencies.length > 0) {
             eventWaitList = stack.mallocPointer(dependencies.length);
-            eventWaitList.put(dependencies);
+            eventWaitList.put(CommandQueue.eventIDs(dependencies));
             eventWaitList.rewind();
         }
         PointerBuffer event = stack.mallocPointer(1);
@@ -143,8 +142,8 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             eventWaitList.put(0, event.get(0)).rewind();
         }
         switch (CL10.clEnqueueNDRangeKernel(commandQueue.commandQueue, kernel,
-                dim, offsets, sizes, local,
-                glObjects == null ? eventWaitList : eventWaitList.getPointerBuffer(0), event)) {
+            dim, offsets, sizes, local,
+            glObjects == null ? eventWaitList : eventWaitList.getPointerBuffer(0), event)) {
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
             case CL10.CL_INVALID_WORK_DIMENSION -> throw new KernelError(String.format("Invalid work dimension %d", dim));
             case CL10.CL_INVALID_GLOBAL_WORK_SIZE -> throw new KernelError("Work group size is invalid.");
@@ -153,8 +152,8 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
         if (glObjects == null)
-            for (long dependency : dependencies)
-                CL10.clReleaseEvent(dependency);
+            for (CommandQueue.Event dependency : dependencies)
+                dependency.close();
         else {
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
@@ -181,8 +180,8 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      */
     public long invoke(MemoryStack stack, CommandQueue commandQueue, long device,
                        final @NonNull KernelParameterList arguments,
-                       final long... dependencies) throws NullPointerException, IllegalStateException,
-            IllegalArgumentException, KernelError, OutOfMemoryError {
+                       final CommandQueue.Event... dependencies) throws NullPointerException, IllegalStateException,
+        IllegalArgumentException, KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);
         Preconditions.checkNotNull(commandQueue);
         Preconditions.checkState(dimensionality == 0, "Not a task.");
@@ -194,7 +193,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         PointerBuffer eventWaitList = null;
         if (dependencies != null && dependencies.length > 0) {
             eventWaitList = stack.mallocPointer(dependencies.length);
-            eventWaitList.put(dependencies);
+            eventWaitList.put(CommandQueue.eventIDs(dependencies));
             eventWaitList.rewind();
         }
         PointerBuffer event = stack.mallocPointer(1);
@@ -211,8 +210,8 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
         if (dependencies != null && glObjects == null)
-            for (long dependency : dependencies)
-                CL10.clReleaseEvent(dependency);
+            for (CommandQueue.Event dependency : dependencies)
+                dependency.close();
         else if (glObjects != null){
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
