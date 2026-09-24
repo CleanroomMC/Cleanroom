@@ -23,6 +23,8 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
 
     private String lastRequest = "";
     private int pendingReplies = 0;
+    // Set while the field holds text the user did not type, such as a recalled history entry
+    private boolean paused;
 
     public SuggestionUpdater(SuggestionList suggestionList, TabCompleter tabCompleter, GuiTextField field, boolean commandBlockMode) {
         this.suggestionList = suggestionList;
@@ -34,6 +36,10 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
             mc.player.connection.sendPacket(new CPacketTabComplete("/", null, false));
             this.pendingReplies++;
         }
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
     }
 
     @Override
@@ -58,7 +64,7 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
             return;
         }
         String text = this.field.getText();
-        if (text.isEmpty()) {
+        if (this.paused || text.isEmpty()) {
             this.lastRequest = "";
             this.suggestionList.hide();
             return;

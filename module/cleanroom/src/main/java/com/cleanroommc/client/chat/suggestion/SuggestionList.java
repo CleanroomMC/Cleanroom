@@ -184,6 +184,11 @@ public class SuggestionList {
     }
 
     public void applySuggestion(GuiTextField inputField, String suggestion) {
+        this.replaceWord(inputField, suggestion);
+        this.hide();
+    }
+
+    public void replaceWord(GuiTextField inputField, String suggestion) {
         int cursor = inputField.getCursorPosition();
         String text = inputField.getText();
         // Delete the tail of the current word that sits after the cursor so the whole token is replaced, not just its prefix
@@ -197,7 +202,6 @@ public class SuggestionList {
         int wordStart = inputField.getNthWordFromPosWS(-1, cursor, false);
         inputField.deleteFromCursor(wordStart - inputField.getCursorPosition());
         inputField.writeText(suggestion);
-        this.hide();
     }
 
     public void drawGhostText(GuiTextField inputField, FontRenderer fontRenderer) {

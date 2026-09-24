@@ -20,6 +20,7 @@ public class CommandSuggestions {
     private final TabCompleter tabCompleter;
     private final SuggestionList list;
     private final SuggestionUpdater updater;
+    private boolean cycling;
 
     /**
      * @param commandBlockMode true to suggest and color commands with or without a leading "/"
@@ -30,18 +31,40 @@ public class CommandSuggestions {
         this.list = new SuggestionList(field, commandBlockMode);
         this.updater = new SuggestionUpdater(this.list, tabCompleter, field, commandBlockMode);
         field.setGuiResponder(this.updater);
-        // Text set before the responder was attached, such as chat opened with "/", never fired it
-        this.updater.refresh();
+        if (commandBlockMode) {
+            // Text set before the responder was attached never fired it
+            this.updater.refresh();
+        } else {
+            // Chat opened with "/" keeps Up and Down on history until the user edits, like vanilla
+            this.updater.setPaused(true);
+        }
     }
 
     public boolean keyTyped(int keyCode) {
+        if (keyCode != Keyboard.KEY_UP && keyCode != Keyboard.KEY_DOWN) {
+            this.updater.setPaused(false);
+        }
+        if (keyCode != Keyboard.KEY_TAB) {
+            this.cycling = false;
+        }
         switch (keyCode) {
+            // Repeated presses cycle through the suggestions, keeping the dropdown open
             case Keyboard.KEY_TAB -> {
                 if (this.list.isInvisible()) {
                     return false;
                 }
-                String selected = this.list.getSelected();
-                this.list.applySuggestion(this.field, selected == null ? this.list.getFirst() : selected);
+                if (this.cycling || this.list.getSelected() == null) {
+                    this.list.selectNext();
+                    // Wraps past the "no selection" slot back to the first suggestion
+                    if (this.list.getSelected() == null) {
+                        this.list.selectNext();
+                    }
+                }
+                this.cycling = true;
+                // Detach the responder, or the edit would request new completions and replace the list being cycled
+                this.field.setGuiResponder(null);
+                this.list.replaceWord(this.field, this.list.getSelected());
+                this.field.setGuiResponder(this.updater);
             }
             case Keyboard.KEY_ESCAPE -> {
                 if (this.list.isInvisible()) {
@@ -51,23 +74,24 @@ public class CommandSuggestions {
             }
             case Keyboard.KEY_RETURN, Keyboard.KEY_NUMPADENTER -> {
                 String selected = this.list.getSelected();
-                if (selected == null) {
+                // A Tab-cycled suggestion is already in the field, so Enter submits it
+                if (selected == null || this.cycling) {
                     return false;
                 }
                 this.list.applySuggestion(this.field, selected);
             }
             // The list grows upward, so Up moves to the next, visually higher, suggestion
-            case Keyboard.KEY_UP -> {
+            case Keyboard.KEY_UP, Keyboard.KEY_DOWN -> {
                 if (this.list.isInvisible()) {
+                    // The screen recalls history, keep the dropdown from popping up over the recalled text
+                    this.updater.setPaused(true);
                     return false;
                 }
-                this.list.selectNext();
-            }
-            case Keyboard.KEY_DOWN -> {
-                if (this.list.isInvisible()) {
-                    return false;
+                if (keyCode == Keyboard.KEY_UP) {
+                    this.list.selectNext();
+                } else {
+                    this.list.selectPrev();
                 }
-                this.list.selectPrev();
             }
             default -> {
                 return false;
