@@ -1,11 +1,13 @@
 package com.cleanroommc.compute;
 
 import com.cleanroommc.compute.buffers.BufferFlags;
+import net.minecraftforge.fml.common.registry.ForgeTestRunner;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ForgeTestRunner.Isolated
 public class BufferFlagsTest {
     @Test
     public void subbufferConflictsTest() {

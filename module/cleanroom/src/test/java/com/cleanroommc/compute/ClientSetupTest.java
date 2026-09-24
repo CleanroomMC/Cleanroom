@@ -1,6 +1,7 @@
 package com.cleanroommc.compute;
 
 import com.cleanroommc.test.kirino.gl.ext.GLTestExtension;
+import net.minecraftforge.fml.common.registry.ForgeTestRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.lwjgl.system.Configuration;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+@ForgeTestRunner.Isolated
 @ExtendWith(GLTestExtension.class)
 public class ClientSetupTest {
     @Test
