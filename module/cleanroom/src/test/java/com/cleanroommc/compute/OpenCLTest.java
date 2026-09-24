@@ -7,12 +7,13 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.extension.*;
 import org.lwjgl.system.Configuration;
 
-public class OpenCLTest implements BeforeAllCallback, AfterAllCallback {
+import java.lang.reflect.Method;
+
+public class OpenCLTest implements BeforeAllCallback, AfterAllCallback, InvocationInterceptor {
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
         GarbageCollector.INSTANCE.wash();
@@ -20,15 +21,25 @@ public class OpenCLTest implements BeforeAllCallback, AfterAllCallback {
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
+        try {
+            Loader.instance();
+            Bootstrap.register();
+            Logger testLogger = LogManager.getLogger("TestLogger");
+            Configuration.OPENCL_EXPLICIT_INIT.set(true);
+            ComputeSetup.initOpenCL(testLogger, false);
+            Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
+            {{
+                modId = "accelerate";
+            }}));
+        } catch (Throwable _) {
+        }
+    }
 
-        Loader.instance();
-        Bootstrap.register();
-        Logger testLogger = LogManager.getLogger("TestLogger");
-        Configuration.OPENCL_EXPLICIT_INIT.set(true);
-        ComputeSetup.initOpenCL(testLogger, false);
-        Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
-        {{
-            modId = "accelerate";
-        }}));
+    @Override
+    public void interceptTestMethod(Invocation<@Nullable Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (Compute.isAvailable())
+            invocation.proceed();
+        else
+            invocation.skip();
     }
 }
