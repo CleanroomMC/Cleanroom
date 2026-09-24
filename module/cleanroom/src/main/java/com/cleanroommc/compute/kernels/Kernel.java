@@ -254,9 +254,9 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             } else if  (p instanceof ImageParameter<?> image && image.image().isGLTexture()) {
                 images.add(image);
             } else if (p instanceof PipeParameter(Pipe pipe)) {
-                PIPE_HOLDER.reference(pipe, queue);
+                HOLDER.reference(pipe, queue);
             } else if (p instanceof SamplerParameter(Sampler sampler)) {
-                SAMPLER_HOLDER.reference(sampler, queue);
+                HOLDER.reference(sampler, queue);
             }
         });
         PointerBuffer handles = stack.mallocPointer(buffers.size() + images.size());
@@ -269,35 +269,32 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         return handles;
     }
 
-    private final static MethodHolder<Pipe> PIPE_HOLDER;
-    private final static MethodHolder<Sampler> SAMPLER_HOLDER;
+    private final static MethodHolder HOLDER;
 
     /**
      * Stores {@link SmartPointer} functions.
-     * @param <T> {@link SmartPointer} subtype.
      */
-    private static final class MethodHolder<T extends SmartPointer> {
+    private static final class MethodHolder {
         private final MethodHandle referenceHandle;
 
-        private MethodHolder(Class<T> type) throws NoSuchMethodException, IllegalAccessException {
-            this.referenceHandle = MethodHandles.lookup().findVirtual(type, "reference", REFERENCE_TYPE);
+        private MethodHolder() throws NoSuchMethodException, IllegalAccessException {
+            Method method = SmartPointer.class.getDeclaredMethod("reference", SmartPointer.class);
+            method.setAccessible(true);
+            this.referenceHandle = MethodHandles.lookup().unreflect(method);
         }
 
-        public void reference(T pointer, SmartPointer reference) {
+        public <T extends SmartPointer> void reference(T pointer, SmartPointer reference) {
             try {
                 referenceHandle.invoke(pointer, reference);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         }
-
-        private final static MethodType REFERENCE_TYPE = MethodType.methodType(void.class, SmartPointer.class);
     }
 
     static {
         try {
-            PIPE_HOLDER = new MethodHolder<>(Pipe.class);
-            SAMPLER_HOLDER = new MethodHolder<>(Sampler.class);
+            HOLDER = new MethodHolder();
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
