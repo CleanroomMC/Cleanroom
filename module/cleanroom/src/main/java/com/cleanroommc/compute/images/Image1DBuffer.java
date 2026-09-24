@@ -86,12 +86,12 @@ public final class Image1DBuffer extends Image1D {
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull Long from, @NonNull Long size, int mipmap, long... dependencies) {
+    public <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull Long from, @NonNull Long size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.fill(stack, commandQueue, color, from, size, mipmap, dependencies);
     }
@@ -106,12 +106,12 @@ public final class Image1DBuffer extends Image1D {
      * @param mipmap Mipmap level of the image.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, long... dependencies) {
+    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.fill(stack, commandQueue, color, from, size, mipmap, dependencies);
     }
@@ -126,12 +126,12 @@ public final class Image1DBuffer extends Image1D {
      * @param mipmap Mipmap level of the image.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, long... dependencies) {
+    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.fill(stack, commandQueue, color, from, size, mipmap, dependencies);
     }
@@ -149,12 +149,12 @@ public final class Image1DBuffer extends Image1D {
      * @param dependencies Additional events this operation depends on.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, long...)
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the source mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination, @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap, @NonNull CT2 size, long... dependencies) {
+    public <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination, @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap, @NonNull CT2 size, CommandQueue.Event... dependencies) {
         return super.copy(stack, commandQueue, destination, from, fromMipmap, to, toMipmap, size, dependencies);
     }
 
@@ -172,12 +172,12 @@ public final class Image1DBuffer extends Image1D {
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, long... dependencies) {
+    public <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
@@ -195,12 +195,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -218,12 +218,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -241,12 +241,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -264,12 +264,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -288,12 +288,12 @@ public final class Image1DBuffer extends Image1D {
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, long... dependencies) {
+    public <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
@@ -311,12 +311,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, long... dependencies) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -334,12 +334,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, long... dependencies) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -357,12 +357,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, long... dependencies) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -380,12 +380,12 @@ public final class Image1DBuffer extends Image1D {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @apiNote This image does not support mipmaps; the mipmap level must be 0.
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, long... dependencies) {
+    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
