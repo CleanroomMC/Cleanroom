@@ -18,7 +18,25 @@
                          BlockPos blockpos = getRandomChunkPosition(worldServerIn, chunkpos1.x, chunkpos1.z);
                          int k1 = blockpos.getX();
                          int l1 = blockpos.getY();
-@@ -133,7 +135,7 @@
+@@ -115,14 +117,15 @@
+                                             )) {
+                                             EntityLiving entityliving;
+                                             try {
+-                                                entityliving = biome$spawnlistentry.entityClass.getConstructor(World.class).newInstance(worldServerIn);
++                                                entityliving = biome$spawnlistentry.newInstance(worldServerIn);
+                                             } catch (Exception exception) {
+                                                 exception.printStackTrace();
+                                                 return j4;
+                                             }
+ 
+                                             entityliving.setLocationAndAngles(f, i3, f1, worldServerIn.rand.nextFloat() * 360.0F, 0.0F);
+-                                            if (entityliving.getCanSpawnHere() && entityliving.isNotColliding()) {
++                                            if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawnSpawner(entityliving, worldServerIn, f, i3, f1, null)) {
++                                                if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(entityliving, worldServerIn, f, i3, f1, null))
+                                                 ientitylivingdata = entityliving.onInitialSpawn(
+                                                     worldServerIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata
+                                                 );
+@@ -133,7 +136,7 @@
                                                      entityliving.setDead();
                                                  }
  
@@ -27,7 +45,7 @@
                                                      continue label134;
                                                  }
                                              }
-@@ -166,31 +168,42 @@
+@@ -166,31 +169,42 @@
              return false;
          } else if (state.canProvidePower()) {
              return false;
@@ -84,7 +102,7 @@
      }
  
      /**
-@@ -221,12 +234,13 @@
+@@ -221,12 +235,13 @@
                          if (canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, worldIn, blockpos)) {
                              EntityLiving entityliving;
                              try {
