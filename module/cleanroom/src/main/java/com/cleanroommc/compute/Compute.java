@@ -1,5 +1,6 @@
 package com.cleanroommc.compute;
 
+import com.cleanroommc.client.LoadingTracker;
 import com.cleanroommc.compute.cmd.CommandQueueDispatch;
 import com.cleanroommc.compute.programs.ComputeProgram;
 import com.cleanroommc.compute.programs.ProgramCacheIntegrityTable;
@@ -12,6 +13,7 @@ import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.ProgressManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opencl.CL10;
@@ -92,11 +94,12 @@ public class Compute {
 
     /**
      * Initialize Compute.
-     * @param log logger
+     *
+     * @param log                  logger
      * @param platformCapabilities platform capabilities
-     * @param context OpenCL context
-     * @param devices all devices
-     * @param isClient is this on the client (if yes enable gl sharing)
+     * @param context              OpenCL context
+     * @param devices              all devices
+     * @param isClient             is this on the client (if yes enable gl sharing)
      * @author EΣrie
      */
     private Compute(Logger log, CLCapabilities platformCapabilities, long context, Device[] devices, boolean isClient) {
@@ -137,6 +140,7 @@ public class Compute {
 
     /**
      * Register a program for compilation.
+     *
      * @param location Where is the program in the "assets/modid/compute/" subfolder?
      * @author EΣrie
      */
@@ -146,11 +150,16 @@ public class Compute {
 
     /**
      * Compile all programs.
+     *
      * @author EΣrie
      */
     void compilePrograms() {
-        for (ComputeProgram program : programs.values()) {
+        int count = programs.size();
+        ProgressManager.ProgressBar progress = ProgressManager.push("Compiling OpenCL programs: ", count);
+        for (var entry : programs.entrySet()) {
+            ComputeProgram program = entry.getValue();
             try (MemoryStack stack = MemoryStack.stackPush()) {
+                progress.step(entry.getKey().toString());
                 program.compile(programCacheIntegrityTable, stack);
             }
         }
@@ -158,7 +167,8 @@ public class Compute {
 
     /**
      * Reads headers.
-     * @param rl start header
+     *
+     * @param rl    start header
      * @param stack MemoryStack for temporary variables.
      * @return OpenCL handles to all headers.
      * @apiNote This caches headers, then puts them into a dependency graph to account for headers that include headers.
@@ -177,13 +187,14 @@ public class Compute {
         while (!browsable.isEmpty()) {
             ResourceLocation curr = browsable.pop();
             String src = MinecraftResourceUtils.readText(new ResourceLocation(curr.getNamespace(),
-                            "compute/" + curr.getPath()),
-                    MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
+                    "compute/" + curr.getPath()),
+                MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
             IntBuffer err_code = stack.mallocInt(1);
             long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
-            switch(err_code.get(0)) {
+            switch (err_code.get(0)) {
                 case CL10.CL_INVALID_VALUE -> throw new NullPointerException(String.format("Source code of %s is null. ", curr));
-                case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
+                case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY ->
+                    throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
             }
             libraries.put(curr, program);
             dependencyGraph.addNode(curr);
@@ -199,6 +210,7 @@ public class Compute {
 
     /**
      * Get a device by its handle.
+     *
      * @param handle device handle
      * @return {@link Device}
      * @author EΣrie
@@ -222,11 +234,12 @@ public class Compute {
 
     /**
      * Initialize Compute.
-     * @param log Logger
+     *
+     * @param log      Logger
      * @param platform Platform capabilities
-     * @param context OpenCL context
+     * @param context  OpenCL context
      * @param isClient Is this on the client?
-     * @param devices All devices
+     * @param devices  All devices
      * @apiNote Initialise the singleton.
      * @author EΣrie
      */

@@ -10,7 +10,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
 import org.lwjgl.opengl.CGL;
@@ -33,11 +32,9 @@ public class ComputeSetup {
      * Init function
      * @param LOGGER The logger
      * @param client Is this on client (if yes, turn on GL Sharing)
-     * @throws LWJGLException If something goes wrong. There is so much that can go wrong here that I can't describe it.
-     * I wrote this class almost three months ago (today is 27th August 2026), and I'm not even sure what I'm doing.
      * @author EΣrie
      */
-    public static void initOpenCL(Logger LOGGER, boolean client) throws LWJGLException {
+    public static void initOpenCL(Logger LOGGER, boolean client) {
         LOGGER.info("Initializing OpenCL");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             CL.create();
