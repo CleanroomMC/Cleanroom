@@ -9,7 +9,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.cleanroommc.cleanroomgradle.settings' version '0.17.3'
+    id 'com.cleanroommc.cleanroomgradle.settings' version '0.17.5'
 }
 
 rootProject.name = 'Cleanroom'
