@@ -430,6 +430,8 @@ public class Buffer extends SmartPointer {
         );
 
         switch (err[0]) {
+            case CL10.CL_INVALID_CONTEXT -> throw new IllegalStateException("Can't create buffer, invalid context. This should not hapen. Something is seriously wrong.");
+            case CL10.CL_INVALID_VALUE -> throw new IllegalArgumentException("Can't create buffer, invalid provided flags, most likely conflicting with the GL buffer's.");
             case CL10GL.CL_INVALID_GL_OBJECT -> throw new BufferError("Can't create buffer, invalid gl object.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
         }
