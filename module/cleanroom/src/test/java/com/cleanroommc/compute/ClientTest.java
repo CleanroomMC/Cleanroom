@@ -53,7 +53,7 @@ public class ClientTest {
                 Kernel kernel = program.kernel("test");
                 KernelParameterList paramList = new KernelParameterList(kernel);
                 paramList.add(buffer);
-                queue.dispatchKernel(kernel, paramList, null, new long[]{values.length})
+                queue.dispatchKernel(stack, kernel, paramList, null, new long[]{values.length})
                     .read(buffer, results).execute();
                 buffer.close();
             }
@@ -77,7 +77,7 @@ public class ClientTest {
                 Kernel kernel = program.kernel("test");
                 KernelParameterList paramList = new KernelParameterList(kernel);
                 paramList.add(buffer);
-                queue.dispatchKernel(kernel, paramList, null, new long[]{values.length})
+                queue.dispatchKernel(stack, kernel, paramList, null, new long[]{values.length})
                     .next(kernel, paramList, null, new long[]{values.length})
                     .next(kernel, paramList, null, new long[]{values.length})
                     .read(buffer, results).execute();
@@ -162,7 +162,7 @@ public class ClientTest {
                 ByteBuffer out = stack.malloc(results.length);
                 CommandQueue.Event wv1 = queue.bufferWrite(v1, 0, bv1);
                 CommandQueue.Event wv2 = queue.bufferWrite(v2, 0, bv2);
-                queue.dispatchKernel(kernel, paramList, null, new long[]{vals1.length, vals2.length}, wv1, wv2)
+                queue.dispatchKernel(stack, kernel, paramList, null, new long[]{vals1.length, vals2.length}, wv1, wv2)
                     .read(output, out).execute();
                 out.rewind();
                 for (int i = 0; i < results.length; i++)
