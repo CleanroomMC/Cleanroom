@@ -120,7 +120,8 @@ public enum GarbageCollector {
         try {
             writeLock.lock();
             SweepTask.running.compareAndExchangeRelease(true, false);
-            referenceGraph.nodes().forEach(ptr -> {if (!ptr.isClosed()) ptr.close();});
+            referenceGraph.nodes().forEach(ptr -> {if (!ptr.isClosed()) deletionQueue.enqueue(ptr);});
+            deleteAllSweptObjects();
         } finally {
             writeLock.unlock();
         }
