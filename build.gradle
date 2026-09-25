@@ -14,6 +14,16 @@ cleanroom {
         accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
         sideAnnotationStrippers.from file('module/cleanroom/minecraft.sas')
     }
+    runs {
+        kirinoClient {
+            inherit = 'cleanroomClient'
+            configure {
+                description = 'Runs the client with Kirino enabled'
+                workingDir = file('run/kirino')
+                systemProperty 'crl.dev.kirino', true
+            }
+        }
+    }
 }
 
 tokenEnvoy {

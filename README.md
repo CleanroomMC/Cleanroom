@@ -85,12 +85,14 @@ It is a work-in-progress rendering engine that replaces Minecraft's implicit ren
 
 ### Main Tasks
 
-| Task                                        | Behavior                                                              |
-|---------------------------------------------|-----------------------------------------------------------------------|
-| `setup`                                     | Workspace setup (chain of tasks)                                      |
-| `runCleanroomClient` / `runCleanroomServer` | Launches the game from the development environment                    |
-| `runVanillaClient` / `runVanillaServer`     | Launches unmodified Minecraft, to compare behavior                    |
-| `generateMinecraftDiffs`                    | Regenerates the patch set from edited Minecraft sources               |
-| `applyMinecraftDiffs`                       | Recreates the Minecraft sources from the committed patch set          |
-| `build`                                     | Builds the universal, installer, userdev and MMC pack artifacts       |
-| `cleanroomInfo`                             | Prints the effective CleanroomGradle mode, versions, caches and tools |
+| Task                                  | Behavior                                                              |
+|---------------------------------------|-----------------------------------------------------------------------|
+| `setup`                               | Workspace setup (chain of tasks)                                      |
+| `runCleanroomClient`                  | Launches the development client with Kirino disabled                  |
+| `runCleanroomServer`                  | Launches the server from the development environment                  |
+| `runKirinoClient`                     | Launches the development client in `run/kirino` with Kirino enabled   |
+| `runVanillaClient`/`runVanillaServer` | Launches unmodified Minecraft, to compare behavior                    |
+| `generateMinecraftDiffs`              | Regenerates the patch set from edited Minecraft sources               |
+| `applyMinecraftDiffs`                 | Recreates the Minecraft sources from the committed patch set          |
+| `build`                               | Builds the universal, installer, userdev and MMC pack artifacts       |
+| `cleanroomInfo`                       | Prints the effective CleanroomGradle mode, versions, caches and tools |
