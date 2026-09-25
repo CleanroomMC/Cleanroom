@@ -397,20 +397,16 @@ public final class Image1DBuffer extends Image1D {
                                          final @NonNull ChannelType channelType,
                                          final @NonNull ChannelOrder channelOrder,
                                          @Nullable ByteBuffer hostMemory) {
-        try (MemoryStack substack = stack.push()) {
-            ByteBuffer container = substack.calloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
-            try (CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF))) {
-                try (CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF))) {
-                    format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
-                    descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE1D).image_width(size)
-                            .image_row_pitch(hostMemory != null ? size * channelType.sizeof(channelOrder) : 0)
-                            .mem_object(buffer.handle);
-                    if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch())
-                        throw new ImageError(String.format("Image size %d too large for host memory %d.",
-                                descriptor.image_row_pitch(), hostMemory.remaining()));
-                    return new Workaround(stack, memoryFlags, format, descriptor, hostMemory);
-                }
-            }
-        }
+        ByteBuffer container = stack.calloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
+        CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF));
+        CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF));
+        format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
+        descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE1D).image_width(size)
+            .image_row_pitch(hostMemory != null ? size * channelType.sizeof(channelOrder) : 0)
+            .mem_object(buffer.handle);
+        if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch())
+            throw new ImageError(String.format("Image size %d too large for host memory %d.",
+                descriptor.image_row_pitch(), hostMemory.remaining()));
+        return new Workaround(stack, memoryFlags, format, descriptor, hostMemory);
     }
 }

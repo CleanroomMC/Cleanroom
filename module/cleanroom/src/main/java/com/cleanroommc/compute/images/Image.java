@@ -116,6 +116,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      */
     protected Image(@NonNull Workaround workaround) {
         this(workaround.stack(), workaround.memoryFlags(), workaround.format(), workaround.descriptor(), workaround.hostMemory());
+        workaround.format.close();
+        workaround.descriptor.close();
     }
 
     /**

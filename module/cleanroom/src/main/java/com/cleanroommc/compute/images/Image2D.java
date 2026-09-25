@@ -87,7 +87,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -172,7 +172,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param mipmap Mipmap level of the image.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -233,7 +233,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param mipmap Mipmap level of the image.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, long...)
+     * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -297,7 +297,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param dependencies Additional events this operation depends on.
      * @param <CT2> Destination image coordinate type.
      * @return Event of the operation.
-     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, long...)
+     * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -383,7 +383,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -453,7 +453,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -510,7 +510,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -567,7 +567,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -624,7 +624,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -682,7 +682,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param dependencies Additional events this operation depends on.
      * @param <B> Type of NIO buffer.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -752,7 +752,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -809,7 +809,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -866,7 +866,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -923,7 +923,7 @@ public final class Image2D extends Image<Vector2L> {
      * @param blocking Whether the operation blocks until the transfer is complete.
      * @param dependencies Additional events this operation depends on.
      * @return Event of the operation.
-     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, long...)
+     * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
     @Override
@@ -991,20 +991,16 @@ public final class Image2D extends Image<Vector2L> {
                                          final @NonNull ChannelType channelType,
                                          final @NonNull ChannelOrder channelOrder,
                                          @Nullable ByteBuffer hostMemory) {
-        try (MemoryStack substack = stack.push()) {
-            ByteBuffer container = substack.calloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
-            try (CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF))) {
-                try (CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF))) {
-                    format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
-                    descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE2D).image_width(width).image_height(height)
-                            .image_row_pitch(hostMemory != null ? width * channelType.sizeof(channelOrder) : 0)
-                            .num_mip_levels(mipmaps);
-                    if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch())
-                        throw new ImageError(String.format("Image size %d too large for host memory %d.",
-                                descriptor.image_row_pitch(), hostMemory.remaining()));
-                    return new Workaround(stack, memoryFlags, format, descriptor, hostMemory);
-                }
-            }
-        }
+        ByteBuffer container = stack.calloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
+        CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF));
+        CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF));
+        format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
+        descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE2D).image_width(width).image_height(height)
+            .image_row_pitch(hostMemory != null ? width * channelType.sizeof(channelOrder) : 0)
+            .num_mip_levels(mipmaps);
+        if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch())
+            throw new ImageError(String.format("Image size %d too large for host memory %d.",
+                descriptor.image_row_pitch(), hostMemory.remaining()));
+        return new Workaround(stack, memoryFlags, format, descriptor, hostMemory);
     }
 }
