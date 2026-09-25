@@ -43,7 +43,6 @@ public class ImageTest {
     }
 
     @Test
-    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void image1DFillTest() {
         AtomicReference<Image<Long>> image = new AtomicReference<>(null);
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -68,7 +67,6 @@ public class ImageTest {
     }
 
     @Test
-    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void image1DCopyTest() {
         AtomicReference<Image<Long>> image1 = new AtomicReference<>(null);
         AtomicReference<Image<Long>> image2 = new AtomicReference<>(null);
@@ -110,7 +108,6 @@ public class ImageTest {
     }
 
     @Test
-    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void image1DWriteTest() {
         AtomicReference<Image<Long>> image = new AtomicReference<>(null);
         try (MemoryStack stack = MemoryStack.stackPush()) {

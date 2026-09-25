@@ -58,14 +58,12 @@ public class ComputeAPITest {
     }
 
     @Test
-    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void compileTest() {
         assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program")));
         assertDoesNotThrow(() -> Compute.instance().compilePrograms());
     }
 
     @Test
-    @EnabledIf(value = "com.cleanroommc.compute.Compute#isAvailable", disabledReason = "OpenCL is not present on this device.")
     public void commandQueueTest() {
         assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program")));
         assertDoesNotThrow(() -> Compute.instance().compilePrograms());
