@@ -3,10 +3,15 @@ package com.cleanroommc.compute;
 import com.cleanroommc.compute.buffers.Buffer;
 import com.cleanroommc.compute.buffers.BufferFlags;
 import com.cleanroommc.compute.cmd.CommandQueue;
+import com.cleanroommc.compute.images.ChannelOrder;
+import com.cleanroommc.compute.images.ChannelType;
+import com.cleanroommc.compute.images.Image;
+import com.cleanroommc.compute.images.Image1D;
 import com.cleanroommc.compute.kernels.Kernel;
 import com.cleanroommc.compute.kernels.params.KernelParameterList;
 import com.cleanroommc.compute.programs.ComputeProgram;
 import com.cleanroommc.kirino.gl.buffer.GLBuffer;
+import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.cleanroommc.test.kirino.gl.ext.GLTestExtension;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeTestRunner;
@@ -18,6 +23,8 @@ import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -176,5 +183,86 @@ public class ClientTest {
         for (int x = 0; x < vals1.length; x++)
             for (int y = 0; y < vals2.length; y++)
                 assertEquals(vals1[x]+vals2[y], results[(x*vals2.length)+y]);
+    }
+
+    @Test
+    public void image1DFillTest() {
+        AtomicReference<Image<Long>> image = new AtomicReference<>(null);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer color = stack.callocFloat(4);
+            color.put(.5f);
+            color.rewind();
+            FloatBuffer imageBuffer = stack.mallocFloat(10);
+            GLTexture texture = GLTexture.newDsaTex1D(10);
+            assertDoesNotThrow(() -> image.set(new Image1D(texture, BufferFlags.READ_WRITE))
+            );
+            assertDoesNotThrow(() -> queue.imageFill(stack, image.get(), color, 0L, 10L)
+                .read(image.get(), 0L, 0, 10L, 0, 0, imageBuffer).execute());
+            for (int i = 0; i < 10; i++)
+                assertEquals(color.get(0), imageBuffer.get(i));
+        } finally {
+            if (image.get() != null)
+                image.get().close();
+        }
+    }
+
+    @Test
+    public void image1DCopyTest() {
+        AtomicReference<Image<Long>> image1 = new AtomicReference<>(null);
+        AtomicReference<Image<Long>> image2 = new AtomicReference<>(null);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer color1 = stack.callocFloat(4);
+            color1.put(.5f);
+            color1.rewind();
+            FloatBuffer color2 = stack.callocFloat(4);
+            color2.put(.4f);
+            color2.rewind();
+            FloatBuffer imageBuffer = stack.mallocFloat(10);
+            GLTexture texture1 = GLTexture.newDsaTex1D(10);
+            GLTexture texture2 = GLTexture.newDsaTex1D(10);
+            assertDoesNotThrow(() -> image1.set(new Image1D(texture1, BufferFlags.READ_WRITE)));
+            assertDoesNotThrow(() -> image2.set(new Image1D(texture2, BufferFlags.READ_WRITE)));
+            assertDoesNotThrow(() -> {
+                CommandQueue.Event fill1 = queue.imageFill(stack, image1.get(), color1, 0L, 10L);
+                queue.imageFill(stack, image2.get(), color2, 0L, 10L)
+                    .copy(image2.get(), image1.get(), 0L, 2L, 4L, fill1)
+                    .read(image1.get(), 0L, 10L, 0, 0, imageBuffer)
+                    .execute();
+            });
+            for (int i = 0; i < 10; i++)
+                assertEquals(((i >= 2 && i <= 5) ? color2 : color1).get(0), imageBuffer.get(i));
+        } finally {
+            if (image1.get() != null)
+                image1.get().close();
+            if (image2.get() != null)
+                image2.get().close();
+        }
+    }
+
+    @Test
+    public void image1DWriteTest() {
+        AtomicReference<Image<Long>> image = new AtomicReference<>(null);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer color = stack.callocFloat(4);
+            color.put(.5f);
+            color.rewind();
+            FloatBuffer writeBuffer = stack.callocFloat(4);
+            writeBuffer.put(.63f);
+            writeBuffer.put(.16f);
+            writeBuffer.put(.06f);
+            writeBuffer.put(.3f);
+            writeBuffer.rewind();
+            FloatBuffer imageBuffer = stack.callocFloat(10);
+            GLTexture texture = GLTexture.newDsaTex1D(10);
+            assertDoesNotThrow(() -> image.set(new Image1D(texture, BufferFlags.READ_WRITE)));
+            assertDoesNotThrow(() -> queue.imageFill(stack, image.get(), color, 0L, 10L)
+                .write(image.get(), 3L, 4L, 0, 0, writeBuffer)
+                .read(image.get(), 0L, 0, 10L, 0, 0, imageBuffer).execute());
+            for (int i = 0; i < 10; i++)
+                assertEquals(((i >= 3 && i <= 6) ? writeBuffer.get((i-3)) : color.get(0)), imageBuffer.get(i));
+        } finally {
+            if (image.get() != null)
+                image.get().close();
+        }
     }
 }
