@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -22,6 +23,7 @@ public enum GarbageCollector {
     final Lock writeLock = lock.writeLock();
     public final SweepTask sweepTask = new SweepTask();
     final PriorityQueue<SmartPointer> deletionQueue = new ObjectArrayFIFOQueue<>();
+    final AtomicBoolean doneCleaning = new AtomicBoolean(false);
 
     /**
      * Adds a pointer to reference tracking.
@@ -131,11 +133,14 @@ public enum GarbageCollector {
      * Remove all objects marked for deletion.
      */
     public void deleteAllSweptObjects() {
+        if (!doneCleaning.getAcquire())
+            return;
         try {
             writeLock.lock();
             SweepTask.running.compareAndExchangeRelease(true, false);
             while (!deletionQueue.isEmpty())
                 if (!deletionQueue.first().isClosed()) deletionQueue.dequeue().close();
+            doneCleaning.setRelease(false);
         } finally {
             writeLock.unlock();
         }

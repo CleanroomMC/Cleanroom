@@ -182,7 +182,15 @@
          }
  
          if (this.tickCounter % 900 == 0) {
-@@ -620,6 +648,7 @@
+@@ -616,10 +644,15 @@
+ 
+         if (this.tickCounter % 6000 == 0) {
+             this.usageSnooper.addMemoryStatsToSnooper();
++            this.profiler.startSection("clsweep");
++            com.cleanroommc.compute.smrtptr.GarbageCollector.INSTANCE.sweepTask.unlock();
++            com.cleanroommc.compute.smrtptr.GarbageCollector.INSTANCE.deleteAllSweptObjects();
++            this.profiler.endSection();
+         }
  
          this.profiler.endSection();
          this.profiler.endSection();
@@ -190,7 +198,7 @@
      }
  
      public void updateTimeLightAndEntities() {
-@@ -631,11 +660,15 @@
+@@ -631,11 +664,15 @@
          }
  
          this.profiler.endStartSection("levels");
@@ -209,7 +217,7 @@
                  this.profiler.func_194340_a(() -> worldserver.getWorldInfo().getWorldName());
                  if (this.tickCounter % 20 == 0) {
                      this.profiler.startSection("timeSync");
-@@ -644,12 +677,13 @@
+@@ -644,12 +681,13 @@
                              new SPacketTimeUpdate(
                                  worldserver.getTotalWorldTime(), worldserver.getWorldTime(), worldserver.getGameRules().getBoolean("doDaylightCycle")
                              ),
@@ -224,7 +232,7 @@
  
                  try {
                      worldserver.tick();
-@@ -667,6 +701,7 @@
+@@ -667,6 +705,7 @@
                      throw new ReportedException(crashreport1);
                  }
  
@@ -232,7 +240,7 @@
                  this.profiler.endSection();
                  this.profiler.startSection("tracker");
                  worldserver.getEntityTracker().tick();
-@@ -674,9 +709,11 @@
+@@ -674,9 +713,11 @@
                  this.profiler.endSection();
              }
  
@@ -245,7 +253,7 @@
          this.profiler.endStartSection("connection");
          this.getNetworkSystem().networkTick();
          this.profiler.endStartSection("players");
-@@ -703,6 +740,15 @@
+@@ -703,6 +744,15 @@
  
      @SideOnly(Side.SERVER)
      public static void main(String[] p_main_0_) {
@@ -261,7 +269,7 @@
          Bootstrap.register();
  
          try {
-@@ -796,7 +842,8 @@
+@@ -796,7 +846,8 @@
      }
  
      public void startServerThread() {
@@ -271,7 +279,7 @@
          this.serverThread.start();
      }
  
-@@ -818,11 +865,12 @@
+@@ -818,11 +869,12 @@
  
      /** Gets the worldServer by the given dimension. */
      public WorldServer getWorld(int dimension) {
@@ -288,7 +296,7 @@
      }
  
      /** Returns the server's Minecraft version as string. */
-@@ -871,7 +919,7 @@
+@@ -871,7 +923,7 @@
      }
  
      public String getServerModName() {
@@ -297,7 +305,16 @@
      }
  
      /** Adds the server info, including from theWorldServer, to the crash report. */
-@@ -1354,7 +1402,7 @@
+@@ -941,7 +993,7 @@
+ 
+     /**
+      * Gets the name of this thing. This method has slightly different behavior depending on the interface (for <a href="https://github.com/ModCoderPack/MCPBot-Issues/issues/14">technical reasons</a> the same method is used for both IWorldNameable and ICommandSender):
+-     *  
++     *
+      * <dl>
+      * <dt>{@link net.minecraft.util.INameable#getName() INameable.getName()}</dt>
+      * <dd>Returns the name of this inventory. If this {@linkplain net.minecraft.inventory#hasCustomName() has a custom name} then this <em>should</em> be a direct string; otherwise it <em>should</em> be a valid translation string.</dd>
+@@ -1354,7 +1406,7 @@
              try {
                  return Futures.immediateFuture(callable.call());
              } catch (Exception exception) {
@@ -306,7 +323,7 @@
              }
          }
      }
-@@ -1408,4 +1456,8 @@
+@@ -1408,4 +1460,8 @@
              this.addScheduledTask(this::reload);
          }
      }
