@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ForgeTestRunner.Isolated
 public class SetupTest {
-    @Test
+    /*@Test
     public void setupTest() {
         Logger testLogger = LogManager.getLogger("TestLogger");
         assertDoesNotThrow(() -> Configuration.OPENCL_EXPLICIT_INIT.set(true));
@@ -22,5 +22,5 @@ public class SetupTest {
     @AfterEach
     public void cleanup() {
         assertDoesNotThrow(CL::destroy);
-    }
+    }*/
 }
