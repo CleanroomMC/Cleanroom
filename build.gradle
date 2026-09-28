@@ -1,9 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.cleanroommc.cleanroomgradle'
-    id 'com.cleanroommc.conventions.base' version '1.1.6'
-    id 'com.cleanroommc.tokenenvoy' version '2.0.0'
-    id 'maven-publish'
+    id 'com.cleanroommc.conventions' version '1.1.7'
 }
 
 base.archivesName = 'cleanroom'
@@ -207,17 +205,10 @@ dependencies {
     api 'com.cleanroommc:mcttf:0.1.0'
     api 'org.lwjgl:lwjgl-freetype'
     lwjglNative "org.lwjgl:lwjgl-freetype:${lwjgl_version}"
-
-    // Test
-    testImplementation platform('org.junit:junit-bom:6.1.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.withType(Test).configureEach {
     maxParallelForks = 1
-    useJUnitPlatform()
-    testLogging.events 'passed', 'skipped', 'failed'
     jvmArgs open_arguments + export_arguments
 }
 
@@ -249,17 +240,4 @@ tasks.named('compileJava', JavaCompile).configure { compile ->
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += export_arguments
-}
-
-publishing {
-    repositories {
-        maven {
-            name = 'Cleanroom'
-            url = 'https://maven.cleanroommc.com'
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
 }
