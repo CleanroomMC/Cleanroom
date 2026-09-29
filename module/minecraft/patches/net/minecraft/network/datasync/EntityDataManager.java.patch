@@ -16,3 +16,22 @@
                  }
              } catch (ClassNotFoundException classnotfoundexception) {
              }
+@@ -64,8 +66,8 @@
+             j = i;
+         }
+ 
+-        if (j > 254) {
+-            throw new IllegalArgumentException("Data value id is too big with " + j + "! (Max is " + 254 + ")");
++        if (j >= 254) { // Forge: 254 is reserved for Entity.ROLL
++            throw new IllegalArgumentException("Data value id is too big with " + j + "! (Max is 253, id 254 is reserved by the loader for Entity.ROLL)");
+         }
+ 
+         NEXT_ID_MAP.put(clazz, j);
+@@ -245,6 +247,7 @@
+             if (dataentry1 != null) {
+                 this.setEntryValue(dataentry1, dataentry);
+                 this.entity.notifyDataManagerChange(dataentry.getKey());
++                if (net.minecraft.entity.Entity.ROLL.equals(dataentry.getKey()) && dataentry1.getValue() instanceof Float) this.entity.onRollSynced((Float) dataentry1.getValue()); // Forge: not routed through overridable notifyDataManagerChange
+             }
+         }
+ 

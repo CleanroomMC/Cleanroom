@@ -9,7 +9,36 @@
      private static final Logger LOGGER = LogManager.getLogger();
      private static final List<ItemStack> EMPTY_EQUIPMENT = Collections.emptyList();
      private static final AxisAlignedBB ZERO_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-@@ -216,6 +216,10 @@
+@@ -123,6 +123,20 @@
+     public float rotationPitch;
+     public float prevRotationYaw;
+     public float prevRotationPitch;
++    /**
++     * Forge: Entity roll in degrees. {@link #setRoll(float)} wraps it to [-180, 180). Per-frame writers may advance
++     * {@code roll} and {@link #prevRoll} together by the same delta to stay continuous across the seam, which can leave
++     * both outside that range until the next {@code setRoll}. On the client the loader only writes a remote entity's roll
++     * from the server value synced via {@link #ROLL}: at tick time, or immediately before the entity's first tick.
++     */
++    public float roll;
++    /**
++     * Forge: Roll on the previous tick, used for interpolation. It may lie whole turns away from {@link #roll}'s range
++     * so that interpolation across the &plusmn;180 seam takes the short way round.
++     */
++    public float prevRoll;
++    private boolean rollSynced; // Forge: a synced roll is pending, applied in tickRoll
++    private float syncedRoll; // Forge
+     /** Axis aligned bounding box. */
+     private AxisAlignedBB boundingBox;
+     public boolean onGround;
+@@ -180,6 +194,7 @@
+     private static final DataParameter<Boolean> CUSTOM_NAME_VISIBLE = EntityDataManager.createKey(Entity.class, DataSerializers.BOOLEAN);
+     private static final DataParameter<Boolean> SILENT = EntityDataManager.createKey(Entity.class, DataSerializers.BOOLEAN);
+     private static final DataParameter<Boolean> NO_GRAVITY = EntityDataManager.createKey(Entity.class, DataSerializers.BOOLEAN);
++    public static final DataParameter<Float> ROLL = DataSerializers.FLOAT.createKey(254); // Forge: reserved id, see EntityDataManager.createKey
+     /** Has this entity been added to the chunk its within */
+     public boolean addedToChunk;
+     public int chunkCoordX;
+@@ -216,6 +231,10 @@
      private boolean isPositionDirty;
      private final double[] pistonDeltas;
      private long pistonDeltasGameTime;
@@ -20,7 +49,7 @@
  
      public Entity(World worldIn) {
          this.entityId = nextEntityID++;
-@@ -236,7 +240,7 @@
+@@ -236,7 +255,7 @@
          this.world = worldIn;
          this.setPosition(0.0, 0.0, 0.0);
          if (worldIn != null) {
@@ -29,9 +58,11 @@
          }
  
          this.dataManager = new EntityDataManager(this);
-@@ -247,8 +251,16 @@
+@@ -246,9 +265,18 @@
+         this.dataManager.register(CUSTOM_NAME, "");
          this.dataManager.register(SILENT, false);
          this.dataManager.register(NO_GRAVITY, false);
++        this.dataManager.register(ROLL, 0.0F); // Forge
          this.entityInit();
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityEvent.EntityConstructing(this));
 +        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
@@ -46,7 +77,7 @@
      public int getEntityId() {
          return this.entityId;
      }
-@@ -373,6 +385,7 @@
+@@ -373,6 +401,7 @@
          this.posX = x;
          this.posY = y;
          this.posZ = z;
@@ -54,7 +85,7 @@
          float f = this.width / 2.0F;
          float f1 = this.height;
          this.setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
-@@ -901,6 +914,7 @@
+@@ -901,6 +930,7 @@
          this.posX = (axisalignedbb.minX + axisalignedbb.maxX) / 2.0;
          this.posY = axisalignedbb.minY;
          this.posZ = (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0;
@@ -62,7 +93,7 @@
      }
  
      protected SoundEvent getSwimSound() {
-@@ -950,7 +964,8 @@
+@@ -950,7 +980,8 @@
      }
  
      protected void playStepSound(BlockPos pos, Block blockIn) {
@@ -72,7 +103,7 @@
          if (this.world.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER) {
              soundtype = Blocks.SNOW_LAYER.getSoundType();
              this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
-@@ -1151,6 +1166,8 @@
+@@ -1151,6 +1182,8 @@
          int k = MathHelper.floor(this.posZ);
          BlockPos blockpos = new BlockPos(i, j, k);
          IBlockState iblockstate = this.world.getBlockState(blockpos);
@@ -81,7 +112,7 @@
          if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE) {
              this.world
                  .spawnParticle(
-@@ -1174,11 +1191,12 @@
+@@ -1174,11 +1207,12 @@
              double d0 = this.posY + this.getEyeHeight();
              BlockPos blockpos = new BlockPos(this.posX, d0, this.posZ);
              IBlockState iblockstate = this.world.getBlockState(blockpos);
@@ -98,7 +129,15 @@
              } else {
                  return false;
              }
-@@ -1262,6 +1280,7 @@
+@@ -1253,6 +1287,7 @@
+         this.rotationPitch = pitch;
+         this.prevRotationYaw = this.rotationYaw;
+         this.prevRotationPitch = this.rotationPitch;
++        this.prevRoll = this.roll; // Forge
+         double d0 = this.prevRotationYaw - yaw;
+         if (d0 < -180.0) {
+             this.prevRotationYaw += 360.0F;
+@@ -1262,6 +1297,7 @@
              this.prevRotationYaw -= 360.0F;
          }
  
@@ -106,7 +145,7 @@
          this.setPosition(this.posX, this.posY, this.posZ);
          this.setRotation(yaw, pitch);
      }
-@@ -1542,6 +1561,7 @@
+@@ -1542,6 +1578,7 @@
              if (this.glowing) {
                  compound.setBoolean("Glowing", this.glowing);
              }
@@ -114,7 +153,7 @@
  
              if (!this.tags.isEmpty()) {
                  NBTTagList nbttaglist = new NBTTagList();
-@@ -1553,6 +1573,9 @@
+@@ -1553,6 +1590,9 @@
                  compound.setTag("Tags", nbttaglist);
              }
  
@@ -124,7 +163,7 @@
              this.writeEntityToNBT(compound);
              if (this.isBeingRidden()) {
                  NBTTagList nbttaglist1 = new NBTTagList();
-@@ -1640,6 +1663,11 @@
+@@ -1640,6 +1680,11 @@
              this.setSilent(compound.getBoolean("Silent"));
              this.setNoGravity(compound.getBoolean("NoGravity"));
              this.setGlowing(compound.getBoolean("Glowing"));
@@ -136,7 +175,7 @@
              if (compound.hasKey("Tags", 9)) {
                  this.tags.clear();
                  NBTTagList nbttaglist1 = compound.getTagList("Tags", 8);
-@@ -1720,7 +1748,11 @@
+@@ -1720,7 +1765,11 @@
  
          EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY + offsetY, this.posZ, stack);
          entityitem.setDefaultPickupDelay();
@@ -149,7 +188,7 @@
          return entityitem;
      }
  
-@@ -1775,6 +1807,7 @@
+@@ -1775,6 +1824,7 @@
              this.motionX = 0.0;
              this.motionY = 0.0;
              this.motionZ = 0.0;
@@ -157,7 +196,7 @@
              this.onUpdate();
              if (this.isRiding()) {
                  entity.updatePassenger(this);
-@@ -1814,6 +1847,7 @@
+@@ -1814,6 +1864,7 @@
              }
          }
  
@@ -165,7 +204,7 @@
          if (force || this.canBeRidden(entityIn) && entityIn.canFitPassenger(this)) {
              if (this.isRiding()) {
                  this.dismountRidingEntity();
-@@ -1842,6 +1876,7 @@
+@@ -1842,6 +1893,7 @@
      public void dismountRidingEntity() {
          if (this.ridingEntity != null) {
              Entity entity = this.ridingEntity;
@@ -173,7 +212,7 @@
              this.ridingEntity = null;
              entity.removePassenger(this);
          }
-@@ -2260,14 +2295,22 @@
+@@ -2260,14 +2312,22 @@
  
      @Nullable
      public Entity changeDimension(int dimensionIn) {
@@ -197,7 +236,7 @@
                  worldserver1 = minecraftserver.getWorld(0);
                  this.dimension = 0;
              }
-@@ -2276,20 +2319,23 @@
+@@ -2276,20 +2336,23 @@
              this.isDead = false;
              this.world.profiler.startSection("reposition");
              BlockPos blockpos;
@@ -228,7 +267,7 @@
                      d0 = MathHelper.clamp(
                          d0 * 8.0, worldserver1.getWorldBorder().minX() + 16.0, worldserver1.getWorldBorder().maxX() - 16.0
                      );
-@@ -2302,8 +2348,7 @@
+@@ -2302,8 +2365,7 @@
                  d1 = MathHelper.clamp((int)d1, -29999872, 29999872);
                  float f = this.rotationYaw;
                  this.setLocationAndAngles(d0, this.posY, d1, 90.0F, 0.0F);
@@ -238,7 +277,7 @@
                  blockpos = new BlockPos(this);
              }
  
-@@ -2312,7 +2357,8 @@
+@@ -2312,7 +2374,8 @@
              Entity entity = EntityList.newEntity((Class<? extends Entity>)this.getClass(), worldserver1);
              if (entity != null) {
                  entity.copyDataFromOld(this);
@@ -248,7 +287,7 @@
                      BlockPos blockpos1 = worldserver1.getTopSolidOrLiquidBlock(worldserver1.getSpawnPoint());
                      entity.moveToBlockPosAndAngles(blockpos1, entity.rotationYaw, entity.rotationPitch);
                  } else {
-@@ -2344,7 +2390,7 @@
+@@ -2344,7 +2407,7 @@
  
      /** Explosion resistance of a block relative to this entity */
      public float getExplosionResistance(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn) {
@@ -257,7 +296,7 @@
      }
  
      public boolean canExplosionDestroyBlock(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn, float p_174816_5_) {
-@@ -2639,7 +2685,184 @@
+@@ -2639,7 +2702,235 @@
          EnchantmentHelper.applyArthropodEnchantments(entityLivingBaseIn, entityIn);
      }
  
@@ -437,6 +476,57 @@
 +            && this instanceof EntityLivingBase
 +            && (this instanceof EntityPlayer || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, this))
 +            && this.width * this.width * this.height > 0.512F;
++    }
++
++    /** @return The current roll in degrees, see {@link #roll} */
++    public float getRoll() {
++        return this.roll;
++    }
++
++    /** @return The roll interpolated between {@link #prevRoll} and {@link #roll} */
++    public float getRoll(float partialTicks) {
++        return partialTicks == 1.0F ? this.roll : this.prevRoll + (this.roll - this.prevRoll) * partialTicks;
++    }
++
++    /** Sets the roll in degrees; non-finite values are discarded, see {@link net.minecraftforge.common.ForgeHooks#setEntityRoll(Entity, float)} */
++    public void setRoll(float roll) {
++        net.minecraftforge.common.ForgeHooks.setEntityRoll(this, roll);
++    }
++
++    /**
++     * Called on the client when the server's {@link #ROLL} arrives, directly from
++     * {@link EntityDataManager#setEntryValues(java.util.List)} so that {@link #notifyDataManagerChange(DataParameter)}
++     * overrides which skip super cannot swallow it. Before the entity's first tick the value is applied at once without
++     * interpolation, so a freshly tracked entity never renders at 0; afterwards it is stashed and applied by
++     * {@link #tickRoll()} to keep interpolation tick-aligned. {@link net.minecraft.client.entity.EntityPlayerSP} overrides
++     * this to ignore the echo of its own roll.
++     *
++     * @param roll The synced roll in degrees
++     */
++    public void onRollSynced(float roll) {
++        if (this.ticksExisted == 0) {
++            this.rollSynced = false;
++            net.minecraftforge.common.ForgeHooks.setEntityRoll(this, roll);
++            this.prevRoll = this.roll;
++        } else {
++            this.rollSynced = true;
++            this.syncedRoll = roll;
++        }
++    }
++
++    /**
++     * Snapshots {@link #prevRoll} and applies a roll received from the server since the last tick. Called by
++     * {@link net.minecraft.world.World#updateEntityWithOptionalForce(Entity, boolean)} once per real tick, beside the
++     * vanilla rotation snapshot, so it also covers entities whose onUpdate does not reach onEntityUpdate. A server-side
++     * EntityPlayerMP that is not riding is ticked by its connection instead; its prevRoll is reset by
++     * {@link #setPositionAndRotation(double, double, double, float, float)} at the end of each of its ticks.
++     */
++    public void tickRoll() {
++        this.prevRoll = this.roll;
++        if (this.rollSynced) {
++            this.rollSynced = false;
++            net.minecraftforge.common.ForgeHooks.applySyncedEntityRoll(this, this.syncedRoll);
++        }
 +    }
 +    /* ================================== Forge End =====================================*/
 +

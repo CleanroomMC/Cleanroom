@@ -82,7 +82,19 @@
      }
  
      /** Returns whether the entity is in a server world */
-@@ -754,6 +771,7 @@
+@@ -565,6 +582,11 @@
+     }
+ 
+     @Override
++    public void onRollSynced(float roll) {
++        // Forge: the local player owns its roll; ignore the server echo
++    }
++
++    @Override
+     public void notifyDataManagerChange(DataParameter<?> key) {
+         super.notifyDataManagerChange(key);
+         if (HAND_STATES.equals(key)) {
+@@ -754,6 +776,7 @@
          float f = 0.8F;
          boolean flag2 = this.movementInput.moveForward >= 0.8F;
          this.movementInput.updatePlayerMoveState();
@@ -90,7 +102,7 @@
          this.mc.getTutorial().handleMovement(this.movementInput);
          if (this.isHandActive() && !this.isRiding()) {
              this.movementInput.moveStrafe *= 0.2F;
-@@ -769,10 +787,13 @@
+@@ -769,10 +792,13 @@
          }
  
          AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
@@ -104,7 +116,7 @@
          boolean flag4 = this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
          if (this.onGround
              && !flag1
-@@ -1029,4 +1050,16 @@
+@@ -1029,4 +1055,16 @@
              }
          }
      }
