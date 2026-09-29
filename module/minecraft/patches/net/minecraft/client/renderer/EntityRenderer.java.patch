@@ -102,6 +102,20 @@
                      if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION)) {
                          float f17 = this.getNightVisionBrightness(this.mc.player, partialTicks);
                          float f14 = 1.0F / f10;
+@@ -917,11 +928,11 @@
+                 this.smoothCamPartialTicks = partialTicks;
+                 f2 = this.smoothCamFilterX * f4;
+                 f3 = this.smoothCamFilterY * f4;
+-                this.mc.player.turn(f2, f3 * i);
++                net.minecraftforge.client.ForgeHooksClient.onMouseTurn(this.mc.player, f2, f3 * i); // Forge: MouseTurnEvent
+             } else {
+                 this.smoothCamYaw = 0.0F;
+                 this.smoothCamPitch = 0.0F;
+-                this.mc.player.turn(f2, f3 * i);
++                net.minecraftforge.client.ForgeHooksClient.onMouseTurn(this.mc.player, f2, f3 * i); // Forge: MouseTurnEvent
+             }
+         }
+ 
 @@ -940,7 +951,13 @@
                  j = Math.max(j, 60);
                  long k = System.nanoTime() - nanoTime;

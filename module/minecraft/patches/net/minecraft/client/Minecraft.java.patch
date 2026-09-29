@@ -295,10 +295,11 @@
          this.profiler.endSection();
          this.profiler.startSection("render");
          GlStateManager.pushMatrix();
-@@ -1009,11 +1014,13 @@
+@@ -1009,11 +1014,14 @@
          GlStateManager.enableTexture2D();
          this.profiler.endSection();
          if (!this.skipRenderWorld) {
++            net.minecraftforge.client.ForgeHooksClient.beginFrame(); // Forge: per-frame clock for MouseTurnEvent and RenderTickEvent START
 +            net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
              this.profiler.endStartSection("gameRenderer");
              this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.renderPartialTicksPaused : this.timer.renderPartialTicks, i);
@@ -309,7 +310,7 @@
          }
  
          this.profiler.endSection();
-@@ -1096,7 +1103,7 @@
+@@ -1096,7 +1104,7 @@
      }
  
      protected void checkWindowResize() {
@@ -318,7 +319,7 @@
              int i = this.displayWidth;
              int j = this.displayHeight;
              this.displayWidth = Display.getWidth();
-@@ -1308,9 +1315,9 @@
+@@ -1308,9 +1316,9 @@
          if (this.leftClickCounter <= 0 && !this.player.isHandActive()) {
              if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                  BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -331,7 +332,7 @@
                      this.player.swingArm(EnumHand.MAIN_HAND);
                  }
              } else {
-@@ -1333,7 +1340,8 @@
+@@ -1333,7 +1341,8 @@
                          break;
                      case BLOCK:
                          BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -341,7 +342,7 @@
                              this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                              break;
                          }
-@@ -1343,6 +1351,7 @@
+@@ -1343,6 +1352,7 @@
                          }
  
                          this.player.resetCooldown();
@@ -349,7 +350,7 @@
                  }
  
                  this.player.swingArm(EnumHand.MAIN_HAND);
-@@ -1399,6 +1408,7 @@
+@@ -1399,6 +1409,7 @@
                          }
                      }
  
@@ -357,7 +358,7 @@
                      if (!itemstack.isEmpty()
                          && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
                          this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
-@@ -1414,7 +1424,12 @@
+@@ -1414,7 +1425,12 @@
          try {
              this.fullscreen = !this.fullscreen;
              this.gameSettings.fullScreen = this.fullscreen;
@@ -371,7 +372,7 @@
                  this.updateDisplayMode();
                  this.displayWidth = Display.getDisplayMode().getWidth();
                  this.displayHeight = Display.getDisplayMode().getHeight();
-@@ -1444,7 +1459,17 @@
+@@ -1444,7 +1460,17 @@
                  this.updateFramebufferSize();
              }
  
@@ -390,7 +391,7 @@
              Display.setVSyncEnabled(this.gameSettings.enableVsync);
              this.updateDisplay();
          } catch (Exception exception) {
-@@ -1483,6 +1508,8 @@
+@@ -1483,6 +1509,8 @@
              this.rightClickDelayTimer--;
          }
  
@@ -399,7 +400,7 @@
          this.profiler.startSection("gui");
          if (!this.isGamePaused) {
              this.ingameGUI.updateTick();
-@@ -1632,6 +1659,7 @@
+@@ -1632,6 +1660,7 @@
          }
  
          this.profiler.endSection();
@@ -407,7 +408,7 @@
          this.systemTime = getSystemTime();
      }
  
-@@ -1705,6 +1733,7 @@
+@@ -1705,6 +1734,7 @@
                      }
                  }
              }
@@ -415,7 +416,7 @@
          }
  
          this.processKeyBinds();
-@@ -1896,6 +1925,8 @@
+@@ -1896,6 +1926,8 @@
  
      private void runTickMouse() throws IOException {
          while (Mouse.next()) {
@@ -424,7 +425,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
              if (Mouse.getEventButtonState()) {
-@@ -1931,6 +1962,7 @@
+@@ -1931,6 +1963,7 @@
                      this.currentScreen.handleMouseInput();
                  }
              }
@@ -432,7 +433,7 @@
          }
      }
  
-@@ -1949,6 +1981,7 @@
+@@ -1949,6 +1982,7 @@
  
      /** Arguments: World foldername,  World ingame name, WorldSettings */
      public void launchIntegratedServer(String folderName, String worldName, @Nullable WorldSettings worldSettingsIn) {
@@ -440,7 +441,7 @@
          this.loadWorld(null);
          System.gc();
          ISaveHandler isavehandler = this.saveLoader.getSaveLoader(folderName, false);
-@@ -1990,6 +2023,11 @@
+@@ -1990,6 +2024,11 @@
          this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
  
          while (!this.integratedServer.serverIsInRunLoop()) {
@@ -452,7 +453,7 @@
              String s = this.integratedServer.getUserMessage();
              if (s != null) {
                  this.loadingScreen.displayLoadingString(I18n.format(s));
-@@ -2007,8 +2045,13 @@
+@@ -2007,8 +2046,13 @@
          SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
          NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
          networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, null));
@@ -468,7 +469,7 @@
          this.networkManager = networkmanager;
      }
  
-@@ -2019,6 +2062,8 @@
+@@ -2019,6 +2063,8 @@
  
      /** par2Str is displayed on the loading screen to the user unloads the current world first */
      public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
@@ -477,7 +478,7 @@
          if (worldClientIn == null) {
              NetHandlerPlayClient nethandlerplayclient = this.getConnection();
              if (nethandlerplayclient != null) {
-@@ -2027,6 +2072,14 @@
+@@ -2027,6 +2073,14 @@
  
              if (this.integratedServer != null && this.integratedServer.isAnvilFileSet()) {
                  this.integratedServer.initiateShutdown();
@@ -492,7 +493,7 @@
              }
  
              this.integratedServer = null;
-@@ -2047,6 +2100,7 @@
+@@ -2047,6 +2101,7 @@
              this.ingameGUI.resetPlayersOverlayFooterHeader();
              this.setServerData(null);
              this.integratedServerIsRunning = false;
@@ -500,7 +501,7 @@
          }
  
          this.soundHandler.stopSounds();
-@@ -2060,6 +2114,8 @@
+@@ -2060,6 +2115,8 @@
          }
  
          TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
@@ -509,7 +510,7 @@
          if (worldClientIn != null) {
              if (!this.integratedServerIsRunning) {
                  AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-@@ -2112,6 +2168,7 @@
+@@ -2112,6 +2169,7 @@
                  this.player == null ? new RecipeBook() : this.player.getRecipeBook()
              );
          this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
@@ -517,7 +518,7 @@
          this.player.dimension = dimension;
          this.renderViewEntity = this.player;
          this.player.preparePlayerToSpawn();
-@@ -2153,110 +2210,8 @@
+@@ -2153,110 +2211,8 @@
      /** Called when user clicked he's mouse middle button (pick block) */
      private void middleClickMouse() {
          if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) {
@@ -630,7 +631,7 @@
          }
      }
  
-@@ -2293,7 +2248,11 @@
+@@ -2293,7 +2249,11 @@
          });
          theCrash.getCategory().addDetail("OpenGL", new ICrashReportDetail<String>() {
              public String call() {
@@ -643,7 +644,7 @@
              }
          });
          theCrash.getCategory().addDetail("GL Caps", new ICrashReportDetail<String>() {
-@@ -2372,6 +2331,7 @@
+@@ -2372,6 +2332,7 @@
          return instance;
      }
  
@@ -651,7 +652,7 @@
      public ListenableFuture<Object> scheduleResourcesRefresh() {
          return this.addScheduledTask(new Runnable() {
              @Override
-@@ -2536,15 +2496,8 @@
+@@ -2536,15 +2497,8 @@
  
      /** Used in the usage snooper. */
      public static int getGLMaximumTextureSize() {
@@ -669,7 +670,7 @@
      }
  
      /** Returns whether snooping is enabled or not. */
-@@ -2658,6 +2611,9 @@
+@@ -2658,6 +2612,9 @@
          }
  
          if (this.player != null) {
@@ -679,7 +680,7 @@
              if (this.player.world.provider instanceof WorldProviderHell) {
                  return MusicTicker.MusicType.NETHER;
              } else if (this.player.world.provider instanceof WorldProviderEnd) {
-@@ -2677,9 +2633,9 @@
+@@ -2677,9 +2634,9 @@
          if (i != 0 && !Keyboard.isRepeatEvent()) {
              if (!(this.currentScreen instanceof GuiControls) || ((GuiControls)this.currentScreen).time <= getSystemTime() - 20L) {
                  if (Keyboard.getEventKeyState()) {
@@ -691,7 +692,7 @@
                          this.ingameGUI
                              .getChatGUI()
                              .printChatMessage(ScreenShotHelper.saveScreenshot(this.gameDir, this.displayWidth, this.displayHeight, this.framebuffer));
-@@ -2691,7 +2647,7 @@
+@@ -2691,7 +2648,7 @@
                              ((ScreenChatOptions)this.currentScreen).updateNarratorButton();
                          }
                      }
@@ -700,7 +701,7 @@
              }
          }
      }
-@@ -2720,7 +2676,7 @@
+@@ -2720,7 +2677,7 @@
              try {
                  return Futures.immediateFuture(callableToSchedule.call());
              } catch (Exception exception) {
@@ -709,7 +710,7 @@
              }
          } else {
              ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(callableToSchedule);
-@@ -2802,7 +2758,11 @@
+@@ -2802,7 +2759,11 @@
          return this.blockColors;
      }
  
@@ -722,7 +723,7 @@
      public boolean isReducedDebug() {
          return this.player != null && this.player.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
      }
-@@ -2814,4 +2774,8 @@
+@@ -2814,4 +2775,8 @@
      public Tutorial getTutorial() {
          return this.tutorial;
      }
