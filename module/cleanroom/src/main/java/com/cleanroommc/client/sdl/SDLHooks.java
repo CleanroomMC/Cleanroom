@@ -45,6 +45,7 @@ public final class SDLHooks {
     private static int lastFieldWidth;
     private static int lastFieldHeight;
     private static boolean lastFieldSet;
+    private static boolean focusedFieldDrawn;
 
     /**
      * Places the native caret and draws composition plus candidates on a focused text field.
@@ -63,7 +64,8 @@ public final class SDLHooks {
         }
         int caretX = caretX(field, font);
         int textY = textY(field);
-        area(field.x, field.y, field.width, field.height, caretX);
+        caret(field.x, field.y, field.width, field.height, caretX - field.x);
+        focusedFieldDrawn = true;
         overlay(text, font, caretX, textY, field.getWidth() - (caretX - (field.getEnableBackgroundDrawing() ? field.x + 4 : field.x)),
                 field.x, field.y, field.width, field.height);
     }
@@ -130,7 +132,7 @@ public final class SDLHooks {
     }
 
     /**
-     * Points the input method at a caret expressed in GUI coordinates.
+     * Points the input method at a caret, projected out of the matrices it is drawn with.
      *
      * @param x the field's left edge
      * @param y the field's top edge
@@ -138,9 +140,70 @@ public final class SDLHooks {
      * @param height the field's height, ideally one line so candidates land beneath the text
      * @param cursorOffset the caret's offset from {@code x}
      */
-    public static void caret(int x, int y, int width, int height, int cursorOffset) {
-        remember(x, y, width, height);
-        area(x, y, width, height, x + cursorOffset);
+    public static void caret(float x, float y, float width, float height, float cursorOffset) {
+        Text text = text();
+        Window window = Window.main();
+        if (text == null || window == null) {
+            return;
+        }
+        ensureProjectionBuffers();
+        modelview.clear();
+        projection.clear();
+        viewport.clear();
+        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelview);
+        GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
+        GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
+        modelview.rewind();
+        projection.rewind();
+        viewport.rewind();
+        float[] origin = project(x, y);
+        float[] opposite = project(x + width, y + height);
+        float[] cursor = project(x + cursorOffset, y);
+        if (origin == null || opposite == null || cursor == null) {
+            return;
+        }
+        double scale = (double) window.width() / Math.max(1, window.pixelWidth());
+        int top = viewport.get(3);
+        int areaX = (int) Math.round(Math.min(origin[0], opposite[0]) * scale);
+        int areaY = (int) Math.round((top - Math.max(origin[1], opposite[1])) * scale);
+        int areaWidth = (int) Math.round(Math.abs(opposite[0] - origin[0]) * scale);
+        int areaHeight = (int) Math.round(Math.abs(opposite[1] - origin[1]) * scale);
+        int cursorWindow = (int) Math.round(cursor[0] * scale) - areaX;
+        text.area(areaX, areaY, Math.max(1, areaWidth), Math.max(1, areaHeight), Math.max(0, cursorWindow));
+        Minecraft minecraft = Minecraft.getMinecraft();
+        int screenWidth = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.width : 0;
+        int screenHeight = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.height : 0;
+        if (screenWidth <= 0 || screenHeight <= 0) {
+            return;
+        }
+        int windowWidth = Math.max(1, window.width());
+        int windowHeight = Math.max(1, window.height());
+        remember(areaX * screenWidth / windowWidth, areaY * screenHeight / windowHeight,
+            Math.max(1, areaWidth * screenWidth / windowWidth), Math.max(1, areaHeight * screenHeight / windowHeight));
+    }
+
+    /**
+     * Turns text input off until a screen that wants it has drawn.
+     */
+    public static void screenChanged() {
+        focusedFieldDrawn = false;
+        Text text = text();
+        if (text != null) {
+            text.active(false);
+        }
+    }
+
+    /**
+     * Keeps text input on only while the drawn screen has a focused text field, or is a book or sign.
+     * This runs after drawing so the input area is placed before the input method shows up.
+     */
+    public static void syncTextInput(GuiScreen screen) {
+        boolean wanted = focusedFieldDrawn || screen instanceof GuiScreenBook || screen instanceof GuiEditSign;
+        focusedFieldDrawn = false;
+        Text text = text();
+        if (text != null) {
+            text.active(wanted);
+        }
     }
 
     /**
@@ -177,7 +240,7 @@ public final class SDLHooks {
         String line = leading + " <";
         int width = fontRenderer.getStringWidth(line);
         fontRenderer.drawString(line, -width / 2, y, 0);
-        caretProjected((float) -width / 2, y, width, fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(leading));
+        caret((float) -width / 2, y, width, fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(leading));
     }
 
     /**
@@ -257,48 +320,6 @@ public final class SDLHooks {
         lastFieldSet = true;
     }
 
-    private static void caretProjected(float x, float y, float width, float height, float cursorOffset) {
-        Text text = text();
-        Window window = Window.main();
-        if (text == null || window == null) {
-            return;
-        }
-        ensureProjectionBuffers();
-        modelview.clear();
-        projection.clear();
-        viewport.clear();
-        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelview);
-        GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
-        GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
-        modelview.rewind();
-        projection.rewind();
-        viewport.rewind();
-        float[] origin = project(x, y);
-        float[] opposite = project(x + width, y + height);
-        float[] cursor = project(x + cursorOffset, y);
-        if (origin == null || opposite == null || cursor == null) {
-            return;
-        }
-        double scale = (double) window.width() / Math.max(1, window.pixelWidth());
-        int top = viewport.get(3);
-        int areaX = (int) Math.round(Math.min(origin[0], opposite[0]) * scale);
-        int areaY = (int) Math.round((top - Math.max(origin[1], opposite[1])) * scale);
-        int areaWidth = (int) Math.round(Math.abs(opposite[0] - origin[0]) * scale);
-        int areaHeight = (int) Math.round(Math.abs(opposite[1] - origin[1]) * scale);
-        int cursorWindow = (int) Math.round(cursor[0] * scale) - areaX;
-        text.area(areaX, areaY, Math.max(1, areaWidth), Math.max(1, areaHeight), Math.max(0, cursorWindow));
-        Minecraft minecraft = Minecraft.getMinecraft();
-        int screenWidth = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.width : 0;
-        int screenHeight = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.height : 0;
-        if (screenWidth <= 0 || screenHeight <= 0) {
-            return;
-        }
-        int windowWidth = Math.max(1, window.width());
-        int windowHeight = Math.max(1, window.height());
-        remember(areaX * screenWidth / windowWidth, areaY * screenHeight / windowHeight,
-                Math.max(1, areaWidth * screenWidth / windowWidth), Math.max(1, areaHeight * screenHeight / windowHeight));
-    }
-
     private static float[] project(float x, float y) {
         windowCoords.clear();
         if (!GLU.gluProject(x, y, 0.0F, modelview, projection, viewport, windowCoords)) {
@@ -314,25 +335,6 @@ public final class SDLHooks {
             viewport = BufferUtils.createIntBuffer(16);
             windowCoords = BufferUtils.createFloatBuffer(3);
         }
-    }
-
-    private static void area(int x, int y, int width, int height, int caretX) {
-        Text text = text();
-        Window window = Window.main();
-        Minecraft minecraft = Minecraft.getMinecraft();
-        if (text == null || window == null || minecraft == null) {
-            return;
-        }
-        int screenWidth = minecraft.currentScreen != null ? minecraft.currentScreen.width : 0;
-        int screenHeight = minecraft.currentScreen != null ? minecraft.currentScreen.height : 0;
-        if (screenWidth <= 0 || screenHeight <= 0) {
-            return;
-        }
-        int windowWidth = Math.max(1, window.width());
-        int windowHeight = Math.max(1, window.height());
-        text.area(x * windowWidth / screenWidth, y * windowHeight / screenHeight,
-                Math.max(1, width * windowWidth / screenWidth), Math.max(1, height * windowHeight / screenHeight),
-                Math.max(0, (caretX - x) * windowWidth / screenWidth));
     }
 
     private static void overlay(Text text, FontRenderer font, int caretX, int caretY, int remainingWidth, int fieldX, int fieldY, int fieldWidth, int fieldHeight) {

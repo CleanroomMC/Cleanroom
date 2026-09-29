@@ -29,8 +29,6 @@ import com.cleanroommc.client.modlist.screen.ModListScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiScreenBook;
-import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -87,17 +85,13 @@ public class ForgeClientHandler
             event.setGui(new ModListScreen(modList.getParent()));
         }
 
-        Window window = SDL.window();
-        if (window != null)
-        {
-            GuiScreen opened = event.getGui();
-            window.text().active(opened instanceof GuiScreenBook || opened instanceof GuiEditSign);
-        }
+        SDLHooks.screenChanged();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Post event)
     {
+        SDLHooks.syncTextInput(event.getGui());
         SDLHooks.draw(event.getGui());
     }
 
