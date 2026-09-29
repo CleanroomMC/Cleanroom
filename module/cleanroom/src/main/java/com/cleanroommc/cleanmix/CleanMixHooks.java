@@ -10,9 +10,18 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.mixin.transformer.ClassInfo;
 import org.spongepowered.asm.mixin.transformer.Config;
 import org.spongepowered.asm.service.MixinService;
-import zone.rong.mixinbooter.*;
+import zone.rong.mixinbooter.Context;
+import zone.rong.mixinbooter.IEarlyMixinLoader;
+import zone.rong.mixinbooter.ILateMixinLoader;
+import zone.rong.mixinbooter.IMixinConfigHijacker;
+import zone.rong.mixinbooter.MixinLoader;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CleanMixHooks {
 

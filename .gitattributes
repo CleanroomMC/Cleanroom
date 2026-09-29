@@ -1,0 +1,45 @@
+# Managed by CleanroomMC/Conventions. Do not edit locally.
+# Change it there and bump the convention plugin version instead.
+
+# Normalise on commit, check out LF everywhere. Windows contributors included.
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+gradlew text eol=lf
+*.sh text eol=lf
+
+*.java text
+*.gradle text
+*.groovy text
+*.kt text
+*.kts text
+*.scala text
+*.properties text
+*.json text
+*.json5 text
+*.toml text
+*.xml text
+*.yml text
+*.yaml text
+*.md text
+
+*.jar binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ogg binary
+*.wav binary
+*.nbt binary
+*.dat binary
+*.class binary
+*.ttf binary
+*.otf binary
+*.so binary
+*.dll binary
+*.dylib binary
+
+# Keep the wrapper jar out of diffs, it is verified by checksum
+**/gradle/wrapper/gradle-wrapper.jar binary linguist-vendored linguist-generated

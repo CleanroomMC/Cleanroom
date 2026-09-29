@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.cleanroommc.cleanroomgradle'
-    id 'com.cleanroommc.conventions' version '1.1.7'
+    id 'com.cleanroommc.conventions' version '1.1.9'
 }
 
 base.archivesName = 'cleanroom'
@@ -52,6 +52,24 @@ sourceSets {
         java.exclude 'com/cleanroommc/test/kirino/gl/ksml/**'
         resources.srcDirs = modules.collect { "module/${it}/src/test/resources" }
     }
+}
+
+// Only the builtin and cleanroom modules are formatted for now, patterns are relative to the source directories
+def unformatted = [
+        'net/minecraft/**',
+        'net/minecraftforge/**',
+        'ibxm/**',
+        'paulscode/**',
+        'com/cleanroommc/kirino/**',
+        'com/cleanroommc/test/kirino/**'
+]
+
+clearSkies {
+    exclude(*unformatted)
+}
+
+formatJ {
+    exclude(*unformatted)
 }
 
 var open_arguments = [

@@ -1,0 +1,239 @@
+# Managed by CleanroomMC/Conventions. Do not edit locally.
+#
+# This is the single source of truth for Java layout in this organization.
+#
+# Rules are spelled out even where they match FormatJ's built-in default.
+
+[file]
+# .editorconfig fixes the line ending and the final newline for every file in the repository,
+# so those two follow it rather than the old profile (which never added a final newline).
+line-ending = "lf"
+final-newline = true
+trim-trailing-whitespace = true
+charset = "UTF-8"
+tab-width = 4
+
+[indent]
+size = 4
+use-tabs = false
+continuation = 4
+chained-call = 4
+array-initializer = 4
+ternary = 4
+throws-clause = 4
+switch-case-labels = true
+switch-case-body = true
+blank-lines = false
+
+[wrapping]
+max-line-length = 160
+method-parameters = "chop-down-if-long"
+method-arguments = "chop-down-if-long"
+chained-calls = "break-all-when-too-long"
+chain-threshold = 2
+binary-operators = "wrap-if-long"
+operator-position = "after-operator"
+method-reference = "never"
+method-reference-operator-position = "before-operator"
+instanceof = "preserve"
+instanceof-operator-position = "after-operator"
+multicatch = "never"
+multicatch-separator-position = "before-operator"
+intersection-types = "never"
+intersection-separator-position = "before-operator"
+ternary = "wrap-if-long"
+assignment = "never"
+array-initializers = "chop-down-if-long"
+extends-implements = "never"
+throws-clause = "wrap-if-long"
+type-parameters = "never"
+annotation-arguments = "wrap-if-long"
+closing-delimiter = "own-line"
+enum-constants = "chop-down-always"
+require-enum-constant-semicolon = false
+for-statement = "chop-down-if-long"
+try-resources = "never"
+keep-simple-methods-on-one-line = false
+keep-simple-classes-on-one-line = false
+keep-simple-lambdas-on-one-line = true
+
+[braces]
+class-placement = "end-of-line"
+method-placement = "end-of-line"
+control-placement = "end-of-line"
+lambda-placement = "end-of-line"
+if-else = "preserve"
+for-loop = "preserve"
+while-loop = "preserve"
+else-on-new-line = false
+catch-on-new-line = false
+finally-on-new-line = false
+empty-class-body = "spaced"
+empty-method-body = "spaced"
+empty-control-body = "expanded"
+
+[spacing]
+before-method-declaration-parenthesis = false
+before-method-call-parenthesis = false
+before-if-parenthesis = true
+before-for-parenthesis = true
+before-while-parenthesis = true
+before-switch-parenthesis = true
+before-catch-parenthesis = true
+before-synchronized-parenthesis = true
+within-parentheses = false
+within-brackets = false
+within-array-initializer-braces = true
+within-angle-brackets = false
+around-assignment-operators = true
+around-binary-operators = true
+around-unary-operators = false
+around-lambda-arrow = true
+around-ternary-operators = true
+around-method-reference-operator = false
+around-multicatch-separator = true
+around-intersection-separator = true
+after-comma = true
+before-comma = false
+after-semicolon-in-for = true
+before-semicolon = false
+after-type-cast = true
+before-colon-in-enhanced-for = true
+after-colon-in-enhanced-for = true
+before-colon-in-case-label = false
+around-case-arrow = true
+before-annotation-parenthesis = false
+before-array-brackets = false
+after-varargs-ellipsis = true
+
+[blank-lines]
+max-consecutive = 1
+after-package = 1
+after-imports = 1
+before-class = 1
+before-method = 1
+before-field = 0
+after-class-opening-brace = 1
+before-class-closing-brace = 1
+around-initializer-block = 1
+before-record-compact-constructor = 1
+after-enum-constants = 0
+before-first-enum-constant = 1
+between-switch-cases = 0
+
+[alignment]
+consecutive-fields = "none"
+consecutive-variables = "none"
+consecutive-assignments = "none"
+method-chains = "none"
+annotation-values = "none"
+switch-arrows = "none"
+ternary-branches = "none"
+trailing-comments = "none"
+
+[annotations]
+declaration-placement = "new-line"
+parameter-placement = "same-line"
+single-marker-inline = false
+
+[imports]
+order = "ascending"
+# Groups descend from the code we own to the platforms we sit on. The longest matching prefix wins,
+# so a prefix that no file uses costs nothing.
+groups = [
+    # Ours
+    ["com.cleanroommc", "zone.rong", "top.outlands"],
+    # Third-party
+    "*",
+    # Gradle
+    "org.gradle",
+    # Coremods and bytecode
+    ["org.spongepowered", "com.llamalad7", "org.objectweb.asm"],
+    # The game
+    ["net.minecraft", "net.minecraftforge", "mcp", "com.mojang", "org.lwjgl"],
+    # JDK
+    ["javax", "java"],
+]
+static-placement = "last"
+blank-line-between-groups = true
+module-imports-first = true
+remove-unused = false
+
+[modifiers]
+order = "preserve"
+
+[module]
+brace-placement = "inherit"
+empty-body = "inherit"
+blank-lines-after-opening-brace = "inherit"
+blank-lines-before-closing-brace = "inherit"
+blank-lines-between-directive-groups = 0
+exports-opens-target-list-wrapping = "never"
+provides-implementation-list-wrapping = "never"
+
+[comments]
+reflow = "preserve"
+block-comment-star-alignment = true
+trailing-comment-min-spaces = 1
+trailing-comment-column = 0
+keep-first-column-comments = false
+indent-with-code = true
+honour-formatter-off = true
+off-marker = "@formatter:off"
+on-marker = "@formatter:on"
+
+[javadoc]
+wrap = false
+tag-order = "preserve"
+blank-line-before-tags = true
+align-tag-descriptions = false
+add-paragraph-tags = false
+keep-single-line = false
+tag-continuation-indent = 0
+closing-tag-form = "preserve"
+opening-tag-position = "preserve"
+
+[switch]
+case-style = "preserve"
+arrow-case-braces = "preserve"
+yield-style = "preserve"
+multi-label-wrapping = "wrap-if-long"
+null-default-on-one-line = true
+guard-on-same-line = true
+arrow-body-on-new-line-when-long = true
+
+[records]
+component-wrapping = "chop-down-if-long"
+single-line-empty-body = false
+compact-constructor-blank-line = false
+with-style = "inline-when-short"
+space-before-with-block = true
+
+[patterns]
+deconstruction-wrapping = "wrap-if-long"
+keep-simple-pattern-inline = true
+nested-indent = 4
+
+[sealed]
+permits-wrapping = "wrap-if-long"
+permits-order = "preserve"
+permits-on-new-line = false
+
+[lambdas]
+parameter-style = "preserve"
+body-braces = "preserve"
+keep-single-expression-inline = true
+
+[text-blocks]
+indent-policy = "preserve"
+closing-delimiter-on-own-line = false
+escape-trailing-spaces = false
+
+[preservation]
+keep-author-blank-lines = true
+max-preserved-blank-lines = 1
+keep-line-break-after-open-paren = false
+keep-simple-blocks-inline = false
+keep-array-initializer-layout = false
+respect-existing-chain-breaks = false
+never-join-lines = false
