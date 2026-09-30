@@ -960,13 +960,13 @@ public class ForgeHooksClient
     public static void beginFrame()
     {
         long now = System.nanoTime();
-        if (lastFrameNanos < 0)
+        if (lastFrameNanos >= 0)
         {
-            frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
+            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9D, 0.0D, MAX_FRAME_DELTA_SECONDS);
         }
         else
         {
-            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9D, 0.0D, MAX_FRAME_DELTA_SECONDS);
+            frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
         }
         lastFrameNanos = now;
     }
