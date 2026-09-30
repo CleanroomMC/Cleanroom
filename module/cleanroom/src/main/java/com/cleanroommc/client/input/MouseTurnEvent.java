@@ -26,8 +26,11 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * {@link Entity#turn(float, float)} itself multiplies both by 0.15 to obtain degrees.
  *
  * <p>This event is fired once per rendered frame while {@code inGameHasFocus && Display.isActive()},
- * including frames with a zero mouse delta. {@link #frameDelta} is the duration of the current frame
- * in seconds, see {@link MouseTurnHooks#getFrameDeltaSeconds()}.
+ * including frames with a zero mouse delta.
+ *
+ * <p>{@link #getFrameDeltaSeconds()} is the duration of the current frame in seconds, taken from vanilla's
+ * frame timer ({@code Minecraft.getTickLength()}, converted from ticks). It has millisecond resolution and is
+ * not clamped, so a hitch such as a world load yields one large value.
  *
  * <p>Handlers may call {@link Entity#turn(float, float)} on the player themselves; the hook sits only at the
  * {@code EntityRenderer} call sites, so doing so does not re-fire this event.

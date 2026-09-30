@@ -11,7 +11,6 @@
 package com.cleanroommc.test.debug.client;
 
 import com.cleanroommc.client.input.MouseTurnEvent;
-import com.cleanroommc.client.input.MouseTurnHooks;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,9 +21,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
- * Tests {@link MouseTurnEvent} and the frame clock.
+ * Tests {@link MouseTurnEvent}.
  *
- * <p>With {@link #ENABLED}, yaw input is halved and {@link MouseTurnHooks#getFrameDeltaSeconds()} is logged once per second.
+ * <p>With {@link #ENABLED}, yaw input is halved and the event's frame delta is logged once per second.
  *
  * <p>With {@link #CANCEL} as well, every turn is canceled, so moving the mouse must not change the view.
  */
@@ -51,7 +50,7 @@ public class MouseTurnEventTest {
         secondAccumulator += event.getFrameDeltaSeconds();
         if (secondAccumulator >= 1.0F) {
             secondAccumulator = 0.0F;
-            LOGGER.info("Frame delta: event {} s, clock {} s", event.getFrameDeltaSeconds(), MouseTurnHooks.getFrameDeltaSeconds());
+            LOGGER.info("Frame delta: {} s", event.getFrameDeltaSeconds());
         }
 
         if (CANCEL) {

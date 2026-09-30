@@ -10,56 +10,31 @@
 
 package com.cleanroommc.client.input;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
- * Hooks behind {@link MouseTurnEvent}: the frame clock and the {@code EntityRenderer} turn call sites.
+ * Hooks behind {@link MouseTurnEvent} at the {@code EntityRenderer} turn call sites.
  */
 public final class MouseTurnHooks {
 
-    // Frame clock, advanced once per rendered frame from Minecraft.runGameLoop before RenderTickEvent START
-    private static final float DEFAULT_FRAME_DELTA_SECONDS = 1.0F / 60.0F;
-    private static final float MAX_FRAME_DELTA_SECONDS = 0.1F;
-    private static long lastFrameNanos = -1;
-    private static float frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
-
-    /**
-     * Advances the frame clock. Called once per rendered frame, right before
-     * {@link net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent} {@code START} is fired.
-     *
-     * <p>The first frame reads {@link #DEFAULT_FRAME_DELTA_SECONDS}; later frames are clamped to
-     * [0, {@link #MAX_FRAME_DELTA_SECONDS}] to absorb hitches such as world loads and dimension changes.
-     */
-    public static void beginFrame() {
-        long now = System.nanoTime();
-        if (lastFrameNanos >= 0) {
-            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9F, 0.0F, MAX_FRAME_DELTA_SECONDS);
-        } else {
-            frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
-        }
-        lastFrameNanos = now;
-    }
-
-    /**
-     * Returns the frame clock's current reading.
-     *
-     * @return the duration of the current rendered frame in seconds, as measured by {@link #beginFrame()}
-     */
-    public static float getFrameDeltaSeconds() {
-        return frameDeltaSeconds;
-    }
+    /** Length of one game tick in seconds. Vanilla's {@code Timer} runs at 20 ticks per second. */
+    private static final float SECONDS_PER_TICK = 0.05F;
 
     /**
      * Fires {@link MouseTurnEvent} and, unless it is canceled, turns the player by the event's yaw and pitch.
+     *
+     * <p>The event's frame delta is vanilla's own reading, {@link Minecraft#getTickLength()}, converted from
+     * ticks to seconds. It is updated once per frame in {@code Minecraft.runGameLoop}, before rendering.
      *
      * @param player The local player
      * @param yaw The yaw delta vanilla was about to pass to {@link EntityPlayerSP#turn(float, float)}
      * @param pitch The pitch delta vanilla was about to pass to {@link EntityPlayerSP#turn(float, float)}
      */
     public static void onMouseTurn(EntityPlayerSP player, float yaw, float pitch) {
-        MouseTurnEvent event = new MouseTurnEvent(player, yaw, pitch, frameDeltaSeconds);
+        float frameDelta = Minecraft.getMinecraft().getTickLength() * SECONDS_PER_TICK;
+        MouseTurnEvent event = new MouseTurnEvent(player, yaw, pitch, frameDelta);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             player.turn(event.getYaw(), event.getPitch());
         }
