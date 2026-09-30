@@ -34,7 +34,7 @@
      private static final DataParameter<Boolean> CUSTOM_NAME_VISIBLE = EntityDataManager.createKey(Entity.class, DataSerializers.BOOLEAN);
      private static final DataParameter<Boolean> SILENT = EntityDataManager.createKey(Entity.class, DataSerializers.BOOLEAN);
      private static final DataParameter<Boolean> NO_GRAVITY = EntityDataManager.createKey(Entity.class, DataSerializers.BOOLEAN);
-+    public static final DataParameter<Float> ROLL = DataSerializers.FLOAT.createKey(254); // Forge: reserved id, see EntityDataManager.createKey
++    public static final DataParameter<Float> ROLL = DataSerializers.FLOAT.createKey(EntityDataManager.ROLL_ID); // Forge: reserved id, see EntityDataManager.createKey
      /** Has this entity been added to the chunk its within */
      public boolean addedToChunk;
      public int chunkCoordX;

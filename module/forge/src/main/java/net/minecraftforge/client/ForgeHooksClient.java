@@ -945,25 +945,27 @@ public class ForgeHooksClient
     }
 
     // Frame clock, advanced once per rendered frame from Minecraft.runGameLoop before RenderTickEvent START
+    private static final double DEFAULT_FRAME_DELTA_SECONDS = 1.0 / 60.0;
+    private static final double MAX_FRAME_DELTA_SECONDS = 0.1;
     private static long lastFrameNanos = -1;
-    private static double frameDeltaSeconds = 1.0 / 60.0;
+    private static double frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
 
     /**
      * Advances the frame clock. Called once per rendered frame, right before
      * {@link net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent} {@code START} is fired.
-     * The first frame reads 1/60 s; later frames are clamped to [0, 0.1] s to absorb hitches
-     * such as world loads and dimension changes.
+     * The first frame reads {@link #DEFAULT_FRAME_DELTA_SECONDS}; later frames are clamped to
+     * [0, {@link #MAX_FRAME_DELTA_SECONDS}] to absorb hitches such as world loads and dimension changes.
      */
     public static void beginFrame()
     {
         long now = System.nanoTime();
         if (lastFrameNanos < 0)
         {
-            frameDeltaSeconds = 1.0 / 60.0;
+            frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
         }
         else
         {
-            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9D, 0.0D, 0.1D);
+            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9D, 0.0D, MAX_FRAME_DELTA_SECONDS);
         }
         lastFrameNanos = now;
     }
