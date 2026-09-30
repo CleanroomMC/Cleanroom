@@ -45,7 +45,8 @@ public final class Touch {
             }
             return List.copyOf(fingers);
         } finally {
-            SDLStdinc.SDL_free(pointers);
+            // Reading advanced the position; SDL_free must get the start of the allocation
+            SDLStdinc.SDL_free(pointers.rewind());
         }
     }
 

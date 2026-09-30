@@ -125,7 +125,8 @@ public final class Gamepads {
                 open(ids.get());
             }
         } finally {
-            SDLStdinc.SDL_free(ids);
+            // Reading advanced the position; SDL_free must get the start of the allocation
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 
