@@ -1,7 +1,7 @@
 package net.minecraftforge.debug.client;
 
 import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.MouseTurnEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Tests {@link InputEvent.MouseTurnEvent} and the frame clock.
+ * Tests {@link MouseTurnEvent} and the frame clock.
  *
  * <p>With {@link #ENABLED}, yaw input is halved and {@link ForgeHooksClient#getFrameDeltaSeconds()} is logged once per second.
  *
@@ -28,7 +28,7 @@ public class MouseTurnEventTest
     private static float secondAccumulator = 0.0F;
 
     @SubscribeEvent
-    public static void onMouseTurn(InputEvent.MouseTurnEvent event)
+    public static void onMouseTurn(MouseTurnEvent event)
     {
         if (!ENABLED) return;
 

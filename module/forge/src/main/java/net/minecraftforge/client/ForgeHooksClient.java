@@ -121,10 +121,10 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.event.MouseTurnEvent;
 import net.minecraftforge.client.event.RenderArmEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
@@ -981,7 +981,7 @@ public class ForgeHooksClient
 
     public static void onMouseTurn(EntityPlayerSP player, float yaw, float pitch)
     {
-        InputEvent.MouseTurnEvent event = new InputEvent.MouseTurnEvent(player, yaw, pitch, frameDeltaSeconds);
+        MouseTurnEvent event = new MouseTurnEvent(player, yaw, pitch, frameDeltaSeconds);
         if (!MinecraftForge.EVENT_BUS.post(event))
         {
             player.turn(event.getYaw(), event.getPitch());
