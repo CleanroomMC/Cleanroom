@@ -1,0 +1,187 @@
+# git-cliff configuration. Managed by CleanroomMC/Conventions. Do not edit locally.
+#
+# The shared release workflow runs this twice: once with --latest for the GitHub
+# Release body, once over the full history for CHANGELOG.md committed to the repository.
+
+# GitHub usernames come from the API. The workflow supplies GITHUB_TOKEN
+# and GITHUB_REPO. Commits whose email is not linked to a GitHub account
+# have an empty username. The first-time contributor section skips those,
+# the GitHub owner (often an organization), and the founder on the first
+# release.
+#
+# Set CLIFF_INCLUDE_DATE=1 when generating CHANGELOG.md
+# Each entry has a date for version heading, GitHub links for commits.
+
+[changelog]
+header = """
+# Changelog
+"""
+body = """
+{%- macro remote_url() -%}
+https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+{%- macro author(username) -%}
+{%- if get_env(name="CLIFF_INCLUDE_DATE", default="") != "" -%}
+[@{{ username }}](https://github.com/{{ username }})
+{%- else -%}
+@{{ username }}
+{%- endif -%}
+{%- endmacro -%}
+{%- macro issue_ref(hit) -%}
+{{ hit | replace_regex(from="(?i)^(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?):?\\s+", to="") }}
+{%- endmacro -%}
+{%- macro coauthors(commit, commits) -%}
+{%- for footer in commit.footers | default(value=[]) -%}
+{%- if footer.token == "Co-authored-by" -%}
+{%- set name = footer.value | replace_regex(from="\\s*<[^>]*>", to="") | trim -%}
+{%- if name != "" and name != commit.author.name -%}
+, {{ name }}
+{%- endif -%}
+{%- endif -%}
+{%- endfor -%}
+{%- for other in commits -%}
+{%- if other.id == commit.id and other.group is containing("Co-authors") -%}
+{%- set name = other.message | split(pat="\n") | first | replace_regex(from="\\s*<[^>]*>", to="") | trim -%}
+{%- if name != "" and name != commit.author.name -%}
+, {{ name }}
+{%- endif -%}
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
+{%- macro print_commit(commit, commits) -%}
+- {% if commit.scope %}**{{ commit.scope }}**: {% endif -%}
+{{ commit.message | split(pat="\f") | first | trim | upper_first -}}
+{%- if commit.remote.pr_number %} *[PR by {% if commit.remote.username %}{{ self::author(username=commit.remote.username) }}{% else %}{{ commit.author.name }}{% endif %}{{ self::coauthors(commit=commit, commits=commits) }} in {% if get_env(name="CLIFF_INCLUDE_DATE", default="") != "" %}[#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}){% else %}#{{ commit.remote.pr_number }}{% endif %}]*
+{%- elif commit.remote.username %} *[commit by {{ self::author(username=commit.remote.username) }}{{ self::coauthors(commit=commit, commits=commits) }} in {% if get_env(name="CLIFF_INCLUDE_DATE", default="") != "" %}[{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}){% else %}{{ commit.id | truncate(length=7, end="") }}{% endif %}]*
+{%- elif commit.author.name %} *[commit by {{ commit.author.name }}{{ self::coauthors(commit=commit, commits=commits) }} in {% if get_env(name="CLIFF_INCLUDE_DATE", default="") != "" %}[{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}){% else %}{{ commit.id | truncate(length=7, end="") }}{% endif %}]*
+{%- endif -%}
+{%- if commit.breaking -%}
+{# split_commits folds the body into breaking_description, so pull the footer text back out. #}
+{%- set breaking_note = commit.breaking_description | default(value="") | find_regex(pat="(?is)BREAKING[ -]CHANGE:.*") -%}
+{%- if breaking_note | length > 0 %}
+{{ "  - " }}{{ breaking_note | first | replace_regex(from="(?is)^BREAKING[ -]CHANGE:\\s*", to="") | replace(from="\f", to=" ") | trim | upper_first }}
+{%- endif -%}
+{%- endif -%}
+{%- for hit in commit.raw_message | default(value="") | find_regex(pat="(?i)(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?):?\\s+(?:[\\w.-]+/[\\w.-]+)?#\\d+") %}
+{{ "    " }}*[Fixes issue {{ self::issue_ref(hit=hit) }}]*
+{%- endfor %}
+{%- endmacro -%}
+{%- set include_date = get_env(name="CLIFF_INCLUDE_DATE", default="") -%}
+{%- if include_date -%}
+## {% if version %}{{ version }} - {{ timestamp | date(format="%Y-%m-%d") }}{% else %}Unreleased{% endif %}
+{%- endif %}
+{% if version and previous.version -%}
+{% if version | split(pat=".") | first != previous.version | split(pat=".") | first %}
+> [!IMPORTANT]
+> This is a new major version ({{ previous.version | split(pat=".") | first }}.x → {{ version | split(pat=".") | first }}.x).
+{% endif -%}
+{% endif -%}
+{% set founder = commits | last -%}
+{% set all_commits = commits -%}
+{% if commits | filter(attribute="breaking", value=true) | length != 0 %}
+> [!WARNING]
+> This version has breaking changes! More details below.
+{% endif -%}
+{% if commits | filter(attribute="breaking", value=true) | length != 0 %}
+## Breaking Changes
+
+{% for commit in commits | filter(attribute="breaking", value=true) -%}
+{{ self::print_commit(commit=commit, commits=all_commits) }}
+{% endfor -%}
+{% endif -%}
+{% for group, commits in commits | group_by(attribute="group") -%}
+{% if group | striptags | trim == "Co-authors" %}{% continue %}{% endif -%}
+{% set_global shown = false -%}
+{% for commit in commits -%}
+{% if commit.breaking %}{% continue %}{% endif -%}
+{% if not shown %}
+## {{ group | striptags | trim }}
+
+{% set_global shown = true -%}
+{% endif -%}
+{{ self::print_commit(commit=commit, commits=all_commits) }}
+{% endfor -%}
+{% endfor -%}
+{% set_global first_timer_heading = false -%}
+{% if github and github.contributors -%}
+{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) -%}
+{% if not contributor.username %}{% continue %}{% endif -%}
+{% if contributor.username == remote.github.owner %}{% continue %}{% endif -%}
+{% if not previous.version and founder.remote.username == contributor.username %}{% continue %}{% endif -%}
+{% if not previous.version and founder.author.name == contributor.username %}{% continue %}{% endif -%}
+{% if not first_timer_heading %}
+## First-time Contributors
+
+{% set_global first_timer_heading = true -%}
+{% endif -%}
+- **{{ self::author(username=contributor.username) }} made their first contribution!**
+{% endfor -%}
+{% endif -%}
+{% if version and previous.version and remote.github.owner %}
+**Full Changelog**: {{ self::remote_url() }}/compare/{{ previous.version }}...{{ version }}
+{% endif %}
+"""
+footer = ""
+# trim would strip the blank line between releases in CHANGELOG.md.
+trim = false
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+split_commits = true
+# Split before parsers so a pack: subject cannot swallow its nested lines.
+processing_order = [
+    "commit_preprocessors",
+    "split_commits",
+    "conventional_commits",
+    "commit_parsers",
+    "link_parsers",
+]
+protect_breaking_commits = true
+filter_commits = false
+recurse_submodules = true
+use_branch_tags = true
+topo_order = false
+sort_commits = "newest"
+
+# GitHub squash-merge appends "(#123)" to the subject. Strip it so the
+# changelog line stays the commit message, with the hash in the byline.
+#
+# pack: is the opt-in multi-change squash type. Nested body lines are
+# often GitHub bullets; strip those so they parse as conventional commits.
+# split_commits is global, so non-pack bodies are collapsed onto the subject
+# line with FF, which git-cliff's lines() does not split on. Co-authored-by
+# lines keep their newline so they split off into the Co-authors group, which
+# the template folds back into the byline. FF and not CR because git-conventional
+# treats a lone CR as a line ending and then fails to parse the commit, which
+# loses the type, scope and breaking flag.
+# Rust's regex crate has no look-ahead, so the pattern only gates on the
+# message being multi-line and the pack check lives in the awk program.
+commit_preprocessors = [
+    { pattern = '\s*\((\w+\s)?#([0-9]+)\)', replace = "" },
+    { pattern = '(?m)^[ \t]*[-*][ \t]+', replace = "" },
+    { pattern = '(?s)^.*\n', replace_command = '''awk 'NR==1 && /^pack[(!:]/ {pack=1} {printf "%s%s", (NR==1 ? "" : (pack || tolower($0) ~ /^co-authored-by:/ ? "\n" : "\f")), $0}' ''' },
+]
+
+# HTML comments force group order; Tera's group_by is alphabetical otherwise.
+# The template strips them with striptags.
+# pack: lands in Comprehensive. Nested feat/fix/… lines keep their groups.
+commit_parsers = [
+    { message = "^pack(?:\\(|:|!)", group = "<!-- 0 -->Comprehensive" },
+    { message = "^feat", group = "<!-- 1 -->Feature" },
+    { message = "^fix", group = "<!-- 2 -->Bug Fix" },
+    { message = "^perf", group = "<!-- 3 -->Performance" },
+    { message = "^refactor", group = "<!-- 4 -->Refactor" },
+    { message = "^doc", group = "<!-- 5 -->Documentation" },
+    { message = "^test", group = "<!-- 6 -->Testing" },
+    { message = "^build", group = "<!-- 7 -->Build and Dependencies" },
+    { message = "^chore\\(deps\\)", group = "<!-- 7 -->Build and Dependencies" },
+    { message = "^ci", group = "<!-- 8 -->CI" },
+    { message = "^chore", skip = true },
+    { message = "^style", skip = true },
+    { message = "^Merge", skip = true },
+    { message = "^revert", skip = true },
+    { message = "^Signed-off-by", skip = true },
+    { message = "^Co-authored-by", group = "<!-- 10 -->Co-authors" },
+    { message = ".*", group = "<!-- 9 -->Other" }
+]

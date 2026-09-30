@@ -2,7 +2,7 @@ package zone.rong.mixinbooter;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
-import java.util.*;
+import java.util.Map;
 
 @IFMLLoadingPlugin.Name(Tags.MOD_NAME)
 @IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 1)

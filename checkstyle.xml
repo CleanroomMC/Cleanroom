@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Check Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!--
+    Managed by CleanroomMC/Conventions. Do not edit locally.
+
+    Scope: rules a formatter cannot express.
+
+    Severity is error: a violation fails the build.
+    The handful of checks that are advisory rather than absolute override it back to warning individually,
+    and are marked as such below.
+-->
+<module name="Checker">
+  <property name="severity" value="error"/>
+  <property name="charset" value="UTF-8"/>
+  <property name="fileExtensions" value="java"/>
+
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="module\-info\.java$"/>
+  </module>
+  <module name="FileTabCharacter">
+    <property name="eachLine" value="true"/>
+  </module>
+  <module name="NewlineAtEndOfFile"/>
+  <module name="LineEnding">
+    <property name="lineEnding" value="lf"/>
+  </module>
+  <!-- Wrapped HEADER, one regex per line so the copyright year never forces a source rewrite. -->
+  <module name="RegexpHeader">
+    <property name="header" value="^/\*$\n^ \* Copyright \(c\) \d{4}(?:-(?:\d{4}|present))? CleanroomMC contributors$\n^ \*$\n^ \* This file is licensed under the CleanroomMC License Version 1\.0\.$\n^ \* See the applicable LICENSE file in this directory or a parent directory$\n^ \* for the full licence terms\.$\n^ \*$\n^ \* This is visible-source software and is not open-source software\.$\n^ \*/$"/>
+  </module>
+  <module name="TreeWalker">
+
+    <!-- Advisory: guide common nullness imports to JSpecify without cataloguing annotation packages. -->
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ForeignNullness"/>
+      <property name="format" value="^\s*import\s+(?!org\.jspecify\.annotations\.)(?:[\w$]+\.)+(?:Nullable|NonNull|Nonnull|NotNull|CheckForNull)\s*;"/>
+      <property name="maximum" value="0"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="severity" value="warning"/>
+      <property name="message" value="Prefer org.jspecify.annotations for nullness."/>
+    </module>
+
+    <module name="OuterTypeFilename"/>
+    <module name="OneTopLevelClass"/>
+    <module name="NeedBraces"/>
+    <module name="EmptyBlock">
+      <property name="option" value="TEXT"/>
+      <property name="tokens" value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH, LITERAL_WHILE, LITERAL_FOR, LITERAL_DO"/>
+    </module>
+    <module name="OneStatementPerLine"/>
+    <module name="MultipleVariableDeclarations"/>
+    <module name="ArrayTypeStyle"/>
+    <module name="ModifierOrder"/>
+    <module name="RedundantModifier"/>
+    <module name="UpperEll"/>
+    <module name="NoFinalizer"/>
+    <module name="FinalClass"/>
+    <module name="HideUtilityClassConstructor"/>
+    <module name="DefaultComesLast"/>
+    <module name="FallThrough"/>
+    <module name="MissingSwitchDefault"/>
+    <module name="EqualsHashCode"/>
+    <module name="StringLiteralEquality"/>
+    <module name="SimplifyBooleanExpression"/>
+    <module name="SimplifyBooleanReturn"/>
+
+    <!-- Imports -->
+    <module name="UnusedImports">
+      <property name="processJavadoc" value="true"/>
+    </module>
+    <module name="RedundantImport"/>
+    <module name="AvoidStarImport"/>
+    <!-- Advisory: some Minecraft-era code legitimately reaches into sun.
+         Pinned to warning so it stays advisory even if the Checker severity is raised to error later. -->
+    <module name="IllegalImport">
+      <property name="illegalPkgs" value="sun, com.sun, jdk.internal"/>
+      <property name="severity" value="warning"/>
+    </module>
+    <!-- AssertJ is the only assertion library. illegalPkgs prefix-matches, which is what catches static imports. -->
+    <module name="IllegalImport">
+      <property name="id" value="ForeignAssertions"/>
+      <property name="illegalPkgs" value="org.hamcrest, junit.framework, org.junit.Assert, org.junit.jupiter.api.Assertions"/>
+      <property name="illegalClasses" value="org.junit.Assert, org.junit.jupiter.api.Assertions"/>
+      <message key="import.illegal" value="Assert with AssertJ (org.assertj.core.api.Assertions), not {0}."/>
+    </module>
+    <!-- Naming -->
+    <module name="PackageName">
+      <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+    </module>
+    <module name="TypeName"/>
+    <module name="MethodName">
+      <property name="format" value="^[a-z][a-zA-Z0-9]*(\$[a-zA-Z][a-zA-Z0-9]*)*$"/>
+    </module>
+    <module name="MemberName">
+      <property name="format" value="^[a-z](([a-z0-9])|([a-z0-9][a-zA-Z0-9]*))?(\$[a-zA-Z][a-zA-Z0-9]*)*$"/>
+    </module>
+    <module name="ParameterName">
+      <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+    </module>
+    <module name="LocalVariableName">
+      <property name="format" value="^(_|[a-z]([a-z0-9][a-zA-Z0-9]*)?)$"/>
+    </module>
+    <!-- Public constants are UPPER_SNAKE, or mixin uniques as camelCase$camelCase. -->
+    <module name="ConstantName">
+      <property name="format" value="(^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$)|(^[a-z]([a-z0-9][a-zA-Z0-9]*)?(\$[a-z][a-zA-Z0-9]*)+$)"/>
+      <property name="applyToProtected" value="false"/>
+      <property name="applyToPackage" value="false"/>
+      <property name="applyToPrivate" value="false"/>
+    </module>
+    <module name="CatchParameterName">
+      <property name="format" value="^(_|[a-z]([a-z0-9][a-zA-Z0-9]*)?)$"/>
+    </module>
+    <module name="LambdaParameterName">
+      <property name="format" value="^(_|[a-z]([a-z0-9][a-zA-Z0-9]*)?)$"/>
+    </module>
+    <module name="PatternVariableName">
+      <property name="format" value="^(_|[a-z]([a-z0-9][a-zA-Z0-9]*)?)$"/>
+    </module>
+    <module name="RecordComponentName">
+      <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+    </module>
+    <!-- find() not matches(): each alternative must be fully anchored. -->
+    <module name="ClassTypeParameterName">
+      <property name="format" value="(^[A-Z][0-9]?$)|(^T[A-Z][a-zA-Z0-9]*$)"/>
+    </module>
+    <module name="MethodTypeParameterName">
+      <property name="format" value="(^[A-Z][0-9]?$)|(^T[A-Z][a-zA-Z0-9]*$)"/>
+    </module>
+
+    <!-- Javadocs -->
+    <!-- Advisory: documentation quality is a review conversation, not a build gate. -->
+    <module name="JavadocMethod">
+      <property name="severity" value="warning"/>
+      <property name="accessModifiers" value="public"/>
+      <property name="allowMissingReturnTag" value="true"/>
+      <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
+    </module>
+    <module name="NonEmptyAtclauseDescription">
+      <property name="severity" value="warning"/>
+    </module>
+    <module name="AtclauseOrder">
+      <property name="severity" value="warning"/>
+    </module>
+    <!-- Replaces JavadocStyle, removed in Checkstyle 13.9.0. -->
+    <module name="SummaryJavadoc">
+      <property name="severity" value="warning"/>
+    </module>
+
+    <!-- Advisory: a stray glyph in a comment is untidy rather than wrong. -->
+    <module name="IllegalSymbol">
+      <property name="severity" value="warning"/>
+    </module>
+
+    <!-- @Shadow is the only signal -->
+    <module name="SuppressionXpathSingleFilter">
+      <property name="checks" value="MemberName|ConstantName"/>
+      <property name="query" value="//VARIABLE_DEF[./MODIFIERS/ANNOTATION/IDENT[@text='Shadow'] or ./MODIFIERS/ANNOTATION/DOT/IDENT[@text='Shadow']]/IDENT"/>
+    </module>
+    <module name="SuppressionXpathSingleFilter">
+      <property name="checks" value="MethodName"/>
+      <property name="query" value="//METHOD_DEF[./MODIFIERS/ANNOTATION/IDENT[@text='Shadow'] or ./MODIFIERS/ANNOTATION/DOT/IDENT[@text='Shadow']]/IDENT"/>
+    </module>
+
+    <!-- Suppress with // CHECKSTYLE:OFF ... // CHECKSTYLE:ON when a rule is genuinely wrong. -->
+    <module name="SuppressionCommentFilter"/>
+  </module>
+
+  <!-- Matches src/test, src/testFixtures, src/integrationTest and friends. -->
+  <module name="SuppressionSingleFilter">
+    <property name="id" value="AssertJOutsideTests"/>
+    <property name="files" value="[\\/]src[\\/][^\\/]*[Tt]est[^\\/]*[\\/]"/>
+  </module>
+</module>
