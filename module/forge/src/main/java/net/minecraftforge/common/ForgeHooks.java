@@ -1101,12 +1101,16 @@ public class ForgeHooks
     }
 
     /**
-     * Implementation of {@link Entity#setRoll(float)}. Non-finite values are logged and discarded;
-     * finite values are wrapped to [-180, 180) with {@link MathHelper#wrapDegrees(float)}.
-     * {@link Entity#prevRoll} is moved by whole turns when the step from the old roll exceeds 180 degrees
+     * Implementation of {@link Entity#setRoll(float)}.
+     *
+     * <p>Non-finite values are logged and discarded; finite values are wrapped to [-180, 180) with
+     * {@link MathHelper#wrapDegrees(float)}.
+     *
+     * <p>{@link Entity#prevRoll} is moved by whole turns when the step from the old roll exceeds 180 degrees
      * (see {@link #adjustPrevRollAcrossSeam(float, float, float)}) so that interpolation takes the short
-     * way round. On the logical server the value is also written to
-     * {@link Entity#ROLL} for tracking clients.
+     * way round.
+     *
+     * <p>On the logical server the value is also written to {@link Entity#ROLL} for tracking clients.
      *
      * @param entity The entity to roll
      * @param roll The new roll in degrees
@@ -1129,11 +1133,13 @@ public class ForgeHooks
     }
 
     /**
-     * Applies a roll value received from the server through {@link Entity#ROLL}. Called at tick time
-     * from {@link Entity#tickRoll()}, right after the previous-tick snapshot; values that arrive before
-     * the first tick are applied directly by {@link Entity#onRollSynced(float)}. While
-     * {@code ticksExisted} (read before the tick increments it) is at most 1, {@link Entity#prevRoll}
-     * is snapped to the new value, which covers object spawns whose metadata packet lands just after
+     * Applies a roll value received from the server through {@link Entity#ROLL}.
+     *
+     * <p>Called at tick time from {@link Entity#tickRoll()}, right after the previous-tick snapshot.
+     * Values that arrive before the first tick are applied directly by {@link Entity#onRollSynced(float)}.
+     *
+     * <p>While {@code ticksExisted} (read before the tick increments it) is at most 1, {@link Entity#prevRoll}
+     * is snapped to the new value. This covers object spawns whose metadata packet lands just after
      * the first tick, so a freshly tracked entity does not animate from 0.
      *
      * @param entity The client-side entity
@@ -1149,11 +1155,13 @@ public class ForgeHooks
     }
 
     /**
-     * Keeps roll interpolation continuous across the &plusmn;180 seam. If the step from
-     * {@code lastRoll} to {@code newRoll} is larger than 180 degrees in either direction, the
-     * previous value is moved by as many whole turns as bring the step back within &plusmn;180;
-     * otherwise it is returned unchanged. A step of exactly &plusmn;180 is not shifted.
-     * {@code lastRoll} may be unwrapped, e.g. after per-frame writers advanced it past the seam.
+     * Keeps roll interpolation continuous across the &plusmn;180 seam.
+     *
+     * <p>If the step from {@code lastRoll} to {@code newRoll} is larger than 180 degrees in either
+     * direction, the previous value is moved by as many whole turns as bring the step back within
+     * &plusmn;180; otherwise it is returned unchanged. A step of exactly &plusmn;180 is not shifted.
+     *
+     * <p>{@code lastRoll} may be unwrapped, e.g. after per-frame writers advanced it past the seam.
      *
      * @param prevRoll The previous-tick roll used for interpolation
      * @param lastRoll The roll before the update

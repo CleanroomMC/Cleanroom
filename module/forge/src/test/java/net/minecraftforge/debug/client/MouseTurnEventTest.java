@@ -1,22 +1,3 @@
-/*
- * Minecraft Forge
- * Copyright (c) 2016-2020.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation version 2.1
- * of the License.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
-
 package net.minecraftforge.debug.client;
 
 import net.minecraftforge.client.ForgeHooksClient;
@@ -28,9 +9,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Tests {@link InputEvent.MouseTurnEvent} and the frame clock.<br>
- * With {@link #ENABLED}, yaw input is halved and {@link ForgeHooksClient#getFrameDeltaSeconds()} is logged once per second.<br>
- * With {@link #CANCEL} as well, every turn is canceled, so moving the mouse must not change the view.
+ * Tests {@link InputEvent.MouseTurnEvent} and the frame clock.
+ *
+ * <p>With {@link #ENABLED}, yaw input is halved and {@link ForgeHooksClient#getFrameDeltaSeconds()} is logged once per second.
+ *
+ * <p>With {@link #CANCEL} as well, every turn is canceled, so moving the mouse must not change the view.
  */
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = MouseTurnEventTest.MODID)
 @Mod(modid = MouseTurnEventTest.MODID, name = "Mouse Turn Event Test", version = "1.0", clientSideOnly = true)

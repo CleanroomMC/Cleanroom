@@ -953,7 +953,8 @@ public class ForgeHooksClient
     /**
      * Advances the frame clock. Called once per rendered frame, right before
      * {@link net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent} {@code START} is fired.
-     * The first frame reads {@link #DEFAULT_FRAME_DELTA_SECONDS}; later frames are clamped to
+     *
+     * <p>The first frame reads {@link #DEFAULT_FRAME_DELTA_SECONDS}; later frames are clamped to
      * [0, {@link #MAX_FRAME_DELTA_SECONDS}] to absorb hitches such as world loads and dimension changes.
      */
     public static void beginFrame()

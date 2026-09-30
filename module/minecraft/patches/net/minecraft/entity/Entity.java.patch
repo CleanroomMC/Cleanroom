@@ -296,7 +296,7 @@
      }
  
      public boolean canExplosionDestroyBlock(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn, float p_174816_5_) {
-@@ -2639,7 +2702,235 @@
+@@ -2639,7 +2702,241 @@
          EnchantmentHelper.applyArthropodEnchantments(entityLivingBaseIn, entityIn);
      }
  
@@ -496,10 +496,13 @@
 +    /**
 +     * Called on the client when the server's {@link #ROLL} arrives, directly from
 +     * {@link EntityDataManager#setEntryValues(java.util.List)} so that {@link #notifyDataManagerChange(DataParameter)}
-+     * overrides which skip super cannot swallow it. Before the entity's first tick the value is applied at once without
-+     * interpolation, so a freshly tracked entity never renders at 0; afterwards it is stashed and applied by
-+     * {@link #tickRoll()} to keep interpolation tick-aligned. {@link net.minecraft.client.entity.EntityPlayerSP} overrides
-+     * this to ignore the echo of its own roll.
++     * overrides which skip super cannot swallow it.
++     *
++     * <p>Before the entity's first tick the value is applied at once without interpolation, so a freshly tracked
++     * entity never renders at 0; afterwards it is stashed and applied by {@link #tickRoll()} to keep interpolation
++     * tick-aligned.
++     *
++     * <p>{@link net.minecraft.client.entity.EntityPlayerSP} overrides this to ignore the echo of its own roll.
 +     *
 +     * @param roll The synced roll in degrees
 +     */
@@ -515,11 +518,14 @@
 +    }
 +
 +    /**
-+     * Snapshots {@link #prevRoll} and applies a roll received from the server since the last tick. Called by
-+     * {@link net.minecraft.world.World#updateEntityWithOptionalForce(Entity, boolean)} once per real tick, beside the
-+     * vanilla rotation snapshot, so it also covers entities whose onUpdate does not reach onEntityUpdate. A server-side
-+     * EntityPlayerMP that is not riding is ticked by its connection instead; its prevRoll is reset by
-+     * {@link #setPositionAndRotation(double, double, double, float, float)} at the end of each of its ticks.
++     * Snapshots {@link #prevRoll} and applies a roll received from the server since the last tick.
++     *
++     * <p>Called by {@link net.minecraft.world.World#updateEntityWithOptionalForce(Entity, boolean)} once per real
++     * tick, beside the vanilla rotation snapshot, so it also covers entities whose onUpdate does not reach
++     * onEntityUpdate.
++     *
++     * <p>A server-side EntityPlayerMP that is not riding is ticked by its connection instead; its prevRoll is reset
++     * by {@link #setPositionAndRotation(double, double, double, float, float)} at the end of each of its ticks.
 +     */
 +    public void tickRoll() {
 +        this.prevRoll = this.roll;
