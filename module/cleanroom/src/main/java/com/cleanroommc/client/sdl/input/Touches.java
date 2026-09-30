@@ -32,7 +32,6 @@ public final class Touches {
             }
             return List.copyOf(devices);
         } finally {
-            // Reading advanced the position; SDL_free must get the start of the allocation
             SDLStdinc.SDL_free(ids.rewind());
         }
     }

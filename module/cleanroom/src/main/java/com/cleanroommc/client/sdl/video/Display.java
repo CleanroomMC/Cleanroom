@@ -72,7 +72,6 @@ public final class Display {
             }
             return List.copyOf(modes);
         } finally {
-            // Reading advanced the position; SDL_free must get the start of the allocation
             SDLStdinc.SDL_free(pointers.rewind());
         }
     }

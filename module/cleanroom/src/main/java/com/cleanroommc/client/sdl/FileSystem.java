@@ -94,7 +94,6 @@ public final class FileSystem {
             }
             return List.copyOf(paths);
         } finally {
-            // Reading advanced the position; SDL_free must get the start of the allocation
             SDLStdinc.SDL_free(matches.rewind());
         }
     }

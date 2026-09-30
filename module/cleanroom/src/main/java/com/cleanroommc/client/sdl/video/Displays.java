@@ -28,7 +28,6 @@ public final class Displays {
             }
             return List.copyOf(displays);
         } finally {
-            // Reading advanced the position; SDL_free must get the start of the allocation
             SDLStdinc.SDL_free(ids.rewind());
         }
     }

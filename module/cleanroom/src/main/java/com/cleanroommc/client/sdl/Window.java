@@ -548,7 +548,6 @@ public final class Window implements AutoCloseable {
                 SDL.check(SDLVideo.SDL_SetWindowFullscreenMode(this.handle, found), "SDL_SetWindowFullscreenMode");
             }
         } finally {
-            // Reading advanced the position; SDL_free must get the start of the allocation
             SDLStdinc.SDL_free(modes.rewind());
         }
         return fullscreen(true);
