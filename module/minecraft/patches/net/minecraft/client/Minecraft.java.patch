@@ -299,7 +299,7 @@
          GlStateManager.enableTexture2D();
          this.profiler.endSection();
          if (!this.skipRenderWorld) {
-+            net.minecraftforge.client.ForgeHooksClient.beginFrame(); // Forge: per-frame clock for MouseTurnEvent and RenderTickEvent START
++            com.cleanroommc.client.input.MouseTurnHooks.beginFrame(); // Cleanroom: per-frame clock for MouseTurnEvent and RenderTickEvent START
 +            net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
              this.profiler.endStartSection("gameRenderer");
              this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.renderPartialTicksPaused : this.timer.renderPartialTicks, i);

@@ -488,9 +488,9 @@
 +        return partialTicks == 1.0F ? this.roll : this.prevRoll + (this.roll - this.prevRoll) * partialTicks;
 +    }
 +
-+    /** Sets the roll in degrees; non-finite values are discarded, see {@link net.minecraftforge.common.ForgeHooks#setEntityRoll(Entity, float)} */
++    /** Sets the roll in degrees; non-finite values are discarded, see {@link com.cleanroommc.common.entity.RollHooks#setEntityRoll(Entity, float)} */
 +    public void setRoll(float roll) {
-+        net.minecraftforge.common.ForgeHooks.setEntityRoll(this, roll);
++        com.cleanroommc.common.entity.RollHooks.setEntityRoll(this, roll);
 +    }
 +
 +    /**
@@ -509,7 +509,7 @@
 +    public void onRollSynced(float roll) {
 +        if (this.ticksExisted == 0) {
 +            this.rollSynced = false;
-+            net.minecraftforge.common.ForgeHooks.setEntityRoll(this, roll);
++            com.cleanroommc.common.entity.RollHooks.setEntityRoll(this, roll);
 +            this.prevRoll = this.roll;
 +        } else {
 +            this.rollSynced = true;
@@ -531,7 +531,7 @@
 +        this.prevRoll = this.roll;
 +        if (this.rollSynced) {
 +            this.rollSynced = false;
-+            net.minecraftforge.common.ForgeHooks.applySyncedEntityRoll(this, this.syncedRoll);
++            com.cleanroommc.common.entity.RollHooks.applySyncedEntityRoll(this, this.syncedRoll);
 +        }
 +    }
 +    /* ================================== Forge End =====================================*/

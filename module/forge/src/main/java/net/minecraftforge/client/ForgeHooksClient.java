@@ -53,7 +53,6 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -124,7 +123,6 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.client.event.MouseTurnEvent;
 import net.minecraftforge.client.event.RenderArmEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
@@ -942,50 +940,6 @@ public class ForgeHooksClient
     public static void onInputUpdate(EntityPlayer player, MovementInput movementInput)
     {
         MinecraftForge.EVENT_BUS.post(new InputUpdateEvent(player, movementInput));
-    }
-
-    // Frame clock, advanced once per rendered frame from Minecraft.runGameLoop before RenderTickEvent START
-    private static final float DEFAULT_FRAME_DELTA_SECONDS = 1.0F / 60.0F;
-    private static final float MAX_FRAME_DELTA_SECONDS = 0.1F;
-    private static long lastFrameNanos = -1;
-    private static float frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
-
-    /**
-     * Advances the frame clock. Called once per rendered frame, right before
-     * {@link net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent} {@code START} is fired.
-     *
-     * <p>The first frame reads {@link #DEFAULT_FRAME_DELTA_SECONDS}; later frames are clamped to
-     * [0, {@link #MAX_FRAME_DELTA_SECONDS}] to absorb hitches such as world loads and dimension changes.
-     */
-    public static void beginFrame()
-    {
-        long now = System.nanoTime();
-        if (lastFrameNanos >= 0)
-        {
-            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9F, 0.0F, MAX_FRAME_DELTA_SECONDS);
-        }
-        else
-        {
-            frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
-        }
-        lastFrameNanos = now;
-    }
-
-    /**
-     * @return the duration of the current rendered frame in seconds, as measured by {@link #beginFrame()}
-     */
-    public static float getFrameDeltaSeconds()
-    {
-        return frameDeltaSeconds;
-    }
-
-    public static void onMouseTurn(EntityPlayerSP player, float yaw, float pitch)
-    {
-        MouseTurnEvent event = new MouseTurnEvent(player, yaw, pitch, frameDeltaSeconds);
-        if (!MinecraftForge.EVENT_BUS.post(event))
-        {
-            player.turn(event.getYaw(), event.getPitch());
-        }
     }
 
     public static String getHorseArmorTexture(EntityHorse horse, ItemStack armorStack)

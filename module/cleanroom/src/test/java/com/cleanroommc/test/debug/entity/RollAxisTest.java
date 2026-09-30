@@ -1,7 +1,17 @@
-package net.minecraftforge.debug.entity;
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
 
-import java.util.HashSet;
-import java.util.Set;
+package com.cleanroommc.test.debug.entity;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -21,9 +31,10 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Tests the entity roll axis ({@link Entity#getRoll(float)}, {@link Entity#setRoll(float)}).
@@ -40,8 +51,8 @@ import org.lwjgl.input.Keyboard;
  */
 @Mod(modid = RollAxisTest.MODID, name = "Roll Axis Test", version = "1.0", acceptableRemoteVersions = "*")
 @Mod.EventBusSubscriber(modid = RollAxisTest.MODID)
-public class RollAxisTest
-{
+public class RollAxisTest {
+
     static final String MODID = "rollaxistest";
     static final boolean ENABLED = false;
     private static final Logger LOGGER = LogManager.getLogger(MODID);
@@ -50,83 +61,66 @@ public class RollAxisTest
     private static final float SINE_AMPLITUDE = 90.0F;
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
-    {
-        if (ENABLED && event.getSide().isClient())
-        {
+    public void init(FMLInitializationEvent event) {
+        if (ENABLED && event.getSide().isClient()) {
             ClientEventHandler.registerKeyBinding();
         }
     }
 
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.WorldTickEvent event)
-    {
-        if (!ENABLED || event.side != Side.SERVER || event.phase != TickEvent.Phase.END)
-        {
+    public static void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (!ENABLED || event.side != Side.SERVER || event.phase != TickEvent.Phase.END) {
             return;
         }
         World world = event.world;
         long time = world.getTotalWorldTime();
         Set<EntityCow> cows = new HashSet<>();
-        for (EntityPlayer player : world.playerEntities)
-        {
+        for (EntityPlayer player : world.playerEntities) {
             cows.addAll(world.getEntitiesWithinAABB(EntityCow.class, player.getEntityBoundingBox().grow(COW_RANGE)));
         }
-        for (EntityCow cow : cows)
-        {
-            if (cow.getEntityId() % 2 == 0)
-            {
+        for (EntityCow cow : cows) {
+            if (cow.getEntityId() % 2 == 0) {
                 cow.setRoll((time % 360L) * SPIN_PER_TICK);
-            }
-            else
-            {
+            } else {
                 cow.setRoll(SINE_AMPLITUDE * (float) Math.sin(time * 0.15D));
             }
         }
     }
 
     @Mod.EventBusSubscriber(value = Side.CLIENT, modid = MODID)
-    public static class ClientEventHandler
-    {
+    public static class ClientEventHandler {
+
         private static final float KEY_ROLL_PER_TICK = 6.0F;
         private static KeyBinding rollKey;
 
-        static void registerKeyBinding()
-        {
+        static void registerKeyBinding() {
             rollKey = new KeyBinding("key.rollaxistest.roll", Keyboard.KEY_R, "key.categories.rollaxistest");
             ClientRegistry.registerKeyBinding(rollKey);
         }
 
         // END phase: the entity tick has already snapshotted prevRoll, so the new value interpolates over the next frames
         @SubscribeEvent
-        public static void onClientTick(TickEvent.ClientTickEvent event)
-        {
-            if (!ENABLED || rollKey == null || event.phase != TickEvent.Phase.END)
-            {
+        public static void onClientTick(TickEvent.ClientTickEvent event) {
+            if (!ENABLED || rollKey == null || event.phase != TickEvent.Phase.END) {
                 return;
             }
             Minecraft mc = Minecraft.getMinecraft();
             Entity view = mc.getRenderViewEntity();
-            if (view == null || mc.isGamePaused())
-            {
+            if (view == null || mc.isGamePaused()) {
                 return;
             }
             boolean sneaking = view.isSneaking();
-            while (rollKey.isPressed())
-            {
-                if (sneaking)
-                {
+            while (rollKey.isPressed()) {
+                if (sneaking) {
                     runSanityChecks(view);
                 }
             }
-            if (rollKey.isKeyDown() && !sneaking)
-            {
+            if (rollKey.isKeyDown() && !sneaking) {
                 view.setRoll(view.getRoll() + KEY_ROLL_PER_TICK);
             }
         }
 
-        private static void runSanityChecks(Entity view)
-        {
+        private static void runSanityChecks(Entity view) {
             view.setRoll(540.0F);
             LOGGER.info("setRoll(540) read back as {} (expected -180.0)", view.getRoll());
             view.setRoll(Float.NaN);
@@ -136,19 +130,15 @@ public class RollAxisTest
         }
 
         @SubscribeEvent
-        public static void onCameraSetup(EntityViewRenderEvent.CameraSetup event)
-        {
-            if (ENABLED)
-            {
+        public static void onCameraSetup(EntityViewRenderEvent.CameraSetup event) {
+            if (ENABLED) {
                 event.setRoll(event.getRoll() + event.getEntity().getRoll((float) event.getRenderPartialTicks()));
             }
         }
 
         @SubscribeEvent(priority = EventPriority.LOWEST)
-        public static void onRenderLivingPre(RenderLivingEvent.Pre<?> event)
-        {
-            if (!ENABLED || !(event.getEntity() instanceof EntityCow))
-            {
+        public static void onRenderLivingPre(RenderLivingEvent.Pre<?> event) {
+            if (!ENABLED || !(event.getEntity() instanceof EntityCow)) {
                 return;
             }
             EntityLivingBase entity = event.getEntity();
@@ -166,12 +156,12 @@ public class RollAxisTest
         }
 
         @SubscribeEvent
-        public static void onRenderLivingPost(RenderLivingEvent.Post<?> event)
-        {
-            if (ENABLED && event.getEntity() instanceof EntityCow)
-            {
+        public static void onRenderLivingPost(RenderLivingEvent.Post<?> event) {
+            if (ENABLED && event.getEntity() instanceof EntityCow) {
                 GlStateManager.popMatrix();
             }
         }
+
     }
+
 }
