@@ -945,10 +945,10 @@ public class ForgeHooksClient
     }
 
     // Frame clock, advanced once per rendered frame from Minecraft.runGameLoop before RenderTickEvent START
-    private static final double DEFAULT_FRAME_DELTA_SECONDS = 1.0 / 60.0;
-    private static final double MAX_FRAME_DELTA_SECONDS = 0.1;
+    private static final float DEFAULT_FRAME_DELTA_SECONDS = 1.0F / 60.0F;
+    private static final float MAX_FRAME_DELTA_SECONDS = 0.1F;
     private static long lastFrameNanos = -1;
-    private static double frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
+    private static float frameDeltaSeconds = DEFAULT_FRAME_DELTA_SECONDS;
 
     /**
      * Advances the frame clock. Called once per rendered frame, right before
@@ -962,7 +962,7 @@ public class ForgeHooksClient
         long now = System.nanoTime();
         if (lastFrameNanos >= 0)
         {
-            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9D, 0.0D, MAX_FRAME_DELTA_SECONDS);
+            frameDeltaSeconds = MathHelper.clamp((now - lastFrameNanos) / 1.0E9F, 0.0F, MAX_FRAME_DELTA_SECONDS);
         }
         else
         {
@@ -974,7 +974,7 @@ public class ForgeHooksClient
     /**
      * @return the duration of the current rendered frame in seconds, as measured by {@link #beginFrame()}
      */
-    public static double getFrameDeltaSeconds()
+    public static float getFrameDeltaSeconds()
     {
         return frameDeltaSeconds;
     }

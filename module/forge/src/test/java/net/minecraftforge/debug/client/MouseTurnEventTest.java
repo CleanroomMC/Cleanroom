@@ -25,7 +25,7 @@ public class MouseTurnEventTest
     static final boolean CANCEL = false;
 
     private static final Logger LOGGER = LogManager.getLogger(MODID);
-    private static double secondAccumulator = 0.0D;
+    private static float secondAccumulator = 0.0F;
 
     @SubscribeEvent
     public static void onMouseTurn(InputEvent.MouseTurnEvent event)
@@ -33,9 +33,9 @@ public class MouseTurnEventTest
         if (!ENABLED) return;
 
         secondAccumulator += event.getFrameDeltaSeconds();
-        if (secondAccumulator >= 1.0D)
+        if (secondAccumulator >= 1.0F)
         {
-            secondAccumulator = 0.0D;
+            secondAccumulator = 0.0F;
             LOGGER.info("Frame delta: event {} s, clock {} s", event.getFrameDeltaSeconds(), ForgeHooksClient.getFrameDeltaSeconds());
         }
 

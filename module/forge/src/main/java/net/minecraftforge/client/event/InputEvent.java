@@ -45,9 +45,9 @@ public abstract class InputEvent extends Event
         private final EntityPlayerSP player;
         private float yaw;
         private float pitch;
-        private final double frameDelta;
+        private final float frameDelta;
 
-        public MouseTurnEvent(EntityPlayerSP player, float yaw, float pitch, double frameDelta)
+        public MouseTurnEvent(EntityPlayerSP player, float yaw, float pitch, float frameDelta)
         {
             this.player = player;
             this.yaw = yaw;
@@ -80,7 +80,7 @@ public abstract class InputEvent extends Event
             this.pitch = pitch;
         }
 
-        public double getFrameDeltaSeconds()
+        public float getFrameDeltaSeconds()
         {
             return frameDelta;
         }
