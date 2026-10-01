@@ -32,7 +32,7 @@ public final class Touches {
             }
             return List.copyOf(devices);
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 

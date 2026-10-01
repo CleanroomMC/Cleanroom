@@ -28,7 +28,7 @@ public final class Displays {
             }
             return List.copyOf(displays);
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 

@@ -94,7 +94,7 @@ public final class FileSystem {
             }
             return List.copyOf(paths);
         } finally {
-            SDLStdinc.SDL_free(matches);
+            SDLStdinc.SDL_free(matches.rewind());
         }
     }
 
