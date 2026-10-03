@@ -45,12 +45,20 @@
          if (Minecraft.getMinecraft().currentScreen != null) {
              Minecraft.getMinecraft().currentScreen.setFocused(isFocusedIn);
          }
-@@ -592,4 +600,8 @@
+@@ -592,4 +600,16 @@
      public void setVisible(boolean isVisible) {
          this.visible = isVisible;
      }
 +
 +    public int getLineScrollOffset() {
 +        return lineScrollOffset;
++    }
++
++    /**
++     * The field's own setting, as drawTextBox lays out the text with it. getEnableBackgroundDrawing() can be
++     * overridden and do more than answer: HEI draws its search box background in it.
++     */
++    public boolean drawsBackground() {
++        return enableBackgroundDrawing;
 +    }
  }
