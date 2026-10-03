@@ -64,7 +64,7 @@ public final class SDLHooks {
         int caretX = caretX(field, font);
         int textY = textY(field);
         area(field.x, field.y, field.width, field.height, caretX);
-        overlay(text, font, caretX, textY, field.getWidth() - (caretX - (field.getEnableBackgroundDrawing() ? field.x + 4 : field.x)),
+        overlay(text, font, caretX, textY, field.getWidth() - (caretX - (field.drawsBackground() ? field.x + 4 : field.x)),
                 field.x, field.y, field.width, field.height);
     }
 
@@ -228,7 +228,7 @@ public final class SDLHooks {
     }
 
     private static int caretX(GuiTextField field, FontRenderer font) {
-        int x = field.getEnableBackgroundDrawing() ? field.x + 4 : field.x;
+        int x = field.drawsBackground() ? field.x + 4 : field.x;
         String contents = field.getText();
         int scroll = field.getLineScrollOffset();
         if (scroll < 0 || scroll > contents.length()) {
@@ -246,7 +246,7 @@ public final class SDLHooks {
     }
 
     private static int textY(GuiTextField field) {
-        return field.getEnableBackgroundDrawing() ? field.y + (field.height - 8) / 2 : field.y;
+        return field.drawsBackground() ? field.y + (field.height - 8) / 2 : field.y;
     }
 
     private static void remember(int x, int y, int width, int height) {
