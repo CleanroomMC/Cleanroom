@@ -87,12 +87,8 @@ public class ForgeClientHandler
             event.setGui(new ModListScreen(modList.getParent()));
         }
 
-        Window window = SDL.window();
-        if (window != null)
-        {
-            GuiScreen opened = event.getGui();
-            window.text().active(opened instanceof GuiScreenBook || opened instanceof GuiEditSign);
-        }
+        GuiScreen opened = event.getGui();
+        SDLHooks.screenOpened(opened instanceof GuiScreenBook || opened instanceof GuiEditSign);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

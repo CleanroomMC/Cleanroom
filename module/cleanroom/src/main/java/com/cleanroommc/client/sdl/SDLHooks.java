@@ -22,6 +22,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
+import java.lang.ref.WeakReference;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
@@ -45,6 +46,38 @@ public final class SDLHooks {
     private static int lastFieldWidth;
     private static int lastFieldHeight;
     private static boolean lastFieldSet;
+    private static WeakReference<GuiTextField> textInputOwner = new WeakReference<>(null);
+
+    /**
+     * Turns text input on when a field gains focus, and off only when the field that turned it on loses focus.
+     * Screens unfocus their other fields as one gains focus, and mods unfocus their own fields on any click,
+     * which must not take text input away from the field that is still focused.
+     */
+    public static void textFieldFocus(GuiTextField field, boolean focused) {
+        Text text = text();
+        if (text == null) {
+            return;
+        }
+        GuiTextField owner = textInputOwner.get();
+        if (focused) {
+            textInputOwner = new WeakReference<>(field);
+            text.active(true);
+        } else if (owner == null || owner == field) {
+            textInputOwner = new WeakReference<>(null);
+            text.active(false);
+        }
+    }
+
+    /**
+     * A screen was opened: no field owns text input yet, screens without text fields that take text (books, signs) get it.
+     */
+    public static void screenOpened(boolean takesText) {
+        textInputOwner = new WeakReference<>(null);
+        Text text = text();
+        if (text != null) {
+            text.active(takesText);
+        }
+    }
 
     /**
      * Places the native caret and draws composition plus candidates on a focused text field.
