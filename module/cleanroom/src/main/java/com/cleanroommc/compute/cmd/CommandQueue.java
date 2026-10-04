@@ -7,6 +7,7 @@ import com.cleanroommc.compute.errors.UnavaliableDeviceError;
 import com.cleanroommc.compute.images.Image;
 import com.cleanroommc.compute.kernels.Kernel;
 import com.cleanroommc.compute.kernels.params.KernelParameterList;
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
@@ -18,6 +19,7 @@ import org.lwjgl.opencl.CL12;
 import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
+import java.lang.ref.Cleaner;
 import java.nio.*;
 import java.util.Set;
 
@@ -28,18 +30,7 @@ import java.util.Set;
  */
 public class CommandQueue extends SmartPointer {
 
-    /** Converts dependency events to the native event wait list. */
-    public static long[] eventIDs(Event... dependencies) {
-        Preconditions.checkNotNull(dependencies);
-        long[] ids = new long[dependencies.length];
-        for (int i = 0; i < dependencies.length; i++) {
-            Event dependency = Preconditions.checkNotNull(dependencies[i]);
-            Preconditions.checkState(!dependency.isClosed(), "Dependency event has already been closed.");
-            ids[i] = dependency.eventID;
-        }
-        return ids;
-    }
-
+    private final Cleaner.Cleanable cleanable;
     public final long commandQueue;
     private final long device;
 
@@ -71,6 +62,12 @@ public class CommandQueue extends SmartPointer {
             case CL10.CL_INVALID_QUEUE_PROPERTIES -> throw new RuntimeException("Queue properties unsupported by device");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL command queue.");
         }
+
+        final long tmp = commandQueue;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseCommandQueue(tmp))
+        );
     }
 
     //<editor-fold desc="Kernel Dispatch">
@@ -4679,7 +4676,7 @@ public class CommandQueue extends SmartPointer {
     @Override
     public void close() {
         super.close();
-        CL20.clReleaseCommandQueue(commandQueue);
+        this.cleanable.clean();
     }
 
     private Event createWriteEvent(long eventID,
@@ -4700,6 +4697,7 @@ public class CommandQueue extends SmartPointer {
     public final class Event extends SmartPointer {
         public final long eventID;
         private final MemoryStack stack;
+        private final Cleaner.Cleanable cleanable;
 
         /** True only when this chain created the stack itself. */
         private boolean ownsStack;
@@ -4719,10 +4717,15 @@ public class CommandQueue extends SmartPointer {
         }
 
         Event(long eventID, @NonNull MemoryStack stack, @Nullable Set<SmartPointer> nonBlockingWrites) {
+            Preconditions.checkNotNull(stack);
+
             this.eventID = eventID;
-            this.stack = Preconditions.checkNotNull(stack);
+            this.stack = stack;
             this.nonBlockingWrites = nonBlockingWrites;
             this.reference(CommandQueue.this);
+            this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+                GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseEvent(eventID))
+            );
         }
 
         /**
@@ -9049,14 +9052,14 @@ public class CommandQueue extends SmartPointer {
          */
         @Override
         public synchronized void close() {
+            if (isClosed())
+                return;
+            super.close();
+            cleanable.clean();
             if (stackTransferPending) {
                 closePending = true;
                 return;
             }
-            if (isClosed())
-                return;
-            super.close();
-            CL10.clReleaseEvent(eventID);
             chainable = false;
             releaseOwnedStack();
         }
@@ -9161,5 +9164,17 @@ public class CommandQueue extends SmartPointer {
                 Compute.instance().LOGGER.warn("Potential data race caused by operation involving {} after non-blocking write.", object instanceof Buffer ? "a buffer" : "an image");
             }
         }
+    }
+
+    /** Converts dependency events to the native event wait list. */
+    public static long[] eventIDs(Event... dependencies) {
+        Preconditions.checkNotNull(dependencies);
+        long[] ids = new long[dependencies.length];
+        for (int i = 0; i < dependencies.length; i++) {
+            Event dependency = Preconditions.checkNotNull(dependencies[i]);
+            Preconditions.checkState(!dependency.isClosed(), "Dependency event has already been closed.");
+            ids[i] = dependency.eventID;
+        }
+        return ids;
     }
 }
