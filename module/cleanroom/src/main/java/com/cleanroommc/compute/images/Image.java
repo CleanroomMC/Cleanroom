@@ -4,6 +4,7 @@ import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.buffers.BufferFlags;
 import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.ImageError;
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
@@ -15,6 +16,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
 import org.lwjgl.system.MemoryStack;
 
+import java.lang.ref.Cleaner;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -25,6 +27,7 @@ import java.nio.IntBuffer;
  */
 public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Image1DArray, Image2D, Image2DArray, Image3D {
 
+    private final Cleaner.Cleanable cleanable;
     /**
      * OpenCL Pointer
      */
@@ -106,6 +109,12 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL image.");
         }
         this.texture = null;
+
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL12.clReleaseMemObject(tmp))
+        );
     }
 
     /**
@@ -153,6 +162,12 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
             case CL10.CL_INVALID_OPERATION -> throw new ImageError("None of the devices support images.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL image.");
         }
+
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            () -> CL12.clReleaseMemObject(tmp)
+        );
     }
 
     /**
@@ -803,7 +818,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
     @Override
     public final void close() {
         super.close();
-        CL12.clReleaseMemObject(this.handle);
+        this.cleanable.clean();
     }
 
     /**
