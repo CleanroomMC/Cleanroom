@@ -2,6 +2,7 @@ package com.cleanroommc.compute.images.samplers;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.errors.ImageError;
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
@@ -11,6 +12,7 @@ import org.lwjgl.opencl.CL20;
 import org.lwjgl.opencl.KHRMipmapImage;
 import org.lwjgl.system.MemoryStack;
 
+import java.lang.ref.Cleaner;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 
@@ -22,6 +24,7 @@ import java.nio.LongBuffer;
  */
 public final class Sampler extends SmartPointer {
 
+    private final Cleaner.Cleanable cleanable;
     /**
      * Is coordinate [0;0] in the centre.
      */
@@ -101,6 +104,9 @@ public final class Sampler extends SmartPointer {
                 case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources to create sampler.");
             }
             this.handle = res;
+            this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+                GarbageCollector.INSTANCE.deletionTask(() -> CL20.clReleaseSampler(res))
+            );
         }
     }
 
@@ -111,6 +117,6 @@ public final class Sampler extends SmartPointer {
     @Override
     public void close() {
         super.close();
-        CL20.clReleaseSampler(handle);
+        cleanable.clean();
     }
 }
