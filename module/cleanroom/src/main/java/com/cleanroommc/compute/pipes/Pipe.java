@@ -2,6 +2,7 @@ package com.cleanroommc.compute.pipes;
 
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.errors.PipeError;
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.compute.types.OpenCLType;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
@@ -10,6 +11,7 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
 
 import java.io.IOException;
+import java.lang.ref.Cleaner;
 
 /**
  * OpenCL Pipe
@@ -17,6 +19,7 @@ import java.io.IOException;
  */
 public class Pipe extends SmartPointer {
 
+    private final Cleaner.Cleanable cleanable;
     /**
      * The actual OpenCL Pipe
      */
@@ -73,6 +76,11 @@ public class Pipe extends SmartPointer {
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL pipe.");
         }
 
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL20.clReleaseMemObject(tmp))
+        );
     }
 
     /**
@@ -82,6 +90,6 @@ public class Pipe extends SmartPointer {
     @Override
     public void close() {
         super.close();
-        CL20.clReleaseMemObject(handle);
+        this.cleanable.clean();
     }
 }
