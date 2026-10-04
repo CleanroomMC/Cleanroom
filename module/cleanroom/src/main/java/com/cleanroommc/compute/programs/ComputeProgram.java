@@ -57,8 +57,8 @@ public class ComputeProgram implements Closeable {
         this.resourceLocation = resourceLocation;
 
         try (InputStreamReader stream = new InputStreamReader(
-                this.getClass().getClassLoader().getResourceAsStream(String.format("assets/%s/compute/%s.json", 
-                        resourceLocation.getNamespace(), 
+                this.getClass().getClassLoader().getResourceAsStream(String.format("assets/%s/compute/%s.json",
+                        resourceLocation.getNamespace(),
                         resourceLocation.getPath())))) {
             Gson gson = new GsonBuilder().registerTypeAdapter(OpenCLType.class, new OpenCLTypeDeserializer()).create();
             metadata = gson.fromJson(stream, ProgramMetadata.class);
@@ -226,7 +226,9 @@ public class ComputeProgram implements Closeable {
                 while (dataDecoded.hasRemaining()) {
                     builder.append(dataDecoded.get());
                 }
-                logs.add(builder.toString());
+                String res = builder.toString().trim();
+                if (!res.isEmpty())
+                    logs.add(res);
             }
         }
         return logs;
