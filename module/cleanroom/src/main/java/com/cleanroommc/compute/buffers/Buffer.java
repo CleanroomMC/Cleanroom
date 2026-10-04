@@ -3,6 +3,7 @@ package com.cleanroommc.compute.buffers;
 import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.BufferError;
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.cleanroommc.kirino.gl.buffer.GLBuffer;
 import com.google.common.base.Preconditions;
@@ -20,6 +21,7 @@ import org.lwjgl.system.MemoryStack;
 import java.awt.*;
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.ref.Cleaner;
 import java.nio.*;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +32,7 @@ import java.util.Set;
  */
 public class Buffer extends SmartPointer {
 
+    private final Cleaner.Cleanable cleanable;
     private final @Nullable Buffer parent;
     private final List<Buffer> children = new ReferenceArrayList<>();
     /**
@@ -95,6 +98,12 @@ public class Buffer extends SmartPointer {
                 case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
             }
         }
+
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseMemObject(tmp))
+        );
     }
 
     /**
@@ -158,6 +167,12 @@ public class Buffer extends SmartPointer {
                 case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
             }
         }
+
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseMemObject(tmp))
+        );
     }
 
     /**
@@ -218,6 +233,12 @@ public class Buffer extends SmartPointer {
             }
         }
 
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseMemObject(tmp))
+        );
+
         this.parent.children.add(this);
     }
 
@@ -263,6 +284,12 @@ public class Buffer extends SmartPointer {
                 case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
             }
         }
+
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseMemObject(tmp))
+        );
     }
 
     /**
@@ -324,6 +351,12 @@ public class Buffer extends SmartPointer {
                 case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
             }
         }
+
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseMemObject(tmp))
+        );
     }
 
     /**
@@ -382,6 +415,12 @@ public class Buffer extends SmartPointer {
             }
         }
 
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseMemObject(tmp))
+        );
+
         this.parent.children.add(this);
     }
 
@@ -435,6 +474,12 @@ public class Buffer extends SmartPointer {
             case CL10GL.CL_INVALID_GL_OBJECT -> throw new BufferError("Can't create buffer, invalid gl object.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create a buffer.");
         }
+
+        final long tmp = handle;
+
+        this.cleanable = GarbageCollector.INSTANCE.cleaner.register(this,
+            GarbageCollector.INSTANCE.deletionTask(() -> CL10.clReleaseMemObject(tmp))
+        );
     }
 
     /**
@@ -1286,7 +1331,7 @@ public class Buffer extends SmartPointer {
             if (child.isClosed())
                 child.close();
         }
-        CL10.clReleaseMemObject(handle);
+        cleanable.clean();
     }
 
     /**
