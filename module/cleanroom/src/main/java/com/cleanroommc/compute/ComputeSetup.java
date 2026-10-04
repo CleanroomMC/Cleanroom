@@ -57,7 +57,7 @@ public class ComputeSetup {
             }
             Platform platform = platformSort.first();
             CLCapabilities platformCapabilities = CL.createPlatformCapabilities(platform.pointer);
-            LOGGER.info("Selected OpenCL platform: {}", platform.name);
+            LOGGER.info("Selected OpenCL platform: {}", platform.name.trim());
             LOGGER.info("Selecting OpenCL Devices");
             PointerBuffer devices;
             if (platform.cuda) {
