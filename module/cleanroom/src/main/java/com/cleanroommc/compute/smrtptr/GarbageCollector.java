@@ -1,10 +1,13 @@
 package com.cleanroommc.compute.smrtptr;
 
-import com.google.common.graph.GraphBuilder;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.graph.MutableGraph;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
+import java.lang.ref.Cleaner;
+import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -16,25 +19,24 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public enum GarbageCollector {
     INSTANCE;
 
+    public final Cleaner cleaner = Cleaner.create();
     public final short startTTL = 16; // TODO: Pull from config
-    private final MutableGraph<SmartPointer> referenceGraph = GraphBuilder.undirected().allowsSelfLoops(false).build();
+    private final Set<WeakReference<SmartPointer>> objects = new ObjectArraySet<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     final Lock readLock = lock.readLock();
     final Lock writeLock = lock.writeLock();
     public final SweepTask sweepTask = new SweepTask();
-    final PriorityQueue<SmartPointer> deletionQueue = new ObjectArrayFIFOQueue<>();
+    final PriorityQueue<Runnable> deletionQueue = new ObjectArrayFIFOQueue<>();
     final AtomicBoolean doneCleaning = new AtomicBoolean(false);
 
     /**
      * Adds a pointer to reference tracking.
      * @param pointer the pointer
-     * @see MutableGraph#addNode(Object)
      */
     void add(SmartPointer pointer) {
-
         try {
             writeLock.lock();
-            this.referenceGraph.addNode(pointer);
+            this.objects.add(new WeakReference<>(pointer));
         } finally {
             writeLock.unlock();
         }
@@ -43,12 +45,11 @@ public enum GarbageCollector {
     /**
      * Removes a pointer from reference tracking.
      * @param pointer the pointer
-     * @see MutableGraph#removeNode(Object)
      */
     void remove(SmartPointer pointer) {
         try {
             writeLock.lock();
-            this.referenceGraph.removeNode(pointer);
+            this.objects.removeIf(ref -> ref.refersTo(pointer));
         } finally {
             writeLock.unlock();
         }
@@ -58,14 +59,15 @@ public enum GarbageCollector {
      * Creates a reference between two pointers.
      * @param from pointer 1
      * @param to pointer 2
-     * @see MutableGraph#putEdge(Object, Object)
      */
     void reference(SmartPointer from, SmartPointer to) {
         try {
-            writeLock.lock();
-            this.referenceGraph.putEdge(from, to);
+            to.writeLock.lock();
+            // Can't be null since we have the objects.
+            from.references.add(new WeakReference<>(to));
+            to.references.add(new WeakReference<>(from));
         } finally {
-            writeLock.unlock();
+            to.writeLock.unlock();
         }
     }
 
@@ -73,29 +75,24 @@ public enum GarbageCollector {
      * Removes a reference between two pointers.
      * @param from pointer 1
      * @param to pointer 2
-     * @see MutableGraph#removeEdge(Object, Object)
      */
     void dereference(SmartPointer from, SmartPointer to) {
         try {
-            writeLock.lock();
-            this.referenceGraph.removeEdge(from, to);
+            to.writeLock.lock();
+            for (WeakReference<SmartPointer> ref : from.references) {
+                if (ref.refersTo(to)) {
+                    from.references.remove(ref);
+                    break;
+                }
+            }
+            for (WeakReference<SmartPointer> ref : to.references) {
+                if (ref.refersTo(from)) {
+                    to.references.remove(ref);
+                    break;
+                }
+            }
         } finally {
-            writeLock.unlock();
-        }
-    }
-
-    /**
-     * Returns all pointers that reference the given pointer.
-     * @param pointer the pointer
-     * @return referencing pointers
-     * @see com.google.common.graph.Graph#adjacentNodes(Object)
-     */
-    Set<SmartPointer> references(SmartPointer pointer) {
-        try {
-            readLock.lock();
-            return referenceGraph.adjacentNodes(pointer);
-        } finally {
-            readLock.unlock();
+            to.writeLock.unlock();
         }
     }
 
@@ -107,7 +104,8 @@ public enum GarbageCollector {
     public void sweep() {
        try {
            writeLock.lock();
-           referenceGraph.nodes().forEach(SmartPointer::tick);
+           this.objects.removeIf(ref -> ref.get() == null);
+           this.objects.forEach(ref -> {if (ref.get() != null) ref.get().tick();});
        } finally {
            writeLock.unlock();
        }
@@ -122,7 +120,7 @@ public enum GarbageCollector {
         try {
             writeLock.lock();
             SweepTask.running.compareAndExchangeRelease(true, false);
-            referenceGraph.nodes().forEach(ptr -> {if (!ptr.isClosed()) deletionQueue.enqueue(ptr);});
+            this.objects.forEach(ref -> {if (ref.get() != null) ref.get().close();});
             deleteAllSweptObjects();
         } finally {
             writeLock.unlock();
@@ -139,10 +137,19 @@ public enum GarbageCollector {
             writeLock.lock();
             SweepTask.running.compareAndExchangeRelease(true, false);
             while (!deletionQueue.isEmpty())
-                if (!deletionQueue.first().isClosed()) deletionQueue.dequeue().close();
+                deletionQueue.dequeue().run();
             doneCleaning.setRelease(false);
         } finally {
             writeLock.unlock();
         }
+    }
+
+    /**
+     * Creates a runnable that will push the provided runnable to the finalizer queue.
+     * @param runnable The runnable that deletes.
+     * @return The enqueueing operation.
+     */
+    public Runnable deletionTask(Runnable runnable) {
+        return () -> deletionQueue.enqueue(runnable);
     }
 }

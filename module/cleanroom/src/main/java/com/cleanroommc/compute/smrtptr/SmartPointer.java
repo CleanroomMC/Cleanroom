@@ -1,8 +1,12 @@
 package com.cleanroommc.compute.smrtptr;
 
 import com.cleanroommc.compute.cmd.CommandQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
 import java.io.Closeable;
+import java.lang.ref.Cleaner;
+import java.lang.ref.WeakReference;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -15,6 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public abstract class SmartPointer implements Closeable {
 
+    final Set<WeakReference<SmartPointer>> references = new ObjectArraySet<>();
     private final AtomicInteger ttl;
     private final short startTTL;
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
@@ -63,13 +68,14 @@ public abstract class SmartPointer implements Closeable {
      */
     public final void tick() {
         try {
-            GarbageCollector.INSTANCE.writeLock.lock();
+            this.writeLock.lock();
+            this.references.removeIf(ref -> ref.get() == null);
             if (this.ttl.getAcquire() == 0)
-                GarbageCollector.INSTANCE.deletionQueue.enqueue(this);
-            else if (GarbageCollector.INSTANCE.references(this).isEmpty() || this instanceof CommandQueue) // Only reading. Shouldn't cause data races
+                this.close();
+            else if (this.references.isEmpty() || this instanceof CommandQueue) // Only reading. Shouldn't cause data races
                 this.ttl.decrementAndGet();
         } finally {
-            GarbageCollector.INSTANCE.writeLock.unlock();
+            this.writeLock.unlock();
         }
     }
 
@@ -97,7 +103,7 @@ public abstract class SmartPointer implements Closeable {
 
     /**
      * Closes the smart pointer.
-     * @implSpec ALWAYS IMPLEMENT THIS, IT MUST RELEASE OPENCL OBJECTS.
+     * @implSpec ALWAYS IMPLEMENT THIS, IT MUST RELEASE OPENCL OBJECTS. IT HAS TO USE {@link Cleaner.Cleanable#clean()}.
      */
     @Override
     public void close() {
