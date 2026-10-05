@@ -117,7 +117,7 @@ public class ConfigManager
             String modid = (String)target.getAnnotationInfo().get("modid");
             if (modid == null) {
                 var containedMods = target.getCandidate().getContainedMods();
-                if (containedMods != null && containedMods.isEmpty()) {
+                if (containedMods != null && !containedMods.isEmpty()) {
                     modid = containedMods.getFirst().getModId();
                 } else {
                     modid = CleanroomModDiscoverer.instance()
