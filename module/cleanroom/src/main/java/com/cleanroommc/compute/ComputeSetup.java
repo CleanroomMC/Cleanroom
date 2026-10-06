@@ -88,6 +88,7 @@ public class ComputeSetup {
                     case CL10.CL_INVALID_PLATFORM -> throw new InvalidPlatformError(String.format("Platform %s is invalid.", platform.name));
                     case CL10.CL_DEVICE_NOT_AVAILABLE -> throw new UnavaliableDeviceError("Device is not available.");
                     case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL context.");
+                    default -> throw new Error(String.format("Could not initialize OpenCL, error code %d", erret.get(0)));
                 }
             }
             Device[] deviceArray = new Device[devices.capacity()];
