@@ -1,12 +1,12 @@
 package com.cleanroommc.compute.smrtptr;
 
 import com.cleanroommc.compute.cmd.CommandQueue;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
 import java.io.Closeable;
 import java.lang.ref.Cleaner;
 import java.lang.ref.WeakReference;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public abstract class SmartPointer implements Closeable {
 
-    final Set<WeakReference<SmartPointer>> references = new ObjectArraySet<>();
+    final List<WeakReference<SmartPointer>> references = new LinkedList<>();
     private final AtomicInteger ttl;
     private final short startTTL;
     private final AtomicBoolean isClosed = new AtomicBoolean(false);

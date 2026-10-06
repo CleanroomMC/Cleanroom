@@ -1,14 +1,12 @@
 package com.cleanroommc.compute.smrtptr;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.graph.MutableGraph;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
 import java.lang.ref.Cleaner;
 import java.lang.ref.WeakReference;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -21,7 +19,7 @@ public enum GarbageCollector {
 
     public final Cleaner cleaner = Cleaner.create();
     public final short startTTL = 16; // TODO: Pull from config
-    private final Set<WeakReference<SmartPointer>> objects = new ObjectArraySet<>();
+    private final List<WeakReference<SmartPointer>> objects = new LinkedList<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     final Lock readLock = lock.readLock();
     final Lock writeLock = lock.writeLock();
