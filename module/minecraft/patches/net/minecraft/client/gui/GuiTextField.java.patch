@@ -21,7 +21,7 @@
                  int l1 = l + this.fontRenderer.getStringWidth(s.substring(0, k));
                  this.drawSelectionBox(k1, i1 - 1, l1 - 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT);
              }
-+            com.cleanroommc.client.sdl.SDLHooks.textFieldDraw(this);
++            com.cleanroommc.client.sdl.SDLHooks.textFieldDraw(this, l, i1);
          }
      }
  

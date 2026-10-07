@@ -50,7 +50,7 @@ public final class SDLHooks {
     /**
      * Places the native caret and draws composition plus candidates on a focused text field.
      */
-    public static void textFieldDraw(GuiTextField field) {
+    public static void textFieldDraw(GuiTextField field, int textX, int textY) {
         if (field == null || !field.getVisible() || !field.isFocused()) {
             return;
         }
@@ -62,11 +62,10 @@ public final class SDLHooks {
         if (font == null) {
             return;
         }
-        int caretX = caretX(field, font);
-        int textY = textY(field);
+        int caretX = caretX(field, font, textX);
         caret(field.x, field.y, field.width, field.height, caretX - field.x);
         focusedFieldDrawn = true;
-        overlay(text, font, caretX, textY, field.getWidth() - (caretX - (field.getEnableBackgroundDrawing() ? field.x + 4 : field.x)),
+        overlay(text, font, caretX, textY, field.getWidth() - (caretX - textX),
                 field.x, field.y, field.width, field.height);
     }
 
@@ -290,8 +289,7 @@ public final class SDLHooks {
         return text.composition().active() || text.candidates().active();
     }
 
-    private static int caretX(GuiTextField field, FontRenderer font) {
-        int x = field.getEnableBackgroundDrawing() ? field.x + 4 : field.x;
+    private static int caretX(GuiTextField field, FontRenderer font, int x) {
         String contents = field.getText();
         int scroll = field.getLineScrollOffset();
         if (scroll < 0 || scroll > contents.length()) {
@@ -306,10 +304,6 @@ public final class SDLHooks {
             relative = visible.length();
         }
         return x + font.getStringWidth(visible.substring(0, relative));
-    }
-
-    private static int textY(GuiTextField field) {
-        return field.getEnableBackgroundDrawing() ? field.y + (field.height - 8) / 2 : field.y;
     }
 
     private static void remember(int x, int y, int width, int height) {
