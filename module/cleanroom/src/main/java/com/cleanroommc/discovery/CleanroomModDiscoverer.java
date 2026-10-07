@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.discovery.ContainerType;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
+import net.minecraftforge.fml.common.discovery.ITypeDiscoverer;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.commons.io.IOUtils;
@@ -629,17 +630,16 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void scanModAnnotations(JarFile jar, Set<String> modIds) {
-        var entries = jar.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            if (entry.isDirectory() || !entry.getName().endsWith(".class")) {
+        List<JarEntry> entries = Collections.list(jar.entries());
+        for (JarEntry entry : entries) {
+            if (!ITypeDiscoverer.shouldScan(entry.getName())) {
                 continue;
             }
             try (InputStream in = jar.getInputStream(entry)) {
                 ASMModParser parser = new ASMModParser(in);
                 parser.validate();
                 for (ModAnnotation annotation : parser.getAnnotations()) {
-                    if (ModContainerFactory.modTypes.containsKey(annotation.getASMType())) {
+                    if (ModContainerFactory.hasType(annotation.getASMType())) {
                         Object modId = annotation.getValues().get("modid");
                         if (modId instanceof String stringModId && !stringModId.isEmpty()) {
                             modIds.add(stringModId);
@@ -649,5 +649,4 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             } catch (Exception ignored) { }
         }
     }
-
 }

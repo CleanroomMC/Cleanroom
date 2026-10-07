@@ -29,5 +29,10 @@ public interface ITypeDiscoverer
     // main class part, followed by an optional $ and an "inner class" part. $ cannot be last, otherwise scala breaks
     Pattern classFile = Pattern.compile("[^\\s$]+(\\$\\S+)?\\.class$");
 
+    static boolean shouldScan(String name)
+    {
+        return name != null && !name.startsWith("__MACOSX") && classFile.matcher(name).matches();
+    }
+
     List<ModContainer> discover(ModCandidate candidate, ASMDataTable table);
 }

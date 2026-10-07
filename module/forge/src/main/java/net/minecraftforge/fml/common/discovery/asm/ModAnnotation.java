@@ -32,27 +32,7 @@ import com.google.common.collect.Maps;
 
 public class ModAnnotation
 {
-    public static class EnumHolder
-    {
-        private final String desc;
-        private final String value;
-
-        public EnumHolder(String desc, String value)
-        {
-            this.desc = desc;
-            this.value = value;
-        }
-
-        public String getDesc()
-        {
-            return desc;
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-    }
+    public record EnumHolder(String desc, String value) {}
     AnnotationType type;
     Type asmType;
     String member;

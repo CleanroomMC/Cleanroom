@@ -37,14 +37,31 @@ import javax.annotation.Nullable;
 public class ModContainerFactory
 {
     public static Map<Type, Constructor<? extends ModContainer>> modTypes = Maps.newHashMap();
+
+    /** The only built-in container type, {@code @Mod}. */
+    public static final Type MOD_ANNOTATION_TYPE = Type.getType(Mod.class);
+
+    /** Whether {@code @Mod} is the only registered container type. */
+    private static boolean onlyModType;
+
     private static final ModContainerFactory INSTANCE = new ModContainerFactory();
 
     private ModContainerFactory() {
         // We always know about Mod type
-        registerContainerType(Type.getType(Mod.class), FMLModContainer.class);
+        registerContainerType(MOD_ANNOTATION_TYPE, FMLModContainer.class);
     }
     public static ModContainerFactory instance() {
         return INSTANCE;
+    }
+
+    /**
+     * Whether {@code type} is a registered container type, i.e. an annotation of it makes {@link #build}
+     * return a container.
+     */
+    public static boolean hasType(Type type)
+    {
+        // With a single registered type the lookup is just an equality test, avoiding Type.hashCode()
+        return onlyModType ? type.equals(MOD_ANNOTATION_TYPE) : modTypes.containsKey(type);
     }
 
     public void registerContainerType(Type type, Class<? extends ModContainer> container)
@@ -53,6 +70,8 @@ public class ModContainerFactory
         {
             Constructor<? extends ModContainer> constructor = container.getConstructor(String.class, ModCandidate.class, Map.class);
             modTypes.put(type, constructor);
+            // keeps onlyModType in sync; modTypes must not be mutated elsewhere
+            onlyModType = modTypes.size() == 1;
         }
         catch (Exception e)
         {

@@ -27,7 +27,6 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 import net.minecraftforge.fml.relauncher.Side;
-import org.apache.logging.log4j.Level;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -59,7 +58,7 @@ public class AutomaticEventSubscriber
                 if (sidesEnum != null) {
                     sides = EnumSet.noneOf(Side.class);
                     for (ModAnnotation.EnumHolder h: sidesEnum) {
-                        sides.add(Side.valueOf(h.getValue()));
+                        sides.add(Side.valueOf(h.value()));
                     }
                 }
                 if (sides == DEFAULT || sides.contains(side)) {

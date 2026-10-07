@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import net.minecraftforge.fml.common.FMLLog;
@@ -36,7 +37,6 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
 import net.minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
 
-import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 
 import org.objectweb.asm.Type;
@@ -85,40 +85,39 @@ public class JarDiscoverer implements ITypeDiscoverer
 
     private void findClassesASM(ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc) throws IOException
     {
-        for (ZipEntry ze : Collections.list(jar.entries()))
+        List<JarEntry> entries = Collections.list(jar.entries());
+
+        for (JarEntry entry : entries)
         {
-            if (ze.getName()!=null && ze.getName().startsWith("__MACOSX"))
+            String entryName = entry.getName();
+            if (!ITypeDiscoverer.shouldScan(entryName))
             {
                 continue;
             }
-            Matcher match = classFile.matcher(ze.getName());
-            if (match.matches())
+            ASMModParser modParser;
+            try
             {
-                ASMModParser modParser;
-                try
+                try (InputStream inputStream = jar.getInputStream(entry))
                 {
-                    try (InputStream inputStream = jar.getInputStream(ze))
-                    {
-                        modParser = new ASMModParser(inputStream);
-                    }
-                    candidate.addClassEntry(ze.getName());
+                    modParser = new ASMModParser(inputStream);
                 }
-                catch (LoaderException e)
-                {
-                    FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", ze.getName(), candidate.getModContainer().getPath(), e);
-                    jar.close();
-                    throw e;
-                }
-                modParser.validate();
-                modParser.sendToTable(table, candidate);
-                ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
-                if (container!=null)
-                {
-                    table.addContainer(container);
-                    foundMods.add(container);
-                    container.bindMetadata(mc);
-                    container.setClassVersion(modParser.getClassVersion());
-                }
+                candidate.addClassEntry(entryName);
+            }
+            catch (LoaderException e)
+            {
+                FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", entryName, candidate.getModContainer().getPath(), e);
+                jar.close();
+                throw e;
+            }
+            modParser.validate();
+            modParser.sendToTable(table, candidate);
+            ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
+            if (container!=null)
+            {
+                table.addContainer(container);
+                foundMods.add(container);
+                container.bindMetadata(mc);
+                container.setClassVersion(modParser.getClassVersion());
             }
         }
     }
@@ -129,6 +128,7 @@ public class JarDiscoverer implements ITypeDiscoverer
         ZipEntry json = jar.getEntry(JsonAnnotationLoader.ANNOTATION_JSON);
         Multimap<String, ASMData> annos = JsonAnnotationLoader.loadJson(jar.getInputStream(json), candidate, table);
 
+        // Kept separate on purpose: only the dead fml.enableJsonAnnotations path uses this predicate.
         for (ZipEntry e : Collections.list(jar.entries()))
         {
             if (!e.getName().startsWith("__MACOSX") && !e.getName().startsWith("META-INF/") && e.getName().endsWith(".class"))
