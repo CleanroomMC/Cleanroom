@@ -35,6 +35,7 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModContainerFactory;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
+import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
 import net.minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
 
 import java.util.zip.ZipEntry;
@@ -85,6 +86,14 @@ public class JarDiscoverer implements ITypeDiscoverer
 
     private void findClassesASM(ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc) throws IOException
     {
+        ClassScanRecord[] scanned = candidate.getScanRecord();
+        if (scanned != null)
+        {
+            sendScanToTable(scanned, candidate, table, foundMods, mc);
+            candidate.setScanRecord(null);
+            return;
+        }
+
         List<JarEntry> entries = Collections.list(jar.entries());
 
         for (JarEntry entry : entries)
@@ -118,6 +127,23 @@ public class JarDiscoverer implements ITypeDiscoverer
                 foundMods.add(container);
                 container.bindMetadata(mc);
                 container.setClassVersion(modParser.getClassVersion());
+            }
+        }
+    }
+
+    private void sendScanToTable(ClassScanRecord[] scanned, ModCandidate candidate, ASMDataTable table, List<ModContainer> foundMods, MetadataCollection mc)
+    {
+        for (ClassScanRecord record : scanned)
+        {
+            candidate.addClassEntry(record.internalName() + ".class");
+            record.sendToTable(candidate, table);
+            ModContainer container = ModContainerFactory.instance().build(record, candidate.getModContainer(), candidate);
+            if (container != null)
+            {
+                table.addContainer(container);
+                foundMods.add(container);
+                container.bindMetadata(mc);
+                container.setClassVersion(record.classVersion());
             }
         }
     }

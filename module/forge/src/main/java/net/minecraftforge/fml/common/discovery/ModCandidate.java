@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -41,6 +42,7 @@ public class ModCandidate
     private List<ModContainer> mods;
     private final List<String> packages = Lists.newArrayList();
     private ASMDataTable table;
+    private ClassScanRecord[] scanRecord;
 
     public ModCandidate(File classPathRoot, File modContainer, ContainerType sourceType)
     {
@@ -92,6 +94,17 @@ public class ModCandidate
         this.table = table;
         this.mods = sourceType.findMods(this, table);
         return this.mods;
+    }
+
+    /** The annotation scan of this candidate's jar, produced during discovery; consumed (and dropped) by the JAR container discoverer. */
+    public ClassScanRecord[] getScanRecord()
+    {
+        return scanRecord;
+    }
+
+    public void setScanRecord(ClassScanRecord[] scanRecord)
+    {
+        this.scanRecord = scanRecord;
     }
 
     public void addClassEntry(String name)

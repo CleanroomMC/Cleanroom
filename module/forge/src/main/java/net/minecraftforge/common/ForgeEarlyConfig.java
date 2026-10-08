@@ -14,7 +14,7 @@ public class ForgeEarlyConfig {
 
     //TODO : make CATEGORY?
     //TODO : make the config display name lowcase?
-    
+
     public static boolean WINDOW_START_MAXIMIZED = false;
     public static boolean WINDOW_START_FOCUSED = true;
     public static boolean WINDOW_START_ICONIFIED = false;
@@ -75,12 +75,10 @@ public class ForgeEarlyConfig {
     public static boolean DISABLE_PATCH_MOD_CHECK = false;
 
     @Config.Comment({
-        "Persist the annotation scan of every mod jar, so later launches skip ASM parsing.",
-        "When enabled, every cache hit is re-parsed with ASM and compared against the cache: the cache never",
-        "takes effect and differences are only logged. Development and diagnosis only."
+        "Ignore annotation cache, reparse everything and write down again"
     })
     @Config.RequiresMcRestart
-    public static boolean SCAN_CACHE_DEBUG = false;
+    public static boolean IGNORE_SCAN_CACHE = false;
 
     public static boolean CUSTOM_BUILT_IN_MOD_VERSION = false;
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
