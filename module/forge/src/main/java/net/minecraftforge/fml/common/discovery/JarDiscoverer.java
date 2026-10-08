@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common.discovery;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -28,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.MetadataCollection;
@@ -36,6 +38,9 @@ import net.minecraftforge.fml.common.ModContainerFactory;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
 import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.JarFingerprint;
+import net.minecraftforge.fml.common.discovery.cache.JarScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.RecordFile;
 import net.minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
 
 import java.util.zip.ZipEntry;
@@ -86,15 +91,24 @@ public class JarDiscoverer implements ITypeDiscoverer
 
     private void findClassesASM(ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc) throws IOException
     {
-        ClassScanRecord[] scanned = candidate.getScanRecord();
-        if (scanned != null)
+        File cacheFile = RecordFile.fileFor(Launch.minecraftHome, candidate.getModContainer());
+        JarScanRecord scan = candidate.getScanRecord();
+        if (scan != null)
         {
-            sendScanToTable(scanned, candidate, table, foundMods, mc);
+            replayScan(scan, candidate, table, jar, foundMods, mc);
+            if (!scan.fromDisk())
+            {
+                RecordFile.write(cacheFile, scan);
+            }
             candidate.setScanRecord(null);
             return;
         }
 
         List<JarEntry> entries = Collections.list(jar.entries());
+        boolean cacheable = cacheFile != null;
+        List<Integer> indices = Lists.newArrayList();
+        List<ClassScanRecord> records = Lists.newArrayList();
+        int ordinal = -1;
 
         for (JarEntry entry : entries)
         {
@@ -103,6 +117,7 @@ public class JarDiscoverer implements ITypeDiscoverer
             {
                 continue;
             }
+            ordinal++;
             ASMModParser modParser;
             try
             {
@@ -120,32 +135,72 @@ public class JarDiscoverer implements ITypeDiscoverer
             }
             modParser.validate();
             modParser.sendToTable(table, candidate);
-            ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
-            if (container!=null)
+            if (cacheable)
             {
-                table.addContainer(container);
-                foundMods.add(container);
-                container.bindMetadata(mc);
-                container.setClassVersion(modParser.getClassVersion());
+                ClassScanRecord record = modParser.toRecord();
+                if (JarScanRecord.hasContent(record))
+                {
+                    indices.add(ordinal);
+                    records.add(record);
+                }
+            }
+            ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
+            addContainer(container, table, foundMods, mc, modParser.getClassVersion());
+        }
+
+        if (cacheable)
+        {
+            // Fresh scan for this jar; the fingerprint covers the entries it was taken from.
+            scan = JarScanRecord.of(JarFingerprint.compute(entries), indices, records);
+            RecordFile.write(cacheFile, scan);
+        }
+    }
+
+    /**
+     * Sends a scan back to the table without parsing: every scanned entry contributes its class entry (taken from
+     * the central directory, which the fingerprint covers), and the stored records contribute annotations,
+     * interfaces and the class version.
+     */
+    private void replayScan(JarScanRecord scan, ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc)
+    {
+        int[] indices = scan.indices();
+        ClassScanRecord[] records = scan.records();
+        int ordinal = -1;
+        int next = 0;
+        for (JarEntry entry : Collections.list(jar.entries()))
+        {
+            String entryName = entry.getName();
+            if (!ITypeDiscoverer.shouldScan(entryName))
+            {
+                continue;
+            }
+            ordinal++;
+            candidate.addClassEntry(entryName);
+            if (next < indices.length && indices[next] == ordinal)
+            {
+                ClassScanRecord record = records[next++];
+                record.sendToTable(candidate, table);
+                ModContainer container = ModContainerFactory.instance().build(record, candidate.getModContainer(), candidate);
+                addContainer(container, table, foundMods, mc, record.classVersion());
             }
         }
     }
 
-    private void sendScanToTable(ClassScanRecord[] scanned, ModCandidate candidate, ASMDataTable table, List<ModContainer> foundMods, MetadataCollection mc)
+    /**
+     * Registers a container the factory built: it belongs in the table, in the discovered list, and needs its
+     * metadata and class version set. The factory returns {@code null} for classes that opt out or fail to
+     * construct, which is a no-op here. Both discovery paths must do exactly this much.
+     */
+    private static void addContainer(ModContainer container, ASMDataTable table, List<ModContainer> foundMods, MetadataCollection mc, int classVersion)
     {
-        for (ClassScanRecord record : scanned)
+        if (container == null)
         {
-            candidate.addClassEntry(record.internalName() + ".class");
-            record.sendToTable(candidate, table);
-            ModContainer container = ModContainerFactory.instance().build(record, candidate.getModContainer(), candidate);
-            if (container != null)
-            {
-                table.addContainer(container);
-                foundMods.add(container);
-                container.bindMetadata(mc);
-                container.setClassVersion(record.classVersion());
-            }
+            return;
         }
+        table.addContainer(container);
+        foundMods.add(container);
+        container.bindMetadata(mc);
+        container.setClassVersion(classVersion);
     }
 
     private void findClassesJSON(ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc) throws IOException

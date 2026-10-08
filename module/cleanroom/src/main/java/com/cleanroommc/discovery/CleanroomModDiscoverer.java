@@ -32,6 +32,9 @@ import net.minecraftforge.fml.common.discovery.ModCandidate;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
 import net.minecraftforge.fml.common.discovery.ITypeDiscoverer;
 import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.JarFingerprint;
+import net.minecraftforge.fml.common.discovery.cache.JarScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.RecordFile;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.commons.io.IOUtils;
@@ -87,7 +90,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private final SetMultimap<String, File> modIdToFiles = HashMultimap.create();
     private final SetMultimap<File, String> fileToModIds = LinkedHashMultimap.create();
     private final Map<File, DiscoveredMod> discoveredFiles = new LinkedHashMap<>();
-    private final Map<File, ClassScanRecord[]> scanRecords = new HashMap<>();
+    private final Map<File, JarScanRecord> scanRecords = new HashMap<>();
     private final ASMDataTable asmDataTable = new ASMDataTable();
 
     private List<File> nonModLibs = List.of();
@@ -305,18 +308,27 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
                 }
             }
-            List<ClassScanRecord> records = new ArrayList<>();
             // Reading the cache is what makes the records worth producing; ignoring it falls back to the pre-cache
             // parse pattern (classes are only read when the mod id is still unknown) and produces no records.
             boolean readCache = !ForgeEarlyConfig.IGNORE_SCAN_CACHE;
-            if (readCache || modIds.isEmpty()) {
-                boolean complete = collectRecords(jarFile, records);
-                if (readCache && complete) {
-                    scanRecords.put(absolute, records.toArray(new ClassScanRecord[0]));
+            boolean needClasses = readCache || modIds.isEmpty();
+            List<JarEntry> entries = needClasses ? Collections.list(jarFile.entries()) : List.of();
+            JarFingerprint fingerprint = readCache ? JarFingerprint.compute(entries) : null;
+            JarScanRecord scan = readCache ? RecordFile.read(RecordFile.fileFor(Launch.minecraftHome, absolute), fingerprint) : null;
+            if (scan == null && needClasses) {
+                List<ClassScanRecord> records = new ArrayList<>();
+                List<Integer> indices = new ArrayList<>();
+                if (collectRecords(entries, jarFile, records, indices) && readCache) {
+                    scan = JarScanRecord.of(fingerprint, indices, records);
                 }
                 if (modIds.isEmpty()) {
                     collectModIds(records, modIds);
                 }
+            } else if (scan != null && modIds.isEmpty()) {
+                collectModIds(List.of(scan.records()), modIds);
+            }
+            if (scan != null) {
+                scanRecords.put(absolute, scan);
             }
             for (String modId : modIds) {
                 if (recordMod(modId, absolute)) {
@@ -644,16 +656,22 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
-    private static boolean collectRecords(JarFile jar, List<ClassScanRecord> out) {
+    private static boolean collectRecords(List<JarEntry> entries, JarFile jar, List<ClassScanRecord> out, List<Integer> indices) {
         boolean complete = true;
-        for (JarEntry entry : Collections.list(jar.entries())) {
+        int ordinal = -1;
+        for (JarEntry entry : entries) {
             if (!ITypeDiscoverer.shouldScan(entry.getName())) {
                 continue;
             }
+            ordinal++;
             try (InputStream in = jar.getInputStream(entry)) {
                 ASMModParser parser = new ASMModParser(in);
                 parser.validate();
-                out.add(parser.toRecord());
+                ClassScanRecord record = parser.toRecord();
+                if (JarScanRecord.hasContent(record)) {
+                    indices.add(ordinal);
+                    out.add(record);
+                }
             } catch (Exception ignored) {
                 // Same tolerance as before: a broken entry contributes nothing. The whole record is dropped so that
                 // the container discovery re-reads the jar and reports the problem where it always did.
