@@ -1,6 +1,15 @@
 --- original/net/minecraft/network/datasync/EntityDataManager.java
 +++ modified/net/minecraft/network/datasync/EntityDataManager.java
-@@ -36,11 +36,13 @@
+@@ -24,6 +24,8 @@
+ public class EntityDataManager {
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static final Map<Class<? extends Entity>, Integer> NEXT_ID_MAP = Maps.newHashMap();
++    /** Forge: the highest id the loader reserves for itself; {@link Entity#ROLL} uses it. Mods may use ids up to {@code ROLL_ID - 1}. */
++    public static final int ROLL_ID = 254;
+     /** The entity that this data manager is for. */
+     private final Entity entity;
+     private final Map<Integer, EntityDataManager.DataEntry<?>> entries = Maps.newHashMap();
+@@ -36,11 +38,13 @@
      }
  
      public static <T> DataParameter<T> createKey(Class<? extends Entity> clazz, DataSerializer<T> serializer) {
@@ -16,3 +25,22 @@
                  }
              } catch (ClassNotFoundException classnotfoundexception) {
              }
+@@ -64,8 +68,8 @@
+             j = i;
+         }
+ 
+-        if (j > 254) {
+-            throw new IllegalArgumentException("Data value id is too big with " + j + "! (Max is " + 254 + ")");
++        if (j >= ROLL_ID) { // Forge: reserved for Entity.ROLL
++            throw new IllegalArgumentException("Data value id is too big with " + j + "! (Max is " + (ROLL_ID - 1) + ", id " + ROLL_ID + " is reserved by the loader for Entity.ROLL)");
+         }
+ 
+         NEXT_ID_MAP.put(clazz, j);
+@@ -245,6 +249,7 @@
+             if (dataentry1 != null) {
+                 this.setEntryValue(dataentry1, dataentry);
+                 this.entity.notifyDataManagerChange(dataentry.getKey());
++                if (net.minecraft.entity.Entity.ROLL.equals(dataentry.getKey()) && dataentry1.getValue() instanceof Float) this.entity.onRollSynced((Float) dataentry1.getValue()); // Forge: not routed through overridable notifyDataManagerChange
+             }
+         }
+ 
