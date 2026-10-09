@@ -22,6 +22,7 @@ package net.minecraftforge.fml.common.discovery.asm;
 import java.util.ArrayList;
 import java.util.Map;
 
+import net.minecraftforge.fml.common.discovery.Intern;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser.AnnotationType;
 
 import org.objectweb.asm.Type;
@@ -84,7 +85,7 @@ public class ModAnnotation
     public void addArray(String name)
     {
         this.arrayList = Lists.newArrayList();
-        this.arrayName = name;
+        this.arrayName = Intern.string(name);
     }
     public void addProperty(String key, Object value)
     {
@@ -94,13 +95,19 @@ public class ModAnnotation
         }
         else
         {
-            values.put(key, value);
+            // Keys repeat across every class of every jar, so the map is built from canonical instances (see Intern)
+            values.put(Intern.string(key), internValue(value));
         }
     }
 
     public void addEnumProperty(String key, String enumName, String value)
     {
-        addProperty(key, new EnumHolder(enumName, value));
+        addProperty(key, Intern.enumHolder(enumName, value));
+    }
+
+    private static Object internValue(Object value)
+    {
+        return value instanceof Type type ? Intern.type(type.getDescriptor()) : value;
     }
 
     public void endArray()

@@ -91,6 +91,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private final SetMultimap<File, String> fileToModIds = LinkedHashMultimap.create();
     private final Map<File, DiscoveredMod> discoveredFiles = new LinkedHashMap<>();
     private final Map<File, JarScanRecord> scanRecords = new HashMap<>();
+    private final Map<File, MetadataCollection> modMetadata = new HashMap<>();
     private final ASMDataTable asmDataTable = new ASMDataTable();
 
     private List<File> nonModLibs = List.of();
@@ -202,6 +203,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         CleanroomLog.get().debug("Minecraft jar mods loaded successfully");
         addLibraryCandidates(modCandidates, seenCandidates);
         scanRecords.clear();
+        modMetadata.clear();
 
         mods.addAll(exploreModCandidates(modCandidates, nonModLibs));
         this.nonModLibs = List.copyOf(nonModLibs);
@@ -305,7 +307,11 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (modIds.isEmpty()) {
                 ZipEntry entry = jarFile.getEntry("mcmod.info");
                 if (entry != null) {
-                    parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
+                    // Kept for the container discovery, which would otherwise read and parse the very same entry again
+                    MetadataCollection metadata = parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
+                    if (metadata != null) {
+                        modMetadata.put(absolute, metadata);
+                    }
                 }
             }
             // Reading the cache is what makes the records worth producing; ignoring it falls back to the pre-cache
@@ -534,6 +540,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private void addCandidate(List<ModCandidate> modCandidates, Set<File> seen, ModCandidate candidate) {
         if (seen.add(candidate.getModContainer())) {
             candidate.setScanRecord(scanRecords.get(candidate.getModContainer().getAbsoluteFile()));
+            candidate.setMetadata(modMetadata.get(candidate.getModContainer().getAbsoluteFile()));
             modCandidates.add(candidate);
         } else {
             CleanroomLog.get().trace("  Skipping already in list {}", candidate.getModContainer());
@@ -640,17 +647,20 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return false;
     }
 
-    private void parseMcmodInfo(File file, InputStream stream, Set<String> ids) {
+    private MetadataCollection parseMcmodInfo(File file, InputStream stream, Set<String> ids) {
         try {
-            for (String id : MetadataCollection.from(stream, file.getName()).getIds()) {
+            MetadataCollection metadata = MetadataCollection.from(stream, file.getName());
+            for (String id : metadata.getIds()) {
                 if (id == null || id.isBlank()) {
                     CleanroomLog.get().warn("Skipping null/blank mod id from {}", file.getName());
                     continue;
                 }
                 ids.add(id);
             }
+            return metadata;
         } catch (Throwable t) {
             CleanroomLog.get().error("Failed to parse mcmod.info for {}", file.getName(), t);
+            return null;
         } finally {
             IOUtils.closeQuietly(stream);
         }

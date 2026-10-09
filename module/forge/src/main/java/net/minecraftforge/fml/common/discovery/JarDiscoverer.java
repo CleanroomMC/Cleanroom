@@ -61,20 +61,25 @@ public class JarDiscoverer implements ITypeDiscoverer
         FMLLog.log.debug("Examining file {} for potential mods", candidate.getModContainer().getName());
         try (JarFile jar = new JarFile(candidate.getModContainer()))
         {
-            ZipEntry modInfo = jar.getEntry("mcmod.info");
-            MetadataCollection mc = null;
-            if (modInfo != null)
+            // Parsed by the discovery phase already; only jars it did not look at (no mod id in the manifest) need
+            // this entry to be read here.
+            MetadataCollection mc = candidate.getMetadata();
+            if (mc == null)
             {
-                FMLLog.log.trace("Located mcmod.info file in file {}", candidate.getModContainer().getName());
-                try (InputStream inputStream = jar.getInputStream(modInfo))
+                ZipEntry modInfo = jar.getEntry("mcmod.info");
+                if (modInfo != null)
                 {
-                    mc = MetadataCollection.from(inputStream, candidate.getModContainer().getName());
+                    FMLLog.log.trace("Located mcmod.info file in file {}", candidate.getModContainer().getName());
+                    try (InputStream inputStream = jar.getInputStream(modInfo))
+                    {
+                        mc = MetadataCollection.from(inputStream, candidate.getModContainer().getName());
+                    }
                 }
-            }
-            else
-            {
-                FMLLog.log.debug("The mod container {} appears to be missing an mcmod.info file", candidate.getModContainer().getName());
-                mc = MetadataCollection.from(null, "");
+                else
+                {
+                    FMLLog.log.debug("The mod container {} appears to be missing an mcmod.info file", candidate.getModContainer().getName());
+                    mc = MetadataCollection.from(null, "");
+                }
             }
 
             if (ENABLE_JSON_TEST && jar.getEntry(JsonAnnotationLoader.ANNOTATION_JSON) != null)

@@ -24,6 +24,7 @@ import java.util.zip.CRC32C;
 import javax.annotation.Nullable;
 
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.discovery.Intern;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 
 import org.objectweb.asm.Type;
@@ -455,7 +456,9 @@ public final class RecordFile {
                 }
                 values = Maps.newHashMap();
                 for (int j = 0; j < size; j++) {
-                    String key = pool[readVInt(data)];
+                    // Canonical keys, like the ASM path builds them (ModAnnotation); the name strings of the record
+                    // itself are canonicalized by ASMDataTable.addASMData, the single funnel into the table.
+                    String key = Intern.string(pool[readVInt(data)]);
                     values.put(key, readValue(data, pool));
                 }
             }
@@ -488,9 +491,9 @@ public final class RecordFile {
             case TAG_STRING:
                 return pool[readVInt(data)];
             case TAG_CLASS:
-                return Type.getType(pool[readVInt(data)]);
+                return Intern.type(pool[readVInt(data)]);
             case TAG_ENUM:
-                return new ModAnnotation.EnumHolder(pool[readVInt(data)], pool[readVInt(data)]);
+                return Intern.enumHolder(pool[readVInt(data)], pool[readVInt(data)]);
             case TAG_LIST: {
                 int size = readVInt(data);
                 if (size < 0) {
@@ -509,7 +512,7 @@ public final class RecordFile {
                 }
                 Map<String, Object> map = Maps.newHashMap();
                 for (int i = 0; i < size; i++) {
-                    map.put(pool[readVInt(data)], readValue(data, pool));
+                    map.put(Intern.string(pool[readVInt(data)]), readValue(data, pool));
                 }
                 return map;
             }

@@ -41,6 +41,9 @@ public class ModContainerFactory
     /** The only built-in container type, {@code @Mod}. */
     public static final Type MOD_ANNOTATION_TYPE = Type.getType(Mod.class);
 
+    /** Dotted name of the only built-in container type. */
+    private static final String MOD_ANNOTATION_NAME = Mod.class.getName();
+
     /** Whether {@code @Mod} is the only registered container type. */
     private static boolean onlyModType;
 
@@ -62,6 +65,16 @@ public class ModContainerFactory
     {
         // With a single registered type the lookup is just an equality test, avoiding Type.hashCode()
         return onlyModType ? type.equals(MOD_ANNOTATION_TYPE) : modTypes.containsKey(type);
+    }
+
+    /**
+     * Whether a dotted annotation name is a registered container type, without allocating a {@link Type} in the
+     * common single-type case.
+     */
+    public static boolean hasType(String annotationName)
+    {
+        return onlyModType ? MOD_ANNOTATION_NAME.equals(annotationName)
+                : modTypes.containsKey(Type.getObjectType(annotationName.replace('.', '/')));
     }
 
     public void registerContainerType(Type type, Class<? extends ModContainer> container)
