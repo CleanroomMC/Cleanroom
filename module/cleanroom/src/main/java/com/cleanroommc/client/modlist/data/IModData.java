@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.data;
 
 import net.minecraft.client.Minecraft;
@@ -6,11 +16,12 @@ import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
-import javax.annotation.Nullable;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /// <h1>Experimental</h1>
 public interface IModData {
+
     Type getType();
 
     String getModId();
@@ -76,22 +87,8 @@ public interface IModData {
     @Nullable
     String getCheckText(CheckResult result);
 
-    /**
-     * @param updatable   Whether the mod is outdated and the icon is clickable.
-     * @param latestFound Latest version found in json.
-     * @param url         URL to download page.
-     */
-    record CheckResult(
-            boolean updatable,
-            boolean animated,
-            int texOffset,
-            ResourceLocation textures,
-            @Nullable String latestFound,
-            @Nullable String url
-    ) {
-    }
-
     enum Type {
+
         DEFAULT(TextFormatting.WHITE),
         LIBRARY(TextFormatting.DARK_GRAY),
         CHILD(TextFormatting.AQUA);
@@ -105,5 +102,20 @@ public interface IModData {
         public TextFormatting getStyle() {
             return this.style;
         }
+
     }
+
+    /**
+     * @param updatable   Whether the mod is outdated and the icon is clickable.
+     * @param latestFound Latest version found in json.
+     * @param url         URL to download page.
+     */
+    record CheckResult(boolean updatable,
+        boolean animated,
+        int texOffset,
+        ResourceLocation textures,
+        @Nullable String latestFound,
+        @Nullable String url
+    ) { }
+
 }

@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.TouchEvent;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLStdinc;
 import org.lwjgl.sdl.SDLTouch;
@@ -55,24 +66,31 @@ public final class Touches {
         switch (type) {
             case SDLEvents.SDL_EVENT_FINGER_DOWN -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
-                SDL.events().post(new TouchEvent.Down(finger.windowID(), finger.timestamp(),
-                        finger.touchID(), finger.fingerID(), finger.x(), finger.y(), finger.pressure()));
+                SDL.events()
+                    .post(new TouchEvent.Down(finger.windowID(), finger.timestamp(), finger.touchID(),
+                        finger.fingerID(), finger.x(), finger.y(), finger.pressure()
+                    ));
             }
             case SDLEvents.SDL_EVENT_FINGER_UP -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
-                SDL.events().post(new TouchEvent.Up(finger.windowID(), finger.timestamp(),
-                        finger.touchID(), finger.fingerID(), finger.x(), finger.y(), finger.pressure()));
+                SDL.events()
+                    .post(new TouchEvent.Up(finger.windowID(), finger.timestamp(), finger.touchID(), finger.fingerID(),
+                        finger.x(), finger.y(), finger.pressure()
+                    ));
             }
             case SDLEvents.SDL_EVENT_FINGER_MOTION -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
-                SDL.events().post(new TouchEvent.Motion(finger.windowID(), finger.timestamp(),
-                        finger.touchID(), finger.fingerID(), finger.x(), finger.y(), finger.dx(), finger.dy(),
-                        finger.pressure()));
+                SDL.events()
+                    .post(new TouchEvent.Motion(finger.windowID(), finger.timestamp(), finger.touchID(),
+                        finger.fingerID(), finger.x(), finger.y(), finger.dx(), finger.dy(), finger.pressure()
+                    ));
             }
             case SDLEvents.SDL_EVENT_FINGER_CANCELED -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
-                SDL.events().post(new TouchEvent.Canceled(finger.windowID(), finger.timestamp(),
-                        finger.touchID(), finger.fingerID(), finger.x(), finger.y(), finger.pressure()));
+                SDL.events()
+                    .post(new TouchEvent.Canceled(finger.windowID(), finger.timestamp(), finger.touchID(),
+                        finger.fingerID(), finger.x(), finger.y(), finger.pressure()
+                    ));
             }
             case SDLEvents.SDL_EVENT_PINCH_BEGIN -> {
                 SDL_PinchFingerEvent pinch = event.pinch();
@@ -85,6 +103,8 @@ public final class Touches {
             case SDLEvents.SDL_EVENT_PINCH_END -> {
                 SDL_PinchFingerEvent pinch = event.pinch();
                 SDL.events().post(new TouchEvent.PinchEnd(pinch.windowID(), pinch.timestamp(), pinch.scale()));
+            }
+            default -> {
             }
         }
     }

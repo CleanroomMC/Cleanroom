@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.internal.Surfaces;
+
 import org.lwjgl.sdl.SDLSurface;
 import org.lwjgl.sdl.SDLTray;
 import org.lwjgl.sdl.SDL_Surface;
@@ -48,6 +59,23 @@ public final class Tray implements AutoCloseable {
         }
     }
 
+    static void pump() {
+        synchronized (OPEN) {
+            if (!OPEN.isEmpty()) {
+                SDLTray.SDL_UpdateTrays();
+            }
+        }
+    }
+
+    static void reset() {
+        synchronized (OPEN) {
+            for (Tray tray : List.copyOf(OPEN)) {
+                tray.close();
+            }
+            OPEN.clear();
+        }
+    }
+
     public Tray tooltip(String tooltip) {
         ensureOpen();
         SDLTray.SDL_SetTrayTooltip(handle, tooltip == null ? "" : tooltip);
@@ -74,23 +102,6 @@ public final class Tray implements AutoCloseable {
         long menu = existing != 0L ? existing : SDLTray.SDL_CreateTrayMenu(handle);
         SDL.checkHandle(menu, "SDL_CreateTrayMenu");
         return new Menu(menu);
-    }
-
-    static void pump() {
-        synchronized (OPEN) {
-            if (!OPEN.isEmpty()) {
-                SDLTray.SDL_UpdateTrays();
-            }
-        }
-    }
-
-    static void reset() {
-        synchronized (OPEN) {
-            for (Tray tray : List.copyOf(OPEN)) {
-                tray.close();
-            }
-            OPEN.clear();
-        }
     }
 
     private void ensureOpen() {
@@ -166,8 +177,8 @@ public final class Tray implements AutoCloseable {
         private long insert(String label, int flags) {
             ensureOpen();
             long entry = label == null
-                    ? SDLTray.nSDL_InsertTrayEntryAt(handle, -1, 0L, flags)
-                    : SDLTray.SDL_InsertTrayEntryAt(handle, -1, label, flags);
+                ? SDLTray.nSDL_InsertTrayEntryAt(handle, -1, 0L, flags)
+                : SDLTray.SDL_InsertTrayEntryAt(handle, -1, label, flags);
             if (label != null) {
                 SDL.checkHandle(entry, "SDL_InsertTrayEntryAt");
             }

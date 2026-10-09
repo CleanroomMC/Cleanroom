@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import org.lwjgl.sdl.SDLFileSystem;
@@ -17,6 +27,12 @@ public enum Folder {
     TEMPLATES(SDLFileSystem.SDL_FOLDER_TEMPLATES),
     VIDEOS(SDLFileSystem.SDL_FOLDER_VIDEOS);
 
+    private final int value;
+
+    Folder(int value) {
+        this.value = value;
+    }
+
     public static Folder of(int value) {
         return switch (value) {
             case SDLFileSystem.SDL_FOLDER_HOME -> HOME;
@@ -32,12 +48,6 @@ public enum Folder {
             case SDLFileSystem.SDL_FOLDER_VIDEOS -> VIDEOS;
             default -> null;
         };
-    }
-
-    private final int value;
-
-    Folder(int value) {
-        this.value = value;
     }
 
     public int value() {

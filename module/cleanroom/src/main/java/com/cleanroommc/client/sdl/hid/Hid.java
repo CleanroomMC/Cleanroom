@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.hid;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.SDLException;
+
 import org.lwjgl.sdl.SDLHIDAPI;
 import org.lwjgl.sdl.SDL_hid_device_info;
 
@@ -17,11 +28,55 @@ public final class Hid {
 
     static final Hid INSTANCE = new Hid();
 
-    private Hid() { }
-
     private static final Set<HidDevice> OPEN = new HashSet<>();
+
     private static boolean started;
 
+    private Hid() { }
+
+    static synchronized void closeAll() {
+        for (HidDevice device : Set.copyOf(OPEN)) {
+            device.close();
+        }
+        OPEN.clear();
+        if (started) {
+            SDLHIDAPI.SDL_hid_exit();
+            started = false;
+        }
+    }
+
+    static synchronized void forget(HidDevice device) {
+        OPEN.remove(device);
+    }
+
+    static HidInfo fromNative(SDL_hid_device_info info) {
+        return new HidInfo(empty(info.pathString()), Short.toUnsignedInt(info.vendor_id()),
+            Short.toUnsignedInt(info.product_id()), empty(info.serial_numberString()),
+            empty(info.manufacturer_stringString()), empty(info.product_stringString()),
+            Short.toUnsignedInt(info.usage_page()), Short.toUnsignedInt(info.usage()), HidBus.of(info.bus_type())
+        );
+    }
+
+    private static synchronized void ensure() {
+        if (started) {
+            return;
+        }
+        if (SDLHIDAPI.SDL_hid_init() < 0) {
+            throw new SDLException("SDL_hid_init failed");
+        }
+        started = true;
+    }
+
+    private static synchronized HidDevice track(long handle, String call) {
+        SDL.checkHandle(handle, call);
+        HidDevice device = new HidDevice(handle);
+        OPEN.add(device);
+        return device;
+    }
+
+    private static String empty(String value) {
+        return value == null ? "" : value;
+    }
 
     public List<HidInfo> enumerate() {
         return enumerate(0, 0);
@@ -66,56 +121,6 @@ public final class Hid {
     public int changeCount() {
         ensure();
         return SDLHIDAPI.SDL_hid_device_change_count();
-    }
-
-    static synchronized void closeAll() {
-        for (HidDevice device : Set.copyOf(OPEN)) {
-            device.close();
-        }
-        OPEN.clear();
-        if (started) {
-            SDLHIDAPI.SDL_hid_exit();
-            started = false;
-        }
-    }
-
-    static synchronized void forget(HidDevice device) {
-        OPEN.remove(device);
-    }
-
-    static HidInfo fromNative(SDL_hid_device_info info) {
-        return new HidInfo(
-                empty(info.pathString()),
-                Short.toUnsignedInt(info.vendor_id()),
-                Short.toUnsignedInt(info.product_id()),
-                empty(info.serial_numberString()),
-                empty(info.manufacturer_stringString()),
-                empty(info.product_stringString()),
-                Short.toUnsignedInt(info.usage_page()),
-                Short.toUnsignedInt(info.usage()),
-                HidBus.of(info.bus_type())
-        );
-    }
-
-    private static synchronized void ensure() {
-        if (started) {
-            return;
-        }
-        if (SDLHIDAPI.SDL_hid_init() < 0) {
-            throw new SDLException("SDL_hid_init failed");
-        }
-        started = true;
-    }
-
-    private static synchronized HidDevice track(long handle, String call) {
-        SDL.checkHandle(handle, call);
-        HidDevice device = new HidDevice(handle);
-        OPEN.add(device);
-        return device;
-    }
-
-    private static String empty(String value) {
-        return value == null ? "" : value;
     }
 
 }

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.audio.AudioDevices;
@@ -19,6 +29,10 @@ import com.cleanroommc.client.sdl.input.virtual.Text;
 import com.cleanroommc.client.sdl.video.Displays;
 import com.cleanroommc.client.sdl.video.VideoInternal;
 import com.cleanroommc.common.CleanroomVersion;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLHints;
@@ -26,11 +40,8 @@ import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLLog;
 import org.lwjgl.sdl.SDL_LogOutputFunction;
 import org.lwjgl.system.MemoryUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 /**
  * The way into SDL. Every device, subsystem and lifecycle call is exposed through here.
@@ -44,6 +55,8 @@ public final class SDL {
 
     private static int initializedBits;
     private static SDL_LogOutputFunction logOutput;
+
+    private SDL() { }
 
     public static EventBus events() {
         return EVENT_BUS;
@@ -174,9 +187,11 @@ public final class SDL {
         if ((missing & SDLInit.SDL_INIT_VIDEO) != 0) {
             Text.implementIME(true, true);
             check(SDLInit.SDL_SetAppMetadata("Cleanroom", CleanroomVersion.VERSION, "com.cleanroommc.cleanroom"),
-                    "SDL_SetAppMetadata");
+                "SDL_SetAppMetadata"
+            );
             check(SDLInit.SDL_SetAppMetadataProperty(SDLInit.SDL_PROP_APP_METADATA_TYPE_STRING, "game"),
-                    "SDL_SetAppMetadataProperty");
+                "SDL_SetAppMetadataProperty"
+            );
         }
     }
 
@@ -253,7 +268,5 @@ public final class SDL {
         }
         return handle;
     }
-
-    private SDL() { }
 
 }

@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.common;
 
 import com.google.common.eventbus.EventBus;
+
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
@@ -12,6 +23,7 @@ import java.net.URL;
 import java.util.Arrays;
 
 public class CleanroomContainer extends DummyModContainer {
+
     public CleanroomContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
@@ -36,12 +48,14 @@ public class CleanroomContainer extends DummyModContainer {
     public boolean registerBus(EventBus bus, LoadController controller) {
         return true;
     }
-    
+
     @Override
     public URL getUpdateUrl() {
-        try{
+        try {
             return new URI("https://download.cleanroommc.com/api/forge").toURL();
-        } catch (MalformedURLException | URISyntaxException ignored){}
+        } catch (MalformedURLException | URISyntaxException ignored) {
+        }
         return null;
     }
+
 }

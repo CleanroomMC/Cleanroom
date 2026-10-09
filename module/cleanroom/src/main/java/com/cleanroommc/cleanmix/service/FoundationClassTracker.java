@@ -1,10 +1,22 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanmix.service;
 
-import net.minecraft.launchwrapper.Launch;
-import org.spongepowered.asm.service.IClassTracker;
 import top.outlands.foundation.boot.ActualClassLoader;
 import top.outlands.foundation.trie.PrefixTrie;
 import top.outlands.foundation.trie.TrieNode;
+
+import org.spongepowered.asm.service.IClassTracker;
+
+import net.minecraft.launchwrapper.Launch;
 
 final class FoundationClassTracker implements IClassTracker {
 
@@ -12,6 +24,19 @@ final class FoundationClassTracker implements IClassTracker {
 
     FoundationClassTracker() {
         this.classLoader = Launch.classLoader;
+    }
+
+    private static boolean isExcluded(PrefixTrie<Boolean> trie, String name, String transformedName) {
+        return isExcluded(trie, name) || (transformedName != null && isExcluded(trie, transformedName));
+    }
+
+    /**
+     * An exclusion can be revoked by re-putting it as {@code false} (see
+     * {@link ActualClassLoader#removeTransformerExclusion}), so the node's value decides, not its presence.
+     */
+    private static boolean isExcluded(PrefixTrie<Boolean> trie, String name) {
+        TrieNode<Boolean> node = trie.getFirstKeyValueNode(name);
+        return node != null && Boolean.TRUE.equals(node.getValue());
     }
 
     @Override
@@ -38,21 +63,8 @@ final class FoundationClassTracker implements IClassTracker {
 
     /** Whether the name or transformedName is excluded from the classloader or from the transformer chain. */
     boolean isClassExcluded(String name, String transformedName) {
-        return isExcluded(ActualClassLoader.classLoaderExceptions, name, transformedName)
-                || isExcluded(ActualClassLoader.transformerExceptions, name, transformedName);
-    }
-
-    private static boolean isExcluded(PrefixTrie<Boolean> trie, String name, String transformedName) {
-        return isExcluded(trie, name) || (transformedName != null && isExcluded(trie, transformedName));
-    }
-
-    /**
-     * An exclusion can be revoked by re-putting it as {@code false} (see
-     * {@link ActualClassLoader#removeTransformerExclusion}), so the node's value decides, not its presence.
-     */
-    private static boolean isExcluded(PrefixTrie<Boolean> trie, String name) {
-        TrieNode<Boolean> node = trie.getFirstKeyValueNode(name);
-        return node != null && Boolean.TRUE.equals(node.getValue());
+        return isExcluded(ActualClassLoader.classLoaderExceptions, name, transformedName) ||
+            isExcluded(ActualClassLoader.transformerExceptions, name, transformedName);
     }
 
 }

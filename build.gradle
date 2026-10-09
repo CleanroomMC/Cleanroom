@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.cleanroommc.cleanroomgradle'
-    id 'com.cleanroommc.conventions' version '1.1.9'
+    id 'com.cleanroommc.conventions' version '1.4.0'
 }
 
 base.archivesName = 'cleanroom'
@@ -36,7 +36,8 @@ def modules = [
         'cleanroom',
         'kirino',
         'builtin/mixinbooter',
-        'builtin/configanytime'
+        'builtin/configanytime',
+        'builtin/mica'
 ]
 
 sourceSets {
@@ -64,12 +65,29 @@ def unformatted = [
         'com/cleanroommc/test/kirino/**'
 ]
 
+// The builtin modules keep their own licensing and public API
+def builtin = [
+        'zone/rong/mixinbooter/**',
+        'com/cleanroommc/configanytime/**',
+        'com/cleanroommc/client/windows/**'
+]
+
 clearSkies {
-    exclude(*unformatted)
+    exclude(*unformatted, *builtin)
 }
 
 formatJ {
-    exclude(*unformatted)
+    exclude(*unformatted, *builtin)
+}
+
+tasks.withType(Checkstyle).configureEach {
+    exclude(*unformatted, *builtin)
+}
+
+conventions {
+    header {
+        exclude(*unformatted, *builtin)
+    }
 }
 
 var open_arguments = [

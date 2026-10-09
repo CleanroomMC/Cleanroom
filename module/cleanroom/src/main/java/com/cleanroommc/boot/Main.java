@@ -1,4 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.boot;
+
+import joptsimple.NonOptionArgumentSpec;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,11 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import joptsimple.NonOptionArgumentSpec;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 
 public class Main {
+
     static Logger LOGGER = setupLogger();
 
     private static Logger setupLogger() {
@@ -27,10 +39,17 @@ public class Main {
         return Logger.getLogger("LegacyDev");
     }
 
-    protected void start(String[] args) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    protected void start(String[] args)
+        throws ClassNotFoundException,
+        NoSuchMethodException,
+        SecurityException,
+        IllegalAccessException,
+        IllegalArgumentException,
+        InvocationTargetException {
         String mainClass = getenv("mainClass");
-        if (mainClass == null)
+        if (mainClass == null) {
             throw new IllegalArgumentException("Must specify mainClass environment variable");
+        }
         LOGGER.info("Main Class: " + mainClass);
 
         String srg2mcp = getenv("MCP_TO_SRG");
@@ -51,8 +70,9 @@ public class Main {
                 x++;
             }
 
-            if (x < size - 1)
+            if (x < size - 1) {
                 b.append(", ");
+            }
         }
         b.append(']');
         LOGGER.info("Running with arguments: " + b);
@@ -71,8 +91,9 @@ public class Main {
         final OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
 
-        for (String key : defaults.keySet())
+        for (String key : defaults.keySet()) {
             parser.accepts(key).withRequiredArg().ofType(String.class);
+        }
 
         final NonOptionArgumentSpec<String> nonOption = parser.nonOptions();
 
@@ -81,8 +102,9 @@ public class Main {
             if (options.hasArgument(key)) {
                 String value = (String) options.valueOf(key);
                 defaults.put(key, value);
-                if (!"password".equalsIgnoreCase(key) && !"accessToken".equalsIgnoreCase(key))
+                if (!"password".equalsIgnoreCase(key) && !"accessToken".equalsIgnoreCase(key)) {
                     LOGGER.info(key + ": " + value);
+                }
             }
         }
 

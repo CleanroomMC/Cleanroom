@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.data;
 
 import com.cleanroommc.client.modlist.ModListConfig;
 import com.cleanroommc.client.modlist.ModListConstants;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -17,7 +28,6 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -25,9 +35,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public class CleanroomModData implements IModData {
-    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation("forge", "textures/gui/version_check_icons.png");
+
+    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation("forge",
+        "textures/gui/version_check_icons.png"
+    );
     private static final List<String> LIB_MODS = Arrays.asList(ModListConfig.libraryList);
     private static final List<String> IGNORED_DEPENDENCIES = Arrays.asList(ModListConfig.ignoredDependenciesList);
 
@@ -45,6 +59,26 @@ public class CleanroomModData implements IModData {
         this.dependencies = analyzeDependencies(info);
         this.childMods = analyzeChildMods(info);
         this.modId = this.info.getModId();
+    }
+
+    private static Set<String> analyzeDependencies(ModContainer source) {
+        return source.getDependencies()
+            .stream()
+            .map(ArtifactVersion::getLabel)
+            .filter(modId -> !IGNORED_DEPENDENCIES.contains(modId))
+            .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private static Set<String> analyzeChildMods(ModContainer source) {
+        ModMetadata metadata = source.getMetadata();
+        if (metadata == null) {
+            return Collections.emptySet();
+        }
+        return metadata.childMods
+            .stream()
+            .filter(Objects::nonNull)
+            .map(ModContainer::getModId)
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
@@ -164,7 +198,9 @@ public class CleanroomModData implements IModData {
     public void openConfigScreen(Minecraft minecraft, GuiScreen parent) {
         try {
             IModGuiFactory factory = FMLClientHandler.instance().getGuiFactoryFor(this.info);
-            if (factory == null) return;
+            if (factory == null) {
+                return;
+            }
             minecraft.displayGuiScreen(factory.createConfigGui(parent));
         } catch (Exception e) {
             ModListConstants.LOG.error("Failed to build config GUI for mod '{}'", this.getModId(), e);
@@ -176,13 +212,10 @@ public class CleanroomModData implements IModData {
     public CheckResult getCheckResult() {
         ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.info);
         if (result != null && result.status.shouldDraw()) {
-            return new CheckResult(
-                    result.status == ForgeVersion.Status.OUTDATED || result.status == ForgeVersion.Status.BETA_OUTDATED,
-                    result.status.isAnimated(),
-                    result.status.getSheetOffset(),
-                    VERSION_CHECK_ICONS,
-                    result.latestFound,
-                    result.homepage
+            return new CheckResult(result.status == ForgeVersion.Status.OUTDATED ||
+                    result.status == ForgeVersion.Status.BETA_OUTDATED,
+                result.status.isAnimated(), result.status.getSheetOffset(), VERSION_CHECK_ICONS, result.latestFound,
+                result.homepage
             );
         }
         return null;
@@ -192,10 +225,13 @@ public class CleanroomModData implements IModData {
     public void drawCheckIcon(Minecraft minecraft, CheckResult result, int x, int y) {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        int vOffset = result.animated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ZERO
+        );
+        int offsetV = result.animated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
         minecraft.getTextureManager().bindTexture(result.textures());
-        Gui.drawModalRectWithCustomSizedTexture(x, y, result.texOffset() * 8, vOffset, 8, 8, 64, 16);
+        Gui.drawModalRectWithCustomSizedTexture(x, y, result.texOffset() * 8, offsetV, 8, 8, 64, 16);
         GlStateManager.disableBlend();
     }
 
@@ -203,18 +239,24 @@ public class CleanroomModData implements IModData {
     @Override
     public String getCheckText(CheckResult update) {
         ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.info);
-        if (result == null) return null;
+        if (result == null) {
+            return null;
+        }
 
         boolean hasPage = update.url() != null && !update.url().isBlank();
         return switch (result.status) {
             case BETA -> TextFormatting.GOLD + I18n.format("cleanroom.gui.beta");
             case AHEAD -> TextFormatting.LIGHT_PURPLE + I18n.format("cleanroom.gui.ahead", update.latestFound());
-            case BETA_OUTDATED -> TextFormatting.GOLD + (hasPage ?
-                    I18n.format("cleanroom.gui.beta_update_available", update.latestFound(), update.url()) :
-                    I18n.format("cleanroom.gui.beta_update_available_no_page", update.latestFound()));
-            case OUTDATED -> TextFormatting.GREEN + (hasPage ?
-                    I18n.format("cleanroom.gui.update_available", update.latestFound(), update.url()) :
-                    I18n.format("cleanroom.gui.update_available_no_page", update.latestFound()));
+            case BETA_OUTDATED ->
+                TextFormatting.GOLD +
+                    (hasPage
+                        ? I18n.format("cleanroom.gui.beta_update_available", update.latestFound(), update.url())
+                        : I18n.format("cleanroom.gui.beta_update_available_no_page", update.latestFound()));
+            case OUTDATED ->
+                TextFormatting.GREEN +
+                    (hasPage
+                        ? I18n.format("cleanroom.gui.update_available", update.latestFound(), update.url())
+                        : I18n.format("cleanroom.gui.update_available_no_page", update.latestFound()));
             default -> null;
         };
     }
@@ -247,19 +289,4 @@ public class CleanroomModData implements IModData {
         }
     }
 
-    private static Set<String> analyzeDependencies(ModContainer source) {
-        return source.getDependencies().stream()
-                .map(ArtifactVersion::getLabel)
-                .filter(modId -> !IGNORED_DEPENDENCIES.contains(modId))
-                .collect(Collectors.toUnmodifiableSet());
-    }
-
-    private static Set<String> analyzeChildMods(ModContainer source) {
-        ModMetadata metadata = source.getMetadata();
-        if (metadata == null) return Collections.emptySet();
-        return metadata.childMods.stream()
-                .filter(Objects::nonNull)
-                .map(ModContainer::getModId)
-                .collect(Collectors.toUnmodifiableSet());
-    }
 }

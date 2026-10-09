@@ -1,18 +1,22 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanmix.service;
 
 import com.cleanroommc.cleanmix.CleanMixModContainer;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
-import com.google.common.base.Strings;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import net.minecraftforge.fml.common.launcher.FMLTweaker;
-import net.minecraftforge.fml.relauncher.CoreModManager;
+
 import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
 import org.spongepowered.asm.launch.platform.container.IContainerHandle;
 import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.obfuscation.mapping.remap.CleanroomRemapper;
 import org.spongepowered.asm.service.IClassBytecodeProvider;
 import org.spongepowered.asm.service.IClassProvider;
@@ -20,6 +24,11 @@ import org.spongepowered.asm.service.IClassTracker;
 import org.spongepowered.asm.service.ITransformerProvider;
 import org.spongepowered.asm.service.mojang.AbstractMixinServiceLaunchWrapper;
 import org.spongepowered.asm.service.mojang.MixinAuditFile;
+
+import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import net.minecraftforge.fml.common.launcher.FMLTweaker;
+import net.minecraftforge.fml.relauncher.CoreModManager;
 
 import java.io.File;
 import java.net.URI;
@@ -31,7 +40,9 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
     private final FoundationClassProvider classProvider = new FoundationClassProvider();
     private final FoundationTransformerProvider transformerProvider = new FoundationTransformerProvider();
     private final FoundationClassTracker classTracker = new FoundationClassTracker();
-    private final FoundationBytecodeProvider bytecodeProvider = new FoundationBytecodeProvider(this.transformerProvider, this.lock, this.classTracker);
+    private final FoundationBytecodeProvider bytecodeProvider = new FoundationBytecodeProvider(this.transformerProvider,
+        this.lock, this.classTracker
+    );
 
     private boolean initialized;
 
@@ -62,7 +73,9 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
         this.initialized = true;
         super.init();
         if (!isDevelopment()) {
-            MixinEnvironment.getDefaultEnvironment().getRemappers().add(new CleanroomRemapper<>(FMLDeobfuscatingRemapper.INSTANCE));
+            MixinEnvironment.getDefaultEnvironment()
+                .getRemappers()
+                .add(new CleanroomRemapper<>(FMLDeobfuscatingRemapper.INSTANCE));
         }
     }
 
@@ -73,7 +86,7 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
 
     /**
      * @see CoreModManager#handleLaunch(File, LaunchClassLoader, FMLTweaker)
-     * @see CleanroomModDiscoverer#discoverMixinMods() 
+     * @see CleanroomModDiscoverer#discoverMixinMods()
      */
     @Override
     public Collection<IContainerHandle> getMixinContainers() {
@@ -93,7 +106,8 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
                 if (modId != null) {
                     return modId;
                 }
-            } catch (IllegalArgumentException ignored) { }
+            } catch (IllegalArgumentException ignored) {
+            }
         }
         return null;
     }

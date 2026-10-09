@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.lwjgly.LWJGLY;
 import com.cleanroommc.lwjgly.spi.WindowBridge;
+
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.sdl.SDLVideo;
@@ -11,6 +22,14 @@ import java.nio.IntBuffer;
 
 /** Connects LWJGLY's LWJGL 2 compatibility APIs to Cleanroom's SDL window. */
 public final class CleanroomWindowBridge implements WindowBridge {
+
+    private final Window window;
+    private final GLCapabilities capabilities;
+
+    private CleanroomWindowBridge(Window window) {
+        this.window = window;
+        this.capabilities = GL.getCapabilities();
+    }
 
     /** Installs the bridge before any call to Display, Keyboard or Mouse. */
     public static void install(Window window) {
@@ -33,16 +52,14 @@ public final class CleanroomWindowBridge implements WindowBridge {
         if (format.floatingPointPacked()) {
             return "SDL cannot guarantee a packed floating point color buffer";
         }
-        String rejection = firstOf(
-                atLeast("alpha bits", format.alphaBits(), SDLVideo.SDL_GL_ALPHA_SIZE),
-                atLeast("depth bits", format.depthBits(), SDLVideo.SDL_GL_DEPTH_SIZE),
-                atLeast("stencil bits", format.stencilBits(), SDLVideo.SDL_GL_STENCIL_SIZE),
-                atLeast("accumulation alpha bits", format.accumulationAlphaBits(), SDLVideo.SDL_GL_ACCUM_ALPHA_SIZE),
-                accumulationBits(format.accumulationBitsPerPixel()),
-                multisampling(format.samples()),
-                present(format.stereo(), "stereoscopic buffers", SDLVideo.SDL_GL_STEREO),
-                present(format.floatingPoint(), "a floating point color buffer", SDLVideo.SDL_GL_FLOATBUFFERS),
-                present(format.sRGB(), "an sRGB capable framebuffer", SDLVideo.SDL_GL_FRAMEBUFFER_SRGB_CAPABLE)
+        String rejection = firstOf(atLeast("alpha bits", format.alphaBits(), SDLVideo.SDL_GL_ALPHA_SIZE),
+            atLeast("depth bits", format.depthBits(), SDLVideo.SDL_GL_DEPTH_SIZE),
+            atLeast("stencil bits", format.stencilBits(), SDLVideo.SDL_GL_STENCIL_SIZE),
+            atLeast("accumulation alpha bits", format.accumulationAlphaBits(), SDLVideo.SDL_GL_ACCUM_ALPHA_SIZE),
+            accumulationBits(format.accumulationBitsPerPixel()), multisampling(format.samples()),
+            present(format.stereo(), "stereoscopic buffers", SDLVideo.SDL_GL_STEREO),
+            present(format.floatingPoint(), "a floating point color buffer", SDLVideo.SDL_GL_FLOATBUFFERS),
+            present(format.sRGB(), "an sRGB capable framebuffer", SDLVideo.SDL_GL_FRAMEBUFFER_SRGB_CAPABLE)
         );
         if (rejection != null) {
             return rejection;
@@ -54,12 +71,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
         if (attributes.layerPlane() != 0) {
             return "SDL does not support OpenGL layer planes";
         }
-        return firstOf(
-                version(attributes.majorVersion(), attributes.minorVersion()),
-                profile(attributes.profile()),
-                flags(attributes),
-                resetNotification(attributes.resetNotification()),
-                releaseBehavior(attributes.releaseBehavior())
+        return firstOf(version(attributes.majorVersion(), attributes.minorVersion()), profile(attributes.profile()),
+            flags(attributes), resetNotification(attributes.resetNotification()),
+            releaseBehavior(attributes.releaseBehavior())
         );
     }
 
@@ -68,15 +82,20 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return null;
         }
         int actual = glAttribute(attribute);
-        return actual >= required ? null : "the context has " + actual + " " + name + ", but " + required + " were requested";
+        return actual >= required
+            ? null
+            : "the context has " + actual + " " + name + ", but " + required + " were requested";
     }
 
     private static String accumulationBits(int required) {
         if (required <= 0) {
             return null;
         }
-        int actual = glAttribute(SDLVideo.SDL_GL_ACCUM_RED_SIZE) + glAttribute(SDLVideo.SDL_GL_ACCUM_GREEN_SIZE) + glAttribute(SDLVideo.SDL_GL_ACCUM_BLUE_SIZE);
-        return actual >= required ? null : "the context has " + actual + " RGB accumulation bits, but " + required + " were requested";
+        int actual = glAttribute(SDLVideo.SDL_GL_ACCUM_RED_SIZE) + glAttribute(SDLVideo.SDL_GL_ACCUM_GREEN_SIZE) +
+            glAttribute(SDLVideo.SDL_GL_ACCUM_BLUE_SIZE);
+        return actual >= required
+            ? null
+            : "the context has " + actual + " RGB accumulation bits, but " + required + " were requested";
     }
 
     private static String multisampling(int required) {
@@ -87,7 +106,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return "the context has no multisample buffer";
         }
         int actual = glAttribute(SDLVideo.SDL_GL_MULTISAMPLESAMPLES);
-        return actual >= required ? null : "the context has " + actual + " samples, but " + required + " were requested";
+        return actual >= required
+            ? null
+            : "the context has " + actual + " samples, but " + required + " were requested";
     }
 
     private static String present(boolean required, String name, int attribute) {
@@ -98,7 +119,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
         int actualMajor = glAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION);
         int actualMinor = glAttribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION);
         return actualMajor > major || actualMajor == major && actualMinor >= minor
-                ? null : "the context is OpenGL " + actualMajor + '.' + actualMinor + ", but at least " + major + '.' + minor + " was requested";
+            ? null
+            : "the context is OpenGL " + actualMajor + '.' + actualMinor + ", but at least " + major + '.' + minor +
+                " was requested";
     }
 
     private static String profile(ContextProfile required) {
@@ -111,14 +134,16 @@ public final class CleanroomWindowBridge implements WindowBridge {
             case ES -> SDLVideo.SDL_GL_CONTEXT_PROFILE_ES;
             case DEFAULT -> 0;
         };
-        return glAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK) == wanted ? null : "the context does not use the requested " + required + " profile";
+        return glAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK) == wanted
+            ? null
+            : "the context does not use the requested " + required + " profile";
     }
 
     private static String flags(ContextAttributesRequest attributes) {
-        int required = (attributes.debug() ? SDLVideo.SDL_GL_CONTEXT_DEBUG_FLAG : 0)
-                | (attributes.forwardCompatible() ? SDLVideo.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG : 0)
-                | (attributes.robustAccess() ? SDLVideo.SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG : 0)
-                | (attributes.resetIsolation() ? SDLVideo.SDL_GL_CONTEXT_RESET_ISOLATION_FLAG : 0);
+        int required = (attributes.debug() ? SDLVideo.SDL_GL_CONTEXT_DEBUG_FLAG : 0) |
+            (attributes.forwardCompatible() ? SDLVideo.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG : 0) |
+            (attributes.robustAccess() ? SDLVideo.SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG : 0) |
+            (attributes.resetIsolation() ? SDLVideo.SDL_GL_CONTEXT_RESET_ISOLATION_FLAG : 0);
         int missing = required & ~glAttribute(SDLVideo.SDL_GL_CONTEXT_FLAGS);
         return missing == 0 ? null : "the context is missing requested flags 0x" + Integer.toHexString(missing);
     }
@@ -128,7 +153,8 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return null;
         }
         return glAttribute(SDLVideo.SDL_GL_CONTEXT_RESET_NOTIFICATION) == SDLVideo.SDL_GL_CONTEXT_RESET_LOSE_CONTEXT
-                ? null : "the context does not use lose-on-reset behavior";
+            ? null
+            : "the context does not use lose-on-reset behavior";
     }
 
     private static String releaseBehavior(ReleaseBehavior required) {
@@ -136,7 +162,8 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return null;
         }
         return glAttribute(SDLVideo.SDL_GL_CONTEXT_RELEASE_BEHAVIOR) == SDLVideo.SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE
-                ? null : "the context flushes when released";
+            ? null
+            : "the context flushes when released";
     }
 
     private static int glAttribute(int attribute) {
@@ -154,14 +181,6 @@ public final class CleanroomWindowBridge implements WindowBridge {
             }
         }
         return null;
-    }
-
-    private final Window window;
-    private final GLCapabilities capabilities;
-
-    private CleanroomWindowBridge(Window window) {
-        this.window = window;
-        this.capabilities = GL.getCapabilities();
     }
 
     @Override

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.util.patch;
 
 import java.io.ByteArrayInputStream;
@@ -10,6 +20,8 @@ final class BinDelta {
 
     private static final int COPY = 0;
     private static final int INSERT = 1;
+
+    private BinDelta() { }
 
     static byte[] decode(byte[] original, byte[] delta) {
         ByteArrayInputStream input = new ByteArrayInputStream(delta);
@@ -60,7 +72,5 @@ final class BinDelta {
     private static IllegalArgumentException corrupt(String detail) {
         return new IllegalArgumentException("Corrupt delta: " + detail);
     }
-
-    private BinDelta() { }
 
 }

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import org.lwjgl.PointerBuffer;
@@ -20,6 +30,10 @@ public final class FileSystem {
     static final FileSystem INSTANCE = new FileSystem();
 
     private FileSystem() { }
+
+    private static Path pathOrNull(String value) {
+        return value == null || value.isEmpty() ? null : Path.of(value);
+    }
 
     public Path base() {
         return pathOrNull(SDLFileSystem.SDL_GetBasePath());
@@ -59,12 +73,8 @@ public final class FileSystem {
             if (!SDLFileSystem.SDL_GetPathInfo(path, nativeInfo)) {
                 return Optional.empty();
             }
-            return Optional.of(new PathInfo(
-                    PathKind.of(nativeInfo.type()),
-                    nativeInfo.size(),
-                    nativeInfo.create_time(),
-                    nativeInfo.modify_time(),
-                    nativeInfo.access_time()
+            return Optional.of(new PathInfo(PathKind.of(nativeInfo.type()), nativeInfo.size(), nativeInfo.create_time(),
+                nativeInfo.modify_time(), nativeInfo.access_time()
             ));
         }
     }
@@ -97,10 +107,5 @@ public final class FileSystem {
             SDLStdinc.SDL_free(matches.rewind());
         }
     }
-
-    private static Path pathOrNull(String value) {
-        return value == null || value.isEmpty() ? null : Path.of(value);
-    }
-
 
 }
