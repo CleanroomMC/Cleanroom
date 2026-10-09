@@ -21,6 +21,7 @@ package net.minecraftforge.fml.common.discovery.asm;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
@@ -42,10 +44,10 @@ public class ASMModParser
     private Type asmType;
     private int classVersion;
     private Type asmSuperType;
-    private LinkedList<ModAnnotation> annotations = Lists.newLinkedList();
-    private Set<String> interfaces = Sets.newHashSet();
+    private final LinkedList<ModAnnotation> annotations = Lists.newLinkedList();
+    private final Set<String> interfaces = Sets.newHashSet();
 
-    static enum AnnotationType
+    public enum AnnotationType
     {
         CLASS, FIELD, METHOD, SUBTYPE;
     }
@@ -69,8 +71,7 @@ public class ASMModParser
         this.asmType = Type.getObjectType(typeQName);
         this.classVersion = classVersion;
         this.asmSuperType = !Strings.isNullOrEmpty(superClassQName) ? Type.getObjectType(superClassQName) : null;
-        for (String intf : interfaces)
-            this.interfaces.add(intf);
+        this.interfaces.addAll(Arrays.asList(interfaces));
     }
 
     public void startClassAnnotation(String annotationName)
@@ -173,5 +174,26 @@ public class ASMModParser
     {
         ModAnnotation ann = new ModAnnotation(AnnotationType.METHOD, Type.getType(annotationName), methodName+methodDescriptor);
         annotations.addFirst(ann);
+    }
+
+    /**
+     * Immutable summary of this parse.
+     */
+    public ClassScanRecord toRecord()
+    {
+        ClassScanRecord.Annotation[] collected = new ClassScanRecord.Annotation[annotations.size()];
+        int index = 0;
+        for (ModAnnotation annotation : annotations)
+        {
+            collected[index++] = new ClassScanRecord.Annotation(
+                    annotation.getASMType().getClassName(),
+                    annotation.getMember(),
+                    annotation.getValues());
+        }
+        return new ClassScanRecord(
+                asmType.getInternalName(),
+                classVersion,
+                interfaces.toArray(new String[0]),
+                collected);
     }
 }

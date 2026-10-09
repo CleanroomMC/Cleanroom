@@ -19,14 +19,17 @@
 
 package net.minecraftforge.fml.common.discovery;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.MetadataCollection;
@@ -34,9 +37,12 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModContainerFactory;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
+import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.JarFingerprint;
+import net.minecraftforge.fml.common.discovery.cache.JarScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.RecordFile;
 import net.minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
 
-import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 
 import org.objectweb.asm.Type;
@@ -55,20 +61,25 @@ public class JarDiscoverer implements ITypeDiscoverer
         FMLLog.log.debug("Examining file {} for potential mods", candidate.getModContainer().getName());
         try (JarFile jar = new JarFile(candidate.getModContainer()))
         {
-            ZipEntry modInfo = jar.getEntry("mcmod.info");
-            MetadataCollection mc = null;
-            if (modInfo != null)
+            // Parsed by the discovery phase already; only jars it did not look at (no mod id in the manifest) need
+            // this entry to be read here.
+            MetadataCollection mc = candidate.getMetadata();
+            if (mc == null)
             {
-                FMLLog.log.trace("Located mcmod.info file in file {}", candidate.getModContainer().getName());
-                try (InputStream inputStream = jar.getInputStream(modInfo))
+                ZipEntry modInfo = jar.getEntry("mcmod.info");
+                if (modInfo != null)
                 {
-                    mc = MetadataCollection.from(inputStream, candidate.getModContainer().getName());
+                    FMLLog.log.trace("Located mcmod.info file in file {}", candidate.getModContainer().getName());
+                    try (InputStream inputStream = jar.getInputStream(modInfo))
+                    {
+                        mc = MetadataCollection.from(inputStream, candidate.getModContainer().getName());
+                    }
                 }
-            }
-            else
-            {
-                FMLLog.log.debug("The mod container {} appears to be missing an mcmod.info file", candidate.getModContainer().getName());
-                mc = MetadataCollection.from(null, "");
+                else
+                {
+                    FMLLog.log.debug("The mod container {} appears to be missing an mcmod.info file", candidate.getModContainer().getName());
+                    mc = MetadataCollection.from(null, "");
+                }
             }
 
             if (ENABLE_JSON_TEST && jar.getEntry(JsonAnnotationLoader.ANNOTATION_JSON) != null)
@@ -85,42 +96,125 @@ public class JarDiscoverer implements ITypeDiscoverer
 
     private void findClassesASM(ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc) throws IOException
     {
-        for (ZipEntry ze : Collections.list(jar.entries()))
+        File cacheFile = RecordFile.fileFor(Launch.minecraftHome, candidate.getModContainer());
+        JarScanRecord scan = candidate.getScanRecord();
+        if (scan != null)
         {
-            if (ze.getName()!=null && ze.getName().startsWith("__MACOSX"))
+            replayScan(scan, candidate, table, jar, foundMods, mc);
+            if (!scan.fromDisk())
+            {
+                RecordFile.write(cacheFile, scan);
+            }
+            candidate.setScanRecord(null);
+            return;
+        }
+
+        List<JarEntry> entries = Collections.list(jar.entries());
+        List<JarEntry> scanned = Lists.newArrayListWithCapacity(entries.size());
+        for (JarEntry entry : entries)
+        {
+            if (ITypeDiscoverer.shouldScan(entry.getName()))
+            {
+                scanned.add(entry);
+            }
+        }
+        // Reading and parsing the class bytes runs on several threads. The loop below must stay in central-directory
+        // order: that order is what a cached replay reproduces.
+        List<ParallelJarParse.Parsed> parsed = ParallelJarParse.parse(scanned, jar);
+        boolean cacheable = cacheFile != null;
+        List<Integer> indices = Lists.newArrayList();
+        List<ClassScanRecord> records = Lists.newArrayList();
+
+        for (int ordinal = 0; ordinal < scanned.size(); ordinal++)
+        {
+            JarEntry entry = scanned.get(ordinal);
+            String entryName = entry.getName();
+            ParallelJarParse.Parsed result = parsed.get(ordinal);
+            if (result.failure() != null)
+            {
+                Exception failure = result.failure();
+                if (failure instanceof LoaderException)
+                {
+                    FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", entryName, candidate.getModContainer().getPath(), failure);
+                    jar.close();
+                    throw (LoaderException) failure;
+                }
+                if (failure instanceof IOException)
+                {
+                    throw (IOException) failure;
+                }
+                throw new LoaderException(failure);
+            }
+            ASMModParser modParser = result.parser();
+            candidate.addClassEntry(entryName);
+            modParser.validate();
+            modParser.sendToTable(table, candidate);
+            if (cacheable)
+            {
+                ClassScanRecord record = modParser.toRecord();
+                if (JarScanRecord.hasContent(record))
+                {
+                    indices.add(ordinal);
+                    records.add(record);
+                }
+            }
+            ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
+            addContainer(container, table, foundMods, mc, modParser.getClassVersion());
+        }
+
+        if (cacheable)
+        {
+            // Fresh scan for this jar; the fingerprint covers the entries it was taken from.
+            scan = JarScanRecord.of(JarFingerprint.compute(entries), indices, records);
+            RecordFile.write(cacheFile, scan);
+        }
+    }
+
+    /**
+     * Sends a scan back to the table without parsing: every scanned entry contributes its class entry (taken from
+     * the central directory, which the fingerprint covers), and the stored records contribute annotations,
+     * interfaces and the class version.
+     */
+    private void replayScan(JarScanRecord scan, ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc)
+    {
+        int[] indices = scan.indices();
+        ClassScanRecord[] records = scan.records();
+        int ordinal = -1;
+        int next = 0;
+        for (JarEntry entry : Collections.list(jar.entries()))
+        {
+            String entryName = entry.getName();
+            if (!ITypeDiscoverer.shouldScan(entryName))
             {
                 continue;
             }
-            Matcher match = classFile.matcher(ze.getName());
-            if (match.matches())
+            ordinal++;
+            candidate.addClassEntry(entryName);
+            if (next < indices.length && indices[next] == ordinal)
             {
-                ASMModParser modParser;
-                try
-                {
-                    try (InputStream inputStream = jar.getInputStream(ze))
-                    {
-                        modParser = new ASMModParser(inputStream);
-                    }
-                    candidate.addClassEntry(ze.getName());
-                }
-                catch (LoaderException e)
-                {
-                    FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", ze.getName(), candidate.getModContainer().getPath(), e);
-                    jar.close();
-                    throw e;
-                }
-                modParser.validate();
-                modParser.sendToTable(table, candidate);
-                ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
-                if (container!=null)
-                {
-                    table.addContainer(container);
-                    foundMods.add(container);
-                    container.bindMetadata(mc);
-                    container.setClassVersion(modParser.getClassVersion());
-                }
+                ClassScanRecord record = records[next++];
+                record.sendToTable(candidate, table);
+                ModContainer container = ModContainerFactory.instance().build(record, candidate.getModContainer(), candidate);
+                addContainer(container, table, foundMods, mc, record.classVersion());
             }
         }
+    }
+
+    /**
+     * Registers a container the factory built: it belongs in the table, in the discovered list, and needs its
+     * metadata and class version set. The factory returns {@code null} for classes that opt out or fail to
+     * construct, which is a no-op here. Both discovery paths must do exactly this much.
+     */
+    private static void addContainer(ModContainer container, ASMDataTable table, List<ModContainer> foundMods, MetadataCollection mc, int classVersion)
+    {
+        if (container == null)
+        {
+            return;
+        }
+        table.addContainer(container);
+        foundMods.add(container);
+        container.bindMetadata(mc);
+        container.setClassVersion(classVersion);
     }
 
     private void findClassesJSON(ModCandidate candidate, ASMDataTable table, JarFile jar, List<ModContainer> foundMods, MetadataCollection mc) throws IOException
@@ -129,6 +223,7 @@ public class JarDiscoverer implements ITypeDiscoverer
         ZipEntry json = jar.getEntry(JsonAnnotationLoader.ANNOTATION_JSON);
         Multimap<String, ASMData> annos = JsonAnnotationLoader.loadJson(jar.getInputStream(json), candidate, table);
 
+        // Kept separate on purpose: only the dead fml.enableJsonAnnotations path uses this predicate.
         for (ZipEntry e : Collections.list(jar.entries()))
         {
             if (!e.getName().startsWith("__MACOSX") && !e.getName().startsWith("META-INF/") && e.getName().endsWith(".class"))

@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import net.minecraftforge.fml.common.discovery.ITypeDiscoverer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +45,7 @@ public class TestAnnotationParser
 {
     // To test, put any mod jar into src/test/resources and put the jar name below
     private static String TEST_JAR = "forestry_1.12.2-5.8.0.242.jar";
-    public static Pattern classFile = Pattern.compile("[^\\s\\$]+(\\$[^\\s]+)?\\.class$");
+    public static Pattern classFile = ITypeDiscoverer.classFile;
     private static final int RUN_COUNT = 100;
     private static final Logger LOG = LogManager.getLogger("TestAnnotationParser");
 

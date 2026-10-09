@@ -29,8 +29,13 @@ import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ContainerType;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.common.discovery.ParallelJarParse;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
-import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
+import net.minecraftforge.fml.common.discovery.ITypeDiscoverer;
+import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.JarFingerprint;
+import net.minecraftforge.fml.common.discovery.cache.JarScanRecord;
+import net.minecraftforge.fml.common.discovery.cache.RecordFile;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.commons.io.IOUtils;
@@ -86,6 +91,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private final SetMultimap<String, File> modIdToFiles = HashMultimap.create();
     private final SetMultimap<File, String> fileToModIds = LinkedHashMultimap.create();
     private final Map<File, DiscoveredMod> discoveredFiles = new LinkedHashMap<>();
+    private final Map<File, JarScanRecord> scanRecords = new HashMap<>();
+    private final Map<File, MetadataCollection> modMetadata = new HashMap<>();
     private final ASMDataTable asmDataTable = new ASMDataTable();
 
     private List<File> nonModLibs = List.of();
@@ -196,6 +203,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         addClasspathCandidates(modClassLoader, modCandidates, seenCandidates);
         CleanroomLog.get().debug("Minecraft jar mods loaded successfully");
         addLibraryCandidates(modCandidates, seenCandidates);
+        scanRecords.clear();
+        modMetadata.clear();
 
         mods.addAll(exploreModCandidates(modCandidates, nonModLibs));
         this.nonModLibs = List.copyOf(nonModLibs);
@@ -299,9 +308,34 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (modIds.isEmpty()) {
                 ZipEntry entry = jarFile.getEntry("mcmod.info");
                 if (entry != null) {
-                    parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
+                    // Kept for the container discovery, which would otherwise read and parse the very same entry again
+                    MetadataCollection metadata = parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
+                    if (metadata != null) {
+                        modMetadata.put(absolute, metadata);
+                    }
                 }
-                scanModAnnotations(jarFile, modIds);
+            }
+            // Reading the cache is what makes the records worth producing; ignoring it falls back to the pre-cache
+            // parse pattern (classes are only read when the mod id is still unknown) and produces no records.
+            boolean readCache = !ForgeEarlyConfig.IGNORE_SCAN_CACHE;
+            boolean needClasses = readCache || modIds.isEmpty();
+            List<JarEntry> entries = needClasses ? Collections.list(jarFile.entries()) : List.of();
+            JarFingerprint fingerprint = readCache ? JarFingerprint.compute(entries) : null;
+            JarScanRecord scan = readCache ? RecordFile.read(RecordFile.fileFor(Launch.minecraftHome, absolute), fingerprint) : null;
+            if (scan == null && needClasses) {
+                List<ClassScanRecord> records = new ArrayList<>();
+                List<Integer> indices = new ArrayList<>();
+                if (collectRecords(entries, jarFile, records, indices) && readCache) {
+                    scan = JarScanRecord.of(fingerprint, indices, records);
+                }
+                if (modIds.isEmpty()) {
+                    collectModIds(records, modIds);
+                }
+            } else if (scan != null && modIds.isEmpty()) {
+                collectModIds(List.of(scan.records()), modIds);
+            }
+            if (scan != null) {
+                scanRecords.put(absolute, scan);
             }
             for (String modId : modIds) {
                 if (recordMod(modId, absolute)) {
@@ -506,6 +540,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private void addCandidate(List<ModCandidate> modCandidates, Set<File> seen, ModCandidate candidate) {
         if (seen.add(candidate.getModContainer())) {
+            candidate.setScanRecord(scanRecords.get(candidate.getModContainer().getAbsoluteFile()));
+            candidate.setMetadata(modMetadata.get(candidate.getModContainer().getAbsoluteFile()));
             modCandidates.add(candidate);
         } else {
             CleanroomLog.get().trace("  Skipping already in list {}", candidate.getModContainer());
@@ -612,42 +648,66 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return false;
     }
 
-    private void parseMcmodInfo(File file, InputStream stream, Set<String> ids) {
+    private MetadataCollection parseMcmodInfo(File file, InputStream stream, Set<String> ids) {
         try {
-            for (String id : MetadataCollection.from(stream, file.getName()).getIds()) {
+            MetadataCollection metadata = MetadataCollection.from(stream, file.getName());
+            for (String id : metadata.getIds()) {
                 if (id == null || id.isBlank()) {
                     CleanroomLog.get().warn("Skipping null/blank mod id from {}", file.getName());
                     continue;
                 }
                 ids.add(id);
             }
+            return metadata;
         } catch (Throwable t) {
             CleanroomLog.get().error("Failed to parse mcmod.info for {}", file.getName(), t);
+            return null;
         } finally {
             IOUtils.closeQuietly(stream);
         }
     }
 
-    private void scanModAnnotations(JarFile jar, Set<String> modIds) {
-        var entries = jar.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            if (entry.isDirectory() || !entry.getName().endsWith(".class")) {
+    private static boolean collectRecords(List<JarEntry> entries, JarFile jar, List<ClassScanRecord> out, List<Integer> indices) {
+        List<JarEntry> scanned = new ArrayList<>();
+        for (JarEntry entry : entries) {
+            if (ITypeDiscoverer.shouldScan(entry.getName())) {
+                scanned.add(entry);
+            }
+        }
+        // Reading and parsing the class bytes runs on several threads; the loop below keeps central-directory order,
+        // so the records of a jar are exactly the ones a sequential scan would have produced.
+        List<ParallelJarParse.Parsed> parsed = ParallelJarParse.parse(scanned, jar);
+        boolean complete = true;
+        for (int ordinal = 0; ordinal < parsed.size(); ordinal++) {
+            ParallelJarParse.Parsed result = parsed.get(ordinal);
+            if (result.failure() != null) {
+                // Same tolerance as before: a broken entry contributes nothing. The whole record is dropped so that
+                // the container discovery re-reads the jar and reports the problem where it always did.
+                complete = false;
                 continue;
             }
-            try (InputStream in = jar.getInputStream(entry)) {
-                ASMModParser parser = new ASMModParser(in);
-                parser.validate();
-                for (ModAnnotation annotation : parser.getAnnotations()) {
-                    if (ModContainerFactory.modTypes.containsKey(annotation.getASMType())) {
-                        Object modId = annotation.getValues().get("modid");
-                        if (modId instanceof String stringModId && !stringModId.isEmpty()) {
-                            modIds.add(stringModId);
-                        }
-                    }
-                }
-            } catch (Exception ignored) { }
+            ASMModParser parser = result.parser();
+            parser.validate();
+            ClassScanRecord record = parser.toRecord();
+            if (JarScanRecord.hasContent(record)) {
+                indices.add(ordinal);
+                out.add(record);
+            }
         }
+        return complete;
     }
 
+    private static void collectModIds(List<ClassScanRecord> records, Set<String> modIds) {
+        for (ClassScanRecord record : records) {
+            for (ClassScanRecord.Annotation annotation : record.annotations()) {
+                if (!ModContainerFactory.hasType(annotation)) {
+                    continue;
+                }
+                Object modId = annotation.values() == null ? null : annotation.values().get("modid");
+                if (modId instanceof String stringModId && !stringModId.isEmpty()) {
+                    modIds.add(stringModId);
+                }
+            }
+        }
+    }
 }

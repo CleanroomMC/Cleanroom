@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.LoaderException;
@@ -47,7 +46,7 @@ public class DirectoryDiscoverer implements ITypeDiscoverer
         @Override
         public boolean accept(File file)
         {
-            return (file.isFile() && classFile.matcher(file.getName()).matches()) || file.isDirectory();
+            return (file.isFile() && ITypeDiscoverer.shouldScan(file.getName())) || file.isDirectory();
         }
     }
 
@@ -104,44 +103,37 @@ public class DirectoryDiscoverer implements ITypeDiscoverer
                 exploreFileSystem(path + file.getName() + "/", file, harvestedMods, candidate, mc);
                 continue;
             }
-            Matcher match = classFile.matcher(file.getName());
 
-            if (match.matches())
+            ASMModParser modParser;
+            FileInputStream fis = null;
+            try
             {
-                ASMModParser modParser;
-                FileInputStream fis = null;
-                try
-                {
-                    fis = new FileInputStream(file);
-                    modParser = new ASMModParser(fis);
-                    candidate.addClassEntry(path+file.getName());
-                }
-                catch (LoaderException e)
-                {
-                    FMLLog.log.error("There was a problem reading the file {} - probably this is a corrupt file", file.getPath(), e);
-                    throw e;
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-                finally
-                {
-                    IOUtils.closeQuietly(fis);
-                }
-
-                modParser.validate();
-                modParser.sendToTable(table, candidate);
-                ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
-                if (container!=null)
-                {
-                    harvestedMods.add(container);
-                    container.bindMetadata(mc);
-                }
+                fis = new FileInputStream(file);
+                modParser = new ASMModParser(fis);
+                candidate.addClassEntry(path+file.getName());
+            }
+            catch (LoaderException e)
+            {
+                FMLLog.log.error("There was a problem reading the file {} - probably this is a corrupt file", file.getPath(), e);
+                throw e;
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                IOUtils.closeQuietly(fis);
             }
 
-
+            modParser.validate();
+            modParser.sendToTable(table, candidate);
+            ModContainer container = ModContainerFactory.instance().build(modParser, candidate.getModContainer(), candidate);
+            if (container!=null)
+            {
+                harvestedMods.add(container);
+                container.bindMetadata(mc);
+            }
         }
     }
-
 }

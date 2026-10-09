@@ -49,7 +49,9 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ModContainer.Disableable;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.cache.RecordFile;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadEvent;
 import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
@@ -495,6 +497,8 @@ public class Loader
         discoverer = CleanroomModDiscoverer.instance();
         discoverer.addBuiltInModContainers(mods, minecraft, mcp);
         IdentifiedMods identifiedMods = discoverer.identifyMods(modClassLoader, injectedContainers, mods);
+        // Discovery has written every cache entry for this launch; drop the ones whose jar is gone.
+        RecordFile.sweep(Launch.minecraftHome);
         mods = identifiedMods.mods();
         identifyDuplicates(mods);
         namedMods = Maps.uniqueIndex(mods, ModContainer::getModId);

@@ -23,7 +23,11 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+import net.minecraftforge.fml.common.MetadataCollection;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.discovery.cache.JarScanRecord;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -41,6 +45,8 @@ public class ModCandidate
     private List<ModContainer> mods;
     private final List<String> packages = Lists.newArrayList();
     private ASMDataTable table;
+    private JarScanRecord scanRecord;
+    private MetadataCollection metadata;
 
     public ModCandidate(File classPathRoot, File modContainer, ContainerType sourceType)
     {
@@ -92,6 +98,32 @@ public class ModCandidate
         this.table = table;
         this.mods = sourceType.findMods(this, table);
         return this.mods;
+    }
+
+    /** The annotation scan of this candidate's jar, produced or read during discovery; consumed by the JAR container discoverer. */
+    public JarScanRecord getScanRecord()
+    {
+        return scanRecord;
+    }
+
+    public void setScanRecord(JarScanRecord scanRecord)
+    {
+        this.scanRecord = scanRecord;
+    }
+
+    /**
+     * The {@code mcmod.info} the discovery phase already parsed for this candidate, or {@code null} when it did not
+     * parse one. The container discovery reuses it instead of reading and parsing the entry a second time.
+     */
+    @Nullable
+    public MetadataCollection getMetadata()
+    {
+        return metadata;
+    }
+
+    public void setMetadata(@Nullable MetadataCollection metadata)
+    {
+        this.metadata = metadata;
     }
 
     public void addClassEntry(String name)

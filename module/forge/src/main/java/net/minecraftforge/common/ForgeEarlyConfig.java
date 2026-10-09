@@ -14,7 +14,7 @@ public class ForgeEarlyConfig {
 
     //TODO : make CATEGORY?
     //TODO : make the config display name lowcase?
-    
+
     public static boolean WINDOW_START_MAXIMIZED = false;
     public static boolean WINDOW_START_FOCUSED = true;
     public static boolean WINDOW_START_ICONIFIED = false;
@@ -73,6 +73,12 @@ public class ForgeEarlyConfig {
         "Only disable this if you know what you are doing!"
     })
     public static boolean DISABLE_PATCH_MOD_CHECK = false;
+
+    @Config.Comment({
+        "Ignore annotation cache, reparse everything and write down again"
+    })
+    @Config.RequiresMcRestart
+    public static boolean IGNORE_SCAN_CACHE = false;
 
     public static boolean CUSTOM_BUILT_IN_MOD_VERSION = false;
     public static String CONFIG_ANY_TIME_VERSION = "3.0";

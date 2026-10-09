@@ -116,10 +116,10 @@ public class ConfigManager
             Multimap<Config.Type, ASMData> map = asm_data.computeIfAbsent(modid, k -> ArrayListMultimap.create());
 
             EnumHolder tholder = (EnumHolder)target.getAnnotationInfo().get("type");
-            Config.Type type = tholder == null ? Config.Type.INSTANCE : Config.Type.valueOf(tholder.getValue());
+            Config.Type type = tholder == null ? Config.Type.INSTANCE : Config.Type.valueOf(tholder.value());
 
             EnumHolder sideHolder = (EnumHolder)target.getAnnotationInfo().get("side");
-            Config.Side side = sideHolder == null ? Config.Side.BOTH : Config.Side.valueOf(sideHolder.getValue());
+            Config.Side side = sideHolder == null ? Config.Side.BOTH : Config.Side.valueOf(sideHolder.value());
             if (side.notAppliesTo(currentSide))
             {
                 FMLLog.log.debug("Skipping @Config class {} on side {}: marked as {}", target.getClassName(), currentSide, side);
@@ -233,7 +233,7 @@ public class ConfigManager
         File configFile = new File(configDir, name + ".cfg");
         return CONFIGS.get(configFile.getAbsolutePath());
     }
-    
+
     private static Side currentSide()
     {
         try
@@ -443,7 +443,7 @@ public class ConfigManager
         }
         sync(cfg, configClass, modId, config.category(), true, null);
         cfg.save();
-        
+
         CLASS_TO_CONFIG.put(configClass, cfg);
     }
 
@@ -459,5 +459,5 @@ public class ConfigManager
         sync(cfg, configClass, modId, config.category(), false, null);
         cfg.save();
     }
-    
+
 }
