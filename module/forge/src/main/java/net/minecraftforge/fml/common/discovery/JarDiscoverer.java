@@ -110,34 +110,43 @@ public class JarDiscoverer implements ITypeDiscoverer
         }
 
         List<JarEntry> entries = Collections.list(jar.entries());
+        List<JarEntry> scanned = Lists.newArrayListWithCapacity(entries.size());
+        for (JarEntry entry : entries)
+        {
+            if (ITypeDiscoverer.shouldScan(entry.getName()))
+            {
+                scanned.add(entry);
+            }
+        }
+        // Reading and parsing the class bytes runs on several threads. The loop below must stay in central-directory
+        // order: that order is what a cached replay reproduces.
+        List<ParallelJarParse.Parsed> parsed = ParallelJarParse.parse(scanned, jar);
         boolean cacheable = cacheFile != null;
         List<Integer> indices = Lists.newArrayList();
         List<ClassScanRecord> records = Lists.newArrayList();
-        int ordinal = -1;
 
-        for (JarEntry entry : entries)
+        for (int ordinal = 0; ordinal < scanned.size(); ordinal++)
         {
+            JarEntry entry = scanned.get(ordinal);
             String entryName = entry.getName();
-            if (!ITypeDiscoverer.shouldScan(entryName))
+            ParallelJarParse.Parsed result = parsed.get(ordinal);
+            if (result.failure() != null)
             {
-                continue;
-            }
-            ordinal++;
-            ASMModParser modParser;
-            try
-            {
-                try (InputStream inputStream = jar.getInputStream(entry))
+                Exception failure = result.failure();
+                if (failure instanceof LoaderException)
                 {
-                    modParser = new ASMModParser(inputStream);
+                    FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", entryName, candidate.getModContainer().getPath(), failure);
+                    jar.close();
+                    throw (LoaderException) failure;
                 }
-                candidate.addClassEntry(entryName);
+                if (failure instanceof IOException)
+                {
+                    throw (IOException) failure;
+                }
+                throw new LoaderException(failure);
             }
-            catch (LoaderException e)
-            {
-                FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", entryName, candidate.getModContainer().getPath(), e);
-                jar.close();
-                throw e;
-            }
+            ASMModParser modParser = result.parser();
+            candidate.addClassEntry(entryName);
             modParser.validate();
             modParser.sendToTable(table, candidate);
             if (cacheable)

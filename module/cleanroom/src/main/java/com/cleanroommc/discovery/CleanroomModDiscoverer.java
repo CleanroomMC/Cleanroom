@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ContainerType;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.common.discovery.ParallelJarParse;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
 import net.minecraftforge.fml.common.discovery.ITypeDiscoverer;
 import net.minecraftforge.fml.common.discovery.cache.ClassScanRecord;
@@ -667,25 +668,30 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private static boolean collectRecords(List<JarEntry> entries, JarFile jar, List<ClassScanRecord> out, List<Integer> indices) {
-        boolean complete = true;
-        int ordinal = -1;
+        List<JarEntry> scanned = new ArrayList<>();
         for (JarEntry entry : entries) {
-            if (!ITypeDiscoverer.shouldScan(entry.getName())) {
-                continue;
+            if (ITypeDiscoverer.shouldScan(entry.getName())) {
+                scanned.add(entry);
             }
-            ordinal++;
-            try (InputStream in = jar.getInputStream(entry)) {
-                ASMModParser parser = new ASMModParser(in);
-                parser.validate();
-                ClassScanRecord record = parser.toRecord();
-                if (JarScanRecord.hasContent(record)) {
-                    indices.add(ordinal);
-                    out.add(record);
-                }
-            } catch (Exception ignored) {
+        }
+        // Reading and parsing the class bytes runs on several threads; the loop below keeps central-directory order,
+        // so the records of a jar are exactly the ones a sequential scan would have produced.
+        List<ParallelJarParse.Parsed> parsed = ParallelJarParse.parse(scanned, jar);
+        boolean complete = true;
+        for (int ordinal = 0; ordinal < parsed.size(); ordinal++) {
+            ParallelJarParse.Parsed result = parsed.get(ordinal);
+            if (result.failure() != null) {
                 // Same tolerance as before: a broken entry contributes nothing. The whole record is dropped so that
                 // the container discovery re-reads the jar and reports the problem where it always did.
                 complete = false;
+                continue;
+            }
+            ASMModParser parser = result.parser();
+            parser.validate();
+            ClassScanRecord record = parser.toRecord();
+            if (JarScanRecord.hasContent(record)) {
+                indices.add(ordinal);
+                out.add(record);
             }
         }
         return complete;
