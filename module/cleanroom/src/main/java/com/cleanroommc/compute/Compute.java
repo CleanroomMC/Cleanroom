@@ -186,9 +186,7 @@ public class Compute {
         browsable.push(rl);
         while (!browsable.isEmpty()) {
             ResourceLocation curr = browsable.pop();
-            String src = MinecraftResourceUtils.readText(new ResourceLocation(curr.getNamespace(),
-                    "compute/" + curr.getPath()),
-                MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
+            String src = ComputeProgram.getResourceAsString(new ResourceLocation(curr.getNamespace(), curr.getPath()));
             IntBuffer err_code = stack.mallocInt(1);
             long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
             switch (err_code.get(0)) {

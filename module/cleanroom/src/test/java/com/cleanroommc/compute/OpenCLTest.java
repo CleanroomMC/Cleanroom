@@ -29,7 +29,7 @@ public class OpenCLTest implements BeforeAllCallback, AfterAllCallback, Invocati
             ComputeSetup.initOpenCL(testLogger, false);
             Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
             {{
-                modId = "accelerate";
+                modId = "cleanroom";
             }}));
         } catch (Throwable _) {
         }

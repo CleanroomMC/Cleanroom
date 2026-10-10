@@ -17,21 +17,26 @@ import com.google.gson.annotations.SerializedName;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -56,10 +61,7 @@ public class ComputeProgram implements Closeable {
     public ComputeProgram(ResourceLocation resourceLocation) {
         this.resourceLocation = resourceLocation;
 
-        try (InputStreamReader stream = new InputStreamReader(
-                this.getClass().getClassLoader().getResourceAsStream(String.format("assets/%s/compute/%s.json",
-                        resourceLocation.getNamespace(),
-                        resourceLocation.getPath())))) {
+        try (Reader stream = getResourceUniversal(resourceLocation)) {
             Gson gson = new GsonBuilder().registerTypeAdapter(OpenCLType.class, new OpenCLTypeDeserializer()).create();
             metadata = gson.fromJson(stream, ProgramMetadata.class);
             for (var kernel : metadata.kernels.entrySet()) {
@@ -68,10 +70,6 @@ public class ComputeProgram implements Closeable {
             }
         } catch (IOException e) {
             throw new RuntimeException(String.format("Problem loading compute program %s. ", resourceLocation));
-        } catch (NullPointerException e) {
-            throw new MissingResourceException("There is no program. ",
-                    "com.cleanroommc.cleanroom.compute.programs.ComputeProgram",
-                    resourceLocation.toString());
         }
     }
 
@@ -84,29 +82,7 @@ public class ComputeProgram implements Closeable {
      */
     public void compile(ProgramCacheIntegrityTable cache, MemoryStack stack) {
         IntBuffer err_code = stack.mallocInt(1);
-        String src = MinecraftResourceUtils.readText(new ResourceLocation(resourceLocation.getNamespace(),
-                "compute/" + metadata.fname), MinecraftResourceUtils.NewLineType.BACK_SLASH_N);
-        /*if (compiledProgramBinary != null && cache.contains(resourceLocation)) {
-            if (cache.compare(resourceLocation, src)) {
-                PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
-                for (Device device : Compute.instance().devices) {
-                    devices.put(device.handle());
-                }
-                IntBuffer status = stack.callocInt(compiledProgramBinary.length);
-                IntBuffer err = stack.callocInt(1);
-                ByteBuffer[] binaries = new ByteBuffer[compiledProgramBinary.length];
-                for (int i = 0; i < binaries.length; i++) {
-                    binaries[i] = stack.bytes(compiledProgramBinary[i]);
-                    binaries[i].flip();
-                }
-                devices.flip();
-                programHandle = CL10.clCreateProgramWithBinary(Compute.instance().context, devices, binaries, status, err);
-                switch (err.get(0)) {
-                    case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to create OpenCL program.");
-                }
-                return;
-            }
-        }*/
+        String src = getResourceAsString(new ResourceLocation(resourceLocation.getNamespace(), metadata.fname));
         long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
         switch(err_code.get(0)) {
             case CL10.CL_INVALID_VALUE -> throw new NullPointerException(String.format("Source code of %s is null. ", resourceLocation));
@@ -161,26 +137,6 @@ public class ComputeProgram implements Closeable {
             Compute.instance().LOGGER.info(log);
         }
         CL10.clReleaseProgram(program);
-        /*
-        PointerBuffer binaryCount = stack.mallocPointer(1);
-        CL10.clGetProgramInfo(program, CL10.CL_PROGRAM_BINARY_SIZES, (ByteBuffer) null, binaryCount);
-        IntBuffer binarySizes = stack.mallocInt((int) binaryCount.get(0)); // Hopefully no one creates a 2 GB OpenCL program
-        CL10.clGetProgramInfo(program, CL10.CL_PROGRAM_BINARY_SIZES, binarySizes, binaryCount);
-        compiledProgramBinary = new byte[binarySizes.get(0)][];
-        List<PointerBuffer> binaryList = new ObjectArrayList<>();
-        int tmp = Math.toIntExact(binaryCount.get(0));
-        PointerBuffer binaries = stack.mallocPointer(tmp);
-        for (int i = 0; i < tmp; i++) {
-            PointerBuffer buf = stack.mallocPointer(binarySizes.get(i));
-            binaryList.add(buf);
-            binaries.putAddressOf(buf);
-        }
-        CL10.clGetProgramInfo(program, CL10.CL_PROGRAM_BINARIES, binaries, binaryCount);
-        for (int i = 0; i < compiledProgramBinary.length; i++) {
-            compiledProgramBinary[i] = binaryList.get(i).getByteBuffer(0, binarySizes.get(i)).array();
-        }
-        // TODO: Save to cache
-        */
         ImmutableMap.Builder<String, Kernel> mapBuilder = new ImmutableMap.Builder<>();
         for (Map.Entry<String, KernelMetadata> kernel : metadata.kernels.entrySet()) {
             mapBuilder.put(kernel.getKey(), new Kernel(programHandle, kernel.getValue()));
@@ -214,10 +170,10 @@ public class ComputeProgram implements Closeable {
     private List<String> getBuildLog(MemoryStack stack, long program) {
         List<String> logs = new ObjectArrayList<>();
         try (MemoryStack substack = stack.push()) {
-            PointerBuffer len = stack.mallocPointer(1);
+            PointerBuffer len = substack.mallocPointer(1);
             for (Device device : Compute.instance().devices) {
                 CL10.clGetProgramBuildInfo(program, device.handle(), CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
-                ByteBuffer data = stack.malloc((int) len.get(0));
+                ByteBuffer data = substack.malloc((int) len.get(0));
                 len.rewind();
                 CL10.clGetProgramBuildInfo(program, device.handle(), CL10.CL_PROGRAM_BUILD_LOG, data, len);
                 data.rewind();
@@ -245,6 +201,50 @@ public class ComputeProgram implements Closeable {
             builder.append(delimiter);
         }
         return builder.toString();
+    }
+
+    private static Reader getResourceUniversal(ResourceLocation resourceLocation) throws IOException {
+        FileSystem fs = null;
+        try {
+            ModContainer owner = Loader.instance().getIndexedModList().get(resourceLocation.getNamespace());
+            fs = FileSystems.newFileSystem(owner.getResource().toPath(), Launch.classLoader);
+            Path path = fs.getPath(String.format("/assets/%s/compute/%s.json", resourceLocation.getNamespace(), resourceLocation.getPath()));
+            if (Files.exists(path)) {
+                return Files.newBufferedReader(path);
+            }
+        } catch (Exception e) {
+            return new InputStreamReader(MinecraftResourceUtils.getInputStream(new ResourceLocation(resourceLocation.getNamespace(), String.format("compute/%s.json", resourceLocation.getPath()))));
+        } finally {
+            IOUtils.closeQuietly(fs);
+        }
+        throw new MissingResourceException("There is no program. ",
+            "com.cleanroommc.cleanroom.compute.programs.ComputeProgram",
+            resourceLocation.toString());
+    }
+
+    public static String getResourceAsString(ResourceLocation resourceLocation) {
+        FileSystem fs = null;
+        try {
+            ModContainer owner = Loader.instance().getIndexedModList().get(resourceLocation.getNamespace());
+            fs = FileSystems.newFileSystem(owner.getResource().toPath(), Launch.classLoader);
+            Path path = fs.getPath(String.format("/assets/%s/compute/%s", resourceLocation.getNamespace(), resourceLocation.getPath()));
+            if (Files.exists(path)) {
+                return Files.readString(path);
+            }
+        } catch (Exception e) {
+            return MinecraftResourceUtils.readText(
+                new ResourceLocation(
+                    resourceLocation.getNamespace(),
+                    String.format("compute/%s", resourceLocation.getPath())
+                ),
+                MinecraftResourceUtils.NewLineType.BACK_SLASH_N
+            );
+        } finally {
+            IOUtils.closeQuietly(fs);
+        }
+        throw new MissingResourceException("There is no program. ",
+            "com.cleanroommc.cleanroom.compute.programs.ComputeProgram",
+            resourceLocation.toString());
     }
 
     /**
