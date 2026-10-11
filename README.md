@@ -9,15 +9,6 @@ If you want to...
 - Play or make modpacks? Jump to [Installation](#installation).
 - Write mods? See [For Mod Developers](#for-mod-developers).
 
-## Runtime
-
-- Java 25
-- LWJGL 3, with LWJGLY shim for LWJGL 2 APIs
-- Foundation, powerful LaunchWrapper replacement
-- CleanMix, Mixin fork with proper bootstrapping and more features
-- ImagineBreaker
-- Netty 4.2, Guava 33, Apache HttpClient 5, Jakarta APIs and more
-
 ## Platform Direction
 
 ### Developer Experience
@@ -97,6 +88,15 @@ However, we have no guarantee that mods provide fallbacks as well.
 - Kirino's font rendering and some vector graphics APIs
 
 </details>
+
+## Runtime
+
+- Java 25
+- LWJGL 3, with LWJGLY shim for LWJGL 2 APIs
+- Foundation, powerful LaunchWrapper replacement
+- CleanMix, Mixin fork with proper bootstrapping and more features
+- ImagineBreaker
+- Netty 4.2, Guava 33, Apache HttpClient 5, Jakarta APIs and more
 
 ## Installation
 
