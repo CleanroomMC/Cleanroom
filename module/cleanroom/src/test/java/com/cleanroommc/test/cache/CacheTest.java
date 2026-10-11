@@ -2,6 +2,7 @@ package com.cleanroommc.test.cache;
 
 import com.cleanroommc.cleanroom.cache.Cache;
 import com.cleanroommc.cleanroom.cache.CacheException;
+import com.cleanroommc.cleanroom.cache.CacheRequest;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
@@ -115,8 +117,8 @@ public class CacheTest {
     void tearDown() throws Exception {
         released.countDown();
         // Background revalidations hold a temporary file until they commit
-        for (var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); ; Thread.sleep(10)) {
-            try (var files = Files.walk(root)) {
+        for (long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); ; Thread.sleep(10)) {
+            try (Stream<Path> files = Files.walk(root)) {
                 if (files.noneMatch(file -> file.toString().endsWith(".part"))) {
                     break;
                 }
@@ -147,11 +149,11 @@ public class CacheTest {
 
     @Test
     void getKeepsAndPutReplaces() throws IOException {
-        var file = cache.fromString("one", UTF_8).get("a/b.txt");
+        Path file = cache.fromString("one", UTF_8).get("a/b.txt");
         assertTrue(file.startsWith(root.resolve("test/a")));
         assertEquals("b.txt", file.getFileName().toString());
         assertEquals("one", read(cache.fromString("two", UTF_8).get("a/b.txt")));
-        var replaced = cache.fromString("two", UTF_8).put("a/b.txt");
+        Path replaced = cache.fromString("two", UTF_8).put("a/b.txt");
         assertEquals("two", read(replaced));
         assertNotEquals(file, replaced);
         assertEquals("one", read(file));
@@ -159,16 +161,16 @@ public class CacheTest {
 
     @Test
     void supersededVersionsAreSwept() throws IOException {
-        var versions = Files.createDirectories(cache.root().resolve("s.versions"));
-        var expired = FileTime.from(Instant.now().minus(Duration.ofDays(2)));
-        var superseded = Files.createDirectories(versions.resolve("old")).resolve("s");
+        Path versions = Files.createDirectories(cache.root().resolve("s.versions"));
+        FileTime expired = FileTime.from(Instant.now().minus(Duration.ofDays(2)));
+        Path superseded = Files.createDirectories(versions.resolve("old")).resolve("s");
         Files.writeString(superseded, "old");
         Files.setLastModifiedTime(superseded.getParent(), expired);
-        var recent = Files.createDirectories(versions.resolve("recent"));
-        var abandoned = Files.createFile(versions.resolve("abandoned.part"));
+        Path recent = Files.createDirectories(versions.resolve("recent"));
+        Path abandoned = Files.createFile(versions.resolve("abandoned.part"));
         Files.setLastModifiedTime(abandoned, expired);
-        var running = Files.createFile(versions.resolve("running.part"));
-        var current = cache.fromString("new", UTF_8).get("s");
+        Path running = Files.createFile(versions.resolve("running.part"));
+        Path current = cache.fromString("new", UTF_8).get("s");
         assertFalse(Files.exists(superseded.getParent()));
         assertFalse(Files.exists(abandoned));
         assertTrue(Files.exists(recent));
@@ -182,21 +184,21 @@ public class CacheTest {
     @Test
     void expectedHashIsEnforced() throws IOException {
         assertEquals("hello", read(cache.fromString("hello", UTF_8).expectSha256(HELLO_SHA256.toUpperCase()).get("ok")));
-        var e = assertThrows(CacheException.class, () -> cache.fromString("other", UTF_8).expectSha256(HELLO_SHA256).get("bad"));
+        CacheException e = assertThrows(CacheException.class, () -> cache.fromString("other", UTF_8).expectSha256(HELLO_SHA256).get("bad"));
         assertEquals(CacheException.Kind.HASH_MISMATCH, e.kind());
         assertFalse(Files.exists(cache.root().resolve("bad")));
     }
 
     @Test
     void corruptionIsRestoredFromPinnedSource() throws IOException {
-        var source = Files.writeString(root.resolve("source.txt"), "original");
-        var file = cache.fromFile(source).get("copy");
+        Path source = Files.writeString(root.resolve("source.txt"), "original");
+        Path file = cache.fromFile(source).get("copy");
         Files.writeString(file, "corrupt");
         assertEquals("original", read(cache.fromFile(source).get("copy")));
 
         Files.writeString(file, "corrupt");
         Files.writeString(source, "changed");
-        var e = assertThrows(CacheException.class, () -> cache.fromFile(source).get("copy"));
+        CacheException e = assertThrows(CacheException.class, () -> cache.fromFile(source).get("copy"));
         assertEquals(CacheException.Kind.HASH_MISMATCH, e.kind());
     }
 
@@ -217,7 +219,7 @@ public class CacheTest {
     @Test
     void failedRevalidationWaitsForTheNextPeriod() throws Exception {
         cache.fromUrl(url("/hello")).get("r");
-        var meta = cache.root().resolve("r.meta");
+        Path meta = cache.root().resolve("r.meta");
         Files.writeString(meta, Files.readString(meta).replaceAll("checked=\\d+", "checked=0"));
         for (int i = 0; i < 5; i++) {
             assertEquals("hello", read(cache.fromUrl(url("/fail")).revalidateIf(Duration.ofMinutes(1)).get("r")));
@@ -235,23 +237,23 @@ public class CacheTest {
 
     @Test
     void stalledBodyFailsOffline() {
-        var e = assertThrows(CacheException.class, () -> cache.fromUrl(url("/stall")).get("stall"));
+        CacheException e = assertThrows(CacheException.class, () -> cache.fromUrl(url("/stall")).get("stall"));
         assertEquals(CacheException.Kind.OFFLINE, e.kind());
     }
 
     @Test
     void bytesAreCopied() throws IOException {
-        var bytes = "hello".getBytes(UTF_8);
-        var request = cache.fromBytes(bytes);
+        byte[] bytes = "hello".getBytes(UTF_8);
+        CacheRequest request = cache.fromBytes(bytes);
         bytes[0] = 'j';
         assertEquals("hello", read(request.get("copied")));
     }
 
     @Test
     void lazyContentIsProducedOnlyOnMiss() throws IOException {
-        var calls = new AtomicInteger();
-        var request = cache.fromBytes(() -> ("build" + calls.incrementAndGet()).getBytes(UTF_8));
-        var file = request.get("lazy");
+        AtomicInteger calls = new AtomicInteger();
+        CacheRequest request = cache.fromBytes(() -> ("build" + calls.incrementAndGet()).getBytes(UTF_8));
+        Path file = request.get("lazy");
         assertEquals("build1", read(request.get("lazy")));
         assertEquals(1, calls.get());
         Files.writeString(file, "corrupt");
@@ -268,17 +270,17 @@ public class CacheTest {
 
     @Test
     void resourcesAndBuffersIngest() throws IOException {
-        var loader = getClass().getClassLoader();
-        var file = cache.fromResource(loader, "com/cleanroommc/test/cache/CacheTest.class").get("self.class");
+        ClassLoader loader = getClass().getClassLoader();
+        Path file = cache.fromResource(loader, "com/cleanroommc/test/cache/CacheTest.class").get("self.class");
         assertTrue(Files.size(file) > 0);
-        var e = assertThrows(IOException.class, () -> cache.fromResource(loader, "nope").get("nope"));
+        IOException e = assertThrows(IOException.class, () -> cache.fromResource(loader, "nope").get("nope"));
         assertInstanceOf(java.nio.file.NoSuchFileException.class, e);
         assertEquals("hello", read(cache.fromBuffer(UTF_8.encode("hello")).get("buffer")));
     }
 
     @Test
     void pathsStayConfined() throws IOException {
-        for (var name : List.of("../x", "a/../../x", "/abs", "C:/x", "\\\\server\\share", "a\0b", ".", "x.meta", "x.lock", "x.versions", "a.versions/x")) {
+        for (String name : List.of("../x", "a/../../x", "/abs", "C:/x", "\\\\server\\share", "a\0b", ".", "x.meta", "x.lock", "x.versions", "a.versions/x")) {
             assertThrows(IllegalArgumentException.class, () -> cache.fromString("x", UTF_8).get(name), name);
         }
         assertThrows(IllegalArgumentException.class, () -> cache.namespace(".."));
@@ -294,13 +296,13 @@ public class CacheTest {
         } catch (UnsupportedOperationException | IOException e) {
             org.junit.jupiter.api.Assumptions.abort("Symbolic links unavailable: " + e);
         }
-        var e = assertThrows(CacheException.class, () -> cache.fromString("x", UTF_8).get("link/x"));
+        CacheException e = assertThrows(CacheException.class, () -> cache.fromString("x", UTF_8).get("link/x"));
         assertEquals(CacheException.Kind.UNSAFE_PATH, e.kind());
     }
 
     @Test
     void concurrentGetsFetchOnce() {
-        var futures = IntStream.range(0, 16).mapToObj(_ -> cache.fromUrl(url("/hello")).getAsync("hello")).toList();
+        List<CompletableFuture<Path>> futures = IntStream.range(0, 16).mapToObj(_ -> cache.fromUrl(url("/hello")).getAsync("hello")).toList();
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
         futures.forEach(future -> assertEquals("hello", read(future.join())));
         assertEquals(1, requests.get());
@@ -315,15 +317,15 @@ public class CacheTest {
 
     @Test
     void asyncFailuresCompleteExceptionally() {
-        var future = cache.fromUrl(url("/stall")).getAsync("stall");
+        CompletableFuture<Path> future = cache.fromUrl(url("/stall")).getAsync("stall");
         assertFalse(future.isDone());
-        var e = assertThrows(CompletionException.class, future::join);
+        CompletionException e = assertThrows(CompletionException.class, future::join);
         assertEquals(CacheException.Kind.OFFLINE, assertInstanceOf(CacheException.class, e.getCause()).kind());
     }
 
     @Test
     void asyncRunsOnAVirtualThread() {
-        var virtual = new AtomicBoolean();
+        AtomicBoolean virtual = new AtomicBoolean();
         cache.fromBytes(() -> {
             virtual.set(Thread.currentThread().isVirtual());
             return "hello".getBytes(UTF_8);
@@ -358,11 +360,11 @@ public class CacheTest {
     void offlineServesWarmAndFailsCold() throws IOException {
         cache.fromUrl(url("/hello")).get("hello");
         URI dead;
-        try (var socket = new ServerSocket(0, 0, InetAddress.getLoopbackAddress())) {
+        try (ServerSocket socket = new ServerSocket(0, 0, InetAddress.getLoopbackAddress())) {
             dead = URI.create("http://127.0.0.1:" + socket.getLocalPort() + "/hello");
         }
         assertEquals("hello", read(cache.fromUrl(dead).get("hello")));
-        var e = assertThrows(CacheException.class, () -> cache.fromUrl(dead).get("cold"));
+        CacheException e = assertThrows(CacheException.class, () -> cache.fromUrl(dead).get("cold"));
         assertEquals(CacheException.Kind.OFFLINE, e.kind());
         cache.fromUrl(url("/hello")).version("1.0").get("versioned");
         e = assertThrows(CacheException.class, () -> cache.fromUrl(dead).version("2.0").get("versioned"));

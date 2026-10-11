@@ -33,7 +33,7 @@ public final class Cache {
     }
 
     private static Cache at(Path root) {
-        var absolute = root.toAbsolutePath().normalize();
+        Path absolute = root.toAbsolutePath().normalize();
         return new Cache(absolute, absolute);
     }
 
@@ -41,11 +41,11 @@ public final class Cache {
      * @return the cache of this game instance, {@code <gameDir>/.cleanroom/cache} unless {@code cleanroom.cache.root.instance} is set
      */
     public static Cache instance() {
-        var override = System.getProperty("cleanroom.cache.root.instance");
+        String override = System.getProperty("cleanroom.cache.root.instance");
         if (override != null) {
             return at(Path.of(override));
         }
-        var gameDir = Launch.minecraftHome == null ? Path.of("") : Launch.minecraftHome.toPath();
+        Path gameDir = Launch.minecraftHome == null ? Path.of("") : Launch.minecraftHome.toPath();
         return at(gameDir.resolve(".cleanroom").resolve("cache"));
     }
 
@@ -53,7 +53,7 @@ public final class Cache {
      * @return the cache shared by every instance, {@code ~/.cleanroom/cache} unless {@code cleanroom.cache.root.global} is set
      */
     public static Cache global() {
-        var override = System.getProperty("cleanroom.cache.root.global");
+        String override = System.getProperty("cleanroom.cache.root.global");
         return at(override != null ? Path.of(override) : Path.of(System.getProperty("user.home"), ".cleanroom", "cache"));
     }
 
@@ -75,7 +75,7 @@ public final class Cache {
      * @param uri an HTTP or HTTPS URL
      */
     public CacheRequest fromUrl(URI uri) {
-        var scheme = uri.getScheme();
+        String scheme = uri.getScheme();
         Preconditions.checkArgument("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme), "Only HTTP(S) URLs can be cached: %s", uri);
         return new CacheRequest(this, new CacheRequest.Remote(uri));
     }
@@ -138,7 +138,7 @@ public final class Cache {
     }
 
     private static byte[] bytes(ByteBuffer buffer) {
-        var bytes = new byte[buffer.remaining()];
+        byte[] bytes = new byte[buffer.remaining()];
         buffer.duplicate().get(bytes);
         return bytes;
     }
@@ -147,7 +147,7 @@ public final class Cache {
      * @return the validated path naming an entry, never the root itself
      */
     Path entry(String name) {
-        var path = resolve(name);
+        Path path = resolve(name);
         Preconditions.checkArgument(!path.equals(root), "Not a valid cache entry name: %s", name);
 
         return path;
@@ -157,7 +157,7 @@ public final class Cache {
      * Rejects any existing symbolic link between the outermost root and the path, both inclusive.
      */
     void checkLinks(Path path) throws CacheException {
-        for (var current = path; current != null && current.startsWith(base); current = current.getParent()) {
+        for (Path current = path; current != null && current.startsWith(base); current = current.getParent()) {
             if (Files.isSymbolicLink(current)) {
                 throw new CacheException(CacheException.Kind.UNSAFE_PATH, "Symbolic link in cache path: " + current);
             }
@@ -167,12 +167,12 @@ public final class Cache {
     // Rejecting backslashes and colons on every OS covers drive letters and UNC prefixes
     private Path resolve(String name) {
         Preconditions.checkArgument(!name.isEmpty() && name.indexOf('\0') < 0 && name.indexOf('\\') < 0 && name.indexOf(':') < 0, "Not a valid cache path: %s", name);
-        var path = root.resolve(name).normalize();
+        Path path = root.resolve(name).normalize();
         Preconditions.checkArgument(path.startsWith(root), "Cache path escapes its root: %s", name);
 
         // Entries keep their files beside them under these suffixes
-        for (var segment : root.relativize(path)) {
-            var part = segment.toString();
+        for (Path segment : root.relativize(path)) {
+            String part = segment.toString();
             Preconditions.checkArgument(!part.endsWith(META) && !part.endsWith(LOCK) && !part.endsWith(VERSIONS), "Cache path uses a reserved suffix: %s", name);
         }
         return path;

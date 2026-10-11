@@ -8,21 +8,23 @@ import com.google.common.io.MoreFiles;
 import net.minecraftforge.fml.common.versioning.ComparableVersion;
 import org.jspecify.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
@@ -38,6 +40,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -171,11 +174,11 @@ public final class CacheRequest {
     }
 
     private Path fetch(String name, Mode mode) throws IOException {
-        var file = cache.entry(name);
+        Path file = cache.entry(name);
         if (mode == Mode.PUT) {
             return ingest(file, new Properties(), sha256, false);
         }
-        var lookup = lookup(file);
+        Lookup lookup = lookup(file);
         if (mode == Mode.REVALIDATE) {
             return ingest(file, lookup.meta(), lookup.expected(), lookup.path() != null);
         }
@@ -189,15 +192,15 @@ public final class CacheRequest {
             return lookup.path();
         }
         // Concurrent gets of one entry share a single ingestion, then look again
-        var ingesting = new CompletableFuture<Void>();
-        var running = INGESTING.putIfAbsent(file, ingesting);
+        CompletableFuture<Void> ingesting = new CompletableFuture<>();
+        CompletableFuture<Void> running = INGESTING.putIfAbsent(file, ingesting);
         if (running != null) {
             await(running);
             return fetch(name, mode);
         }
         try {
             lookup = lookup(file);
-            var path = lookup.path() != null ? lookup.path() : ingest(file, lookup.meta(), lookup.expected(), false);
+            Path path = lookup.path() != null ? lookup.path() : ingest(file, lookup.meta(), lookup.expected(), false);
             ingesting.complete(null);
             return path;
         } catch (Throwable t) {
@@ -209,18 +212,18 @@ public final class CacheRequest {
     }
 
     private Lookup lookup(Path file) throws IOException {
-        var meta = locked(file, current -> {
+        Properties meta = locked(file, current -> {
             if (SWEPT.add(file)) {
                 sweep(file, current.getProperty(SHA256));
             }
             return current;
         });
-        var pinned = meta.getProperty(SHA256);
+        String pinned = meta.getProperty(SHA256);
         if (pinned == null || outdated(meta) || (sha256 != null && !sha256.equals(pinned))) {
             return new Lookup(meta, null, false, sha256);
         }
         // Stored versions never change, so they are verified unlocked
-        var path = stored(file, pinned);
+        Path path = stored(file, pinned);
         cache.checkLinks(path);
         if (holds(path, pinned)) {
             return new Lookup(meta, path, isStale(meta), sha256);
@@ -243,16 +246,16 @@ public final class CacheRequest {
 
     // Runs unlocked so readers are served during the download
     private Path ingest(Path file, Properties seen, @Nullable String expected, boolean conditional) throws IOException {
-        var versions = versions(file);
+        Path versions = versions(file);
         cache.checkLinks(versions);
         Files.createDirectories(versions);
-        var temp = Files.createTempFile(versions, null, ".part");
+        Path temp = Files.createTempFile(versions, null, ".part");
         try {
             Fetched fetched;
-            if (source instanceof Remote(var uri)) {
+            if (source instanceof Remote(URI uri)) {
                 fetched = download(uri, file, seen, conditional, temp);
             } else {
-                try (var input = open()) {
+                try (InputStream input = open()) {
                     fetched = new Fetched(write(input, temp), null, null);
                 }
             }
@@ -267,15 +270,15 @@ public final class CacheRequest {
 
     private Path commit(Path file, Properties seen, Path temp, Fetched fetched) throws IOException {
         return locked(file, meta -> {
-            var previous = meta.getProperty(SHA256);
-            var hash = fetched.hash();
+            String previous = meta.getProperty(SHA256);
+            String hash = fetched.hash();
             if (hash == null) {
                 // A 304 only vouches for the content it was asked about
                 if (!Objects.equals(previous, seen.getProperty(SHA256))) {
                     return stored(file, seen.getProperty(SHA256));
                 }
             } else {
-                var target = stored(file, hash);
+                Path target = stored(file, hash);
                 cache.checkLinks(target);
                 // Identical content is kept, it may be open elsewhere
                 if (!holds(target, hash)) {
@@ -285,10 +288,10 @@ public final class CacheRequest {
                 meta.setProperty(SHA256, hash);
             }
             // Descriptions of replaced content are dropped, unchanged content keeps what this fetch does not restate
-            var changed = hash != null && !hash.equals(previous);
+            boolean changed = hash != null && !hash.equals(previous);
             if (hash != null) {
                 set(meta, VERSION, version, changed);
-                set(meta, URL, source instanceof Remote(var uri) ? uri.toString() : null, changed);
+                set(meta, URL, source instanceof Remote(URI uri) ? uri.toString() : null, changed);
             }
             set(meta, ETAG, fetched.etag(), changed);
             set(meta, MODIFIED, fetched.modified(), changed);
@@ -306,15 +309,15 @@ public final class CacheRequest {
         if (Boolean.getBoolean("cleanroom.cache.offline")) {
             throw offline(file, seen, "Offline, cannot fetch " + uri, null);
         }
-        var request = HttpRequest.newBuilder(uri).timeout(Http.TIMEOUT);
+        HttpRequest.Builder request = HttpRequest.newBuilder(uri).timeout(Http.TIMEOUT);
         // Validators only describe what the URL they came from served
-        var validate = conditional && uri.toString().equals(seen.getProperty(URL));
+        boolean validate = conditional && uri.toString().equals(seen.getProperty(URL));
         if (validate) {
-            var etag = seen.getProperty(ETAG);
+            String etag = seen.getProperty(ETAG);
             if (etag != null) {
                 request.header("If-None-Match", etag);
             }
-            var modified = seen.getProperty(MODIFIED);
+            String modified = seen.getProperty(MODIFIED);
             if (modified != null) {
                 request.header("If-Modified-Since", modified);
             }
@@ -328,7 +331,7 @@ public final class CacheRequest {
         } catch (IOException e) {
             throw offline(file, seen, "Cannot reach " + uri, e);
         }
-        try (var body = response.body()) {
+        try (InputStream body = response.body()) {
             String hash = null;
             if (response.statusCode() == 200) {
                 hash = write(guard(body, uri), temp);
@@ -352,10 +355,10 @@ public final class CacheRequest {
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
                 // Whoever takes the reader first decides whether the interrupt happens
-                var reader = new AtomicReference<>(Thread.currentThread());
-                var watchdog = Http.WATCHDOG.schedule(() -> {
+                AtomicReference<Thread> reader = new AtomicReference<>(Thread.currentThread());
+                ScheduledFuture<?> watchdog = Http.WATCHDOG.schedule(() -> {
                     synchronized (reader) {
-                        var thread = reader.getAndSet(null);
+                        Thread thread = reader.getAndSet(null);
                         if (thread != null) {
                             thread.interrupt();
                         }
@@ -381,11 +384,11 @@ public final class CacheRequest {
     private <T> T locked(Path file, Locked<T> action) throws IOException {
         cache.checkLinks(metaFile(file));
         Files.createDirectories(file.getParent());
-        var lockFile = file.resolveSibling(file.getFileName() + Cache.LOCK);
-        try (var channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS)) {
-            var lock = LOCKS.computeIfAbsent(lockFile.toRealPath(), _ -> new ReentrantLock());
+        Path lockFile = file.resolveSibling(file.getFileName() + Cache.LOCK);
+        try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS)) {
+            ReentrantLock lock = LOCKS.computeIfAbsent(lockFile.toRealPath(), _ -> new ReentrantLock());
             lock.lock();
-            try (var _ = channel.lock()) {
+            try (FileLock _ = channel.lock()) {
                 return action.run(readMeta(file));
             } finally {
                 lock.unlock();
@@ -394,8 +397,8 @@ public final class CacheRequest {
     }
 
     private static Properties readMeta(Path file) throws IOException {
-        var meta = new Properties();
-        try (var reader = Files.newBufferedReader(metaFile(file), StandardCharsets.UTF_8)) {
+        Properties meta = new Properties();
+        try (BufferedReader reader = Files.newBufferedReader(metaFile(file), StandardCharsets.UTF_8)) {
             meta.load(reader);
         } catch (NoSuchFileException _) {
             return meta;
@@ -403,7 +406,7 @@ public final class CacheRequest {
             CleanroomLog.get().warn("Cache metadata {} is unreadable, discarding it", metaFile(file), e);
             return new Properties();
         }
-        var pinned = meta.getProperty(SHA256);
+        String pinned = meta.getProperty(SHA256);
         if (pinned != null && !isSha256(pinned)) {
             CleanroomLog.get().warn("Cache metadata {} pins a malformed hash, discarding it", metaFile(file));
             return new Properties();
@@ -413,12 +416,12 @@ public final class CacheRequest {
 
     // The metadata is replaced whole, so an interruption leaves the previous one
     private void writeMeta(Path file, Properties meta) throws IOException {
-        var versions = versions(file);
+        Path versions = versions(file);
         cache.checkLinks(versions);
         Files.createDirectories(versions);
-        var temp = Files.createTempFile(versions, null, ".part");
+        Path temp = Files.createTempFile(versions, null, ".part");
         try {
-            try (var channel = FileChannel.open(temp, StandardOpenOption.WRITE)) {
+            try (FileChannel channel = FileChannel.open(temp, StandardOpenOption.WRITE)) {
                 meta.store(Channels.newWriter(channel, StandardCharsets.UTF_8), null);
                 channel.force(true);
             }
@@ -455,10 +458,10 @@ public final class CacheRequest {
 
     // Runs once per entry per JVM. Superseded versions and temporary files get a grace period, as other processes may still use them
     private static void sweep(Path file, @Nullable String pinned) {
-        var current = pinned == null ? null : directory(pinned);
-        var expired = Instant.now().minus(GRACE);
-        try (var entries = Files.newDirectoryStream(versions(file))) {
-            for (var entry : entries) {
+        String current = pinned == null ? null : directory(pinned);
+        Instant expired = Instant.now().minus(GRACE);
+        try (DirectoryStream<Path> entries = Files.newDirectoryStream(versions(file))) {
+            for (Path entry : entries) {
                 try {
                     if (entry.getFileName().toString().equals(current) || !Files.getLastModifiedTime(entry, LinkOption.NOFOLLOW_LINKS).toInstant().isBefore(expired)) {
                         continue;
@@ -505,16 +508,16 @@ public final class CacheRequest {
 
     private InputStream open() throws IOException {
         return switch (source) {
-            case Resource(var loader, var name) -> {
-                var stream = loader.getResourceAsStream(name);
+            case Resource(ClassLoader loader, String name) -> {
+                InputStream stream = loader.getResourceAsStream(name);
                 if (stream == null) {
                     throw new NoSuchFileException(name);
                 }
                 yield stream;
             }
-            case Local(var file) -> Files.newInputStream(file);
-            case Bytes(var bytes) -> new ByteArrayInputStream(bytes);
-            case Lazy(var content) -> {
+            case Local(Path file) -> Files.newInputStream(file);
+            case Bytes(byte[] bytes) -> new ByteArrayInputStream(bytes);
+            case Lazy(Callable<byte[]> content) -> {
                 try {
                     yield new ByteArrayInputStream(content.call());
                 } catch (IOException | RuntimeException e) {
@@ -528,7 +531,7 @@ public final class CacheRequest {
     }
 
     private boolean outdated(Properties meta) {
-        var cached = meta.getProperty(VERSION);
+        String cached = meta.getProperty(VERSION);
         return version != null && (cached == null || new ComparableVersion(version).compareTo(new ComparableVersion(cached)) > 0);
     }
 
@@ -565,8 +568,8 @@ public final class CacheRequest {
     }
 
     private static String write(InputStream input, Path target) throws IOException {
-        try (var in = new HashingInputStream(Hashing.sha256(), input);
-             var channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
+        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), input);
+             FileChannel channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
             in.transferTo(Channels.newOutputStream(channel));
             channel.force(true);
             return in.hash().toString();
@@ -586,7 +589,7 @@ public final class CacheRequest {
     }
 
     private static CompletableFuture<Path> async(Callable<Path> task) {
-        var future = new CompletableFuture<Path>();
+        CompletableFuture<Path> future = new CompletableFuture<>();
         Thread.ofVirtual().name("cleanroom-cache").start(() -> {
             try {
                 future.complete(task.call());
