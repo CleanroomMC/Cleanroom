@@ -63,14 +63,7 @@ public final class CacheRequest {
 
     record Remote(URI uri) implements Source { }
 
-    record Resource(ClassLoader loader, String name) implements Source {
-
-        Resource {
-            Preconditions.checkNotNull(loader, "Cannot cache resource %s from a null class loader", name);
-            Preconditions.checkNotNull(name, "Cannot cache a resource with a null name");
-        }
-
-    }
+    record Resource(ClassLoader loader, String name) implements Source { }
 
     record Local(Path file) implements Source { }
 
@@ -311,7 +304,7 @@ public final class CacheRequest {
     }
 
     private Fetched download(URI uri, Path file, Properties seen, boolean conditional, Path temp) throws IOException {
-        if (Boolean.getBoolean("cleanroom.offline")) {
+        if (Boolean.getBoolean("cleanroom.cache.offline")) {
             throw offline(file, seen, "Offline, cannot fetch " + uri, null);
         }
         var request = HttpRequest.newBuilder(uri).timeout(Http.TIMEOUT);
