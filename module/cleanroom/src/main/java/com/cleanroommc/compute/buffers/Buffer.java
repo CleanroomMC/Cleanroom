@@ -17,6 +17,7 @@ import org.lwjgl.opencl.CL10GL;
 import org.lwjgl.opencl.CL11;
 import org.lwjgl.opencl.CLBufferRegion;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
 import java.io.Closeable;
@@ -219,7 +220,7 @@ public class Buffer extends SmartPointer {
 
         try (MemoryStack substack = stack.push()) {
             IntBuffer err = substack.mallocInt(1);
-            ByteBuffer region = substack.malloc(CLBufferRegion.SIZE);
+            ByteBuffer region = substack.malloc(CLBufferRegion.SIZEOF);
 
             try (CLBufferRegion tmp = new CLBufferRegion(region)) {
                 tmp.set(offset, size);
@@ -529,7 +530,7 @@ public class Buffer extends SmartPointer {
         try (MemoryStack substack = stack.push()) {
             writeLock.lock();
             PointerBuffer dependencies;
-            if (events != null && events.length > 0) {
+            if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
                 dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
@@ -539,11 +540,11 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null && glBuffer == null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
-            else if (glBuffer != null)
+            else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
             return event.get(0);
@@ -599,7 +600,7 @@ public class Buffer extends SmartPointer {
         try (MemoryStack substack = stack.push()) {
             writeLock.lock();
             PointerBuffer dependencies;
-            if (events != null && events.length > 0) {
+            if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
                 dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
@@ -609,11 +610,11 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null && glBuffer == null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
-            else if (glBuffer != null)
+            else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
             return event.get(0);
@@ -664,7 +665,7 @@ public class Buffer extends SmartPointer {
         try (MemoryStack substack = stack.push()) {
             writeLock.lock();
             PointerBuffer dependencies;
-            if (events != null && events.length > 0) {
+            if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
                 dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
@@ -674,12 +675,11 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data,
-                glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null && glBuffer == null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
-            else if (glBuffer != null)
+            else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
             return event.get(0);
@@ -730,7 +730,7 @@ public class Buffer extends SmartPointer {
         try (MemoryStack substack = stack.push()) {
             writeLock.lock();
             PointerBuffer dependencies;
-            if (events != null && events.length > 0) {
+            if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
                 dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
@@ -740,12 +740,11 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data,
-                glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null && glBuffer == null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, data, dependencies, event));
+            if (glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
-            else if (glBuffer != null)
+            else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
             return event.get(0);
@@ -772,7 +771,7 @@ public class Buffer extends SmartPointer {
             buffer.flip();
 
             PointerBuffer dependencies;
-            if (events != null && events.length > 0) {
+            if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
                 dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
@@ -782,11 +781,11 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, buffer, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
-            if (events != null && glBuffer == null)
+            checkBufferWriteErrors(CL10.clEnqueueWriteBuffer(commandQueue.commandQueue, handle, blocking, offset, buffer, dependencies, event));
+            if (glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
-            else if (glBuffer != null)
+            else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
             return event.get(0);
@@ -847,7 +846,7 @@ public class Buffer extends SmartPointer {
         try (MemoryStack substack = stack.push()) {
             writeLock.lock();
             PointerBuffer dependencies;
-            if (events != null && events.length > 0) {
+            if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
                 dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
@@ -858,9 +857,6 @@ public class Buffer extends SmartPointer {
             if (glBuffer != null) {
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
             }
-            PointerBuffer waitList = glBuffer == null
-                ? dependencies
-                : dependencies.getPointerBuffer(1);
             checkBufferWriteErrors(switch (data) {
                 case ByteBuffer buffer ->
                     CL10.clEnqueueWriteBuffer(
@@ -869,7 +865,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case ShortBuffer buffer ->
@@ -879,7 +875,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case IntBuffer buffer ->
@@ -889,7 +885,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case FloatBuffer buffer ->
@@ -899,7 +895,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case DoubleBuffer buffer ->
@@ -909,16 +905,16 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
             });
-            if (events != null && glBuffer == null) {
+            if (glBuffer == null) {
                 for (CommandQueue.Event dependency : events) {
                     dependency.close();
                 }
-            } else if (glBuffer != null) {
+            } else if (dependencies != null) {
                 releaseGLObjects(commandQueue, dependencies, event);
             }
             this.reference(commandQueue);
@@ -980,7 +976,7 @@ public class Buffer extends SmartPointer {
         try (MemoryStack substack = stack.push()) {
             writeLock.lock();
             PointerBuffer dependencies;
-            if (events != null && events.length > 0) {
+            if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
                 dependencies.put(CommandQueue.eventIDs(events));
                 dependencies.rewind();
@@ -991,9 +987,6 @@ public class Buffer extends SmartPointer {
             if (glBuffer != null) {
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
             }
-            PointerBuffer waitList = glBuffer == null
-                ? dependencies
-                : dependencies.getPointerBuffer(1);
             checkBufferReadErrors(switch (target) {
                 case ByteBuffer buffer ->
                     CL10.clEnqueueReadBuffer(
@@ -1002,7 +995,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case ShortBuffer buffer ->
@@ -1012,7 +1005,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case IntBuffer buffer ->
@@ -1022,7 +1015,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case FloatBuffer buffer ->
@@ -1032,7 +1025,7 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 case DoubleBuffer buffer ->
@@ -1042,16 +1035,16 @@ public class Buffer extends SmartPointer {
                         blocking,
                         offset,
                         buffer,
-                        waitList,
+                        dependencies,
                         event
                     );
                 default -> throw new IllegalArgumentException("Wrong buffer type.");
             });
-            if (events != null && glBuffer == null) {
+            if (glBuffer == null) {
                 for (CommandQueue.Event dependency : events) {
                     dependency.close();
                 }
-            } else if (glBuffer != null) {
+            } else if (dependencies != null) {
                 releaseGLObjects(commandQueue, dependencies, event);
             }
             this.reference(commandQueue);
@@ -1112,7 +1105,7 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, dependencies, event));
             if (events != null && glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
@@ -1176,7 +1169,7 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, dependencies, event));
             if (events != null && glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
@@ -1240,11 +1233,11 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, dependencies, event));
             if (events != null && glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
-            else if (glBuffer != null)
+            else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
             this.reference(commandQueue);
             return event.get(0);
@@ -1304,7 +1297,7 @@ public class Buffer extends SmartPointer {
             PointerBuffer event = substack.mallocPointer(1);
             if (glBuffer != null)
                 acquireGLObjects(substack, commandQueue, dependencies, event, events);
-            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, glBuffer == null ? dependencies : dependencies.getPointerBuffer(1), event));
+            checkBufferReadErrors(CL10.clEnqueueReadBuffer(commandQueue.commandQueue, this.handle, blocking, offset, target, dependencies, event));
             if (events != null && glBuffer == null)
                 for (CommandQueue.Event dependency : events)
                     dependency.close();
@@ -1381,7 +1374,8 @@ public class Buffer extends SmartPointer {
     private void releaseGLObjects(CommandQueue commandQueue, PointerBuffer dependencies, PointerBuffer event) {
         dependencies.put(0, event.get(0)).rewind();
         CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, dependencies, event);
-        CL10.clReleaseEvent(dependencies.get(0));
+        if (dependencies.get(0) != MemoryUtil.NULL)
+            CL10.clReleaseEvent(dependencies.get(0));
     }
 
     /**
