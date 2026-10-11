@@ -6,6 +6,7 @@ import org.lwjgl.opencl.CL20;
 import org.lwjgl.opencl.KHRDepthImages;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Order of channels in an image.
@@ -119,6 +120,6 @@ public enum ChannelOrder {
         for (int i = 0; i < CL_VALS.length; i++)
             CL_VALS[i] = values[i].order;
         Arrays.sort(CL_VALS);
-        Arrays.sort(values, (lhs, rhs) -> lhs.order - rhs.order - rhs.order);
+        Arrays.sort(values, Comparator.comparingLong(lhs -> lhs.order));
     }
 }

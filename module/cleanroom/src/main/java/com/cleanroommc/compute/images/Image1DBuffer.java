@@ -401,7 +401,7 @@ public final class Image1DBuffer extends Image1D {
         CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF));
         CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF));
         format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
-        descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE1D).image_width(size)
+        descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE1D_BUFFER).image_width(size)
             .image_row_pitch(hostMemory != null ? size * channelType.sizeof(channelOrder) : 0)
             .mem_object(buffer.handle);
         if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch())
