@@ -1,0 +1,39 @@
+{
+  "file_name": "pipe_test.cl",
+  "requirements": {
+    "pipes": true
+  },
+  "kernels": {
+    "produce": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "packets": "pipe int",
+        "count": "int",
+        "status": "int*"
+      }
+    },
+    "consume": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "packets": "pipe int",
+        "count": "int",
+        "output": "int*",
+        "status": "int*"
+      }
+    },
+    "empty": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "packets": "pipe int",
+        "output": "int*"
+      }
+    },
+    "overflow": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "packets": "pipe int",
+        "output": "int*"
+      }
+    }
+  }
+}
