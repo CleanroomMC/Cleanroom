@@ -17,12 +17,10 @@ public class SweepTask implements Runnable {
                     return;
             }
             GarbageCollector.INSTANCE.sweep();
-            GarbageCollector.INSTANCE.doneCleaning.compareAndExchangeRelease(false, true);
         } while (running.getAcquire());
     }
 
     public void unlock() {
-        if (!GarbageCollector.INSTANCE.doneCleaning.getAcquire())
-            spinlock.unlock();
+        spinlock.unlock();
     }
 }
