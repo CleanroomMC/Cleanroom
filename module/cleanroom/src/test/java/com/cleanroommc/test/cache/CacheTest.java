@@ -246,6 +246,18 @@ public class CacheTest {
     }
 
     @Test
+    void lazyContentIsProducedOnlyOnMiss() throws IOException {
+        var calls = new AtomicInteger();
+        var request = cache.fromBytes(() -> ("build" + calls.incrementAndGet()).getBytes(UTF_8));
+        var file = request.get("lazy");
+        assertEquals("build1", read(request.get("lazy")));
+        assertEquals(1, calls.get());
+        Files.writeString(file, "corrupt");
+        assertEquals("build2", read(request.get("lazy")));
+        assertEquals("hello", read(cache.fromBuffer(() -> UTF_8.encode("hello")).get("lazyBuffer")));
+    }
+
+    @Test
     void greaterVersionReingests() throws IOException {
         cache.fromString("1", UTF_8).version("1.0").get("v");
         assertEquals("2", read(cache.fromString("2", UTF_8).version("1.10").get("v")));

@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Callable;
 
 /**
  * A file cache confined to a root directory.
@@ -85,9 +86,27 @@ public final class Cache {
     }
 
     public CacheRequest fromBuffer(ByteBuffer buffer) {
+        return new CacheRequest(this, new CacheRequest.Bytes(bytes(buffer)));
+    }
+
+    /**
+     * The content is only produced when the entry has to be ingested, and need not be the same each time.
+     */
+    public CacheRequest fromBytes(Callable<byte[]> content) {
+        return new CacheRequest(this, new CacheRequest.Lazy(content));
+    }
+
+    /**
+     * The content is only produced when the entry has to be ingested, and need not be the same each time.
+     */
+    public CacheRequest fromBuffer(Callable<ByteBuffer> content) {
+        return fromBytes(() -> bytes(content.call()));
+    }
+
+    private static byte[] bytes(ByteBuffer buffer) {
         var bytes = new byte[buffer.remaining()];
         buffer.duplicate().get(bytes);
-        return new CacheRequest(this, new CacheRequest.Bytes(bytes));
+        return bytes;
     }
 
     Path entry(String name) {

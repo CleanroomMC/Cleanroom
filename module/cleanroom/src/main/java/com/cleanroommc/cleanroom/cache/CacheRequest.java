@@ -72,6 +72,8 @@ public final class CacheRequest {
 
     record Bytes(byte[] bytes) implements Source { }
 
+    record Lazy(Callable<byte[]> content) implements Source { }
+
     private enum Mode { GET, PUT, REVALIDATE }
 
     /**
@@ -209,7 +211,7 @@ public final class CacheRequest {
             return new Lookup(meta, path, isStale(meta), sha256);
         }
         CleanroomLog.get().warn("Cache entry {} is missing or corrupt, restoring it", path);
-        return new Lookup(meta, null, false, pinned);
+        return new Lookup(meta, null, false, source instanceof Lazy ? sha256 : pinned);
     }
 
     // Marking the entry checked up front stops concurrent and failing revalidations from repeating
@@ -486,6 +488,15 @@ public final class CacheRequest {
             }
             case Local(var file) -> Files.newInputStream(file);
             case Bytes(var bytes) -> new ByteArrayInputStream(bytes);
+            case Lazy(var content) -> {
+                try {
+                    yield new ByteArrayInputStream(content.call());
+                } catch (IOException | RuntimeException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new IOException(e);
+                }
+            }
             case Remote _ -> throw new IllegalStateException();
         };
     }
