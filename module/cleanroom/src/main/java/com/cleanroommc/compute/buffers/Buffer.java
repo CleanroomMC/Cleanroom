@@ -1319,7 +1319,7 @@ public class Buffer extends SmartPointer {
     public void close() {
         super.close();
         for(Buffer child : children) {
-            if (child.isClosed())
+            if (!child.isClosed())
                 child.close();
         }
         cleanable.clean();
