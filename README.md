@@ -24,7 +24,7 @@ If you want to...
 
 - [CleanroomGradle](https://github.com/CleanroomMC/CleanroomGradle): Gradle plugin for Cleanroom development
 - [Conventions](https://github.com/CleanroomMC/Conventions): Cleanroom code conventions
-- Modding Templates: [CleanroomModTemplate](https://github.com/CleanroomMC/CleanroomModTemplate), [ForgeDevEnv](https://github.com/CleanroomMC/ForgeDevEnv)
+- Modding Templates: [CleanroomModTemplate](https://github.com/CleanroomMC/CleanroomModTemplate)
 - Modpack Resources: [Preparing Your Modpack](https://cleanroommc.com/wiki/end-user-guide/preparing-your-modpack), [PackCompanion](https://github.com/AnasDevO/PackTemplateCompanion)
 
 ### User Experience
@@ -41,8 +41,21 @@ If you want to...
 
 ### Architecture Overhaul
 
-- (Planned) Strata: A unified asset loading pipeline for Cleanroom. Refer to [Proposal 584](https://github.com/CleanroomMC/Cleanroom/discussions/584)
 - (WIP) [Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine): It's an attempt to establish an explicit rendering runtime over Minecraft
+- (Planned) Strata: A unified asset loading pipeline for Cleanroom. Refer to [Proposal 584](https://github.com/CleanroomMC/Cleanroom/discussions/584)
+
+### Content Mods / Remakes
+
+[Refitbench](https://github.com/Refitbench): Suborganization of CleanroomMC that concentrates on refitting, maintaining and developing old open-source mods on 1.12.2
+
+- [HadEnoughItems](https://github.com/CleanroomMC/HadEnoughItems)
+- [AgriCraft](https://github.com/Refitbench/AgriCraft)
+- [BetterPortalsRefitted](https://github.com/Refitbench/BetterPortalsRefitted)
+- [CodeChickenLib](https://github.com/Refitbench/CodeChickenLib)
+- [SpongeForge](https://github.com/Refitbench/SpongeForge)
+- [MatterOverdrive](https://github.com/Refitbench/MatterOverdrive)
+- [Dyson-Cube-Project](https://github.com/Refitbench/Dyson-Cube-Project)
+- (WIP) Backportium: A proper and modular port of modern Minecraft contents
 
 ## Kirino Engine
 
