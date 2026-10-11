@@ -1,21 +1,15 @@
 package com.cleanroommc.client.modlist.screen.widget;
 
-import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class ModListTextButton extends GuiButton {
-    private static final ResourceLocation BUTTON = ModListConstants.resource("textures/gui/sprites/widget/button.png");
-    private static final ResourceLocation BUTTON_DISABLED = ModListConstants.resource("textures/gui/sprites/widget/button_disabled.png");
-    private static final ResourceLocation BUTTON_HIGHLIGHTED = ModListConstants.resource("textures/gui/sprites/widget/button_highlighted.png");
-    private static final RenderUtils.NineSlice BUTTON_SLICE = new RenderUtils.NineSlice(200, 20, 3);
     private final @Nullable Consumer<ModListTextButton> onPress;
 
     public ModListTextButton(int x, int y, int width, int height, String text, @Nullable Consumer<ModListTextButton> onPress) {
@@ -38,11 +32,9 @@ public class ModListTextButton extends GuiButton {
 
     @SuppressWarnings("unused")
     protected void renderBackground(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        mc.getTextureManager().bindTexture(this.enabled ? (this.hovered ? BUTTON_HIGHLIGHTED : BUTTON) : BUTTON_DISABLED);
-        RenderUtils.blitNineSlicedSprite(BUTTON_SLICE, this.x, this.y, this.width, this.height);
+        mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
+        GuiUtils.drawContinuousTexturedBox(this.x, this.y, 0, 46 + this.getHoverState(this.hovered) * 20,
+            this.width, this.height, 200, 20, 2, this.zLevel);
     }
 
     @SuppressWarnings("unused")

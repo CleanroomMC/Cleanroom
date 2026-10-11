@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nullable;
@@ -143,9 +144,7 @@ public class DropdownMenu extends Gui {
     }
 
     private static class MenuItem extends Gui {
-        private static final ResourceLocation TEXTURE = ModListConstants.resource("textures/gui/sprites/dropdown/item.png");
-        private static final ResourceLocation HIGHLIGHTED_TEXTURE = ModListConstants.resource("textures/gui/sprites/dropdown/item_highlighted.png");
-        private static final RenderUtils.NineSlice MENU_ITEM_SLICE = new RenderUtils.NineSlice(12, 12, 2);
+        private static final ResourceLocation TEXTURE = ModListConstants.resource("textures/gui/dropdown.png");
 
         protected final DropdownMenu parent;
         private final @Nullable Runnable onClick;
@@ -177,11 +176,9 @@ public class DropdownMenu extends Gui {
             if (!this.visible) return;
             this.hovered = RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
 
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            minecraft.getTextureManager().bindTexture(this.hovered || this.selected() ? HIGHLIGHTED_TEXTURE : TEXTURE);
-            RenderUtils.blitNineSlicedSprite(MENU_ITEM_SLICE, this.x, this.y, this.width, this.height);
+            minecraft.getTextureManager().bindTexture(TEXTURE);
+            GuiUtils.drawContinuousTexturedBox(this.x, this.y, this.hovered || this.selected() ? 12 : 0, 0,
+                this.width, this.height, 12, 12, 2, this.zLevel);
 
             FontRenderer font = minecraft.fontRenderer;
             int offset = (this.height - font.FONT_HEIGHT) / 2 + 1;
