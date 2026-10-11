@@ -20,7 +20,7 @@ If you want to...
 
 ### User Experience
 
-- Better Performance In General
+- Better performance and faster instance launching
 - [CleanroomRelauncher](https://github.com/CleanroomMC/CleanroomRelauncher): Forge mod that relaunches the Forge instance with Cleanroom
 - CJK IME-Friendly Input Handling: Allow gameplay keys such as WASD to function properly with IMEs on
 - (Planned) Pre-Splash Bootstrap Screen: Show immediate launching feedback, so large modpacks don't hang before launching. Refer to [Proposal 650](https://github.com/CleanroomMC/Cleanroom/discussions/650)
@@ -33,7 +33,7 @@ If you want to...
 
 ### Architecture Overhaul
 
-- (WIP) [Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine): It's an attempt to establish an explicit rendering runtime over Minecraft
+- (WIP) [Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine): It's a work-in-progress explicit rendering runtime for Minecraft
 - (Planned) Strata: A unified asset loading pipeline for Cleanroom. Refer to [Proposal 584](https://github.com/CleanroomMC/Cleanroom/discussions/584)
 
 ### Content Mods / Remakes
