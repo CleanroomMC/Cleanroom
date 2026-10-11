@@ -24,6 +24,6 @@ public record VectorType(OpenCLPrimitive primitive, int length) implements OpenC
 
     @Override
     public int sizeof() {
-        return primitive.sizeof * length;
+        return primitive.sizeof * (length + (length == 3 ? 1 : 0));
     }
 }
