@@ -11,6 +11,7 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
 import org.lwjgl.opencl.KHRMipmapImage;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.lang.ref.Cleaner;
 import java.nio.IntBuffer;
@@ -85,8 +86,8 @@ public final class Sampler extends SmartPointer {
         this.mipmapFilteringMode = mipmapFilteringMode;
         this.levelOfDetailMinimum = levelOfDetailMinimum;
         this.levelOfDetailMaximum = levelOfDetailMaximum;
-        try (MemoryStack stack = MemoryStack.create(); MemoryStack substack = stack.push()) {
-            LongBuffer buf = substack.callocLong(mipmapFilteringMode != null ? 6 : 3);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            LongBuffer buf = stack.callocLong((mipmapFilteringMode != null ? 12 : 6) + 1);
             buf.put(CL20.CL_SAMPLER_NORMALIZED_COORDS).put(normalized ? CL10.CL_TRUE : CL10.CL_FALSE);
             buf.put(CL20.CL_SAMPLER_ADDRESSING_MODE).put(addressingMode.addressingMode);
             buf.put(CL20.CL_SAMPLER_FILTER_MODE).put(filteringMode.filteringMode);
@@ -95,8 +96,8 @@ public final class Sampler extends SmartPointer {
                 buf.put(KHRMipmapImage.CL_SAMPLER_LOD_MIN_KHR).put(Float.floatToRawIntBits(levelOfDetailMinimum));
                 buf.put(KHRMipmapImage.CL_SAMPLER_LOD_MAX_KHR).put(Float.floatToRawIntBits(levelOfDetailMaximum));
             }
-            buf.rewind();
-            IntBuffer err = substack.mallocInt(1);
+            buf.put(MemoryUtil.NULL).rewind();
+            IntBuffer err = stack.mallocInt(1);
             long res = CL20.clCreateSamplerWithProperties(Compute.instance().context, buf, err);
             switch (err.get(0)) {
                 case CL10.CL_INVALID_VALUE -> throw new ImageError("Unsupported sampler property.");
