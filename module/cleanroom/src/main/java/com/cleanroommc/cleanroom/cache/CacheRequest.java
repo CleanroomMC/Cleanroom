@@ -58,7 +58,7 @@ public final class CacheRequest {
 
     // Serializes threads of this JVM, file locks only exclude other processes
     private static final ConcurrentHashMap<Path, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Path, CompletableFuture<Void>> INGESTING = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Path, CompletableFuture<@Nullable Void>> INGESTING = new ConcurrentHashMap<>();
     private static final Set<Path> SWEPT = ConcurrentHashMap.newKeySet();
 
     sealed interface Source { }
@@ -184,16 +184,17 @@ public final class CacheRequest {
         }
         if (lookup.path() != null) {
             if (lookup.stale() && claimRevalidation(file, lookup.meta().getProperty(SHA256))) {
-                async(() -> fetch(name, Mode.REVALIDATE)).exceptionally(t -> {
-                    CleanroomLog.get().warn("Cannot revalidate cache entry {}, keeping it", file, t);
-                    return null;
+                async(() -> fetch(name, Mode.REVALIDATE)).whenComplete((_, t) -> {
+                    if (t != null) {
+                        CleanroomLog.get().warn("Cannot revalidate cache entry {}, keeping it", file, t);
+                    }
                 });
             }
             return lookup.path();
         }
         // Concurrent gets of one entry share a single ingestion, then look again
-        CompletableFuture<Void> ingesting = new CompletableFuture<>();
-        CompletableFuture<Void> running = INGESTING.putIfAbsent(file, ingesting);
+        CompletableFuture<@Nullable Void> ingesting = new CompletableFuture<>();
+        CompletableFuture<@Nullable Void> running = INGESTING.putIfAbsent(file, ingesting);
         if (running != null) {
             await(running);
             return fetch(name, mode);
@@ -272,12 +273,15 @@ public final class CacheRequest {
         return locked(file, meta -> {
             String previous = meta.getProperty(SHA256);
             String hash = fetched.hash();
+            String current;
             if (hash == null) {
                 // A 304 only vouches for the content it was asked about
-                if (!Objects.equals(previous, seen.getProperty(SHA256))) {
-                    return stored(file, seen.getProperty(SHA256));
+                current = Objects.requireNonNull(seen.getProperty(SHA256));
+                if (!current.equals(previous)) {
+                    return stored(file, current);
                 }
             } else {
+                current = hash;
                 Path target = stored(file, hash);
                 cache.checkLinks(target);
                 // Identical content is kept, it may be open elsewhere
@@ -301,7 +305,7 @@ public final class CacheRequest {
                 // Starts the superseded version's grace period
                 touch(versions(file).resolve(directory(previous)));
             }
-            return stored(file, hash != null ? hash : previous);
+            return stored(file, current);
         });
     }
 
@@ -355,7 +359,7 @@ public final class CacheRequest {
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
                 // Whoever takes the reader first decides whether the interrupt happens
-                AtomicReference<Thread> reader = new AtomicReference<>(Thread.currentThread());
+                AtomicReference<@Nullable Thread> reader = new AtomicReference<>(Thread.currentThread());
                 ScheduledFuture<?> watchdog = Http.WATCHDOG.schedule(() -> {
                     synchronized (reader) {
                         Thread thread = reader.getAndSet(null);
@@ -490,7 +494,7 @@ public final class CacheRequest {
         }
     }
 
-    private static void await(CompletableFuture<Void> running) throws IOException {
+    private static void await(CompletableFuture<@Nullable Void> running) throws IOException {
         try {
             running.get();
         } catch (InterruptedException e) {

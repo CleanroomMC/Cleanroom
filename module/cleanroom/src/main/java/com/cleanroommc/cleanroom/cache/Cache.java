@@ -14,11 +14,29 @@ import java.util.concurrent.Callable;
 /**
  * A file cache confined to a root directory.
  * <p>
+ * Pick a cache with {@link #instance()} or {@link #global()}, optionally narrow it with {@link #namespace},
+ * describe the content with a {@code from} method, then fetch it under an entry name:
+ * <pre>{@code
+ * Path jar = Cache.global()
+ *         .namespace("mymod")
+ *         .fromUrl(URI.create("https://example.com/lib-1.2.jar"))
+ *         .expectSha256("2cf24d...")        // optional, the hash is otherwise pinned on first ingestion
+ *         .version("1.2")                   // optional, re-ingests when greater than the cached version
+ *         .revalidateIf(Duration.ofDays(1)) // optional, URLs only
+ *         .get("libs/lib.jar");
+ * }</pre>
+ * {@link CacheRequest#get} only ingests when it has to, {@link CacheRequest#put} always does.
+ * Both have async variants that run on a virtual thread.
+ * <p>
  * Entries are named by relative paths that may never leave the root, or pass through a symbolic link.
  * <p>
  * Every entry pins its SHA-256 and is verified on each access.
  * <p>
  * Each content version has its own path, so updates never replace a file that may be open.
+ * Treat returned paths as read-only, and fetch again instead of keeping one across an update.
+ * <p>
+ * Failures are {@link java.io.IOException}s, the cache's own are {@link CacheException}s told apart by {@link CacheException#kind()}.
+ * Setting {@code cleanroom.cache.offline} to {@code true} stops all URL fetches, cached entries are still served.
  */
 public final class Cache {
 

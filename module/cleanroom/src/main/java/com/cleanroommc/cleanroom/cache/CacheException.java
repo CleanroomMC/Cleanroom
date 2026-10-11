@@ -1,5 +1,7 @@
 package com.cleanroommc.cleanroom.cache;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.IOException;
 
 /**
@@ -34,7 +36,7 @@ public final class CacheException extends IOException {
         this.kind = kind;
     }
 
-    CacheException(Kind kind, String message, Throwable cause) {
+    CacheException(Kind kind, String message, @Nullable Throwable cause) {
         super(message, cause);
         this.kind = kind;
     }
