@@ -129,8 +129,10 @@ public final class CacheRequest {
      * Content must match this SHA-256, otherwise it is pinned on first ingestion and verified from then on.
      */
     public CacheRequest expectSha256(String hex) {
-        Preconditions.checkArgument(hex.length() == 64, "SHA-256 must be 64 hexadecimal characters: %s", hex);
-        this.sha256 = HexFormat.of().formatHex(HexFormat.of().parseHex(hex));
+        hex = hex.toLowerCase(Locale.ROOT);
+        Preconditions.checkArgument(HEX_SHA256.matcher(hex).matches(), "SHA-256 must be 64 hexadecimal characters: %s", hex);
+
+        this.sha256 = hex;
         return this;
     }
 
