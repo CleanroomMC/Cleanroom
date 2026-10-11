@@ -379,18 +379,17 @@ public final class CacheRequest {
     }
 
     private <T> T locked(Path file, Locked<T> action) throws IOException {
-        var lock = LOCKS.computeIfAbsent(file, _ -> new ReentrantLock());
-        lock.lock();
-        try {
-            cache.checkLinks(metaFile(file));
-            Files.createDirectories(file.getParent());
-            var lockFile = file.resolveSibling(file.getFileName() + Cache.LOCK);
-            try (var channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS);
-                 var _ = channel.lock()) {
+        cache.checkLinks(metaFile(file));
+        Files.createDirectories(file.getParent());
+        var lockFile = file.resolveSibling(file.getFileName() + Cache.LOCK);
+        try (var channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS)) {
+            var lock = LOCKS.computeIfAbsent(lockFile.toRealPath(), _ -> new ReentrantLock());
+            lock.lock();
+            try (var _ = channel.lock()) {
                 return action.run(readMeta(file));
+            } finally {
+                lock.unlock();
             }
-        } finally {
-            lock.unlock();
         }
     }
 
