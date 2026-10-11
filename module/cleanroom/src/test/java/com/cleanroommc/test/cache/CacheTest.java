@@ -22,10 +22,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -302,6 +304,31 @@ public class CacheTest {
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
         futures.forEach(future -> assertEquals("hello", read(future.join())));
         assertEquals(1, requests.get());
+    }
+
+    @Test
+    void putAsyncAlwaysIngests() {
+        cache.fromUrl(url("/hello")).putAsync("hello").join();
+        assertEquals("hello", read(cache.fromUrl(url("/hello")).putAsync("hello").join()));
+        assertEquals(2, requests.get());
+    }
+
+    @Test
+    void asyncFailuresCompleteExceptionally() {
+        var future = cache.fromUrl(url("/stall")).getAsync("stall");
+        assertFalse(future.isDone());
+        var e = assertThrows(CompletionException.class, future::join);
+        assertEquals(CacheException.Kind.OFFLINE, assertInstanceOf(CacheException.class, e.getCause()).kind());
+    }
+
+    @Test
+    void asyncRunsOnAVirtualThread() {
+        var virtual = new AtomicBoolean();
+        cache.fromBytes(() -> {
+            virtual.set(Thread.currentThread().isVirtual());
+            return "hello".getBytes(UTF_8);
+        }).getAsync("virtual").join();
+        assertTrue(virtual.get());
     }
 
     @Test
