@@ -66,6 +66,24 @@ Expect everything to run properly as how 1.12 Forge did.
 Advanced OpenGL implementations that macOS doesn't support have fallbacks and won't crash.
 However, we have no guarantee that mods provide fallbacks as well.
 
+## Version Histories
+
+<details>
+<summary>Click to Expand</summary>
+
+...
+
+### 0.6
+
+### 0.7
+
+- LWJGLY & SDL migration
+- Caching API
+- Compute API
+- Kirino's font rendering and some vector graphics APIs
+
+</details>
+
 ## Installation
 
 > [!IMPORTANT]
