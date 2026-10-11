@@ -254,6 +254,9 @@ public final class Text {
      * Applies an {@code SDL_EVENT_TEXT_EDITING} event from the window's pump.
      */
     public synchronized void editing(SDL_TextEditingEvent event) {
+        if (!this.active()) {
+            return;
+        }
         this.composition = composition(event);
         if (!this.composition.active()) {
             this.candidates = InputCandidates.NONE;
@@ -264,6 +267,9 @@ public final class Text {
      * Applies an {@code SDL_EVENT_TEXT_EDITING_CANDIDATES} event from the window's pump.
      */
     public synchronized void editingCandidates(SDL_TextEditingCandidatesEvent event) {
+        if (!this.active()) {
+            return;
+        }
         this.candidates = candidates(event);
     }
 
@@ -297,6 +303,7 @@ public final class Text {
     }
 
     private void stop() {
+        SDL.check(SDLKeyboard.SDL_ClearComposition(this.handle()), "SDL_ClearComposition");
         SDL.check(SDLKeyboard.SDL_StopTextInput(this.handle()), "SDL_StopTextInput");
         this.reset();
     }

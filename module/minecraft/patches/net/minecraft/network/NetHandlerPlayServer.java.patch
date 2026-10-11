@@ -113,3 +113,13 @@
                      this.player
                          .connection
                          .sendPacket(new SPacketConfirmTransaction(packetIn.getWindowId(), packetIn.getActionNumber(), true));
+@@ -1218,8 +1232,7 @@
+         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
+         List<String> list = Lists.newArrayList();
+ 
+-        for (String s : this.server
+-            .getTabCompletions(this.player, packetIn.getMessage(), packetIn.getTargetBlock(), packetIn.hasTargetBlock())) {
++        for (String s : com.cleanroommc.client.chat.suggestion.TabCompleteHooks.getTabCompletions(this.server, this.player, packetIn)) {
+             list.add(s);
+         }
+ 

@@ -123,7 +123,7 @@ public final class AudioDevices {
             }
             return List.copyOf(devices);
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 

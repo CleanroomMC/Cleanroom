@@ -141,3 +141,11 @@
      }
  
      @Override
+@@ -1108,6 +1142,7 @@
+     /** Send a chat message to the CommandSender */
+     @Override
+     public void sendMessage(ITextComponent component) {
++        if (com.cleanroommc.client.chat.suggestion.TabCompleteHooks.isCompleting(this)) return;
+         this.connection.sendPacket(new SPacketChat(component));
+     }
+ 

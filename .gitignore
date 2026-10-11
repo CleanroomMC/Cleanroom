@@ -1,3 +1,127 @@
+# >>> cleanroom-conventions
+# Managed by CleanroomMC/Conventions. Do not edit the marked region locally.
+# Change it there and bump the convention plugin version instead.
+# Project-specific ignores go below the closing marker.
+#
+# Scope: JVM projects. Java, Kotlin, Groovy, Scala, and the build tools around them.
+
+# Build output
+build/
+!**/src/**/build/
+out/
+!**/src/**/out/
+bin/
+!**/src/**/bin/
+target/
+!**/src/**/target/
+classes/
+!**/src/**/classes/
+dist/
+!**/src/**/dist/
+*.class
+*.tasty
+
+# Gradle
+.gradle/
+gradle-app.setting
+.gradletasknamecache
+local.properties
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Maven
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+dependency-reduced-pom.xml
+buildNumber.properties
+.flattened-pom.xml
+
+# sbt and Scala
+.bsp/
+.bloop/
+.metals/
+.scala-build/
+project/project/
+project/target/
+.scala_dependencies
+.worksheet
+
+# Kotlin
+.kotlin/
+*.kotlin_module
+.kotlin_native/
+
+# IntelliJ IDEA
+# The code style is convention-owned and must stay tracked
+.idea/*
+!.idea/codeStyles/
+!.idea/codeStyles/**
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+atlassian-ide-plugin.xml
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+.apt_generated/
+.apt_generated_tests/
+.factorypath
+.springBeans
+.sts4-cache/
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JVM crash and profiling output
+hs_err_pid*
+replay_pid*
+*.hprof
+*.jfr
+*.log
+
+# Minecraft Development
+run/
+!**/src/**/run/
+logs/
+!**/src/**/logs/
+crash-reports/
+.mixin.out/
+
+# OS noise
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editors and temporary files
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+*.rej
+# <<< cleanroom-conventions
 **/.idea/*
 **/.run/
 **/.gradle/

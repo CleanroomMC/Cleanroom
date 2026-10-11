@@ -41,7 +41,7 @@ public final class Haptics {
             ids.get(copy);
             return copy;
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 

@@ -21,7 +21,7 @@
                  int l1 = l + this.fontRenderer.getStringWidth(s.substring(0, k));
                  this.drawSelectionBox(k1, i1 - 1, l1 - 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT);
              }
-+            com.cleanroommc.client.sdl.SDLHooks.textFieldDraw(this);
++            com.cleanroommc.client.sdl.SDLHooks.textFieldDraw(this, l, i1);
          }
      }
  
@@ -33,19 +33,7 @@
          }
      }
  
-@@ -519,6 +522,11 @@
-         }
- 
-         this.isFocused = isFocusedIn;
-+        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.window();
-+        if (window != null) {
-+            window.text().active(isFocusedIn);
-+        }
-+
-         if (Minecraft.getMinecraft().currentScreen != null) {
-             Minecraft.getMinecraft().currentScreen.setFocused(isFocusedIn);
-         }
-@@ -592,4 +600,8 @@
+@@ -592,4 +595,8 @@
      public void setVisible(boolean isVisible) {
          this.visible = isVisible;
      }

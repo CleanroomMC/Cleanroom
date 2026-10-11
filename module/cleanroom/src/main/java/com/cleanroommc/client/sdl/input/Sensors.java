@@ -86,7 +86,7 @@ public final class Sensors {
                 open(ids.get());
             }
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 

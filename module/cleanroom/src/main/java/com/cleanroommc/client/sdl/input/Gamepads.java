@@ -125,7 +125,7 @@ public final class Gamepads {
                 open(ids.get());
             }
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 

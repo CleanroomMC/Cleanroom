@@ -114,7 +114,7 @@ public final class Cameras {
                 remember(ids.get());
             }
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 

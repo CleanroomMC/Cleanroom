@@ -72,7 +72,7 @@ public final class Display {
             }
             return List.copyOf(modes);
         } finally {
-            SDLStdinc.SDL_free(pointers);
+            SDLStdinc.SDL_free(pointers.rewind());
         }
     }
 

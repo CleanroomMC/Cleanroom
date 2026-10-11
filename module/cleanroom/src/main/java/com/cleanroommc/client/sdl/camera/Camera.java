@@ -64,7 +64,7 @@ public final class Camera implements AutoCloseable {
             }
             return List.copyOf(specs);
         } finally {
-            SDLStdinc.SDL_free(pointers);
+            SDLStdinc.SDL_free(pointers.rewind());
         }
     }
 

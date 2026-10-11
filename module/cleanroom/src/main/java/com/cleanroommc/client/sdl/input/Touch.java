@@ -45,7 +45,7 @@ public final class Touch {
             }
             return List.copyOf(fingers);
         } finally {
-            SDLStdinc.SDL_free(pointers);
+            SDLStdinc.SDL_free(pointers.rewind());
         }
     }
 
