@@ -136,14 +136,16 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         PointerBuffer glObjects = null;
         if (Compute.instance().glSharing) {
             glObjects = getGLObjects(stack, arguments, commandQueue);
-            CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
-            if (eventWaitList == null)
-                eventWaitList = stack.mallocPointer(1);
-            eventWaitList.put(0, event.get(0)).rewind();
+            if (glObjects != null) {
+                CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
+                if (eventWaitList == null)
+                    eventWaitList = stack.mallocPointer(1);
+                eventWaitList.put(0, event.get(0)).rewind();
+            }
         }
         switch (CL10.clEnqueueNDRangeKernel(commandQueue.commandQueue, kernel,
             dim, offsets, sizes, local,
-            glObjects == null ? eventWaitList : eventWaitList.getPointerBuffer(0), event)) {
+            eventWaitList, event)) {
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
             case CL10.CL_INVALID_WORK_DIMENSION -> throw new KernelError(String.format("Invalid work dimension %d", dim));
             case CL10.CL_INVALID_GLOBAL_WORK_SIZE -> throw new KernelError("Work group size is invalid.");
@@ -154,7 +156,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         if (glObjects == null)
             for (CommandQueue.Event dependency : dependencies)
                 dependency.close();
-        else {
+        else if (eventWaitList.get(0) != 0) {
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
             event.rewind();
@@ -245,7 +247,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      * @param queue since samplers and pipes don't have functions that get queued, this is where the referencing happens.
      * @return List of GL objects.
      */
-    private static PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters, CommandQueue queue) {
+    private static @Nullable PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters, CommandQueue queue) {
         List<BufferParameter> buffers = new ReferenceArrayList<>();
         List<ImageParameter<?>> images = new ReferenceArrayList<>();
         parameters.forEach(p -> {
@@ -259,6 +261,8 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
                 HOLDER.reference(sampler, queue);
             }
         });
+        if (buffers.isEmpty() && images.isEmpty())
+            return null;
         PointerBuffer handles = stack.mallocPointer(buffers.size() + images.size());
         for (BufferParameter buffer : buffers) {
             handles.put(buffer.buffer().handle);
