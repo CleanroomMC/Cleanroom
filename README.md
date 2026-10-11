@@ -18,11 +18,53 @@ If you want to...
 - ImagineBreaker
 - Netty 4.2, Guava 33, Apache HttpClient 5, Jakarta APIs and more
 
+## Platform Direction
+
+### Developer Experience
+
+- [CleanroomGradle](https://github.com/CleanroomMC/CleanroomGradle): Gradle plugin for Cleanroom development
+- [Conventions](https://github.com/CleanroomMC/Conventions): Cleanroom code conventions
+- Modding Templates: [CleanroomModTemplate](https://github.com/CleanroomMC/CleanroomModTemplate), [ForgeDevEnv](https://github.com/CleanroomMC/ForgeDevEnv)
+- Modpack Resources: [Preparing Your Modpack](https://cleanroommc.com/wiki/end-user-guide/preparing-your-modpack), [PackCompanion](https://github.com/AnasDevO/PackTemplateCompanion)
+
+### User Experience
+
+- Better Performance In General
+- CJK IME-Friendly Input Handling: Allow gameplay keys such as WASD to function properly with IMEs on
+- (Planned) Pre-Splash Bootstrap Screen: Show immediate launching feedback, so large modpacks don't hang before launching. Refer to [Proposal 650](https://github.com/CleanroomMC/Cleanroom/discussions/650)
+- (Planned) Vanilla UI/UX Overhaul: Modern UI/UX design that preserves the vanilla pixel art style
+
+### Platform APIs
+
+- Caching API: A common caching framework for storing expensive data persistently
+- Compute API: A managed computing API that abstracts OpenCL
+
+### Architecture Overhaul
+
+- (Planned) Strata: A unified asset loading pipeline for Cleanroom. Refer to [Proposal 584](https://github.com/CleanroomMC/Cleanroom/discussions/584)
+- (WIP) [Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine): It's an attempt to establish an explicit rendering runtime over Minecraft
+
 ## Kirino Engine
 
 [Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine) ships as a module of this repository and is wired into the loader lifecycle.
 
 It is a work-in-progress rendering engine that replaces Minecraft's implicit render state with an explicit structure, and gives mod authors a real rendering API instead of another layer of mixins.
+
+## FAQs
+
+> Are there plans to migrate to Vulkan?
+
+No, and
+- OpenGL is capable of almost all rendering scenarios, and we're utilizing modern OpenGL features heavily. Modern OpenGL itself isn't technically obsolete
+- OpenGL-to-Vulkan one-to-one mapping type of migration is considered as the worst practice possible. Heavy architectural redesign is required
+- Lack of manpower to maintain multi-backend
+- We'd rather prefer BGFX when we finally come to multi-backend
+
+> How's the (OpenGL related implementations) compatibility with macOS?
+
+Expect everything to run properly as how 1.12 Forge did.
+Advanced OpenGL implementations that macOS doesn't support have fallbacks and won't crash.
+However, we have no guarantee that mods provide fallbacks as well.
 
 ## Installation
 
