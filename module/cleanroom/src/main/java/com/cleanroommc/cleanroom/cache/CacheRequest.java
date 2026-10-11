@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -350,15 +351,27 @@ public final class CacheRequest {
         return new FilterInputStream(body) {
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
-                var watchdog = Http.WATCHDOG.schedule(Thread.currentThread()::interrupt, Http.TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+                // Whoever takes the reader first decides whether the interrupt happens
+                var reader = new AtomicReference<>(Thread.currentThread());
+                var watchdog = Http.WATCHDOG.schedule(() -> {
+                    synchronized (reader) {
+                        var thread = reader.getAndSet(null);
+                        if (thread != null) {
+                            thread.interrupt();
+                        }
+                    }
+                }, Http.TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
                 try {
                     return super.read(b, off, len);
                 } catch (IOException e) {
                     throw new CacheException(CacheException.Kind.OFFLINE, "Lost connection fetching " + uri, e);
                 } finally {
+                    watchdog.cancel(false);
                     // An interrupt that fired as the read returned must not reach the file write
-                    if (!watchdog.cancel(false)) {
-                        Thread.interrupted();
+                    synchronized (reader) {
+                        if (reader.getAndSet(null) == null) {
+                            Thread.interrupted();
+                        }
                     }
                 }
             }
