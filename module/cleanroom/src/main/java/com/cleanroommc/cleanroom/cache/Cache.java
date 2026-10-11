@@ -1,5 +1,6 @@
 package com.cleanroommc.cleanroom.cache;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.launchwrapper.Launch;
 
 import java.net.URI;
@@ -63,9 +64,7 @@ public final class Cache {
 
     public CacheRequest fromUrl(URI uri) {
         var scheme = uri.getScheme();
-        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
-            throw new IllegalArgumentException("Only HTTP(S) URLs can be cached: " + uri);
-        }
+        Preconditions.checkArgument("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme), "Only HTTP(S) URLs can be cached: %s", uri);
         return new CacheRequest(this, new CacheRequest.Remote(uri));
     }
 
@@ -100,6 +99,7 @@ public final class Cache {
      * The content is only produced when the entry has to be ingested, and need not be the same each time.
      */
     public CacheRequest fromBuffer(Callable<ByteBuffer> content) {
+        Preconditions.checkNotNull(content, "Cannot cache a buffer from a null supplier");
         return fromBytes(() -> bytes(content.call()));
     }
 
@@ -111,9 +111,7 @@ public final class Cache {
 
     Path entry(String name) {
         var path = resolve(name);
-        if (path.equals(root)) {
-            throw new IllegalArgumentException("Not a valid cache entry name: " + name);
-        }
+        Preconditions.checkArgument(!path.equals(root), "Not a valid cache entry name: %s", name);
         return path;
     }
 
@@ -130,19 +128,13 @@ public final class Cache {
 
     // Rejecting backslashes and colons on every OS covers drive letters and UNC prefixes
     private Path resolve(String name) {
-        if (name.isEmpty() || name.indexOf('\0') >= 0 || name.indexOf('\\') >= 0 || name.indexOf(':') >= 0) {
-            throw new IllegalArgumentException("Not a valid cache path: " + name);
-        }
+        Preconditions.checkArgument(!name.isEmpty() && name.indexOf('\0') < 0 && name.indexOf('\\') < 0 && name.indexOf(':') < 0, "Not a valid cache path: %s", name);
         var path = root.resolve(name).normalize();
-        if (!path.startsWith(root)) {
-            throw new IllegalArgumentException("Cache path escapes its root: " + name);
-        }
+        Preconditions.checkArgument(path.startsWith(root), "Cache path escapes its root: %s", name);
         // Entries keep their files beside them under these suffixes
         for (var segment : root.relativize(path)) {
             var part = segment.toString();
-            if (part.endsWith(META) || part.endsWith(LOCK) || part.endsWith(VERSIONS)) {
-                throw new IllegalArgumentException("Cache path uses a reserved suffix: " + name);
-            }
+            Preconditions.checkArgument(!part.endsWith(META) && !part.endsWith(LOCK) && !part.endsWith(VERSIONS), "Cache path uses a reserved suffix: %s", name);
         }
         return path;
     }

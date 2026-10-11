@@ -1,6 +1,7 @@
 package com.cleanroommc.cleanroom.cache;
 
 import com.cleanroommc.util.CleanroomLog;
+import com.google.common.base.Preconditions;
 import net.minecraftforge.fml.common.versioning.ComparableVersion;
 import org.jspecify.annotations.Nullable;
 
@@ -66,13 +67,32 @@ public final class CacheRequest {
 
     record Remote(URI uri) implements Source { }
 
-    record Resource(ClassLoader loader, String name) implements Source { }
+    record Resource(ClassLoader loader, String name) implements Source {
 
-    record Local(Path file) implements Source { }
+        Resource {
+            Preconditions.checkNotNull(loader, "Cannot cache resource %s from a null class loader", name);
+            Preconditions.checkNotNull(name, "Cannot cache a resource with a null name");
+        }
+
+    }
+
+    record Local(Path file) implements Source {
+
+        Local {
+            Preconditions.checkNotNull(file, "Cannot cache a null file");
+        }
+
+    }
 
     record Bytes(byte[] bytes) implements Source { }
 
-    record Lazy(Callable<byte[]> content) implements Source { }
+    record Lazy(Callable<byte[]> content) implements Source {
+
+        Lazy {
+            Preconditions.checkNotNull(content, "Cannot cache bytes from a null supplier");
+        }
+
+    }
 
     private enum Mode { GET, PUT, REVALIDATE }
 
@@ -109,9 +129,7 @@ public final class CacheRequest {
      * Content must match this SHA-256, otherwise it is pinned on first ingestion and verified from then on.
      */
     public CacheRequest expectSha256(String hex) {
-        if (hex.length() != 64) {
-            throw new IllegalArgumentException("SHA-256 must be 64 hexadecimal characters: " + hex);
-        }
+        Preconditions.checkArgument(hex.length() == 64, "SHA-256 must be 64 hexadecimal characters: %s", hex);
         this.sha256 = HexFormat.of().formatHex(HexFormat.of().parseHex(hex));
         return this;
     }
