@@ -1024,7 +1024,7 @@ public final class Image2DArray extends Image<Vector3L> {
         CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF));
         CLImageDesc descriptor = new CLImageDesc(container.slice(CLImageFormat.SIZEOF, CLImageDesc.SIZEOF));
         format.image_channel_data_type(channelType.type).image_channel_order(channelOrder.order);
-        descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE2D).image_width(width).image_height(height)
+        descriptor.image_type(CL12.CL_MEM_OBJECT_IMAGE2D_ARRAY).image_width(width).image_height(height)
             .image_row_pitch(hostMemory != null ? width * channelType.sizeof(channelOrder) : 0)
             .num_mip_levels(mipmaps).image_array_size(arraySize);
         if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch())

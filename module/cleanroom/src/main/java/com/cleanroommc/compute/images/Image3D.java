@@ -1031,7 +1031,7 @@ public final class Image3D extends Image<Vector3L> {
             .image_row_pitch(hostMemory != null ? width * channelType.sizeof(channelOrder) : 0)
             .image_slice_pitch(hostMemory != null ? width * height * channelType.sizeof(channelOrder) : 0)
             .num_mip_levels(mipmaps);
-        if (hostMemory != null && hostMemory.remaining() < descriptor.image_row_pitch() * descriptor.image_slice_pitch())
+        if (hostMemory != null && hostMemory.remaining() < descriptor.image_slice_pitch() * depth)
             throw new ImageError(String.format("Image size %d too large for host memory %d.",
                 descriptor.image_row_pitch() * descriptor.image_slice_pitch(), hostMemory.remaining()));
         return new Workaround(stack, memoryFlags, format, descriptor, hostMemory);

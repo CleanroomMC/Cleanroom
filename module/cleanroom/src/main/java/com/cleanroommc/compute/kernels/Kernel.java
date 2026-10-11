@@ -137,10 +137,12 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         if (Compute.instance().glSharing) {
             glObjects = getGLObjects(stack, arguments, commandQueue);
             if (glObjects != null) {
-                CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
-                if (eventWaitList == null)
-                    eventWaitList = stack.mallocPointer(1);
-                eventWaitList.put(0, event.get(0)).rewind();
+                int error = CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
+                if (error != CL10.CL_SUCCESS)
+                    throw new KernelError("Failed to acquire GL objects: " + error);
+                for (CommandQueue.Event dependency : dependencies)
+                    dependency.close();
+                eventWaitList = stack.mallocPointer(1).put(0, event.get(0));
             }
         }
         switch (CL10.clEnqueueNDRangeKernel(commandQueue.commandQueue, kernel,
@@ -160,8 +162,10 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
             event.rewind();
-            CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
+            int error = CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, glObjects, eventWaitList.slice(0, 1), event);
             CL10.clReleaseEvent(eventWaitList.get(0));
+            if (error != CL10.CL_SUCCESS)
+                throw new KernelError("Failed to release GL objects: " + error);
         }
         return event.get(0);
     }
@@ -202,10 +206,15 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         PointerBuffer glObjects = null;
         if (Compute.instance().glSharing) {
             glObjects = getGLObjects(stack, arguments, commandQueue);
-            CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
-            if (eventWaitList == null)
-                eventWaitList = stack.mallocPointer(1);
-            eventWaitList.put(0, event.get(0)).rewind();
+            if (glObjects != null) {
+                int error = CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
+                if (error != CL10.CL_SUCCESS)
+                    throw new KernelError("Failed to acquire GL objects: " + error);
+                if (dependencies != null)
+                    for (CommandQueue.Event dependency : dependencies)
+                        dependency.close();
+                eventWaitList = stack.mallocPointer(1).put(0, event.get(0));
+            }
         }
         switch (CL10.clEnqueueTask(commandQueue.commandQueue, this.kernel, eventWaitList, event)) {
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
@@ -218,8 +227,10 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
             event.rewind();
-            CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, glObjects, eventWaitList.getPointerBuffer(0), event);
+            int error = CL10GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, glObjects, eventWaitList.slice(0, 1), event);
             CL10.clReleaseEvent(eventWaitList.get(0));
+            if (error != CL10.CL_SUCCESS)
+                throw new KernelError("Failed to release GL objects: " + error);
         }
         return event.get(0);
     }
@@ -270,7 +281,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         for (ImageParameter<?> image : images) {
             handles.put(image.image().handle);
         }
-        return handles;
+        return handles.rewind();
     }
 
     private final static MethodHolder HOLDER;

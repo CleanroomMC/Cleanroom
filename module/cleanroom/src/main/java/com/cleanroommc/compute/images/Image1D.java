@@ -245,7 +245,6 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
     @Override
     public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(color.length == 1);
         Preconditions.checkArgument(from + size <= this.size.x);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {

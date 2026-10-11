@@ -9,6 +9,7 @@ import com.cleanroommc.compute.kernels.params.KernelParameterList;
 import com.cleanroommc.compute.programs.ComputeProgram;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeTestRunner;
+import org.apache.commons.io.IOUtils;
 import org.joml.Vector2L;
 import org.joml.Vector3L;
 import org.junit.jupiter.api.AfterAll;
@@ -17,10 +18,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
 import org.lwjgl.system.MemoryStack;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -332,7 +335,7 @@ public class ImageTest {
                     for (int x = 0; x < readWidth; x++)
                         for (int c = 0; c < 4; c++) {
                             int index = ((z * readHeight + y) * readWidth + x) * 4 + c;
-                            int sourceIndex = ((z * regionHeight + y) * regionWidth + x - 2) * 4 + c;
+                            int sourceIndex = ((z * readHeight + y) * readWidth + x - 2) * 4 + c;
                             assertEquals(x >= 3 && x < 6 ? expected.get(sourceIndex) : -1.f, result.get(index), String.format("Element (%d;%d;%d;%d)", x, y, z, c));
                         }
         }
@@ -396,7 +399,7 @@ public class ImageTest {
             long requiredHostSize = shape == Shape.IMAGE_3D
                 ? (long) shape.width * 16 * shape.width * shape.height * 16
                 : (long) shape.elements() * Float.BYTES;
-            var host = stack.calloc(Math.toIntExact(Math.max(requiredHostSize, (long) shape.elements() * Float.BYTES)));
+            ByteBuffer host = BufferUtils.createByteBuffer(Math.multiplyExact(shape.elements(), Float.BYTES));
             FloatBuffer hostValues = host.asFloatBuffer();
             for (int i = 0; i < expected.capacity(); i++)
                 hostValues.put(i, expected.get(i));
@@ -406,7 +409,7 @@ public class ImageTest {
                 : new Image2DArray(stack, BufferFlags.READ_WRITE, shape.width, shape.height, 0,
                 shape.depth, ChannelType.FLOAT, ChannelOrder.RGBA, host);
             try (ImageResource resource = new ImageResource(image, null);
-                 Buffer output = new Buffer(stack, shape.elements() * Float.BYTES, BufferFlags.READ_WRITE)) {
+                 Buffer output = new Buffer(stack, (long) shape.elements() * Float.BYTES, BufferFlags.READ_WRITE)) {
                 FloatBuffer result = stack.mallocFloat(shape.elements());
                 KernelParameterList parameters = new KernelParameterList(kernel);
                 parameters.add(resource.image);

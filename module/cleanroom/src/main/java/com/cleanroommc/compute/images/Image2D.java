@@ -389,8 +389,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public <B extends Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {

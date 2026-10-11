@@ -3,6 +3,9 @@ package com.cleanroommc.compute;
 import com.cleanroommc.compute.buffers.Buffer;
 import com.cleanroommc.compute.buffers.BufferFlags;
 import com.cleanroommc.compute.cmd.CommandQueue;
+import com.cleanroommc.compute.images.ChannelOrder;
+import com.cleanroommc.compute.images.ChannelType;
+import com.cleanroommc.compute.images.Image2D;
 import com.cleanroommc.compute.images.samplers.AddressingMode;
 import com.cleanroommc.compute.images.samplers.FilteringMode;
 import com.cleanroommc.compute.images.samplers.Sampler;
@@ -47,7 +50,16 @@ public class SamplerTest {
     }
 
     protected ImageTest.ImageResource createImage(MemoryStack stack) {
-        return new ImageTest().createImage(stack, ImageTest.Shape.IMAGE_2D);
+        // Initialize every texel, including the edge used by REPEAT and MIRROR.
+        ImageTest.Shape shape = ImageTest.Shape.IMAGE_2D;
+        var hostMemory = stack.malloc(shape.elements() * Float.BYTES);
+        FloatBuffer values = hostMemory.asFloatBuffer();
+        for (int py = 0; py < shape.height; py++)
+            for (int px = 0; px < shape.width; px++)
+                for (int c = 0; c < 4; c++)
+                    values.put((py * shape.width + px) * 4 + c, py * 10.f + px + c);
+        return new ImageTest.ImageResource(new Image2D(stack, BufferFlags.READ_WRITE,
+            shape.width, shape.height, 0, ChannelType.FLOAT, ChannelOrder.RGBA, hostMemory), null);
     }
 
     @ParameterizedTest
@@ -108,20 +120,13 @@ public class SamplerTest {
              ImageTest.ImageResource resource = createImage(stack);
              Sampler sampler = new Sampler(normalized, addressing, filtering, null, 0, 0);
              Buffer output = new Buffer(stack, 4 * Float.BYTES, BufferFlags.READ_WRITE)) {
-            FloatBuffer values = stack.mallocFloat(7 * 5 * 4);
-            for (int py = 0; py < 5; py++)
-                for (int px = 0; px < 7; px++)
-                    for (int c = 0; c < 4; c++)
-                        values.put((py * 7 + px) * 4 + c, py * 10.f + px + c);
             FloatBuffer result = stack.mallocFloat(4);
             KernelParameterList parameters = new KernelParameterList(kernel);
             parameters.add(resource.image);
             parameters.add(sampler);
             parameters.add(x, y);
             parameters.add(output);
-            queue.imageWrite(stack, resource.image, ImageTest.Shape.IMAGE_2D.origin(), 0,
-                    ImageTest.Shape.IMAGE_2D.region(), 0, 0, values, false)
-                .next(kernel, parameters, null, new long[]{1})
+            queue.dispatchKernel(stack, kernel, parameters, null, new long[]{1})
                 .read(output, result).execute();
             for (int c = 0; c < 4; c++)
                 assertEquals(border ? 0.f : expected + c, result.get(c), .0001f);
