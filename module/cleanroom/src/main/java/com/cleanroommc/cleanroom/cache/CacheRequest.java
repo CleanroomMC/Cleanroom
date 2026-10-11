@@ -2,6 +2,9 @@ package com.cleanroommc.cleanroom.cache;
 
 import com.cleanroommc.util.CleanroomLog;
 import com.google.common.base.Preconditions;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
+import com.google.common.io.MoreFiles;
 import net.minecraftforge.fml.common.versioning.ComparableVersion;
 import org.jspecify.annotations.Nullable;
 
@@ -28,9 +31,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -542,21 +542,16 @@ public final class CacheRequest {
     }
 
     private static String write(InputStream input, Path target) throws IOException {
-        var digest = sha256();
-        try (var in = new DigestInputStream(input, digest);
+        try (var in = new HashingInputStream(Hashing.sha256(), input);
              var channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
             in.transferTo(Channels.newOutputStream(channel));
             channel.force(true);
+            return in.hash().toString();
         }
-        return HexFormat.of().formatHex(digest.digest());
     }
 
     private static String hash(Path file) throws IOException {
-        var digest = sha256();
-        try (var in = new DigestInputStream(Files.newInputStream(file, LinkOption.NOFOLLOW_LINKS), digest)) {
-            in.transferTo(OutputStream.nullOutputStream());
-        }
-        return HexFormat.of().formatHex(digest.digest());
+        return MoreFiles.asByteSource(file, LinkOption.NOFOLLOW_LINKS).hash(Hashing.sha256()).toString();
     }
 
     private static void move(Path source, Path target) throws IOException {
@@ -564,14 +559,6 @@ public final class CacheRequest {
             Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
         } catch (AtomicMoveNotSupportedException e) {
             Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
-
-    private static MessageDigest sha256() {
-        try {
-            return MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new AssertionError(e);
         }
     }
 
