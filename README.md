@@ -30,6 +30,7 @@ If you want to...
 ### User Experience
 
 - Better Performance In General
+- [CleanroomRelauncher](https://github.com/CleanroomMC/CleanroomRelauncher): Forge mod that relaunches the Forge instance with Cleanroom
 - CJK IME-Friendly Input Handling: Allow gameplay keys such as WASD to function properly with IMEs on
 - (Planned) Pre-Splash Bootstrap Screen: Show immediate launching feedback, so large modpacks don't hang before launching. Refer to [Proposal 650](https://github.com/CleanroomMC/Cleanroom/discussions/650)
 - (Planned) Vanilla UI/UX Overhaul: Modern UI/UX design that preserves the vanilla pixel art style
