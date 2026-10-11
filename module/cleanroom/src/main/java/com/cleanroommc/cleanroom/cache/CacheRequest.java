@@ -41,7 +41,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Pattern;
 
 /**
  * Describes where an entry comes from and how it is trusted, then fetches it with {@link #get} or {@link #put}.
@@ -51,7 +50,6 @@ import java.util.regex.Pattern;
 public final class CacheRequest {
 
     private static final String SHA256 = "sha256", VERSION = "version", CHECKED = "checked", URL = "url", ETAG = "etag", MODIFIED = "modified";
-    private static final Pattern HEX_SHA256 = Pattern.compile("[0-9a-f]{64}");
     private static final Duration GRACE = Duration.ofDays(1);
 
     // Serializes threads of this JVM, file locks only exclude other processes
@@ -113,7 +111,7 @@ public final class CacheRequest {
      */
     public CacheRequest expectSha256(String hex) {
         hex = hex.toLowerCase(Locale.ROOT);
-        Preconditions.checkArgument(HEX_SHA256.matcher(hex).matches(), "SHA-256 must be 64 hexadecimal characters: %s", hex);
+        Preconditions.checkArgument(isSha256(hex), "SHA-256 string is malformed: %s", hex);
 
         this.sha256 = hex;
         return this;
@@ -394,7 +392,7 @@ public final class CacheRequest {
             return new Properties();
         }
         var pinned = meta.getProperty(SHA256);
-        if (pinned != null && !HEX_SHA256.matcher(pinned).matches()) {
+        if (pinned != null && !isSha256(pinned)) {
             CleanroomLog.get().warn("Cache metadata {} pins a malformed hash, discarding it", metaFile(file));
             return new Properties();
         }
@@ -531,6 +529,19 @@ public final class CacheRequest {
         } catch (NumberFormatException e) {
             return true;
         }
+    }
+
+    private static boolean isSha256(String hex) {
+        if (hex.length() != 64) {
+            return false;
+        }
+        for (int i = 0; i < 64; i++) {
+            char c = hex.charAt(i);
+            if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean holds(Path path, String hash) throws IOException {
