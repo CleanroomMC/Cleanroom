@@ -31,8 +31,10 @@ public class OpenCLTest implements BeforeAllCallback, AfterAllCallback, Invocati
             {{
                 modId = "cleanroom";
             }}));
-        } catch (Throwable _) {
+        } catch (Throwable e) {
+            org.junit.jupiter.api.Assumptions.assumeTrue(false, "OpenCL initialization failed: " + e);
         }
+        org.junit.jupiter.api.Assumptions.assumeTrue(Compute.isAvailable(), "OpenCL is unavailable.");
     }
 
     @Override
