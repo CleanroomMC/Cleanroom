@@ -1,14 +1,85 @@
 {
   "file_name": "image_test.cl",
   "requirements": {
-    "images": true,
-    "mipmaps": true
+    "images": true
   },
   "kernels": {
-    "gradient1d": {
+    "read_1d": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image1d_t",
+        "output": "float4*"
+      }
+    },
+    "write_1d": {
       "work_group_dimensions": 1,
       "arguments": {
         "image": "image1d_t"
+      }
+    },
+    "read_2d": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image2d_t",
+        "output": "float4*"
+      }
+    },
+    "write_2d": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image2d_t"
+      }
+    },
+    "read_3d": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image3d_t",
+        "output": "float4*"
+      }
+    },
+    "write_3d": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image3d_t"
+      }
+    },
+    "read_1d_buffer": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image1d_buffer_t",
+        "output": "float4*"
+      }
+    },
+    "write_1d_buffer": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image1d_buffer_t"
+      }
+    },
+    "read_1d_array": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image1d_array_t",
+        "output": "float4*"
+      }
+    },
+    "write_1d_array": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image1d_array_t"
+      }
+    },
+    "read_2d_array": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image2d_array_t",
+        "output": "float4*"
+      }
+    },
+    "write_2d_array": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image2d_array_t"
       }
     }
   }
