@@ -2,6 +2,10 @@ package com.cleanroommc.cleanroom.cache;
 
 import java.io.IOException;
 
+/**
+ * A cache failure that callers can tell apart by {@link #kind()}.
+ * Other I/O failures surface as plain {@link IOException}s.
+ */
 public final class CacheException extends IOException {
 
     public enum Kind {

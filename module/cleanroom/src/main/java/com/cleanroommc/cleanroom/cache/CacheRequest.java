@@ -18,6 +18,7 @@ import java.net.http.HttpResponse;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -32,10 +33,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HexFormat;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,8 +42,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Describes where an entry comes from and how it is trusted, then fetches it with {@link #get} or {@link #put}.
@@ -76,25 +72,19 @@ public final class CacheRequest {
 
     }
 
-    record Local(Path file) implements Source {
-
-        Local {
-            Preconditions.checkNotNull(file, "Cannot cache a null file");
-        }
-
-    }
+    record Local(Path file) implements Source { }
 
     record Bytes(byte[] bytes) implements Source { }
 
-    record Lazy(Callable<byte[]> content) implements Source {
+    record Lazy(Callable<byte[]> content) implements Source { }
 
-        Lazy {
-            Preconditions.checkNotNull(content, "Cannot cache bytes from a null supplier");
-        }
+    private enum Mode {
+
+        GET,
+        PUT,
+        REVALIDATE
 
     }
-
-    private enum Mode { GET, PUT, REVALIDATE }
 
     /**
      * @param path     the verified content, null when it has to be ingested
@@ -153,24 +143,37 @@ public final class CacheRequest {
     }
 
     /**
-     * @return the entry's content, ingested only when missing, corrupt, outdated or expected with another hash.
-     * The path changes with the content.
+     * Ingests the entry only when it is missing, corrupt, outdated or expected with another hash.
+     *
+     * @param name the entry's path relative to the cache root
+     * @return the verified content, at a path that changes with the content
+     * @throws CacheException if the source is unreachable or untrusted, see {@link CacheException.Kind}
      */
     public Path get(String name) throws IOException {
         return fetch(name, Mode.GET);
     }
 
     /**
-     * @return the entry's content, always ingested from the source
+     * Always ingests the entry from the source.
+     *
+     * @param name the entry's path relative to the cache root
+     * @return the verified content, at a path that changes with the content
+     * @throws CacheException if the source is unreachable or untrusted, see {@link CacheException.Kind}
      */
     public Path put(String name) throws IOException {
         return fetch(name, Mode.PUT);
     }
 
+    /**
+     * {@link #get} on a virtual thread, failures complete the future exceptionally.
+     */
     public CompletableFuture<Path> getAsync(String name) {
         return async(() -> get(name));
     }
 
+    /**
+     * {@link #put} on a virtual thread, failures complete the future exceptionally.
+     */
     public CompletableFuture<Path> putAsync(String name) {
         return async(() -> put(name));
     }
@@ -389,7 +392,7 @@ public final class CacheRequest {
 
     private static Properties readMeta(Path file) throws IOException {
         var meta = new Properties();
-        try (var reader = Files.newBufferedReader(metaFile(file), UTF_8)) {
+        try (var reader = Files.newBufferedReader(metaFile(file), StandardCharsets.UTF_8)) {
             meta.load(reader);
         } catch (NoSuchFileException _) {
             return meta;
@@ -413,7 +416,7 @@ public final class CacheRequest {
         var temp = Files.createTempFile(versions, null, ".part");
         try {
             try (var channel = FileChannel.open(temp, StandardOpenOption.WRITE)) {
-                meta.store(Channels.newWriter(channel, UTF_8), null);
+                meta.store(Channels.newWriter(channel, StandardCharsets.UTF_8), null);
                 channel.force(true);
             }
             move(temp, metaFile(file));
