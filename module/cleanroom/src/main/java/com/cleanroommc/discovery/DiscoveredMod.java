@@ -22,7 +22,8 @@ public record DiscoveredMod(File file,
     boolean mixinTweakerForceMod,
     boolean coreModContainsMod,
     String coremod,
-    String tweaker
+    String tweaker,
+    boolean onClasspath
 ) {
 
     public DiscoveredMod {

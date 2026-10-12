@@ -321,13 +321,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         long startTime = System.nanoTime();
 
         for (File candidate : LibraryManager.getCandidates()) {
-            scan(candidate);
+            scan(candidate, false);
         }
         for (URL url : Launch.classLoader.getURLs()) {
             try {
                 File file = new File(url.toURI()).getAbsoluteFile();
                 if (isArchive(file) && !discoveredFiles.containsKey(file)) {
-                    scan(file);
+                    scan(file, true);
                 }
             } catch (URISyntaxException ignored) {
             }
@@ -341,7 +341,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         CleanroomLog.get().debug("Discovered mod ids: {}", String.join(", ", modIdToFiles.keySet()));
     }
 
-    private void scan(File file) {
+    private void scan(File file, boolean onClasspath) {
         File absolute = file.getAbsoluteFile();
         DiscoveredMod cached = discoveredFiles.get(absolute);
         if (cached != null) {
@@ -349,7 +349,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
         if (!isArchive(absolute)) {
             DiscoveredMod info = new DiscoveredMod(absolute, null, List.of(), ManifestAttributes.CLEANROOMMODTYPE,
-                false, false, false, null, null
+                false, false, false, null, null, onClasspath
             );
             discoveredFiles.put(absolute, info);
             return;
@@ -403,7 +403,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
 
         DiscoveredMod info = new DiscoveredMod(absolute, attributes, List.copyOf(modIds), modType,
-            hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker
+            hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker, onClasspath
         );
         discoveredFiles.put(absolute, info);
 
@@ -588,17 +588,18 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private void addClasspathCandidates(ModClassLoader modClassLoader, List<ModCandidate> modCandidates, Set<File> seen
     ) {
-        Set<String> knownLibraries = new HashSet<>();
-        knownLibraries.addAll(modClassLoader.getDefaultLibraries());
-        knownLibraries.addAll(CoreModManager.getIgnoredMods());
-        knownLibraries.addAll(CoreModManager.getReparseableCoremods());
-
         File[] minecraftSources = modClassLoader.getParentSources();
         List<File> devPaths = new ArrayList<>();
         for (File source : minecraftSources) {
             if (source.isFile()) {
-                if (knownLibraries.contains(source.getName()) || modClassLoader.isDefaultLibrary(source)) {
-                    CleanroomLog.get().trace("Skipping known library file {}", source.getAbsolutePath());
+                DiscoveredMod discovered = discoveredFiles.get(source);
+                if (CoreModManager.getIgnoredMods().contains(source.getName()) &&
+                    !CoreModManager.getReparseableCoremods().contains(source.getName())) {
+                    CleanroomLog.get().trace("Skipping already parsed coremod or tweaker {}", source.getName());
+                } else if (discovered != null && !discovered.onClasspath()) {
+                    CleanroomLog.get().trace("Leaving {} to the mods directory pass", source.getName());
+                } else if (discovered != null && discovered.modIds().isEmpty()) {
+                    CleanroomLog.get().trace("Skipping library file {}", source.getAbsolutePath());
                 } else {
                     CleanroomLog.get()
                         .debug("Found a minecraft related file at {}, examining for mod candidates",
@@ -646,6 +647,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private void addLibraryCandidates(List<ModCandidate> modCandidates, Set<File> seen) {
         for (DiscoveredMod discoveredMod : discoveredFiles.values()) {
             File mod = discoveredMod.file();
+            // addClasspathCandidates already decided on these
+            if (discoveredMod.onClasspath()) {
+                continue;
+            }
             if (CoreModManager.getIgnoredMods().contains(mod.getName()) &&
                 !CoreModManager.getReparseableCoremods().contains(mod.getName())) {
                 CleanroomLog.get().trace("Skipping already parsed coremod or tweaker {}", mod.getName());
