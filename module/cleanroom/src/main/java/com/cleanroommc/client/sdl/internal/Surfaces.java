@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.internal;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.SDLException;
+
 import org.lwjgl.sdl.SDLPixels;
 import org.lwjgl.sdl.SDLSurface;
 import org.lwjgl.sdl.SDL_Surface;
@@ -16,6 +27,8 @@ import java.nio.ByteOrder;
  * <p>Internal. Not part of the SDL API surface. Reach SDL through {@link SDL}.
  */
 public final class Surfaces {
+
+    private Surfaces() { }
 
     public static SDL_Surface from(BufferedImage image) {
         if (image == null) {
@@ -102,7 +115,5 @@ public final class Surfaces {
             }
         }
     }
-
-    private Surfaces() { }
 
 }

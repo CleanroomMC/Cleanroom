@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.screen.widget;
 
 import com.cleanroommc.client.modlist.RenderUtils;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -11,13 +22,15 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends GuiListExtended {
+
     private final List<E> entries = new ArrayList<>();
+
     private boolean scrolling;
 
     public ModListExtended(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {
@@ -57,7 +70,10 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
 
         GlStateManager.disableDepth();
         GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO,
+            GlStateManager.DestFactor.ONE
+        );
         GlStateManager.disableAlpha();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
         GlStateManager.disableTexture2D();
@@ -79,7 +95,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
 
     protected void drawScrollBar(int maxScroll, Tessellator tess) {
         int scrollThumbHeight = this.getScrollThumbHeight();
-        if (scrollThumbHeight <= 0) return;
+        if (scrollThumbHeight <= 0) {
+            return;
+        }
 
         int viewHeight = this.bottom - this.top;
         int scrollThumbTop = (int) this.amountScrolled * (viewHeight - scrollThumbHeight) / maxScroll + this.top;
@@ -91,34 +109,34 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
         // Background
-        buffer.pos(scrollBarLeft, this.bottom, 0).tex(0, 1)
-                .color(0, 0, 0, 255).endVertex();
-        buffer.pos(scrollBarRight, this.bottom, 0).tex(1, 1)
-                .color(0, 0, 0, 255).endVertex();
-        buffer.pos(scrollBarRight, this.top, 0).tex(1, 0)
-                .color(0, 0, 0, 255).endVertex();
-        buffer.pos(scrollBarLeft, this.top, 0).tex(0, 0)
-                .color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarLeft, this.bottom, 0).tex(0, 1).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarRight, this.bottom, 0).tex(1, 1).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarRight, this.top, 0).tex(1, 0).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarLeft, this.top, 0).tex(0, 0).color(0, 0, 0, 255).endVertex();
 
         // Main
         buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight, 0)
-                .tex(0, 1).color(128, 128, 128, 255).endVertex();
+            .tex(0, 1)
+            .color(128, 128, 128, 255)
+            .endVertex();
         buffer.pos(scrollBarRight, scrollThumbTop + scrollThumbHeight, 0)
-                .tex(1, 1).color(128, 128, 128, 255).endVertex();
-        buffer.pos(scrollBarRight, scrollThumbTop, 0)
-                .tex(1, 0).color(128, 128, 128, 255).endVertex();
-        buffer.pos(scrollBarLeft, scrollThumbTop, 0)
-                .tex(0, 0).color(128, 128, 128, 255).endVertex();
+            .tex(1, 1)
+            .color(128, 128, 128, 255)
+            .endVertex();
+        buffer.pos(scrollBarRight, scrollThumbTop, 0).tex(1, 0).color(128, 128, 128, 255).endVertex();
+        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(128, 128, 128, 255).endVertex();
 
         // Border
         buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight - 1, 0)
-                .tex(0, 1).color(192, 192, 192, 255).endVertex();
+            .tex(0, 1)
+            .color(192, 192, 192, 255)
+            .endVertex();
         buffer.pos(scrollBarRight - 1, scrollThumbTop + scrollThumbHeight - 1, 0)
-                .tex(1, 1).color(192, 192, 192, 255).endVertex();
-        buffer.pos(scrollBarRight - 1, scrollThumbTop, 0)
-                .tex(1, 0).color(192, 192, 192, 255).endVertex();
-        buffer.pos(scrollBarLeft, scrollThumbTop, 0)
-                .tex(0, 0).color(192, 192, 192, 255).endVertex();
+            .tex(1, 1)
+            .color(192, 192, 192, 255)
+            .endVertex();
+        buffer.pos(scrollBarRight - 1, scrollThumbTop, 0).tex(1, 0).color(192, 192, 192, 255).endVertex();
+        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(192, 192, 192, 255).endVertex();
 
         tess.draw();
     }
@@ -140,7 +158,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
         }
     }
 
-    protected void renderItem(int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX, int mouseY, float partialTicks) {
+    protected void renderItem(int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX,
+        int mouseY, float partialTicks
+    ) {
         this.drawSlot(slotIndex, rowLeft, rowTop, rowBottom - rowTop, mouseX, mouseY, partialTicks);
     }
 
@@ -164,7 +184,12 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
                 int relativeY = this.mouseY - this.top - this.headerPadding + (int) this.amountScrolled - 4;
                 int slotIndex = relativeY / this.slotHeight;
 
-                if (beforeScrollBar && slotIndex < this.getSize() && this.mouseX >= listLeft && this.mouseX <= listRight && slotIndex >= 0 && relativeY >= 0) {
+                if (beforeScrollBar &&
+                    slotIndex < this.getSize() &&
+                    this.mouseX >= listLeft &&
+                    this.mouseX <= listRight &&
+                    slotIndex >= 0 &&
+                    relativeY >= 0) {
                     this.elementClicked(slotIndex, false, this.mouseX, this.mouseY);
                     this.selectedElement = slotIndex;
                 } else if (beforeScrollBar && this.mouseX >= listLeft && this.mouseX <= listRight && relativeY < 0) {
@@ -184,13 +209,24 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
                     int slotIndex = relativeY / this.slotHeight;
                     boolean beforeScrollBar = this.isMouseBeforeScrollBar(hasScrollBar, this.mouseX);
 
-                    if (beforeScrollBar && slotIndex < this.getSize() && this.mouseX >= listLeft && this.mouseX <= listRight && slotIndex >= 0 && relativeY >= 0) {
-                        boolean isDoubleClick = slotIndex == this.selectedElement && Minecraft.getSystemTime() - this.lastClicked < 250L;
+                    if (beforeScrollBar &&
+                        slotIndex < this.getSize() &&
+                        this.mouseX >= listLeft &&
+                        this.mouseX <= listRight &&
+                        slotIndex >= 0 &&
+                        relativeY >= 0) {
+                        boolean isDoubleClick = slotIndex == this.selectedElement &&
+                            Minecraft.getSystemTime() - this.lastClicked < 250L;
                         this.elementClicked(slotIndex, isDoubleClick, this.mouseX, this.mouseY);
                         this.selectedElement = slotIndex;
                         this.lastClicked = Minecraft.getSystemTime();
-                    } else if (beforeScrollBar && this.mouseX >= listLeft && this.mouseX <= listRight && relativeY < 0) {
-                        this.clickedHeader(this.mouseX - listLeft, this.mouseY - this.top + (int) this.amountScrolled - 4);
+                    } else if (beforeScrollBar &&
+                        this.mouseX >= listLeft &&
+                        this.mouseX <= listRight &&
+                        relativeY < 0) {
+                        this.clickedHeader(this.mouseX - listLeft,
+                            this.mouseY - this.top + (int) this.amountScrolled - 4
+                        );
                         clickedOnHeader = true;
                     }
 
@@ -215,8 +251,12 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
                     int scrollThumbHeight = this.getScrollThumbHeight();
                     int scrollRange = viewHeight - scrollThumbHeight;
 
-                    this.scrollMultiplier = scrollRange > 0 ? Math.max(1.0F, (float) maxScroll / (float) scrollRange) : 0.0F;
-                    this.setAmountScrolled(this.amountScrolled + (float) (this.mouseY - this.initialClickY) * this.scrollMultiplier);
+                    this.scrollMultiplier = scrollRange > 0
+                        ? Math.max(1.0F, (float) maxScroll / (float) scrollRange)
+                        : 0.0F;
+                    this.setAmountScrolled(this.amountScrolled +
+                            (float) (this.mouseY - this.initialClickY) * this.scrollMultiplier
+                    );
                 }
 
                 this.initialClickY = this.mouseY;
@@ -238,7 +278,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (!this.visible) return false;
+        if (!this.visible) {
+            return false;
+        }
 
         int slotIndex = this.getSlotIndexFromScreenCoords(mouseX, mouseY);
         if (slotIndex >= 0) {
@@ -246,7 +288,8 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
             int rowTop = this.getRowTop(slotIndex);
             int relativeX = mouseX - rowLeft;
             int relativeY = mouseY - rowTop;
-            if (this.getListEntry(slotIndex).mousePressed(slotIndex, mouseX, mouseY, mouseButton, relativeX, relativeY)) {
+            if (this.getListEntry(slotIndex)
+                .mousePressed(slotIndex, mouseX, mouseY, mouseButton, relativeX, relativeY)) {
                 this.setEnabled(false);
                 return true;
             }
@@ -273,7 +316,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
 
     @Override
     public int getSlotIndexFromScreenCoords(int mouseX, int mouseY) {
-        if (!this.isMouseWithinListBounds(mouseX, mouseY)) return -1;
+        if (!this.isMouseWithinListBounds(mouseX, mouseY)) {
+            return -1;
+        }
 
         boolean hasScrollBar = this.shouldShowScrollBar();
         int listLeft = this.getListLeft();
@@ -281,7 +326,14 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
         int relativeY = MathHelper.floor(mouseY - this.top) - this.headerPadding + this.getAmountScrolled() - 4;
         int slotIndex = relativeY / this.slotHeight;
         boolean beforeScrollBar = this.isMouseBeforeScrollBar(hasScrollBar, mouseX);
-        return beforeScrollBar && mouseX >= listLeft && mouseX <= listRight && slotIndex >= 0 && relativeY >= 0 && slotIndex < this.getSize() ? slotIndex : -1;
+        return beforeScrollBar &&
+            mouseX >= listLeft &&
+            mouseX <= listRight &&
+            slotIndex >= 0 &&
+            relativeY >= 0 &&
+            slotIndex < this.getSize()
+            ? slotIndex
+            : -1;
     }
 
     public boolean isMouseWithinListBounds(int mouseX, int mouseY) {
@@ -337,7 +389,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
     protected int getScrollThumbHeight() {
         int viewHeight = this.bottom - this.top;
         int contentHeight = this.getContentHeight();
-        if (viewHeight <= 0 || contentHeight <= 0) return 0;
+        if (viewHeight <= 0 || contentHeight <= 0) {
+            return 0;
+        }
 
         int thumbHeight = viewHeight * viewHeight / contentHeight;
         int maxThumbHeight = Math.max(1, viewHeight - 8);
@@ -456,9 +510,11 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
 
     @Deprecated
     @Override
-    protected final void drawSelectionBox(int contentLeft, int contentTop, int mouseX, int mouseY, float partialTicks) { }
+    protected final void drawSelectionBox(int contentLeft, int contentTop, int mouseX, int mouseY, float partialTicks
+    ) { }
 
     public interface IListEntry extends IGuiListEntry {
+
         /**
          * Called when the entry's position is moved.
          */
@@ -475,7 +531,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
          * @return {@code true} means that something within this entry was clicked and the list should not be dragged.
          */
         @Override
-        default boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY) {
+        default boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX,
+            int relativeY
+        ) {
             return false;
         }
 
@@ -488,7 +546,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
          * @param relativeY the current y position of the mouse relative to the top-left corner of the entry
          */
         @Override
-        default void mouseReleased(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY) { }
+        default void mouseReleased(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY
+        ) { }
 
     }
+
 }

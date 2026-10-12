@@ -1,14 +1,27 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanmix.service;
 
+import top.outlands.foundation.TransformerDelegate;
+
 import com.google.common.collect.Sets;
-import net.minecraft.launchwrapper.IClassTransformer;
+
 import org.spongepowered.asm.logging.ILogger;
 import org.spongepowered.asm.service.ILegacyClassTransformer;
 import org.spongepowered.asm.service.ITransformer;
 import org.spongepowered.asm.service.ITransformerProvider;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.LegacyTransformerHandle;
-import top.outlands.foundation.TransformerDelegate;
+
+import net.minecraft.launchwrapper.IClassTransformer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +37,9 @@ final class FoundationTransformerProvider implements ITransformerProvider {
      * mixin target, else resolving the target re-enters their pipeline. Other re-entrants are detected and
      * excluded automatically at runtime via the re-entrance lock.
      */
-    private static final Set<String> REENTRANT_EXCLUSIONS = Sets.newHashSet(
-            "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
-            "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer"
+    private static final Set<
+        String> REENTRANT_EXCLUSIONS = Sets.newHashSet("net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
+        "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer"
     );
 
     private final Set<String> excludeTransformers = new HashSet<>(REENTRANT_EXCLUSIONS);

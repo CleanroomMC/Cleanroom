@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.Window;
+
 import org.lwjgl.sdl.SDLMouse;
 
 /**
@@ -12,6 +23,14 @@ import org.lwjgl.sdl.SDLMouse;
 public final class Mouse {
 
     Mouse() { }
+
+    private static Window required() {
+        Window window = SDL.window();
+        if (window == null) {
+            throw new IllegalStateException("There is no SDL window to point at yet");
+        }
+        return window;
+    }
 
     public float x() {
         Window window = SDL.window();
@@ -71,14 +90,6 @@ public final class Mouse {
         }
         cursor.apply();
         return this;
-    }
-
-    private static Window required() {
-        Window window = SDL.window();
-        if (window == null) {
-            throw new IllegalStateException("There is no SDL window to point at yet");
-        }
-        return window;
     }
 
 }

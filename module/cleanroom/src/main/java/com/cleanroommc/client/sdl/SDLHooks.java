@@ -1,8 +1,19 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.input.virtual.InputCandidates;
 import com.cleanroommc.client.sdl.input.virtual.Text;
 import com.cleanroommc.client.sdl.input.virtual.TextComposition;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -47,6 +58,8 @@ public final class SDLHooks {
     private static boolean lastFieldSet;
     private static boolean focusedFieldDrawn;
 
+    private SDLHooks() { }
+
     /**
      * Places the native caret and draws composition plus candidates on a focused text field.
      */
@@ -65,8 +78,9 @@ public final class SDLHooks {
         int caretX = caretX(field, font, textX);
         caret(field.x, field.y, field.width, field.height, caretX - field.x);
         focusedFieldDrawn = true;
-        overlay(text, font, caretX, textY, field.getWidth() - (caretX - textX),
-                field.x, field.y, field.width, field.height);
+        overlay(text, font, caretX, textY, field.getWidth() - (caretX - textX), field.x, field.y, field.width,
+            field.height
+        );
     }
 
     /**
@@ -178,7 +192,8 @@ public final class SDLHooks {
         int windowWidth = Math.max(1, window.width());
         int windowHeight = Math.max(1, window.height());
         remember(areaX * screenWidth / windowWidth, areaY * screenHeight / windowHeight,
-            Math.max(1, areaWidth * screenWidth / windowWidth), Math.max(1, areaHeight * screenHeight / windowHeight));
+            Math.max(1, areaWidth * screenWidth / windowWidth), Math.max(1, areaHeight * screenHeight / windowHeight)
+        );
     }
 
     /**
@@ -319,7 +334,7 @@ public final class SDLHooks {
         if (!GLU.gluProject(x, y, 0.0F, modelview, projection, viewport, windowCoords)) {
             return null;
         }
-        return new float[] { windowCoords.get(0), windowCoords.get(1) } ;
+        return new float[] { windowCoords.get(0), windowCoords.get(1) };
     }
 
     private static void ensureProjectionBuffers() {
@@ -331,7 +346,9 @@ public final class SDLHooks {
         }
     }
 
-    private static void overlay(Text text, FontRenderer font, int caretX, int caretY, int remainingWidth, int fieldX, int fieldY, int fieldWidth, int fieldHeight) {
+    private static void overlay(Text text, FontRenderer font, int caretX, int caretY, int remainingWidth, int fieldX,
+        int fieldY, int fieldWidth, int fieldHeight
+    ) {
         TextComposition composition = text.composition();
         if (composition.active()) {
             composition(font, composition, caretX, caretY, Math.max(0, remainingWidth));
@@ -344,13 +361,17 @@ public final class SDLHooks {
     }
 
     private static void composition(FontRenderer font, TextComposition composition, int x, int y, int remainingWidth) {
-        String shown = remainingWidth <= 0 ? composition.text() : font.trimStringToWidth(composition.text(), remainingWidth);
+        String shown = remainingWidth <= 0
+            ? composition.text()
+            : font.trimStringToWidth(composition.text(), remainingWidth);
         if (shown.isEmpty()) {
             return;
         }
         int width = font.getStringWidth(shown);
         int height = font.FONT_HEIGHT;
-        int cursor = Math.max(0, Math.min(shown.length(), composition.cursor() < 0 ? shown.length() : composition.cursor()));
+        int cursor = Math.max(0,
+            Math.min(shown.length(), composition.cursor() < 0 ? shown.length() : composition.cursor())
+        );
         int selection = composition.selectionLength();
         if (selection > 0) {
             int end = Math.min(shown.length(), cursor + selection);
@@ -366,14 +387,20 @@ public final class SDLHooks {
         }
     }
 
-    private static void candidates(FontRenderer font, InputCandidates candidates, int fieldX, int fieldY, int fieldWidth, int fieldHeight) {
+    private static void candidates(FontRenderer font, InputCandidates candidates, int fieldX, int fieldY,
+        int fieldWidth, int fieldHeight
+    ) {
         List<String> entries = candidates.entries();
         if (entries.isEmpty()) {
             return;
         }
         Minecraft minecraft = Minecraft.getMinecraft();
-        int screenWidth = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.width : fieldX + 256;
-        int screenHeight = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.height : fieldY + fieldHeight + 64;
+        int screenWidth = minecraft != null && minecraft.currentScreen != null
+            ? minecraft.currentScreen.width
+            : fieldX + 256;
+        int screenHeight = minecraft != null && minecraft.currentScreen != null
+            ? minecraft.currentScreen.height
+            : fieldY + fieldHeight + 64;
         int line = font.FONT_HEIGHT + CANDIDATE_PADDING;
         boolean horizontal = candidates.horizontal();
         int innerWidth = 0;
@@ -408,7 +435,9 @@ public final class SDLHooks {
                 String entry = entries.get(i);
                 int entryWidth = font.getStringWidth(entry);
                 if (i == selected) {
-                    Gui.drawRect(drawX - 1, drawY - 1, drawX + entryWidth + 1, drawY + font.FONT_HEIGHT + 1, CANDIDATE_SELECTED);
+                    Gui.drawRect(drawX - 1, drawY - 1, drawX + entryWidth + 1, drawY + font.FONT_HEIGHT + 1,
+                        CANDIDATE_SELECTED
+                    );
                 }
                 font.drawStringWithShadow(entry, drawX, drawY, CANDIDATE_TEXT);
                 drawX += entryWidth + CANDIDATE_PADDING;
@@ -423,7 +452,5 @@ public final class SDLHooks {
             font.drawStringWithShadow(entries.get(i), x + CANDIDATE_PADDING, drawY, CANDIDATE_TEXT);
         }
     }
-
-    private SDLHooks() { }
 
 }

@@ -6,8 +6,9 @@
 # GitHub usernames come from the API. The workflow supplies GITHUB_TOKEN
 # and GITHUB_REPO. Commits whose email is not linked to a GitHub account
 # have an empty username. The first-time contributor section skips those,
-# the GitHub owner (often an organization), and the founder on the first
-# release.
+# the GitHub owner (often an organization), bot accounts, and the founder
+# on the first release. Bot logins end in [bot], except the Copilot coding
+# agent, which the API reports as plain Copilot.
 #
 # Set CLIFF_INCLUDE_DATE=1 when generating CHANGELOG.md
 # Each entry has a date for version heading, GitHub links for commits.
@@ -83,7 +84,7 @@ https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 > This version has breaking changes! More details below.
 {% endif -%}
 {% if commits | filter(attribute="breaking", value=true) | length != 0 %}
-## Breaking Changes
+##{% if include_date %}#{% endif %} Breaking Changes
 
 {% for commit in commits | filter(attribute="breaking", value=true) -%}
 {{ self::print_commit(commit=commit, commits=all_commits) }}
@@ -95,7 +96,7 @@ https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {% for commit in commits -%}
 {% if commit.breaking %}{% continue %}{% endif -%}
 {% if not shown %}
-## {{ group | striptags | trim }}
+##{% if include_date %}#{% endif %} {{ group | striptags | trim }}
 
 {% set_global shown = true -%}
 {% endif -%}
@@ -107,10 +108,12 @@ https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {% for contributor in github.contributors | filter(attribute="is_first_time", value=true) -%}
 {% if not contributor.username %}{% continue %}{% endif -%}
 {% if contributor.username == remote.github.owner %}{% continue %}{% endif -%}
+{% if contributor.username is ending_with("[bot]") %}{% continue %}{% endif -%}
+{% if contributor.username == "Copilot" %}{% continue %}{% endif -%}
 {% if not previous.version and founder.remote.username == contributor.username %}{% continue %}{% endif -%}
 {% if not previous.version and founder.author.name == contributor.username %}{% continue %}{% endif -%}
 {% if not first_timer_heading %}
-## First-time Contributors
+##{% if include_date %}#{% endif %} First-time Contributors
 
 {% set_global first_timer_heading = true -%}
 {% endif -%}

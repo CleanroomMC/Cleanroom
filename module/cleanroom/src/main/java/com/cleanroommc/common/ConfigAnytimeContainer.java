@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.common;
 
 import com.google.common.eventbus.EventBus;
+
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
@@ -9,6 +20,7 @@ import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 
 public class ConfigAnytimeContainer extends DummyModContainer {
+
     public ConfigAnytimeContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
@@ -29,4 +41,5 @@ public class ConfigAnytimeContainer extends DummyModContainer {
     public ArtifactVersion getProcessedVersion() {
         return new DefaultArtifactVersion("configanytime", true);
     }
+
 }

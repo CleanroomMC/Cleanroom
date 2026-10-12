@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import org.lwjgl.opengl.GL;
@@ -6,34 +16,6 @@ import org.lwjgl.sdl.SDLVideo;
 
 /** A hidden SDL surface and GL context sharing objects with the main window. */
 public final class SharedGLContext implements AutoCloseable {
-
-    /**
-     * Creates a context sharing objects with {@code window}'s GL context.
-     */
-    public static SharedGLContext create(Window window) {
-        if (window == null) {
-            throw new IllegalStateException("The SDL window does not exist");
-        }
-        long surface = SDL.checkHandle(SDLVideo.SDL_CreateWindow("Cleanroom Shared Context", 1, 1,
-                SDLVideo.SDL_WINDOW_OPENGL | SDLVideo.SDL_WINDOW_HIDDEN), "SDL_CreateWindow");
-        long context = 0L;
-        try {
-            window.makeCurrent();
-            SDL.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1),
-                    "SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT)");
-            context = SDL.checkHandle(SDLVideo.SDL_GL_CreateContext(surface), "SDL_GL_CreateContext");
-            window.makeCurrent();
-            return new SharedGLContext(window, surface, context);
-        } catch (RuntimeException failure) {
-            if (context != 0L) {
-                SDLVideo.SDL_GL_DestroyContext(context);
-            }
-            SDLVideo.SDL_DestroyWindow(surface);
-            throw failure;
-        } finally {
-            SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0);
-        }
-    }
 
     private final Window window;
     private final long surface;
@@ -46,6 +28,38 @@ public final class SharedGLContext implements AutoCloseable {
         this.window = window;
         this.surface = surface;
         this.context = context;
+    }
+
+    /**
+     * Creates a context sharing objects with {@code window}'s GL context.
+     */
+    public static SharedGLContext create(Window window) {
+        if (window == null) {
+            throw new IllegalStateException("The SDL window does not exist");
+        }
+        long surface = SDL.checkHandle(SDLVideo.SDL_CreateWindow("Cleanroom Shared Context", 1, 1,
+                SDLVideo.SDL_WINDOW_OPENGL | SDLVideo.SDL_WINDOW_HIDDEN
+            ),
+            "SDL_CreateWindow"
+        );
+        long context = 0L;
+        try {
+            window.makeCurrent();
+            SDL.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1),
+                "SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT)"
+            );
+            context = SDL.checkHandle(SDLVideo.SDL_GL_CreateContext(surface), "SDL_GL_CreateContext");
+            window.makeCurrent();
+            return new SharedGLContext(window, surface, context);
+        } catch (RuntimeException failure) {
+            if (context != 0L) {
+                SDLVideo.SDL_GL_DestroyContext(context);
+            }
+            SDLVideo.SDL_DestroyWindow(surface);
+            throw failure;
+        } finally {
+            SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0);
+        }
     }
 
     public void makeCurrent() {

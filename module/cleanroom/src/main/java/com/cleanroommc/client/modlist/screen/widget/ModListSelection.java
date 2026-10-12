@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.screen.widget;
 
 import net.minecraft.client.Minecraft;
@@ -8,6 +18,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import javax.annotation.Nullable;
 
 public class ModListSelection<E extends GuiListExtended.IGuiListEntry> extends ModListExtended<E> {
+
     private @Nullable E selected;
 
     public ModListSelection(Minecraft mc, int width, int height, int top, int bottom, int slotHeight) {
@@ -50,7 +61,9 @@ public class ModListSelection<E extends GuiListExtended.IGuiListEntry> extends M
     }
 
     @Override
-    protected void renderItem(int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX, int mouseY, float partialTicks) {
+    protected void renderItem(int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX,
+        int mouseY, float partialTicks
+    ) {
         if (this.showSelectionBox && this.isSelected(slotIndex)) {
             this.renderSelection(rowLeft, rowTop, rowRight, rowBottom);
         }
@@ -65,4 +78,5 @@ public class ModListSelection<E extends GuiListExtended.IGuiListEntry> extends M
         Gui.drawRect(left + 1, top + 1, right - 1, bottom - 1, 0xFF000000);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
+
 }

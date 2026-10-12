@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.common;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -5,8 +15,9 @@ import net.minecraftforge.fml.relauncher.Side;
 // TODO: temp
 public final class CleanroomEnvironment {
 
-    private static Side side;
     private static final boolean deobfuscatedEnvironment;
+
+    private static Side side;
 
     // TODO: check obf class name?
     static {
@@ -15,6 +26,8 @@ public final class CleanroomEnvironment {
 
         deobfuscatedEnvironment = deobfEnvironment;
     }
+
+    private CleanroomEnvironment() { }
 
     public static void setSide(Side side) {
         if (CleanroomEnvironment.side != null) {
@@ -33,7 +46,5 @@ public final class CleanroomEnvironment {
         }
         return side;
     }
-
-    private CleanroomEnvironment() { }
 
 }

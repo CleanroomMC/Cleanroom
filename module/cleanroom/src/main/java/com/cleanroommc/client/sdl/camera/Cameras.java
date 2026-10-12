@@ -1,9 +1,21 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.camera;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.CameraEvent;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLCamera;
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
@@ -62,7 +74,7 @@ public final class Cameras {
         long timestampNs = device.timestamp();
         switch (type) {
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_ADDED ->
-                    SDL.events().post(new CameraEvent.Added(timestampNs, remember(id)));
+                SDL.events().post(new CameraEvent.Added(timestampNs, remember(id)));
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_REMOVED -> {
                 Camera camera = cameras.remove(id);
                 if (camera != null) {
@@ -76,8 +88,9 @@ public final class Cameras {
                     SDL.events().post(new CameraEvent.Approved(timestampNs, camera));
                 }
             }
-            case SDLEvents.SDL_EVENT_CAMERA_DEVICE_DENIED ->
-                    SDL.events().post(new CameraEvent.Denied(id, timestampNs));
+            case SDLEvents.SDL_EVENT_CAMERA_DEVICE_DENIED -> SDL.events().post(new CameraEvent.Denied(id, timestampNs));
+            default -> {
+            }
         }
     }
 

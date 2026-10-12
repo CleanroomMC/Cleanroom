@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.internal.Surfaces;
+
 import org.lwjgl.sdl.SDLMouse;
 import org.lwjgl.sdl.SDLSurface;
 import org.lwjgl.sdl.SDL_Surface;
@@ -18,6 +29,16 @@ public final class Cursor implements AutoCloseable {
 
     private static final Map<SystemCursor, Cursor> SYSTEM = new EnumMap<>(SystemCursor.class);
     private static final Set<Cursor> CUSTOM = new HashSet<>();
+
+    private final long handle;
+    private final boolean system;
+
+    private boolean closed;
+
+    private Cursor(long handle, boolean system) {
+        this.handle = handle;
+        this.system = system;
+    }
 
     public static Cursor of(BufferedImage image) {
         return of(image, 0, 0);
@@ -36,8 +57,12 @@ public final class Cursor implements AutoCloseable {
     }
 
     static synchronized Cursor system(SystemCursor kind) {
-        return SYSTEM.computeIfAbsent(kind, owned -> new Cursor(
-                SDL.checkHandle(SDLMouse.SDL_CreateSystemCursor(owned.value()), "SDL_CreateSystemCursor"), true));
+        return SYSTEM.computeIfAbsent(kind,
+            owned -> new Cursor(SDL.checkHandle(SDLMouse.SDL_CreateSystemCursor(owned.value()), "SDL_CreateSystemCursor"
+                ),
+                true
+            )
+        );
     }
 
     static synchronized void closeAll() {
@@ -60,16 +85,6 @@ public final class Cursor implements AutoCloseable {
         if (cursor.system) {
             SYSTEM.values().remove(cursor);
         }
-    }
-
-    private final long handle;
-    private final boolean system;
-
-    private boolean closed;
-
-    private Cursor(long handle, boolean system) {
-        this.handle = handle;
-        this.system = system;
     }
 
     void apply() {

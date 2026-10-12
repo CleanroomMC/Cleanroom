@@ -1,10 +1,22 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.Power;
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.JoystickEvent;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLJoystick;
@@ -82,6 +94,8 @@ public final class Joysticks {
                     int percent = battery.percent();
                     SDL.events().post(new JoystickEvent.Battery(battery.timestamp(), stick, state, percent));
                 }
+            }
+            default -> {
             }
         }
     }

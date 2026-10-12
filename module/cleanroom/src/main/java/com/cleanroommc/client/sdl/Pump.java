@@ -1,9 +1,20 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.audio.AudioInternal;
 import com.cleanroommc.client.sdl.camera.CameraInternal;
 import com.cleanroommc.client.sdl.drop.DropInternal;
 import com.cleanroommc.client.sdl.input.InputInternal;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDL_Event;
 import org.lwjgl.system.MemoryStack;
@@ -12,6 +23,8 @@ import org.lwjgl.system.MemoryStack;
  * Drains SDL's process-wide event queue once per frame and hands each event to whoever owns it.
  */
 final class Pump {
+
+    private Pump() { }
 
     static void pump(Window window) {
         window.beginPump();
@@ -38,47 +51,33 @@ final class Pump {
             case SDLEvents.SDL_EVENT_TEXT_EDITING -> window.editing(event.edit());
             case SDLEvents.SDL_EVENT_TEXT_EDITING_CANDIDATES -> window.editingCandidates(event.edit_candidates());
             case SDLEvents.SDL_EVENT_MOUSE_MOTION -> window.motion(event.motion());
-            case SDLEvents.SDL_EVENT_MOUSE_BUTTON_DOWN, SDLEvents.SDL_EVENT_MOUSE_BUTTON_UP -> window.button(event.button());
+            case SDLEvents.SDL_EVENT_MOUSE_BUTTON_DOWN, SDLEvents.SDL_EVENT_MOUSE_BUTTON_UP ->
+                window.button(event.button());
             case SDLEvents.SDL_EVENT_MOUSE_WHEEL -> window.wheel(event.wheel());
-            case SDLEvents.SDL_EVENT_WINDOW_CLOSE_REQUESTED,
-                 SDLEvents.SDL_EVENT_WINDOW_RESIZED,
-                 SDLEvents.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED,
-                 SDLEvents.SDL_EVENT_WINDOW_FOCUS_GAINED,
-                 SDLEvents.SDL_EVENT_WINDOW_FOCUS_LOST,
-                 SDLEvents.SDL_EVENT_WINDOW_MINIMIZED,
-                 SDLEvents.SDL_EVENT_WINDOW_MAXIMIZED,
-                 SDLEvents.SDL_EVENT_WINDOW_RESTORED,
-                 SDLEvents.SDL_EVENT_WINDOW_SHOWN,
-                 SDLEvents.SDL_EVENT_WINDOW_HIDDEN,
-                 SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER,
-                 SDLEvents.SDL_EVENT_WINDOW_MOUSE_LEAVE,
-                 SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED,
-                 SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED,
-                 SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN,
-                 SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN -> window.window(type, event.window());
+            case SDLEvents.SDL_EVENT_WINDOW_CLOSE_REQUESTED, SDLEvents.SDL_EVENT_WINDOW_RESIZED,
+                SDLEvents.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, SDLEvents.SDL_EVENT_WINDOW_FOCUS_GAINED,
+                SDLEvents.SDL_EVENT_WINDOW_FOCUS_LOST, SDLEvents.SDL_EVENT_WINDOW_MINIMIZED,
+                SDLEvents.SDL_EVENT_WINDOW_MAXIMIZED, SDLEvents.SDL_EVENT_WINDOW_RESTORED,
+                SDLEvents.SDL_EVENT_WINDOW_SHOWN, SDLEvents.SDL_EVENT_WINDOW_HIDDEN,
+                SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER, SDLEvents.SDL_EVENT_WINDOW_MOUSE_LEAVE,
+                SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED, SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED,
+                SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN, SDLEvents.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN ->
+                window.window(type, event.window());
             case SDLEvents.SDL_EVENT_CLIPBOARD_UPDATE -> Clipboard.updated();
             case SDLEvents.SDL_EVENT_SYSTEM_THEME_CHANGED -> SystemTheme.changed(event.common().timestamp());
-            case SDLEvents.SDL_EVENT_DROP_FILE,
-                 SDLEvents.SDL_EVENT_DROP_TEXT,
-                 SDLEvents.SDL_EVENT_DROP_BEGIN,
-                 SDLEvents.SDL_EVENT_DROP_COMPLETE,
-                 SDLEvents.SDL_EVENT_DROP_POSITION -> DropInternal.dispatch(event);
-            case SDLEvents.SDL_EVENT_DISPLAY_ADDED,
-                 SDLEvents.SDL_EVENT_DISPLAY_REMOVED,
-                 SDLEvents.SDL_EVENT_DISPLAY_MOVED,
-                 SDLEvents.SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED,
-                 SDLEvents.SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED,
-                 SDLEvents.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED -> { }
-            case SDLEvents.SDL_EVENT_AUDIO_DEVICE_ADDED,
-                 SDLEvents.SDL_EVENT_AUDIO_DEVICE_REMOVED,
-                 SDLEvents.SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED -> AudioInternal.dispatch(event);
+            case SDLEvents.SDL_EVENT_DROP_FILE, SDLEvents.SDL_EVENT_DROP_TEXT, SDLEvents.SDL_EVENT_DROP_BEGIN,
+                SDLEvents.SDL_EVENT_DROP_COMPLETE, SDLEvents.SDL_EVENT_DROP_POSITION -> DropInternal.dispatch(event);
+            case SDLEvents.SDL_EVENT_DISPLAY_ADDED, SDLEvents.SDL_EVENT_DISPLAY_REMOVED,
+                SDLEvents.SDL_EVENT_DISPLAY_MOVED, SDLEvents.SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED,
+                SDLEvents.SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED, SDLEvents.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED -> {
+            }
+            case SDLEvents.SDL_EVENT_AUDIO_DEVICE_ADDED, SDLEvents.SDL_EVENT_AUDIO_DEVICE_REMOVED,
+                SDLEvents.SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED -> AudioInternal.dispatch(event);
             default -> {
                 InputInternal.dispatch(event);
                 CameraInternal.dispatch(event);
             }
         }
     }
-
-    private Pump() { }
 
 }

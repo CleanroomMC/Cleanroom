@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.drop;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.DropEvent;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDL_DropEvent;
 import org.lwjgl.sdl.SDL_Event;
@@ -25,9 +36,11 @@ final class Drops {
             case SDLEvents.SDL_EVENT_DROP_FILE -> file(windowId, timestampNs, x, y, source, drop.dataString());
             case SDLEvents.SDL_EVENT_DROP_TEXT -> text(windowId, timestampNs, x, y, source, drop.dataString());
             case SDLEvents.SDL_EVENT_DROP_POSITION ->
-                    SDL.events().post(new DropEvent.Position(windowId, timestampNs, x, y, source));
+                SDL.events().post(new DropEvent.Position(windowId, timestampNs, x, y, source));
             case SDLEvents.SDL_EVENT_DROP_COMPLETE ->
-                    SDL.events().post(new DropEvent.Complete(windowId, timestampNs, x, y, source));
+                SDL.events().post(new DropEvent.Complete(windowId, timestampNs, x, y, source));
+            default -> {
+            }
         }
     }
 

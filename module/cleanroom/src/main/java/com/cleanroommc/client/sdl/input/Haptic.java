@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.SDLException;
+
 import org.lwjgl.sdl.SDLHaptic;
 import org.lwjgl.sdl.SDL_HapticEffect;
 import org.lwjgl.system.MemoryStack;
@@ -11,14 +22,6 @@ import org.lwjgl.system.MemoryStack;
  * This is the rest of the effect set.
  */
 public final class Haptic implements AutoCloseable {
-
-    static float clamp01(float value) {
-        return Math.max(0.0F, Math.min(1.0F, value));
-    }
-
-    private static int clampPercent(int value) {
-        return Math.max(0, Math.min(100, value));
-    }
 
     private final int id;
     private final long handle;
@@ -30,6 +33,14 @@ public final class Haptic implements AutoCloseable {
     Haptic(int id, long handle) {
         this.id = id;
         this.handle = handle;
+    }
+
+    static float clamp01(float value) {
+        return Math.max(0.0F, Math.min(1.0F, value));
+    }
+
+    private static int clampPercent(int value) {
+        return Math.max(0, Math.min(100, value));
     }
 
     public int id() {
@@ -90,10 +101,10 @@ public final class Haptic implements AutoCloseable {
             SDL_HapticEffect effect = SDL_HapticEffect.calloc(stack);
             effect.type((short) SDLHaptic.SDL_HAPTIC_LEFTRIGHT);
             effect.leftright()
-                    .type((short) SDLHaptic.SDL_HAPTIC_LEFTRIGHT)
-                    .length(durationMs)
-                    .large_magnitude(Gamepad.toStrength(large))
-                    .small_magnitude(Gamepad.toStrength(small));
+                .type((short) SDLHaptic.SDL_HAPTIC_LEFTRIGHT)
+                .length(durationMs)
+                .large_magnitude(Gamepad.toStrength(large))
+                .small_magnitude(Gamepad.toStrength(small));
             if (this.leftRightEffect < 0) {
                 int id = SDLHaptic.SDL_CreateHapticEffect(handle, effect);
                 if (id < 0) {
@@ -101,7 +112,9 @@ public final class Haptic implements AutoCloseable {
                 }
                 this.leftRightEffect = id;
             } else {
-                SDL.check(SDLHaptic.SDL_UpdateHapticEffect(handle, this.leftRightEffect, effect), "SDL_UpdateHapticEffect");
+                SDL.check(SDLHaptic.SDL_UpdateHapticEffect(handle, this.leftRightEffect, effect),
+                    "SDL_UpdateHapticEffect"
+                );
             }
             SDL.check(SDLHaptic.SDL_RunHapticEffect(handle, this.leftRightEffect, 1), "SDL_RunHapticEffect");
             return this.leftRightEffect;

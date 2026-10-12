@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLPen;
@@ -13,6 +23,12 @@ public enum PenAxis {
     SLIDER(SDLPen.SDL_PEN_AXIS_SLIDER),
     TANGENTIAL_PRESSURE(SDLPen.SDL_PEN_AXIS_TANGENTIAL_PRESSURE);
 
+    private final int value;
+
+    PenAxis(int value) {
+        this.value = value;
+    }
+
     public static PenAxis of(int value) {
         return switch (value) {
             case SDLPen.SDL_PEN_AXIS_PRESSURE -> PRESSURE;
@@ -24,12 +40,6 @@ public enum PenAxis {
             case SDLPen.SDL_PEN_AXIS_TANGENTIAL_PRESSURE -> TANGENTIAL_PRESSURE;
             default -> null;
         };
-    }
-
-    private final int value;
-
-    PenAxis(int value) {
-        this.value = value;
     }
 
     public int value() {

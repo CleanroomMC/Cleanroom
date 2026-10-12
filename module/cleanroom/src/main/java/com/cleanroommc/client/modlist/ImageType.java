@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist;
 
 import com.cleanroommc.client.modlist.data.IModData;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -9,15 +20,17 @@ import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.ResourcePackFileNotFoundException;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 public enum ImageType {
+
     ICON("icon", IModData::getImageIcon) {
+
         @Override
         protected boolean validate(IModData data, BufferedImage image) {
             if (image.getWidth() != image.getHeight()) {
@@ -26,8 +39,10 @@ public enum ImageType {
             }
             return true;
         }
+
     },
     BANNER("banner", IModData::getBanner) {
+
         @Override
         protected BufferedImage readImage(IModData data, String resource) throws IOException {
             IResourcePack resourcePack = data.getResourcePack();
@@ -36,6 +51,7 @@ public enum ImageType {
             }
             return super.readImage(data, resource);
         }
+
     },
     BACKGROUND("background", IModData::getBackground);
 
@@ -49,21 +65,29 @@ public enum ImageType {
 
     public Optional<ImageInfo> load(IModData data) {
         String resource = this.resourceLocator.apply(data);
-        if (resource == null || resource.isBlank()) return Optional.empty();
+        if (resource == null || resource.isBlank()) {
+            return Optional.empty();
+        }
 
         try {
             BufferedImage image = this.readImage(data, resource);
             if (image == null) {
-                ModListConstants.LOG.warn("Failed to locate {} image resource '{}' for mod '{}'", this.type, resource, data.getModId());
+                ModListConstants.LOG.warn("Failed to locate {} image resource '{}' for mod '{}'", this.type, resource,
+                    data.getModId()
+                );
                 return Optional.empty();
             }
             return this.validate(data, image) ? Optional.of(this.registerTexture(data, image)) : Optional.empty();
         } catch (ResourcePackFileNotFoundException e) {
             // Remove stack trace if getPackImage errored
-            ModListConstants.LOG.warn("Failed to locate {} image {} for mod '{}'", this.type, e.getMessage(), data.getModId());
+            ModListConstants.LOG.warn("Failed to locate {} image {} for mod '{}'", this.type, e.getMessage(),
+                data.getModId()
+            );
             return Optional.empty();
         } catch (IOException e) {
-            ModListConstants.LOG.warn("Failed to load {} image resource '{}' for mod '{}'", this.type, resource, data.getModId(), e);
+            ModListConstants.LOG.warn("Failed to load {} image resource '{}' for mod '{}'", this.type, resource,
+                data.getModId(), e
+            );
             return Optional.empty();
         }
     }
@@ -86,4 +110,5 @@ public enum ImageType {
         manager.loadTexture(id, new DynamicTexture(image));
         return new ImageInfo(id, image.getWidth(), image.getHeight(), () -> manager.deleteTexture(id));
     }
+
 }

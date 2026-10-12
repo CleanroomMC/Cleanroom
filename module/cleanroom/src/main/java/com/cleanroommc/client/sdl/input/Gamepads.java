@@ -1,9 +1,21 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.GamepadEvent;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLGamepad;
 import org.lwjgl.sdl.SDLInit;
@@ -81,17 +93,18 @@ public final class Gamepads {
                     SDL.events().post(new GamepadEvent.Remapped(timestampNs, pad));
                 }
             }
-            case SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN,
-                 SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_UP,
-                 SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION -> {
+            case SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN, SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_UP,
+                SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION -> {
                 org.lwjgl.sdl.SDL_GamepadTouchpadEvent touch = event.gtouchpad();
                 Gamepad pad = pads.get(touch.which());
                 if (pad == null) {
                     return;
                 }
                 boolean down = type != SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_UP;
-                SDL.events().post(new GamepadEvent.Touchpad(touch.timestamp(), pad, touch.touchpad(),
-                        touch.finger(), touch.x(), touch.y(), touch.pressure(), down));
+                SDL.events()
+                    .post(new GamepadEvent.Touchpad(touch.timestamp(), pad, touch.touchpad(), touch.finger(), touch.x(),
+                        touch.y(), touch.pressure(), down
+                    ));
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_SENSOR_UPDATE -> {
                 org.lwjgl.sdl.SDL_GamepadSensorEvent update = event.gsensor();
@@ -100,9 +113,11 @@ public final class Gamepads {
                     return;
                 }
                 SensorType sensor = SensorType.of(update.sensor());
-                float[] data = {update.data(0), update.data(1), update.data(2)};
-                SDL.events().post(new GamepadEvent.Sensor(update.timestamp(), pad, sensor, data,
-                        update.sensor_timestamp()));
+                float[] data = { update.data(0), update.data(1), update.data(2) };
+                SDL.events()
+                    .post(new GamepadEvent.Sensor(update.timestamp(), pad, sensor, data, update.sensor_timestamp()));
+            }
+            default -> {
             }
         }
     }

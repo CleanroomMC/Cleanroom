@@ -1,12 +1,24 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.util.patch;
 
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.util.CleanroomLog;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import java.io.File;
@@ -30,16 +42,8 @@ import java.util.zip.ZipInputStream;
  */
 public final class ClassPatchManager {
 
-    private record ClassPatch(String sourceClassName, boolean existsAtTarget, byte[] expectedHash, byte[] patch) {
-
-        @Override
-        public String toString() {
-            return "%s (%s) size %d".formatted(sourceClassName, existsAtTarget ? "modify" : "add", patch.length);
-        }
-
-    }
-
-    public static final boolean dumpPatched = Boolean.parseBoolean(System.getProperty("fml.dumpPatchedClasses", "false"));
+    public static final boolean DUMP_PATCHED = Boolean.parseBoolean(System.getProperty("fml.dumpPatchedClasses", "false"
+    ));
     public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("fml.debugClassPatchManager", "false"));
     public static final ClassPatchManager INSTANCE = new ClassPatchManager();
 
@@ -54,9 +58,21 @@ public final class ClassPatchManager {
     private File tempDir;
 
     private ClassPatchManager() {
-        if (dumpPatched) {
+        if (DUMP_PATCHED) {
             tempDir = Files.createTempDir();
             CleanroomLog.get().info("Dumping patched classes to {}", tempDir.getAbsolutePath());
+        }
+    }
+
+    private static String stripClassExtension(String name) {
+        return name.endsWith(".class") ? name.substring(0, name.length() - ".class".length()) : name;
+    }
+
+    private static byte[] sha256(byte[] data) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(data);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is unavailable", e);
         }
     }
 
@@ -73,8 +89,9 @@ public final class ClassPatchManager {
             return patchedClasses.get(name);
         }
         if (removedClasses.contains(name)) {
-            if (DEBUG)
+            if (DEBUG) {
                 CleanroomLog.get().debug("Refusing to load {} ({}), the binary patch set removes it", mappedName, name);
+            }
             patchedClasses.put(name, null);
             return null;
         }
@@ -83,8 +100,12 @@ public final class ClassPatchManager {
             return inputData;
         }
         boolean ignoredError = false;
-        if (DEBUG)
-            CleanroomLog.get().debug("Runtime patching class {} (input size {}), found {} patch{}", mappedName, (inputData == null ? 0 : inputData.length), list.size(), list.size() != 1 ? "es" : "");
+        if (DEBUG) {
+            CleanroomLog.get()
+                .debug("Runtime patching class {} (input size {}), found {} patch{}", mappedName,
+                    (inputData == null ? 0 : inputData.length), list.size(), list.size() != 1 ? "es" : ""
+                );
+        }
         for (ClassPatch patch : list) {
             if (!patch.existsAtTarget() && (inputData == null || inputData.length == 0)) {
                 inputData = patch.patch();
@@ -92,18 +113,28 @@ public final class ClassPatchManager {
                 CleanroomLog.get().warn("Patcher expecting empty class data file for {}, but received non-empty", name);
                 inputData = patch.patch();
             } else if (inputData == null || inputData.length == 0) {
-                CleanroomLog.get().error("Patcher expecting non-empty class data file for {}, but received empty.", name);
-                throw new RuntimeException("Patcher expecting non-empty class data file for %s, but received empty, your vanilla jar may be corrupt.".formatted(name));
+                CleanroomLog.get()
+                    .error("Patcher expecting non-empty class data file for {}, but received empty.", name);
+                throw new RuntimeException(
+                    "Patcher expecting non-empty class data file for %s, but received empty, your vanilla jar may be corrupt.".formatted(name
+                    ));
             } else {
                 byte[] actualHash = sha256(inputData);
                 if (!Arrays.equals(actualHash, patch.expectedHash())) {
-                    CleanroomLog.get().error("There is a binary discrepancy between the expected input class {} ({}) and the actual class. Hash on disk is {}, in patch {}. Things are probably about to go very wrong. Did you put something into the jar file?",
-                            mappedName, name, HexFormat.of().formatHex(actualHash), HexFormat.of().formatHex(patch.expectedHash()));
+                    CleanroomLog.get()
+                        .error("There is a binary discrepancy between the expected input class {} ({}) and the actual class. Hash on disk is {}, in patch {}. Things are probably about to go very wrong. Did you put something into the jar file?",
+                            mappedName, name, HexFormat.of().formatHex(actualHash),
+                            HexFormat.of().formatHex(patch.expectedHash())
+                        );
                     if (!Boolean.parseBoolean(System.getProperty("fml.ignorePatchDiscrepancies", "false"))) {
-                        CleanroomLog.get().error("The game is going to exit, because this is a critical error, and it is very improbable that the modded game will work, please obtain clean jar files.");
+                        CleanroomLog.get()
+                            .error("The game is going to exit, because this is a critical error, and it is very improbable that the modded game will work, please obtain clean jar files."
+                            );
                         System.exit(1);
                     } else {
-                        CleanroomLog.get().error("FML is going to ignore this error, note that the patch will not be applied, and there is likely to be a malfunctioning behaviour, including not running at all");
+                        CleanroomLog.get()
+                            .error("FML is going to ignore this error, note that the patch will not be applied, and there is likely to be a malfunctioning behaviour, including not running at all"
+                            );
                         ignoredError = true;
                         continue;
                     }
@@ -117,9 +148,10 @@ public final class ClassPatchManager {
             }
         }
         if (!ignoredError && DEBUG) {
-            CleanroomLog.get().debug("Successfully applied runtime patches for {} (new size {})", mappedName, inputData.length);
+            CleanroomLog.get()
+                .debug("Successfully applied runtime patches for {} (new size {})", mappedName, inputData.length);
         }
-        if (dumpPatched) {
+        if (DUMP_PATCHED) {
             try {
                 Files.write(inputData, new File(tempDir, mappedName));
             } catch (IOException e) {
@@ -190,22 +222,20 @@ public final class ClassPatchManager {
         }
 
         CleanroomLog.get().debug("Read {} binary patches, {} removed classes", patches.size(), removedClasses.size());
-        if (DEBUG)
-            CleanroomLog.get().debug("Patch list :\n\t{}", com.google.common.base.Joiner.on("\t\n").join(patches.asMap().entrySet()));
+        if (DEBUG) {
+            CleanroomLog.get()
+                .debug("Patch list :\n\t{}", com.google.common.base.Joiner.on("\t\n").join(patches.asMap().entrySet()));
+        }
         patchedClasses.clear();
     }
 
-    private static String stripClassExtension(String name) {
-        return name.endsWith(".class") ? name.substring(0, name.length() - ".class".length()) : name;
-    }
+    private record ClassPatch(String sourceClassName, boolean existsAtTarget, byte[] expectedHash, byte[] patch) {
 
-    private static byte[] sha256(byte[] data) {
-        try {
-            return MessageDigest.getInstance("SHA-256").digest(data);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 is unavailable", e);
+        @Override
+        public String toString() {
+            return "%s (%s) size %d".formatted(sourceClassName, existsAtTarget ? "modify" : "add", patch.length);
         }
-    }
 
+    }
 
 }
