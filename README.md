@@ -57,6 +57,12 @@ It is a work-in-progress rendering engine that replaces Minecraft's implicit ren
 
 ## FAQs
 
+> Is Cleanroom a fork of MinecraftForge?
+
+At the beginning it was, though Cleanroom slowly developed independence, and most of the work no longer resides in Forge's code.
+It now includes Forge, and we are still optimizing and fixing Forge's performance and other issues.
+Cleanroom itself grew to its own ecosystem, and beyond being a simple mod loader, with plans to include major APIs and frameworks.
+
 > Are there plans to migrate to Vulkan?
 
 No, and
@@ -71,21 +77,56 @@ Expect everything to run properly as how 1.12 Forge did.
 Advanced OpenGL implementations that macOS doesn't support have fallbacks and won't crash.
 However, we have no guarantee that mods provide fallbacks as well.
 
-## Version Histories
+> How is the mod compatibility in Cleanroom?
+ 
+We retain compatibility with old Forge mods as much as possible, if not, Fugue can be installed to retain compatibility.
+As for Cleanroom mods, before Cleanroom 1.0.0, no binary compatibility is guaranteed due to lots of internal reworks and rewrites that may happen.
+
+## Version History
 
 <details>
 <summary>Click to Expand</summary>
 
 ...
 
-### 0.6
-
 ### 0.7
 
-- LWJGLY & SDL migration
+- CleanroomGradle adoption
+- LWJGLY & SDL 3 migration
 - Caching API
-- Compute API
-- Kirino's font rendering and some vector graphics APIs
+- Kirino Engine font rendering + vector graphics APIs
+- EventBus optimization
+
+### 0.6
+
+- Migration to our Mixin fork (CleanMix), reach parity with MixinBooter 11+
+- Modern mod list screen
+
+### 0.5
+
+- Windows Mica support
+- Modern GUI scaling
+- Taskbar integration
+
+### 0.4
+
+- Birth of the Kirino Engine
+
+### 0.3
+
+- Patches and mappings rework
+- Compatibility fixes (+ help divided into Fugue)
+
+### 0.2
+
+- Classloading via Foundation
+- Push for Java 25+ compatibility
+
+### 0.1
+
+- The Beginning
+- LWJGL 3 Adoption
+- Java 21 requirement
 
 </details>
 
