@@ -598,7 +598,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     CleanroomLog.get().trace("Skipping already parsed coremod or tweaker {}", source.getName());
                 } else if (discovered != null && !discovered.onClasspath()) {
                     CleanroomLog.get().trace("Leaving {} to the mods directory pass", source.getName());
-                } else if (discovered != null && discovered.modIds().isEmpty()) {
+                } else if (discovered != null && discovered.modIds().isEmpty() &&
+                    !source.equals(FMLForgePlugin.forgeLocation)) {
                     CleanroomLog.get().trace("Skipping library file {}", source.getAbsolutePath());
                 } else {
                     CleanroomLog.get()
