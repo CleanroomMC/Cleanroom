@@ -8,7 +8,219 @@
          this.tagMap.put(key, value);
      }
  
-@@ -394,6 +395,7 @@
+@@ -137,6 +138,10 @@
+         this.tagMap.put(key, new NBTTagIntArray(value));
+     }
+ 
++    public void setLongArray(String key, long[] value) {
++        this.tagMap.put(key, new NBTTagLongArray(value));
++    }
++
+     /** Stores the given boolean value as a NBTTagByte, storing 1 for true and 0 for false, using the given string key. */
+     public void setBoolean(String key, boolean value) {
+         this.setByte(key, (byte)(value ? 1 : 0));
+@@ -170,11 +175,9 @@
+ 
+     /** Retrieves a byte value using the specified key, or 0 if no such key was stored. */
+     public byte getByte(String key) {
+-        try {
+-            if (this.hasKey(key, 99)) {
+-                return ((NBTPrimitive)this.tagMap.get(key)).getByte();
+-            }
+-        } catch (ClassCastException classcastexception) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTPrimitive) {
++            return ((NBTPrimitive) nbt).getByte();
+         }
+ 
+         return 0;
+@@ -182,11 +185,9 @@
+ 
+     /** Retrieves a short value using the specified key, or 0 if no such key was stored. */
+     public short getShort(String key) {
+-        try {
+-            if (this.hasKey(key, 99)) {
+-                return ((NBTPrimitive)this.tagMap.get(key)).getShort();
+-            }
+-        } catch (ClassCastException classcastexception) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTPrimitive) {
++            return ((NBTPrimitive) nbt).getShort();
+         }
+ 
+         return 0;
+@@ -194,11 +195,9 @@
+ 
+     /** Retrieves an integer value using the specified key, or 0 if no such key was stored. */
+     public int getInteger(String key) {
+-        try {
+-            if (this.hasKey(key, 99)) {
+-                return ((NBTPrimitive)this.tagMap.get(key)).getInt();
+-            }
+-        } catch (ClassCastException classcastexception) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTPrimitive) {
++            return ((NBTPrimitive) nbt).getInt();
+         }
+ 
+         return 0;
+@@ -206,11 +205,9 @@
+ 
+     /** Retrieves a long value using the specified key, or 0 if no such key was stored. */
+     public long getLong(String key) {
+-        try {
+-            if (this.hasKey(key, 99)) {
+-                return ((NBTPrimitive)this.tagMap.get(key)).getLong();
+-            }
+-        } catch (ClassCastException classcastexception) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTPrimitive) {
++            return ((NBTPrimitive) nbt).getLong();
+         }
+ 
+         return 0L;
+@@ -218,11 +215,9 @@
+ 
+     /** Retrieves a float value using the specified key, or 0 if no such key was stored. */
+     public float getFloat(String key) {
+-        try {
+-            if (this.hasKey(key, 99)) {
+-                return ((NBTPrimitive)this.tagMap.get(key)).getFloat();
+-            }
+-        } catch (ClassCastException classcastexception) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTPrimitive) {
++            return ((NBTPrimitive) nbt).getFloat();
+         }
+ 
+         return 0.0F;
+@@ -230,11 +225,9 @@
+ 
+     /** Retrieves a double value using the specified key, or 0 if no such key was stored. */
+     public double getDouble(String key) {
+-        try {
+-            if (this.hasKey(key, 99)) {
+-                return ((NBTPrimitive)this.tagMap.get(key)).getDouble();
+-            }
+-        } catch (ClassCastException classcastexception) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTPrimitive) {
++            return ((NBTPrimitive) nbt).getDouble();
+         }
+ 
+         return 0.0;
+@@ -242,11 +235,9 @@
+ 
+     /** Retrieves a string value using the specified key, or an empty string if no such key was stored. */
+     public String getString(String key) {
+-        try {
+-            if (this.hasKey(key, 8)) {
+-                return this.tagMap.get(key).getString();
+-            }
+-        } catch (ClassCastException classcastexception) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTTagString) {
++            return nbt.getString();
+         }
+ 
+         return "";
+@@ -254,12 +245,13 @@
+ 
+     /** Retrieves a byte array using the specified key, or a zero-length array if no such key was stored. */
+     public byte[] getByteArray(String key) {
+-        try {
+-            if (this.hasKey(key, 7)) {
+-                return ((NBTTagByteArray)this.tagMap.get(key)).getByteArray();
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTTagByteArray) {
++            try {
++                return ((NBTTagByteArray) nbt).getByteArray();
++            } catch (ClassCastException e) {
++                throw new ReportedException(this.createCrashReport(key, 7, e));
+             }
+-        } catch (ClassCastException classcastexception) {
+-            throw new ReportedException(this.createCrashReport(key, 7, classcastexception));
+         }
+ 
+         return new byte[0];
+@@ -267,25 +259,40 @@
+ 
+     /** Retrieves an int array using the specified key, or a zero-length array if no such key was stored. */
+     public int[] getIntArray(String key) {
+-        try {
+-            if (this.hasKey(key, 11)) {
+-                return ((NBTTagIntArray)this.tagMap.get(key)).getIntArray();
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTTagIntArray) {
++            try {
++                return ((NBTTagIntArray) nbt).getIntArray();
++            } catch (ClassCastException e) {
++                throw new ReportedException(this.createCrashReport(key, 11, e));
+             }
+-        } catch (ClassCastException classcastexception) {
+-            throw new ReportedException(this.createCrashReport(key, 11, classcastexception));
+         }
+ 
+         return new int[0];
+     }
+ 
++    public long[] getLongArray(String key) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTTagLongArray) {
++            try {
++                return ((NBTTagLongArray) nbt).getLongArray();
++            } catch (ClassCastException e) {
++                throw new ReportedException(this.createCrashReport(key, 12, e));
++            }
++        }
++
++        return new long[0];
++    }
++
+     /** Retrieves a NBTTagCompound subtag matching the specified key, or a new empty NBTTagCompound if no such key was stored. */
+     public NBTTagCompound getCompoundTag(String key) {
+-        try {
+-            if (this.hasKey(key, 10)) {
+-                return (NBTTagCompound)this.tagMap.get(key);
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTTagCompound) {
++            try {
++                return (NBTTagCompound) nbt;
++            } catch (ClassCastException e) {
++                throw new ReportedException(this.createCrashReport(key, 10, e));
+             }
+-        } catch (ClassCastException classcastexception) {
+-            throw new ReportedException(this.createCrashReport(key, 10, classcastexception));
+         }
+ 
+         return new NBTTagCompound();
+@@ -293,17 +300,17 @@
+ 
+     /** Gets the NBTTagList object with the given name. */
+     public NBTTagList getTagList(String key, int type) {
+-        try {
+-            if (this.getTagId(key) == 9) {
+-                NBTTagList nbttaglist = (NBTTagList)this.tagMap.get(key);
+-                if (!nbttaglist.isEmpty() && nbttaglist.getTagType() != type) {
++        NBTBase nbt = this.tagMap.get(key);
++        if (nbt instanceof NBTTagList) {
++            try {
++                NBTTagList list = (NBTTagList) nbt;
++                if (!list.isEmpty() && list.getTagType() != type) {
+                     return new NBTTagList();
+                 }
+-
+-                return nbttaglist;
++                return list;
++            } catch (ClassCastException e) {
++                throw new ReportedException(this.createCrashReport(key, 9, e));
+             }
+-        } catch (ClassCastException classcastexception) {
+-            throw new ReportedException(this.createCrashReport(key, 9, classcastexception));
+         }
+ 
+         return new NBTTagList();
+@@ -394,6 +401,7 @@
      }
  
      private static byte readType(DataInput input, NBTSizeTracker sizeTracker) throws IOException {
@@ -16,7 +228,7 @@
          return input.readByte();
      }
  
-@@ -402,6 +404,7 @@
+@@ -402,6 +410,7 @@
      }
  
      static NBTBase readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException {
