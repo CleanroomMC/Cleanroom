@@ -8,7 +8,7 @@
          this.tagMap.put(key, value);
      }
  
-@@ -137,11 +138,85 @@
+@@ -137,11 +138,75 @@
          this.tagMap.put(key, new NBTTagIntArray(value));
      }
  
@@ -31,18 +31,8 @@
 +        return this;
 +    }
 +
-+    public NBTTagCompound putByte(String key, int value) {
-+        this.setByte(key, (byte) value);
-+        return this;
-+    }
-+
 +    public NBTTagCompound putShort(String key, short value) {
 +        this.setShort(key, value);
-+        return this;
-+    }
-+
-+    public NBTTagCompound putShort(String key, int value) {
-+        this.setShort(key, (short) value);
 +        return this;
 +    }
 +
@@ -94,7 +84,7 @@
      /** gets a generic tag with the specified name */
      public NBTBase getTag(String key) {
          return this.tagMap.get(key);
-@@ -170,11 +245,9 @@
+@@ -170,11 +235,9 @@
  
      /** Retrieves a byte value using the specified key, or 0 if no such key was stored. */
      public byte getByte(String key) {
@@ -109,7 +99,7 @@
          }
  
          return 0;
-@@ -182,11 +255,9 @@
+@@ -182,11 +245,9 @@
  
      /** Retrieves a short value using the specified key, or 0 if no such key was stored. */
      public short getShort(String key) {
@@ -124,7 +114,7 @@
          }
  
          return 0;
-@@ -194,11 +265,9 @@
+@@ -194,11 +255,9 @@
  
      /** Retrieves an integer value using the specified key, or 0 if no such key was stored. */
      public int getInteger(String key) {
@@ -139,7 +129,7 @@
          }
  
          return 0;
-@@ -206,11 +275,9 @@
+@@ -206,11 +265,9 @@
  
      /** Retrieves a long value using the specified key, or 0 if no such key was stored. */
      public long getLong(String key) {
@@ -154,7 +144,7 @@
          }
  
          return 0L;
-@@ -218,11 +285,9 @@
+@@ -218,11 +275,9 @@
  
      /** Retrieves a float value using the specified key, or 0 if no such key was stored. */
      public float getFloat(String key) {
@@ -169,7 +159,7 @@
          }
  
          return 0.0F;
-@@ -230,11 +295,9 @@
+@@ -230,11 +285,9 @@
  
      /** Retrieves a double value using the specified key, or 0 if no such key was stored. */
      public double getDouble(String key) {
@@ -184,7 +174,7 @@
          }
  
          return 0.0;
-@@ -242,11 +305,9 @@
+@@ -242,11 +295,9 @@
  
      /** Retrieves a string value using the specified key, or an empty string if no such key was stored. */
      public String getString(String key) {
@@ -199,7 +189,7 @@
          }
  
          return "";
-@@ -254,12 +315,13 @@
+@@ -254,12 +305,13 @@
  
      /** Retrieves a byte array using the specified key, or a zero-length array if no such key was stored. */
      public byte[] getByteArray(String key) {
@@ -218,7 +208,7 @@
          }
  
          return new byte[0];
-@@ -267,25 +329,40 @@
+@@ -267,25 +319,40 @@
  
      /** Retrieves an int array using the specified key, or a zero-length array if no such key was stored. */
      public int[] getIntArray(String key) {
@@ -269,7 +259,7 @@
          }
  
          return new NBTTagCompound();
-@@ -293,17 +370,16 @@
+@@ -293,17 +360,16 @@
  
      /** Gets the NBTTagList object with the given name. */
      public NBTTagList getTagList(String key, int type) {
@@ -294,7 +284,7 @@
          }
  
          return new NBTTagList();
-@@ -394,6 +470,7 @@
+@@ -394,6 +460,7 @@
      }
  
      private static byte readType(DataInput input, NBTSizeTracker sizeTracker) throws IOException {
@@ -302,7 +292,7 @@
          return input.readByte();
      }
  
-@@ -402,6 +479,7 @@
+@@ -402,6 +469,7 @@
      }
  
      static NBTBase readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException {
