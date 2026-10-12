@@ -1,8 +1,5 @@
 package com.cleanroommc.nbt;
 
-import java.util.UUID;
-
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,13 +13,9 @@ import net.minecraft.nbt.NBTTagLongArray;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 
-public final class NBTBuilder {
+public final class NBTListBuilder {
 
-    private NBTBuilder() {}
-
-    public static NBTCompoundBuild compound() {
-        return new NBTCompoundBuild();
-    }
+    private NBTListBuilder() {}
 
     public static NBTByteListBuild byteList() {
         return new NBTByteListBuild();
@@ -72,103 +65,6 @@ public final class NBTBuilder {
         return new NBTListListBuild();
     }
 
-    public static final class NBTCompoundBuild {
-        private final NBTTagCompound compound;
-
-        private NBTCompoundBuild() {
-            this.compound = new NBTTagCompound();
-        }
-
-        public NBTCompoundBuild putTag(String key, NBTBase value) {
-            this.compound.setTag(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putTag(String key, NBTCompoundBuild build) {
-            this.compound.setTag(key, build.build());
-            return this;
-        }
-
-        public NBTCompoundBuild putTag(String key, NBTListBuild build) {
-            this.compound.setTag(key, build.build());
-            return this;
-        }
-
-        public NBTCompoundBuild putBool(String key, boolean value) {
-            this.compound.setBoolean(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putByte(String key, byte value) {
-            this.compound.setByte(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putByte(String key, int value) {
-            this.compound.setByte(key, (byte)value);
-            return this;
-        }
-
-        public NBTCompoundBuild putShort(String key, short value) {
-            this.compound.setShort(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putShort(String key, int value) {
-            this.compound.setShort(key, (short)value);
-            return this;
-        }
-
-        public NBTCompoundBuild putInt(String key, int value) {
-            this.compound.setInteger(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putLong(String key, long value) {
-            this.compound.setLong(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putUUID(String key, UUID value) {
-            this.compound.setUniqueId(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putFloat(String key, float value) {
-            this.compound.setFloat(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putDouble(String key, double value) {
-            this.compound.setDouble(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putString(String key, String value) {
-            this.compound.setString(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putByteArray(String key, byte[] value) {
-            this.compound.setByteArray(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putIntArray(String key, int[] value) {
-            this.compound.setIntArray(key, value);
-            return this;
-        }
-
-        public NBTCompoundBuild putLongArray(String key, long[] value) {
-            this.compound.setLongArray(key, value);
-            return this;
-        }
-
-        public NBTTagCompound build() {
-            return this.compound;
-        }
-    }
-
     public abstract static class NBTListBuild {
         protected final NBTTagList list;
 
@@ -189,7 +85,7 @@ public final class NBTBuilder {
         }
 
         public NBTByteListBuild add(int value) {
-            this.list.appendTag(new NBTTagByte((byte)value));
+            this.list.appendTag(new NBTTagByte((byte) value));
             return this;
         }
 
@@ -207,7 +103,7 @@ public final class NBTBuilder {
         }
 
         public NBTShortListBuild add(int value) {
-            this.list.appendTag(new NBTTagShort((short)value));
+            this.list.appendTag(new NBTTagShort((short) value));
             return this;
         }
 
@@ -325,11 +221,6 @@ public final class NBTBuilder {
 
         public NBTCompoundListBuild add(NBTTagCompound value) {
             this.list.appendTag(value);
-            return this;
-        }
-
-        public NBTCompoundListBuild add(NBTCompoundBuild build) {
-            this.list.appendTag(build.build());
             return this;
         }
     }
