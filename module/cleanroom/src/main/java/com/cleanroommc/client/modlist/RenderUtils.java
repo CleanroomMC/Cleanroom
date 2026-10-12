@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist;
 
 import net.minecraft.client.Minecraft;
@@ -11,12 +21,12 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public final class RenderUtils {
-    private static final float[] DEFAULT_COVER_FADE_ALPHA_LEVELS = {1.0F, 0.0F};
+
+    private static final float[] DEFAULT_COVER_FADE_ALPHA_LEVELS = { 1.0F, 0.0F };
     private static final double PERIOD_PER_SCROLLED_PIXEL = 0.5D;
     private static final double MIN_SCROLL_PERIOD = 3.0D;
 
-    private RenderUtils() {
-    }
+    private RenderUtils() { }
 
     /**
      * Creates a scissor test using minecraft screen coordinates instead of pixel coordinates.
@@ -41,8 +51,12 @@ public final class RenderUtils {
     /**
      * Draws a cover-cropped texture with alpha levels distributed evenly from top to bottom.
      */
-    public static void drawCoverFade(Minecraft mc, ImageInfo image, int x, int y, int width, int height, float zLevel, float... alphaLevels) {
-        if (width <= 0 || height <= 0 || image.width() <= 0 || image.height() <= 0) return;
+    public static void drawCoverFade(Minecraft mc, ImageInfo image, int x, int y, int width, int height, float depth,
+        float... alphaLevels
+    ) {
+        if (width <= 0 || height <= 0 || image.width() <= 0 || image.height() <= 0) {
+            return;
+        }
         float[] levels = alphaLevels != null && alphaLevels.length >= 2 ? alphaLevels : DEFAULT_COVER_FADE_ALPHA_LEVELS;
 
         mc.getTextureManager().bindTexture(image.resource());
@@ -53,7 +67,10 @@ public final class RenderUtils {
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ZERO
+        );
 
         double sourceAspect = image.width() / (double) image.height();
         double targetAspect = width / (double) height;
@@ -88,10 +105,10 @@ public final class RenderUtils {
             float topAlpha = MathHelper.clamp(levels[i], 0.0F, 1.0F);
             float bottomAlpha = MathHelper.clamp(levels[i + 1], 0.0F, 1.0F);
 
-            buffer.pos(x, bottomY, zLevel).tex(u0, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
-            buffer.pos(x + width, bottomY, zLevel).tex(u1, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
-            buffer.pos(x + width, topY, zLevel).tex(u1, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
-            buffer.pos(x, topY, zLevel).tex(u0, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
+            buffer.pos(x, bottomY, depth).tex(u0, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
+            buffer.pos(x + width, bottomY, depth).tex(u1, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
+            buffer.pos(x + width, topY, depth).tex(u1, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
+            buffer.pos(x, topY, depth).tex(u0, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
         }
         tess.draw();
 
@@ -109,10 +126,8 @@ public final class RenderUtils {
      * @param maxX right edge of the box.
      * @param maxY bottom edge of the box.
      */
-    public static void drawScrollingString(
-            FontRenderer font, String text,
-            int minX, int minY, int maxX, int maxY,
-            int color, boolean shadow
+    public static void drawScrollingString(FontRenderer font, String text, int minX, int minY, int maxX, int maxY,
+        int color, boolean shadow
     ) {
         drawScrollingString(font, text, (minX + maxX) / 2, minX, minY, maxX, maxY, color, shadow);
     }
@@ -126,10 +141,8 @@ public final class RenderUtils {
      * @param maxX    right edge of the box.
      * @param maxY    bottom edge of the box.
      */
-    public static void drawScrollingString(
-            FontRenderer font, String text,
-            int centerX, int minX, int minY, int maxX, int maxY,
-            int color, boolean shadow
+    public static void drawScrollingString(FontRenderer font, String text, int centerX, int minX, int minY, int maxX,
+        int maxY, int color, boolean shadow
     ) {
         int textWidth = font.getStringWidth(text);
         int textY = (minY + maxY - 9) / 2 + 1;
@@ -165,29 +178,61 @@ public final class RenderUtils {
             blitSprite(nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, width, height);
         } else if (height == nineSlice.height()) {
             blitSprite(nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, leftBorder, height);
-            blitTiledSprite(x + leftBorder, y, z, width - rightBorder - leftBorder, height, leftBorder, 0, nineSlice.width() - rightBorder - leftBorder, nineSlice.height(), nineSlice.width(), nineSlice.height());
-            blitSprite(nineSlice.width(), nineSlice.height(), nineSlice.width() - rightBorder, 0, x + width - rightBorder, y, z, rightBorder, height);
+            blitTiledSprite(x + leftBorder, y, z, width - rightBorder - leftBorder, height, leftBorder, 0,
+                nineSlice.width() - rightBorder - leftBorder, nineSlice.height(), nineSlice.width(), nineSlice.height()
+            );
+            blitSprite(nineSlice.width(), nineSlice.height(), nineSlice.width() - rightBorder, 0,
+                x + width - rightBorder, y, z, rightBorder, height
+            );
         } else if (width == nineSlice.width()) {
             blitSprite(nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, width, topBorder);
-            blitTiledSprite(x, y + topBorder, z, width, height - bottomBorder - topBorder, 0, topBorder, nineSlice.width(), nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
-            blitSprite(nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - bottomBorder, x, y + height - bottomBorder, z, width, bottomBorder);
+            blitTiledSprite(x, y + topBorder, z, width, height - bottomBorder - topBorder, 0, topBorder,
+                nineSlice.width(), nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height()
+            );
+            blitSprite(nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - bottomBorder, x,
+                y + height - bottomBorder, z, width, bottomBorder
+            );
         } else {
             blitSprite(nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, leftBorder, topBorder);
-            blitTiledSprite(x + leftBorder, y, z, width - rightBorder - leftBorder, topBorder, leftBorder, 0, nineSlice.width() - rightBorder - leftBorder, topBorder, nineSlice.width(), nineSlice.height());
-            blitSprite(nineSlice.width(), nineSlice.height(), nineSlice.width() - rightBorder, 0, x + width - rightBorder, y, z, rightBorder, topBorder);
-            blitSprite(nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - bottomBorder, x, y + height - bottomBorder, z, leftBorder, bottomBorder);
-            blitTiledSprite(x + leftBorder, y + height - bottomBorder, z, width - rightBorder - leftBorder, bottomBorder, leftBorder, nineSlice.height() - bottomBorder, nineSlice.width() - rightBorder - leftBorder, bottomBorder, nineSlice.width(), nineSlice.height());
-            blitSprite(nineSlice.width(), nineSlice.height(), nineSlice.width() - rightBorder, nineSlice.height() - bottomBorder, x + width - rightBorder, y + height - bottomBorder, z, rightBorder, bottomBorder);
-            blitTiledSprite(x, y + topBorder, z, leftBorder, height - bottomBorder - topBorder, 0, topBorder, leftBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
-            blitTiledSprite(x + leftBorder, y + topBorder, z, width - rightBorder - leftBorder, height - bottomBorder - topBorder, leftBorder, topBorder, nineSlice.width() - rightBorder - leftBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
-            blitTiledSprite(x + width - rightBorder, y + topBorder, z, rightBorder, height - bottomBorder - topBorder, nineSlice.width() - rightBorder, topBorder, rightBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height());
+            blitTiledSprite(x + leftBorder, y, z, width - rightBorder - leftBorder, topBorder, leftBorder, 0,
+                nineSlice.width() - rightBorder - leftBorder, topBorder, nineSlice.width(), nineSlice.height()
+            );
+            blitSprite(nineSlice.width(), nineSlice.height(), nineSlice.width() - rightBorder, 0,
+                x + width - rightBorder, y, z, rightBorder, topBorder
+            );
+            blitSprite(nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - bottomBorder, x,
+                y + height - bottomBorder, z, leftBorder, bottomBorder
+            );
+            blitTiledSprite(x + leftBorder, y + height - bottomBorder, z, width - rightBorder - leftBorder,
+                bottomBorder, leftBorder, nineSlice.height() - bottomBorder,
+                nineSlice.width() - rightBorder - leftBorder, bottomBorder, nineSlice.width(), nineSlice.height()
+            );
+            blitSprite(nineSlice.width(), nineSlice.height(), nineSlice.width() - rightBorder,
+                nineSlice.height() - bottomBorder, x + width - rightBorder, y + height - bottomBorder, z, rightBorder,
+                bottomBorder
+            );
+            blitTiledSprite(x, y + topBorder, z, leftBorder, height - bottomBorder - topBorder, 0, topBorder,
+                leftBorder, nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height()
+            );
+            blitTiledSprite(x + leftBorder, y + topBorder, z, width - rightBorder - leftBorder,
+                height - bottomBorder - topBorder, leftBorder, topBorder, nineSlice.width() - rightBorder - leftBorder,
+                nineSlice.height() - bottomBorder - topBorder, nineSlice.width(), nineSlice.height()
+            );
+            blitTiledSprite(x + width - rightBorder, y + topBorder, z, rightBorder, height - bottomBorder - topBorder,
+                nineSlice.width() - rightBorder, topBorder, rightBorder, nineSlice.height() - bottomBorder - topBorder,
+                nineSlice.width(), nineSlice.height()
+            );
         }
     }
 
-    private static void blitTiledSprite(int targetX, int targetY, int z, int width, int height, int u, int v, int spriteWidth, int spriteHeight, int textureWidth, int textureHeight) {
+    private static void blitTiledSprite(int targetX, int targetY, int z, int width, int height, int u, int v,
+        int spriteWidth, int spriteHeight, int textureWidth, int textureHeight
+    ) {
         if (width > 0 && height > 0) {
             if (spriteWidth <= 0 || spriteHeight <= 0) {
-                throw new IllegalArgumentException("Tiled sprite texture size must be positive, got " + spriteWidth + "x" + spriteHeight);
+                throw new IllegalArgumentException("Tiled sprite texture size must be positive, got " + spriteWidth +
+                        "x" + spriteHeight
+                );
             }
 
             for (int tileX = 0; tileX < width; tileX += spriteWidth) {
@@ -195,13 +240,17 @@ public final class RenderUtils {
 
                 for (int tileY = 0; tileY < height; tileY += spriteHeight) {
                     int tileHeight = Math.min(spriteHeight, height - tileY);
-                    blitSprite(textureWidth, textureHeight, u, v, targetX + tileX, targetY + tileY, z, tileWidth, tileHeight);
+                    blitSprite(textureWidth, textureHeight, u, v, targetX + tileX, targetY + tileY, z, tileWidth,
+                        tileHeight
+                    );
                 }
             }
         }
     }
 
-    private static void blitSprite(int textureWidth, int textureHeight, int u, int v, int targetX, int targetY, int z, int regionWidth, int regionHeight) {
+    private static void blitSprite(int textureWidth, int textureHeight, int u, int v, int targetX, int targetY, int z,
+        int regionWidth, int regionHeight
+    ) {
         if (regionWidth != 0 && regionHeight != 0) {
             float minU = (float) u / (float) textureWidth;
             float maxU = (float) (u + regionWidth) / (float) textureWidth;
@@ -225,7 +274,9 @@ public final class RenderUtils {
      * @param minV   the minimum vertical texture coordinate.
      * @param maxV   the maximum vertical texture coordinate.
      */
-    private static void innerBlit(int left, int right, int top, int bottom, int z, float minU, float maxU, float minV, float maxV) {
+    private static void innerBlit(int left, int right, int top, int bottom, int z, float minU, float maxU, float minV,
+        float maxV
+    ) {
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buffer = tess.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -238,14 +289,19 @@ public final class RenderUtils {
 
     // Info of the texture
     public record NineSlice(int width, int height, Border border) {
-        public record Border(int left, int top, int right, int bottom) {
-            public Border(int border) {
-                this(border, border, border, border);
-            }
-        }
 
         public NineSlice(int width, int height, int border) {
             this(width, height, new Border(border));
         }
+
+        public record Border(int left, int top, int right, int bottom) {
+
+            public Border(int border) {
+                this(border, border, border, border);
+            }
+
+        }
+
     }
+
 }

@@ -1,9 +1,21 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.SensorEvent;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLSensor;
@@ -61,9 +73,8 @@ public final class Sensors {
             if (sensor == null) {
                 return;
             }
-            float[] data = {update.data(0), update.data(1), update.data(2)};
-            SDL.events().post(new SensorEvent.Updated(update.timestamp(), sensor, data,
-                    update.sensor_timestamp()));
+            float[] data = { update.data(0), update.data(1), update.data(2) };
+            SDL.events().post(new SensorEvent.Updated(update.timestamp(), sensor, data, update.sensor_timestamp()));
         }
         // Standalone sensors have no add/remove event
     }

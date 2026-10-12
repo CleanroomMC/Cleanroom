@@ -1,8 +1,19 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist;
 
 import com.cleanroommc.client.modlist.data.CleanroomModData;
 import com.cleanroommc.client.modlist.data.IModData;
 import com.cleanroommc.client.modlist.data.OptiFineModData;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Loader;
@@ -15,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class PlatformUtils {
-    private PlatformUtils() {
-    }
+
+    private PlatformUtils() { }
 
     public static List<IModData> getAllModData() {
         ArrayList<ModContainer> containerList = new ArrayList<>();
@@ -27,7 +38,9 @@ public final class PlatformUtils {
 
         List<IModData> dataList = new ArrayList<>(containerList.size());
         for (ModContainer container : containerList) {
-            if (container == null) continue;
+            if (container == null) {
+                continue;
+            }
             if ("optifine".equals(container.getModId())) {
                 dataList.add(new OptiFineModData(container));
                 continue;
@@ -39,9 +52,14 @@ public final class PlatformUtils {
 
     private static void linkChildMods(List<ModContainer> containerList) {
         for (ModContainer container : containerList) {
-            if (container == null) continue;
+            if (container == null) {
+                continue;
+            }
             ModMetadata metadata = container.getMetadata();
-            if (metadata != null && metadata.parentMod == null && metadata.parent != null && !metadata.parent.isBlank()) {
+            if (metadata != null &&
+                metadata.parentMod == null &&
+                metadata.parent != null &&
+                !metadata.parent.isBlank()) {
                 ModContainer parentContainer = Loader.instance().getIndexedModList().get(metadata.parent);
                 ModMetadata parentMetadata = parentContainer != null ? parentContainer.getMetadata() : null;
                 if (parentMetadata != null) {
@@ -63,6 +81,10 @@ public final class PlatformUtils {
     }
 
     public static boolean isKeyCombo(int keyCode, int comboKeyCode) {
-        return keyCode == comboKeyCode && GuiScreen.isCtrlKeyDown() && !GuiScreen.isShiftKeyDown() && !GuiScreen.isAltKeyDown();
+        return keyCode == comboKeyCode &&
+            GuiScreen.isCtrlKeyDown() &&
+            !GuiScreen.isShiftKeyDown() &&
+            !GuiScreen.isAltKeyDown();
     }
+
 }

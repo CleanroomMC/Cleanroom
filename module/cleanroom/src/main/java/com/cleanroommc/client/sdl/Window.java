@@ -1,24 +1,33 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
-import com.cleanroommc.client.sdl.internal.Surfaces;
 import com.cleanroommc.client.sdl.events.MouseEvent;
 import com.cleanroommc.client.sdl.events.WindowEvent;
 import com.cleanroommc.client.sdl.input.virtual.Text;
+import com.cleanroommc.client.sdl.internal.Surfaces;
 import com.cleanroommc.client.sdl.video.Display;
 import com.cleanroommc.client.sdl.video.DisplayMode;
-import com.cleanroommc.client.sdl.video.Displays;
 import com.cleanroommc.lwjgly.spi.WindowBridge;
+
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLMouse;
 import org.lwjgl.sdl.SDLProperties;
 import org.lwjgl.sdl.SDLStdinc;
-import org.lwjgl.sdl.SDLTimer;
 import org.lwjgl.sdl.SDLSurface;
+import org.lwjgl.sdl.SDLTimer;
 import org.lwjgl.sdl.SDLVideo;
-import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDL_DisplayMode;
-import org.lwjgl.sdl.SDL_Event;
 import org.lwjgl.sdl.SDL_KeyboardEvent;
 import org.lwjgl.sdl.SDL_MouseButtonEvent;
 import org.lwjgl.sdl.SDL_MouseMotionEvent;
@@ -81,46 +90,6 @@ public final class Window implements AutoCloseable {
 
     private volatile boolean closed;
 
-    /** Attention request passed to {@link #flash(Flash)}. */
-    public enum Flash {
-
-        CANCEL(SDLVideo.SDL_FLASH_CANCEL),
-        BRIEFLY(SDLVideo.SDL_FLASH_BRIEFLY),
-        UNTIL_FOCUSED(SDLVideo.SDL_FLASH_UNTIL_FOCUSED);
-
-        private final int value;
-
-        Flash(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return value;
-        }
-
-    }
-
-    /** Taskbar/dock progress passed to {@link #progress(Progress, float)}. */
-    public enum Progress {
-
-        NONE(SDLVideo.SDL_PROGRESS_STATE_NONE),
-        INDETERMINATE(SDLVideo.SDL_PROGRESS_STATE_INDETERMINATE),
-        NORMAL(SDLVideo.SDL_PROGRESS_STATE_NORMAL),
-        PAUSED(SDLVideo.SDL_PROGRESS_STATE_PAUSED),
-        ERROR(SDLVideo.SDL_PROGRESS_STATE_ERROR);
-
-        private final int value;
-
-        Progress(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return value;
-        }
-
-    }
-
     private Window(long handle, long glContext, String title, int width, int height) {
         this.handle = handle;
         this.glContext = glContext;
@@ -152,7 +121,6 @@ public final class Window implements AutoCloseable {
         return handle;
     }
 
-
     /**
      * Returns the platform window handle rather than SDL's opaque window pointer.
      */
@@ -174,8 +142,8 @@ public final class Window implements AutoCloseable {
                 continue;
             }
             long value = compositor.pointer()
-                    ? SDLProperties.SDL_GetPointerProperty(properties, compositor.property(), 0L)
-                    : SDLProperties.SDL_GetNumberProperty(properties, compositor.property(), 0L);
+                ? SDLProperties.SDL_GetPointerProperty(properties, compositor.property(), 0L)
+                : SDLProperties.SDL_GetNumberProperty(properties, compositor.property(), 0L);
             if (value != 0L) {
                 return new NativeWindow(compositor, value);
             }
@@ -398,7 +366,9 @@ public final class Window implements AutoCloseable {
         }
         SDL.check(SDLVideo.SDL_SetWindowProgressState(this.handle, state.value), "SDL_SetWindowProgressState");
         if (state != Progress.NONE && state != Progress.INDETERMINATE) {
-            SDL.check(SDLVideo.SDL_SetWindowProgressValue(this.handle, Math.clamp(value, 0.0F, 1.0F)), "SDL_SetWindowProgressValue");
+            SDL.check(SDLVideo.SDL_SetWindowProgressValue(this.handle, Math.clamp(value, 0.0F, 1.0F)),
+                "SDL_SetWindowProgressValue"
+            );
         }
         return this;
     }
@@ -499,8 +469,8 @@ public final class Window implements AutoCloseable {
             }
             Display display = this.display();
             Display.Bounds bounds = display != null
-                    ? display.bounds()
-                    : new Display.Bounds(this.restoreX, this.restoreY, this.restoreWidth, this.restoreHeight);
+                ? display.bounds()
+                : new Display.Bounds(this.restoreX, this.restoreY, this.restoreWidth, this.restoreHeight);
             this.borderless(true);
             this.position(bounds.x(), bounds.y());
             this.size(Math.max(1, bounds.width()), Math.max(1, bounds.height() + heightAdjust));
@@ -536,10 +506,10 @@ public final class Window implements AutoCloseable {
             SDL_DisplayMode found = null;
             while (modes.hasRemaining()) {
                 SDL_DisplayMode candidate = SDL_DisplayMode.createSafe(modes.get());
-                if (candidate != null
-                        && candidate.w() == mode.width()
-                        && candidate.h() == mode.height()
-                        && (mode.refreshRate() <= 0 || Math.abs(candidate.refresh_rate() - mode.refreshRate()) < 0.5F)) {
+                if (candidate != null &&
+                    candidate.w() == mode.width() &&
+                    candidate.h() == mode.height() &&
+                    (mode.refreshRate() <= 0 || Math.abs(candidate.refresh_rate() - mode.refreshRate()) < 0.5F)) {
                     found = candidate;
                     break;
                 }
@@ -646,8 +616,10 @@ public final class Window implements AutoCloseable {
         float dy = this.mouseWarped ? 0.0F : event.yrel();
         this.mouseWarped = false;
         this.legacy.motion(this.mouseX, this.mouseY, dx, dy, event.timestamp());
-        SDL.events().post(new MouseEvent.Motion(event.which(), this.id, event.timestamp(),
-                this.mouseX, this.mouseY, dx, dy, event.state()));
+        SDL.events()
+            .post(new MouseEvent.Motion(event.which(), this.id, event.timestamp(), this.mouseX, this.mouseY, dx, dy,
+                event.state()
+            ));
     }
 
     void button(SDL_MouseButtonEvent event) {
@@ -661,8 +633,10 @@ public final class Window implements AutoCloseable {
             this.buttons[button] = event.down();
         }
         this.legacy.button(button, event.down(), this.mouseX, this.mouseY, event.timestamp());
-        SDL.events().post(new MouseEvent.Button(event.which(), this.id, event.timestamp(),
-                this.mouseX, this.mouseY, button, event.down(), event.clicks() & 0xFF));
+        SDL.events()
+            .post(new MouseEvent.Button(event.which(), this.id, event.timestamp(), this.mouseX, this.mouseY, button,
+                event.down(), event.clicks() & 0xFF
+            ));
     }
 
     void wheel(SDL_MouseWheelEvent event) {
@@ -673,9 +647,10 @@ public final class Window implements AutoCloseable {
         int sign = flipped ? -1 : 1;
         float amount = event.y() * sign;
         this.legacy.wheel(event.mouse_x(), event.mouse_y(), amount, event.timestamp());
-        SDL.events().post(new MouseEvent.Wheel(event.which(), this.id, event.timestamp(),
-                event.mouse_x(), event.mouse_y(), event.x() * sign, amount,
-                event.integer_x() * sign, event.integer_y() * sign, flipped));
+        SDL.events()
+            .post(new MouseEvent.Wheel(event.which(), this.id, event.timestamp(), event.mouse_x(), event.mouse_y(),
+                event.x() * sign, amount, event.integer_x() * sign, event.integer_y() * sign, flipped
+            ));
     }
 
     void window(int type, SDL_WindowEvent event) {
@@ -724,10 +699,12 @@ public final class Window implements AutoCloseable {
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER -> this.mouseInside = true;
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_LEAVE -> this.mouseInside = false;
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_CHANGED ->
-                    SDL.events().post(new WindowEvent.DisplayChanged(this, event.timestamp(), event.data1()));
+                SDL.events().post(new WindowEvent.DisplayChanged(this, event.timestamp(), event.data1()));
             case SDLEvents.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED ->
-                    SDL.events().post(new WindowEvent.ScaleChanged(this, event.timestamp(),
-                            SDLVideo.SDL_GetWindowDisplayScale(this.handle)));
+                SDL.events()
+                    .post(new WindowEvent.ScaleChanged(this, event.timestamp(),
+                        SDLVideo.SDL_GetWindowDisplayScale(this.handle)
+                    ));
             case SDLEvents.SDL_EVENT_WINDOW_ENTER_FULLSCREEN -> {
                 this.fullscreen = true;
                 SDL.events().post(new WindowEvent.Fullscreen(this, event.timestamp(), true));
@@ -737,6 +714,8 @@ public final class Window implements AutoCloseable {
                 if (!this.covering) {
                     SDL.events().post(new WindowEvent.Fullscreen(this, event.timestamp(), false));
                 }
+            }
+            default -> {
             }
         }
     }
@@ -787,8 +766,10 @@ public final class Window implements AutoCloseable {
                 this.pixelHeight = h.get(0);
             }
         }
-        if (this.width != previousWidth || this.height != previousHeight
-                || this.pixelWidth != previousPixelWidth || this.pixelHeight != previousPixelHeight) {
+        if (this.width != previousWidth ||
+            this.height != previousHeight ||
+            this.pixelWidth != previousPixelWidth ||
+            this.pixelHeight != previousPixelHeight) {
             this.resized = true;
         }
     }
@@ -880,6 +861,46 @@ public final class Window implements AutoCloseable {
         }
     }
 
+    /** Attention request passed to {@link #flash(Flash)}. */
+    public enum Flash {
+
+        CANCEL(SDLVideo.SDL_FLASH_CANCEL),
+        BRIEFLY(SDLVideo.SDL_FLASH_BRIEFLY),
+        UNTIL_FOCUSED(SDLVideo.SDL_FLASH_UNTIL_FOCUSED);
+
+        private final int value;
+
+        Flash(int value) {
+            this.value = value;
+        }
+
+        public int value() {
+            return value;
+        }
+
+    }
+
+    /** Taskbar/dock progress passed to {@link #progress(Progress, float)}. */
+    public enum Progress {
+
+        NONE(SDLVideo.SDL_PROGRESS_STATE_NONE),
+        INDETERMINATE(SDLVideo.SDL_PROGRESS_STATE_INDETERMINATE),
+        NORMAL(SDLVideo.SDL_PROGRESS_STATE_NORMAL),
+        PAUSED(SDLVideo.SDL_PROGRESS_STATE_PAUSED),
+        ERROR(SDLVideo.SDL_PROGRESS_STATE_ERROR);
+
+        private final int value;
+
+        Progress(int value) {
+            this.value = value;
+        }
+
+        public int value() {
+            return value;
+        }
+
+    }
+
     public static final class Builder {
 
         private String title = "Window";
@@ -959,7 +980,9 @@ public final class Window implements AutoCloseable {
             if (this.fullscreen) {
                 flags |= SDLVideo.SDL_WINDOW_FULLSCREEN;
             }
-            long handle = SDL.checkHandle(SDLVideo.SDL_CreateWindow(this.title, this.width, this.height, flags), "SDL_CreateWindow");
+            long handle = SDL.checkHandle(SDLVideo.SDL_CreateWindow(this.title, this.width, this.height, flags),
+                "SDL_CreateWindow"
+            );
             long context = 0L;
             boolean created = false;
             try {
@@ -987,13 +1010,10 @@ public final class Window implements AutoCloseable {
                 }
             }
         }
+
     }
 
     public static final class GLConfig {
-
-        private static void attribute(int attribute, int value) {
-            SDL.check(SDLVideo.SDL_GL_SetAttribute(attribute, value), "SDL_GL_SetAttribute(" + attribute + ")");
-        }
 
         private int major = 3;
         private int minor = 2;
@@ -1002,6 +1022,10 @@ public final class Window implements AutoCloseable {
         private int stencilBits = 8;
 
         private GLConfig() { }
+
+        private static void attribute(int attribute, int value) {
+            SDL.check(SDLVideo.SDL_GL_SetAttribute(attribute, value), "SDL_GL_SetAttribute(" + attribute + ")");
+        }
 
         public GLConfig version(int major, int minor) {
             this.major = major;
@@ -1032,11 +1056,14 @@ public final class Window implements AutoCloseable {
         private void apply() {
             attribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, this.major);
             attribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, this.minor);
-            attribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, core ? SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE : SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+            attribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK,
+                core ? SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE : SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY
+            );
             attribute(SDLVideo.SDL_GL_DOUBLEBUFFER, 1);
             attribute(SDLVideo.SDL_GL_DEPTH_SIZE, depthBits);
             attribute(SDLVideo.SDL_GL_STENCIL_SIZE, stencilBits);
         }
 
     }
+
 }

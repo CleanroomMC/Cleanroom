@@ -1,13 +1,25 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanmix.service;
 
 import com.google.common.io.ByteStreams;
-import net.minecraft.launchwrapper.Launch;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.service.IClassBytecodeProvider;
 import org.spongepowered.asm.service.ILegacyClassTransformer;
 import org.spongepowered.asm.transformers.MixinClassReader;
 import org.spongepowered.asm.util.ReEntranceLock;
+
+import net.minecraft.launchwrapper.Launch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,10 +32,26 @@ final class FoundationBytecodeProvider implements IClassBytecodeProvider {
     private final ReEntranceLock lock;
     private final FoundationClassTracker classTracker;
 
-    FoundationBytecodeProvider(FoundationTransformerProvider transformerProvider, ReEntranceLock lock, FoundationClassTracker classTracker) {
+    FoundationBytecodeProvider(FoundationTransformerProvider transformerProvider, ReEntranceLock lock,
+        FoundationClassTracker classTracker
+    ) {
         this.transformerProvider = transformerProvider;
         this.lock = lock;
         this.classTracker = classTracker;
+    }
+
+    private static byte[] getClassBytes(String name, String transformedName) throws IOException {
+        byte[] classBytes = Launch.classLoader.getClassBytes(name);
+        if (classBytes != null) {
+            return classBytes;
+        }
+        try (InputStream classStream = APP_CLASS_LOADER.getResourceAsStream(transformedName.replace('.', '/')
+                .concat(".class")
+        )) {
+            return classStream != null ? ByteStreams.toByteArray(classStream) : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -37,7 +65,9 @@ final class FoundationBytecodeProvider implements IClassBytecodeProvider {
     }
 
     @Override
-    public ClassNode getClassNode(String name, boolean runTransformers, int readerFlags) throws ClassNotFoundException, IOException {
+    public ClassNode getClassNode(String name, boolean runTransformers, int readerFlags)
+        throws ClassNotFoundException,
+        IOException {
         String transformedName = name.replace('/', '.');
         String originalName = Launch.classLoader.untransformName(transformedName);
         byte[] bytes = getClassBytes(originalName, transformedName);
@@ -50,18 +80,6 @@ final class FoundationBytecodeProvider implements IClassBytecodeProvider {
         ClassNode classNode = new ClassNode();
         new MixinClassReader(bytes, name).accept(classNode, readerFlags);
         return classNode;
-    }
-
-    private static byte[] getClassBytes(String name, String transformedName) throws IOException {
-        byte[] classBytes = Launch.classLoader.getClassBytes(name);
-        if (classBytes != null) {
-            return classBytes;
-        }
-        try (InputStream classStream = APP_CLASS_LOADER.getResourceAsStream(transformedName.replace('.', '/').concat(".class"))) {
-            return classStream != null ? ByteStreams.toByteArray(classStream) : null;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private byte[] applyTransformers(String name, String transformedName, byte[] basicClass) {

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.data;
 
 import net.minecraft.client.Minecraft;
@@ -5,11 +15,12 @@ import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IResourcePack;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 public class MinecraftModData implements IModData {
+
     @Override
     public Type getType() {
         return Type.LIBRARY;
@@ -140,12 +151,12 @@ public class MinecraftModData implements IModData {
     }
 
     @Override
-    public void drawCheckIcon(Minecraft minecraft, CheckResult result, int x, int y) {
-    }
+    public void drawCheckIcon(Minecraft minecraft, CheckResult result, int x, int y) { }
 
     @Nullable
     @Override
     public String getCheckText(CheckResult result) {
         return null;
     }
+
 }

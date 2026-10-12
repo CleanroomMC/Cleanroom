@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLKeycode;
@@ -25,18 +35,18 @@ public final class KeyModifier {
     public static final int MODE = SDLKeycode.SDL_KMOD_MODE;
     public static final int SCROLL = SDLKeycode.SDL_KMOD_SCROLL;
 
+    private final int bits;
+
+    private KeyModifier(int bits) {
+        this.bits = bits;
+    }
+
     public static KeyModifier none() {
         return new KeyModifier(NONE);
     }
 
     public static KeyModifier of(int bits) {
         return new KeyModifier(bits);
-    }
-
-    private final int bits;
-
-    private KeyModifier(int bits) {
-        this.bits = bits;
     }
 
     public int value() {

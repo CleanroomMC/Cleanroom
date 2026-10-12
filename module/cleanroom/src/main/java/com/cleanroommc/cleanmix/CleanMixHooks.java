@@ -1,20 +1,32 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanmix;
 
 import com.cleanroommc.discovery.CleanroomModDiscoverer;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.relauncher.CoreModManager;
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import zone.rong.mixinbooter.Context;
+import zone.rong.mixinbooter.IEarlyMixinLoader;
+import zone.rong.mixinbooter.ILateMixinLoader;
+import zone.rong.mixinbooter.IMixinConfigHijacker;
+import zone.rong.mixinbooter.MixinLoader;
+
 import org.spongepowered.asm.logging.ILogger;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.mixin.transformer.ClassInfo;
 import org.spongepowered.asm.mixin.transformer.Config;
 import org.spongepowered.asm.service.MixinService;
-import zone.rong.mixinbooter.Context;
-import zone.rong.mixinbooter.IEarlyMixinLoader;
-import zone.rong.mixinbooter.ILateMixinLoader;
-import zone.rong.mixinbooter.IMixinConfigHijacker;
-import zone.rong.mixinbooter.MixinLoader;
+
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.relauncher.CoreModManager;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -23,7 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CleanMixHooks {
+public final class CleanMixHooks {
+
+    private CleanMixHooks() { }
 
     public static String addMixinMetadataToCrashReport(Throwable throwable) {
         Map<String, ClassInfo> classes = new LinkedHashMap<>();
@@ -151,7 +165,9 @@ public class CleanMixHooks {
         }
     }
 
-    private static boolean findAndAddMixinMetadata(StringBuilder mixinMetadataBuilder, String className, ClassInfo classInfo) {
+    private static boolean findAndAddMixinMetadata(StringBuilder mixinMetadataBuilder, String className,
+        ClassInfo classInfo
+    ) {
         Set<IMixinInfo> mixinInfos = classInfo.getMixins();
         if (!mixinInfos.isEmpty()) {
             mixinMetadataBuilder.append("\n\t");

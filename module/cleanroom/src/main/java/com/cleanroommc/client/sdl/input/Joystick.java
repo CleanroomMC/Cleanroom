@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.Power;
 import com.cleanroommc.client.sdl.SDL;
+
 import org.lwjgl.sdl.SDLGUID;
 import org.lwjgl.sdl.SDLJoystick;
 import org.lwjgl.sdl.SDL_GUID;
@@ -140,15 +151,15 @@ public final class Joystick {
 
     public int[] ball(int index) {
         if (index < 0 || index >= balls()) {
-            return new int[] {0, 0};
+            return new int[] { 0, 0 };
         }
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer dx = stack.mallocInt(1);
             IntBuffer dy = stack.mallocInt(1);
             if (!SDLJoystick.SDL_GetJoystickBall(handle, index, dx, dy)) {
-                return new int[] {0, 0};
+                return new int[] { 0, 0 };
             }
-            return new int[] {dx.get(0), dy.get(0)};
+            return new int[] { dx.get(0), dy.get(0) };
         }
     }
 
@@ -166,13 +177,17 @@ public final class Joystick {
 
     public Joystick rumble(float low, float high, int durationMs) {
         SDL.check(SDLJoystick.SDL_RumbleJoystick(handle, Gamepad.toStrength(low), Gamepad.toStrength(high), durationMs),
-                "SDL_RumbleJoystick");
+            "SDL_RumbleJoystick"
+        );
         return this;
     }
 
     public Joystick rumbleTriggers(float left, float right, int durationMs) {
-        SDL.check(SDLJoystick.SDL_RumbleJoystickTriggers(handle, Gamepad.toStrength(left), Gamepad.toStrength(right), durationMs),
-                "SDL_RumbleJoystickTriggers");
+        SDL.check(SDLJoystick.SDL_RumbleJoystickTriggers(handle, Gamepad.toStrength(left), Gamepad.toStrength(right),
+                durationMs
+            ),
+            "SDL_RumbleJoystickTriggers"
+        );
         return this;
     }
 

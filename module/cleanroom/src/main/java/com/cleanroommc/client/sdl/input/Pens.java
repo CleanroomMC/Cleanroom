@@ -1,9 +1,21 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.PenEvent;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLPen;
 import org.lwjgl.sdl.SDL_Event;
@@ -54,31 +66,38 @@ public final class Pens {
                 SDL_PenProximityEvent proximity = event.pproximity();
                 boolean in = type == SDLEvents.SDL_EVENT_PEN_PROXIMITY_IN;
                 remember(proximity.which()).proximity(in);
-                SDL.events().post(new PenEvent.Proximity(proximity.which(), proximity.windowID(),
-                        proximity.timestamp(), in));
+                SDL.events()
+                    .post(new PenEvent.Proximity(proximity.which(), proximity.windowID(), proximity.timestamp(), in));
             }
             case SDLEvents.SDL_EVENT_PEN_DOWN, SDLEvents.SDL_EVENT_PEN_UP -> {
                 SDL_PenTouchEvent touch = event.ptouch();
                 boolean down = type == SDLEvents.SDL_EVENT_PEN_DOWN;
                 remember(touch.which()).position(touch.x(), touch.y(), touch.pen_state());
-                SDL.events().post(down
-                        ? new PenEvent.Down(touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
-                                touch.pen_state(), touch.eraser())
-                        : new PenEvent.Up(touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
-                                touch.pen_state(), touch.eraser()));
+                SDL.events()
+                    .post(down
+                            ? new PenEvent.Down(touch.which(), touch.windowID(), touch.timestamp(), touch.x(),
+                                touch.y(), touch.pen_state(), touch.eraser()
+                            )
+                            : new PenEvent.Up(touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
+                                touch.pen_state(), touch.eraser()
+                            )
+                    );
             }
             case SDLEvents.SDL_EVENT_PEN_MOTION -> {
                 SDL_PenMotionEvent motion = event.pmotion();
                 remember(motion.which()).position(motion.x(), motion.y(), motion.pen_state());
-                SDL.events().post(new PenEvent.Motion(motion.which(), motion.windowID(),
-                        motion.timestamp(), motion.x(), motion.y(), motion.pen_state()));
+                SDL.events()
+                    .post(new PenEvent.Motion(motion.which(), motion.windowID(), motion.timestamp(), motion.x(),
+                        motion.y(), motion.pen_state()
+                    ));
             }
             case SDLEvents.SDL_EVENT_PEN_BUTTON_DOWN, SDLEvents.SDL_EVENT_PEN_BUTTON_UP -> {
                 SDL_PenButtonEvent button = event.pbutton();
                 remember(button.which()).position(button.x(), button.y(), button.pen_state());
-                SDL.events().post(new PenEvent.Button(button.which(), button.windowID(),
-                        button.timestamp(), button.x(), button.y(), button.pen_state(), button.button() & 0xFF,
-                        button.down()));
+                SDL.events()
+                    .post(new PenEvent.Button(button.which(), button.windowID(), button.timestamp(), button.x(),
+                        button.y(), button.pen_state(), button.button() & 0xFF, button.down()
+                    ));
             }
             case SDLEvents.SDL_EVENT_PEN_AXIS -> {
                 SDL_PenAxisEvent axis = event.paxis();
@@ -89,8 +108,12 @@ public final class Pens {
                 Pen pen = remember(axis.which());
                 pen.position(axis.x(), axis.y(), axis.pen_state());
                 pen.axis(kind, axis.value());
-                SDL.events().post(new PenEvent.Axis(axis.which(), axis.windowID(), axis.timestamp(),
-                        axis.x(), axis.y(), axis.pen_state(), kind, axis.value()));
+                SDL.events()
+                    .post(new PenEvent.Axis(axis.which(), axis.windowID(), axis.timestamp(), axis.x(), axis.y(),
+                        axis.pen_state(), kind, axis.value()
+                    ));
+            }
+            default -> {
             }
         }
     }

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.lwjgly.spi.WindowBridge;
@@ -10,37 +20,6 @@ final class LegacyInputQueues {
 
     private static final int CAPACITY = 1024;
 
-    private static final class PendingKey {
-
-        private final int scancode;
-        private final int key;
-        private final boolean pressed;
-        private final boolean repeat;
-        private final long timestampNs;
-
-        private char character;
-
-        private PendingKey(int scancode, int key, boolean pressed, boolean repeat, long timestampNs) {
-            this.scancode = scancode;
-            this.key = key;
-            this.pressed = pressed;
-            this.repeat = repeat;
-            this.timestampNs = timestampNs;
-        }
-
-        private WindowBridge.KeyEvent freeze() {
-            return new WindowBridge.KeyEvent(scancode, key, pressed, repeat, character, timestampNs);
-        }
-
-    }
-
-    private static <T> void append(Deque<T> queue, T event) {
-        if (queue.size() == CAPACITY) {
-            queue.removeFirst();
-        }
-        queue.addLast(event);
-    }
-
     private final Deque<PendingKey> keys = new ArrayDeque<>();
     private final Deque<WindowBridge.MouseEvent> mice = new ArrayDeque<>();
 
@@ -48,6 +27,13 @@ final class LegacyInputQueues {
     private double deltaX;
     private double deltaY;
     private double wheel;
+
+    private static <T> void append(Deque<T> queue, T event) {
+        if (queue.size() == CAPACITY) {
+            queue.removeFirst();
+        }
+        queue.addLast(event);
+    }
 
     synchronized void key(int scancode, int key, boolean pressed, boolean repeat, long timestampNs) {
         this.pendingCharacter = null;
@@ -134,6 +120,30 @@ final class LegacyInputQueues {
         float value = (float) this.wheel;
         this.wheel = 0.0;
         return value;
+    }
+
+    private static final class PendingKey {
+
+        private final int scancode;
+        private final int key;
+        private final boolean pressed;
+        private final boolean repeat;
+        private final long timestampNs;
+
+        private char character;
+
+        private PendingKey(int scancode, int key, boolean pressed, boolean repeat, long timestampNs) {
+            this.scancode = scancode;
+            this.key = key;
+            this.pressed = pressed;
+            this.repeat = repeat;
+            this.timestampNs = timestampNs;
+        }
+
+        private WindowBridge.KeyEvent freeze() {
+            return new WindowBridge.KeyEvent(scancode, key, pressed, repeat, character, timestampNs);
+        }
+
     }
 
 }

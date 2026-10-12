@@ -1,31 +1,51 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.screen.widget;
 
 import com.cleanroommc.client.modlist.ModListConstants;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 public class ModListIconButton extends ModListTextButton {
+
     public static final ResourceLocation ICON_TEXTURE = ModListConstants.resource("textures/gui/icons.png");
-    private final int u, v;
+
+    private final int u;
+    private final int v;
 
     public ModListIconButton(int x, int y, int u, int v, @Nullable Consumer<ModListTextButton> onPress) {
         this(x, y, u, v, 20, "", onPress);
     }
 
-    public ModListIconButton(int x, int y, int u, int v, int width, int height, @Nullable Consumer<ModListTextButton> onPress) {
+    public ModListIconButton(int x, int y, int u, int v, int width, int height,
+        @Nullable Consumer<ModListTextButton> onPress
+    ) {
         this(x, y, u, v, width, height, "", onPress);
     }
 
-    public ModListIconButton(int x, int y, int u, int v, int width, String label, @Nullable Consumer<ModListTextButton> onPress) {
+    public ModListIconButton(int x, int y, int u, int v, int width, String label,
+        @Nullable Consumer<ModListTextButton> onPress
+    ) {
         this(x, y, u, v, width, 20, label, onPress);
     }
 
-    public ModListIconButton(int x, int y, int u, int v, int width, int height, String label, @Nullable Consumer<ModListTextButton> onPress) {
+    public ModListIconButton(int x, int y, int u, int v, int width, int height, String label,
+        @Nullable Consumer<ModListTextButton> onPress
+    ) {
         super(x, y, width, height, label, onPress);
         this.u = u;
         this.v = v;
@@ -46,4 +66,5 @@ public class ModListIconButton extends ModListTextButton {
         this.drawString(font, this.displayString, iconX + 14, iconY + 1, this.getFGColor());
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
+
 }
