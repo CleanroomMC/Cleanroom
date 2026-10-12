@@ -29,7 +29,7 @@ If you want to...
 ### Platform APIs
 
 - Caching API: A common caching framework for storing expensive data persistently
-- Compute API: A managed computing API that abstracts OpenCL
+- (WIP) Compute API: A managed computing API that abstracts OpenCL
 
 ### Architecture Overhaul
 
@@ -66,15 +66,15 @@ Cleanroom itself grew to its own ecosystem, and beyond being a simple mod loader
 > Are there plans to migrate to Vulkan?
 
 No, and
-- OpenGL is capable of almost all rendering scenarios, and we're utilizing modern OpenGL features heavily. Modern OpenGL itself isn't technically obsolete
+- OpenGL is capable of almost all rendering scenarios, and we are utilizing modern OpenGL features heavily. Modern OpenGL itself is not technically obsolete
 - OpenGL-to-Vulkan one-to-one mapping type of migration is considered as the worst practice possible. Heavy architectural redesign is required
 - Lack of manpower to maintain multi-backend
-- We'd rather prefer BGFX when we finally come to multi-backend
+- We would rather prefer BGFX when we finally come to multi-backend
 
-> How's the (OpenGL related implementations) compatibility with macOS?
+> How is the (OpenGL related implementations) compatibility with macOS?
 
 Expect everything to run properly as how 1.12 Forge did.
-Advanced OpenGL implementations that macOS doesn't support have fallbacks and won't crash.
+Advanced OpenGL implementations that macOS does not support have fallbacks and would not crash.
 However, we have no guarantee that mods provide fallbacks as well.
 
 > How is the mod compatibility in Cleanroom?
@@ -86,8 +86,6 @@ As for Cleanroom mods, before Cleanroom 1.0.0, no binary compatibility is guaran
 
 <details>
 <summary>Click to Expand</summary>
-
-...
 
 ### 0.7
 
