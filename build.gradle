@@ -256,16 +256,24 @@ tasks.register('isolatedTest', Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
     forkEvery = 1
+    sourceSets.test.java.asFileTree.visit {
+        if (!it.directory && it.file.text.contains('@ForgeTestRunner.Isolated')) {
+            include it.path.replace('.java', '.class')
+        }
+    }
     useJUnitPlatform {
         includeTags 'forge-isolated'
     }
 }
 
 tasks.named('test', Test) {
-    dependsOn tasks.named('isolatedTest')
     useJUnitPlatform {
         excludeTags 'forge-isolated'
     }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('isolatedTest')
 }
 
 tasks.named('compileJava', JavaCompile).configure { compile ->
