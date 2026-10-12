@@ -72,11 +72,14 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
         }
         this.initialized = true;
         super.init();
-        if (!isDevelopment()) {
-            MixinEnvironment.getDefaultEnvironment()
-                .getRemappers()
-                .add(new CleanroomRemapper<>(FMLDeobfuscatingRemapper.INSTANCE));
-        }
+        MixinEnvironment.getDefaultEnvironment()
+            .getRemappers()
+            .add(new CleanroomRemapper<>(FMLDeobfuscatingRemapper.INSTANCE));
+    }
+
+    @Override
+    protected boolean isDevelopment() {
+        return CleanroomEnvironment.isDev();
     }
 
     @Override
