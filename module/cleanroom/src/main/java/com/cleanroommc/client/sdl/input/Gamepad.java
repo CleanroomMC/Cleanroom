@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
+
 import org.lwjgl.sdl.SDLGamepad;
 import org.lwjgl.system.MemoryStack;
 
@@ -21,6 +32,15 @@ public final class Gamepad {
     Gamepad(int instanceId, long handle) {
         this.instanceId = instanceId;
         this.handle = handle;
+    }
+
+    static short toStrength(float value) {
+        float clamped = Math.max(0.0F, Math.min(1.0F, value));
+        return (short) Math.round(clamped * 65535.0F);
+    }
+
+    private static byte channel(int value) {
+        return (byte) Math.clamp(value, 0, 255);
     }
 
     public int id() {
@@ -89,18 +109,22 @@ public final class Gamepad {
      * @param durationMs how long to rumble
      */
     public Gamepad rumble(float low, float high, int durationMs) {
-        SDL.check(SDLGamepad.SDL_RumbleGamepad(handle, toStrength(low), toStrength(high), durationMs), "SDL_RumbleGamepad");
+        SDL.check(SDLGamepad.SDL_RumbleGamepad(handle, toStrength(low), toStrength(high), durationMs),
+            "SDL_RumbleGamepad"
+        );
         return this;
     }
 
     public Gamepad rumbleTriggers(float left, float right, int durationMs) {
         SDL.check(SDLGamepad.SDL_RumbleGamepadTriggers(handle, toStrength(left), toStrength(right), durationMs),
-                "SDL_RumbleGamepadTriggers");
+            "SDL_RumbleGamepadTriggers"
+        );
         return this;
     }
 
     public Gamepad led(int red, int green, int blue) {
-        SDL.check(SDLGamepad.SDL_SetGamepadLED(handle, channel(red), channel(green), channel(blue)), "SDL_SetGamepadLED");
+        SDL.check(SDLGamepad.SDL_SetGamepadLED(handle, channel(red), channel(green), channel(blue)), "SDL_SetGamepadLED"
+        );
         return this;
     }
 
@@ -120,7 +144,8 @@ public final class Gamepad {
         if (sensor == null) {
             throw new IllegalArgumentException("Sensor cannot be null");
         }
-        SDL.check(SDLGamepad.SDL_SetGamepadSensorEnabled(handle, sensor.value(), enabled), "SDL_SetGamepadSensorEnabled");
+        SDL.check(SDLGamepad.SDL_SetGamepadSensorEnabled(handle, sensor.value(), enabled), "SDL_SetGamepadSensorEnabled"
+        );
         return this;
     }
 
@@ -140,7 +165,7 @@ public final class Gamepad {
             if (!SDLGamepad.SDL_GetGamepadSensorData(handle, sensor.value(), buffer)) {
                 return new float[0];
             }
-            return new float[] {buffer.get(0), buffer.get(1), buffer.get(2)};
+            return new float[] { buffer.get(0), buffer.get(1), buffer.get(2) };
         }
     }
 
@@ -187,15 +212,6 @@ public final class Gamepad {
 
     long handle() {
         return handle;
-    }
-
-    static short toStrength(float value) {
-        float clamped = Math.max(0.0F, Math.min(1.0F, value));
-        return (short) Math.round(clamped * 65535.0F);
-    }
-
-    private static byte channel(int value) {
-        return (byte) Math.clamp(value, 0, 255);
     }
 
 }

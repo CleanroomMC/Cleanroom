@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import org.lwjgl.sdl.SDLDialog;
@@ -70,17 +80,14 @@ public final class FileDialogs {
                 if (button.isEscape()) {
                     flags |= SDLMessageBox.SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
                 }
-                nativeButtons.get(i)
-                        .flags(flags)
-                        .buttonID(button.id())
-                        .text(stack.UTF8(button.text()));
+                nativeButtons.get(i).flags(flags).buttonID(button.id()).text(stack.UTF8(button.text()));
             }
             SDL_MessageBoxData data = SDL_MessageBoxData.calloc(stack);
             data.flags(0)
-                    .window(parentHandle())
-                    .title(stack.UTF8(title == null ? "" : title))
-                    .message(stack.UTF8(message == null ? "" : message))
-                    .buttons(nativeButtons);
+                .window(parentHandle())
+                .title(stack.UTF8(title == null ? "" : title))
+                .message(stack.UTF8(message == null ? "" : message))
+                .buttons(nativeButtons);
             IntBuffer pressed = stack.mallocInt(1);
             SDL.check(SDLMessageBox.SDL_ShowMessageBox(data, pressed), "SDL_ShowMessageBox");
             return pressed.get(0);
@@ -107,8 +114,9 @@ public final class FileDialogs {
         }
     }
 
-    private static void fileDialog(List<Filter> filters, boolean many, String location,
-            boolean openFile, boolean folder, Consumer<List<Path>> onResult) {
+    private static void fileDialog(List<Filter> filters, boolean many, String location, boolean openFile,
+        boolean folder, Consumer<List<Path>> onResult
+    ) {
         if (onResult == null) {
             throw new IllegalArgumentException("onResult cannot be null");
         }
@@ -155,7 +163,9 @@ public final class FileDialogs {
         }
     }
 
-    private static void release(SDL_DialogFileCallback callback, SDL_DialogFileFilter.Buffer filters, List<ByteBuffer> strings) {
+    private static void release(SDL_DialogFileCallback callback, SDL_DialogFileFilter.Buffer filters,
+        List<ByteBuffer> strings
+    ) {
         if (callback != null) {
             callback.free();
         }
@@ -174,7 +184,7 @@ public final class FileDialogs {
             return paths;
         }
         int pointerSize = Pointer.POINTER_SIZE;
-        for (int i = 0; ; i++) {
+        for (int i = 0;; i++) {
             long address = MemoryUtil.memGetAddress(filelist + (long) i * pointerSize);
             if (address == 0L) {
                 break;
@@ -188,10 +198,10 @@ public final class FileDialogs {
     }
 
     private static void box(int flags, String title, String message) {
-        SDL.check(SDLMessageBox.SDL_ShowSimpleMessageBox(flags,
-                title == null ? "" : title,
-                message == null ? "" : message,
-                parentHandle()), "SDL_ShowSimpleMessageBox"
+        SDL.check(SDLMessageBox.SDL_ShowSimpleMessageBox(flags, title == null ? "" : title,
+                message == null ? "" : message, parentHandle()
+            ),
+            "SDL_ShowSimpleMessageBox"
         );
     }
 

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist;
 
 import net.minecraft.client.Minecraft;
@@ -11,12 +21,12 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public final class RenderUtils {
-    private static final float[] DEFAULT_COVER_FADE_ALPHA_LEVELS = {1.0F, 0.0F};
+
+    private static final float[] DEFAULT_COVER_FADE_ALPHA_LEVELS = { 1.0F, 0.0F };
     private static final double PERIOD_PER_SCROLLED_PIXEL = 0.5D;
     private static final double MIN_SCROLL_PERIOD = 3.0D;
 
-    private RenderUtils() {
-    }
+    private RenderUtils() { }
 
     /**
      * Creates a scissor test using minecraft screen coordinates instead of pixel coordinates.
@@ -41,8 +51,12 @@ public final class RenderUtils {
     /**
      * Draws a cover-cropped texture with alpha levels distributed evenly from top to bottom.
      */
-    public static void drawCoverFade(Minecraft mc, ImageInfo image, int x, int y, int width, int height, float zLevel, float... alphaLevels) {
-        if (width <= 0 || height <= 0 || image.width() <= 0 || image.height() <= 0) return;
+    public static void drawCoverFade(Minecraft mc, ImageInfo image, int x, int y, int width, int height, float depth,
+        float... alphaLevels
+    ) {
+        if (width <= 0 || height <= 0 || image.width() <= 0 || image.height() <= 0) {
+            return;
+        }
         float[] levels = alphaLevels != null && alphaLevels.length >= 2 ? alphaLevels : DEFAULT_COVER_FADE_ALPHA_LEVELS;
 
         mc.getTextureManager().bindTexture(image.resource());
@@ -53,7 +67,10 @@ public final class RenderUtils {
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ZERO
+        );
 
         double sourceAspect = image.width() / (double) image.height();
         double targetAspect = width / (double) height;
@@ -88,10 +105,10 @@ public final class RenderUtils {
             float topAlpha = MathHelper.clamp(levels[i], 0.0F, 1.0F);
             float bottomAlpha = MathHelper.clamp(levels[i + 1], 0.0F, 1.0F);
 
-            buffer.pos(x, bottomY, zLevel).tex(u0, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
-            buffer.pos(x + width, bottomY, zLevel).tex(u1, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
-            buffer.pos(x + width, topY, zLevel).tex(u1, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
-            buffer.pos(x, topY, zLevel).tex(u0, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
+            buffer.pos(x, bottomY, depth).tex(u0, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
+            buffer.pos(x + width, bottomY, depth).tex(u1, bottomV).color(1.0F, 1.0F, 1.0F, bottomAlpha).endVertex();
+            buffer.pos(x + width, topY, depth).tex(u1, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
+            buffer.pos(x, topY, depth).tex(u0, topV).color(1.0F, 1.0F, 1.0F, topAlpha).endVertex();
         }
         tess.draw();
 
@@ -109,10 +126,8 @@ public final class RenderUtils {
      * @param maxX right edge of the box.
      * @param maxY bottom edge of the box.
      */
-    public static void drawScrollingString(
-            FontRenderer font, String text,
-            int minX, int minY, int maxX, int maxY,
-            int color, boolean shadow
+    public static void drawScrollingString(FontRenderer font, String text, int minX, int minY, int maxX, int maxY,
+        int color, boolean shadow
     ) {
         drawScrollingString(font, text, (minX + maxX) / 2, minX, minY, maxX, maxY, color, shadow);
     }
@@ -126,10 +141,8 @@ public final class RenderUtils {
      * @param maxX    right edge of the box.
      * @param maxY    bottom edge of the box.
      */
-    public static void drawScrollingString(
-            FontRenderer font, String text,
-            int centerX, int minX, int minY, int maxX, int maxY,
-            int color, boolean shadow
+    public static void drawScrollingString(FontRenderer font, String text, int centerX, int minX, int minY, int maxX,
+        int maxY, int color, boolean shadow
     ) {
         int textWidth = font.getStringWidth(text);
         int textY = (minY + maxY - 9) / 2 + 1;
@@ -150,4 +163,5 @@ public final class RenderUtils {
         }
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
+
 }

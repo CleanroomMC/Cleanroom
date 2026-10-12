@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.chat.suggestion;
 
 import net.minecraft.client.Minecraft;
@@ -26,24 +36,16 @@ public class SuggestionList {
     private static final int PADDING_X = 3;
     private static final Set<String> knownCommands = new HashSet<>();
     private static final int[] ARGUMENT_COLORS = new int[] {
-            0xFFAA00, // Orange
-            0xFFFF55, // Yellow
-            0x55FFFF, // Cyan
-            0x5555FF, // Blue
-            0xAA00FF, // Purple
-            0xFF55FF, // Magenta
+        0xFFAA00, // Orange
+        0xFFFF55, // Yellow
+        0x55FFFF, // Cyan
+        0x5555FF, // Blue
+        0xAA00FF, // Purple
+        0xFF55FF, // Magenta
     };
 
     // Tracks the connection the knownCommands were learned on. Different connection means a different server
     private static WeakReference<NetHandlerPlayClient> lastConnection = new WeakReference<>(null);
-
-    private static int textOriginX(GuiTextField f) {
-        return f.getEnableBackgroundDrawing() ? f.x + 4 : f.x;
-    }
-
-    private static int textOriginY(GuiTextField f) {
-        return f.getEnableBackgroundDrawing() ? f.y + (f.height - 8) / 2 : f.y;
-    }
 
     private final GuiTextField field;
     // When true, commands are auto-suggested and colored with or without a leading "/" (command-block GUIs)
@@ -57,13 +59,23 @@ public class SuggestionList {
     public SuggestionList(GuiTextField field, boolean commandBlockMode) {
         this.field = field;
         this.commandBlockMode = commandBlockMode;
-        NetHandlerPlayClient connection = Minecraft.getMinecraft().player != null ? Minecraft.getMinecraft().player.connection : null;
+        NetHandlerPlayClient connection = Minecraft.getMinecraft().player != null
+            ? Minecraft.getMinecraft().player.connection
+            : null;
         if (connection != lastConnection.get()) {
             // Server changed since the last chat, needs refreshing
             knownCommands.clear();
             lastConnection = new WeakReference<>(connection);
         }
         knownCommands.addAll(ClientCommandHandler.instance.getCommands().keySet());
+    }
+
+    private static int textOriginX(GuiTextField f) {
+        return f.getEnableBackgroundDrawing() ? f.x + 4 : f.x;
+    }
+
+    private static int textOriginY(GuiTextField f) {
+        return f.getEnableBackgroundDrawing() ? f.y + (f.height - 8) / 2 : f.y;
     }
 
     public void setSuggestions(List<String> newSuggestions) {
@@ -73,7 +85,8 @@ public class SuggestionList {
         this.cachedWidth = newSuggestions.stream()
                 .mapToInt(Minecraft.getMinecraft().fontRenderer::getStringWidth)
                 .max()
-                .orElse(0) + PADDING_X * 2;
+                .orElse(0) +
+            PADDING_X * 2;
     }
 
     public boolean isInvisible() {
@@ -103,7 +116,9 @@ public class SuggestionList {
         if (this.isInvisible()) {
             return;
         }
-        this.selectedIndex = this.selectedIndex == -1 ? this.suggestions.size() - 1 : Math.max(-1, this.selectedIndex - 1);
+        this.selectedIndex = this.selectedIndex == -1
+            ? this.suggestions.size() - 1
+            : Math.max(-1, this.selectedIndex - 1);
         this.clampScroll();
     }
 
@@ -131,8 +146,13 @@ public class SuggestionList {
             // Flip the visual row so index 0 (window start) sits in the bottom row, nearest the input
             int entryY = g.topY + (g.visibleCount - 1 - i) * ENTRY_HEIGHT;
             boolean selected = idx == selectedIndex;
-            boolean hovered = mouseX >= g.x && mouseX < g.x + g.width && mouseY >= entryY && mouseY < entryY + ENTRY_HEIGHT;
-            mc.fontRenderer.drawStringWithShadow(text, g.x + PADDING_X, entryY + 2, (selected || hovered) ? 0xFFFF55 : 0xFFFFFF);
+            boolean hovered = mouseX >= g.x &&
+                mouseX < g.x + g.width &&
+                mouseY >= entryY &&
+                mouseY < entryY + ENTRY_HEIGHT;
+            mc.fontRenderer.drawStringWithShadow(text, g.x + PADDING_X, entryY + 2,
+                (selected || hovered) ? 0xFFFF55 : 0xFFFFFF
+            );
         }
         if (this.suggestions.size() > g.visibleCount) {
             int barX = g.x + g.width;
@@ -218,7 +238,8 @@ public class SuggestionList {
         }
         int wordStart = inputField.getNthWordFromPosWS(-1, cursorPos, false);
         String typedWord = inputField.getText().substring(wordStart, cursorPos);
-        if (typedWord.isEmpty() || !suggestion.toLowerCase(Locale.ROOT).startsWith(typedWord.toLowerCase(Locale.ROOT))) {
+        if (typedWord.isEmpty() ||
+            !suggestion.toLowerCase(Locale.ROOT).startsWith(typedWord.toLowerCase(Locale.ROOT))) {
             return;
         }
         String suffix = suggestion.substring(typedWord.length());
@@ -230,7 +251,8 @@ public class SuggestionList {
         if (cursorPos < lineScrollOffset) {
             return;
         }
-        int ghostX = textOriginX(inputField) + fontRenderer.getStringWidth(inputField.getText().substring(lineScrollOffset, cursorPos));
+        int ghostX = textOriginX(inputField) +
+            fontRenderer.getStringWidth(inputField.getText().substring(lineScrollOffset, cursorPos));
         int fieldRight = textOriginX(inputField) + inputField.getWidth();
         if (ghostX >= fieldRight) {
             return;
@@ -347,7 +369,8 @@ public class SuggestionList {
         int lineScrollOffset = this.field.getLineScrollOffset();
         int start = Math.min(Math.max(wordStart, lineScrollOffset), text.length());
         // Shift left by the internal padding so the entry text (drawn at x + PADDING_X) lines up with the token itself
-        int x = textOriginX(this.field) + Minecraft.getMinecraft().fontRenderer.getStringWidth(text.substring(lineScrollOffset, start)) - PADDING_X;
+        int x = textOriginX(this.field) +
+            Minecraft.getMinecraft().fontRenderer.getStringWidth(text.substring(lineScrollOffset, start)) - PADDING_X;
         // Clamp so the box never overflows the right edge of the input, shifting left as needed
         int fieldRight = this.field.x + this.field.width;
         if (x + width > fieldRight) {

@@ -1,0 +1,11 @@
+--- original/net/minecraft/nbt/NBTTagLongArray.java
++++ modified/net/minecraft/nbt/NBTTagLongArray.java
+@@ -90,4 +90,8 @@
+     public int hashCode() {
+         return super.hashCode() ^ Arrays.hashCode(this.data);
+     }
++
++    public long[] getLongArray() {
++        return this.data;
++    }
+ }

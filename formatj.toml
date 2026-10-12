@@ -26,9 +26,9 @@ switch-case-body = true
 blank-lines = false
 
 [wrapping]
-max-line-length = 160
-method-parameters = "chop-down-if-long"
-method-arguments = "chop-down-if-long"
+max-line-length = 120
+method-parameters = "wrap-if-long"
+method-arguments = "wrap-if-long"
 chained-calls = "break-all-when-too-long"
 chain-threshold = 2
 binary-operators = "wrap-if-long"
@@ -43,28 +43,31 @@ intersection-types = "never"
 intersection-separator-position = "before-operator"
 ternary = "wrap-if-long"
 assignment = "never"
+assignment-break = "inside-value"
+hug-sole-argument = true
 array-initializers = "chop-down-if-long"
 extends-implements = "never"
 throws-clause = "wrap-if-long"
 type-parameters = "never"
 annotation-arguments = "wrap-if-long"
 closing-delimiter = "own-line"
+break-after-open-paren = false
 enum-constants = "chop-down-always"
 require-enum-constant-semicolon = false
 for-statement = "chop-down-if-long"
 try-resources = "never"
 keep-simple-methods-on-one-line = false
 keep-simple-classes-on-one-line = false
-keep-simple-lambdas-on-one-line = true
+keep-simple-lambdas-on-one-line = false
 
 [braces]
 class-placement = "end-of-line"
 method-placement = "end-of-line"
 control-placement = "end-of-line"
 lambda-placement = "end-of-line"
-if-else = "preserve"
-for-loop = "preserve"
-while-loop = "preserve"
+if-else = "always"
+for-loop = "always"
+while-loop = "always"
 else-on-new-line = false
 catch-on-new-line = false
 finally-on-new-line = false
@@ -115,11 +118,13 @@ before-method = 1
 before-field = 0
 after-class-opening-brace = 1
 before-class-closing-brace = 1
+strip-at-brace-edges = false
 around-initializer-block = 1
 before-record-compact-constructor = 1
 after-enum-constants = 0
 before-first-enum-constant = 1
 between-switch-cases = 0
+between-member-groups = 1
 
 [alignment]
 consecutive-fields = "none"
@@ -134,6 +139,7 @@ trailing-comments = "none"
 [annotations]
 declaration-placement = "new-line"
 parameter-placement = "same-line"
+field-placement = "same-line"
 single-marker-inline = false
 
 [imports]
@@ -160,7 +166,8 @@ module-imports-first = true
 remove-unused = false
 
 [modifiers]
-order = "preserve"
+order = "canonical"
+remove-redundant = true
 
 [module]
 brace-placement = "inherit"
@@ -194,9 +201,9 @@ closing-tag-form = "preserve"
 opening-tag-position = "preserve"
 
 [switch]
-case-style = "preserve"
-arrow-case-braces = "preserve"
-yield-style = "preserve"
+case-style = "arrow"
+arrow-case-braces = "when-multi-statement"
+yield-style = "expression-when-possible"
 multi-label-wrapping = "wrap-if-long"
 null-default-on-one-line = true
 guard-on-same-line = true
@@ -220,14 +227,21 @@ permits-order = "preserve"
 permits-on-new-line = false
 
 [lambdas]
-parameter-style = "preserve"
-body-braces = "preserve"
+parameter-style = "omit-when-possible"
+body-braces = "when-multi-statement"
 keep-single-expression-inline = true
 
 [text-blocks]
 indent-policy = "preserve"
 closing-delimiter-on-own-line = false
 escape-trailing-spaces = false
+
+[literals]
+long-suffix = "upper"
+hex-digits = "upper"
+
+[semicolons]
+remove-redundant = true
 
 [preservation]
 keep-author-blank-lines = true
@@ -237,3 +251,9 @@ keep-simple-blocks-inline = false
 keep-array-initializer-layout = false
 respect-existing-chain-breaks = false
 never-join-lines = false
+
+[arrays]
+c-style-brackets = "java"
+
+[members]
+order = "intellij"

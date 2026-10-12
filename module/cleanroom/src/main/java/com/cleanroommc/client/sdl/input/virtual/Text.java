@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input.virtual;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.Window;
+
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.sdl.SDLHints;
 import org.lwjgl.sdl.SDLInit;
@@ -26,49 +37,6 @@ import java.util.List;
  */
 public final class Text {
 
-    /**
-     * The field's rectangle in window coordinates, and the caret's offset from the rectangle's left edge.
-     *
-     * @param x left edge
-     * @param y top edge
-     * @param width width
-     * @param height height
-     * @param cursor caret offset from {@code x}, in window coordinates
-     */
-    public record Area(int x, int y, int width, int height, int cursor) { }
-
-    /**
-     * Tells SDL which parts of the input method editor's interface the game draws itself.
-     *
-     * <p>This is a hint, so it has to be set before the video subsystem comes up.
-     *
-     * @param composition whether the game draws the preedit text at the caret
-     * @param candidates  whether the game draws the candidate list
-     */
-    public static synchronized void implementIME(boolean composition, boolean candidates) {
-        if (SDL.isInitialized(SDLInit.SDL_INIT_VIDEO)) {
-            throw new IllegalStateException("SDL's video subsystem had been initialized already. The IME hint would be ignored.");
-        }
-        StringBuilder value = new StringBuilder();
-        if (composition) {
-            value.append("composition");
-        }
-        if (candidates) {
-            if (!value.isEmpty()) {
-                value.append(',');
-            }
-            value.append("candidates");
-        }
-        SDL.check(SDLHints.SDL_SetHint(SDLHints.SDL_HINT_IME_IMPLEMENTED_UI, value.toString()), "SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI)");
-    }
-
-    /**
-     * @return whether this platform can show an on-screen keyboard
-     */
-    public static boolean screenKeyboardSupported() {
-        return SDLKeyboard.SDL_HasScreenKeyboardSupport();
-    }
-
     private final Window window;
 
     private TextInputKind kind = TextInputKind.TEXT;
@@ -86,6 +54,64 @@ public final class Text {
             throw new IllegalStateException("The SDL window does not exist");
         }
         this.window = window;
+    }
+
+    /**
+     * Tells SDL which parts of the input method editor's interface the game draws itself.
+     *
+     * <p>This is a hint, so it has to be set before the video subsystem comes up.
+     *
+     * @param composition whether the game draws the preedit text at the caret
+     * @param candidates  whether the game draws the candidate list
+     */
+    public static synchronized void implementIME(boolean composition, boolean candidates) {
+        if (SDL.isInitialized(SDLInit.SDL_INIT_VIDEO)) {
+            throw new IllegalStateException("SDL's video subsystem had been initialized already. The IME hint would be ignored."
+            );
+        }
+        StringBuilder value = new StringBuilder();
+        if (composition) {
+            value.append("composition");
+        }
+        if (candidates) {
+            if (!value.isEmpty()) {
+                value.append(',');
+            }
+            value.append("candidates");
+        }
+        SDL.check(SDLHints.SDL_SetHint(SDLHints.SDL_HINT_IME_IMPLEMENTED_UI, value.toString()),
+            "SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI)"
+        );
+    }
+
+    /**
+     * @return whether this platform can show an on-screen keyboard
+     */
+    public static boolean screenKeyboardSupported() {
+        return SDLKeyboard.SDL_HasScreenKeyboardSupport();
+    }
+
+    private static TextComposition composition(SDL_TextEditingEvent event) {
+        String text = event.textString();
+        if (text == null || text.isEmpty()) {
+            return TextComposition.NONE;
+        }
+        return new TextComposition(text, event.start(), event.length());
+    }
+
+    private static InputCandidates candidates(SDL_TextEditingCandidatesEvent event) {
+        int count = event.num_candidates();
+        PointerBuffer pointers = event.candidates();
+        if (count <= 0 || pointers == null || !pointers.hasRemaining()) {
+            return InputCandidates.NONE;
+        }
+        int size = Math.min(count, pointers.remaining());
+        String[] entries = new String[size];
+        for (int i = 0; i < size; i++) {
+            String entry = MemoryUtil.memUTF8Safe(pointers.get(i));
+            entries[i] = entry == null ? "" : entry;
+        }
+        return new InputCandidates(List.of(entries), event.selected_candidate(), event.horizontal());
     }
 
     /**
@@ -288,15 +314,29 @@ public final class Text {
         int props = SDLProperties.SDL_CreateProperties();
         SDL.check(props != 0, "SDL_CreateProperties");
         try {
-            SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER, this.kind.value()),
-                    "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER + ")");
-            SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, this.capitalization.value()),
-                    "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER + ")");
-            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN, this.multiline),
-                    "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN + ")");
-            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, this.autocorrect),
-                    "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN + ")");
-            SDL.check(SDLKeyboard.SDL_StartTextInputWithProperties(this.handle(), props), "SDL_StartTextInputWithProperties");
+            SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER,
+                    this.kind.value()
+                ),
+                "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER + ")"
+            );
+            SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER,
+                    this.capitalization.value()
+                ),
+                "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER + ")"
+            );
+            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN,
+                    this.multiline
+                ),
+                "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN + ")"
+            );
+            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN,
+                    this.autocorrect
+                ),
+                "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN + ")"
+            );
+            SDL.check(SDLKeyboard.SDL_StartTextInputWithProperties(this.handle(), props),
+                "SDL_StartTextInputWithProperties"
+            );
         } finally {
             SDLProperties.SDL_DestroyProperties(props);
         }
@@ -313,27 +353,15 @@ public final class Text {
         this.candidates = InputCandidates.NONE;
     }
 
-    private static TextComposition composition(SDL_TextEditingEvent event) {
-        String text = event.textString();
-        if (text == null || text.isEmpty()) {
-            return TextComposition.NONE;
-        }
-        return new TextComposition(text, event.start(), event.length());
-    }
-
-    private static InputCandidates candidates(SDL_TextEditingCandidatesEvent event) {
-        int count = event.num_candidates();
-        PointerBuffer pointers = event.candidates();
-        if (count <= 0 || pointers == null || !pointers.hasRemaining()) {
-            return InputCandidates.NONE;
-        }
-        int size = Math.min(count, pointers.remaining());
-        String[] entries = new String[size];
-        for (int i = 0; i < size; i++) {
-            String entry = MemoryUtil.memUTF8Safe(pointers.get(i));
-            entries[i] = entry == null ? "" : entry;
-        }
-        return new InputCandidates(List.of(entries), event.selected_candidate(), event.horizontal());
-    }
+    /**
+     * The field's rectangle in window coordinates, and the caret's offset from the rectangle's left edge.
+     *
+     * @param x left edge
+     * @param y top edge
+     * @param width width
+     * @param height height
+     * @param cursor caret offset from {@code x}, in window coordinates
+     */
+    public record Area(int x, int y, int width, int height, int cursor) { }
 
 }

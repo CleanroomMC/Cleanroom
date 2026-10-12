@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.events;
 
 import com.cleanroommc.client.sdl.input.MouseButton;
+
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.lwjgl.sdl.SDLTouch;
 
@@ -102,7 +113,9 @@ public abstract class MouseEvent extends Event {
         private final boolean pressed;
         private final int clicks;
 
-        public Button(int mouse, int windowId, long timestampNs, float x, float y, int rawButton, boolean pressed, int clicks) {
+        public Button(int mouse, int windowId, long timestampNs, float x, float y, int rawButton, boolean pressed,
+            int clicks
+        ) {
             super(mouse, windowId, timestampNs, x, y);
             this.rawButton = rawButton;
             this.pressed = pressed;
@@ -150,7 +163,8 @@ public abstract class MouseEvent extends Event {
         private final boolean flipped;
 
         public Wheel(int mouse, int windowId, long timestampNs, float x, float y, float horizontal, float vertical,
-                     int integerHorizontal, int integerVertical, boolean flipped) {
+            int integerHorizontal, int integerVertical, boolean flipped
+        ) {
             super(mouse, windowId, timestampNs, x, y);
             this.horizontal = horizontal;
             this.vertical = vertical;

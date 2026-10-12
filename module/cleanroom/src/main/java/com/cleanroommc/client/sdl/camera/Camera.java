@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.camera;
 
 import com.cleanroommc.client.sdl.SDLException;
 import com.cleanroommc.client.sdl.internal.Surfaces;
+
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.sdl.SDLCamera;
 import org.lwjgl.sdl.SDLStdinc;
@@ -19,21 +30,18 @@ import java.util.List;
  */
 public final class Camera implements AutoCloseable {
 
-    private static CameraSpec fromNative(SDL_CameraSpec spec) {
-        return new CameraSpec(spec.width(), spec.height(), spec.format(), spec.framerate_numerator(), spec.framerate_denominator());
-    }
-
-    /**
-     * @param timestampNs SDL's timestamp, or {@code 0} if unknown
-     */
-    public record Frame(int width, int height, int format, long timestampNs, BufferedImage image) { }
-
     private final int id;
 
     private long handle;
 
     Camera(int id) {
         this.id = id;
+    }
+
+    private static CameraSpec fromNative(SDL_CameraSpec spec) {
+        return new CameraSpec(spec.width(), spec.height(), spec.format(), spec.framerate_numerator(),
+            spec.framerate_denominator()
+        );
     }
 
     public int id() {
@@ -85,11 +93,11 @@ public final class Camera implements AutoCloseable {
         } else {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 SDL_CameraSpec nativeSpec = SDL_CameraSpec.calloc(stack)
-                        .format(spec.format())
-                        .width(spec.width())
-                        .height(spec.height())
-                        .framerate_numerator(spec.fpsNumerator())
-                        .framerate_denominator(spec.fpsDenominator());
+                    .format(spec.format())
+                    .width(spec.width())
+                    .height(spec.height())
+                    .framerate_numerator(spec.fpsNumerator())
+                    .framerate_denominator(spec.fpsDenominator());
                 handle = SDLCamera.SDL_OpenCamera(id, nativeSpec);
             }
         }
@@ -133,7 +141,8 @@ public final class Camera implements AutoCloseable {
                 return null;
             }
             try {
-                return new Frame(surface.w(), surface.h(), surface.format(), timestamp.get(0), Surfaces.toImage(surface));
+                return new Frame(surface.w(), surface.h(), surface.format(), timestamp.get(0), Surfaces.toImage(surface)
+                );
             } finally {
                 SDLCamera.SDL_ReleaseCameraFrame(handle, surface);
             }
@@ -152,5 +161,10 @@ public final class Camera implements AutoCloseable {
     long handle() {
         return handle;
     }
+
+    /**
+     * @param timestampNs SDL's timestamp, or {@code 0} if unknown
+     */
+    public record Frame(int width, int height, int format, long timestampNs, BufferedImage image) { }
 
 }

@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.audio;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.AudioDeviceEvent;
+
 import org.lwjgl.sdl.SDLAudio;
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
@@ -29,6 +40,26 @@ public final class AudioDevices {
     private String defaultPlayback = "";
 
     private AudioDevices() { }
+
+    private static String readDefaultPlayback() {
+        String name = SDLAudio.SDL_GetAudioDeviceName(SDLAudio.SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK);
+        return name == null ? "" : name;
+    }
+
+    private static List<AudioDevice> devices(IntBuffer ids, boolean recording) {
+        if (ids == null) {
+            return List.of();
+        }
+        try {
+            List<AudioDevice> devices = new ArrayList<>(ids.remaining());
+            while (ids.hasRemaining()) {
+                devices.add(new AudioDevice(ids.get(), recording));
+            }
+            return List.copyOf(devices);
+        } finally {
+            SDLStdinc.SDL_free(ids.rewind());
+        }
+    }
 
     public List<AudioDevice> playback() {
         ensure();
@@ -83,9 +114,9 @@ public final class AudioDevices {
         long timestampNs = device.timestamp();
         switch (type) {
             case SDLEvents.SDL_EVENT_AUDIO_DEVICE_ADDED ->
-                    SDL.events().post(new AudioDeviceEvent.Added(id, timestampNs, new AudioDevice(id, recording)));
+                SDL.events().post(new AudioDeviceEvent.Added(id, timestampNs, new AudioDevice(id, recording)));
             case SDLEvents.SDL_EVENT_AUDIO_DEVICE_REMOVED ->
-                    SDL.events().post(new AudioDeviceEvent.Removed(id, timestampNs, recording));
+                SDL.events().post(new AudioDeviceEvent.Removed(id, timestampNs, recording));
             case SDLEvents.SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED -> {
                 SDL.events().post(new AudioDeviceEvent.FormatChanged(id, timestampNs, new AudioDevice(id, recording)));
                 return;
@@ -105,26 +136,6 @@ public final class AudioDevices {
         String previous = defaultPlayback;
         defaultPlayback = current;
         SDL.events().post(new AudioDeviceEvent.DefaultChanged(timestampNs, previous, current));
-    }
-
-    private static String readDefaultPlayback() {
-        String name = SDLAudio.SDL_GetAudioDeviceName(SDLAudio.SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK);
-        return name == null ? "" : name;
-    }
-
-    private static List<AudioDevice> devices(IntBuffer ids, boolean recording) {
-        if (ids == null) {
-            return List.of();
-        }
-        try {
-            List<AudioDevice> devices = new ArrayList<>(ids.remaining());
-            while (ids.hasRemaining()) {
-                devices.add(new AudioDevice(ids.get(), recording));
-            }
-            return List.copyOf(devices);
-        } finally {
-            SDLStdinc.SDL_free(ids.rewind());
-        }
     }
 
     synchronized void reset() {

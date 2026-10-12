@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.cleanroommc.cleanroomgradle'
-    id 'com.cleanroommc.conventions' version '1.1.9'
+    id 'com.cleanroommc.conventions' version '1.4.0'
 }
 
 base.archivesName = 'cleanroom'
@@ -36,7 +36,8 @@ def modules = [
         'cleanroom',
         'kirino',
         'builtin/mixinbooter',
-        'builtin/configanytime'
+        'builtin/configanytime',
+        'builtin/mica'
 ]
 
 sourceSets {
@@ -64,12 +65,29 @@ def unformatted = [
         'com/cleanroommc/test/kirino/**'
 ]
 
+// The builtin modules keep their own licensing and public API
+def builtin = [
+        'zone/rong/mixinbooter/**',
+        'com/cleanroommc/configanytime/**',
+        'com/cleanroommc/client/windows/**'
+]
+
 clearSkies {
-    exclude(*unformatted)
+    exclude(*unformatted, *builtin)
 }
 
 formatJ {
-    exclude(*unformatted)
+    exclude(*unformatted, *builtin)
+}
+
+tasks.withType(Checkstyle).configureEach {
+    exclude(*unformatted, *builtin)
+}
+
+conventions {
+    header {
+        exclude(*unformatted, *builtin)
+    }
 }
 
 var open_arguments = [
@@ -126,8 +144,10 @@ configurations.named('vanillaNatives') {
     exclude group: 'org.lwjgl.lwjgl'
 }
 
-configurations.named('runtimeClasspath') {
-    exclude group: 'org.lwjgl.lwjgl'
+['compileClasspath', 'runtimeClasspath', 'testCompileClasspath', 'testRuntimeClasspath'].each { name ->
+    configurations.named(name) {
+        exclude group: 'org.lwjgl.lwjgl'
+    }
 }
 
 dependencies {
@@ -149,7 +169,7 @@ dependencies {
     implementation "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
 
     api 'org.jspecify:jspecify:1.0.0'
-    api 'top.outlands:foundation:0.21.0'
+    api 'top.outlands:foundation:0.22.0'
     api 'zone.rong:imaginebreaker:3.2'
     api 'org.javassist:javassist:3.30.2-GA' // FIXME
     api 'lzma:lzma:0.0.1'
@@ -209,7 +229,7 @@ dependencies {
 
     // TODO
     compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
-    runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
+    api 'com.cleanroommc:lwjgly:1.0.0'
     lwjglNative "org.lwjgl:lwjgl:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-jemalloc:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-opengl:${lwjgl_version}"

@@ -45,7 +45,14 @@
     <module name="NeedBraces"/>
     <module name="EmptyBlock">
       <property name="option" value="TEXT"/>
-      <property name="tokens" value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH, LITERAL_WHILE, LITERAL_FOR, LITERAL_DO"/>
+      <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH, LITERAL_WHILE, LITERAL_FOR, LITERAL_DO"/>
+    </module>
+    <!-- Advisory: a swallowed exception is sometimes the intent. -->
+    <module name="EmptyBlock">
+      <property name="id" value="EmptyCatch"/>
+      <property name="option" value="TEXT"/>
+      <property name="tokens" value="LITERAL_CATCH"/>
+      <property name="severity" value="warning"/>
     </module>
     <module name="OneStatementPerLine"/>
     <module name="MultipleVariableDeclarations"/>
@@ -159,6 +166,16 @@
     <module name="SuppressionXpathSingleFilter">
       <property name="checks" value="MethodName"/>
       <property name="query" value="//METHOD_DEF[./MODIFIERS/ANNOTATION/IDENT[@text='Shadow'] or ./MODIFIERS/ANNOTATION/DOT/IDENT[@text='Shadow']]/IDENT"/>
+    </module>
+
+    <!-- Native bindings keep the names of the library they mirror: members of JNA binding types, and JNI methods. -->
+    <module name="SuppressionXpathSingleFilter">
+      <property name="checks" value="TypeName|MethodName|MemberName|ParameterName"/>
+      <property name="query" value="/COMPILATION_UNIT[./IMPORT//IDENT[@text='jna']]//*[self::INTERFACE_DEF or self::CLASS_DEF][./EXTENDS_CLAUSE/IDENT[@text='Library' or @text='StdCallLibrary' or @text='Structure' or @text='Union'] or ./EXTENDS_CLAUSE/DOT/IDENT[@text='Library' or @text='StdCallLibrary' or @text='Structure' or @text='Union']]/OBJBLOCK//IDENT"/>
+    </module>
+    <module name="SuppressionXpathSingleFilter">
+      <property name="checks" value="MethodName|ParameterName"/>
+      <property name="query" value="//METHOD_DEF[./MODIFIERS/LITERAL_NATIVE]//IDENT"/>
     </module>
 
     <!-- Suppress with // CHECKSTYLE:OFF ... // CHECKSTYLE:ON when a rule is genuinely wrong. -->
