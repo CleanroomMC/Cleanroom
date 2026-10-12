@@ -10,7 +10,7 @@
 
 package com.cleanroommc.test.debug.client;
 
-import com.cleanroommc.client.input.MouseTurnEvent;
+import com.cleanroommc.client.input.mouse.MouseTurnEvent;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +36,7 @@ public class MouseTurnEventTest {
     static final boolean CANCEL = false;
 
     private static final Logger LOGGER = LogManager.getLogger(MODID);
-    private static float secondAccumulator = 0.0F;
+    private static double secondAccumulator = 0.0;
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
@@ -48,8 +48,8 @@ public class MouseTurnEventTest {
     @SubscribeEvent
     public static void onMouseTurn(MouseTurnEvent event) {
         secondAccumulator += event.getFrameDeltaSeconds();
-        if (secondAccumulator >= 1.0F) {
-            secondAccumulator = 0.0F;
+        if (secondAccumulator >= 1.0) {
+            secondAccumulator = 0.0;
             LOGGER.info("Frame delta: {} s", event.getFrameDeltaSeconds());
         }
 

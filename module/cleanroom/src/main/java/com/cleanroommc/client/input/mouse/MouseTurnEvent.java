@@ -8,8 +8,9 @@
  * This is visible-source software and is not open-source software.
  */
 
-package com.cleanroommc.client.input;
+package com.cleanroommc.client.input.mouse;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,9 +29,9 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * <p>This event is fired once per rendered frame while {@code inGameHasFocus && Display.isActive()},
  * including frames with a zero mouse delta.
  *
- * <p>{@link #getFrameDeltaSeconds()} is the duration of the current frame in seconds, taken from vanilla's
- * frame timer ({@code Minecraft.getTickLength()}, converted from ticks). It has millisecond resolution and is
- * not clamped, so a hitch such as a world load yields one large value.
+ * <p>{@link #getFrameDeltaSeconds()} returns {@link Minecraft#getFrameDeltaSeconds()}, for handlers that scale
+ * by time. It is sampled on every frame, including frames where this event is not fired, so the first event
+ * after the game regains focus still reports a single frame.
  *
  * <p>Handlers may call {@link Entity#turn(float, float)} on the player themselves; the hook sits only at the
  * {@code EntityRenderer} call sites, so doing so does not re-fire this event.
@@ -47,13 +48,11 @@ public class MouseTurnEvent extends Event {
     private final EntityPlayerSP player;
     private float yaw;
     private float pitch;
-    private final float frameDelta;
 
-    public MouseTurnEvent(EntityPlayerSP player, float yaw, float pitch, float frameDelta) {
+    public MouseTurnEvent(EntityPlayerSP player, float yaw, float pitch) {
         this.player = player;
         this.yaw = yaw;
         this.pitch = pitch;
-        this.frameDelta = frameDelta;
     }
 
     public EntityPlayerSP getPlayer() {
@@ -76,8 +75,8 @@ public class MouseTurnEvent extends Event {
         this.pitch = pitch;
     }
 
-    public float getFrameDeltaSeconds() {
-        return this.frameDelta;
+    public double getFrameDeltaSeconds() {
+        return Minecraft.getMinecraft().getFrameDeltaSeconds();
     }
 
 }
