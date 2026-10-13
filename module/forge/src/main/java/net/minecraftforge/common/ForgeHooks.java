@@ -578,14 +578,17 @@ public class ForgeHooks
         MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
     }
 
-    public static EntityLivingBase onLivingSetAttackTarget(EntityLiving living, @Nullable EntityLivingBase target)
+    public static EntityLivingBase onLivingSetAttackTarget(EntityLiving living, @Nullable EntityLivingBase target, @Nullable EntityLivingBase previous)
     {
         LivingSetAttackTargetEvent event = new LivingSetAttackTargetEvent(living, target);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        boolean canceled = MinecraftForge.EVENT_BUS.post(event);
+        // Forge-era handlers redirect by calling setAttackTarget re-entrantly
+        EntityLivingBase current = living.getAttackTarget();
+        if (current != target || !canceled && !event.isModified())
         {
-            return living.getAttackTarget();
+            return current;
         }
-        return event.getTarget();
+        return canceled ? previous : event.getTarget();
     }
 
     public static boolean onLivingUpdate(EntityLivingBase entity)
