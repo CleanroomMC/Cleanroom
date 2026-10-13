@@ -17,8 +17,8 @@ import com.cleanroommc.client.sdl.internal.Surfaces;
 import com.cleanroommc.client.sdl.video.Display;
 import com.cleanroommc.client.sdl.video.DisplayMode;
 import com.cleanroommc.lwjgly.spi.WindowBridge;
-import net.minecraftforge.common.ForgeEarlyConfig;
 
+import net.minecraftforge.common.ForgeEarlyConfig;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.sdl.SDLEvents;
@@ -1084,8 +1084,10 @@ public final class Window implements AutoCloseable {
                 }
                 attribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, version / 10);
                 attribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, version % 10);
-                attribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, version < 32 ? 0
-                    : core ? SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE : SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY
+                attribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK,
+                    version < 32
+                        ? 0
+                        : core ? SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE : SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY
                 );
                 context = SDLVideo.SDL_GL_CreateContext(handle);
                 if (context != 0L) {
