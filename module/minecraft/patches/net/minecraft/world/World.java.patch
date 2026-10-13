@@ -1247,7 +1247,7 @@
          }
      }
  
-@@ -2513,7 +2728,9 @@
+@@ -2513,12 +2728,14 @@
      public boolean mayPlace(Block blockIn, BlockPos pos, boolean skipCollisionCheck, EnumFacing sidePlacedOn, @Nullable Entity placer) {
          IBlockState iblockstate = this.getBlockState(pos);
          AxisAlignedBB axisalignedbb = skipCollisionCheck ? null : blockIn.getDefaultState().getCollisionBoundingBox(this, pos);
@@ -1258,6 +1258,12 @@
              return false;
          } else {
              return iblockstate.getMaterial() == Material.CIRCUITS && blockIn == Blocks.ANVIL
+                 ? true
+-                : iblockstate.getMaterial().isReplaceable() && blockIn.canPlaceBlockOnSide(this, pos, sidePlacedOn);
++                : iblockstate.getBlock().isReplaceable(this, pos) && blockIn.canPlaceBlockOnSide(this, pos, sidePlacedOn);
+         }
+     }
+ 
 @@ -2579,7 +2796,7 @@
  
      public int getRedstonePower(BlockPos pos, EnumFacing facing) {
