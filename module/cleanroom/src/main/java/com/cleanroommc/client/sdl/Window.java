@@ -981,6 +981,12 @@ public final class Window implements AutoCloseable {
             if (this.fullscreen) {
                 flags |= SDLVideo.SDL_WINDOW_FULLSCREEN;
             }
+            if (ForgeEarlyConfig.WINDOW_START_MAXIMIZED) {
+                flags |= SDLVideo.SDL_WINDOW_MAXIMIZED;
+            }
+            // TODO: HiDPI on macOS and Wayland. SDL_WINDOW_HIGH_PIXEL_DENSITY gives a native-resolution
+            //  framebuffer, but CleanroomWindowBridge must then report pixel sizes and scale mouse
+            //  coordinates by pixelDensity().
             long handle = SDL.checkHandle(SDLVideo.SDL_CreateWindow(this.title, this.width, this.height, flags),
                 "SDL_CreateWindow"
             );
@@ -1060,6 +1066,9 @@ public final class Window implements AutoCloseable {
             attribute(SDLVideo.SDL_GL_DOUBLEBUFFER, 1);
             attribute(SDLVideo.SDL_GL_DEPTH_SIZE, depthBits);
             attribute(SDLVideo.SDL_GL_STENCIL_SIZE, stencilBits);
+            if (ForgeEarlyConfig.OPENGL_DEBUG_CONTEXT) {
+                attribute(SDLVideo.SDL_GL_CONTEXT_FLAGS, SDLVideo.SDL_GL_CONTEXT_DEBUG_FLAG);
+            }
         }
 
         private long createContext(long handle) {
