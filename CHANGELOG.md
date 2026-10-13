@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.7.1-alpha - 2026-10-13
+
+### Bug Fix
+
+- **sas**: Keep TextureOffset on the server *[commit by [@Rongmario](https://github.com/Rongmario) in [3889529](https://github.com/CleanroomMC/Cleanroom/commit/38895295cc7d29107b8b19fc8d27f5135c653b83)]*
+- **sdl**: Bring up SDL video before the game settings load *[commit by [@Rongmario](https://github.com/Rongmario) in [c8c9df2](https://github.com/CleanroomMC/Cleanroom/commit/c8c9df2f7682b7bfd751c63646ed87a6e60d4570)]*
+- **sdl**: Reapply the mouse grab on macOS when the cursor escapes *[commit by [@Rongmario](https://github.com/Rongmario) in [c4f735e](https://github.com/CleanroomMC/Cleanroom/commit/c4f735ed665ba6cd21e5c9096d31197298ca5aaa)]*
+- **sdl**: Keep the splash thread from pumping events on macOS *[commit by [@Rongmario](https://github.com/Rongmario) in [86568f6](https://github.com/CleanroomMC/Cleanroom/commit/86568f64a62915875e8a02d7860306d724192292)]*
+
+### Build and Dependencies
+
+- **deps**: Update lwjgly to 1.0.2 *[commit by [@Rongmario](https://github.com/Rongmario) in [930c8e8](https://github.com/CleanroomMC/Cleanroom/commit/930c8e828f0f1a390b43cb2c420598ca238f2638)]*
+    *[Fixes issue #659 by [@MCTian-mi](https://github.com/MCTian-mi)]*
+- **deps**: Update Conventions to 1.4.1 *[commit by [@Rongmario](https://github.com/Rongmario) in [1d2d592](https://github.com/CleanroomMC/Cleanroom/commit/1d2d59223907e32c5de235df197d868f02651ccb)]*
+- **deps**: Update CleanroomGradle to 0.21.1 *[commit by [@Rongmario](https://github.com/Rongmario) in [6010e54](https://github.com/CleanroomMC/Cleanroom/commit/6010e54d0670f205bc29f47542388f2909a19490)]*
+- **deps**: Update lwjgly to 1.0.1 *[commit by [@Rongmario](https://github.com/Rongmario) in [63847b5](https://github.com/CleanroomMC/Cleanroom/commit/63847b581f6249256cca8f051c4599f9fe2950d9)]*
+
+### CI
+
+- Remove the manual publish workflow *[commit by [@Rongmario](https://github.com/Rongmario) in [314cfa4](https://github.com/CleanroomMC/Cleanroom/commit/314cfa4a8c5394652c506ad74b1b0641e09aff22)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.0-alpha...0.7.1-alpha
+
 ## 0.7.0-alpha - 2026-10-13
 
 > [!WARNING]
