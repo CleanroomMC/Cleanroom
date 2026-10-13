@@ -3,6 +3,7 @@ package com.cleanroommc.test.cache;
 import com.cleanroommc.cleanroom.cache.Cache;
 import com.cleanroommc.cleanroom.cache.CacheException;
 import com.cleanroommc.cleanroom.cache.CacheRequest;
+
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +35,13 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CacheTest {
 
@@ -44,11 +51,11 @@ public class CacheTest {
 
     private static final String HELLO_SHA256 = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824";
 
-    @TempDir
-    Path root;
+    @TempDir Path root;
 
     private Cache cache;
     private HttpServer server;
+
     private final AtomicInteger requests = new AtomicInteger();
     private final AtomicInteger notModified = new AtomicInteger();
     private final CountDownLatch revalidated = new CountDownLatch(1);
@@ -117,7 +124,7 @@ public class CacheTest {
     void tearDown() throws Exception {
         released.countDown();
         // Background revalidations hold a temporary file until they commit
-        for (long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); ; Thread.sleep(10)) {
+        for (long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);; Thread.sleep(10)) {
             try (Stream<Path> files = Files.walk(root)) {
                 if (files.noneMatch(file -> file.toString().endsWith(".part"))) {
                     break;
@@ -183,8 +190,11 @@ public class CacheTest {
 
     @Test
     void expectedHashIsEnforced() throws IOException {
-        assertEquals("hello", read(cache.fromString("hello", UTF_8).expectSha256(HELLO_SHA256.toUpperCase()).get("ok")));
-        CacheException e = assertThrows(CacheException.class, () -> cache.fromString("other", UTF_8).expectSha256(HELLO_SHA256).get("bad"));
+        assertEquals("hello", read(cache.fromString("hello", UTF_8).expectSha256(HELLO_SHA256.toUpperCase()).get("ok"))
+        );
+        CacheException e = assertThrows(CacheException.class,
+            () -> cache.fromString("other", UTF_8).expectSha256(HELLO_SHA256).get("bad")
+        );
         assertEquals(CacheException.Kind.HASH_MISMATCH, e.kind());
         assertFalse(Files.exists(cache.root().resolve("bad")));
     }
@@ -280,7 +290,9 @@ public class CacheTest {
 
     @Test
     void pathsStayConfined() throws IOException {
-        for (String name : List.of("../x", "a/../../x", "/abs", "C:/x", "\\\\server\\share", "a\0b", ".", "x.meta", "x.lock", "x.versions", "a.versions/x")) {
+        for (String name : List.of("../x", "a/../../x", "/abs", "C:/x", "\\\\server\\share", "a\0b", ".", "x.meta",
+            "x.lock", "x.versions", "a.versions/x"
+        )) {
             assertThrows(IllegalArgumentException.class, () -> cache.fromString("x", UTF_8).get(name), name);
         }
         assertThrows(IllegalArgumentException.class, () -> cache.namespace(".."));
@@ -302,7 +314,9 @@ public class CacheTest {
 
     @Test
     void concurrentGetsFetchOnce() {
-        List<CompletableFuture<Path>> futures = IntStream.range(0, 16).mapToObj(_ -> cache.fromUrl(url("/hello")).getAsync("hello")).toList();
+        List<CompletableFuture<Path>> futures = IntStream.range(0, 16)
+            .mapToObj(_ -> cache.fromUrl(url("/hello")).getAsync("hello"))
+            .toList();
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
         futures.forEach(future -> assertEquals("hello", read(future.join())));
         assertEquals(1, requests.get());
@@ -350,7 +364,9 @@ public class CacheTest {
         try {
             cache.fromUrl(url("/slow")).revalidateIf(Duration.ZERO).get("slow");
             assertTrue(slowRequested.await(10, TimeUnit.SECONDS));
-            assertTimeoutPreemptively(Duration.ofSeconds(5), () -> assertEquals("hello", read(cache.fromUrl(url("/slow")).get("slow"))));
+            assertTimeoutPreemptively(Duration.ofSeconds(5),
+                () -> assertEquals("hello", read(cache.fromUrl(url("/slow")).get("slow")))
+            );
         } finally {
             released.countDown();
         }

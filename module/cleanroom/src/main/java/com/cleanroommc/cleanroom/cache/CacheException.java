@@ -10,7 +10,24 @@ import java.io.IOException;
  */
 public final class CacheException extends IOException {
 
+    private final Kind kind;
+
+    CacheException(Kind kind, String message) {
+        super(message);
+        this.kind = kind;
+    }
+
+    CacheException(Kind kind, String message, @Nullable Throwable cause) {
+        super(message, cause);
+        this.kind = kind;
+    }
+
+    public Kind kind() {
+        return kind;
+    }
+
     public enum Kind {
+
         /**
          * The source could not be reached and no usable entry is cached.
          */
@@ -27,22 +44,7 @@ public final class CacheException extends IOException {
          * A symbolic link sits on the cache path.
          */
         UNSAFE_PATH
-    }
 
-    private final Kind kind;
-
-    CacheException(Kind kind, String message) {
-        super(message);
-        this.kind = kind;
-    }
-
-    CacheException(Kind kind, String message, @Nullable Throwable cause) {
-        super(message, cause);
-        this.kind = kind;
-    }
-
-    public Kind kind() {
-        return kind;
     }
 
 }

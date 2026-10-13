@@ -46,6 +46,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 public class MouseTurnEvent extends Event {
 
     private final EntityPlayerSP player;
+
     private float yaw;
     private float pitch;
 

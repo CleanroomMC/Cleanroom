@@ -1,12 +1,14 @@
 package com.cleanroommc.cleanroom.cache;
 
 import com.cleanroommc.util.CleanroomLog;
+
 import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.MoreFiles;
-import net.minecraftforge.fml.common.versioning.ComparableVersion;
 import org.jspecify.annotations.Nullable;
+
+import net.minecraftforge.fml.common.versioning.ComparableVersion;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -35,7 +37,10 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,54 +58,23 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class CacheRequest {
 
-    private static final String SHA256 = "sha256", VERSION = "version", CHECKED = "checked", URL = "url", ETAG = "etag", MODIFIED = "modified";
+    private static final String SHA256 = "sha256",
+        VERSION = "version",
+        CHECKED = "checked",
+        URL = "url",
+        ETAG = "etag",
+        MODIFIED = "modified";
     private static final Duration GRACE = Duration.ofDays(1);
 
     // Serializes threads of this JVM, file locks only exclude other processes
     private static final ConcurrentHashMap<Path, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Path, CompletableFuture<@Nullable Void>> INGESTING = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<
+        Path, CompletableFuture<@Nullable Void>> INGESTING = new ConcurrentHashMap<>();
     private static final Set<Path> SWEPT = ConcurrentHashMap.newKeySet();
-
-    sealed interface Source { }
-
-    record Remote(URI uri) implements Source { }
-
-    record Resource(ClassLoader loader, String name) implements Source { }
-
-    record Local(Path file) implements Source { }
-
-    record Bytes(byte[] bytes) implements Source { }
-
-    record Lazy(Callable<byte[]> content) implements Source { }
-
-    private enum Mode {
-
-        GET,
-        PUT,
-        REVALIDATE
-
-    }
-
-    /**
-     * @param path     the verified content, null when it has to be ingested
-     * @param expected the hash ingested content must match
-     */
-    private record Lookup(Properties meta, @Nullable Path path, boolean stale, @Nullable String expected) { }
-
-    /**
-     * @param hash null when the server confirmed the cached content is current
-     */
-    private record Fetched(@Nullable String hash, @Nullable String etag, @Nullable String modified) { }
-
-    @FunctionalInterface
-    private interface Locked<T> {
-
-        T run(Properties meta) throws IOException;
-
-    }
 
     private final Cache cache;
     private final Source source;
+
     private @Nullable String sha256;
     private @Nullable String version;
     private @Nullable Duration maxAge;
@@ -108,6 +82,192 @@ public final class CacheRequest {
     CacheRequest(Cache cache, Source source) {
         this.cache = cache;
         this.source = source;
+    }
+
+    // Read failures, including a body stalled past the timeout, mean the source was lost
+    private static InputStream guard(InputStream body, URI uri) {
+        return new FilterInputStream(body) {
+
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                // Whoever takes the reader first decides whether the interrupt happens
+                AtomicReference<@Nullable Thread> reader = new AtomicReference<>(Thread.currentThread());
+                ScheduledFuture<?> watchdog = Http.WATCHDOG.schedule(() -> {
+                        synchronized (reader) {
+                            Thread thread = reader.getAndSet(null);
+                            if (thread != null) {
+                                thread.interrupt();
+                            }
+                        }
+                    },
+                    Http.TIMEOUT.toMillis(), TimeUnit.MILLISECONDS
+                );
+                try {
+                    return super.read(b, off, len);
+                } catch (IOException e) {
+                    throw new CacheException(CacheException.Kind.OFFLINE, "Lost connection fetching " + uri, e);
+                } finally {
+                    watchdog.cancel(false);
+                    // An interrupt that fired as the read returned must not reach the file write
+                    synchronized (reader) {
+                        if (reader.getAndSet(null) == null) {
+                            Thread.interrupted();
+                        }
+                    }
+                }
+            }
+
+        };
+    }
+
+    private static Properties readMeta(Path file) throws IOException {
+        Properties meta = new Properties();
+        try (BufferedReader reader = Files.newBufferedReader(metaFile(file), StandardCharsets.UTF_8)) {
+            meta.load(reader);
+        } catch (NoSuchFileException _) {
+            return meta;
+        } catch (IllegalArgumentException | CharacterCodingException e) {
+            CleanroomLog.get().warn("Cache metadata {} is unreadable, discarding it", metaFile(file), e);
+            return new Properties();
+        }
+        String pinned = meta.getProperty(SHA256);
+        if (pinned != null && !isSha256(pinned)) {
+            CleanroomLog.get().warn("Cache metadata {} pins a malformed hash, discarding it", metaFile(file));
+            return new Properties();
+        }
+        return meta;
+    }
+
+    private static Path metaFile(Path file) {
+        return file.resolveSibling(file.getFileName() + Cache.META);
+    }
+
+    private static Path versions(Path file) {
+        return file.resolveSibling(file.getFileName() + Cache.VERSIONS);
+    }
+
+    // A hash prefix keeps paths short, the full hash stays in the metadata
+    private static String directory(String hash) {
+        return hash.substring(0, 16);
+    }
+
+    private static Path stored(Path file, String hash) {
+        return versions(file).resolve(directory(hash)).resolve(file.getFileName());
+    }
+
+    private static void set(Properties meta, String key, @Nullable String value, boolean clear) {
+        if (value != null) {
+            meta.setProperty(key, value);
+        } else if (clear) {
+            meta.remove(key);
+        }
+    }
+
+    // Runs once per entry per JVM. Superseded versions and temporary files get a grace period, as other processes may still use them
+    private static void sweep(Path file, @Nullable String pinned) {
+        String current = pinned == null ? null : directory(pinned);
+        Instant expired = Instant.now().minus(GRACE);
+        try (DirectoryStream<Path> entries = Files.newDirectoryStream(versions(file))) {
+            for (Path entry : entries) {
+                try {
+                    if (entry.getFileName().toString().equals(current) ||
+                        !Files.getLastModifiedTime(entry, LinkOption.NOFOLLOW_LINKS).toInstant().isBefore(expired)) {
+                        continue;
+                    }
+                    if (Files.isDirectory(entry, LinkOption.NOFOLLOW_LINKS)) {
+                        Files.deleteIfExists(entry.resolve(file.getFileName()));
+                    }
+                    Files.deleteIfExists(entry);
+                } catch (IOException e) {
+                    // Windows cannot delete open files, a later launch retries
+                    CleanroomLog.get().debug("Cannot delete superseded cache file {}", entry, e);
+                }
+            }
+        } catch (NoSuchFileException _) {
+            // Nothing was ever stored
+        } catch (IOException e) {
+            CleanroomLog.get().warn("Cannot sweep superseded versions of cache entry {}", file, e);
+        }
+    }
+
+    private static void touch(Path path) {
+        try {
+            Files.getFileAttributeView(path, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS)
+                .setTimes(FileTime.from(Instant.now()), null, null);
+        } catch (IOException e) {
+            CleanroomLog.get().debug("Cannot touch superseded cache version {}", path, e);
+        }
+    }
+
+    private static void await(CompletableFuture<@Nullable Void> running) throws IOException {
+        try {
+            running.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted waiting for a concurrent cache ingestion");
+        } catch (ExecutionException e) {
+            switch (e.getCause()) {
+                case IOException cause -> throw cause;
+                case RuntimeException cause -> throw cause;
+                case Error cause -> throw cause;
+                default -> throw new IOException(e.getCause());
+            }
+        }
+    }
+
+    private static boolean isSha256(String hex) {
+        if (hex.length() != 64) {
+            return false;
+        }
+        for (int i = 0; i < 64; i++) {
+            char c = hex.charAt(i);
+            if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean holds(Path path, String hash) throws IOException {
+        try {
+            return Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && hash.equals(hash(path));
+        } catch (NoSuchFileException e) {
+            return false;
+        }
+    }
+
+    private static String write(InputStream input, Path target) throws IOException {
+        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), input
+        ); FileChannel channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING
+        )) {
+            in.transferTo(Channels.newOutputStream(channel));
+            channel.force(true);
+            return in.hash().toString();
+        }
+    }
+
+    private static String hash(Path file) throws IOException {
+        return MoreFiles.asByteSource(file, LinkOption.NOFOLLOW_LINKS).hash(Hashing.sha256()).toString();
+    }
+
+    private static void move(Path source, Path target) throws IOException {
+        try {
+            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private static CompletableFuture<Path> async(Callable<Path> task) {
+        CompletableFuture<Path> future = new CompletableFuture<>();
+        Thread.ofVirtual().name("cleanroom-cache").start(() -> {
+            try {
+                future.complete(task.call());
+            } catch (Throwable t) {
+                future.completeExceptionally(t);
+            }
+        });
+        return future;
     }
 
     /**
@@ -261,7 +421,9 @@ public final class CacheRequest {
                 }
             }
             if (fetched.hash() != null && expected != null && !expected.equals(fetched.hash())) {
-                throw new CacheException(CacheException.Kind.HASH_MISMATCH, "Expected SHA-256 " + expected + " for " + file + ", got " + fetched.hash());
+                throw new CacheException(CacheException.Kind.HASH_MISMATCH,
+                    "Expected SHA-256 " + expected + " for " + file + ", got " + fetched.hash()
+                );
             }
             return commit(file, seen, temp, fetched);
         } finally {
@@ -340,56 +502,30 @@ public final class CacheRequest {
             if (response.statusCode() == 200) {
                 hash = write(guard(body, uri), temp);
             } else if (response.statusCode() != 304 || !validate) {
-                throw new CacheException(CacheException.Kind.HTTP, "HTTP " + response.statusCode() + " fetching " + uri);
+                throw new CacheException(CacheException.Kind.HTTP, "HTTP " + response.statusCode() + " fetching " + uri
+                );
             }
-            return new Fetched(hash, response.headers().firstValue("ETag").orElse(null), response.headers().firstValue("Last-Modified").orElse(null));
+            return new Fetched(hash, response.headers().firstValue("ETag").orElse(null),
+                response.headers().firstValue("Last-Modified").orElse(null)
+            );
         }
     }
 
     private CacheException offline(Path file, Properties seen, String message, @Nullable Throwable cause) {
         if (seen.getProperty(SHA256) != null && outdated(seen)) {
-            message += ", " + file + " is cached at version " + seen.getProperty(VERSION, "unknown") + " but " + version + " is required";
+            message += ", " + file + " is cached at version " + seen.getProperty(VERSION, "unknown") + " but " +
+                version + " is required";
         }
         return new CacheException(CacheException.Kind.OFFLINE, message, cause);
-    }
-
-    // Read failures, including a body stalled past the timeout, mean the source was lost
-    private static InputStream guard(InputStream body, URI uri) {
-        return new FilterInputStream(body) {
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                // Whoever takes the reader first decides whether the interrupt happens
-                AtomicReference<@Nullable Thread> reader = new AtomicReference<>(Thread.currentThread());
-                ScheduledFuture<?> watchdog = Http.WATCHDOG.schedule(() -> {
-                    synchronized (reader) {
-                        Thread thread = reader.getAndSet(null);
-                        if (thread != null) {
-                            thread.interrupt();
-                        }
-                    }
-                }, Http.TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-                try {
-                    return super.read(b, off, len);
-                } catch (IOException e) {
-                    throw new CacheException(CacheException.Kind.OFFLINE, "Lost connection fetching " + uri, e);
-                } finally {
-                    watchdog.cancel(false);
-                    // An interrupt that fired as the read returned must not reach the file write
-                    synchronized (reader) {
-                        if (reader.getAndSet(null) == null) {
-                            Thread.interrupted();
-                        }
-                    }
-                }
-            }
-        };
     }
 
     private <T> T locked(Path file, Locked<T> action) throws IOException {
         cache.checkLinks(metaFile(file));
         Files.createDirectories(file.getParent());
         Path lockFile = file.resolveSibling(file.getFileName() + Cache.LOCK);
-        try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS)) {
+        try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+            LinkOption.NOFOLLOW_LINKS
+        )) {
             ReentrantLock lock = LOCKS.computeIfAbsent(lockFile.toRealPath(), _ -> new ReentrantLock());
             lock.lock();
             try (FileLock _ = channel.lock()) {
@@ -398,24 +534,6 @@ public final class CacheRequest {
                 lock.unlock();
             }
         }
-    }
-
-    private static Properties readMeta(Path file) throws IOException {
-        Properties meta = new Properties();
-        try (BufferedReader reader = Files.newBufferedReader(metaFile(file), StandardCharsets.UTF_8)) {
-            meta.load(reader);
-        } catch (NoSuchFileException _) {
-            return meta;
-        } catch (IllegalArgumentException | CharacterCodingException e) {
-            CleanroomLog.get().warn("Cache metadata {} is unreadable, discarding it", metaFile(file), e);
-            return new Properties();
-        }
-        String pinned = meta.getProperty(SHA256);
-        if (pinned != null && !isSha256(pinned)) {
-            CleanroomLog.get().warn("Cache metadata {} pins a malformed hash, discarding it", metaFile(file));
-            return new Properties();
-        }
-        return meta;
     }
 
     // The metadata is replaced whole, so an interruption leaves the previous one
@@ -432,81 +550,6 @@ public final class CacheRequest {
             move(temp, metaFile(file));
         } finally {
             Files.deleteIfExists(temp);
-        }
-    }
-
-    private static Path metaFile(Path file) {
-        return file.resolveSibling(file.getFileName() + Cache.META);
-    }
-
-    private static Path versions(Path file) {
-        return file.resolveSibling(file.getFileName() + Cache.VERSIONS);
-    }
-
-    // A hash prefix keeps paths short, the full hash stays in the metadata
-    private static String directory(String hash) {
-        return hash.substring(0, 16);
-    }
-
-    private static Path stored(Path file, String hash) {
-        return versions(file).resolve(directory(hash)).resolve(file.getFileName());
-    }
-
-    private static void set(Properties meta, String key, @Nullable String value, boolean clear) {
-        if (value != null) {
-            meta.setProperty(key, value);
-        } else if (clear) {
-            meta.remove(key);
-        }
-    }
-
-    // Runs once per entry per JVM. Superseded versions and temporary files get a grace period, as other processes may still use them
-    private static void sweep(Path file, @Nullable String pinned) {
-        String current = pinned == null ? null : directory(pinned);
-        Instant expired = Instant.now().minus(GRACE);
-        try (DirectoryStream<Path> entries = Files.newDirectoryStream(versions(file))) {
-            for (Path entry : entries) {
-                try {
-                    if (entry.getFileName().toString().equals(current) || !Files.getLastModifiedTime(entry, LinkOption.NOFOLLOW_LINKS).toInstant().isBefore(expired)) {
-                        continue;
-                    }
-                    if (Files.isDirectory(entry, LinkOption.NOFOLLOW_LINKS)) {
-                        Files.deleteIfExists(entry.resolve(file.getFileName()));
-                    }
-                    Files.deleteIfExists(entry);
-                } catch (IOException e) {
-                    // Windows cannot delete open files, a later launch retries
-                    CleanroomLog.get().debug("Cannot delete superseded cache file {}", entry, e);
-                }
-            }
-        } catch (NoSuchFileException _) {
-            // Nothing was ever stored
-        } catch (IOException e) {
-            CleanroomLog.get().warn("Cannot sweep superseded versions of cache entry {}", file, e);
-        }
-    }
-
-    private static void touch(Path path) {
-        try {
-            Files.getFileAttributeView(path, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS).setTimes(FileTime.from(Instant.now()), null, null);
-        } catch (IOException e) {
-            CleanroomLog.get().debug("Cannot touch superseded cache version {}", path, e);
-        }
-    }
-
-    private static void await(CompletableFuture<@Nullable Void> running) throws IOException {
-        try {
-            running.get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new InterruptedIOException("Interrupted waiting for a concurrent cache ingestion");
-        } catch (ExecutionException e) {
-            switch (e.getCause()) {
-                case IOException cause -> throw cause;
-                case RuntimeException cause -> throw cause;
-                case Error cause -> throw cause;
-                default -> throw new IOException(e.getCause());
-            }
         }
     }
 
@@ -536,7 +579,8 @@ public final class CacheRequest {
 
     private boolean outdated(Properties meta) {
         String cached = meta.getProperty(VERSION);
-        return version != null && (cached == null || new ComparableVersion(version).compareTo(new ComparableVersion(cached)) > 0);
+        return version != null &&
+            (cached == null || new ComparableVersion(version).compareTo(new ComparableVersion(cached)) > 0);
     }
 
     private boolean isStale(Properties meta) {
@@ -550,59 +594,43 @@ public final class CacheRequest {
         }
     }
 
-    private static boolean isSha256(String hex) {
-        if (hex.length() != 64) {
-            return false;
-        }
-        for (int i = 0; i < 64; i++) {
-            char c = hex.charAt(i);
-            if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
-                return false;
-            }
-        }
-        return true;
+    private enum Mode {
+
+        GET,
+        PUT,
+        REVALIDATE
+
     }
 
-    private static boolean holds(Path path, String hash) throws IOException {
-        try {
-            return Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && hash.equals(hash(path));
-        } catch (NoSuchFileException e) {
-            return false;
-        }
+    sealed interface Source { }
+
+    @FunctionalInterface
+    private interface Locked<T> {
+
+        T run(Properties meta) throws IOException;
+
     }
 
-    private static String write(InputStream input, Path target) throws IOException {
-        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), input);
-             FileChannel channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            in.transferTo(Channels.newOutputStream(channel));
-            channel.force(true);
-            return in.hash().toString();
-        }
-    }
+    record Remote(URI uri) implements Source { }
 
-    private static String hash(Path file) throws IOException {
-        return MoreFiles.asByteSource(file, LinkOption.NOFOLLOW_LINKS).hash(Hashing.sha256()).toString();
-    }
+    record Resource(ClassLoader loader, String name) implements Source { }
 
-    private static void move(Path source, Path target) throws IOException {
-        try {
-            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-        } catch (AtomicMoveNotSupportedException e) {
-            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
+    record Local(Path file) implements Source { }
 
-    private static CompletableFuture<Path> async(Callable<Path> task) {
-        CompletableFuture<Path> future = new CompletableFuture<>();
-        Thread.ofVirtual().name("cleanroom-cache").start(() -> {
-            try {
-                future.complete(task.call());
-            } catch (Throwable t) {
-                future.completeExceptionally(t);
-            }
-        });
-        return future;
-    }
+    record Bytes(byte[] bytes) implements Source { }
+
+    record Lazy(Callable<byte[]> content) implements Source { }
+
+    /**
+     * @param path     the verified content, null when it has to be ingested
+     * @param expected the hash ingested content must match
+     */
+    private record Lookup(Properties meta, @Nullable Path path, boolean stale, @Nullable String expected) { }
+
+    /**
+     * @param hash null when the server confirmed the cached content is current
+     */
+    private record Fetched(@Nullable String hash, @Nullable String etag, @Nullable String modified) { }
 
     // Holder, so the client and its threads only exist once something is fetched
     private static final class Http {
@@ -610,11 +638,13 @@ public final class CacheRequest {
         static final Duration TIMEOUT = Duration.ofSeconds(Long.getLong("cleanroom.cache.timeout", 30));
 
         static final HttpClient CLIENT = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .build();
+            .connectTimeout(Duration.ofSeconds(10))
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .build();
 
-        static final ScheduledThreadPoolExecutor WATCHDOG = new ScheduledThreadPoolExecutor(1, Thread.ofVirtual().name("cleanroom-cache-watchdog").factory());
+        static final ScheduledThreadPoolExecutor WATCHDOG = new ScheduledThreadPoolExecutor(1,
+            Thread.ofVirtual().name("cleanroom-cache-watchdog").factory()
+        );
 
         static {
             WATCHDOG.setRemoveOnCancelPolicy(true);

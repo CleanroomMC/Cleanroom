@@ -36,14 +36,8 @@ public class MouseTurnEventTest {
     static final boolean CANCEL = false;
 
     private static final Logger LOGGER = LogManager.getLogger(MODID);
-    private static double secondAccumulator = 0.0;
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
-        if (ENABLED) {
-            MinecraftForge.EVENT_BUS.register(MouseTurnEventTest.class);
-        }
-    }
+    private static double secondAccumulator = 0.0;
 
     @SubscribeEvent
     public static void onMouseTurn(MouseTurnEvent event) {
@@ -59,6 +53,13 @@ public class MouseTurnEventTest {
         }
 
         event.setYaw(event.getYaw() * 0.5F);
+    }
+
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
+        if (ENABLED) {
+            MinecraftForge.EVENT_BUS.register(MouseTurnEventTest.class);
+        }
     }
 
 }

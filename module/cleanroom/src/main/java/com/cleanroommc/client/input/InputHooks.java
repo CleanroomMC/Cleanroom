@@ -20,6 +20,8 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public final class InputHooks {
 
+    private InputHooks() { }
+
     /**
      * Called from the {@code EntityRenderer} turn call sites. Fires {@link MouseTurnEvent} and, unless it is
      * canceled, turns the player by the event's yaw and pitch.
@@ -34,7 +36,5 @@ public final class InputHooks {
             player.turn(event.getYaw(), event.getPitch());
         }
     }
-
-    private InputHooks() { }
 
 }
