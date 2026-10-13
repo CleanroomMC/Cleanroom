@@ -17,6 +17,7 @@ import com.cleanroommc.client.sdl.internal.Surfaces;
 import com.cleanroommc.client.sdl.video.Display;
 import com.cleanroommc.client.sdl.video.DisplayMode;
 import com.cleanroommc.lwjgly.spi.WindowBridge;
+import net.minecraftforge.common.ForgeEarlyConfig;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL;
@@ -987,7 +988,7 @@ public final class Window implements AutoCloseable {
             boolean created = false;
             try {
                 if (this.gl != null) {
-                    context = SDL.checkHandle(SDLVideo.SDL_GL_CreateContext(handle), "SDL_GL_CreateContext");
+                    context = this.gl.createContext(handle);
                     SDL.check(SDLVideo.SDL_GL_MakeCurrent(handle, context), "SDL_GL_MakeCurrent");
                     SDL.check(SDLVideo.SDL_GL_SetSwapInterval(this.vsync ? 1 : 0), "SDL_GL_SetSwapInterval");
                     GL.createCapabilities();
@@ -1015,9 +1016,11 @@ public final class Window implements AutoCloseable {
 
     public static final class GLConfig {
 
-        private int major = 3;
-        private int minor = 2;
-        private boolean core;
+        private static final int[] VERSIONS = { 46, 45, 44, 43, 42, 41, 40, 33, 32, 31, 30, 21 };
+
+        private int major = ForgeEarlyConfig.OPENGL_VERSION_MAJOR;
+        private int minor = ForgeEarlyConfig.OPENGL_VERSION_MINOR;
+        private boolean core = !ForgeEarlyConfig.OPENGL_COMPAT_PROFILE;
         private int depthBits = 24;
         private int stencilBits = 8;
 
@@ -1054,14 +1057,33 @@ public final class Window implements AutoCloseable {
         }
 
         private void apply() {
-            attribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, this.major);
-            attribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, this.minor);
-            attribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK,
-                core ? SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE : SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY
-            );
             attribute(SDLVideo.SDL_GL_DOUBLEBUFFER, 1);
             attribute(SDLVideo.SDL_GL_DEPTH_SIZE, depthBits);
             attribute(SDLVideo.SDL_GL_STENCIL_SIZE, stencilBits);
+        }
+
+        private long createContext(long handle) {
+            int requested = this.major * 10 + this.minor;
+            long context = 0L;
+            for (int version : VERSIONS) {
+                if (version > requested && version != 21) {
+                    continue;
+                }
+                // Mesa grants a 3.1 request as core when the driver lacks GL_ARB_compatibility.
+                if (version == 31 && !core) {
+                    continue;
+                }
+                attribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, version / 10);
+                attribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, version % 10);
+                attribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, version < 32 ? 0
+                    : core ? SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE : SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY
+                );
+                context = SDLVideo.SDL_GL_CreateContext(handle);
+                if (context != 0L) {
+                    break;
+                }
+            }
+            return SDL.checkHandle(context, "SDL_GL_CreateContext");
         }
 
     }
