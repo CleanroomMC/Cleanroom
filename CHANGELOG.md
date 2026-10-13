@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.7.2-alpha - 2026-10-13
+
+### Comprehensive
+
+- Several regression fixes and patches *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+
+### Bug Fix
+
+- **sdl**: Make compositor-dependent window calls non-fatal *[commit by [@Rongmario](https://github.com/Rongmario) in [e9f958e](https://github.com/CleanroomMC/Cleanroom/commit/e9f958e6364b3d71a8654824a21b5fd5197611d5)]*
+- **sdl**: Treat window icon errors as non-fatal *[commit by [@Rongmario](https://github.com/Rongmario) in [727eb5b](https://github.com/CleanroomMC/Cleanroom/commit/727eb5b2f641a9beda6c24217a52fa6d267a4c6d)]*
+    *[Fixes issue #669 by [@teamnotus](https://github.com/teamnotus)]*
+- **patch**: Mending consuming wrong amount of XP on item with custom `.getXpRepairRatio(...)` *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: Modded bed with no orientation always "too far away" *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: `ItemStack` with (both) no NBT but different caps being considered as equal *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: `Block#isReplaceable` with context not being used, causing difference when placing block on vegetation *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: Biome size hook *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+
+### Documentation
+
+- Update README to illustrate roadmap & answer FAQs *[PR by [@tttsaurus](https://github.com/tttsaurus), Rongmario in [#654](https://github.com/CleanroomMC/Cleanroom/pull/654)]*
+
+### Build and Dependencies
+
+- **deps**: Update oshi *[commit by [@Rongmario](https://github.com/Rongmario) in [63c3394](https://github.com/CleanroomMC/Cleanroom/commit/63c3394ab32ded3bcd5f51a1d7c49e919143078d)]*
+- **deps**: Update CleanroomGradle to 0.22.0 *[commit by [@Rongmario](https://github.com/Rongmario) in [2973da3](https://github.com/CleanroomMC/Cleanroom/commit/2973da34a392f0b9e06e3cf30705892352e7e4d3)]*
+    *[Fixes issue #657 by [@MCTian-mi](https://github.com/MCTian-mi)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.1-alpha...0.7.2-alpha
+
 ## 0.7.1-alpha - 2026-10-13
 
 ### Bug Fix
