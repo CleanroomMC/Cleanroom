@@ -9,6 +9,125 @@ If you want to...
 - Play or make modpacks? Jump to [Installation](#installation).
 - Write mods? See [For Mod Developers](#for-mod-developers).
 
+## Platform Direction
+
+### Developer Experience
+
+- [CleanroomGradle](https://github.com/CleanroomMC/CleanroomGradle): Gradle plugin for Cleanroom development
+- [Conventions](https://github.com/CleanroomMC/Conventions): Cleanroom code conventions
+- Modding Templates: [CleanroomModTemplate](https://github.com/CleanroomMC/CleanroomModTemplate)
+- Modpack Resources: [Preparing Your Modpack](https://cleanroommc.com/wiki/end-user-guide/preparing-your-modpack), [PackCompanion](https://github.com/AnasDevO/PackTemplateCompanion)
+
+### User Experience
+
+- Better performance and faster instance launching
+- [CleanroomRelauncher](https://github.com/CleanroomMC/CleanroomRelauncher): Forge mod that relaunches the Forge instance with Cleanroom
+- CJK IME-Friendly Input Handling: Allow gameplay keys such as WASD to function properly with IMEs on
+- (Planned) Pre-Splash Bootstrap Screen: Show immediate launching feedback, so large modpacks don't hang before launching. Refer to [Proposal 650](https://github.com/CleanroomMC/Cleanroom/discussions/650)
+- (Planned) Vanilla UI/UX Overhaul: Modern UI/UX design that preserves the vanilla pixel art style
+
+### Platform APIs
+
+- Caching API: A common caching framework for storing expensive data persistently
+- (WIP) Compute API: A managed computing API that abstracts OpenCL
+
+### Architecture Overhaul
+
+- (WIP) [Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine): It's a work-in-progress explicit rendering runtime for Minecraft
+- (Planned) Strata: A unified asset loading pipeline for Cleanroom. Refer to [Proposal 584](https://github.com/CleanroomMC/Cleanroom/discussions/584)
+
+### Content Mods / Remakes
+
+[Refitbench](https://github.com/Refitbench): Suborganization of CleanroomMC that concentrates on refitting, maintaining and developing old open-source mods on 1.12.2
+
+- [HadEnoughItems](https://github.com/CleanroomMC/HadEnoughItems)
+- [AgriCraft](https://github.com/Refitbench/AgriCraft)
+- [BetterPortalsRefitted](https://github.com/Refitbench/BetterPortalsRefitted)
+- [CodeChickenLib](https://github.com/Refitbench/CodeChickenLib)
+- [SpongeForge](https://github.com/Refitbench/SpongeForge)
+- [MatterOverdrive](https://github.com/Refitbench/MatterOverdrive)
+- [Dyson-Cube-Project](https://github.com/Refitbench/Dyson-Cube-Project)
+- (WIP) Backportium: A proper and modular port of modern Minecraft contents
+
+## Kirino Engine
+
+[Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine) ships as a module of this repository and is wired into the loader lifecycle.
+
+It is a work-in-progress rendering engine that replaces Minecraft's implicit render state with an explicit structure, and gives mod authors a real rendering API instead of another layer of mixins.
+
+## FAQs
+
+> Is Cleanroom a fork of MinecraftForge?
+
+At the beginning it was, though Cleanroom slowly developed independence, and most of the work no longer resides in Forge's code.
+It now includes Forge, and we are still optimizing and fixing Forge's performance and other issues.
+Cleanroom itself grew to its own ecosystem, and beyond being a simple mod loader, with plans to include major APIs and frameworks.
+
+> Are there plans to migrate to Vulkan?
+
+No, and
+- OpenGL is capable of almost all rendering scenarios, and we are utilizing modern OpenGL features heavily. Modern OpenGL itself is not technically obsolete
+- OpenGL-to-Vulkan one-to-one mapping type of migration is considered as the worst practice possible. Heavy architectural redesign is required
+- Lack of manpower to maintain multi-backend
+- We would rather prefer BGFX when we finally come to multi-backend
+
+> How is the (OpenGL related implementations) compatibility with macOS?
+
+Expect everything to run properly as how 1.12 Forge did.
+Advanced OpenGL implementations that macOS does not support have fallbacks and would not crash.
+However, we have no guarantee that mods provide fallbacks as well.
+
+> How is the mod compatibility in Cleanroom?
+ 
+We retain compatibility with old Forge mods as much as possible, if not, Fugue can be installed to retain compatibility.
+As for Cleanroom mods, before Cleanroom 1.0.0, no binary compatibility is guaranteed due to lots of internal reworks and rewrites that may happen.
+
+## Version History
+
+<details>
+<summary>Click to Expand</summary>
+
+### 0.7
+
+- CleanroomGradle adoption
+- LWJGLY & SDL 3 migration
+- Caching API
+- Kirino Engine font rendering + vector graphics APIs
+- EventBus optimization
+
+### 0.6
+
+- Migration to our Mixin fork (CleanMix), reach parity with MixinBooter 11+
+- Modern mod list screen
+
+### 0.5
+
+- Windows Mica support
+- Modern GUI scaling
+- Taskbar integration
+
+### 0.4
+
+- Birth of the Kirino Engine
+
+### 0.3
+
+- Patches and mappings rework
+- Compatibility fixes (+ help divided into Fugue)
+
+### 0.2
+
+- Classloading via Foundation
+- Push for Java 25+ compatibility
+
+### 0.1
+
+- The Beginning
+- LWJGL 3 Adoption
+- Java 21 requirement
+
+</details>
+
 ## Runtime
 
 - Java 25
@@ -17,12 +136,6 @@ If you want to...
 - CleanMix, Mixin fork with proper bootstrapping and more features
 - ImagineBreaker
 - Netty 4.2, Guava 33, Apache HttpClient 5, Jakarta APIs and more
-
-## Kirino Engine
-
-[Kirino Engine](https://github.com/CleanroomMC/Kirino-Engine) ships as a module of this repository and is wired into the loader lifecycle.
-
-It is a work-in-progress rendering engine that replaces Minecraft's implicit render state with an explicit structure, and gives mod authors a real rendering API instead of another layer of mixins.
 
 ## Installation
 
