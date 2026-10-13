@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    uses: CleanroomMC/Conventions/.github/workflows/release.yml@1.4.0
+    uses: CleanroomMC/Conventions/.github/workflows/release.yml@1.4.1
     with:
       artifact-path: build/libs/*-universal.jar build/libs/*-installer.jar build/libs/*.zip
       submodules: recursive
