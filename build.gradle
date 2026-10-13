@@ -16,6 +16,7 @@ cleanroom {
         kirinoClient {
             inherit = 'cleanroomClient'
             configure {
+                group 'cleanroom runs'
                 description = 'Runs the client with Kirino enabled'
                 workingDir = file('run/kirino')
                 systemProperty 'crl.dev.kirino', true
