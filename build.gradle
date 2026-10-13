@@ -288,3 +288,10 @@ tasks.named('compileJava', JavaCompile).configure { compile ->
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += export_arguments
 }
+
+// Fixme: nothing consumes these at the moment, wastes space
+afterEvaluate {
+    publishing.publications.named('maven', MavenPublication) {
+        artifacts.removeIf { it.classifier in ['sources', 'javadoc'] }
+    }
+}
