@@ -391,12 +391,13 @@ public final class Window implements AutoCloseable {
                 }
                 SDL_Surface extra = Surfaces.from(images[i]);
                 try {
-                    SDL.check(SDLSurface.SDL_AddSurfaceAlternateImage(primary, extra), "SDL_AddSurfaceAlternateImage");
+                    SDL.tryCheck(SDLSurface.SDL_AddSurfaceAlternateImage(primary, extra), "SDL_AddSurfaceAlternateImage"
+                    );
                 } finally {
                     SDLSurface.SDL_DestroySurface(extra);
                 }
             }
-            SDL.check(SDLVideo.SDL_SetWindowIcon(this.handle, primary), "SDL_SetWindowIcon");
+            SDL.tryCheck(SDLVideo.SDL_SetWindowIcon(this.handle, primary), "SDL_SetWindowIcon");
         } finally {
             SDLSurface.SDL_DestroySurface(primary);
         }
@@ -409,11 +410,9 @@ public final class Window implements AutoCloseable {
             throw new IllegalArgumentException("Path cannot be null");
         }
         SDL_Surface surface = SDLSurface.SDL_LoadSurface(path.toAbsolutePath().toString());
-        if (surface == null) {
-            throw new SDLException("SDL_LoadSurface failed");
-        }
+        SDL.check(surface != null, "SDL_LoadSurface");
         try {
-            SDL.check(SDLVideo.SDL_SetWindowIcon(this.handle, surface), "SDL_SetWindowIcon");
+            SDL.tryCheck(SDLVideo.SDL_SetWindowIcon(this.handle, surface), "SDL_SetWindowIcon");
         } finally {
             SDLSurface.SDL_DestroySurface(surface);
         }

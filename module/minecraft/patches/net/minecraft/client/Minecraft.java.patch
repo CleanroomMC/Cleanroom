@@ -216,7 +216,7 @@
                  inputstream1 = this.defaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_32x32.png"));
                  if (inputstream != null && inputstream1 != null) {
 -                    Display.setIcon(new ByteBuffer[]{this.readImageToBuffer(inputstream), this.readImageToBuffer(inputstream1)});
-+                    com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.window().icon(ImageIO.read(inputstream), ImageIO.read(inputstream1));
++                    com.cleanroommc.client.sdl.SDL.window().icon(ImageIO.read(inputstream), ImageIO.read(inputstream1));
                  }
              } catch (IOException ioexception) {
                  LOGGER.error("Couldn't set icon", ioexception);
