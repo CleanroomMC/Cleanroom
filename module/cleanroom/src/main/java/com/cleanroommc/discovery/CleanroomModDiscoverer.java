@@ -609,6 +609,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                         );
                     addCandidate(modCandidates, seen, new ModCandidate(source, source, ContainerType.JAR, false, true));
                 }
+            } else if (source.equals(FMLForgePlugin.forgeLocation)) {
+                CleanroomLog.get()
+                    .debug("Found the loader's classes at {}, examining for annotations", source.getAbsolutePath());
+                addCandidate(modCandidates, seen, new ModCandidate(source, source, ContainerType.DIR, false, true));
             } else if (source.isDirectory()) {
                 CleanroomLog.get()
                     .debug("Found a minecraft related directory at {}, collecting as developing mod",
@@ -620,9 +624,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
         Map<String, List<File>> pathsBySourceSet = new HashMap<>();
         for (File path : devPaths) {
-            if (path.equals(FMLForgePlugin.forgeLocation)) {
-                continue;
-            }
             pathsBySourceSet.computeIfAbsent(path.getName(), key -> new ArrayList<>()).add(path);
         }
         for (List<File> paths : pathsBySourceSet.values()) {
