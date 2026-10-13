@@ -6,7 +6,7 @@
      private int borderWarningTime = 15;
 -    /**
 -     * Mapping providing data between different dimensions.
--     *  
+-     *
 -     * MODDERS: <strong>DO NOT USE</strong>. This map will have a different type of key depending on whether forge is installed or not.
 -     */
 -    private final Map<DimensionType, NBTTagCompound> dimensionData = Maps.newEnumMap(DimensionType.class);

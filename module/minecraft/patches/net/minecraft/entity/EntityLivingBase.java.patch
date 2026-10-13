@@ -6,7 +6,7 @@
      private static final AttributeModifier SPRINTING_SPEED_BOOST = new AttributeModifier(SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", 0.3F, 2).setSaved(false);
 -    /**
 -     * Hand states, used to trigger blocking/eating/drinking animation.
--     *  
+-     *
 -     * Note that this is completely unrelated to {@link #isSwingInProgress}/{@link #swingingHand}, which is used for the swinging animation.
 -     */
 +    public static final net.minecraft.entity.ai.attributes.IAttribute SWIM_SPEED = new net.minecraft.entity.ai.attributes.RangedAttribute(null, "forge.swimSpeed", 1.0, 0.0, 1024.0).setShouldWatch(true);

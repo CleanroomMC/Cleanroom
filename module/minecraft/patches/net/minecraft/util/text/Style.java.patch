@@ -16,7 +16,7 @@
 -
 -        /**
 -         * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
--         *  
+-         *
 -         * @return A formatted string that can be combined with text to produce this style.
 -         */
          @Override
@@ -28,7 +28,7 @@
  
 -    /**
 -     * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
--     *  
+-     *
 -     * @return A formatted string that can be combined with text to produce this style.
 -     */
      public String getFormattingCode() {

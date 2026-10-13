@@ -6,7 +6,7 @@
      private int wealth;
 -    /**
 -     * Last player to trade with this villager, used for aggressivity.
--     *  
+-     *
 -     * MODDERS: Do not reference directly; will have a different type under forge
 -     */
 -    private String lastBuyingPlayer;

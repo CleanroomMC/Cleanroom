@@ -6,7 +6,7 @@
      private static final Logger LOGGER = LogManager.getLogger();
 -    /**
 -     * A registry containing all entities by name and ID.
--     *  
+-     *
 -     * @deprecated DO NOT USE. This field does not exist under forge, and mods using it will break if forge is installed. Directly use the equivalent methods in this class instead.
 -     */
 -    public static final RegistryNamespaced<ResourceLocation, Class<? extends Entity>> REGISTRY = new RegistryNamespaced<>();
@@ -14,13 +14,13 @@
      public static final Map<ResourceLocation, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.newLinkedHashMap();
 -    /**
 -     * A list of all known entity types.
--     *  
+-     *
 -     * @deprecated DO NOT USE. This field does not exist under forge, and mods using it will break if forge is installed. Use {@link #getEntityNameList()} instead.
 -     */
 -    public static final Set<ResourceLocation> KNOWN_TYPES = Sets.newHashSet();
 -    /**
 -     * A list of "old" entity names (used as IDs in versions prior to 1.11) and still used for translations.
--     *  
+-     *
 -     * @deprecated DO NOT USE. This field does not exist under forge, and mods using it will break if forge is installed. Unfortunately, there is no direct replacement for the list, but {@link #getEntityString()} and {@link #getTranslationName()} can be used for individual entities.
 -     */
 -    private static final List<String> OLD_NAMES = Lists.newArrayList();
@@ -31,7 +31,7 @@
 @@ -136,11 +118,12 @@
      /**
       * Gets the {@link ResourceLocation} that identifies the given entity's type.
-      *  
+      *
 -     * @return The resource location, or null if the {@link #REGISTRY} does not contain a mapping for that class.
 +     * @return The resource location, or null if the entity registry does not contain a mapping for that class.
       */
