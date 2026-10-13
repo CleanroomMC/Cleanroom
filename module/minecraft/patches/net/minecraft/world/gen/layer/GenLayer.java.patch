@@ -1,6 +1,11 @@
 --- original/net/minecraft/world/gen/layer/GenLayer.java
 +++ modified/net/minecraft/world/gen/layer/GenLayer.java
-@@ -49,10 +49,7 @@
+@@ -46,13 +46,12 @@
+             i = 6;
+         }
+ 
++        i = getModdedBiomeSize(p_180781_2_, i);
++
          GenLayer genlayer1 = genlayer;
          genlayer1 = GenLayerZoom.magnify(1000L, genlayer1, 0);
          genlayer1 = new GenLayerRiverInit(100L, genlayer1);
@@ -12,7 +17,7 @@
          GenLayer genlayer3 = genlayer1;
          genlayer3 = GenLayerZoom.magnify(1000L, genlayer3, 2);
          genlayer2 = new GenLayerHills(1000L, genlayer2, genlayer3);
-@@ -153,11 +150,29 @@
+@@ -153,11 +152,29 @@
  
      /** returns true if the biomeId is one of the various ocean biomes. */
      protected static boolean isBiomeOceanic(int p_151618_0_) {
