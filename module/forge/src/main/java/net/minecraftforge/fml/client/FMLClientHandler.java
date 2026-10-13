@@ -1071,8 +1071,8 @@ public class FMLClientHandler implements IFMLSidedHandler
     @Override
     public void processWindowMessages()
     {
-        // workaround for windows requiring messages being processed on the main thread
-        if (LWJGLUtil.getPlatform() != LWJGLUtil.PLATFORM_WINDOWS) return;
+        // workaround for windows and macOS requiring messages being processed on the main thread
+        if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_LINUX) return;
         // If we can't grab the mutex, the update call is blocked, probably in native code, just skip it and carry on
         // We'll get another go next time
         if (!SplashProgress.mutex.tryAcquire()) return;

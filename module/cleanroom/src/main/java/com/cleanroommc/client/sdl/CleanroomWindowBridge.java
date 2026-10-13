@@ -15,8 +15,10 @@ import com.cleanroommc.lwjgly.spi.WindowBridge;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.Platform;
 
 import java.nio.IntBuffer;
 
@@ -275,6 +277,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public void pump() {
+        if (Platform.get() == Platform.MACOSX && !SDLInit.SDL_IsMainThread()) {
+            return;
+        }
         Pump.pump(window);
     }
 
