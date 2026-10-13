@@ -39,8 +39,10 @@ import org.lwjgl.sdl.SDL_TextEditingEvent;
 import org.lwjgl.sdl.SDL_TextInputEvent;
 import org.lwjgl.sdl.SDL_WindowEvent;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.Platform;
 
 import java.awt.image.BufferedImage;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -87,6 +89,8 @@ public final class Window implements AutoCloseable {
     private boolean alwaysOnTop;
     private boolean mouseGrabbed;
     private boolean mouseWarped;
+    private float grabGlobalX = Float.NaN;
+    private float grabGlobalY = Float.NaN;
     private boolean mouseInside = true;
 
     private volatile boolean closed;
@@ -613,6 +617,9 @@ public final class Window implements AutoCloseable {
         }
         this.mouseX = event.x();
         this.mouseY = event.y();
+        if (this.mouseGrabbed && Platform.get() == Platform.MACOSX) {
+            this.reassertGrab();
+        }
         float dx = this.mouseWarped ? 0.0F : event.xrel();
         float dy = this.mouseWarped ? 0.0F : event.yrel();
         this.mouseWarped = false;
@@ -621,6 +628,26 @@ public final class Window implements AutoCloseable {
             .post(new MouseEvent.Motion(event.which(), this.id, event.timestamp(), this.mouseX, this.mouseY, dx, dy,
                 event.state()
             ));
+    }
+
+    /**
+     * SDL's Cocoa backend can skip detaching the cursor from mouse movement and never retry.
+     * A detached cursor does not move, so a grabbed cursor that moved means the grab has to be applied again.
+     */
+    private void reassertGrab() {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer x = stack.mallocFloat(1);
+            FloatBuffer y = stack.mallocFloat(1);
+            SDLMouse.SDL_GetGlobalMouseState(x, y);
+            if (Float.isNaN(this.grabGlobalX)) {
+                this.grabGlobalX = x.get(0);
+                this.grabGlobalY = y.get(0);
+            } else if (x.get(0) != this.grabGlobalX || y.get(0) != this.grabGlobalY) {
+                SDLMouse.SDL_SetWindowRelativeMouseMode(this.handle, false);
+                SDLMouse.SDL_SetWindowRelativeMouseMode(this.handle, true);
+                this.grabGlobalX = Float.NaN;
+            }
+        }
     }
 
     void button(SDL_MouseButtonEvent event) {
@@ -803,6 +830,7 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         SDL.check(SDLMouse.SDL_SetWindowRelativeMouseMode(handle, grab), "SDL_SetWindowRelativeMouseMode");
         this.mouseGrabbed = grab;
+        this.grabGlobalX = Float.NaN;
         this.legacy.resetDeltas();
         this.mouseWarped = true;
     }
