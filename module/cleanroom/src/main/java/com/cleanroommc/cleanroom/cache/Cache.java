@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.cache;
 
 import com.google.common.base.Preconditions;
@@ -41,7 +51,9 @@ import java.util.concurrent.Callable;
  */
 public final class Cache {
 
-    static final String META = ".meta", LOCK = ".lock", VERSIONS = ".versions";
+    static final String META = ".meta";
+    static final String LOCK = ".lock";
+    static final String VERSIONS = ".versions";
 
     private final Path base;
     private final Path root;

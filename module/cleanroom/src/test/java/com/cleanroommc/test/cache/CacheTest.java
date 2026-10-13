@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.test.cache;
 
 import com.cleanroommc.cleanroom.cache.Cache;
@@ -5,6 +15,8 @@ import com.cleanroommc.cleanroom.cache.CacheException;
 import com.cleanroommc.cleanroom.cache.CacheRequest;
 
 import com.sun.net.httpserver.HttpServer;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.assertj.core.api.ThrowableAssertAlternative;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,13 +47,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 public class CacheTest {
 
@@ -132,7 +140,7 @@ public class CacheTest {
             } catch (UncheckedIOException ignored) {
                 // A file vanished mid-walk
             }
-            assertTrue(System.nanoTime() < deadline, "Background cache work did not finish");
+            assertThat(System.nanoTime()).as("Background cache work did not finish").isLessThan(deadline);
         }
         server.stop(0);
     }
@@ -157,13 +165,13 @@ public class CacheTest {
     @Test
     void getKeepsAndPutReplaces() throws IOException {
         Path file = cache.fromString("one", UTF_8).get("a/b.txt");
-        assertTrue(file.startsWith(root.resolve("test/a")));
-        assertEquals("b.txt", file.getFileName().toString());
-        assertEquals("one", read(cache.fromString("two", UTF_8).get("a/b.txt")));
+        assertThat(file).startsWithRaw(root.resolve("test/a"));
+        assertThat(file).hasFileName("b.txt");
+        assertThat(read(cache.fromString("two", UTF_8).get("a/b.txt"))).isEqualTo("one");
         Path replaced = cache.fromString("two", UTF_8).put("a/b.txt");
-        assertEquals("two", read(replaced));
-        assertNotEquals(file, replaced);
-        assertEquals("one", read(file));
+        assertThat(read(replaced)).isEqualTo("two");
+        assertThat(replaced).isNotEqualTo(file);
+        assertThat(read(file)).isEqualTo("one");
     }
 
     @Test
@@ -178,25 +186,24 @@ public class CacheTest {
         Files.setLastModifiedTime(abandoned, expired);
         Path running = Files.createFile(versions.resolve("running.part"));
         Path current = cache.fromString("new", UTF_8).get("s");
-        assertFalse(Files.exists(superseded.getParent()));
-        assertFalse(Files.exists(abandoned));
-        assertTrue(Files.exists(recent));
-        assertTrue(Files.exists(running));
+        assertThat(superseded.getParent()).doesNotExist();
+        assertThat(abandoned).doesNotExist();
+        assertThat(recent).exists();
+        assertThat(running).exists();
 
         cache.fromString("newer", UTF_8).put("s");
-        assertEquals("new", read(current));
+        assertThat(read(current)).isEqualTo("new");
         Files.delete(running);
     }
 
     @Test
     void expectedHashIsEnforced() throws IOException {
-        assertEquals("hello", read(cache.fromString("hello", UTF_8).expectSha256(HELLO_SHA256.toUpperCase()).get("ok"))
-        );
-        CacheException e = assertThrows(CacheException.class,
+        assertThat(read(cache.fromString("hello", UTF_8).expectSha256(HELLO_SHA256.toUpperCase()).get("ok")
+        )).isEqualTo("hello");
+        assertFails(CacheException.Kind.HASH_MISMATCH,
             () -> cache.fromString("other", UTF_8).expectSha256(HELLO_SHA256).get("bad")
         );
-        assertEquals(CacheException.Kind.HASH_MISMATCH, e.kind());
-        assertFalse(Files.exists(cache.root().resolve("bad")));
+        assertThat(cache.root().resolve("bad")).doesNotExist();
     }
 
     @Test
@@ -204,26 +211,25 @@ public class CacheTest {
         Path source = Files.writeString(root.resolve("source.txt"), "original");
         Path file = cache.fromFile(source).get("copy");
         Files.writeString(file, "corrupt");
-        assertEquals("original", read(cache.fromFile(source).get("copy")));
+        assertThat(read(cache.fromFile(source).get("copy"))).isEqualTo("original");
 
         Files.writeString(file, "corrupt");
         Files.writeString(source, "changed");
-        CacheException e = assertThrows(CacheException.class, () -> cache.fromFile(source).get("copy"));
-        assertEquals(CacheException.Kind.HASH_MISMATCH, e.kind());
+        assertFails(CacheException.Kind.HASH_MISMATCH, () -> cache.fromFile(source).get("copy"));
     }
 
     @Test
     void replacedContentDropsItsMetadata() throws Exception {
         cache.fromString("a", UTF_8).version("2.0").get("v");
         cache.fromString("b", UTF_8).put("v");
-        assertEquals("c", read(cache.fromString("c", UTF_8).version("1.0").get("v")));
+        assertThat(read(cache.fromString("c", UTF_8).version("1.0").get("v"))).isEqualTo("c");
 
         cache.fromUrl(url("/hello")).get("e");
-        assertTrue(served.tryAcquire(10, TimeUnit.SECONDS));
+        assertThat(served.tryAcquire(10, TimeUnit.SECONDS)).isTrue();
         cache.fromString("other", UTF_8).put("e");
-        assertEquals("other", read(cache.fromUrl(url("/hello")).revalidateIf(Duration.ZERO).get("e")));
-        assertTrue(served.tryAcquire(10, TimeUnit.SECONDS));
-        assertEquals(0, notModified.get());
+        assertThat(read(cache.fromUrl(url("/hello")).revalidateIf(Duration.ZERO).get("e"))).isEqualTo("other");
+        assertThat(served.tryAcquire(10, TimeUnit.SECONDS)).isTrue();
+        assertThat(notModified.get()).isEqualTo(0);
     }
 
     @Test
@@ -232,23 +238,23 @@ public class CacheTest {
         Path meta = cache.root().resolve("r.meta");
         Files.writeString(meta, Files.readString(meta).replaceAll("checked=\\d+", "checked=0"));
         for (int i = 0; i < 5; i++) {
-            assertEquals("hello", read(cache.fromUrl(url("/fail")).revalidateIf(Duration.ofMinutes(1)).get("r")));
+            assertThat(read(cache.fromUrl(url("/fail")).revalidateIf(Duration.ofMinutes(1)).get("r"))).isEqualTo("hello"
+            );
         }
         Thread.sleep(500);
-        assertEquals(1, failures.get());
+        assertThat(failures.get()).isEqualTo(1);
     }
 
     @Test
     void malformedMetadataIsDiscarded() throws IOException {
         cache.fromString("x", UTF_8).get("m");
         Files.writeString(cache.root().resolve("m.meta"), "sha256=../../../escape\nchecked=soon\n");
-        assertEquals("y", read(cache.fromString("y", UTF_8).get("m")));
+        assertThat(read(cache.fromString("y", UTF_8).get("m"))).isEqualTo("y");
     }
 
     @Test
     void stalledBodyFailsOffline() {
-        CacheException e = assertThrows(CacheException.class, () -> cache.fromUrl(url("/stall")).get("stall"));
-        assertEquals(CacheException.Kind.OFFLINE, e.kind());
+        assertFails(CacheException.Kind.OFFLINE, () -> cache.fromUrl(url("/stall")).get("stall"));
     }
 
     @Test
@@ -256,7 +262,7 @@ public class CacheTest {
         byte[] bytes = "hello".getBytes(UTF_8);
         CacheRequest request = cache.fromBytes(bytes);
         bytes[0] = 'j';
-        assertEquals("hello", read(request.get("copied")));
+        assertThat(read(request.get("copied"))).isEqualTo("hello");
     }
 
     @Test
@@ -264,28 +270,30 @@ public class CacheTest {
         AtomicInteger calls = new AtomicInteger();
         CacheRequest request = cache.fromBytes(() -> ("build" + calls.incrementAndGet()).getBytes(UTF_8));
         Path file = request.get("lazy");
-        assertEquals("build1", read(request.get("lazy")));
-        assertEquals(1, calls.get());
+        assertThat(read(request.get("lazy"))).isEqualTo("build1");
+        assertThat(calls.get()).isEqualTo(1);
         Files.writeString(file, "corrupt");
-        assertEquals("build2", read(request.get("lazy")));
-        assertEquals("hello", read(cache.fromBuffer(() -> UTF_8.encode("hello")).get("lazyBuffer")));
+        assertThat(read(request.get("lazy"))).isEqualTo("build2");
+        assertThat(read(cache.fromBuffer(() -> UTF_8.encode("hello")).get("lazyBuffer"))).isEqualTo("hello");
     }
 
     @Test
     void greaterVersionReingests() throws IOException {
         cache.fromString("1", UTF_8).version("1.0").get("v");
-        assertEquals("2", read(cache.fromString("2", UTF_8).version("1.10").get("v")));
-        assertEquals("2", read(cache.fromString("3", UTF_8).version("1.9").get("v")));
+        assertThat(read(cache.fromString("2", UTF_8).version("1.10").get("v"))).isEqualTo("2");
+        assertThat(read(cache.fromString("3", UTF_8).version("1.9").get("v"))).isEqualTo("2");
     }
 
     @Test
     void resourcesAndBuffersIngest() throws IOException {
         ClassLoader loader = getClass().getClassLoader();
         Path file = cache.fromResource(loader, "com/cleanroommc/test/cache/CacheTest.class").get("self.class");
-        assertTrue(Files.size(file) > 0);
-        IOException e = assertThrows(IOException.class, () -> cache.fromResource(loader, "nope").get("nope"));
-        assertInstanceOf(java.nio.file.NoSuchFileException.class, e);
-        assertEquals("hello", read(cache.fromBuffer(UTF_8.encode("hello")).get("buffer")));
+        assertThat(file).isNotEmptyFile();
+        assertThatExceptionOfType(java.nio.file.NoSuchFileException.class).isThrownBy(() -> cache.fromResource(loader,
+            "nope"
+        )
+            .get("nope"));
+        assertThat(read(cache.fromBuffer(UTF_8.encode("hello")).get("buffer"))).isEqualTo("hello");
     }
 
     @Test
@@ -293,11 +301,11 @@ public class CacheTest {
         for (String name : List.of("../x", "a/../../x", "/abs", "C:/x", "\\\\server\\share", "a\0b", ".", "x.meta",
             "x.lock", "x.versions", "a.versions/x"
         )) {
-            assertThrows(IllegalArgumentException.class, () -> cache.fromString("x", UTF_8).get(name), name);
+            assertThatIllegalArgumentException().as(name).isThrownBy(() -> cache.fromString("x", UTF_8).get(name));
         }
-        assertThrows(IllegalArgumentException.class, () -> cache.namespace(".."));
-        assertThrows(IllegalArgumentException.class, () -> cache.namespace("a.versions"));
-        assertEquals(cache.fromString("x", UTF_8).get("b"), cache.fromString("x", UTF_8).get("a/../b"));
+        assertThatIllegalArgumentException().isThrownBy(() -> cache.namespace(".."));
+        assertThatIllegalArgumentException().isThrownBy(() -> cache.namespace("a.versions"));
+        assertThat(cache.fromString("x", UTF_8).get("a/../b")).isEqualTo(cache.fromString("x", UTF_8).get("b"));
     }
 
     @Test
@@ -308,8 +316,7 @@ public class CacheTest {
         } catch (UnsupportedOperationException | IOException e) {
             org.junit.jupiter.api.Assumptions.abort("Symbolic links unavailable: " + e);
         }
-        CacheException e = assertThrows(CacheException.class, () -> cache.fromString("x", UTF_8).get("link/x"));
-        assertEquals(CacheException.Kind.UNSAFE_PATH, e.kind());
+        assertFails(CacheException.Kind.UNSAFE_PATH, () -> cache.fromString("x", UTF_8).get("link/x"));
     }
 
     @Test
@@ -318,23 +325,27 @@ public class CacheTest {
             .mapToObj(_ -> cache.fromUrl(url("/hello")).getAsync("hello"))
             .toList();
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
-        futures.forEach(future -> assertEquals("hello", read(future.join())));
-        assertEquals(1, requests.get());
+        futures.forEach(future -> assertThat(read(future.join())).isEqualTo("hello"));
+        assertThat(requests.get()).isEqualTo(1);
     }
 
     @Test
     void putAsyncAlwaysIngests() {
         cache.fromUrl(url("/hello")).putAsync("hello").join();
-        assertEquals("hello", read(cache.fromUrl(url("/hello")).putAsync("hello").join()));
-        assertEquals(2, requests.get());
+        assertThat(read(cache.fromUrl(url("/hello")).putAsync("hello").join())).isEqualTo("hello");
+        assertThat(requests.get()).isEqualTo(2);
     }
 
     @Test
     void asyncFailuresCompleteExceptionally() {
         CompletableFuture<Path> future = cache.fromUrl(url("/stall")).getAsync("stall");
-        assertFalse(future.isDone());
-        CompletionException e = assertThrows(CompletionException.class, future::join);
-        assertEquals(CacheException.Kind.OFFLINE, assertInstanceOf(CacheException.class, e.getCause()).kind());
+        assertThat(future.isDone()).isFalse();
+        assertThatExceptionOfType(CompletionException.class)
+            .isThrownBy(future::join)
+            .havingCause()
+            .isInstanceOfSatisfying(CacheException.class,
+                e -> assertThat(e.kind()).isEqualTo(CacheException.Kind.OFFLINE)
+            );
     }
 
     @Test
@@ -344,18 +355,18 @@ public class CacheTest {
             virtual.set(Thread.currentThread().isVirtual());
             return "hello".getBytes(UTF_8);
         }).getAsync("virtual").join();
-        assertTrue(virtual.get());
+        assertThat(virtual.get()).isTrue();
     }
 
     @Test
     void staleEntriesRevalidateInTheBackground() throws Exception {
         cache.fromUrl(url("/hello")).get("hello");
         cache.fromUrl(url("/hello")).revalidateIf(Duration.ofHours(1)).get("hello");
-        assertEquals(1, requests.get());
+        assertThat(requests.get()).isEqualTo(1);
 
-        assertEquals("hello", read(cache.fromUrl(url("/hello")).revalidateIf(Duration.ZERO).get("hello")));
-        assertTrue(revalidated.await(10, TimeUnit.SECONDS));
-        assertEquals(1, notModified.get());
+        assertThat(read(cache.fromUrl(url("/hello")).revalidateIf(Duration.ZERO).get("hello"))).isEqualTo("hello");
+        assertThat(revalidated.await(10, TimeUnit.SECONDS)).isTrue();
+        assertThat(notModified.get()).isEqualTo(1);
     }
 
     @Test
@@ -363,10 +374,10 @@ public class CacheTest {
         cache.fromUrl(url("/slow")).get("slow");
         try {
             cache.fromUrl(url("/slow")).revalidateIf(Duration.ZERO).get("slow");
-            assertTrue(slowRequested.await(10, TimeUnit.SECONDS));
-            assertTimeoutPreemptively(Duration.ofSeconds(5),
-                () -> assertEquals("hello", read(cache.fromUrl(url("/slow")).get("slow")))
-            );
+            assertThat(slowRequested.await(10, TimeUnit.SECONDS)).isTrue();
+            assertThat(cache.fromUrl(url("/slow")).getAsync("slow"))
+                .succeedsWithin(Duration.ofSeconds(5))
+                .satisfies(file -> assertThat(read(file)).isEqualTo("hello"));
         } finally {
             released.countDown();
         }
@@ -379,17 +390,21 @@ public class CacheTest {
         try (ServerSocket socket = new ServerSocket(0, 0, InetAddress.getLoopbackAddress())) {
             dead = URI.create("http://127.0.0.1:" + socket.getLocalPort() + "/hello");
         }
-        assertEquals("hello", read(cache.fromUrl(dead).get("hello")));
-        CacheException e = assertThrows(CacheException.class, () -> cache.fromUrl(dead).get("cold"));
-        assertEquals(CacheException.Kind.OFFLINE, e.kind());
+        assertThat(read(cache.fromUrl(dead).get("hello"))).isEqualTo("hello");
+        assertFails(CacheException.Kind.OFFLINE, () -> cache.fromUrl(dead).get("cold"));
         cache.fromUrl(url("/hello")).version("1.0").get("versioned");
-        e = assertThrows(CacheException.class, () -> cache.fromUrl(dead).version("2.0").get("versioned"));
-        assertEquals(CacheException.Kind.OFFLINE, e.kind());
-        assertTrue(e.getMessage().contains("cached at version 1.0 but 2.0 is required"), e.getMessage());
-        e = assertThrows(CacheException.class, () -> cache.fromUrl(url("/drop")).get("drop"));
-        assertEquals(CacheException.Kind.OFFLINE, e.kind());
-        e = assertThrows(CacheException.class, () -> cache.fromUrl(url("/missing")).get("missing"));
-        assertEquals(CacheException.Kind.HTTP, e.kind());
+        assertFails(CacheException.Kind.OFFLINE, () -> cache.fromUrl(dead).version("2.0").get("versioned")
+        ).withMessageContaining("cached at version 1.0 but 2.0 is required");
+        assertFails(CacheException.Kind.OFFLINE, () -> cache.fromUrl(url("/drop")).get("drop"));
+        assertFails(CacheException.Kind.HTTP, () -> cache.fromUrl(url("/missing")).get("missing"));
+    }
+
+    private static ThrowableAssertAlternative<CacheException> assertFails(CacheException.Kind kind,
+        ThrowingCallable call
+    ) {
+        return assertThatExceptionOfType(CacheException.class)
+            .isThrownBy(call)
+            .satisfies(e -> assertThat(e.kind()).isEqualTo(kind));
     }
 
     private String read(Path file) {

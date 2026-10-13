@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.cache;
 
 import com.cleanroommc.util.CleanroomLog;
@@ -58,12 +68,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class CacheRequest {
 
-    private static final String SHA256 = "sha256",
-        VERSION = "version",
-        CHECKED = "checked",
-        URL = "url",
-        ETAG = "etag",
-        MODIFIED = "modified";
+    private static final String SHA256 = "sha256";
+    private static final String VERSION = "version";
+    private static final String CHECKED = "checked";
+    private static final String URL = "url";
+    private static final String ETAG = "etag";
+    private static final String MODIFIED = "modified";
     private static final Duration GRACE = Duration.ofDays(1);
 
     // Serializes threads of this JVM, file locks only exclude other processes
