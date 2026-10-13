@@ -362,18 +362,16 @@
              float f1 = 0.5F + enumfacing.getXOffset() * 0.4F;
              float f = 0.5F + enumfacing.getZOffset() * 0.4F;
              this.setRenderOffsetForSleep(enumfacing);
-@@ -1430,6 +1514,10 @@
-     }
- 
-     private boolean bedInRange(BlockPos p_190774_1_, EnumFacing p_190774_2_) {
-+        if (p_190774_2_ == null) {
-+            return false;
-+        }
-+
-         if (Math.abs(this.posX - p_190774_1_.getX()) <= 3.0
+@@ -1434,6 +1518,8 @@
              && Math.abs(this.posY - p_190774_1_.getY()) <= 2.0
              && Math.abs(this.posZ - p_190774_1_.getZ()) <= 3.0) {
-@@ -1449,16 +1537,21 @@
+             return true;
++        } else if (p_190774_2_ == null) {
++            return false; // Forge: for modded bed with no explicit orientation
+         }
+ 
+         BlockPos blockpos = p_190774_1_.offset(p_190774_2_.getOpposite());
+@@ -1449,16 +1535,21 @@
  
      /** Wake up the player if they're sleeping. */
      public void wakeUpPlayer(boolean immediately, boolean updateWorldFlag, boolean setSpawn) {
@@ -399,7 +397,7 @@
          }
  
          this.sleeping = false;
-@@ -1473,14 +1566,16 @@
+@@ -1473,14 +1564,16 @@
      }
  
      private boolean isInBed() {
@@ -419,7 +417,7 @@
              if (!forceSpawn) {
                  return null;
              }
-@@ -1489,15 +1584,17 @@
+@@ -1489,15 +1582,17 @@
              boolean flag1 = worldIn.getBlockState(bedLocation.up()).getBlock().canSpawnInBlock();
              return flag && flag1 ? bedLocation : null;
          } else {
@@ -440,7 +438,7 @@
              switch (enumfacing) {
                  case SOUTH:
                      return 90.0F;
-@@ -1533,14 +1630,21 @@
+@@ -1533,14 +1628,21 @@
      }
  
      public BlockPos getBedLocation() {
@@ -464,7 +462,7 @@
          if (pos != null) {
              this.spawnPos = pos;
              this.spawnForced = forced;
-@@ -1681,6 +1785,8 @@
+@@ -1681,6 +1783,8 @@
              }
  
              super.fall(distance, damageMultiplier);
@@ -473,7 +471,7 @@
          }
      }
  
-@@ -2018,7 +2124,10 @@
+@@ -2018,7 +2122,10 @@
       */
      @Override
      public ITextComponent getDisplayName() {
@@ -485,7 +483,7 @@
          itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + this.getName() + " "));
          itextcomponent.getStyle().setHoverEvent(this.getHoverEvent());
          itextcomponent.getStyle().setInsertion(this.getName());
-@@ -2027,7 +2136,8 @@
+@@ -2027,7 +2134,8 @@
  
      @Override
      public float getEyeHeight() {
@@ -495,7 +493,7 @@
          if (this.isPlayerSleeping()) {
              f = 0.2F;
          } else if (this.isSneaking() || this.height == 1.65F) {
-@@ -2213,6 +2323,150 @@
+@@ -2213,6 +2321,150 @@
          return this.capabilities.isCreativeMode && this.canUseCommand(2, "");
      }
  
