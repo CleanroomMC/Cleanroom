@@ -10,12 +10,13 @@
 
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.lwjgly.spi.WindowBridge;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.sdl.SDLVideo;
 
 /** A hidden SDL surface and GL context sharing objects with the main window. */
-public final class SharedGLContext implements AutoCloseable {
+public final class SharedGLContext implements WindowBridge.SharedContext {
 
     private final Window window;
     private final long surface;
@@ -32,11 +33,14 @@ public final class SharedGLContext implements AutoCloseable {
 
     /**
      * Creates a context sharing objects with {@code window}'s GL context.
+     * The calling thread keeps whichever context was current on it.
      */
     public static SharedGLContext create(Window window) {
         if (window == null) {
             throw new IllegalStateException("The SDL window does not exist");
         }
+        long previousWindow = SDLVideo.SDL_GL_GetCurrentWindow();
+        long previousContext = SDLVideo.SDL_GL_GetCurrentContext();
         long surface = SDL.checkHandle(SDLVideo.SDL_CreateWindow("Cleanroom Shared Context", 1, 1,
                 SDLVideo.SDL_WINDOW_OPENGL | SDLVideo.SDL_WINDOW_HIDDEN
             ),
@@ -44,14 +48,17 @@ public final class SharedGLContext implements AutoCloseable {
         );
         long context = 0L;
         try {
-            window.makeCurrent();
+            if (previousContext == 0L) {
+                window.makeCurrent();
+            }
             SDL.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1),
                 "SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT)"
             );
             context = SDL.checkHandle(SDLVideo.SDL_GL_CreateContext(surface), "SDL_GL_CreateContext");
-            window.makeCurrent();
+            SDL.check(SDLVideo.SDL_GL_MakeCurrent(previousWindow, previousContext), "SDL_GL_MakeCurrent");
             return new SharedGLContext(window, surface, context);
         } catch (RuntimeException failure) {
+            SDLVideo.SDL_GL_MakeCurrent(previousWindow, previousContext);
             if (context != 0L) {
                 SDLVideo.SDL_GL_DestroyContext(context);
             }
@@ -62,6 +69,12 @@ public final class SharedGLContext implements AutoCloseable {
         }
     }
 
+    @Override
+    public boolean isCurrent() {
+        return !this.closed && SDLVideo.SDL_GL_GetCurrentContext() == this.context;
+    }
+
+    @Override
     public void makeCurrent() {
         this.ensureOpen();
         SDL.check(SDLVideo.SDL_GL_MakeCurrent(surface, context), "SDL_GL_MakeCurrent");
@@ -72,6 +85,7 @@ public final class SharedGLContext implements AutoCloseable {
         }
     }
 
+    @Override
     public void release() {
         if (this.closed || SDLVideo.SDL_GL_GetCurrentContext() != this.context) {
             return;

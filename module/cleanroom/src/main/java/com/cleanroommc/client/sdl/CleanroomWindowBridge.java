@@ -271,6 +271,11 @@ public final class CleanroomWindowBridge implements WindowBridge {
     }
 
     @Override
+    public SharedGLContext createSharedContext() {
+        return SharedGLContext.create(window);
+    }
+
+    @Override
     public void swapBuffers() {
         window.swapBuffers();
     }
