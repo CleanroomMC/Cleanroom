@@ -54,6 +54,9 @@ sourceSets {
         java.exclude 'com/cleanroommc/test/kirino/gl/ksml/**'
         resources.srcDirs = modules.collect { "module/${it}/src/test/resources" }
     }
+    benchmark {
+        java.srcDirs = modules.collect { "module/${it}/src/benchmark/java" }
+    }
 }
 
 // Only the builtin and cleanroom modules are formatted for now, patterns are relative to the source directories
