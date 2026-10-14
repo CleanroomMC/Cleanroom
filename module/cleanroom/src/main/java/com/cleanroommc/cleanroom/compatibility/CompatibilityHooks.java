@@ -196,13 +196,20 @@ public final class CompatibilityHooks {
         if (clazz != LaunchClassLoader.class) {
             return clazz.getDeclaredField(name);
         }
-        if (name.equals("transformers") || name.equals("renameTransformer")) {
-            return TransformerHolder.class.getDeclaredField(name);
-        }
-        try {
-            return ActualClassLoader.class.getDeclaredField(name);
-        } catch (NoSuchFieldException e) {
-            return clazz.getDeclaredField(name);
+        switch (name) {
+            case "classLoaderExceptions", "transformerExceptions" -> {
+                return clazz.getDeclaredField(name);
+            }
+            case "transformers", "renameTransformer" -> {
+                return TransformerHolder.class.getDeclaredField(name);
+            }
+            default -> {
+                try {
+                    return ActualClassLoader.class.getDeclaredField(name);
+                } catch (NoSuchFieldException e) {
+                    return clazz.getDeclaredField(name);
+                }
+            }
         }
     }
 
