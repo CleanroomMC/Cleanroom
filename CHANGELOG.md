@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.4-alpha - 2026-10-14
+
+### Bug Fix
+
+- **compatibility**: Keep LaunchClassLoader's exception set fields unredirected *[commit by [@Rongmario](https://github.com/Rongmario) in [73b461c](https://github.com/CleanroomMC/Cleanroom/commit/73b461c8d6614aa99eea0ee85af75d2237188e5e)]*
+    *[Fixes issue #673 by [@MCTian-mi](https://github.com/MCTian-mi)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.3-alpha...0.7.4-alpha
+
 ## 0.7.3-alpha - 2026-10-14
 
 ### Feature
