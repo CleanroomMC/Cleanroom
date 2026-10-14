@@ -455,7 +455,10 @@ public final class Window implements AutoCloseable {
                     int pixelHeight = Math.round(mode.h() * mode.pixel_density());
                     SDL_DisplayMode closest = SDL_DisplayMode.malloc(stack);
                     if (SDLVideo.SDL_GetClosestFullscreenDisplayMode(display.id(), pixelWidth, pixelHeight,
-                        mode.refresh_rate(), false, closest) && closest.w() == pixelWidth && closest.h() == pixelHeight) {
+                            mode.refresh_rate(), false, closest
+                        ) &&
+                        closest.w() == pixelWidth &&
+                        closest.h() == pixelHeight) {
                         mode = closest;
                     }
                 }
