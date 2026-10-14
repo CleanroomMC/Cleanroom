@@ -75,16 +75,18 @@
          this.gameSettings = new GameSettings(this, this.gameDir);
          this.creativeSettings = new CreativeSettings(this, this.gameDir);
          this.defaultResourcePacks.add(this.defaultResourcePack);
-@@ -455,7 +445,8 @@
+@@ -455,8 +445,9 @@
              this.displayWidth = this.gameSettings.overrideWidth;
              this.displayHeight = this.gameSettings.overrideHeight;
          }
 -
+-        LOGGER.info("LWJGL Version: {}", Sys.getVersion());
 +        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.createWindow().title("Cleanroom").size(this.displayWidth, this.displayHeight).resizable().vsync(this.gameSettings.enableVsync).openGL().build();
 +        com.cleanroommc.client.sdl.CleanroomWindowBridge.install(window);
-         LOGGER.info("LWJGL Version: {}", Sys.getVersion());
++        LOGGER.info("LWJGL Version: {}", org.lwjgl.Version.getVersion());
          this.setWindowIcon();
          this.setInitialDisplayMode();
+         this.createDisplay();
 @@ -468,12 +459,13 @@
              this.fileResourcepacks, new File(this.gameDir, "server-resource-packs"), this.defaultResourcePack, this.metadataSerializer, this.gameSettings
          );
@@ -656,7 +658,13 @@
          }
      }
  
-@@ -2293,7 +2253,11 @@
+@@ -2288,12 +2248,16 @@
+         });
+         theCrash.getCategory().addDetail("LWJGL", new ICrashReportDetail<String>() {
+             public String call() throws Exception {
+-                return Sys.getVersion();
++                return org.lwjgl.Version.getVersion();
+             }
          });
          theCrash.getCategory().addDetail("OpenGL", new ICrashReportDetail<String>() {
              public String call() {
