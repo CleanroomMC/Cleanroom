@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.3-alpha - 2026-10-14
+
+### Feature
+
+- **compatibility**: Enable final field mutation for Java 26+ *[commit by [@Rongmario](https://github.com/Rongmario) in [c815a0e](https://github.com/CleanroomMC/Cleanroom/commit/c815a0ef964c5129c1a77dff281383043e7500f3)]*
+- **compatibility**: Fugue's generic patches, without whitelist & checks every Forge mod *[PR by [@Rongmario](https://github.com/Rongmario) in [#671](https://github.com/CleanroomMC/Cleanroom/pull/671)]*
+
+### Bug Fix
+
+- **lwjgl**: Report proper version in crashes and logging *[commit by [@Rongmario](https://github.com/Rongmario) in [2645a0f](https://github.com/CleanroomMC/Cleanroom/commit/2645a0f46bf040a47f6b6339ebf9797dd981c08a)]*
+- **sdl**: Render at native resolution on HiDPI displays *[commit by [@Rongmario](https://github.com/Rongmario) in [8068eaa](https://github.com/CleanroomMC/Cleanroom/commit/8068eaad0bafd7c771bd88b4c027031c92851adb)]*
+    *[Fixes issue #670 by [@teamnotus](https://github.com/teamnotus)]*
+
+### Build and Dependencies
+
+- **deps**: Remove vanilla's old oshi version *[commit by [@Rongmario](https://github.com/Rongmario) in [c481a48](https://github.com/CleanroomMC/Cleanroom/commit/c481a48df34b95b4219eeb7e3df8bb9608b3c1b1)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.2-alpha...0.7.3-alpha
+
 ## 0.7.2-alpha - 2026-10-13
 
 ### Comprehensive
