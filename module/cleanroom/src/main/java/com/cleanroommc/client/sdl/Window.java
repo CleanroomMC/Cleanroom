@@ -75,6 +75,7 @@ public final class Window implements AutoCloseable {
     private boolean focused = true;
     private boolean closeRequested;
     private boolean resized;
+    private boolean exposed;
     private boolean fullscreen;
     private boolean covering;
     private boolean borderless;
@@ -219,6 +220,12 @@ public final class Window implements AutoCloseable {
     public synchronized boolean consumeResized() {
         boolean value = this.resized;
         this.resized = false;
+        return value;
+    }
+
+    public synchronized boolean consumeExposed() {
+        boolean value = this.exposed;
+        this.exposed = false;
         return value;
     }
 
@@ -753,6 +760,7 @@ public final class Window implements AutoCloseable {
                 this.minimized = false;
                 this.maximized = false;
             }
+            case SDLEvents.SDL_EVENT_WINDOW_EXPOSED -> this.exposed = true;
             case SDLEvents.SDL_EVENT_WINDOW_SHOWN -> this.hidden = false;
             case SDLEvents.SDL_EVENT_WINDOW_HIDDEN -> this.hidden = true;
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER -> this.mouseInside = true;
