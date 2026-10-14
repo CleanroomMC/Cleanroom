@@ -29,6 +29,7 @@ tokenEnvoy {
     set 'VERSION', project.version
     set 'ID', 'cleanroom'
     set 'BUILD', project.version
+    set 'CLEANMIX_VERSION', providers.gradleProperty('cleanmix_version')
 }
 
 def modules = [
