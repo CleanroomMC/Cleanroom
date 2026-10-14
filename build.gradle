@@ -128,6 +128,8 @@ configurations.configureEach { configuration ->
     // patchy ships its own copy of io.netty.bootstrap.Bootstrap
     // Against 4.2 netty it shadows the real class and dies on a superclass method that no longer exists
     exclude group: 'com.mojang', module: 'patchy'
+    // Vanilla's oshi 1.1 sits under a different group to com.github.oshi, so conflict resolution never drops it
+    exclude group: 'oshi-project', module: 'oshi-core'
 
     resolutionStrategy.eachDependency { details ->
         var version = library_upgrades["${details.requested.group}:${details.requested.name}"]
