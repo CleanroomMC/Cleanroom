@@ -448,9 +448,20 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         Display display = this.display();
         if (display != null) {
-            SDL_DisplayMode desktop = SDLVideo.SDL_GetDesktopDisplayMode(display.id());
-            if (desktop == null || !SDLVideo.SDL_SetWindowFullscreenMode(this.handle, desktop)) {
-                SDLVideo.SDL_SetWindowFullscreenMode(this.handle, null);
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                SDL_DisplayMode mode = SDLVideo.SDL_GetDesktopDisplayMode(display.id());
+                if (mode != null && mode.pixel_density() != 1.0F) {
+                    int pixelWidth = Math.round(mode.w() * mode.pixel_density());
+                    int pixelHeight = Math.round(mode.h() * mode.pixel_density());
+                    SDL_DisplayMode closest = SDL_DisplayMode.malloc(stack);
+                    if (SDLVideo.SDL_GetClosestFullscreenDisplayMode(display.id(), pixelWidth, pixelHeight,
+                        mode.refresh_rate(), false, closest) && closest.w() == pixelWidth && closest.h() == pixelHeight) {
+                        mode = closest;
+                    }
+                }
+                if (mode == null || !SDLVideo.SDL_SetWindowFullscreenMode(this.handle, mode)) {
+                    SDLVideo.SDL_SetWindowFullscreenMode(this.handle, null);
+                }
             }
         }
         return fullscreen(true);
@@ -632,7 +643,7 @@ public final class Window implements AutoCloseable {
         float dx = this.mouseWarped ? 0.0F : event.xrel();
         float dy = this.mouseWarped ? 0.0F : event.yrel();
         this.mouseWarped = false;
-        this.legacy.motion(this.mouseX, this.mouseY, dx, dy, event.timestamp());
+        this.legacy.motion(this.pixelX(this.mouseX), this.pixelY(this.mouseY), dx, dy, event.timestamp());
         SDL.events()
             .post(new MouseEvent.Motion(event.which(), this.id, event.timestamp(), this.mouseX, this.mouseY, dx, dy,
                 event.state()
@@ -659,6 +670,14 @@ public final class Window implements AutoCloseable {
         }
     }
 
+    synchronized float pixelX(float x) {
+        return x * this.pixelWidth / Math.max(1, this.width);
+    }
+
+    synchronized float pixelY(float y) {
+        return y * this.pixelHeight / Math.max(1, this.height);
+    }
+
     void button(SDL_MouseButtonEvent event) {
         if (event.windowID() != id) {
             return;
@@ -669,7 +688,7 @@ public final class Window implements AutoCloseable {
         if (button > 0 && button < this.buttons.length) {
             this.buttons[button] = event.down();
         }
-        this.legacy.button(button, event.down(), this.mouseX, this.mouseY, event.timestamp());
+        this.legacy.button(button, event.down(), this.pixelX(this.mouseX), this.pixelY(this.mouseY), event.timestamp());
         SDL.events()
             .post(new MouseEvent.Button(event.which(), this.id, event.timestamp(), this.mouseX, this.mouseY, button,
                 event.down(), event.clicks() & 0xFF
@@ -683,7 +702,7 @@ public final class Window implements AutoCloseable {
         boolean flipped = event.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED;
         int sign = flipped ? -1 : 1;
         float amount = event.y() * sign;
-        this.legacy.wheel(event.mouse_x(), event.mouse_y(), amount, event.timestamp());
+        this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), amount, event.timestamp());
         SDL.events()
             .post(new MouseEvent.Wheel(event.which(), this.id, event.timestamp(), event.mouse_x(), event.mouse_y(),
                 event.x() * sign, amount, event.integer_x() * sign, event.integer_y() * sign, flipped
@@ -767,7 +786,7 @@ public final class Window implements AutoCloseable {
         for (int button = 1; button < this.buttons.length; button++) {
             if (this.buttons[button]) {
                 this.buttons[button] = false;
-                this.legacy.button(button, false, this.mouseX, this.mouseY, timestampNs);
+                this.legacy.button(button, false, this.pixelX(this.mouseX), this.pixelY(this.mouseY), timestampNs);
             }
         }
     }
@@ -1004,7 +1023,7 @@ public final class Window implements AutoCloseable {
 
         private Window create() {
             SDL.ensureVideo();
-            long flags = 0L;
+            long flags = SDLVideo.SDL_WINDOW_HIGH_PIXEL_DENSITY;
             if (this.gl != null) {
                 this.gl.apply();
                 flags |= SDLVideo.SDL_WINDOW_OPENGL;
@@ -1021,9 +1040,6 @@ public final class Window implements AutoCloseable {
             if (ForgeEarlyConfig.WINDOW_START_MAXIMIZED) {
                 flags |= SDLVideo.SDL_WINDOW_MAXIMIZED;
             }
-            // TODO: HiDPI on macOS and Wayland. SDL_WINDOW_HIGH_PIXEL_DENSITY gives a native-resolution
-            //  framebuffer, but CleanroomWindowBridge must then report pixel sizes and scale mouse
-            //  coordinates by pixelDensity().
             long handle = SDL.checkHandle(SDLVideo.SDL_CreateWindow(this.title, this.width, this.height, flags),
                 "SDL_CreateWindow"
             );

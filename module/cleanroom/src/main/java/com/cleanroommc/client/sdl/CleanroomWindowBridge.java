@@ -192,12 +192,12 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public int width() {
-        return window.width();
+        return window.pixelWidth();
     }
 
     @Override
     public int height() {
-        return window.height();
+        return window.pixelHeight();
     }
 
     @Override
@@ -320,12 +320,12 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public float mouseX() {
-        return window.mouseX();
+        return window.pixelX(window.mouseX());
     }
 
     @Override
     public float mouseY() {
-        return window.mouseY();
+        return window.pixelY(window.mouseY());
     }
 
     @Override
@@ -345,7 +345,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public void mousePosition(float x, float y) {
-        window.mousePosition(x, y);
+        window.mousePosition(x * window.width() / Math.max(1, window.pixelWidth()),
+            y * window.height() / Math.max(1, window.pixelHeight())
+        );
     }
 
     @Override
