@@ -15,6 +15,7 @@ import top.outlands.foundation.boot.ActualClassLoader;
 import top.outlands.foundation.boot.LoadingContext;
 import top.outlands.foundation.boot.TransformerHolder;
 import top.outlands.foundation.function.ExplicitTransformerFunction;
+import zone.rong.imaginebreaker.Index;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
@@ -175,6 +176,9 @@ public final class CompatibilityTransformer {
     }
 
     public static void install() {
+        if (CompatibilityConfig.reflectFields) {
+            Index.get().enableFinalFieldMutation();
+        }
         enabled = (CompatibilityConfig.reflectFields ? REFLECT_FIELDS : 0) |
             (CompatibilityConfig.classLoaderUrls ? CLASS_LOADER_URLS : 0) |
             (CompatibilityConfig.scriptEngine ? SCRIPT_ENGINE : 0) |
