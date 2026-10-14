@@ -133,6 +133,10 @@ configurations.configureEach { configuration ->
     exclude group: 'com.mojang', module: 'patchy'
     // Vanilla's oshi 1.1 sits under a different group to com.github.oshi, so conflict resolution never drops it
     exclude group: 'oshi-project', module: 'oshi-core'
+    // Same with vanilla's JNA platform 3.4.0, renamed to jna-platform since
+    exclude group: 'net.java.dev.jna', module: 'platform'
+    // jinput 2.0.10 bundles jutils' classes
+    exclude group: 'net.java.jutils', module: 'jutils'
 
     resolutionStrategy.eachDependency { details ->
         var version = library_upgrades["${details.requested.group}:${details.requested.name}"]
@@ -222,7 +226,6 @@ dependencies {
     api 'net.java.dev.jna:jna-platform:5.19.1'
     // java-objc-bridge bumped here for updated OSX arm64 natives
     api 'ca.weblite:java-objc-bridge:1.2'
-    runtimeOnly 'org.jline:jline-native:4.1.3'
 
     // LWJGL 3
     def lwjgl_version = '3.4.3'
