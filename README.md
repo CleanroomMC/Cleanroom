@@ -146,6 +146,7 @@ As for Cleanroom mods, before Cleanroom 1.0.0, no binary compatibility is guaran
 ### Client
 
 - **MultiMC-based Launchers (PrismLauncher, PolyMC etc)**: download the .zip (MMC instance) and import it.
+  - On PrismLauncher 11+ or a fork based on it, you can install the MMC pack directly by pasting the link below into your browser's address bar:<br>`prismlauncher://import?url=https://github.com/CleanroomMC/Cleanroom/releases/download/0.7.5-alpha/cleanroom-0.7.5-alpha.zip`
   - Alternatively, unzip and move the patches directory into your existing 1.12 instance (same level as the `.minecraft` directory).
 - **Minecraft Official Launcher**: follow instructions when launching the installer jar. Or launch it with cli.
 - **Other Launchers (ATLauncher, HMCL etc):** install the [relauncher](https://www.curseforge.com/minecraft/mc-mods/cleanroom-relauncher), and follow instructions in the pop-up GUI.
