@@ -24,6 +24,44 @@ jobs:
       MAVEN_NAME: ${{ secrets.CLEANROOM_MAVEN_USERNAME }}
       MAVEN_PASSWORD: ${{ secrets.CLEANROOM_MAVEN_PASSWORD }}
 
+  update-readme:
+    needs: release
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Update README with current release version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          sed -i -E "s|(prismlauncher://import\?url=https://github\.com/CleanroomMC/Cleanroom/releases/download/)[^/]+(/cleanroom-)[^/]+(\.zip)|\1${TAG}\2${TAG}\3|g" README.md
+
+      - name: Commit and push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "README.md already up to date, nothing to commit."
+            exit 0
+          fi
+          git commit -m "chore(readme): update MMC import link for ${TAG}"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+          
   download-site:
     needs: release
     if: github.ref_type == 'tag'
