@@ -1,6 +1,27 @@
 --- original/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
 +++ modified/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
-@@ -380,7 +380,7 @@
+@@ -81,6 +81,10 @@
+         this.xOffset = p_193014_1_ ? 0 : 86;
+         int i = (this.width - 147) / 2 - this.xOffset;
+         int j = (this.height - 166) / 2;
++        if (this.searchBar != null) {
++            this.searchBar.setFocused(false);
++        }
++
+         this.stackedContents.clear();
+         this.mc.player.inventory.fillStackedContents(this.stackedContents, false);
+         p_193014_2_.fillStackedContents(this.stackedContents);
+@@ -124,6 +128,9 @@
+         this.recipeBook.setGuiOpen(p_193006_1_);
+         if (!p_193006_1_) {
+             this.recipeBookPage.setInvisible();
++            if (this.searchBar != null) {
++                this.searchBar.setFocused(false);
++            }
+         }
+ 
+         this.sendUpdateSettings();
+@@ -380,7 +387,7 @@
  
              languagemanager.setCurrentLanguage(language);
              this.mc.gameSettings.language = language.getLanguageCode();
@@ -9,7 +30,7 @@
              this.mc
                  .fontRenderer
                  .setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.mc.gameSettings.forceUnicodeFont);
-@@ -413,7 +413,7 @@
+@@ -413,7 +420,7 @@
          this.ghostRecipe.addIngredient(Ingredient.fromStacks(itemstack), p_193951_2_.get(0).xPos, p_193951_2_.get(0).yPos);
          int i = this.craftingSlots.getWidth();
          int j = this.craftingSlots.getHeight();
@@ -18,7 +39,7 @@
          int l = 1;
          Iterator<Ingredient> iterator = p_193951_1_.getIngredients().iterator();
  
-@@ -424,7 +424,8 @@
+@@ -424,7 +431,8 @@
                  }
  
                  Ingredient ingredient = iterator.next();
