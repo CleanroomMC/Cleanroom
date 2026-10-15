@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.7.5-alpha - 2026-10-15
+
+### Feature
+
+- **lwjgl**: Bridge window geometry, icons, display modes and expose events to LWJGLY *[commit by [@Rongmario](https://github.com/Rongmario) in [8d3ac4f](https://github.com/CleanroomMC/Cleanroom/commit/8d3ac4f70baaf73281998e89bd10e8110e02d50c)]*
+- **lwjgl**: Back LWJGLY's SharedDrawable with SharedGLContext *[commit by [@Rongmario](https://github.com/Rongmario) in [6322201](https://github.com/CleanroomMC/Cleanroom/commit/63222012238f432ae35f3a3563ec2cd19010b3f0)]*
+
+### Bug Fix
+
+- **cleanmix**: Erroneous version being shown *[commit by [@Rongmario](https://github.com/Rongmario) in [868d55e](https://github.com/CleanroomMC/Cleanroom/commit/868d55e87435e41380f799630652951962c21eaf)]*
+
+### Refactor
+
+- **font**: Have jetbrains mono as default fallback *[commit by [@Rongmario](https://github.com/Rongmario) in [ba63fb7](https://github.com/CleanroomMC/Cleanroom/commit/ba63fb7ad107e39166f9b0c4e44b5e645a043579)]*
+- **kirino**: Load fonts from cleanroom's cdn at runtime and cache *[commit by [@Rongmario](https://github.com/Rongmario) in [ef9d731](https://github.com/CleanroomMC/Cleanroom/commit/ef9d7317fcbe01d184cd2b48d96df30a44602b43)]*
+
+### Build and Dependencies
+
+- **deps**: Exclude old vanilla libraries duplicated under other coordinates *[commit by [@Rongmario](https://github.com/Rongmario) in [9ff7745](https://github.com/CleanroomMC/Cleanroom/commit/9ff77459e959807e0556065a976f7bf467ca9974)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.4-alpha...0.7.5-alpha
+
 ## 0.7.4-alpha - 2026-10-14
 
 ### Bug Fix
