@@ -34,6 +34,7 @@ public final class CleanroomEnvironment {
             return;
         }
         CleanroomEnvironment.side = side;
+        System.setProperty("cleanroom.side", side.name());
     }
 
     public static boolean isDev() {
@@ -41,6 +42,12 @@ public final class CleanroomEnvironment {
     }
 
     public static Side side() {
+        if (side == null) {
+            String property = System.getProperty("cleanroom.side");
+            if (property != null) {
+                side = Side.valueOf(property);
+            }
+        }
         if (side == null) {
             throw new IllegalStateException("Side not yet set.");
         }
