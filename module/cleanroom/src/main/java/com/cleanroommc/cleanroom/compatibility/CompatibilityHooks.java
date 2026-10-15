@@ -20,6 +20,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import net.minecraft.launchwrapper.IClassNameTransformer;
+import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 
@@ -32,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -201,7 +204,9 @@ public final class CompatibilityHooks {
                 return clazz.getDeclaredField(name);
             }
             case "transformers", "renameTransformer" -> {
-                return TransformerHolder.class.getDeclaredField(name);
+                TransformerFields.transformers = TransformerHolder.transformers;
+                TransformerFields.renameTransformer = TransformerHolder.renameTransformer;
+                return TransformerFields.class.getDeclaredField(name);
             }
             default -> {
                 try {
@@ -287,6 +292,17 @@ public final class CompatibilityHooks {
 
     public static <V> void addCallback(ListenableFuture<V> future, FutureCallback<? super V> callback) {
         Futures.addCallback(future, callback, MoreExecutors.directExecutor());
+    }
+
+    /**
+     * Reflecting on {@link TransformerHolder} makes the app loader resolve launchwrapper types it must never load,
+     * as {@link LaunchClassLoader} already defined its own copies. These mirrors are refreshed on every lookup.
+     */
+    private static final class TransformerFields {
+
+        private static List<IClassTransformer> transformers;
+        private static IClassNameTransformer renameTransformer;
+
     }
 
     private static final class Breaker {
