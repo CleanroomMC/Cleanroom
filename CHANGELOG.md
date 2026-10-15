@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.6-alpha - 2026-10-15
+
+### Bug Fix
+
+- **registries**: Initialize holder classes before injecting object holders *[commit by [@Rongmario](https://github.com/Rongmario) in [acd2632](https://github.com/CleanroomMC/Cleanroom/commit/acd2632e30a2ef80c247733cc8b9b398b105f7a8)]*
+- **sdl**: Deliver typed characters to every text widget *[commit by [@Rongmario](https://github.com/Rongmario) in [a6009b1](https://github.com/CleanroomMC/Cleanroom/commit/a6009b1be2c2e74fee749c97e0dbba92545d164c)]*
+    *[Fixes issue #678 by [@BuenChico785446](https://github.com/BuenChico785446)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.5-alpha...0.7.6-alpha
+
 ## 0.7.5-alpha - 2026-10-15
 
 ### Feature
