@@ -11,6 +11,7 @@
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.lwjgly.spi.WindowBridge;
+
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.sdl.SDLVideo;

@@ -176,8 +176,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
     }
 
     private static VideoMode videoMode(DisplayMode mode) {
-        return new VideoMode(Math.round(mode.width() * mode.pixelDensity()), Math.round(mode.height() * mode.pixelDensity()),
-            SDLPixels.SDL_BITSPERPIXEL(mode.format()), Math.round(mode.refreshRate())
+        return new VideoMode(Math.round(mode.width() * mode.pixelDensity()),
+            Math.round(mode.height() * mode.pixelDensity()), SDLPixels.SDL_BITSPERPIXEL(mode.format()),
+            Math.round(mode.refreshRate())
         );
     }
 
@@ -341,8 +342,10 @@ public final class CleanroomWindowBridge implements WindowBridge {
             BufferedImage image = new BufferedImage(side, side, BufferedImage.TYPE_INT_ARGB);
             for (int pixel = 0; pixel < side * side; pixel++) {
                 int at = icon.position() + pixel * 4;
-                image.setRGB(pixel % side, pixel / side, (icon.get(at + 3) & 0xFF) << 24 | (icon.get(at) & 0xFF) << 16 |
-                    (icon.get(at + 1) & 0xFF) << 8 | icon.get(at + 2) & 0xFF);
+                image.setRGB(pixel % side, pixel / side,
+                    (icon.get(at + 3) & 0xFF) << 24 | (icon.get(at) & 0xFF) << 16 | (icon.get(at + 1) & 0xFF) << 8 |
+                        icon.get(at + 2) & 0xFF
+                );
             }
             images[i] = image;
         }
