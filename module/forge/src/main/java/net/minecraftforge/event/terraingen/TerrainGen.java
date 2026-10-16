@@ -68,9 +68,20 @@ public abstract class TerrainGen
      */
     public static boolean decorate(World world, Random rand, ChunkPos chunkPos, BlockPos placementPos, Decorate.EventType type)
     {
-        Decorate event = new Decorate(world, rand, chunkPos, placementPos, type);
-        MinecraftForge.TERRAIN_GEN_BUS.post(event);
-        return event.getResult() != Result.DENY;
+        if (!com.cleanroommc.common.CascadingWorldGen.beginDecorate(type))
+        {
+            return true;
+        }
+        try
+        {
+            Decorate event = new Decorate(world, rand, chunkPos, placementPos, type);
+            MinecraftForge.TERRAIN_GEN_BUS.post(event);
+            return event.getResult() != Result.DENY;
+        }
+        finally
+        {
+            com.cleanroommc.common.CascadingWorldGen.endDecorate(type);
+        }
     }
 
     /**
@@ -84,9 +95,7 @@ public abstract class TerrainGen
      */
     public static boolean decorate(World world, Random rand, ChunkPos chunkPos, Decorate.EventType type)
     {
-        Decorate event = new Decorate(world, rand, chunkPos, null, type);
-        MinecraftForge.TERRAIN_GEN_BUS.post(event);
-        return event.getResult() != Result.DENY;
+        return decorate(world, rand, chunkPos, null, type);
     }
 
     @Deprecated
