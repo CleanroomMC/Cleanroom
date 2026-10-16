@@ -26,7 +26,7 @@ public final class DebugOverlayHooks {
             return biome.getBiomeName();
         }
         ModContainer mod = Loader.instance().getIndexedModList().get(name.getNamespace());
-        return (mod != null ? mod.getName() : name.getNamespace()) + ": " + biome.getBiomeName();
+        return biome.getBiomeName() + " (" + biomeOwnerName + ")"; // Cache biomeOwnerName in Biome?
     }
 
 }
