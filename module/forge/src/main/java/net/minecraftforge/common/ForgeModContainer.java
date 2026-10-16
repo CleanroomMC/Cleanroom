@@ -584,6 +584,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
             MinecraftForge.EVENT_BUS.register(ForgeClientHandler.class);
+            com.cleanroommc.client.windows.WindowStyleListener.register();
         }
         ForgeChunkManager.captureConfig(evt.getModConfigurationDirectory());
         MinecraftForge.EVENT_BUS.register(this);

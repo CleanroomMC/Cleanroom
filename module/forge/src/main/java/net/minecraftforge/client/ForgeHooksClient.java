@@ -990,50 +990,11 @@ public class ForgeHooksClient
         }
     }
     
-    private static boolean styleListenersRegistered = false;
-
     public static void setWindowStyle(boolean isFullScreen) {
         if (SystemUtils.IS_OS_WINDOWS) {
-            listenForStyleChanges();
+            com.cleanroommc.client.windows.WindowStyleListener.register();
             DwmApi.updateDwm(isFullScreen, WindowsProperties.handle);
         }
-    }
-
-    /** Re-applies the window style from the window's own state. */
-    private static void updateWindowStyle() {
-        Window window = SDL.window();
-        setWindowStyle(window != null && window.fullscreen());
-    }
-
-    /**
-     * Re-applies the window style whenever the desktop switches between light and dark, or the window enters
-     * or leaves fullscreen, so the title bar keeps following the system theme without a restart.
-     */
-    private static void listenForStyleChanges() {
-        if (styleListenersRegistered) {
-            return;
-        }
-        styleListenersRegistered = true;
-        SDL.events().register(new WindowStyleListener());
-    }
-
-    private static final class WindowStyleListener {
-
-        @SubscribeEvent
-        public void onSystemTheme(SystemThemeEvent event) {
-            updateWindowStyle();
-        }
-
-        @SubscribeEvent
-        public void onFullscreen(WindowEvent.Fullscreen event) {
-            setWindowStyle(event.fullscreen());
-        }
-
-        @SubscribeEvent
-        public void onBorderless(WindowEvent.Borderless event) {
-            updateWindowStyle();
-        }
-
     }
 
     public static void initializeWindowsInformation() {
