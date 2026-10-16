@@ -277,7 +277,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         // Minecraft Coder Pack
         mods.add(new InjectedModContainer(mcp, new File("minecraft.jar")));
         // Cleanroom
-        mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
+        mods.add(CleanroomContainer.instance());
         mods.add(new InjectedModContainer(new CleanMixModContainer(), CleanMixModContainer.location()));
         // Included Mods
         this.builtInMods

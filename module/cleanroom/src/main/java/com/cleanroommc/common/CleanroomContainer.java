@@ -13,8 +13,11 @@ package com.cleanroommc.common;
 import com.google.common.eventbus.EventBus;
 
 import net.minecraftforge.fml.common.DummyModContainer;
+import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.LoadController;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -23,6 +26,15 @@ import java.net.URL;
 import java.util.Arrays;
 
 public class CleanroomContainer extends DummyModContainer {
+
+    private static ModContainer instance;
+
+    public static ModContainer instance() {
+        if (instance == null) {
+            instance = new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation);
+        }
+        return instance;
+    }
 
     public CleanroomContainer() {
         super(new ModMetadata());
