@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -58,15 +59,27 @@ public class ModAccessTransformer extends AccessTransformer
 
     public static void addJar(JarFile jar, String atList) throws IOException
     {
+        embedded.putAll(readJar(jar, atList));
+    }
+
+    public static Map<String, String> readJar(JarFile jar, String atList) throws IOException
+    {
+        Map<String, String> ats = new HashMap<>();
         for (String at : atList.split(" "))
         {
             JarEntry jarEntry = jar.getJarEntry("META-INF/"+at);
             if (jarEntry != null)
             {
-                embedded.put(String.format("%s!META-INF/%s", jar.getName(), at),
+                ats.put(String.format("%s!META-INF/%s", jar.getName(), at),
                         new JarByteSource(jar,jarEntry).asCharSource(StandardCharsets.UTF_8).read());
             }
         }
+        return ats;
+    }
+
+    public static void addEmbedded(Map<String, String> ats)
+    {
+        embedded.putAll(ats);
     }
 
     private static class JarByteSource extends ByteSource

@@ -352,7 +352,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
         if (!isArchive(absolute)) {
             DiscoveredMod info = new DiscoveredMod(absolute, null, List.of(), ManifestAttributes.CLEANROOMMODTYPE,
-                false, false, false, null, null, onClasspath
+                false, false, false, null, null, onClasspath, Map.of()
             );
             discoveredFiles.put(absolute, info);
             return;
@@ -366,6 +366,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         boolean hasMixinManifestAttributes = false;
         boolean mixinTweakerForceMod = false;
         boolean coreModContainsMod = false;
+        Map<String, String> accessTransformers = Map.of();
 
         try (JarFile jarFile = new JarFile(absolute)) {
             attributes = readManifestAttributes(absolute, jarFile);
@@ -401,12 +402,17 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     return;
                 }
             }
+            String atList = attributes == null ? null : attributes.getValue(ModAccessTransformer.FMLAT);
+            if (atList != null && !atList.isEmpty()) {
+                accessTransformers = ModAccessTransformer.readJar(jarFile, atList);
+            }
         } catch (IOException e) {
             CleanroomLog.get().error("Failed to read mod metadata from {}", absolute.getName(), e);
         }
 
         DiscoveredMod info = new DiscoveredMod(absolute, attributes, List.copyOf(modIds), modType,
-            hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker, onClasspath
+            hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker, onClasspath,
+            accessTransformers
         );
         discoveredFiles.put(absolute, info);
 
@@ -420,7 +426,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     ) {
         File file = discoveredMod.file();
         CleanroomLog.get().debug("Examining for coremod candidacy {}", file.getName());
-        JarFile jar = null;
         Attributes attributes;
         String fmlCorePlugin;
         boolean containNonMods;
@@ -440,11 +445,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 return;
             }
 
-            String accessTransformers = attributes.getValue(ModAccessTransformer.FMLAT);
-            if (accessTransformers != null && !accessTransformers.isEmpty()) {
-                jar = new JarFile(file);
-                ModAccessTransformer.addJar(jar, accessTransformers);
-            }
+            ModAccessTransformer.addEmbedded(discoveredMod.accessTransformers());
 
             containNonMods = Boolean.parseBoolean(attributes.getValue("NonModDeps"));
             if (discoveredMod.tweaker() != null) {
@@ -489,13 +490,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         } catch (IOException ioe) {
             CleanroomLog.get().error("Unable to read the jar file {} - ignoring", file.getName(), ioe);
             return;
-        } finally {
-            try {
-                if (jar != null) {
-                    jar.close();
-                }
-            } catch (IOException ignored) {
-            }
         }
 
         try {

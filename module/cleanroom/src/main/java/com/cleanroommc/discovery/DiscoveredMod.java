@@ -12,6 +12,7 @@ package com.cleanroommc.discovery;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 
 public record DiscoveredMod(File file,
@@ -23,12 +24,14 @@ public record DiscoveredMod(File file,
     boolean coreModContainsMod,
     String coremod,
     String tweaker,
-    boolean onClasspath
+    boolean onClasspath,
+    Map<String, String> accessTransformers
 ) {
 
     public DiscoveredMod {
         file = file.getAbsoluteFile();
         modIds = List.copyOf(modIds);
+        accessTransformers = Map.copyOf(accessTransformers);
     }
 
     public boolean isDirectoryBased() {
