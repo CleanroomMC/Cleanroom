@@ -329,7 +329,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         for (URL url : Launch.classLoader.getURLs()) {
             try {
                 File file = new File(url.toURI()).getAbsoluteFile();
-                if (isArchive(file) && !discoveredFiles.containsKey(file)) {
+                if (isArchive(file)) {
                     scan(file, true);
                 }
             } catch (URISyntaxException ignored) {
@@ -686,9 +686,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         if (this.builtInModIds.contains(modId)) {
             return true;
         }
-        File abs = source.getAbsoluteFile();
-        modIdToFiles.put(modId, abs);
-        fileToModIds.put(abs, modId);
+        modIdToFiles.put(modId, source);
+        fileToModIds.put(source, modId);
         return false;
     }
 
