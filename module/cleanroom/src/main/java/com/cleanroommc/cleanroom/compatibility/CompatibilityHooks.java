@@ -127,6 +127,9 @@ public final class CompatibilityHooks {
         try {
             Breaker.on(field).set(owner, field, value);
         } catch (IllegalArgumentException e) {
+            if (!field.getType().isPrimitive() || !(value instanceof Number || value instanceof Character || value instanceof Boolean)) {
+                throw e;
+            }
             field.set(owner, value);
         }
     }
