@@ -91,8 +91,14 @@ public class ForgeClientHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Post event)
     {
-        SDLHooks.syncTextInput(event.getGui());
         SDLHooks.draw(event.getGui());
+        SDLHooks.syncTextInput(event.getGui());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onGuiMouse(GuiScreenEvent.MouseInputEvent.Pre event)
+    {
+        SDLHooks.mouseInput(event.getGui());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -146,19 +152,19 @@ public class ForgeClientHandler
         }
         List<String> list = event.getToolTip();
         ItemStack stack = event.getItemStack();
-        
+
         int limit = ForgeModContainer.maxTooltipNBTListLength;
         list.add(I18n.translateToLocal("item.forge.advanced_shift_info"));
         if (stack.hasTagCompound() && limit > 0) list.add(I18n.translateToLocal("item.forge.advanced_ctrl_info"));
         String pre = TextFormatting.DARK_GRAY + "     ";
         String head = TextFormatting.GRAY + "  -";
-        
+
         int burnTime = TileEntityFurnace.getItemBurnTime(stack);
         if (burnTime > 0)
         {
             list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.burn_time", burnTime, burnTime / 20));
         }
-        
+
         if (GuiScreen.isShiftKeyDown() && !stack.isEmpty())
         {
             list.add(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + I18n.translateToLocal("item.forge.advanced_info"));

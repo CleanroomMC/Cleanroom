@@ -75,6 +75,7 @@ public final class Window implements AutoCloseable {
     private boolean focused = true;
     private boolean closeRequested;
     private boolean resized;
+    private boolean exposed;
     private boolean fullscreen;
     private boolean covering;
     private boolean borderless;
@@ -222,6 +223,12 @@ public final class Window implements AutoCloseable {
         return value;
     }
 
+    public synchronized boolean consumeExposed() {
+        boolean value = this.exposed;
+        this.exposed = false;
+        return value;
+    }
+
     public synchronized Window title(String title) {
         this.ensureOpen();
         SDL.check(SDLVideo.SDL_SetWindowTitle(this.handle, title), "SDL_SetWindowTitle");
@@ -237,17 +244,19 @@ public final class Window implements AutoCloseable {
         if (fullscreen && this.covering) {
             this.coverDisplay(false, 0);
         }
-        SDL.check(SDLVideo.SDL_SetWindowFullscreen(this.handle, fullscreen), "SDL_SetWindowFullscreen");
-        this.fullscreen = fullscreen;
-        this.syncState();
+        if (SDL.tryCheck(SDLVideo.SDL_SetWindowFullscreen(this.handle, fullscreen), "SDL_SetWindowFullscreen")) {
+            this.fullscreen = fullscreen;
+            this.syncState();
+        }
         return this;
     }
 
     public synchronized Window borderless(boolean borderless) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowBordered(this.handle, !borderless), "SDL_SetWindowBordered");
-        this.borderless = borderless;
-        SDL.events().post(new WindowEvent.Borderless(this, SDLTimer.SDL_GetTicksNS(), borderless));
+        if (SDL.tryCheck(SDLVideo.SDL_SetWindowBordered(this.handle, !borderless), "SDL_SetWindowBordered")) {
+            this.borderless = borderless;
+            SDL.events().post(new WindowEvent.Borderless(this, SDLTimer.SDL_GetTicksNS(), borderless));
+        }
         return this;
     }
 
@@ -263,47 +272,52 @@ public final class Window implements AutoCloseable {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer x = stack.mallocInt(1);
             IntBuffer y = stack.mallocInt(1);
-            SDL.check(SDLVideo.SDL_GetWindowPosition(this.handle, x, y), "SDL_GetWindowPosition");
+            if (!SDL.tryCheck(SDLVideo.SDL_GetWindowPosition(this.handle, x, y), "SDL_GetWindowPosition")) {
+                return new int[] { 0, 0 };
+            }
             return new int[] { x.get(0), y.get(0) };
         }
     }
 
     public synchronized Window position(int x, int y) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowPosition(this.handle, x, y), "SDL_SetWindowPosition");
+        SDL.tryCheck(SDLVideo.SDL_SetWindowPosition(this.handle, x, y), "SDL_SetWindowPosition");
         return this;
     }
 
     public synchronized Window minimumSize(int width, int height) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowMinimumSize(this.handle, width, height), "SDL_SetWindowMinimumSize");
+        SDL.tryCheck(SDLVideo.SDL_SetWindowMinimumSize(this.handle, width, height), "SDL_SetWindowMinimumSize");
         return this;
     }
 
     public synchronized Window maximumSize(int width, int height) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowMaximumSize(this.handle, width, height), "SDL_SetWindowMaximumSize");
+        SDL.tryCheck(SDLVideo.SDL_SetWindowMaximumSize(this.handle, width, height), "SDL_SetWindowMaximumSize");
         return this;
     }
 
     public synchronized Window resizable(boolean resizable) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowResizable(this.handle, resizable), "SDL_SetWindowResizable");
-        this.resizable = resizable;
+        if (SDL.tryCheck(SDLVideo.SDL_SetWindowResizable(this.handle, resizable), "SDL_SetWindowResizable")) {
+            this.resizable = resizable;
+        }
         return this;
     }
 
     public synchronized Window alwaysOnTop(boolean alwaysOnTop) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowAlwaysOnTop(this.handle, alwaysOnTop), "SDL_SetWindowAlwaysOnTop");
-        this.alwaysOnTop = alwaysOnTop;
+        if (SDL.tryCheck(SDLVideo.SDL_SetWindowAlwaysOnTop(this.handle, alwaysOnTop), "SDL_SetWindowAlwaysOnTop")) {
+            this.alwaysOnTop = alwaysOnTop;
+        }
         return this;
     }
 
     public synchronized Window opacity(float opacity) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_SetWindowOpacity(this.handle, opacity), "SDL_SetWindowOpacity");
-        this.opacity = opacity;
+        if (SDL.tryCheck(SDLVideo.SDL_SetWindowOpacity(this.handle, opacity), "SDL_SetWindowOpacity")) {
+            this.opacity = opacity;
+        }
         return this;
     }
 
@@ -327,23 +341,25 @@ public final class Window implements AutoCloseable {
 
     public synchronized Window raise() {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_RaiseWindow(this.handle), "SDL_RaiseWindow");
+        SDL.tryCheck(SDLVideo.SDL_RaiseWindow(this.handle), "SDL_RaiseWindow");
         return this;
     }
 
     public synchronized Window minimize() {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_MinimizeWindow(this.handle), "SDL_MinimizeWindow");
-        this.minimized = true;
-        this.maximized = false;
+        if (SDL.tryCheck(SDLVideo.SDL_MinimizeWindow(this.handle), "SDL_MinimizeWindow")) {
+            this.minimized = true;
+            this.maximized = false;
+        }
         return this;
     }
 
     public synchronized Window maximize() {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_MaximizeWindow(this.handle), "SDL_MaximizeWindow");
-        this.maximized = true;
-        this.minimized = false;
+        if (SDL.tryCheck(SDLVideo.SDL_MaximizeWindow(this.handle), "SDL_MaximizeWindow")) {
+            this.maximized = true;
+            this.minimized = false;
+        }
         return this;
     }
 
@@ -352,7 +368,7 @@ public final class Window implements AutoCloseable {
         if (flash == null) {
             throw new IllegalArgumentException("Flash cannot be null");
         }
-        SDL.check(SDLVideo.SDL_FlashWindow(this.handle, flash.value), "SDL_FlashWindow");
+        SDL.tryCheck(SDLVideo.SDL_FlashWindow(this.handle, flash.value), "SDL_FlashWindow");
         return this;
     }
 
@@ -369,9 +385,10 @@ public final class Window implements AutoCloseable {
         if (state == null) {
             throw new IllegalArgumentException("Progress cannot be null");
         }
-        SDL.check(SDLVideo.SDL_SetWindowProgressState(this.handle, state.value), "SDL_SetWindowProgressState");
-        if (state != Progress.NONE && state != Progress.INDETERMINATE) {
-            SDL.check(SDLVideo.SDL_SetWindowProgressValue(this.handle, Math.clamp(value, 0.0F, 1.0F)),
+        if (SDL.tryCheck(SDLVideo.SDL_SetWindowProgressState(this.handle, state.value), "SDL_SetWindowProgressState") &&
+            state != Progress.NONE &&
+            state != Progress.INDETERMINATE) {
+            SDL.tryCheck(SDLVideo.SDL_SetWindowProgressValue(this.handle, Math.clamp(value, 0.0F, 1.0F)),
                 "SDL_SetWindowProgressValue"
             );
         }
@@ -391,12 +408,13 @@ public final class Window implements AutoCloseable {
                 }
                 SDL_Surface extra = Surfaces.from(images[i]);
                 try {
-                    SDL.check(SDLSurface.SDL_AddSurfaceAlternateImage(primary, extra), "SDL_AddSurfaceAlternateImage");
+                    SDL.tryCheck(SDLSurface.SDL_AddSurfaceAlternateImage(primary, extra), "SDL_AddSurfaceAlternateImage"
+                    );
                 } finally {
                     SDLSurface.SDL_DestroySurface(extra);
                 }
             }
-            SDL.check(SDLVideo.SDL_SetWindowIcon(this.handle, primary), "SDL_SetWindowIcon");
+            SDL.tryCheck(SDLVideo.SDL_SetWindowIcon(this.handle, primary), "SDL_SetWindowIcon");
         } finally {
             SDLSurface.SDL_DestroySurface(primary);
         }
@@ -409,11 +427,9 @@ public final class Window implements AutoCloseable {
             throw new IllegalArgumentException("Path cannot be null");
         }
         SDL_Surface surface = SDLSurface.SDL_LoadSurface(path.toAbsolutePath().toString());
-        if (surface == null) {
-            throw new SDLException("SDL_LoadSurface failed");
-        }
+        SDL.check(surface != null, "SDL_LoadSurface");
         try {
-            SDL.check(SDLVideo.SDL_SetWindowIcon(this.handle, surface), "SDL_SetWindowIcon");
+            SDL.tryCheck(SDLVideo.SDL_SetWindowIcon(this.handle, surface), "SDL_SetWindowIcon");
         } finally {
             SDLSurface.SDL_DestroySurface(surface);
         }
@@ -439,9 +455,23 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         Display display = this.display();
         if (display != null) {
-            SDL_DisplayMode desktop = SDLVideo.SDL_GetDesktopDisplayMode(display.id());
-            if (desktop == null || !SDLVideo.SDL_SetWindowFullscreenMode(this.handle, desktop)) {
-                SDLVideo.SDL_SetWindowFullscreenMode(this.handle, null);
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                SDL_DisplayMode mode = SDLVideo.SDL_GetDesktopDisplayMode(display.id());
+                if (mode != null && mode.pixel_density() != 1.0F) {
+                    int pixelWidth = Math.round(mode.w() * mode.pixel_density());
+                    int pixelHeight = Math.round(mode.h() * mode.pixel_density());
+                    SDL_DisplayMode closest = SDL_DisplayMode.malloc(stack);
+                    if (SDLVideo.SDL_GetClosestFullscreenDisplayMode(display.id(), pixelWidth, pixelHeight,
+                            mode.refresh_rate(), false, closest
+                        ) &&
+                        closest.w() == pixelWidth &&
+                        closest.h() == pixelHeight) {
+                        mode = closest;
+                    }
+                }
+                if (mode == null || !SDLVideo.SDL_SetWindowFullscreenMode(this.handle, mode)) {
+                    SDLVideo.SDL_SetWindowFullscreenMode(this.handle, null);
+                }
             }
         }
         return fullscreen(true);
@@ -455,12 +485,12 @@ public final class Window implements AutoCloseable {
         this.ensureOpen();
         if (cover) {
             if (this.fullscreen) {
-                SDL.check(SDLVideo.SDL_SetWindowFullscreen(this.handle, false), "SDL_SetWindowFullscreen");
+                SDL.tryCheck(SDLVideo.SDL_SetWindowFullscreen(this.handle, false), "SDL_SetWindowFullscreen");
                 this.fullscreen = false;
                 this.syncState();
             }
             if (this.maximized) {
-                SDL.check(SDLVideo.SDL_RestoreWindow(this.handle), "SDL_RestoreWindow");
+                SDL.tryCheck(SDLVideo.SDL_RestoreWindow(this.handle), "SDL_RestoreWindow");
                 this.maximized = false;
                 this.syncState();
             }
@@ -500,7 +530,7 @@ public final class Window implements AutoCloseable {
     public synchronized Window fullscreenMode(DisplayMode mode) {
         this.ensureOpen();
         if (mode == null) {
-            SDL.check(SDLVideo.SDL_SetWindowFullscreenMode(this.handle, null), "SDL_SetWindowFullscreenMode");
+            SDL.tryCheck(SDLVideo.SDL_SetWindowFullscreenMode(this.handle, null), "SDL_SetWindowFullscreenMode");
             return fullscreen(true);
         }
         PointerBuffer modes = SDLVideo.SDL_GetFullscreenDisplayModes(mode.displayId());
@@ -520,7 +550,7 @@ public final class Window implements AutoCloseable {
                 }
             }
             if (found != null) {
-                SDL.check(SDLVideo.SDL_SetWindowFullscreenMode(this.handle, found), "SDL_SetWindowFullscreenMode");
+                SDL.tryCheck(SDLVideo.SDL_SetWindowFullscreenMode(this.handle, found), "SDL_SetWindowFullscreenMode");
             }
         } finally {
             SDLStdinc.SDL_free(modes.rewind());
@@ -534,7 +564,7 @@ public final class Window implements AutoCloseable {
      */
     public Window vsync(boolean enabled) {
         this.ensureOpen();
-        SDL.check(SDLVideo.SDL_GL_SetSwapInterval(enabled ? 1 : 0), "SDL_GL_SetSwapInterval");
+        SDL.tryCheck(SDLVideo.SDL_GL_SetSwapInterval(enabled ? 1 : 0), "SDL_GL_SetSwapInterval");
         return this;
     }
 
@@ -589,7 +619,8 @@ public final class Window implements AutoCloseable {
         if (scancode >= 0 && scancode < this.keys.length) {
             this.keys[scancode] = event.down();
         }
-        this.legacy.key(scancode, event.key(), event.down(), event.repeat(), event.timestamp());
+        char character = event.down() ? LegacyInputQueues.character(scancode, event.mod(), this.text.active()) : 0;
+        this.legacy.key(scancode, event.key(), event.down(), event.repeat(), character, event.timestamp());
     }
 
     void text(SDL_TextInputEvent event) {
@@ -623,7 +654,7 @@ public final class Window implements AutoCloseable {
         float dx = this.mouseWarped ? 0.0F : event.xrel();
         float dy = this.mouseWarped ? 0.0F : event.yrel();
         this.mouseWarped = false;
-        this.legacy.motion(this.mouseX, this.mouseY, dx, dy, event.timestamp());
+        this.legacy.motion(this.pixelX(this.mouseX), this.pixelY(this.mouseY), dx, dy, event.timestamp());
         SDL.events()
             .post(new MouseEvent.Motion(event.which(), this.id, event.timestamp(), this.mouseX, this.mouseY, dx, dy,
                 event.state()
@@ -650,6 +681,14 @@ public final class Window implements AutoCloseable {
         }
     }
 
+    synchronized float pixelX(float x) {
+        return x * this.pixelWidth / Math.max(1, this.width);
+    }
+
+    synchronized float pixelY(float y) {
+        return y * this.pixelHeight / Math.max(1, this.height);
+    }
+
     void button(SDL_MouseButtonEvent event) {
         if (event.windowID() != id) {
             return;
@@ -660,7 +699,7 @@ public final class Window implements AutoCloseable {
         if (button > 0 && button < this.buttons.length) {
             this.buttons[button] = event.down();
         }
-        this.legacy.button(button, event.down(), this.mouseX, this.mouseY, event.timestamp());
+        this.legacy.button(button, event.down(), this.pixelX(this.mouseX), this.pixelY(this.mouseY), event.timestamp());
         SDL.events()
             .post(new MouseEvent.Button(event.which(), this.id, event.timestamp(), this.mouseX, this.mouseY, button,
                 event.down(), event.clicks() & 0xFF
@@ -674,7 +713,7 @@ public final class Window implements AutoCloseable {
         boolean flipped = event.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED;
         int sign = flipped ? -1 : 1;
         float amount = event.y() * sign;
-        this.legacy.wheel(event.mouse_x(), event.mouse_y(), amount, event.timestamp());
+        this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), amount, event.timestamp());
         SDL.events()
             .post(new MouseEvent.Wheel(event.which(), this.id, event.timestamp(), event.mouse_x(), event.mouse_y(),
                 event.x() * sign, amount, event.integer_x() * sign, event.integer_y() * sign, flipped
@@ -722,6 +761,7 @@ public final class Window implements AutoCloseable {
                 this.minimized = false;
                 this.maximized = false;
             }
+            case SDLEvents.SDL_EVENT_WINDOW_EXPOSED -> this.exposed = true;
             case SDLEvents.SDL_EVENT_WINDOW_SHOWN -> this.hidden = false;
             case SDLEvents.SDL_EVENT_WINDOW_HIDDEN -> this.hidden = true;
             case SDLEvents.SDL_EVENT_WINDOW_MOUSE_ENTER -> this.mouseInside = true;
@@ -752,13 +792,13 @@ public final class Window implements AutoCloseable {
         for (int scancode = 0; scancode < this.keys.length; scancode++) {
             if (this.keys[scancode]) {
                 this.keys[scancode] = false;
-                this.legacy.key(scancode, 0, false, false, timestampNs);
+                this.legacy.key(scancode, 0, false, false, (char) 0, timestampNs);
             }
         }
         for (int button = 1; button < this.buttons.length; button++) {
             if (this.buttons[button]) {
                 this.buttons[button] = false;
-                this.legacy.button(button, false, this.mouseX, this.mouseY, timestampNs);
+                this.legacy.button(button, false, this.pixelX(this.mouseX), this.pixelY(this.mouseY), timestampNs);
             }
         }
     }
@@ -828,7 +868,7 @@ public final class Window implements AutoCloseable {
 
     public synchronized void grabMouse(boolean grab) {
         this.ensureOpen();
-        SDL.check(SDLMouse.SDL_SetWindowRelativeMouseMode(handle, grab), "SDL_SetWindowRelativeMouseMode");
+        SDL.tryCheck(SDLMouse.SDL_SetWindowRelativeMouseMode(handle, grab), "SDL_SetWindowRelativeMouseMode");
         this.mouseGrabbed = grab;
         this.grabGlobalX = Float.NaN;
         this.legacy.resetDeltas();
@@ -995,7 +1035,7 @@ public final class Window implements AutoCloseable {
 
         private Window create() {
             SDL.ensureVideo();
-            long flags = 0L;
+            long flags = SDLVideo.SDL_WINDOW_HIGH_PIXEL_DENSITY;
             if (this.gl != null) {
                 this.gl.apply();
                 flags |= SDLVideo.SDL_WINDOW_OPENGL;
@@ -1012,9 +1052,6 @@ public final class Window implements AutoCloseable {
             if (ForgeEarlyConfig.WINDOW_START_MAXIMIZED) {
                 flags |= SDLVideo.SDL_WINDOW_MAXIMIZED;
             }
-            // TODO: HiDPI on macOS and Wayland. SDL_WINDOW_HIGH_PIXEL_DENSITY gives a native-resolution
-            //  framebuffer, but CleanroomWindowBridge must then report pixel sizes and scale mouse
-            //  coordinates by pixelDensity().
             long handle = SDL.checkHandle(SDLVideo.SDL_CreateWindow(this.title, this.width, this.height, flags),
                 "SDL_CreateWindow"
             );
@@ -1024,7 +1061,7 @@ public final class Window implements AutoCloseable {
                 if (this.gl != null) {
                     context = this.gl.createContext(handle);
                     SDL.check(SDLVideo.SDL_GL_MakeCurrent(handle, context), "SDL_GL_MakeCurrent");
-                    SDL.check(SDLVideo.SDL_GL_SetSwapInterval(this.vsync ? 1 : 0), "SDL_GL_SetSwapInterval");
+                    SDL.tryCheck(SDLVideo.SDL_GL_SetSwapInterval(this.vsync ? 1 : 0), "SDL_GL_SetSwapInterval");
                     GL.createCapabilities();
                 }
                 Window window = new Window(handle, context, this.title, this.width, this.height);

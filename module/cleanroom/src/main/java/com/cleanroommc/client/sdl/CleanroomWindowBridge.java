@@ -10,17 +10,24 @@
 
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.video.Display;
+import com.cleanroommc.client.sdl.video.DisplayMode;
 import com.cleanroommc.lwjgly.LWJGLY;
 import com.cleanroommc.lwjgly.spi.WindowBridge;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.sdl.SDLInit;
+import org.lwjgl.sdl.SDLPixels;
 import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.Platform;
 
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Connects LWJGLY's LWJGL 2 compatibility APIs to Cleanroom's SDL window. */
 public final class CleanroomWindowBridge implements WindowBridge {
@@ -168,6 +175,13 @@ public final class CleanroomWindowBridge implements WindowBridge {
             : "the context flushes when released";
     }
 
+    private static VideoMode videoMode(DisplayMode mode) {
+        return new VideoMode(Math.round(mode.width() * mode.pixelDensity()),
+            Math.round(mode.height() * mode.pixelDensity()), SDLPixels.SDL_BITSPERPIXEL(mode.format()),
+            Math.round(mode.refreshRate())
+        );
+    }
+
     private static int glAttribute(int attribute) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer value = stack.mallocInt(1);
@@ -192,12 +206,12 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public int width() {
-        return window.width();
+        return window.pixelWidth();
     }
 
     @Override
     public int height() {
-        return window.height();
+        return window.pixelHeight();
     }
 
     @Override
@@ -271,6 +285,112 @@ public final class CleanroomWindowBridge implements WindowBridge {
     }
 
     @Override
+    public boolean mouseInside() {
+        return window.mouseInside();
+    }
+
+    @Override
+    public int x() {
+        return window.position()[0];
+    }
+
+    @Override
+    public int y() {
+        return window.position()[1];
+    }
+
+    @Override
+    public void position(int x, int y) {
+        window.position(x, y);
+    }
+
+    @Override
+    public void size(int width, int height) {
+        float density = window.pixelDensity();
+        window.size(Math.max(1, Math.round(width / density)), Math.max(1, Math.round(height / density)));
+    }
+
+    @Override
+    public boolean resizable() {
+        return window.resizable();
+    }
+
+    @Override
+    public void resizable(boolean resizable) {
+        window.resizable(resizable);
+    }
+
+    @Override
+    public boolean visible() {
+        return !window.hidden() && !window.minimized();
+    }
+
+    @Override
+    public boolean consumeExposed() {
+        return window.consumeExposed();
+    }
+
+    @Override
+    public int icon(ByteBuffer... icons) {
+        if (icons == null || icons.length == 0) {
+            return 0;
+        }
+        BufferedImage[] images = new BufferedImage[icons.length];
+        for (int i = 0; i < icons.length; i++) {
+            ByteBuffer icon = icons[i];
+            int side = (int) Math.sqrt(icon.remaining() / 4.0);
+            BufferedImage image = new BufferedImage(side, side, BufferedImage.TYPE_INT_ARGB);
+            for (int pixel = 0; pixel < side * side; pixel++) {
+                int at = icon.position() + pixel * 4;
+                image.setRGB(pixel % side, pixel / side,
+                    (icon.get(at + 3) & 0xFF) << 24 | (icon.get(at) & 0xFF) << 16 | (icon.get(at + 1) & 0xFF) << 8 |
+                        icon.get(at + 2) & 0xFF
+                );
+            }
+            images[i] = image;
+        }
+        window.icon(images);
+        return images.length;
+    }
+
+    @Override
+    public List<VideoMode> videoModes() {
+        Display display = window.display();
+        if (display == null) {
+            return List.of();
+        }
+        List<VideoMode> modes = new ArrayList<>();
+        for (DisplayMode mode : display.modes()) {
+            modes.add(videoMode(mode));
+        }
+        return modes;
+    }
+
+    @Override
+    public void fullscreen(VideoMode mode) {
+        Display display = window.display();
+        DisplayMode found = null;
+        if (display != null) {
+            for (DisplayMode candidate : display.modes()) {
+                if (videoMode(candidate).equals(mode)) {
+                    found = candidate;
+                    break;
+                }
+            }
+        }
+        if (found != null) {
+            window.fullscreenMode(found);
+        } else {
+            window.fullscreen(true);
+        }
+    }
+
+    @Override
+    public SharedGLContext createSharedContext() {
+        return SharedGLContext.create(window);
+    }
+
+    @Override
     public void swapBuffers() {
         window.swapBuffers();
     }
@@ -320,12 +440,12 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public float mouseX() {
-        return window.mouseX();
+        return window.pixelX(window.mouseX());
     }
 
     @Override
     public float mouseY() {
-        return window.mouseY();
+        return window.pixelY(window.mouseY());
     }
 
     @Override
@@ -345,7 +465,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public void mousePosition(float x, float y) {
-        window.mousePosition(x, y);
+        window.mousePosition(x * window.width() / Math.max(1, window.pixelWidth()),
+            y * window.height() / Math.max(1, window.pixelHeight())
+        );
     }
 
     @Override

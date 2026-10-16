@@ -10,6 +10,8 @@
 
 package com.cleanroommc.client.modlist.screen.widget;
 
+import com.cleanroommc.client.sdl.SDLHooks;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
@@ -61,7 +63,10 @@ public class ModListTextField extends GuiTextField {
         );
 
         boolean cursorVisible = cursorPosRel >= 0 && cursorPosRel <= visibleText.length();
-        boolean drawCursor = this.isFocused() && this.cursorCounter / 6 % 2 == 0 && cursorVisible;
+        boolean drawCursor = this.isFocused() &&
+            this.cursorCounter / 6 % 2 == 0 &&
+            cursorVisible &&
+            !SDLHooks.composing();
 
         int textX = bordered ? this.x + 4 : this.x;
         int textY = bordered ? this.y + (this.height - 8) / 2 : this.y;
@@ -98,7 +103,7 @@ public class ModListTextField extends GuiTextField {
             this.fontRenderer.drawStringWithShadow(this.hint, textX, textY, color);
         }
 
-        if (!textTruncated && !this.suggestion.isEmpty()) {
+        if (!textTruncated && !this.suggestion.isEmpty() && !SDLHooks.composing()) {
             int suggestionDrawX = this.getText().isEmpty() ? cursorX : cursorX - 1;
             String suggestion = this.fontRenderer.trimStringToWidth(this.suggestion,
                 textStartX + this.getWidth() - suggestionDrawX

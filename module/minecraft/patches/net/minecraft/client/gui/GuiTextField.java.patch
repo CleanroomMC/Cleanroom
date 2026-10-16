@@ -33,7 +33,15 @@
          }
      }
  
-@@ -592,4 +595,8 @@
+@@ -519,6 +522,7 @@
+         }
+ 
+         this.isFocused = isFocusedIn;
++        com.cleanroommc.client.sdl.SDLHooks.textFieldFocused(this, isFocusedIn);
+         if (Minecraft.getMinecraft().currentScreen != null) {
+             Minecraft.getMinecraft().currentScreen.setFocused(isFocusedIn);
+         }
+@@ -592,4 +596,8 @@
      public void setVisible(boolean isVisible) {
          this.visible = isVisible;
      }

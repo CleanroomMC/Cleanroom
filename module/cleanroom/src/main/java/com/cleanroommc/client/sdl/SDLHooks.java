@@ -30,12 +30,16 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public final class SDLHooks {
 
@@ -47,6 +51,11 @@ public final class SDLHooks {
     private static final int CANDIDATE_TEXT = 0xFFE0E0E0;
     private static final int CANDIDATE_PADDING = 2;
 
+    /**
+     * Cleared when the screen changes, so fields left focused by an old screen do not count.
+     */
+    private static final Set<GuiTextField> focusedFields = Collections.newSetFromMap(new WeakHashMap<>());
+
     private static FloatBuffer modelview;
     private static FloatBuffer projection;
     private static IntBuffer viewport;
@@ -55,8 +64,14 @@ public final class SDLHooks {
     private static int lastFieldY;
     private static int lastFieldWidth;
     private static int lastFieldHeight;
-    private static boolean lastFieldSet;
     private static boolean focusedFieldDrawn;
+    private static boolean caretPlaced;
+    private static boolean clicked;
+    private static int clickX;
+    private static int clickY;
+    private static boolean anchored;
+    private static int anchorX;
+    private static int anchorY;
 
     private SDLHooks() { }
 
@@ -81,6 +96,18 @@ public final class SDLHooks {
         overlay(text, font, caretX, textY, field.getWidth() - (caretX - textX), field.x, field.y, field.width,
             field.height
         );
+    }
+
+    /**
+     * Remembers where the screen was last clicked, in GUI coordinates.
+     */
+    public static void mouseInput(GuiScreen screen) {
+        if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            clickX = Mouse.getEventX() * screen.width / minecraft.displayWidth;
+            clickY = screen.height - Mouse.getEventY() * screen.height / minecraft.displayHeight - 1;
+            clicked = true;
+        }
     }
 
     /**
@@ -196,11 +223,23 @@ public final class SDLHooks {
         );
     }
 
+    public static void textFieldFocused(GuiTextField field, boolean focused) {
+        if (focused) {
+            focusedFields.add(field);
+        } else {
+            focusedFields.remove(field);
+        }
+    }
+
     /**
-     * Turns text input off until a screen that wants it has drawn.
+     * Turns text input off and forgets focused fields until a screen that wants text input has drawn.
      */
     public static void screenChanged() {
         focusedFieldDrawn = false;
+        caretPlaced = false;
+        focusedFields.clear();
+        clicked = false;
+        anchored = false;
         Text text = text();
         if (text != null) {
             text.active(false);
@@ -210,10 +249,28 @@ public final class SDLHooks {
     /**
      * Keeps text input on only while the drawn screen has a focused text field, or is a book or sign.
      * This runs after drawing so the input area is placed before the input method shows up.
+     *
+     * <p>Focus tracking covers fields that draw themselves without {@link GuiTextField#drawTextBox()}.
+     * The draw covers fields focused before their screen initialized.
+     * The screen's own focus covers text widgets that are not {@link GuiTextField}s, such as ModularUI's.
      */
     public static void syncTextInput(GuiScreen screen) {
-        boolean wanted = focusedFieldDrawn || screen instanceof GuiScreenBook || screen instanceof GuiEditSign;
+        // Widgets that only focus the screen give no position, but are usually focused by clicking them
+        if (!screen.isFocused()) {
+            anchored = false;
+        } else if (clicked) {
+            anchored = true;
+            anchorX = clickX;
+            anchorY = clickY;
+        }
+        clicked = false;
+        boolean wanted = focusedFieldDrawn ||
+            typingField() != null ||
+            screen.isFocused() ||
+            screen instanceof GuiScreenBook ||
+            screen instanceof GuiEditSign;
         focusedFieldDrawn = false;
+        caretPlaced = false;
         Text text = text();
         if (text != null) {
             text.active(wanted);
@@ -258,35 +315,53 @@ public final class SDLHooks {
     }
 
     /**
-     * Draws candidates for screens that do not use {@link GuiTextField}.
-     * Composition for those screens is drawn as part of the screen's own text.
+     * Draws the input method for focused text widgets that did not draw it themselves this frame.
+     * Has to run before {@link #syncTextInput}, which forgets whether a field drew it.
+     *
+     * <p>The most exact position known this frame wins:
+     * <ol>
+     *     <li>Widgets that placed the caret themselves, like books and signs, draw their own composition, so only
+     *     candidates are drawn for them.</li>
+     *     <li>Fields that skip the vanilla {@link GuiTextField#drawTextBox()} are drawn over with its layout.</li>
+     *     <li>Other widgets only set the screen's focus, so composition goes where the screen was clicked to focus
+     *     them, or on a bar at the bottom of the screen without that click.</li>
+     * </ol>
      */
     public static void draw(GuiScreen screen) {
-        if (screen == null || !lastFieldSet) {
-            return;
-        }
-        if (!(screen instanceof GuiScreenBook) && !(screen instanceof GuiEditSign)) {
-            return;
-        }
         Text text = text();
-        if (text == null || !text.active()) {
-            return;
-        }
         FontRenderer font = font();
-        if (font == null) {
+        if (screen == null || text == null || font == null || !text.active() || !busy(text)) {
             return;
         }
-        InputCandidates candidates = text.candidates();
-        if (!candidates.active()) {
+        if (focusedFieldDrawn) {
             return;
         }
-        if (screen instanceof GuiEditSign) {
-            GlStateManager.disableDepth();
+        GlStateManager.disableDepth();
+        if (caretPlaced) {
+            if (text.candidates().active()) {
+                candidates(font, text.candidates(), lastFieldX, lastFieldY, lastFieldWidth, lastFieldHeight);
+            }
+        } else {
+            GuiTextField field = typingField();
+            if (field != null) {
+                boolean bordered = field.getEnableBackgroundDrawing();
+                textFieldDraw(field, bordered ? field.x + 4 : field.x,
+                    bordered ? field.y + (field.height - 8) / 2 : field.y
+                );
+            } else {
+                int height = font.FONT_HEIGHT + CANDIDATE_PADDING * 2;
+                int x = anchored ? anchorX : 2;
+                int y = anchored ? anchorY - height / 2 : screen.height - height - 2;
+                int width = Math.max(1, screen.width - x - 2);
+                int compositionWidth = font.getStringWidth(text.composition().text()) + CANDIDATE_PADDING * 2;
+                caret(x, y, width, height, CANDIDATE_PADDING);
+                Gui.drawRect(x, y, x + Math.min(compositionWidth, width), y + height, CANDIDATE_BACKGROUND);
+                overlay(text, font, x + CANDIDATE_PADDING, y + CANDIDATE_PADDING, width - CANDIDATE_PADDING * 2, x, y,
+                    width, height
+                );
+            }
         }
-        candidates(font, candidates, lastFieldX, lastFieldY, lastFieldWidth, lastFieldHeight);
-        if (screen instanceof GuiEditSign) {
-            GlStateManager.enableDepth();
-        }
+        GlStateManager.enableDepth();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
@@ -298,6 +373,15 @@ public final class SDLHooks {
     private static FontRenderer font() {
         Minecraft minecraft = Minecraft.getMinecraft();
         return minecraft == null ? null : minecraft.fontRenderer;
+    }
+
+    private static GuiTextField typingField() {
+        for (GuiTextField field : focusedFields) {
+            if (field.getVisible()) {
+                return field;
+            }
+        }
+        return null;
     }
 
     private static boolean busy(Text text) {
@@ -326,7 +410,7 @@ public final class SDLHooks {
         lastFieldY = y;
         lastFieldWidth = width;
         lastFieldHeight = height;
-        lastFieldSet = true;
+        caretPlaced = true;
     }
 
     private static float[] project(float x, float y) {

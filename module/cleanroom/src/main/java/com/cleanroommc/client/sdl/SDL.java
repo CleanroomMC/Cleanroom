@@ -48,6 +48,7 @@ import java.awt.image.BufferedImage;
  */
 public final class SDL {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("SDL3");
     /**
      * Every {@code com.cleanroommc.client.sdl.events} event is posted here, not on Forge's bus.
      * */
@@ -229,17 +230,16 @@ public final class SDL {
         if (logOutput != null) {
             return;
         }
-        Logger logger = LoggerFactory.getLogger("SDL3");
         logOutput = SDL_LogOutputFunction.create((_, category, priority, message) -> {
             String text = MemoryUtil.memUTF8(message);
             if (priority >= SDLLog.SDL_LOG_PRIORITY_ERROR) {
-                logger.error("[{}] {}", category, text);
+                LOGGER.error("[{}] {}", category, text);
             } else if (priority == SDLLog.SDL_LOG_PRIORITY_WARN) {
-                logger.warn("[{}] {}", category, text);
+                LOGGER.warn("[{}] {}", category, text);
             } else if (priority == SDLLog.SDL_LOG_PRIORITY_INFO) {
-                logger.info("[{}] {}", category, text);
+                LOGGER.info("[{}] {}", category, text);
             } else {
-                logger.debug("[{}] {}", category, text);
+                LOGGER.debug("[{}] {}", category, text);
             }
         });
         SDLLog.SDL_SetLogOutputFunction(logOutput, 0L);
@@ -254,6 +254,20 @@ public final class SDL {
         if (!result) {
             throw new SDLException(call + " failed: " + SDLError.SDL_GetError());
         }
+    }
+
+    /**
+     * Logs a failed optional SDL call at {@code debug} rather than throwing {@link SDLException}.
+     *
+     * @param result the {@code boolean} an SDL call returned
+     * @param call the call's name, for the message
+     * @return {@code result}
+     */
+    public static boolean tryCheck(boolean result, String call) {
+        if (!result) {
+            LOGGER.debug("{} failed: {}", call, SDLError.SDL_GetError());
+        }
+        return result;
     }
 
     /**

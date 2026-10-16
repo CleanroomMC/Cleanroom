@@ -1,5 +1,94 @@
 # Changelog
 
+## 0.7.6-alpha - 2026-10-15
+
+### Bug Fix
+
+- **registries**: Initialize holder classes before injecting object holders *[commit by [@Rongmario](https://github.com/Rongmario) in [acd2632](https://github.com/CleanroomMC/Cleanroom/commit/acd2632e30a2ef80c247733cc8b9b398b105f7a8)]*
+- **sdl**: Deliver typed characters to every text widget *[commit by [@Rongmario](https://github.com/Rongmario) in [a6009b1](https://github.com/CleanroomMC/Cleanroom/commit/a6009b1be2c2e74fee749c97e0dbba92545d164c)]*
+    *[Fixes issue #678 by [@BuenChico785446](https://github.com/BuenChico785446)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.5-alpha...0.7.6-alpha
+
+## 0.7.5-alpha - 2026-10-15
+
+### Feature
+
+- **lwjgl**: Bridge window geometry, icons, display modes and expose events to LWJGLY *[commit by [@Rongmario](https://github.com/Rongmario) in [8d3ac4f](https://github.com/CleanroomMC/Cleanroom/commit/8d3ac4f70baaf73281998e89bd10e8110e02d50c)]*
+- **lwjgl**: Back LWJGLY's SharedDrawable with SharedGLContext *[commit by [@Rongmario](https://github.com/Rongmario) in [6322201](https://github.com/CleanroomMC/Cleanroom/commit/63222012238f432ae35f3a3563ec2cd19010b3f0)]*
+
+### Bug Fix
+
+- **cleanmix**: Erroneous version being shown *[commit by [@Rongmario](https://github.com/Rongmario) in [868d55e](https://github.com/CleanroomMC/Cleanroom/commit/868d55e87435e41380f799630652951962c21eaf)]*
+
+### Refactor
+
+- **font**: Have jetbrains mono as default fallback *[commit by [@Rongmario](https://github.com/Rongmario) in [ba63fb7](https://github.com/CleanroomMC/Cleanroom/commit/ba63fb7ad107e39166f9b0c4e44b5e645a043579)]*
+- **kirino**: Load fonts from cleanroom's cdn at runtime and cache *[commit by [@Rongmario](https://github.com/Rongmario) in [ef9d731](https://github.com/CleanroomMC/Cleanroom/commit/ef9d7317fcbe01d184cd2b48d96df30a44602b43)]*
+
+### Build and Dependencies
+
+- **deps**: Exclude old vanilla libraries duplicated under other coordinates *[commit by [@Rongmario](https://github.com/Rongmario) in [9ff7745](https://github.com/CleanroomMC/Cleanroom/commit/9ff77459e959807e0556065a976f7bf467ca9974)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.4-alpha...0.7.5-alpha
+
+## 0.7.4-alpha - 2026-10-14
+
+### Bug Fix
+
+- **compatibility**: Keep LaunchClassLoader's exception set fields unredirected *[commit by [@Rongmario](https://github.com/Rongmario) in [73b461c](https://github.com/CleanroomMC/Cleanroom/commit/73b461c8d6614aa99eea0ee85af75d2237188e5e)]*
+    *[Fixes issue #673 by [@MCTian-mi](https://github.com/MCTian-mi)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.3-alpha...0.7.4-alpha
+
+## 0.7.3-alpha - 2026-10-14
+
+### Feature
+
+- **compatibility**: Enable final field mutation for Java 26+ *[commit by [@Rongmario](https://github.com/Rongmario) in [c815a0e](https://github.com/CleanroomMC/Cleanroom/commit/c815a0ef964c5129c1a77dff281383043e7500f3)]*
+- **compatibility**: Fugue's generic patches, without whitelist & checks every Forge mod *[PR by [@Rongmario](https://github.com/Rongmario) in [#671](https://github.com/CleanroomMC/Cleanroom/pull/671)]*
+
+### Bug Fix
+
+- **lwjgl**: Report proper version in crashes and logging *[commit by [@Rongmario](https://github.com/Rongmario) in [2645a0f](https://github.com/CleanroomMC/Cleanroom/commit/2645a0f46bf040a47f6b6339ebf9797dd981c08a)]*
+- **sdl**: Render at native resolution on HiDPI displays *[commit by [@Rongmario](https://github.com/Rongmario) in [8068eaa](https://github.com/CleanroomMC/Cleanroom/commit/8068eaad0bafd7c771bd88b4c027031c92851adb)]*
+    *[Fixes issue #670 by [@teamnotus](https://github.com/teamnotus)]*
+
+### Build and Dependencies
+
+- **deps**: Remove vanilla's old oshi version *[commit by [@Rongmario](https://github.com/Rongmario) in [c481a48](https://github.com/CleanroomMC/Cleanroom/commit/c481a48df34b95b4219eeb7e3df8bb9608b3c1b1)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.2-alpha...0.7.3-alpha
+
+## 0.7.2-alpha - 2026-10-13
+
+### Comprehensive
+
+- Several regression fixes and patches *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+
+### Bug Fix
+
+- **sdl**: Make compositor-dependent window calls non-fatal *[commit by [@Rongmario](https://github.com/Rongmario) in [e9f958e](https://github.com/CleanroomMC/Cleanroom/commit/e9f958e6364b3d71a8654824a21b5fd5197611d5)]*
+- **sdl**: Treat window icon errors as non-fatal *[commit by [@Rongmario](https://github.com/Rongmario) in [727eb5b](https://github.com/CleanroomMC/Cleanroom/commit/727eb5b2f641a9beda6c24217a52fa6d267a4c6d)]*
+    *[Fixes issue #669 by [@teamnotus](https://github.com/teamnotus)]*
+- **patch**: Mending consuming wrong amount of XP on item with custom `.getXpRepairRatio(...)` *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: Modded bed with no orientation always "too far away" *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: `ItemStack` with (both) no NBT but different caps being considered as equal *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: `Block#isReplaceable` with context not being used, causing difference when placing block on vegetation *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+- **patch**: Biome size hook *[PR by [@ZZZank](https://github.com/ZZZank) in [#667](https://github.com/CleanroomMC/Cleanroom/pull/667)]*
+
+### Documentation
+
+- Update README to illustrate roadmap & answer FAQs *[PR by [@tttsaurus](https://github.com/tttsaurus), Rongmario in [#654](https://github.com/CleanroomMC/Cleanroom/pull/654)]*
+
+### Build and Dependencies
+
+- **deps**: Update oshi *[commit by [@Rongmario](https://github.com/Rongmario) in [63c3394](https://github.com/CleanroomMC/Cleanroom/commit/63c3394ab32ded3bcd5f51a1d7c49e919143078d)]*
+- **deps**: Update CleanroomGradle to 0.22.0 *[commit by [@Rongmario](https://github.com/Rongmario) in [2973da3](https://github.com/CleanroomMC/Cleanroom/commit/2973da34a392f0b9e06e3cf30705892352e7e4d3)]*
+    *[Fixes issue #657 by [@MCTian-mi](https://github.com/MCTian-mi)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.1-alpha...0.7.2-alpha
+
 ## 0.7.1-alpha - 2026-10-13
 
 ### Bug Fix

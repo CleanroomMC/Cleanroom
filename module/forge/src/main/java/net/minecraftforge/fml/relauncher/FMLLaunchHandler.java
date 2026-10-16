@@ -77,6 +77,7 @@ public class FMLLaunchHandler
         this.classLoader.addTransformerExclusion("org.spongepowered.asm.lib.");
         this.classLoader.addTransformerExclusion("org.objectweb.asm.");
         this.classLoader.addTransformerExclusion("com.cleanroommc.loader.");
+        this.classLoader.addTransformerExclusion("com.cleanroommc.cleanroom.compatibility.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.relauncher.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.classloading.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.asm.transformers.");

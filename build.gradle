@@ -29,6 +29,7 @@ tokenEnvoy {
     set 'VERSION', project.version
     set 'ID', 'cleanroom'
     set 'BUILD', project.version
+    set 'CLEANMIX_VERSION', providers.gradleProperty('cleanmix_version')
 }
 
 def modules = [
@@ -53,6 +54,9 @@ sourceSets {
         // Fixme: Temp
         java.exclude 'com/cleanroommc/test/kirino/gl/ksml/**'
         resources.srcDirs = modules.collect { "module/${it}/src/test/resources" }
+    }
+    benchmark {
+        java.srcDirs = modules.collect { "module/${it}/src/benchmark/java" }
     }
 }
 
@@ -128,6 +132,12 @@ configurations.configureEach { configuration ->
     // patchy ships its own copy of io.netty.bootstrap.Bootstrap
     // Against 4.2 netty it shadows the real class and dies on a superclass method that no longer exists
     exclude group: 'com.mojang', module: 'patchy'
+    // Vanilla's oshi 1.1 sits under a different group to com.github.oshi, so conflict resolution never drops it
+    exclude group: 'oshi-project', module: 'oshi-core'
+    // Same with vanilla's JNA platform 3.4.0, renamed to jna-platform since
+    exclude group: 'net.java.dev.jna', module: 'platform'
+    // jinput 2.0.10 bundles jutils' classes
+    exclude group: 'net.java.jutils', module: 'jutils'
 
     resolutionStrategy.eachDependency { details ->
         var version = library_upgrades["${details.requested.group}:${details.requested.name}"]
@@ -212,12 +222,11 @@ dependencies {
 
     // Others
     api 'org.jline:jline:4.1.3'
-    api 'com.github.oshi:oshi-core-ffm:7.3.2'
-    api 'com.github.oshi:oshi-common:7.3.2'
+    api 'com.github.oshi:oshi-core-ffm:7.7.1'
+    api 'com.github.oshi:oshi-common:7.7.1'
     api 'net.java.dev.jna:jna-platform:5.19.1'
     // java-objc-bridge bumped here for updated OSX arm64 natives
     api 'ca.weblite:java-objc-bridge:1.2'
-    runtimeOnly 'org.jline:jline-native:4.1.3'
 
     // LWJGL 3
     def lwjgl_version = '3.4.3'
@@ -229,8 +238,8 @@ dependencies {
     api 'org.lwjgl:lwjgl-stb'
     api 'org.lwjgl:lwjgl-sdl'
     // TODO
-    compileOnly 'com.cleanroommc:lwjgly-spi:1.0.2'
-    api 'com.cleanroommc:lwjgly:1.0.2'
+    compileOnly 'com.cleanroommc:lwjgly-spi:2.0.0'
+    api 'com.cleanroommc:lwjgly:2.0.0'
     lwjglNative "org.lwjgl:lwjgl:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-jemalloc:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-opengl:${lwjgl_version}"
