@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.SetMultimap;
+import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import org.apache.commons.io.IOUtils;
 
@@ -53,6 +54,7 @@ import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -60,6 +62,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -712,6 +715,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void scanModAnnotations(JarFile jar, Set<String> modIds) {
+        List<byte[]> modDescriptors = ModContainerFactory.modTypes.keySet()
+            .stream()
+            .map(type -> type.getDescriptor().getBytes(StandardCharsets.UTF_8))
+            .toList();
         var entries = jar.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
@@ -719,7 +726,11 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 continue;
             }
             try (InputStream in = jar.getInputStream(entry)) {
-                ASMModParser parser = new ASMModParser(in);
+                byte[] bytes = in.readAllBytes();
+                if (modDescriptors.stream().noneMatch(descriptor -> Bytes.indexOf(bytes, descriptor) != -1)) {
+                    continue;
+                }
+                ASMModParser parser = new ASMModParser(new ByteArrayInputStream(bytes));
                 parser.validate();
                 for (ModAnnotation annotation : parser.getAnnotations()) {
                     if (ModContainerFactory.modTypes.containsKey(annotation.getASMType())) {
