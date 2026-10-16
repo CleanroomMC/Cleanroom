@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.7-alpha - 2026-10-16
+
+### Bug Fix
+
+- **compatibility**: Mirror LaunchClassLoader transformer fields to avoid loader constraint violations *[commit by [@Rongmario](https://github.com/Rongmario) in [199d4d8](https://github.com/CleanroomMC/Cleanroom/commit/199d4d8048d6ee8a920e82c3fee6bd6742e9e361)]*
+
+### Build and Dependencies
+
+- **deps**: Bump LWJGLY to 2.1.0 so Display.isCurrent ignores the splash shared context *[commit by [@Rongmario](https://github.com/Rongmario) in [ac6dfeb](https://github.com/CleanroomMC/Cleanroom/commit/ac6dfeb7d35b670f7fbe7f55dff79539c2a1b97b)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.6-alpha...0.7.7-alpha
+
 ## 0.7.6-alpha - 2026-10-15
 
 ### Bug Fix
