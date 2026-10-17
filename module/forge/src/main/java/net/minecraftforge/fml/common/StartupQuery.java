@@ -21,6 +21,7 @@ package net.minecraftforge.fml.common;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.minecraft.server.MinecraftServer;
 
@@ -38,8 +39,53 @@ public class StartupQuery {
 
     public static void notify(String text)
     {
-        StartupQuery query = new StartupQuery(text, null);
+        StartupQuery query = new StartupQuery(text, (AtomicBoolean) null);
         query.execute();
+    }
+
+    /**
+     * Ask the user to pick one of the options and return its index; a client shows
+     * {@link net.minecraftforge.fml.client.GuiRetainRemove} (its extra Cancel button answers -1,
+     * which aborts the load like a declined confirm). A dedicated server has no GUI: the text is
+     * logged at WARN and the answer is {@code serverDefault} unless the system property named by
+     * {@code propertyName} matches one of the option labels (case-insensitive).
+     */
+    public static int choice(String text, int serverDefault, String propertyName, String... options)
+    {
+        if (FMLCommonHandler.instance().getSide().isServer())
+        {
+            FMLLog.log.warn(text);
+            String pick = System.getProperty(propertyName);
+            if (pick == null)
+            {
+                FMLLog.log.info("No override ({} unset); taking the default option {}", propertyName, options[serverDefault]);
+                return serverDefault;
+            }
+            for (int i = 0; i < options.length; i++)
+            {
+                if (options[i].equalsIgnoreCase(pick))
+                {
+                    FMLLog.log.info("{}={}: {}", propertyName, pick, options[i]);
+                    return i;
+                }
+            }
+            FMLLog.log.warn("{}={} names none of the options; taking the default {}", propertyName, pick, options[serverDefault]);
+            return serverDefault;
+        }
+        StartupQuery query = new StartupQuery(text, options);
+        query.execute();
+        int result = query.getChoiceResult();
+        if (result < 0)
+        {
+            abort();
+        }
+        return result;
+    }
+
+    /** {@link #choice(String, int, String, String...)} with the retain-style default: first option, -Dcleanroom.missingContent. */
+    public static int choice(String text, String... options)
+    {
+        return choice(text, 0, "cleanroom.missingContent", options);
     }
 
     public static void abort()
@@ -86,6 +132,13 @@ public class StartupQuery {
     {
         this.text = text;
         this.result = result;
+    }
+
+    private StartupQuery(String text, String[] options)
+    {
+        this.text = text;
+        this.result = null;
+        this.options = options;
     }
 
     @Nullable
@@ -164,6 +217,29 @@ public class StartupQuery {
     private String text;
     @Nullable
     private AtomicBoolean result;
+    @Nullable
+    private String[] options;
+    private final AtomicInteger choiceResult = new AtomicInteger(-1);
+
+    public boolean isChoice()
+    {
+        return options != null;
+    }
+
+    public String[] getOptions()
+    {
+        return options;
+    }
+
+    public int getChoiceResult()
+    {
+        return choiceResult.get();
+    }
+
+    public void setChoiceResult(int index)
+    {
+        choiceResult.set(index);
+    }
     private CountDownLatch signal = new CountDownLatch(1);
     private volatile boolean synchronous;
 

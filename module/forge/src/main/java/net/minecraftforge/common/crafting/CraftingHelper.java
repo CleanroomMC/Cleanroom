@@ -618,6 +618,28 @@ public class CraftingHelper {
         }
     }
 
+    /** Recipe names registered by code before the first JSON load; a reload removes everything else. */
+    private static Set<ResourceLocation> codeRecipeNames = null;
+
+    /**
+     * Records the currently registered recipe names as the code recipes that survive a JSON reload.
+     * Called by {@link GameData#freezeData()} after mod registration is complete.
+     */
+    public static void rememberCodeRecipes()
+    {
+        ForgeRegistry<IRecipe> reg = (ForgeRegistry<IRecipe>)ForgeRegistries.RECIPES;
+        codeRecipeNames = new java.util.HashSet<ResourceLocation>(reg.getKeys());
+    }
+
+    /**
+     * Removes every recipe that is not in the remembered code-recipe set, i.e. everything a
+     * previous JSON load added. ids are derived, so there is no frozen copy to revert to.
+     */
+    public static void revertToCodeRecipes()
+    {
+        GameData.revertRecipesToCode(codeRecipeNames);
+    }
+
     public static void loadRecipes(boolean revertFrozen)
     {
         //TODO: If this errors in ServerInit it freezes the client at loading world, find a way to pop that up?
@@ -629,7 +651,7 @@ public class CraftingHelper {
         if (DEBUG_LOAD_MINECRAFT)
             reg.clear();
         else if (revertFrozen)
-            GameData.revert(RegistryManager.FROZEN, GameData.RECIPES, false);
+            revertToCodeRecipes();
         //ModContainer old = Loader.instance().activeModContainer();
         Loader.instance().setActiveModContainer(null);
         Loader.instance().getActiveModList().forEach(CraftingHelper::loadFactories);

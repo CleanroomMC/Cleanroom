@@ -1,6 +1,14 @@
 --- original/net/minecraft/tileentity/TileEntityBeacon.java
 +++ modified/net/minecraft/tileentity/TileEntityBeacon.java
-@@ -127,16 +127,22 @@
+@@ -28,6 +28,7 @@
+ import net.minecraft.potion.Potion;
+ import net.minecraft.potion.PotionEffect;
+ import net.minecraft.util.EnumFacing;
++import net.minecraft.util.ResourceLocation;
+ import net.minecraft.util.ITickable;
+ import net.minecraft.util.math.AxisAlignedBB;
+ import net.minecraft.util.math.BlockPos;
+@@ -127,16 +128,22 @@
                  afloat = iblockstate.getValue(BlockStainedGlass.COLOR).getColorComponentValues();
              } else {
                  if (iblockstate.getBlock() != Blocks.STAINED_GLASS_PANE) {
@@ -24,7 +32,7 @@
                  afloat = iblockstate.getValue(BlockStainedGlassPane.COLOR).getColorComponentValues();
              }
  
-@@ -170,10 +176,7 @@
+@@ -170,10 +177,7 @@
                  for (int j1 = i - l1; j1 <= i + l1 && flag1; j1++) {
                      for (int k1 = k - l1; k1 <= k + l1; k1++) {
                          Block block = this.world.getBlockState(new BlockPos(j1, i2, k1)).getBlock();
@@ -36,7 +44,35 @@
                              flag1 = false;
                              break;
                          }
-@@ -392,10 +395,7 @@
+@@ -251,15 +255,15 @@
+ 
+     @Nullable
+     private static Potion isBeaconEffect(int p_184279_0_) {
+-        Potion potion = Potion.getPotionById(p_184279_0_);
++        Potion potion = com.cleanroommc.ids.LegacyIds.potion(p_184279_0_); // Cleanroom: a Forge-era saved id
+         return VALID_EFFECTS.contains(potion) ? potion : null;
+     }
+ 
+     @Override
+     public void readFromNBT(NBTTagCompound compound) {
+         super.readFromNBT(compound);
+-        this.primaryEffect = isBeaconEffect(compound.getInteger("Primary"));
+-        this.secondaryEffect = isBeaconEffect(compound.getInteger("Secondary"));
++        this.primaryEffect = com.cleanroommc.ids.LegacyIds.beaconEffect(compound, "PrimaryName", "Primary", VALID_EFFECTS); // Cleanroom: name first, then id
++        this.secondaryEffect = com.cleanroommc.ids.LegacyIds.beaconEffect(compound, "SecondaryName", "Secondary", VALID_EFFECTS);
+         this.levels = compound.getInteger("Levels");
+     }
+ 
+@@ -268,6 +272,8 @@
+         super.writeToNBT(compound);
+         compound.setInteger("Primary", Potion.getIdFromPotion(this.primaryEffect));
+         compound.setInteger("Secondary", Potion.getIdFromPotion(this.secondaryEffect));
++        com.cleanroommc.ids.LegacyIds.writePotionName(compound, "PrimaryName", this.primaryEffect); // Cleanroom: names are stable when ids shift
++        com.cleanroommc.ids.LegacyIds.writePotionName(compound, "SecondaryName", this.secondaryEffect);
+         compound.setInteger("Levels", this.levels);
+         return compound;
+     }
+@@ -392,10 +398,7 @@
      /** Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot. For guis use Slot.isItemValid */
      @Override
      public boolean isItemValidForSlot(int index, ItemStack stack) {

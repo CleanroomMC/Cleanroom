@@ -1,0 +1,11 @@
+--- original/net/minecraft/network/play/server/SPacketMultiBlockChange.java
++++ modified/net/minecraft/network/play/server/SPacketMultiBlockChange.java
+@@ -36,7 +36,7 @@
+ 
+         for (int i = 0; i < this.changedBlocks.length; i++) {
+             this.changedBlocks[i] = new SPacketMultiBlockChange.BlockUpdateData(
+-                buf.readShort(), Block.BLOCK_STATE_IDS.getByValue(buf.readVarInt())
++                buf.readShort(), Block.getStateById(buf.readVarInt())
+             );
+         }
+     }

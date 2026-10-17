@@ -1,6 +1,6 @@
 --- original/net/minecraft/entity/item/EntityMinecart.java
 +++ modified/net/minecraft/entity/item/EntityMinecart.java
-@@ -71,6 +71,20 @@
+@@ -71,6 +72,20 @@
      @SideOnly(Side.CLIENT)
      private double velocityZ;
  
@@ -21,7 +21,7 @@
      public EntityMinecart(World worldIn) {
          super(worldIn);
          this.preventEntitySpawning = true;
-@@ -116,6 +130,7 @@
+@@ -116,6 +131,7 @@
      @Nullable
      @Override
      public AxisAlignedBB getCollisionBox(Entity entityIn) {
@@ -29,7 +29,7 @@
          return entityIn.canBePushed() ? entityIn.getEntityBoundingBox() : null;
      }
  
-@@ -129,13 +144,14 @@
+@@ -129,13 +145,14 @@
      @Nullable
      @Override
      public AxisAlignedBB getCollisionBoundingBox() {
@@ -45,7 +45,7 @@
      }
  
      public EntityMinecart(World worldIn, double x, double y, double z) {
-@@ -301,7 +317,8 @@
+@@ -301,7 +318,8 @@
  
              BlockPos blockpos = new BlockPos(k, l, i1);
              IBlockState iblockstate = this.world.getBlockState(blockpos);
@@ -55,7 +55,7 @@
                  this.moveAlongTrack(blockpos, iblockstate);
                  if (iblockstate.getBlock() == Blocks.ACTIVATOR_RAIL) {
                      this.onActivatorRailPass(k, l, i1, iblockstate.getValue(BlockRailPowered.POWERED));
-@@ -328,10 +345,15 @@
+@@ -328,10 +346,15 @@
              }
  
              this.setRotation(this.rotationYaw, this.rotationPitch);
@@ -74,7 +74,7 @@
                  if (!list.isEmpty()) {
                      for (int j1 = 0; j1 < list.size(); j1++) {
                          Entity entity1 = list.get(j1);
-@@ -347,7 +369,7 @@
+@@ -347,7 +370,7 @@
                      }
                  }
              } else {
@@ -83,7 +83,7 @@
                      if (!this.isPassenger(entity) && entity.canBePushed() && entity instanceof EntityMinecart) {
                          entity.applyEntityCollision(this);
                      }
-@@ -355,6 +377,7 @@
+@@ -355,6 +378,7 @@
              }
  
              this.handleWaterMovement();
@@ -91,7 +91,7 @@
          }
      }
  
-@@ -369,20 +392,31 @@
+@@ -369,20 +393,31 @@
  
      /** Moves a minecart that is not attached to a rail */
      protected void moveDerailedMinecart() {
@@ -128,7 +128,7 @@
          }
      }
  
-@@ -398,23 +432,24 @@
+@@ -398,23 +433,24 @@
              flag1 = !flag;
          }
  
@@ -159,7 +159,7 @@
                  this.posY++;
          }
  
-@@ -450,7 +485,7 @@
+@@ -450,7 +486,7 @@
              }
          }
  
@@ -168,7 +168,7 @@
              double d17 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
              if (d17 < 0.03) {
                  this.motionX *= 0.0;
-@@ -485,17 +520,8 @@
+@@ -485,17 +521,8 @@
          this.posX = d18 + d1 * d10;
          this.posZ = d19 + d2 * d10;
          this.setPosition(this.posX, this.posY, this.posZ);
@@ -187,7 +187,7 @@
          if (aint[0][1] != 0
              && MathHelper.floor(this.posX) - pos.getX() == aint[0][0]
              && MathHelper.floor(this.posZ) - pos.getZ() == aint[0][2]) {
-@@ -527,7 +553,12 @@
+@@ -527,7 +554,12 @@
              this.motionZ = d5 * (i - pos.getZ());
          }
  
@@ -201,7 +201,7 @@
              double d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
              if (d15 > 0.01) {
                  double d16 = 0.06;
-@@ -584,9 +615,7 @@
+@@ -584,9 +616,7 @@
  
          IBlockState iblockstate = this.world.getBlockState(new BlockPos(i, j, k));
          if (BlockRailBase.isRailBlock(iblockstate)) {
@@ -212,7 +212,7 @@
              y = j;
              if (blockrailbase$enumraildirection.isAscending()) {
                  y = j + 1;
-@@ -623,9 +652,7 @@
+@@ -623,9 +653,7 @@
  
          IBlockState iblockstate = this.world.getBlockState(new BlockPos(i, j, k));
          if (BlockRailBase.isRailBlock(iblockstate)) {
@@ -223,7 +223,70 @@
              int[][] aint = MATRIX[blockrailbase$enumraildirection.getMetadata()];
              double d0 = i + 0.5 + aint[0][0] * 0.5;
              double d1 = j + 0.0625 + aint[0][1] * 0.5;
-@@ -708,6 +735,11 @@
+@@ -683,24 +711,55 @@
+             if (compound.hasKey("DisplayTile", 8)) {
+                 block = Block.getBlockFromName(compound.getString("DisplayTile"));
+             } else {
+-                block = Block.getBlockById(compound.getInteger("DisplayTile"));
++                block = com.cleanroommc.ids.LegacyIds.block(compound.getInteger("DisplayTile"));
+             }
+ 
+             int i = compound.getInteger("DisplayData");
+-            this.setDisplayTile(block == null ? Blocks.AIR.getDefaultState() : block.getStateFromMeta(i));
+-            this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
++            this.retainedDisplayStateTag = null;
++            if (compound.hasKey("DisplayState", 10)) {
++                NBTTagCompound stateTag = compound.getCompoundTag("DisplayState");
++                String blockName = stateTag.getString("Name");
++                if (!blockName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
++                    if (com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
++                        com.cleanroommc.ids.RetainedContent.noteRemoved(blockName);
++                        this.setHasDisplayTile(false);
++                    } else {
++                        IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(blockName);
++                        com.cleanroommc.ids.RetainedContent.noteMissingBlock(blockName, standIn, null);
++                        this.setDisplayTile(standIn != null ? standIn : Blocks.AIR.getDefaultState());
++                        this.retainedDisplayStateTag = stateTag.copy();
++                        this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
++                    }
++                } else {
++                    this.setDisplayTile(net.minecraft.nbt.NBTUtil.readBlockState(stateTag));
++                    this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
++                }
++            } else {
++                this.setDisplayTile(block == null ? Blocks.AIR.getDefaultState() : block.getStateFromMeta(i));
++                this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
++            }
+         }
+     }
+ 
++    @Nullable
++    private NBTTagCompound retainedDisplayStateTag;
++
+     /** (abstract) Protected helper method to write subclass entity data to NBT. */
+     @Override
+     protected void writeEntityToNBT(NBTTagCompound compound) {
+         if (this.hasDisplayTile()) {
+             compound.setBoolean("CustomDisplayTile", true);
+-            IBlockState iblockstate = this.getDisplayTile();
+-            ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(iblockstate.getBlock());
+-            compound.setString("DisplayTile", resourcelocation == null ? "" : resourcelocation.toString());
+-            compound.setInteger("DisplayData", iblockstate.getBlock().getMetaFromState(iblockstate));
++            if (this.retainedDisplayStateTag != null) {
++                compound.setString("DisplayTile", this.retainedDisplayStateTag.getString("Name"));
++                compound.setInteger("DisplayData", 0);
++                compound.setTag("DisplayState", this.retainedDisplayStateTag.copy());
++            } else {
++                IBlockState iblockstate = this.getDisplayTile();
++                ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(iblockstate.getBlock());
++                compound.setString("DisplayTile", resourcelocation == null ? "" : resourcelocation.toString());
++                compound.setInteger("DisplayData", iblockstate.getBlock().getMetaFromState(iblockstate));
++                compound.setTag("DisplayState", net.minecraft.nbt.NBTUtil.writeBlockState(new NBTTagCompound(), iblockstate)); // Cleanroom: by name, any block id or state
++            }
+             compound.setInteger("DisplayOffset", this.getDisplayTileOffset());
+         }
+     }
+@@ -708,6 +767,11 @@
      /** Applies a velocity to the entities, to push them away from eachother. */
      @Override
      public void applyEntityCollision(Entity entityIn) {
@@ -235,7 +298,7 @@
          if (!this.world.isRemote) {
              if (!entityIn.noClip && !this.noClip) {
                  if (!this.isPassenger(entityIn)) {
-@@ -748,15 +780,14 @@
+@@ -748,15 +812,14 @@
  
                              double d7 = entityIn.motionX + this.motionX;
                              double d8 = entityIn.motionZ + this.motionZ;
@@ -254,7 +317,19 @@
                                  entityIn.motionX *= 0.2F;
                                  entityIn.motionZ *= 0.2F;
                                  entityIn.addVelocity(this.motionX + d0, 0.0, this.motionZ + d1);
-@@ -877,6 +908,203 @@
+@@ -860,6 +923,7 @@
+     }
+ 
+     public void setDisplayTile(IBlockState displayTile) {
++        this.retainedDisplayStateTag = null;
+         this.getDataManager().set(DISPLAY_TILE, Block.getStateId(displayTile));
+         this.setHasDisplayTile(true);
+     }
+@@ -874,9 +938,207 @@
+     }
+ 
+     public void setHasDisplayTile(boolean showBlock) {
++        if (!showBlock) { this.retainedDisplayStateTag = null; }
          this.getDataManager().set(SHOW_BLOCK, showBlock);
      }
  

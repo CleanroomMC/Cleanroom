@@ -1,6 +1,20 @@
 --- original/net/minecraft/world/storage/DerivedWorldInfo.java
 +++ modified/net/minecraft/world/storage/DerivedWorldInfo.java
-@@ -247,13 +247,23 @@
+@@ -198,7 +198,13 @@
+         return this.delegate.getTerrainType();
+     }
+ 
++    @javax.annotation.Nullable
+     @Override
++    public String getRetainedGeneratorName() {
++        return this.delegate.getRetainedGeneratorName();
++    }
++
++    @Override
+     public void setTerrainType(WorldType type) {
+     }
+ 
+@@ -247,13 +253,23 @@
      public void setDifficultyLocked(boolean locked) {
      }
  

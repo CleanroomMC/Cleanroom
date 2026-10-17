@@ -158,8 +158,6 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -1068,7 +1066,7 @@ public class ForgeHooks
         }
         else if (block instanceof BlockLiquid)
         {
-            filled = 1.0 - (BlockLiquid.getLiquidHeightPercent(block.getMetaFromState(state)) - (1.0 / 9.0));
+            filled = 1.0 - (BlockLiquid.getLiquidHeightPercent(state.getValue(BlockLiquid.LEVEL)) - (1.0 / 9.0));
         }
 
         if (filled < 0)
@@ -1431,11 +1429,12 @@ public class ForgeHooks
         ConnectionType type = disp == null || disp.getConnectionType() == null ? ConnectionType.MODDED : disp.getConnectionType();
         if (type == ConnectionType.VANILLA)
         {
-            IForgeRegistry<IRecipe> vanilla = RegistryManager.VANILLA.getRegistry(IRecipe.class);
+            ForgeRegistry<IRecipe> recipes_ = (ForgeRegistry<IRecipe>)ForgeRegistries.RECIPES;
+            java.util.Set<ResourceLocation> vanilla = recipes_.getVanillaBaseline().keySet();
             if (!recipes.isEmpty())
-                recipes = recipes.stream().filter(vanilla::containsValue).collect(Collectors.toList());
+                recipes = recipes.stream().filter(r -> vanilla.contains(r.getRegistryName())).collect(Collectors.toList());
             if (!display.isEmpty())
-                display = display.stream().filter(vanilla::containsValue).collect(Collectors.toList());
+                display = display.stream().filter(r -> vanilla.contains(r.getRegistryName())).collect(Collectors.toList());
         }
 
         if (!recipes.isEmpty() || !display.isEmpty())
@@ -1464,7 +1463,7 @@ public class ForgeHooks
                 if (enchantmentsNbt.tagCount() == 1)
                 {
                     NBTTagCompound nbttagcompound = enchantmentsNbt.getCompoundTagAt(0);
-                    Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getShort("id"));
+                    Enchantment enchantment = EnchantmentHelper.enchantmentFrom(nbttagcompound); // Cleanroom: name first, then id
                     if (enchantment != null)
                     {
                         ResourceLocation resourceLocation = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);

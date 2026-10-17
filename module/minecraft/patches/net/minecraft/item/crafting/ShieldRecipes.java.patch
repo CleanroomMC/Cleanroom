@@ -1,6 +1,7 @@
 --- original/net/minecraft/item/crafting/ShieldRecipes.java
 +++ modified/net/minecraft/item/crafting/ShieldRecipes.java
-@@ -8,7 +8,7 @@
+@@ -7,8 +7,9 @@
+ import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
  
  public class ShieldRecipes {
@@ -9,3 +10,12 @@
          /** Used to check if a recipe matches current crafting inventory */
          @Override
          public boolean matches(InventoryCrafting inv, World worldIn) {
+@@ -68,7 +69,7 @@
+ 
+             NBTTagCompound nbttagcompound = itemstack.getSubCompound("BlockEntityTag");
+             NBTTagCompound nbttagcompound1 = nbttagcompound == null ? new NBTTagCompound() : nbttagcompound.copy();
+-            nbttagcompound1.setInteger("Base", itemstack.getMetadata() & 15);
++            nbttagcompound1.setInteger("Base", net.minecraft.item.ItemBanner.getBaseColor(itemstack).getDyeDamage());
+             itemstack1.setTagInfo("BlockEntityTag", nbttagcompound1);
+             return itemstack1;
+         }

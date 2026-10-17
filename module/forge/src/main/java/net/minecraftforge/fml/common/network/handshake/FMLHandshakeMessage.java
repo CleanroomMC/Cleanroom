@@ -23,6 +23,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +37,11 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
-import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.RegistrySync;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public abstract class FMLHandshakeMessage {
     public static FMLProxyPacket makeCustomChannelRegistration(Set<String> channels)
@@ -120,12 +120,19 @@ public abstract class FMLHandshakeMessage {
         }
         public ModList(List<ModContainer> modList)
         {
+            this(modList, java.util.Collections.emptyList());
+        }
+
+        public ModList(List<ModContainer> modList, List<RegistrySync.Entry> entries)
+        {
+            this.entries = entries;
             for (ModContainer mod : modList)
             {
                 modTags.put(mod.getModId(), mod.getVersion());
             }
         }
         private Map<String,String> modTags = Maps.newHashMap();
+        private List<RegistrySync.Entry> entries = new ArrayList<>();
 
         @Override
         public void toBytes(ByteBuf buffer)
@@ -136,6 +143,15 @@ public abstract class FMLHandshakeMessage {
             {
                 ByteBufUtils.writeUTF8String(buffer, modTag.getKey());
                 ByteBufUtils.writeUTF8String(buffer, modTag.getValue());
+            }
+            // Trailing section (protocol 3+): the server's registry hashes ride along on the
+            // mod list. A client's own ModList always writes an empty section.
+            ByteBufUtils.writeVarInt(buffer, entries.size(), 5);
+            for (RegistrySync.Entry entry : entries)
+            {
+                ByteBufUtils.writeUTF8String(buffer, entry.registry().toString());
+                ByteBufUtils.writeVarInt(buffer, entry.count(), 5);
+                buffer.writeLong(entry.hash());
             }
         }
 
@@ -148,6 +164,23 @@ public abstract class FMLHandshakeMessage {
             {
                 modTags.put(ByteBufUtils.readUTF8String(buffer), ByteBufUtils.readUTF8String(buffer));
             }
+            entries = new ArrayList<>();
+            if (buffer.isReadable()) // protocol <3 ModLists carry no trailing hash section
+            {
+                int length = ByteBufUtils.readVarInt(buffer, 5);
+                for (int i = 0; i < length; i++)
+                {
+                    ResourceLocation name = new ResourceLocation(ByteBufUtils.readUTF8String(buffer));
+                    int count = ByteBufUtils.readVarInt(buffer, 5);
+                    long hash = buffer.readLong();
+                    entries.add(new RegistrySync.Entry(name, count, hash));
+                }
+            }
+        }
+
+        public List<RegistrySync.Entry> entries()
+        {
+            return entries;
         }
 
         public String modListAsString()
@@ -170,116 +203,157 @@ public abstract class FMLHandshakeMessage {
             return super.toString(side)+":"+modTags.size()+" mods";
         }
     }
-
-    public static class RegistryData extends FMLHandshakeMessage
+    /**
+     * Client to server: after a hash mismatch, the registries whose full ordered name list the
+     * client wants so it can adopt the server's numbering.
+     */
+    public static class RegistryNamesRequest extends FMLHandshakeMessage
     {
-        public RegistryData()
+        private List<ResourceLocation> registries = new ArrayList<>();
+
+        public RegistryNamesRequest()
         {
 
         }
 
-        public RegistryData(boolean hasMore, ResourceLocation name, ForgeRegistry.Snapshot entry)
+        public RegistryNamesRequest(List<ResourceLocation> registries)
         {
-            this.hasMore = hasMore;
-            this.name = name;
-            this.ids = entry.ids;
-            this.dummied = entry.dummied;
-            this.overrides = entry.overrides;
+            this.registries = registries;
         }
-
-        private boolean hasMore;
-        private ResourceLocation name;
-        private Map<ResourceLocation, Integer> ids;
-        private Set<ResourceLocation> dummied;
-        private Map<ResourceLocation, String> overrides;
 
         @Override
         public void fromBytes(ByteBuf buffer)
         {
-            this.hasMore = buffer.readBoolean();
-            this.name = new ResourceLocation(ByteBufUtils.readUTF8String(buffer));
-
-            int length = ByteBufUtils.readVarInt(buffer, 3);
-            ids = Maps.newHashMap();
-
+            int length = ByteBufUtils.readVarInt(buffer, 5);
+            registries = new ArrayList<>(length);
             for (int i = 0; i < length; i++)
             {
-                ids.put(new ResourceLocation(ByteBufUtils.readUTF8String(buffer)), ByteBufUtils.readVarInt(buffer, 3));
-            }
-
-            length = ByteBufUtils.readVarInt(buffer, 3);
-            dummied = Sets.newHashSet();
-
-            for (int i = 0; i < length; i++)
-            {
-                dummied.add(new ResourceLocation(ByteBufUtils.readUTF8String(buffer)));
-            }
-
-            length = ByteBufUtils.readVarInt(buffer, 3);
-            overrides = Maps.newHashMap();
-
-            for (int i = 0; i < length; i++)
-            {
-                overrides.put(new ResourceLocation(ByteBufUtils.readUTF8String(buffer)), ByteBufUtils.readUTF8String(buffer));
+                registries.add(new ResourceLocation(ByteBufUtils.readUTF8String(buffer)));
             }
         }
 
         @Override
         public void toBytes(ByteBuf buffer)
         {
-            buffer.writeBoolean(this.hasMore);
-            ByteBufUtils.writeUTF8String(buffer, this.name.toString());
-
-            ByteBufUtils.writeVarInt(buffer, ids.size(), 3);
-            for (Entry<ResourceLocation, Integer> entry: ids.entrySet())
+            ByteBufUtils.writeVarInt(buffer, registries.size(), 5);
+            for (ResourceLocation registry : registries)
             {
-                ByteBufUtils.writeUTF8String(buffer, entry.getKey().toString());
-                ByteBufUtils.writeVarInt(buffer, entry.getValue(), 3);
-            }
-
-            ByteBufUtils.writeVarInt(buffer, dummied.size(), 3);
-            for (ResourceLocation entry: dummied)
-            {
-                ByteBufUtils.writeUTF8String(buffer, entry.toString());
-            }
-
-            ByteBufUtils.writeVarInt(buffer, overrides.size(), 3);
-            for (Entry<ResourceLocation, String> entry: overrides.entrySet())
-            {
-                ByteBufUtils.writeUTF8String(buffer, entry.getKey().toString());
-                ByteBufUtils.writeUTF8String(buffer, entry.getValue().toString());
+                ByteBufUtils.writeUTF8String(buffer, registry.toString());
             }
         }
 
-        public Map<ResourceLocation, Integer> getIdMap()
+        public List<ResourceLocation> registries()
         {
-            return ids;
-        }
-
-        public Set<ResourceLocation> getDummied()
-        {
-            return dummied;
-        }
-
-        public Map<ResourceLocation, String> getOverrides()
-        {
-            return overrides;
-        }
-
-        public ResourceLocation getName()
-        {
-            return this.name;
-        }
-
-        public boolean hasMore()
-        {
-            return this.hasMore;
+            return registries;
         }
 
         @Override
         public String toString(Class<? extends Enum<?>> side)
         {
-            return super.toString(side) + ":"+ids.size()+" mappings";
+            return super.toString(side) + ":"+registries.size()+" registries";
+        }
+    }
+
+    /**
+     * Server to client: one registry's names in id order. A registry whose serialized name list is
+     * larger than {@link #MAX_NAMES_PAYLOAD} is sent as several messages with hasMore true on all
+     * but the last; the client concatenates them.
+     */
+    public static class RegistryNames extends FMLHandshakeMessage
+    {
+        /**
+         * Budget for the serialized names in one message. Well under the ~1 MiB payload cap a single
+         * SPacketCustomPayload (and FMLProxyPacket PART_SIZE) accepts, so no chunk ever needs the
+         * FML|MP multiplexer.
+         */
+        static final int MAX_NAMES_PAYLOAD = 0x80000;
+
+        private ResourceLocation registry;
+        private boolean hasMore;
+        private List<ResourceLocation> names = new ArrayList<>();
+
+        public RegistryNames()
+        {
+
+        }
+
+        private RegistryNames(ResourceLocation registry, boolean hasMore, List<ResourceLocation> names)
+        {
+            this.registry = registry;
+            this.hasMore = hasMore;
+            this.names = names;
+        }
+
+        /**
+         * Splits a registry's complete ordered name list into messages of at most
+         * {@link #MAX_NAMES_PAYLOAD} serialized bytes; the last message has hasMore false.
+         */
+        public static List<RegistryNames> split(ResourceLocation registry, List<ResourceLocation> names)
+        {
+            List<RegistryNames> ret = new ArrayList<>();
+            List<ResourceLocation> chunk = new ArrayList<>();
+            int size = 0;
+            for (ResourceLocation name : names)
+            {
+                // varint length prefix + utf8 bytes, as writeUTF8String emits
+                int len = name.toString().getBytes(StandardCharsets.UTF_8).length + 2;
+                if (!chunk.isEmpty() && size + len > MAX_NAMES_PAYLOAD)
+                {
+                    ret.add(new RegistryNames(registry, true, chunk));
+                    chunk = new ArrayList<>();
+                    size = 0;
+                }
+                chunk.add(name);
+                size += len;
+            }
+            ret.add(new RegistryNames(registry, false, chunk));
+            return ret;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buffer)
+        {
+            registry = new ResourceLocation(ByteBufUtils.readUTF8String(buffer));
+            hasMore = buffer.readBoolean();
+            int length = ByteBufUtils.readVarInt(buffer, 5);
+            names = new ArrayList<>(length);
+            for (int i = 0; i < length; i++)
+            {
+                names.add(new ResourceLocation(ByteBufUtils.readUTF8String(buffer)));
+            }
+        }
+
+        @Override
+        public void toBytes(ByteBuf buffer)
+        {
+            ByteBufUtils.writeUTF8String(buffer, registry.toString());
+            buffer.writeBoolean(hasMore);
+            ByteBufUtils.writeVarInt(buffer, names.size(), 5);
+            for (ResourceLocation name : names)
+            {
+                ByteBufUtils.writeUTF8String(buffer, name.toString());
+            }
+        }
+
+        public ResourceLocation registry()
+        {
+            return registry;
+        }
+
+        public boolean hasMore()
+        {
+            return hasMore;
+        }
+
+        public List<ResourceLocation> names()
+        {
+            return names;
+        }
+
+        @Override
+        public String toString(Class<? extends Enum<?>> side)
+        {
+            return super.toString(side) + ":"+registry+":"+names.size()+(hasMore ? "+" : "")+" names";
         }
     }
     public static class HandshakeAck extends FMLHandshakeMessage {

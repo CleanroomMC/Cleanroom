@@ -671,6 +671,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     @Subscribe
     public void mappingChanged(FMLModIdMappingEvent evt)
     {
+        com.cleanroommc.ids.PackedItems.clear();
         OreDictionary.rebakeMap();
         StatList.reinit();
         Ingredient.invalidateAll();

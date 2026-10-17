@@ -1,0 +1,16 @@
+--- original/net/minecraft/village/MerchantRecipe.java
++++ modified/net/minecraft/village/MerchantRecipe.java
+@@ -81,7 +81,12 @@
+     }
+ 
+     public boolean isRecipeDisabled() {
+-        return this.toolUses >= this.maxTradeUses;
++        return this.toolUses >= this.maxTradeUses
++            || this.itemToBuy.isEmpty()
++            || this.itemToSell.isEmpty()
++            || this.itemToBuy.getItem() == com.cleanroommc.ids.MissingItem.INSTANCE
++            || this.secondItemToBuy.getItem() == com.cleanroommc.ids.MissingItem.INSTANCE
++            || this.itemToSell.getItem() == com.cleanroommc.ids.MissingItem.INSTANCE;
+     }
+ 
+     /** Compensates {@link net.minecraft.village.MerchantRecipe#toolUses toolUses} with {@link net.minecraft.village.MerchantRecipe#maxTradeUses maxTradeUses} */

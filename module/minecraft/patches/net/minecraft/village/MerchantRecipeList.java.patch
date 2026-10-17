@@ -1,0 +1,14 @@
+--- original/net/minecraft/village/MerchantRecipeList.java
++++ modified/net/minecraft/village/MerchantRecipeList.java
+@@ -105,7 +105,10 @@
+ 
+         for (int i = 0; i < nbttaglist.tagCount(); i++) {
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+-            this.add(new MerchantRecipe(nbttagcompound));
++            MerchantRecipe recipe = new MerchantRecipe(nbttagcompound);
++            if (!recipe.getItemToBuy().isEmpty() && !recipe.getItemToSell().isEmpty()) {
++                this.add(recipe);
++            }
+         }
+     }
+ 

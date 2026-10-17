@@ -1,6 +1,14 @@
 --- original/net/minecraft/potion/PotionEffect.java
 +++ modified/net/minecraft/potion/PotionEffect.java
-@@ -23,6 +23,8 @@
+@@ -3,6 +3,7 @@
+ import com.google.common.collect.ComparisonChain;
+ import net.minecraft.entity.EntityLivingBase;
+ import net.minecraft.nbt.NBTTagCompound;
++import net.minecraft.util.ResourceLocation;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+@@ -23,6 +24,8 @@
      @SideOnly(Side.CLIENT)
      private boolean isPotionDurationMax;
      private boolean showParticles;
@@ -9,7 +17,7 @@
  
      public PotionEffect(Potion potionIn) {
          this(potionIn, 0, 0);
-@@ -50,6 +52,7 @@
+@@ -50,6 +53,7 @@
          this.amplifier = other.amplifier;
          this.isAmbient = other.isAmbient;
          this.showParticles = other.showParticles;
@@ -17,7 +25,7 @@
      }
  
      /** merges the input PotionEffect into this one if this.amplifier <= tomerge.amplifier. The duration in the supplied potion effect is assumed to be greater. */
-@@ -71,6 +74,10 @@
+@@ -71,6 +75,10 @@
      }
  
      public Potion getPotion() {
@@ -28,7 +36,17 @@
          return this.potion;
      }
  
-@@ -172,12 +179,13 @@
+@@ -167,18 +175,29 @@
+ 
+     /** Write a custom potion effect to a potion item's NBT data. */
+     public NBTTagCompound writeCustomPotionEffectToNBT(NBTTagCompound nbt) {
+-        nbt.setByte("Id", (byte)Potion.getIdFromPotion(this.getPotion()));
++        nbt.setInteger("Id", Potion.getIdFromPotion(this.getPotion())); // Cleanroom: any id (was a byte)
++        ResourceLocation potionName = Potion.REGISTRY.getNameForObject(this.getPotion()); // Cleanroom: names are stable when ids shift
++        if (potionName != null) {
++            nbt.setString("Name", potionName.toString());
++        }
+         nbt.setByte("Amplifier", (byte)this.getAmplifier());
          nbt.setInteger("Duration", this.getDuration());
          nbt.setBoolean("Ambient", this.getIsAmbient());
          nbt.setBoolean("ShowParticles", this.doesShowParticles());
@@ -39,11 +57,19 @@
      /** Read a custom potion effect from a potion item's NBT data. */
      public static PotionEffect readCustomPotionEffectFromNBT(NBTTagCompound nbt) {
 -        int i = nbt.getByte("Id");
-+        int i = nbt.getByte("Id") & 0xFF;
-         Potion potion = Potion.getPotionById(i);
+-        Potion potion = Potion.getPotionById(i);
++        Potion potion;
++        if (nbt.hasKey("Name", 8)) { // Cleanroom: names are stable when ids shift; an unresolvable name is missing, never the id
++            potion = Potion.REGISTRY.getObject(new ResourceLocation(nbt.getString("Name")));
++        } else {
++            // Cleanroom: saves from before ids were widened wrote a signed byte, so 128..255 are negative there;
++            // the number is a Forge-era saved id, resolved through the world's legacy name table
++            potion = com.cleanroommc.ids.LegacyIds.potion(nbt.getTagId("Id") == 1 ? nbt.getByte("Id") & 0xFF : nbt.getInteger("Id"));
++        }
          if (potion == null) {
              return null;
-@@ -191,7 +199,7 @@
+         }
+@@ -191,7 +210,7 @@
              flag1 = nbt.getBoolean("ShowParticles");
          }
  
@@ -52,7 +78,7 @@
      }
  
      /** Toggle the isPotionDurationMax field. */
-@@ -209,14 +217,82 @@
+@@ -209,14 +228,82 @@
      public int compareTo(PotionEffect p_compareTo_1_) {
          int i = 32147;
          return (this.getDuration() <= 32147 || p_compareTo_1_.getDuration() <= 32147) && (!this.getIsAmbient() || !p_compareTo_1_.getIsAmbient())
