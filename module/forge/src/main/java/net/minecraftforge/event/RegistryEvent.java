@@ -20,6 +20,7 @@
 package net.minecraftforge.event;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import net.minecraftforge.registries.RegistryBuilder;
@@ -33,6 +34,7 @@ import net.minecraftforge.fml.common.eventhandler.GenericEvent;
 import net.minecraftforge.fml.common.eventhandler.IContextSetter;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryManager;
 
 
 /**
@@ -85,6 +87,59 @@ public class RegistryEvent<T extends IForgeRegistryEntry<T>> extends GenericEven
 
     }
 
+
+    /**
+     * Register your objects in ANY registry when you receive this event; every registry is open at
+     * once, and the order in which registries are visited does not matter — numeric ids are derived
+     * at freeze, not at registration time.
+     * <p>
+     * Use {@link #get(ResourceLocation)} or {@link #get(Class)} to fetch a registry, then
+     * <code>registry.register(...)</code>. Only registries included in this pass are returned;
+     * {@link #keys()} lists them.
+     * <p>
+     * The per-type {@link Register} events still fire afterwards, in their historical order, so
+     * existing listeners are unaffected.
+     */
+    public static class RegisterAll extends Event implements IContextSetter
+    {
+        private final Collection<ResourceLocation> keys;
+
+        public RegisterAll(Collection<ResourceLocation> keys)
+        {
+            this.keys = keys;
+        }
+
+        public RegisterAll()
+        {
+            this.keys = Collections.emptyList();
+        }
+
+        /**
+         * The registries open in this pass, in the order the per-type events visit them.
+         */
+        public Collection<ResourceLocation> keys()
+        {
+            return keys;
+        }
+
+        /**
+         * The registry for {@code key}, or null if it is absent from this pass.
+         */
+        public <T extends IForgeRegistryEntry<T>> IForgeRegistry<T> get(ResourceLocation key)
+        {
+            if (!keys.contains(key))
+                return null;
+            return RegistryManager.ACTIVE.getRegistry(key);
+        }
+
+        /**
+         * The registry whose entries are {@code type}, or null if there is none.
+         */
+        public <T extends IForgeRegistryEntry<T>> IForgeRegistry<T> get(Class<T> type)
+        {
+            return RegistryManager.ACTIVE.getRegistry(type);
+        }
+    }
     public static class MissingMappings<T extends IForgeRegistryEntry<T>> extends RegistryEvent<T>
     {
         private final IForgeRegistry<T> registry;

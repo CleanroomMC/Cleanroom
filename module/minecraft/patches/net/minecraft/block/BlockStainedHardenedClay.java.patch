@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockStainedHardenedClay.java
++++ modified/net/minecraft/block/BlockStainedHardenedClay.java
+@@ -36,6 +36,6 @@
+      */
+     @Override
+     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+-        return MAP_COLORS[state.getValue(COLOR).getMetadata()];
++        int meta = state.getValue(COLOR).getMetadata(); return meta >= 0 && meta < MAP_COLORS.length ? MAP_COLORS[meta] : MapColor.getBlockColor(state.getValue(COLOR));
+     }
+ }

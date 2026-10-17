@@ -1,0 +1,12 @@
+--- original/net/minecraft/block/material/MapColor.java
++++ modified/net/minecraft/block/material/MapColor.java
+@@ -101,7 +101,8 @@
+     }
+ 
+     public static MapColor getBlockColor(EnumDyeColor dyeColorIn) {
+-        return BLOCK_COLORS[dyeColorIn.getMetadata()];
++        int meta = dyeColorIn.getMetadata();
++        return meta >= 0 && meta < BLOCK_COLORS.length && BLOCK_COLORS[meta] != null ? BLOCK_COLORS[meta] : CLOTH;
+     }
+ 
+     static {

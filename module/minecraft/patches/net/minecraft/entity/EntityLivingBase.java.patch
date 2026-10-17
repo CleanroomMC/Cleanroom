@@ -50,7 +50,61 @@
                  while (i > 0) {
                      int j = EntityXPOrb.getXPSplit(i);
                      i -= j;
-@@ -581,7 +580,7 @@
+@@ -520,12 +519,17 @@
+             }
+         }
+ 
+-        if (!this.activePotionsMap.isEmpty()) {
++        if (!this.activePotionsMap.isEmpty() || (this.retainedActiveEffects != null && !this.retainedActiveEffects.isEmpty())) {
+             NBTTagList nbttaglist = new NBTTagList();
+ 
+             for (PotionEffect potioneffect : this.activePotionsMap.values()) {
+                 nbttaglist.appendTag(potioneffect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
+             }
++            if (this.retainedActiveEffects != null) {
++                for (NBTTagCompound retainedTag : this.retainedActiveEffects) {
++                    nbttaglist.appendTag(retainedTag.copy());
++                }
++            }
+ 
+             compound.setTag("ActiveEffects", nbttaglist);
+         }
+@@ -533,19 +537,31 @@
+         compound.setBoolean("FallFlying", this.isElytraFlying());
+     }
+ 
++    @Nullable
++    private List<NBTTagCompound> retainedActiveEffects;
++
+     /** (abstract) Protected helper method to read subclass entity data from NBT. */
+     @Override
+     public void readEntityFromNBT(NBTTagCompound compound) {
+         this.setAbsorptionAmount(compound.getFloat("AbsorptionAmount"));
+         if (compound.hasKey("Attributes", 9) && this.world != null && !this.world.isRemote) {
+             SharedMonsterAttributes.setAttributeModifiers(this.getAttributeMap(), compound.getTagList("Attributes", 10));
+         }
+ 
++        this.retainedActiveEffects = null;
+         if (compound.hasKey("ActiveEffects", 9)) {
+             NBTTagList nbttaglist = compound.getTagList("ActiveEffects", 10);
+ 
+             for (int i = 0; i < nbttaglist.tagCount(); i++) {
+                 NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+                 PotionEffect potioneffect = PotionEffect.readCustomPotionEffectFromNBT(nbttagcompound);
+                 if (potioneffect != null) {
+                     this.activePotionsMap.put(potioneffect.getPotion(), potioneffect);
++                } else if (nbttagcompound.hasKey("Name", 8)) {
++                    String potName = nbttagcompound.getString("Name");
++                    if (!potName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(potName)) {
++                        if (this.retainedActiveEffects == null) {
++                            this.retainedActiveEffects = new java.util.ArrayList<>();
++                        }
++                        this.retainedActiveEffects.add(nbttagcompound.copy());
++                    }
+                 }
+             }
+         }
+@@ -581,7 +597,7 @@
                  Potion potion = iterator.next();
                  PotionEffect potioneffect = this.activePotionsMap.get(potion);
                  if (!potioneffect.onUpdate(this)) {

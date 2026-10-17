@@ -1,5 +1,19 @@
 --- original/net/minecraft/world/gen/ChunkGeneratorFlat.java
 +++ modified/net/minecraft/world/gen/ChunkGeneratorFlat.java
+@@ -125,10 +125,10 @@
+ 
+         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
+         Biome[] abiome = this.world.getBiomeProvider().getBiomes(null, x * 16, z * 16, 16, 16);
+-        byte[] abyte = chunk.getBiomeArray();
++        com.cleanroommc.ids.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
+ 
+-        for (int l = 0; l < abyte.length; l++) {
+-            abyte[l] = (byte)Biome.getIdForBiome(abiome[l]);
++        for (int l = 0; l < 256; l++) {
++            biomeIds.set(l, Biome.getIdForBiome(abiome[l]));
+         }
+ 
+         chunk.generateSkylightMap();
 @@ -143,6 +143,7 @@
       */
      @Override

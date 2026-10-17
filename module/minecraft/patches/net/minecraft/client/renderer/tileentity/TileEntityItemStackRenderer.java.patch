@@ -1,14 +1,25 @@
 --- original/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
 +++ modified/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
-@@ -95,8 +95,9 @@
+@@ -85,15 +85,18 @@
+         } else if (item == Item.getItemFromBlock(Blocks.TRAPPED_CHEST)) {
              TileEntityRendererDispatcher.instance.render(this.chestTrap, 0.0, 0.0, 0.0, 0.0F, partialTicks);
          } else if (Block.getBlockFromItem(item) instanceof BlockShulkerBox) {
              TileEntityRendererDispatcher.instance
 -                .render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0, 0.0, 0.0, 0.0F, partialTicks);
 -        } else {
-+            .render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0, 0.0, 0.0, 0.0F, partialTicks);
++            .render(SHULKER_BOXES[Math.max(0, Math.min(SHULKER_BOXES.length - 1, BlockShulkerBox.getColorFromItem(item).getMetadata()))], 0.0, 0.0, 0.0, 0.0F, partialTicks);
 +        } else if (Block.getBlockFromItem(item) != Blocks.CHEST) net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
 +        else {
              TileEntityRendererDispatcher.instance.render(this.chestBasic, 0.0, 0.0, 0.0, 0.0F, partialTicks);
          }
      }
+ 
+     static {
+         for (EnumDyeColor enumdyecolor : EnumDyeColor.values()) {
+-            SHULKER_BOXES[enumdyecolor.getMetadata()] = new TileEntityShulkerBox(enumdyecolor);
++            if (enumdyecolor.getMetadata() >= 0 && enumdyecolor.getMetadata() < SHULKER_BOXES.length) {
++                SHULKER_BOXES[enumdyecolor.getMetadata()] = new TileEntityShulkerBox(enumdyecolor);
++            }
+         }
+ 
+         instance = new TileEntityItemStackRenderer();

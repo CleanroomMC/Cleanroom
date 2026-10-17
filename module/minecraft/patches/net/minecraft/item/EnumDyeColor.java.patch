@@ -1,0 +1,38 @@
+--- original/net/minecraft/item/EnumDyeColor.java
++++ modified/net/minecraft/item/EnumDyeColor.java
+@@ -77,19 +77,27 @@
+     }
+ 
+     public static EnumDyeColor byDyeDamage(int damage) {
+-        if (damage < 0 || damage >= DYE_DMG_LOOKUP.length) {
+-            damage = 0;
++        if (damage >= 0 && damage < DYE_DMG_LOOKUP.length && DYE_DMG_LOOKUP[damage] != null) {
++            return DYE_DMG_LOOKUP[damage];
+         }
+-
+-        return DYE_DMG_LOOKUP[damage];
++        for (EnumDyeColor c : values()) {
++            if (c.getDyeDamage() == damage) {
++                return c;
++            }
++        }
++        return WHITE;
+     }
+ 
+     public static EnumDyeColor byMetadata(int meta) {
+-        if (meta < 0 || meta >= META_LOOKUP.length) {
+-            meta = 0;
++        if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++            return META_LOOKUP[meta];
+         }
+-
+-        return META_LOOKUP[meta];
++        for (EnumDyeColor c : values()) {
++            if (c.getMetadata() == meta) {
++                return c;
++            }
++        }
++        return WHITE;
+     }
+ 
+     @Override

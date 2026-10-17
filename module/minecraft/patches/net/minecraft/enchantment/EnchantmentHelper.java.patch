@@ -1,6 +1,105 @@
 --- original/net/minecraft/enchantment/EnchantmentHelper.java
 +++ modified/net/minecraft/enchantment/EnchantmentHelper.java
-@@ -120,6 +120,7 @@
+@@ -20,8 +20,10 @@
+ import net.minecraft.nbt.NBTTagList;
+ import net.minecraft.util.DamageSource;
+ import net.minecraft.util.Util;
++import net.minecraft.util.ResourceLocation;
+ import net.minecraft.util.WeightedRandom;
+ import net.minecraft.util.math.MathHelper;
++import javax.annotation.Nullable;
+ 
+ public class EnchantmentHelper {
+     /** Used to calculate the extra armor of enchantments on armors equipped on player. */
+@@ -31,6 +33,17 @@
+     private static final EnchantmentHelper.HurtIterator ENCHANTMENT_ITERATOR_HURT = new EnchantmentHelper.HurtIterator();
+     private static final EnchantmentHelper.DamageIterator ENCHANTMENT_ITERATOR_DAMAGE = new EnchantmentHelper.DamageIterator();
+ 
++    /** Cleanroom: reads the registry {@code name} when present; an unresolvable name means the enchantment is gone
++     * and returns null - a shifted numeric id must never rebind to a different enchantment. The id is a fallback only
++     * for compounds written before the name existed. */
++    @Nullable
++    public static Enchantment enchantmentFrom(NBTTagCompound tag) {
++        if (tag.hasKey("name", 8)) {
++            return Enchantment.REGISTRY.getObject(new ResourceLocation(tag.getString("name")));
++        }
++        return com.cleanroommc.ids.LegacyIds.enchantment(tag.getInteger("id")); // Cleanroom: a Forge-era saved id
++    }
++
+     /** Returns the level of enchantment on the ItemStack passed. */
+     public static int getEnchantmentLevel(Enchantment enchID, ItemStack stack) {
+         if (stack.isEmpty()) {
+@@ -41,7 +54,7 @@
+ 
+         for (int i = 0; i < nbttaglist.tagCount(); i++) {
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+-            Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getShort("id"));
++            Enchantment enchantment = enchantmentFrom(nbttagcompound); // Cleanroom: name first, then id
+             int j = nbttagcompound.getShort("lvl");
+             if (enchantment == enchID) {
+                 return j;
+@@ -58,9 +71,11 @@
+ 
+         for (int i = 0; i < nbttaglist.tagCount(); i++) {
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+-            Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getShort("id"));
++            Enchantment enchantment = enchantmentFrom(nbttagcompound); // Cleanroom: name first, then id
+             int j = nbttagcompound.getShort("lvl");
+-            map.put(enchantment, j);
++            if (enchantment != null) {
++                map.put(enchantment, j);
++            }
+         }
+ 
+         return map;
+@@ -69,13 +84,29 @@
+     /** Set the enchantments for the specified stack. */
+     public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack) {
+         NBTTagList nbttaglist = new NBTTagList();
++        NBTTagList existing = stack.getItem() == Items.ENCHANTED_BOOK ? ItemEnchantedBook.getEnchantments(stack) : stack.getEnchantmentTagList();
++        for (int idx = 0; idx < existing.tagCount(); idx++) {
++            NBTTagCompound oldTag = existing.getCompoundTagAt(idx);
++            if (oldTag.hasKey("name", 8)) {
++                String oldName = oldTag.getString("name");
++                if (!oldName.isEmpty()
++                    && !Enchantment.REGISTRY.containsKey(new ResourceLocation(oldName))
++                    && !com.cleanroommc.ids.RetainedContent.isRemoved(oldName)) {
++                    nbttaglist.appendTag(oldTag.copy());
++                }
++            }
++        }
+ 
+         for (Entry<Enchantment, Integer> entry : enchMap.entrySet()) {
+             Enchantment enchantment = entry.getKey();
+             if (enchantment != null) {
+                 int i = entry.getValue();
+                 NBTTagCompound nbttagcompound = new NBTTagCompound();
+-                nbttagcompound.setShort("id", (short)Enchantment.getEnchantmentID(enchantment));
++                nbttagcompound.setInteger("id", Enchantment.getEnchantmentID(enchantment)); // Cleanroom: any id (was a short)
++                ResourceLocation enchantmentName = Enchantment.REGISTRY.getNameForObject(enchantment); // Cleanroom: names are stable when ids shift
++                if (enchantmentName != null) {
++                    nbttagcompound.setString("name", enchantmentName.toString());
++                }
+                 nbttagcompound.setShort("lvl", (short)i);
+                 nbttaglist.appendTag(nbttagcompound);
+                 if (stack.getItem() == Items.ENCHANTED_BOOK) {
+@@ -99,10 +130,11 @@
+             NBTTagList nbttaglist = stack.getEnchantmentTagList();
+ 
+             for (int i = 0; i < nbttaglist.tagCount(); i++) {
+-                int j = nbttaglist.getCompoundTagAt(i).getShort("id");
+-                int k = nbttaglist.getCompoundTagAt(i).getShort("lvl");
+-                if (Enchantment.getEnchantmentByID(j) != null) {
+-                    modifier.calculateModifier(Enchantment.getEnchantmentByID(j), k);
++                NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
++                Enchantment enchantment = enchantmentFrom(nbttagcompound); // Cleanroom: name first, then id
++                int k = nbttagcompound.getShort("lvl");
++                if (enchantment != null) {
++                    modifier.calculateModifier(enchantment, k);
+                 }
+             }
+         }
+@@ -120,6 +152,7 @@
          ENCHANTMENT_MODIFIER_DAMAGE.damageModifier = 0;
          ENCHANTMENT_MODIFIER_DAMAGE.source = source;
          applyEnchantmentModifierArray(ENCHANTMENT_MODIFIER_DAMAGE, stacks);
@@ -8,7 +107,7 @@
          return ENCHANTMENT_MODIFIER_DAMAGE.damageModifier;
      }
  
-@@ -145,6 +146,9 @@
+@@ -145,6 +178,9 @@
          if (p_151384_1_ instanceof EntityPlayer) {
              applyEnchantmentModifier(ENCHANTMENT_ITERATOR_HURT, p_151384_0_.getHeldItemMainhand());
          }
@@ -18,7 +117,7 @@
      }
  
      public static void applyArthropodEnchantments(EntityLivingBase p_151385_0_, Entity p_151385_1_) {
-@@ -157,6 +161,9 @@
+@@ -157,6 +193,9 @@
          if (p_151385_0_ instanceof EntityPlayer) {
              applyEnchantmentModifier(ENCHANTMENT_ITERATOR_DAMAGE, p_151385_0_.getHeldItemMainhand());
          }
@@ -28,7 +127,7 @@
      }
  
      public static int getMaxEnchantmentLevel(Enchantment p_185284_0_, EntityLivingBase p_185284_1_) {
-@@ -251,7 +258,8 @@
+@@ -251,7 +290,8 @@
      /** Returns the enchantability of itemstack, using a separate calculation for each enchantNum (0, 1 or 2), cutting to the max enchantability power of the table, which is locked to a max of 15. */
      public static int calcItemStackEnchantability(Random rand, int enchantNum, int power, ItemStack stack) {
          Item item = stack.getItem();
@@ -38,7 +137,7 @@
          if (i <= 0) {
              return 0;
          }
-@@ -291,7 +299,8 @@
+@@ -291,7 +331,8 @@
      public static List<EnchantmentData> buildEnchantmentList(Random randomIn, ItemStack itemStackIn, int level, boolean allowTreasure) {
          List<EnchantmentData> list = Lists.newArrayList();
          Item item = itemStackIn.getItem();
@@ -48,7 +147,7 @@
          if (i <= 0) {
              return list;
          }
-@@ -328,13 +337,13 @@
+@@ -328,13 +369,13 @@
      }
  
      public static List<EnchantmentData> getEnchantmentDatas(int p_185291_0_, ItemStack p_185291_1_, boolean allowTreasure) {

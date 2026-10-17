@@ -104,15 +104,18 @@ public interface IForgeRegistry<V extends IForgeRegistryEntry<V>> extends Iterab
 
     /**
      * Factory for creating dummy entries, allowing worlds to be loaded and keep the missing block references.
+     * @deprecated dummy entries are gone; missing names are retained by name. Kept so old mods still link.
      */
+    @Deprecated
     interface DummyFactory<V extends IForgeRegistryEntry<V>>
     {
         V createDummy(ResourceLocation key);
     }
 
     /**
-     *
+     * @deprecated the default missing-mappings action no longer creates entries. Kept so old mods still link.
      */
+    @Deprecated
     interface MissingFactory<V extends IForgeRegistryEntry<V>>
     {
         V createMissing(ResourceLocation key, boolean isNetwork);

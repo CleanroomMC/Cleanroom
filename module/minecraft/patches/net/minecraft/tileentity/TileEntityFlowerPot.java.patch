@@ -1,0 +1,52 @@
+--- original/net/minecraft/tileentity/TileEntityFlowerPot.java
++++ modified/net/minecraft/tileentity/TileEntityFlowerPot.java
+@@ -12,6 +12,8 @@
+ public class TileEntityFlowerPot extends TileEntity {
+     private Item flowerPotItem;
+     private int flowerPotData;
++    @Nullable
++    private String retainedItemName;
+ 
+     public TileEntityFlowerPot() {
+     }
+@@ -28,15 +30,27 @@
+     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+         super.writeToNBT(compound);
+         ResourceLocation resourcelocation = Item.REGISTRY.getNameForObject(this.flowerPotItem);
+-        compound.setString("Item", resourcelocation == null ? "" : resourcelocation.toString());
++        compound.setString("Item", resourcelocation == null ? (this.retainedItemName != null ? this.retainedItemName : "") : resourcelocation.toString());
+         compound.setInteger("Data", this.flowerPotData);
+         return compound;
+     }
+ 
+     @Override
+     public void readFromNBT(NBTTagCompound compound) {
+         super.readFromNBT(compound);
++        this.retainedItemName = null;
+         if (compound.hasKey("Item", 8)) {
+-            this.flowerPotItem = Item.getByNameOrId(compound.getString("Item"));
++            String itemName = compound.getString("Item");
++            this.flowerPotItem = Item.getByNameOrId(itemName);
++            if (this.flowerPotItem == null && !itemName.isEmpty()) {
++                if (com.cleanroommc.ids.RetainedContent.isRemoved(itemName)) {
++                    com.cleanroommc.ids.RetainedContent.noteRemoved(itemName);
++                    this.flowerPotData = 0;
++                    return;
++                }
++                com.cleanroommc.ids.RetainedContent.noteMissingItem(itemName);
++                this.retainedItemName = itemName;
++            }
+         } else {
+-            this.flowerPotItem = Item.getItemById(compound.getInteger("Item"));
++            this.flowerPotItem = com.cleanroommc.ids.LegacyIds.item(compound.getInteger("Item"));
+         }
+ 
+         this.flowerPotData = compound.getInteger("Data");
+@@ -55,6 +69,7 @@
+     }
+ 
+     public void setItemStack(ItemStack stack) {
++        this.retainedItemName = null;
+         this.flowerPotItem = stack.getItem();
+         this.flowerPotData = stack.getMetadata();
+     }

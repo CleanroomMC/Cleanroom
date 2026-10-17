@@ -27,29 +27,44 @@
              if (this.buyingList == null) {
                  this.populateBuyingList();
              }
-@@ -528,6 +527,7 @@
+@@ -525,9 +524,13 @@
+     }
+ 
++    @Nullable
++    private String retainedProfessionName;
++
+     /** (abstract) Protected helper method to write subclass entity data to NBT. */
+     @Override
      public void writeEntityToNBT(NBTTagCompound compound) {
          super.writeEntityToNBT(compound);
          compound.setInteger("Profession", this.getProfession());
-+        compound.setString("ProfessionName", this.getProfessionForge().getRegistryName().toString());
++        compound.setString("ProfessionName", this.retainedProfessionName != null ? this.retainedProfessionName : this.getProfessionForge().getRegistryName().toString());
          compound.setInteger("Riches", this.wealth);
          compound.setInteger("Career", this.careerId);
          compound.setInteger("CareerLevel", this.careerLevel);
-@@ -553,6 +553,13 @@
+@@ -552,7 +555,21 @@
+     @Override
      public void readEntityFromNBT(NBTTagCompound compound) {
          super.readEntityFromNBT(compound);
++        this.retainedProfessionName = null;
          this.setProfession(compound.getInteger("Profession"));
 +        if (compound.hasKey("ProfessionName")) {
++            String profName = compound.getString("ProfessionName");
 +            net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession p =
-+                net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new net.minecraft.util.ResourceLocation(compound.getString("ProfessionName")));
-+            if (p == null)
++                net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new net.minecraft.util.ResourceLocation(profName));
++            if (p == null) {
 +                p = net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new net.minecraft.util.ResourceLocation("minecraft:farmer"));
++                if (!profName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(profName)) {
++                    com.cleanroommc.ids.RetainedContent.noteMissing(profName, null);
++                    this.retainedProfessionName = profName;
++                }
++            }
 +            this.setProfession(p);
 +        }
          this.wealth = compound.getInteger("Riches");
          this.careerId = compound.getInteger("Career");
          this.careerLevel = compound.getInteger("CareerLevel");
-@@ -603,13 +610,38 @@
+@@ -603,13 +620,38 @@
      }
  
      public void setProfession(int professionId) {

@@ -1,6 +1,10 @@
 --- original/net/minecraft/entity/item/EntityFallingBlock.java
 +++ modified/net/minecraft/entity/item/EntityFallingBlock.java
-@@ -148,6 +148,8 @@
++    private NBTTagCompound retainedBlockStateTag;
+     public int fallTime;
+     public boolean shouldDropItem = true;
+     private boolean dontSetBlock;
+@@ -148,6 +151,8 @@
                      }
                  } else {
                      IBlockState iblockstate = this.world.getBlockState(blockpos1);
@@ -9,7 +13,7 @@
                      if (!flag1
                          && BlockFalling.canFallThrough(
                              this.world.getBlockState(new BlockPos(this.posX, this.posY - 0.01F, this.posZ))
-@@ -162,14 +164,14 @@
+@@ -162,14 +167,14 @@
                      if (iblockstate.getBlock() != Blocks.PISTON_EXTENSION) {
                          this.setDead();
                          if (!this.dontSetBlock) {
@@ -28,3 +32,72 @@
                                      TileEntity tileentity = this.world.getTileEntity(blockpos1);
                                      if (tileentity != null) {
                                          NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
+@@ -234,9 +239,18 @@
+     @Override
+     protected void writeEntityToNBT(NBTTagCompound compound) {
+         Block block = this.fallTile != null ? this.fallTile.getBlock() : Blocks.AIR;
+-        ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(block);
+-        compound.setString("Block", resourcelocation == null ? "" : resourcelocation.toString());
+-        compound.setByte("Data", (byte)block.getMetaFromState(this.fallTile));
++        if (this.retainedBlockStateTag != null) {
++            compound.setString("Block", this.retainedBlockStateTag.getString("Name"));
++            compound.setByte("Data", (byte)0);
++            compound.setTag("BlockState", this.retainedBlockStateTag.copy());
++        } else {
++            ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(block);
++            compound.setString("Block", resourcelocation == null ? "" : resourcelocation.toString());
++            compound.setByte("Data", (byte)block.getMetaFromState(this.fallTile));
++            if (this.fallTile != null) {
++                compound.setTag("BlockState", net.minecraft.nbt.NBTUtil.writeBlockState(new NBTTagCompound(), this.fallTile)); // Cleanroom: IBlockState stands by itself
++            }
++        }
+         compound.setInteger("Time", this.fallTime);
+         compound.setBoolean("DropItem", this.shouldDropItem);
+         compound.setBoolean("HurtEntities", this.hurtEntities);
+@@ -251,12 +265,31 @@
+     @Override
+     protected void readEntityFromNBT(NBTTagCompound compound) {
+         int i = compound.getByte("Data") & 255;
+-        if (compound.hasKey("Block", 8)) {
+-            this.fallTile = Block.getBlockFromName(compound.getString("Block")).getStateFromMeta(i);
++        this.retainedBlockStateTag = null;
++        if (compound.hasKey("BlockState", 10)) {
++            NBTTagCompound stateTag = compound.getCompoundTag("BlockState");
++            String blockName = stateTag.getString("Name");
++            if (!blockName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
++                if (com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
++                    com.cleanroommc.ids.RetainedContent.noteRemoved(blockName);
++                    this.fallTile = Blocks.AIR.getDefaultState();
++                } else {
++                    this.retainedBlockStateTag = stateTag.copy();
++                    IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(blockName);
++                    this.fallTile = standIn != null ? standIn : Blocks.SAND.getDefaultState();
++                }
++            } else {
++                this.fallTile = net.minecraft.nbt.NBTUtil.readBlockState(stateTag);
++            }
++        } else if (compound.hasKey("Block", 8)) {
++            Block b = Block.getBlockFromName(compound.getString("Block"));
++            this.fallTile = b == null ? Blocks.SAND.getDefaultState() : b.getStateFromMeta(i);
+         } else if (compound.hasKey("TileID", 99)) {
+-            this.fallTile = Block.getBlockById(compound.getInteger("TileID")).getStateFromMeta(i);
++            Block b = com.cleanroommc.ids.LegacyIds.block(compound.getInteger("TileID"));
++            this.fallTile = b == null ? Blocks.SAND.getDefaultState() : b.getStateFromMeta(i);
+         } else {
+-            this.fallTile = Block.getBlockById(compound.getByte("Tile") & 255).getStateFromMeta(i);
++            Block b = com.cleanroommc.ids.LegacyIds.block(compound.getByte("Tile") & 255);
++            this.fallTile = b == null ? Blocks.SAND.getDefaultState() : b.getStateFromMeta(i);
+         }
+ 
+         this.fallTime = compound.getInteger("Time");
+@@ -303,8 +336,8 @@
+         super.addEntityCrashInfo(category);
+         if (this.fallTile != null) {
+             Block block = this.fallTile.getBlock();
+-            category.addCrashSection("Immitating block ID", Block.getIdFromBlock(block));
+-            category.addCrashSection("Immitating block data", block.getMetaFromState(this.fallTile));
++            category.addCrashSection("Imitating block ID", Block.getIdFromBlock(block));
++            category.addCrashSection("Imitating block state", this.fallTile.toString());
+         }
+     }
+ 

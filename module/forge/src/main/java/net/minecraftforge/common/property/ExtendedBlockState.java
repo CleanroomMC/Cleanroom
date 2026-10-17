@@ -160,5 +160,18 @@ public class ExtendedBlockState extends BlockStateContainer
         {
             return cleanState;
         }
+
+        @Override
+        public int getOrdinal()
+        {
+            // Unlisted wrapper states take their clean state's ordinal
+            return this == cleanState ? super.getOrdinal() : cleanState.getOrdinal();
+        }
+
+        @Override
+        public int getStateId()
+        {
+            return this == cleanState ? super.getStateId() : cleanState.getStateId();
+        }
     }
 }

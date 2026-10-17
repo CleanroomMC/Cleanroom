@@ -1,0 +1,20 @@
+--- original/net/minecraft/client/renderer/entity/RenderShulker.java
++++ modified/net/minecraft/client/renderer/entity/RenderShulker.java
+@@ -84,7 +85,7 @@
+ 
+     /** Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture. */
+     protected ResourceLocation getEntityTexture(EntityShulker entity) {
+-        return SHULKER_ENDERGOLEM_TEXTURE[entity.getColor().getMetadata()];
++        int meta = entity.getColor().getMetadata(); return SHULKER_ENDERGOLEM_TEXTURE[meta >= 0 && meta < SHULKER_ENDERGOLEM_TEXTURE.length ? meta : 0];
+     }
+ 
+     protected void applyRotations(EntityShulker entityLiving, float ageInTicks, float rotationYaw, float partialTicks) {
+@@ -173,7 +174,7 @@
+             ModelRenderer modelrenderer = RenderShulker.this.getMainModel().head;
+             modelrenderer.rotateAngleY = netHeadYaw * (float) (Math.PI / 180.0);
+             modelrenderer.rotateAngleX = headPitch * (float) (Math.PI / 180.0);
+-            RenderShulker.this.bindTexture(RenderShulker.SHULKER_ENDERGOLEM_TEXTURE[entitylivingbaseIn.getColor().getMetadata()]);
++            int meta = entitylivingbaseIn.getColor().getMetadata(); RenderShulker.this.bindTexture(RenderShulker.SHULKER_ENDERGOLEM_TEXTURE[meta >= 0 && meta < RenderShulker.SHULKER_ENDERGOLEM_TEXTURE.length ? meta : 0]);
+             modelrenderer.render(scale);
+             GlStateManager.popMatrix();
+         }

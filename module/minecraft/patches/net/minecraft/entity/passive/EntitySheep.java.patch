@@ -1,15 +1,44 @@
 --- original/net/minecraft/entity/passive/EntitySheep.java
 +++ modified/net/minecraft/entity/passive/EntitySheep.java
-@@ -46,7 +46,7 @@
+@@ -46,8 +46,10 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class EntitySheep extends EntityAnimal {
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 +public class EntitySheep extends EntityAnimal implements net.minecraftforge.common.IShearable {
      private static final DataParameter<Byte> DYE_COLOR = EntityDataManager.createKey(EntitySheep.class, DataSerializers.BYTE);
++    private static final DataParameter<Integer> FULL_DYE_COLOR = EntityDataManager.createKey(EntitySheep.class, DataSerializers.VARINT);
      /** Internal crafting inventory used to check the result of mixing dyes corresponding to the fleece color when breeding sheep. */
      private final InventoryCrafting inventoryCrafting = new InventoryCrafting(new Container() {
-@@ -202,7 +202,8 @@
+         /** Determines whether supplied player can use this container */
+@@ -57,7 +59,7 @@
+         }
+     }, 2, 1);
+     /** Map from EnumDyeColor to RGB values for passage to GlStateManager.color() */
+-    private static final Map<EnumDyeColor, float[]> DYE_TO_RGB = Maps.newEnumMap(EnumDyeColor.class);
++    private static final Map<EnumDyeColor, float[]> DYE_TO_RGB = Maps.newHashMap();
+     /** Used to control movement as well as wool regrowth. Set to 40 on handleHealthUpdate and counts down with each tick. */
+     private int sheepTimer;
+     private EntityAIEatGrass entityAIEatGrass;
+@@ -70,7 +72,7 @@
+ 
+     @SideOnly(Side.CLIENT)
+     public static float[] getDyeRgb(EnumDyeColor dyeColor) {
+-        return DYE_TO_RGB.get(dyeColor);
++        return DYE_TO_RGB.computeIfAbsent(dyeColor, EntitySheep::createSheepColor);
+     }
+ 
+     public EntitySheep(World worldIn) {
+@@ -121,6 +123,7 @@
+     protected void entityInit() {
+         super.entityInit();
+         this.dataManager.register(DYE_COLOR, (byte)0);
++        this.dataManager.register(FULL_DYE_COLOR, 0);
+     }
+ 
+     @Nullable
+@@ -202,7 +205,8 @@
      @Override
      public boolean processInteract(EntityPlayer player, EnumHand hand) {
          ItemStack itemstack = player.getHeldItem(hand);
@@ -19,7 +48,43 @@
              if (!this.world.isRemote) {
                  this.setSheared(true);
                  int i = 1 + this.rand.nextInt(3);
-@@ -340,7 +341,24 @@
+@@ -233,7 +237,7 @@
+     public void writeEntityToNBT(NBTTagCompound compound) {
+         super.writeEntityToNBT(compound);
+         compound.setBoolean("Sheared", this.getSheared());
+-        compound.setByte("Color", (byte)this.getFleeceColor().getMetadata());
++        compound.setInteger("Color", this.getFleeceColor().getMetadata());
+     }
+ 
+     /** (abstract) Protected helper method to read subclass entity data from NBT. */
+@@ -241,7 +245,7 @@
+     public void readEntityFromNBT(NBTTagCompound compound) {
+         super.readEntityFromNBT(compound);
+         this.setSheared(compound.getBoolean("Sheared"));
+-        this.setFleeceColor(EnumDyeColor.byMetadata(compound.getByte("Color")));
++        this.setFleeceColor(EnumDyeColor.byMetadata(compound.getInteger("Color")));
+     }
+ 
+     @Override
+@@ -266,13 +270,16 @@
+ 
+     /** Gets the wool color of this sheep. */
+     public EnumDyeColor getFleeceColor() {
+-        return EnumDyeColor.byMetadata(this.dataManager.get(DYE_COLOR) & 15);
++        int low = this.dataManager.get(DYE_COLOR) & 15;
++        int full = this.dataManager.get(FULL_DYE_COLOR);
++        return EnumDyeColor.byMetadata((full & 15) == low ? full : low);
+     }
+ 
+     /** Sets the wool color of this sheep */
+     public void setFleeceColor(EnumDyeColor color) {
+         byte b0 = this.dataManager.get(DYE_COLOR);
+         this.dataManager.set(DYE_COLOR, (byte)(b0 & 240 | color.getMetadata() & 15));
++        this.dataManager.set(FULL_DYE_COLOR, color.getMetadata());
+     }
+ 
+     /** returns true if a sheeps wool has been sheared */
+@@ -340,7 +347,24 @@
          return livingdata;
      }
  

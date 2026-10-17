@@ -48,6 +48,8 @@ public class BlockSnapshot
     private final int dimId;
     @Nullable
     private IBlockState replacedBlock;
+    @Nullable
+    private NBTTagCompound retainedStateTag;
     private int flag;
     @Nullable
     private final NBTTagCompound nbt;
@@ -73,7 +75,7 @@ public class BlockSnapshot
         this.nbt = nbt;
         if (DEBUG)
         {
-            System.out.printf("Created BlockSnapshot - [World: %s ][Location: %d,%d,%d ][Block: %s ][Meta: %d ]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), getRegistryName(), getMeta());
+            System.out.printf("Created BlockSnapshot - [World: %s ][Location: %d,%d,%d ][Block: %s ][State: %s ]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), getRegistryName(), state);
         }
     }
 
@@ -92,7 +94,10 @@ public class BlockSnapshot
 
     /**
      * Raw constructor designed for serialization usages.
+     * @deprecated the {@code meta} argument is a legacy view; use {@link #BlockSnapshot(World, BlockPos, IBlockState)}
+     * or the {@code "state"} NBT tag written by {@link #writeToNBT} instead.
      */
+    @Deprecated
     public BlockSnapshot(int dimension, BlockPos pos, ResourceLocation registryName, int meta, int flag, @Nullable NBTTagCompound nbt)
     {
         this.dimId = dimension;
@@ -115,13 +120,27 @@ public class BlockSnapshot
 
     public static BlockSnapshot readFromNBT(NBTTagCompound tag)
     {
-        return new BlockSnapshot(
+        BlockSnapshot snapshot = new BlockSnapshot(
                 tag.getInteger("dimension"),
                 new BlockPos(tag.getInteger("posX"), tag.getInteger("posY"), tag.getInteger("posZ")),
                 new ResourceLocation(tag.getString("blockMod"), tag.getString("blockName")),
                 tag.getInteger("metadata"),
                 tag.getInteger("flag"),
                 tag.getBoolean("hasTE") ? tag.getCompoundTag("tileEntity") : null);
+        if (tag.hasKey("state", 10))
+        {
+            // Name + properties written by writeToNBT; "metadata" alone only describes one of every sixteen states
+            NBTTagCompound stateTag = tag.getCompoundTag("state");
+            if (ForgeRegistries.BLOCKS.containsKey(snapshot.getRegistryName()))
+            {
+                snapshot.setReplacedBlock(net.minecraft.nbt.NBTUtil.readBlockState(stateTag));
+            }
+            else
+            {
+                snapshot.retainedStateTag = stateTag.copy();
+            }
+        }
+        return snapshot;
     }
 
     @Nullable
@@ -158,6 +177,17 @@ public class BlockSnapshot
         return this.replacedBlock;
     }
 
+    /** The replaced state, or null when the block is not registered — keeps equals/hashCode safe on dead snapshots */
+    @Nullable
+    private IBlockState replacedBlockOrNull()
+    {
+        if (this.replacedBlock == null && ForgeRegistries.BLOCKS.containsKey(getRegistryName()))
+        {
+            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(getMeta());
+        }
+        return this.replacedBlock;
+    }
+
     @Nullable
     public TileEntity getTileEntity()
     {
@@ -186,7 +216,7 @@ public class BlockSnapshot
 
         int flags = notifyNeighbors ? Constants.BlockFlags.DEFAULT : Constants.BlockFlags.SEND_TO_CLIENTS;
 
-        if (current.getBlock() != replaced.getBlock() || current.getBlock().getMetaFromState(current) != replaced.getBlock().getMetaFromState(replaced))
+        if (current != replaced)
         {
             if (force)
             {
@@ -214,7 +244,7 @@ public class BlockSnapshot
 
         if (DEBUG)
         {
-            System.out.printf("Restored BlockSnapshot with data [World: %s ][Location: %d,%d,%d ][Meta: %d ][Block: %s ][TileEntity: %s ][force: %s ][notifyNeighbors: %s]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), replaced.getBlock().getMetaFromState(replaced), replaced.getBlock().delegate.name(), te, force, notifyNeighbors);
+            System.out.printf("Restored BlockSnapshot with data [World: %s ][Location: %d,%d,%d ][State: %s ][TileEntity: %s ][force: %s ][notifyNeighbors: %s]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), replaced, te, force, notifyNeighbors);
         }
         return true;
     }
@@ -229,6 +259,15 @@ public class BlockSnapshot
         compound.setInteger("flag", getFlag());
         compound.setInteger("dimension", getDimId());
         compound.setInteger("metadata", getMeta());
+        // Name + properties, so the state survives both missing-block retention and >16-state blocks
+        if (this.replacedBlock != null)
+        {
+            compound.setTag("state", net.minecraft.nbt.NBTUtil.writeBlockState(new NBTTagCompound(), this.replacedBlock));
+        }
+        else if (this.retainedStateTag != null)
+        {
+            compound.setTag("state", this.retainedStateTag.copy());
+        }
 
         compound.setBoolean("hasTE", getNbt() != null);
 
@@ -254,6 +293,10 @@ public class BlockSnapshot
             return false;
         }
         final BlockSnapshot other = (BlockSnapshot) obj;
+        if (!Objects.equals(this.replacedBlockOrNull(), other.replacedBlockOrNull()))
+        {
+            return false;
+        }
         if (this.getMeta() != other.getMeta())
         {
             return false;
@@ -281,7 +324,7 @@ public class BlockSnapshot
     public int hashCode()
     {
         int hash = 7;
-        hash = 73 * hash + this.getMeta();
+        hash = 73 * hash + (this.replacedBlockOrNull() != null ? this.replacedBlockOrNull().hashCode() : this.getMeta());
         hash = 73 * hash + this.getDimId();
         hash = 73 * hash + this.getPos().hashCode();
         hash = 73 * hash + this.getRegistryName().hashCode();
@@ -306,5 +349,10 @@ public class BlockSnapshot
 
     public ResourceLocation getRegistryName() { return registryName; }
 
+    /**
+     * The legacy metadata of the replaced state.
+     * @deprecated use {@link #getReplacedBlock()}; metadata cannot describe states past fifteen.
+     */
+    @Deprecated
     public int getMeta() { return meta; }
 }

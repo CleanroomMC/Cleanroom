@@ -1,0 +1,17 @@
+--- original/net/minecraft/nbt/NBTPrimitive.java
++++ modified/net/minecraft/nbt/NBTPrimitive.java
+@@ -15,4 +15,14 @@
+     public abstract double getDouble();
+ 
+     public abstract float getFloat();
++
++    /** Cleanroom: byte, short and int tags are one integral type at different widths: ids are saved as int, so a short or byte from a mod or an older save must still equal them. */
++    static boolean isIntegral(NBTBase tag) {
++        byte id = tag.getId();
++        return id >= 1 && id <= 3;
++    }
++
++    static boolean integralEquals(NBTPrimitive self, Object other) {
++        return other instanceof NBTPrimitive primitive && isIntegral(self) && isIntegral(primitive) && self.getLong() == primitive.getLong();
++    }
+ }

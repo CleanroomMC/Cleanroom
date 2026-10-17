@@ -17,7 +17,57 @@
          }
  
          return structurevillagepieces$village;
-@@ -1631,6 +1634,7 @@
+@@ -446,16 +449,20 @@
+             tagCompound.setInteger("CB", Block.REGISTRY.getIDForObject(this.cropTypeB));
+             tagCompound.setInteger("CC", Block.REGISTRY.getIDForObject(this.cropTypeC));
+             tagCompound.setInteger("CD", Block.REGISTRY.getIDForObject(this.cropTypeD));
++            if (Block.REGISTRY.getNameForObject(this.cropTypeA) != null) tagCompound.setString("CAName", Block.REGISTRY.getNameForObject(this.cropTypeA).toString());
++            if (Block.REGISTRY.getNameForObject(this.cropTypeB) != null) tagCompound.setString("CBName", Block.REGISTRY.getNameForObject(this.cropTypeB).toString());
++            if (Block.REGISTRY.getNameForObject(this.cropTypeC) != null) tagCompound.setString("CCName", Block.REGISTRY.getNameForObject(this.cropTypeC).toString());
++            if (Block.REGISTRY.getNameForObject(this.cropTypeD) != null) tagCompound.setString("CDName", Block.REGISTRY.getNameForObject(this.cropTypeD).toString());
+         }
+ 
+         /** (abstract) Helper method to read subclass data from NBT */
+         @Override
+         protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_) {
+             super.readStructureFromNBT(tagCompound, p_143011_2_);
+-            this.cropTypeA = Block.getBlockById(tagCompound.getInteger("CA"));
+-            this.cropTypeB = Block.getBlockById(tagCompound.getInteger("CB"));
+-            this.cropTypeC = Block.getBlockById(tagCompound.getInteger("CC"));
+-            this.cropTypeD = Block.getBlockById(tagCompound.getInteger("CD"));
++            this.cropTypeA = tagCompound.hasKey("CAName", 8) ? Block.getBlockFromName(tagCompound.getString("CAName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CA"));
++            this.cropTypeB = tagCompound.hasKey("CBName", 8) ? Block.getBlockFromName(tagCompound.getString("CBName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CB"));
++            this.cropTypeC = tagCompound.hasKey("CCName", 8) ? Block.getBlockFromName(tagCompound.getString("CCName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CC"));
++            this.cropTypeD = tagCompound.hasKey("CDName", 8) ? Block.getBlockFromName(tagCompound.getString("CDName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CD"));
+             if (!(this.cropTypeA instanceof BlockCrops)) {
+                 this.cropTypeA = Blocks.WHEAT;
+             }
+@@ -587,14 +594,22 @@
+             super.writeStructureToNBT(tagCompound);
+             tagCompound.setInteger("CA", Block.REGISTRY.getIDForObject(this.cropTypeA));
+             tagCompound.setInteger("CB", Block.REGISTRY.getIDForObject(this.cropTypeB));
++            if (Block.REGISTRY.getNameForObject(this.cropTypeA) != null) tagCompound.setString("CAName", Block.REGISTRY.getNameForObject(this.cropTypeA).toString());
++            if (Block.REGISTRY.getNameForObject(this.cropTypeB) != null) tagCompound.setString("CBName", Block.REGISTRY.getNameForObject(this.cropTypeB).toString());
+         }
+ 
+         /** (abstract) Helper method to read subclass data from NBT */
+         @Override
+         protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_) {
+             super.readStructureFromNBT(tagCompound, p_143011_2_);
+-            this.cropTypeA = Block.getBlockById(tagCompound.getInteger("CA"));
+-            this.cropTypeB = Block.getBlockById(tagCompound.getInteger("CB"));
++            this.cropTypeA = tagCompound.hasKey("CAName", 8) ? Block.getBlockFromName(tagCompound.getString("CAName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CA"));
++            this.cropTypeB = tagCompound.hasKey("CBName", 8) ? Block.getBlockFromName(tagCompound.getString("CBName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CB"));
++            if (!(this.cropTypeA instanceof BlockCrops)) {
++                this.cropTypeA = Blocks.WHEAT;
++            }
++            if (!(this.cropTypeB instanceof BlockCrops)) {
++                this.cropTypeB = Blocks.CARROTS;
++            }
+         }
+ 
+         private Block getRandomCropType(Random rand) {
+@@ -1631,6 +1646,7 @@
          public List<StructureVillagePieces.PieceWeight> structureVillageWeightedPieceList;
          public List<StructureComponent> pendingHouses = Lists.newArrayList();
          public List<StructureComponent> pendingRoads = Lists.newArrayList();
@@ -25,7 +75,7 @@
  
          public Start() {
          }
-@@ -1649,6 +1653,8 @@
+@@ -1649,6 +1665,8 @@
              this.structureVillageWeightedPieceList = p_i2104_6_;
              this.terrainType = p_i2104_7_;
              Biome biome = biomeProviderIn.getBiome(new BlockPos(p_i2104_4_, 0, p_i2104_5_), Biomes.DEFAULT);
@@ -34,7 +84,7 @@
              if (biome instanceof BiomeDesert) {
                  this.structureType = 1;
              } else if (biome instanceof BiomeSavanna) {
-@@ -1717,6 +1723,7 @@
+@@ -1717,6 +1735,7 @@
          private int villagersSpawned;
          protected int structureType;
          protected boolean isZombieInfested;
@@ -42,7 +92,7 @@
  
          public Village() {
          }
-@@ -1726,6 +1733,7 @@
+@@ -1726,6 +1745,7 @@
              if (start != null) {
                  this.structureType = start.structureType;
                  this.isZombieInfested = start.isZombieInfested;
@@ -50,7 +100,7 @@
              }
          }
  
-@@ -1908,13 +1916,14 @@
+@@ -1908,13 +1928,14 @@
                          EntityZombieVillager entityzombievillager = new EntityZombieVillager(worldIn);
                          entityzombievillager.setLocationAndAngles(j + 0.5, k, l + 0.5, 0.0F, 0.0F);
                          entityzombievillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombievillager)), null);
@@ -67,7 +117,7 @@
                          entityvillager.finalizeMobSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), null, false);
                          worldIn.spawnEntity(entityvillager);
                      }
-@@ -1922,11 +1931,19 @@
+@@ -1922,11 +1943,19 @@
              }
          }
  
