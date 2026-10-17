@@ -64,7 +64,7 @@
          compound.setByte("shake", (byte)this.arrowShake);
          compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
          compound.setByte("pickup", (byte)this.pickupStatus.ordinal());
-@@ -490,10 +508,30 @@
+@@ -490,10 +508,50 @@
          if (compound.hasKey("inTile", 8)) {
              this.inTile = Block.getBlockFromName(compound.getString("inTile"));
          } else {
@@ -91,6 +91,26 @@
 +            } else {
 +                this.inState = net.minecraft.nbt.NBTUtil.readBlockState(stateTag);
 +                this.inTile = this.inState.getBlock();
++            }
++        } else {
++            String legacyTileName = compound.hasKey("inTile", 8) ? compound.getString("inTile") : null;
++            if ((legacyTileName == null || legacyTileName.isEmpty()) && compound.hasKey("inTile", 99)) {
++                ResourceLocation legRl = com.cleanroommc.ids.LegacyIds.blockName(compound.getByte("inTile") & 255);
++                if (legRl != null && !Block.REGISTRY.containsKey(legRl)) {
++                    legacyTileName = legRl.toString();
++                }
++            }
++            if (legacyTileName != null && !legacyTileName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(legacyTileName))) {
++                if (!com.cleanroommc.ids.RetainedContent.isRemoved(legacyTileName)) {
++                    NBTTagCompound synth = new NBTTagCompound();
++                    synth.setString("Name", legacyTileName);
++                    this.retainedInStateTag = synth;
++                    IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(legacyTileName);
++                    this.inState = standIn != null ? standIn : net.minecraft.init.Blocks.AIR.getDefaultState();
++                    this.inTile = this.inState.getBlock();
++                } else {
++                    this.inTile = net.minecraft.init.Blocks.AIR;
++                }
 +            }
 +        }
          this.arrowShake = compound.getByte("shake") & 255;
