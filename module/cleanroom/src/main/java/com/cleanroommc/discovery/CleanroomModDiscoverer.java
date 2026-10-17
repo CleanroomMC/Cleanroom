@@ -708,7 +708,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void scanModAnnotations(JarFile jar, Set<String> modIds) {
-        List<byte[]> modDescriptors = ModContainerFactory.modTypes.keySet()
+        List<byte[]> modDescriptors = ModContainerFactory.modTypes
+            .keySet()
             .stream()
             .map(type -> type.getDescriptor().getBytes(StandardCharsets.UTF_8))
             .toList();

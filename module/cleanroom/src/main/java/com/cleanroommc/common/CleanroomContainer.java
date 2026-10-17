@@ -29,13 +29,6 @@ public class CleanroomContainer extends DummyModContainer {
 
     private static ModContainer instance;
 
-    public static ModContainer instance() {
-        if (instance == null) {
-            instance = new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation);
-        }
-        return instance;
-    }
-
     public CleanroomContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
@@ -54,6 +47,13 @@ public class CleanroomContainer extends DummyModContainer {
         meta.logoFile = "/assets/cleanroom/banner.png";
         meta.modProperties.put("iconFile", "/assets/cleanroom/icon.png");
         meta.modProperties.put("backgroundFile", "/assets/cleanroom/background.png");
+    }
+
+    public static ModContainer instance() {
+        if (instance == null) {
+            instance = new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation);
+        }
+        return instance;
     }
 
     @Override
