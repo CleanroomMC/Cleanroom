@@ -533,4 +533,27 @@ public final class RetainedContent {
         return false;
     }
 
+    /*
+     * Centralized helper for reading a named/numbered Potion entry (e.g. TileEntityBeacon Primary/Secondary)
+     * and returning the unresolved potion registry name when the mod is absent and not removed.
+     */
+    @Nullable
+    public static String readRetainedPotionName(NBTTagCompound compound, String nameKey, String idKey) {
+        String name = compound.hasKey(nameKey, 8) ? compound.getString(nameKey) : null;
+        if ((name == null || name.isEmpty()) && compound.hasKey(idKey, 99)) {
+            int rawId = compound.getInteger(idKey);
+            if (rawId > 0) {
+                ResourceLocation leg = LegacyIds.potionName(rawId);
+                name = leg == null ? null : leg.toString();
+            }
+        }
+        if (name != null &&
+            !name.isEmpty() &&
+            !net.minecraft.potion.Potion.REGISTRY.containsKey(new ResourceLocation(name)) &&
+            !isRemoved(name)) {
+            return name;
+        }
+        return null;
+    }
+
 }

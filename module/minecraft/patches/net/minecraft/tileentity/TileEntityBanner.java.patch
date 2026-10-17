@@ -10,16 +10,27 @@
      /** A list of all the banner patterns. */
      private NBTTagList patterns;
      private boolean patternDataSet;
-@@ -36,6 +39,8 @@
+@@ -36,7 +39,18 @@
              this.patterns = nbttagcompound.getTagList("Patterns", 10).copy();
          }
  
+-        this.baseColor = p_175112_2_ ? getColor(stack) : ItemBanner.getBaseColor(stack);
 +        this.retainedBaseName = null;
 +        this.retainedBaseDye = -1;
-         this.baseColor = p_175112_2_ ? getColor(stack) : ItemBanner.getBaseColor(stack);
++        if (nbttagcompound != null && (nbttagcompound.hasKey("BaseName", 8) || nbttagcompound.hasKey("Base", 99))) {
++            com.cleanroommc.ids.RetainedContent.DyeRead d = com.cleanroommc.ids.RetainedContent.readDyeColor(
++                nbttagcompound, "BaseName", "Base", true, p_175112_2_ ? EnumDyeColor.BLACK : ItemBanner.getBaseColor(stack)
++            );
++            this.baseColor = d.color();
++            this.retainedBaseName = d.retainedName();
++            this.retainedBaseDye = d.retainedNumber();
++        } else {
++            this.baseColor = p_175112_2_ ? getColor(stack) : ItemBanner.getBaseColor(stack);
++        }
          this.patternList = null;
          this.colorList = null;
-@@ -99,7 +104,7 @@
+         this.patternResourceLocation = "";
+@@ -99,7 +113,7 @@
      @Override
      public NBTTagCompound writeToNBT(NBTTagCompound compound) {
          super.writeToNBT(compound);
@@ -28,7 +39,7 @@
          if (this.patterns != null) {
              compound.setTag("Patterns", this.patterns);
          }
-@@ -118,7 +123,10 @@
+@@ -118,7 +132,10 @@
              this.name = compound.getString("CustomName");
          }
  
@@ -40,7 +51,7 @@
          this.patterns = compound.getTagList("Patterns", 10);
          this.patternList = null;
          this.colorList = null;
-@@ -184,7 +192,17 @@
+@@ -184,7 +201,17 @@
                          if (bannerpattern != null) {
                              this.patternList.add(bannerpattern);
                              int j = nbttagcompound.getInteger("Color");
@@ -59,7 +70,20 @@
                              this.patternResourceLocation = this.patternResourceLocation + bannerpattern.getHashname() + j;
                          }
                      }
-@@ -221,6 +239,14 @@
+@@ -212,6 +239,12 @@
+ 
+     public ItemStack getItem() {
+         ItemStack itemstack = ItemBanner.makeBanner(this.baseColor, this.patterns);
++        if (this.retainedBaseName != null) {
++            NBTTagCompound bet = itemstack.getOrCreateSubCompound("BlockEntityTag");
++            com.cleanroommc.ids.RetainedContent.writeDyeColor(
++                bet, "BaseName", "Base", true, false, this.baseColor, this.retainedBaseName, this.retainedBaseDye
++            );
++        }
+         if (this.hasCustomName()) {
+             itemstack.setStackDisplayName(this.getName());
+         }
+@@ -221,6 +254,14 @@
  
      public static EnumDyeColor getColor(ItemStack p_190616_0_) {
          NBTTagCompound nbttagcompound = p_190616_0_.getSubCompound("BlockEntityTag");

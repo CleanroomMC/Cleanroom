@@ -44,7 +44,7 @@
                              flag1 = false;
                              break;
                          }
-@@ -251,15 +255,15 @@
+@@ -251,15 +255,26 @@
  
      @Nullable
      private static Potion isBeaconEffect(int p_184279_0_) {
@@ -53,6 +53,11 @@
          return VALID_EFFECTS.contains(potion) ? potion : null;
      }
  
++    @Nullable
++    private String retainedPrimaryName;
++    @Nullable
++    private String retainedSecondaryName;
++
      @Override
      public void readFromNBT(NBTTagCompound compound) {
          super.readFromNBT(compound);
@@ -60,19 +65,33 @@
 -        this.secondaryEffect = isBeaconEffect(compound.getInteger("Secondary"));
 +        this.primaryEffect = com.cleanroommc.ids.LegacyIds.beaconEffect(compound, "PrimaryName", "Primary", VALID_EFFECTS); // Cleanroom: name first, then id
 +        this.secondaryEffect = com.cleanroommc.ids.LegacyIds.beaconEffect(compound, "SecondaryName", "Secondary", VALID_EFFECTS);
++        this.retainedPrimaryName = this.primaryEffect == null
++            ? com.cleanroommc.ids.RetainedContent.readRetainedPotionName(compound, "PrimaryName", "Primary")
++            : null;
++        this.retainedSecondaryName = this.secondaryEffect == null
++            ? com.cleanroommc.ids.RetainedContent.readRetainedPotionName(compound, "SecondaryName", "Secondary")
++            : null;
          this.levels = compound.getInteger("Levels");
      }
  
-@@ -268,6 +272,8 @@
+@@ -268,6 +283,16 @@
          super.writeToNBT(compound);
          compound.setInteger("Primary", Potion.getIdFromPotion(this.primaryEffect));
          compound.setInteger("Secondary", Potion.getIdFromPotion(this.secondaryEffect));
-+        com.cleanroommc.ids.LegacyIds.writePotionName(compound, "PrimaryName", this.primaryEffect); // Cleanroom: names are stable when ids shift
-+        com.cleanroommc.ids.LegacyIds.writePotionName(compound, "SecondaryName", this.secondaryEffect);
++        if (this.retainedPrimaryName != null && this.primaryEffect == null) {
++            compound.setString("PrimaryName", this.retainedPrimaryName);
++        } else {
++            com.cleanroommc.ids.LegacyIds.writePotionName(compound, "PrimaryName", this.primaryEffect); // Cleanroom: names are stable when ids shift
++        }
++        if (this.retainedSecondaryName != null && this.secondaryEffect == null) {
++            compound.setString("SecondaryName", this.retainedSecondaryName);
++        } else {
++            com.cleanroommc.ids.LegacyIds.writePotionName(compound, "SecondaryName", this.secondaryEffect);
++        }
          compound.setInteger("Levels", this.levels);
          return compound;
      }
-@@ -392,10 +398,7 @@
+@@ -392,10 +417,7 @@
      /** Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot. For guis use Slot.isItemValid */
      @Override
      public boolean isItemValidForSlot(int index, ItemStack stack) {
@@ -84,3 +103,15 @@
      }
  
      @Override
+@@ -429,9 +451,11 @@
+                 this.levels = value;
+                 break;
+             case 1:
++                this.retainedPrimaryName = null;
+                 this.primaryEffect = isBeaconEffect(value);
+                 break;
+             case 2:
++                this.retainedSecondaryName = null;
+                 this.secondaryEffect = isBeaconEffect(value);
+         }
+     }
