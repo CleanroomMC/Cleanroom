@@ -27,7 +27,7 @@
          }
      }
  
-@@ -165,11 +177,29 @@
+@@ -165,18 +177,63 @@
      @Override
      public void readEntityFromNBT(NBTTagCompound compound) {
          super.readEntityFromNBT(compound);
@@ -51,16 +51,43 @@
 +                iblockstate = net.minecraft.nbt.NBTUtil.readBlockState(stateTag);
 +            }
 +        } else if (compound.hasKey("carried", 8)) {
-+            Block carriedBlock = Block.getBlockFromName(compound.getString("carried"));
-+            iblockstate = carriedBlock == null ? null : carriedBlock.getStateFromMeta(compound.getShort("carriedData") & 65535);
++            String carriedName = compound.getString("carried");
++            Block carriedBlock = Block.getBlockFromName(carriedName);
++            if (carriedBlock == null && !carriedName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(carriedName)) {
++                NBTTagCompound synth = new NBTTagCompound();
++                synth.setString("Name", carriedName);
++                pendingRetained = synth;
++                iblockstate = com.cleanroommc.ids.StandIns.forMissing(carriedName);
++                com.cleanroommc.ids.RetainedContent.noteMissingBlock(carriedName, iblockstate, null);
++            } else {
++                iblockstate = carriedBlock == null ? null : carriedBlock.getStateFromMeta(compound.getShort("carriedData") & 65535);
++            }
++        } else if (compound.hasKey("carried", 99)) {
++            int legacyId = compound.getShort("carried") & 0xFFFF;
++            ResourceLocation missingName = com.cleanroommc.ids.LegacyIds.blockName(legacyId);
++            if (missingName != null && !Block.REGISTRY.containsKey(missingName)) {
++                String blockName = missingName.toString();
++                if (!com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
++                    NBTTagCompound synth = new NBTTagCompound();
++                    synth.setString("Name", blockName);
++                    pendingRetained = synth;
++                    iblockstate = com.cleanroommc.ids.StandIns.forMissing(blockName);
++                    com.cleanroommc.ids.RetainedContent.noteMissingBlock(blockName, iblockstate, null);
++                } else {
++                    iblockstate = null;
++                }
++            } else {
++                Block carriedBlock = com.cleanroommc.ids.LegacyIds.block(legacyId); // Cleanroom: the short is a Forge-era saved id
++                iblockstate = carriedBlock == null ? null : carriedBlock.getStateFromMeta(compound.getShort("carriedData") & 65535);
++            }
          } else {
 -            iblockstate = Block.getBlockById(compound.getShort("carried")).getStateFromMeta(compound.getShort("carriedData") & 65535);
-+            Block carriedBlock = com.cleanroommc.ids.LegacyIds.block(compound.getShort("carried") & 0xFFFF); // Cleanroom: the short is a Forge-era saved id
-+            iblockstate = carriedBlock == null ? null : carriedBlock.getStateFromMeta(compound.getShort("carriedData") & 65535);
++            iblockstate = null;
          }
  
-         if (iblockstate == null || iblockstate.getBlock() == null || iblockstate.getMaterial() == Material.AIR) {
-@@ -177,6 +207,7 @@
+-        if (iblockstate == null || iblockstate.getBlock() == null || iblockstate.getMaterial() == Material.AIR) {
++        if (pendingRetained == null && (iblockstate == null || iblockstate.getBlock() == null || iblockstate.getMaterial() == Material.AIR)) {
+             iblockstate = null;
          }
  
          this.setHeldBlockState(iblockstate);
@@ -68,7 +95,7 @@
      }
  
      /** Checks to see if this enderman should be attacking this player */
-@@ -267,7 +298,10 @@
+@@ -267,7 +324,10 @@
  
      /** Teleport the enderman */
      private boolean teleportTo(double x, double y, double z) {
@@ -80,7 +107,7 @@
          if (flag) {
              this.world
                  .playSound(null, this.prevPosX, this.prevPosY, this.prevPosZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
-@@ -312,6 +346,7 @@
+@@ -312,6 +372,7 @@
  
      /** Sets this enderman's held block state */
      public void setHeldBlockState(@Nullable IBlockState state) {
@@ -88,7 +115,7 @@
          this.dataManager.set(CARRIED_BLOCK, Optional.fromNullable(state));
      }
  
-@@ -346,6 +381,16 @@
+@@ -346,6 +407,16 @@
          }
      }
  
@@ -105,7 +132,7 @@
      public boolean isScreaming() {
          return this.dataManager.get(SCREAMING);
      }
-@@ -473,7 +518,7 @@
+@@ -473,7 +544,7 @@
              if (this.enderman.getHeldBlockState() == null) {
                  return false;
              } else {
@@ -114,7 +141,7 @@
                      ? false
                      : this.enderman.getRNG().nextInt(2000) == 0;
              }
-@@ -491,7 +536,16 @@
+@@ -491,7 +562,16 @@
              IBlockState iblockstate = world.getBlockState(blockpos);
              IBlockState iblockstate1 = world.getBlockState(blockpos.down());
              IBlockState iblockstate2 = this.enderman.getHeldBlockState();
@@ -132,7 +159,7 @@
                  world.setBlockState(blockpos, iblockstate2, 3);
                  this.enderman.setHeldBlockState(null);
              }
-@@ -521,7 +575,7 @@
+@@ -521,7 +601,7 @@
              if (this.enderman.getHeldBlockState() != null) {
                  return false;
              } else {

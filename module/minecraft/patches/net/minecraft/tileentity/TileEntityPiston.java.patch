@@ -13,7 +13,7 @@
  
                  for (int i = 0; i < list1.size(); i++) {
                      Entity entity = list1.get(i);
-@@ -370,7 +373,26 @@
+@@ -370,7 +373,42 @@
      @Override
      public void readFromNBT(NBTTagCompound compound) {
          super.readFromNBT(compound);
@@ -35,13 +35,29 @@
 +                this.pistonState = net.minecraft.nbt.NBTUtil.readBlockState(stateTag);
 +            }
 +        } else {
-+            Block block = com.cleanroommc.ids.LegacyIds.block(compound.getInteger("blockId")); // Cleanroom: blockId is a Forge-era saved id
-+            this.pistonState = block == null ? Blocks.AIR.getDefaultState() : block.getStateFromMeta(compound.getInteger("blockData"));
++            int legacyId = compound.getInteger("blockId");
++            net.minecraft.util.ResourceLocation missingName = com.cleanroommc.ids.LegacyIds.blockName(legacyId);
++            if (missingName != null && !Block.REGISTRY.containsKey(missingName)) {
++                String blockName = missingName.toString();
++                if (com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
++                    com.cleanroommc.ids.RetainedContent.noteRemoved(blockName);
++                    this.pistonState = Blocks.AIR.getDefaultState();
++                } else {
++                    NBTTagCompound synth = new NBTTagCompound();
++                    synth.setString("Name", blockName);
++                    this.retainedBlockStateTag = synth;
++                    IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(blockName);
++                    this.pistonState = standIn != null ? standIn : Blocks.AIR.getDefaultState();
++                }
++            } else {
++                Block block = com.cleanroommc.ids.LegacyIds.block(legacyId); // Cleanroom: blockId is a Forge-era saved id
++                this.pistonState = block == null ? Blocks.AIR.getDefaultState() : block.getStateFromMeta(compound.getInteger("blockData"));
++            }
 +        }
          this.pistonFacing = EnumFacing.byIndex(compound.getInteger("facing"));
          this.progress = compound.getFloat("progress");
          this.lastProgress = this.progress;
-@@ -383,6 +405,7 @@
+@@ -383,6 +421,7 @@
          super.writeToNBT(compound);
          compound.setInteger("blockId", Block.getIdFromBlock(this.pistonState.getBlock()));
          compound.setInteger("blockData", this.pistonState.getBlock().getMetaFromState(this.pistonState));
