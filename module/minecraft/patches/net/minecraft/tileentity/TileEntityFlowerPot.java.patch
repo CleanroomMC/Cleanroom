@@ -50,3 +50,18 @@
          this.flowerPotItem = stack.getItem();
          this.flowerPotData = stack.getMetadata();
      }
+ 
+     public ItemStack getFlowerItemStack() {
+-        return this.flowerPotItem == null ? ItemStack.EMPTY : new ItemStack(this.flowerPotItem, 1, this.flowerPotData);
++        if (this.flowerPotItem == null) {
++            if (this.retainedItemName != null) {
++                NBTTagCompound tag = new NBTTagCompound();
++                tag.setString("id", this.retainedItemName);
++                tag.setByte("Count", (byte)1);
++                tag.setInteger("Damage", this.flowerPotData);
++                return new ItemStack(tag);
++            }
++            return ItemStack.EMPTY;
++        }
++        return new ItemStack(this.flowerPotItem, 1, this.flowerPotData);
+     }
