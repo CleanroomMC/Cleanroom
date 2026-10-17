@@ -210,6 +210,13 @@ public final class LegacyIds {
         return Potion.getPotionById(savedId);
     }
 
+    /* The saved registry name for a legacy potion id in the world's table, or null when not in the table. */
+    @Nullable
+    public static ResourceLocation potionName(int savedId) {
+        LegacyIds table = current();
+        return table == null ? null : table.lookup(GameData.POTIONS, savedId);
+    }
+
     /* A saved enchantment id. Falls back to the live id. */
     @Nullable
     public static Enchantment enchantment(int savedId) {
@@ -221,6 +228,13 @@ public final class LegacyIds {
             }
         }
         return Enchantment.getEnchantmentByID(savedId);
+    }
+
+    /* The saved registry name for a legacy enchantment id in the world's table, or null when not in the table. */
+    @Nullable
+    public static ResourceLocation enchantmentName(int savedId) {
+        LegacyIds table = current();
+        return table == null ? null : table.lookup(GameData.ENCHANTMENTS, savedId);
     }
 
     public static void writePotionName(NBTTagCompound compound, String key, @Nullable Potion potion) {

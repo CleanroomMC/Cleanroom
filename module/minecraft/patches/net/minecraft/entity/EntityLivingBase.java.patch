@@ -93,13 +93,22 @@
                  PotionEffect potioneffect = PotionEffect.readCustomPotionEffectFromNBT(nbttagcompound);
                  if (potioneffect != null) {
                      this.activePotionsMap.put(potioneffect.getPotion(), potioneffect);
-+                } else if (nbttagcompound.hasKey("Name", 8)) {
-+                    String potName = nbttagcompound.getString("Name");
-+                    if (!potName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(potName)) {
++                } else {
++                    String potName = nbttagcompound.hasKey("Name", 8) ? nbttagcompound.getString("Name") : null;
++                    if ((potName == null || potName.isEmpty()) && nbttagcompound.hasKey("Id", 99)) {
++                        int rawId = nbttagcompound.getTagId("Id") == 1
++                            ? (nbttagcompound.getByte("Id") & 0xFF)
++                            : nbttagcompound.getInteger("Id");
++                        net.minecraft.util.ResourceLocation leg = com.cleanroommc.ids.LegacyIds.potionName(rawId);
++                        potName = leg == null ? null : leg.toString();
++                    }
++                    if (potName != null && !potName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(potName)) {
 +                        if (this.retainedActiveEffects == null) {
 +                            this.retainedActiveEffects = new java.util.ArrayList<>();
 +                        }
-+                        this.retainedActiveEffects.add(nbttagcompound.copy());
++                        NBTTagCompound retainedCopy = nbttagcompound.copy();
++                        retainedCopy.setString("Name", potName);
++                        this.retainedActiveEffects.add(retainedCopy);
 +                    }
                  }
              }
