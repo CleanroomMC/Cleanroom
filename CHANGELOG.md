@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.7.8-alpha - 2026-10-17
+
+### Bug Fix
+
+- **event**: Set active mod to Cleanroom if loading had not started yet *[commit by [@Rongmario](https://github.com/Rongmario) in [6591cbe](https://github.com/CleanroomMC/Cleanroom/commit/6591cbe3da14e752b75c524f4daa7ca73990073b)]*
+    *[Fixes issue #680 by [@BuenChico785446](https://github.com/BuenChico785446)]*
+    *[Fixes issue #688 by [@geyesborg](https://github.com/geyesborg)]*
+- **compatibility**: Rethrow non-widening type mismatches in CompatibilityHooks.set *[commit by [@Rongmario](https://github.com/Rongmario) in [2bcc2b5](https://github.com/CleanroomMC/Cleanroom/commit/2bcc2b54cab7e338301ae5b46b13fd902fc52872)]*
+- **client**: Widen ModelBlockDefinition$MissingVariantException.<init> to public in forge_at.cfg *[PR by [@geyesborg](https://github.com/geyesborg), Lilith in [#690](https://github.com/CleanroomMC/Cleanroom/pull/690)]*
+
+### Performance
+
+- **discovery**: Read access transformers during the scan instead of reopening the jar *[commit by [@Rongmario](https://github.com/Rongmario) in [b57228f](https://github.com/CleanroomMC/Cleanroom/commit/b57228f1672850cd2dc49399fabdd93de95a0e7f)]*
+- **discovery**: Skip ASM parsing of classes that cannot carry a mod annotation *[commit by [@Rongmario](https://github.com/Rongmario) in [dac6284](https://github.com/CleanroomMC/Cleanroom/commit/dac628416e60b7bc5c9b460cb9fdf78a8c753da3)]*
+
+### Refactor
+
+- **discovery**: Drop duplicate cache and absolute path checks *[commit by [@Rongmario](https://github.com/Rongmario) in [e922286](https://github.com/CleanroomMC/Cleanroom/commit/e9222861cab0c4c781d8bdf4b73b552c50309196)]*
+
+### Build and Dependencies
+
+- **deps**: Update cleanmix, softens bugged mixin configs to not hard crash *[commit by [@Rongmario](https://github.com/Rongmario) in [48fa2f8](https://github.com/CleanroomMC/Cleanroom/commit/48fa2f8f54094dbfb83811c29d519f853f4ec842)]*
+
+### First-time Contributors
+
+- **[@geyesborg](https://github.com/geyesborg) made their first contribution!**
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.7-alpha...0.7.8-alpha
+
 ## 0.7.7-alpha - 2026-10-16
 
 ### Bug Fix
