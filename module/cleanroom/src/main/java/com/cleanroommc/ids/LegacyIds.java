@@ -150,6 +150,13 @@ public final class LegacyIds {
         return Block.getBlockById(savedId);
     }
 
+    /* The saved registry name for a legacy block id in the world's table, or null when not in the table. */
+    @Nullable
+    public static ResourceLocation blockName(int savedId) {
+        LegacyIds table = current();
+        return table == null ? null : table.lookup(GameData.BLOCKS, savedId);
+    }
+
     /* A saved item id (jukeboxes, flower pots). Falls back to the live id. */
     @Nullable
     public static Item item(int savedId) {
@@ -161,6 +168,13 @@ public final class LegacyIds {
             }
         }
         return Item.getItemById(savedId);
+    }
+
+    /* The saved registry name for a legacy item id in the world's table, or null when not in the table. */
+    @Nullable
+    public static ResourceLocation itemName(int savedId) {
+        LegacyIds table = current();
+        return table == null ? null : table.lookup(GameData.ITEMS, savedId);
     }
 
     /* A saved biome id (legacy biome bytes, JEID int arrays). Falls back to the live id. */

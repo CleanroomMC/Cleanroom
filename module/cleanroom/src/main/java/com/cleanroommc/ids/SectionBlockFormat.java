@@ -52,6 +52,7 @@ import java.util.Map;
  * Unknown block names read as air, unknown properties or values as the block's default for them; Forge aliases and
  * missing-mapping remaps apply through the block registry.
  */
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public final class SectionBlockFormat {
 
     public static final String CHUNK_PALETTE = "BlockPalette";
@@ -78,6 +79,12 @@ public final class SectionBlockFormat {
     }
 
     public static void readJeid(NBTTagCompound section, BlockStateContainer data) {
+        readJeid(section, data, null, null);
+    }
+
+    public static void readJeid(NBTTagCompound section, BlockStateContainer data,
+        RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
+    ) {
         int[] palette = section.getIntArray(PALETTE);
         byte[] blocks = section.getByteArray("Blocks");
         byte[] nibbles = section.getByteArray("Data");
@@ -86,10 +93,6 @@ public final class SectionBlockFormat {
         }
         NibbleArray dataNibbles = new NibbleArray(nibbles);
         NibbleArray addNibbles = section.hasKey("Add", 7) ? new NibbleArray(section.getByteArray("Add")) : null;
-        IBlockState[] resolved = new IBlockState[palette.length];
-        for (int p = 0; p < palette.length; p++) {
-            resolved[p] = stateFromPacked(palette[p]);
-        }
         for (int i = 0; i < SIZE; i++) {
             int x = i & 15;
             int y = i >> 8 & 15;
@@ -98,14 +101,20 @@ public final class SectionBlockFormat {
             if (addNibbles != null) {
                 index |= addNibbles.get(x, y, z) << 12;
             }
-            if (index >= resolved.length) {
-                throw corrupt(section, "refers to JEID palette entry " + index + " of " + resolved.length);
+            if (index >= palette.length) {
+                throw corrupt(section, "refers to JEID palette entry " + index + " of " + palette.length);
             }
-            data.set(x, y, z, resolved[index]);
+            setFromPacked(i, palette[index], data, retained, pos);
         }
     }
 
     public static void readNeid(NBTTagCompound section, BlockStateContainer data) {
+        readNeid(section, data, null, null);
+    }
+
+    public static void readNeid(NBTTagCompound section, BlockStateContainer data,
+        RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
+    ) {
         if (section.hasKey("Add2", 7)) {
             byte[] blocks = section.getByteArray("Blocks");
             byte[] nibbles = section.getByteArray("Data");
@@ -124,7 +133,7 @@ public final class SectionBlockFormat {
                 int add2 = add2Nibbles.get(x, y, z);
                 int blockId = (add2 << 12) | (add << 8) | (blocks[i] & 255);
                 int meta = dataNibbles.get(x, y, z);
-                data.set(x, y, z, stateFromPacked(blockId << 4 | meta));
+                setFromPacked(i, blockId << 4 | meta, data, retained, pos);
             }
             return;
         }
@@ -137,16 +146,56 @@ public final class SectionBlockFormat {
         for (int i = 0; i < SIZE; i++) {
             int blockId = (blocks[i * 2] & 255) << 8 | blocks[i * 2 + 1] & 255;
             int meta = dataNibbles.get(i & 15, i >> 8 & 15, i >> 4 & 15);
-            data.set(i & 15, i >> 8, i >> 4 & 15, stateFromPacked(blockId << 4 | meta));
+            setFromPacked(i, blockId << 4 | meta, data, retained, pos);
         }
     }
 
-    private static IBlockState stateFromPacked(int packed) {
-        Block block = LegacyIds.block(LegacyIdWorlds.jeidBlockId(packed));
-        if (block == null) {
-            return Blocks.AIR.getDefaultState();
+    public static void readLegacy(byte[] blockIds, NibbleArray dataNibbles, @Nullable NibbleArray blockIdExtension,
+        BlockStateContainer data, RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
+    ) {
+        for (int i = 0; i < SIZE; i++) {
+            int x = i & 15;
+            int y = i >> 8 & 15;
+            int z = i >> 4 & 15;
+            int ext = blockIdExtension == null ? 0 : blockIdExtension.get(x, y, z);
+            int packed = ext << 12 | (blockIds[i] & 255) << 4 | dataNibbles.get(x, y, z);
+            setFromPacked(i, packed, data, retained, pos);
         }
-        return block.getStateFromMeta(LegacyIdWorlds.jeidMeta(packed));
+    }
+
+    private static void setFromPacked(int cellIndex, int packed, BlockStateContainer data,
+        RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
+    ) {
+        int x = cellIndex & 15;
+        int y = cellIndex >> 8 & 15;
+        int z = cellIndex >> 4 & 15;
+        int blockId = LegacyIdWorlds.jeidBlockId(packed);
+        int meta = LegacyIdWorlds.jeidMeta(packed);
+        ResourceLocation missingName = LegacyIds.blockName(blockId);
+        if (missingName != null && !Block.REGISTRY.containsKey(missingName)) {
+            if (retained != null) {
+                String baseName = missingName.toString();
+                if (RetainedContent.isRemoved(baseName)) {
+                    RetainedContent.noteRemoved(baseName);
+                    data.set(x, y, z, Blocks.AIR.getDefaultState());
+                    return;
+                }
+                String spec = meta == 0 ? baseName : baseName + "[" + meta + "]";
+                IBlockState standIn = StandIns.forMissing(spec);
+                data.set(x, y, z, standIn != null ? standIn : Blocks.AIR.getDefaultState());
+                retained.retain(cellIndex, spec, standIn);
+                RetainedContent.noteMissingBlock(spec, standIn, pos);
+                return;
+            }
+            data.set(x, y, z, Blocks.AIR.getDefaultState());
+            return;
+        }
+        Block block = LegacyIds.block(blockId);
+        if (block != null) {
+            data.set(x, y, z, block.getStateFromMeta(meta));
+            return;
+        }
+        data.set(x, y, z, Blocks.AIR.getDefaultState());
     }
 
     public static boolean isPaletted(NBTTagCompound chunk) {
@@ -431,8 +480,16 @@ public final class SectionBlockFormat {
         if (open < 0 || open + 1 >= close) {
             return state;
         }
+        String inner = s.substring(open + 1, close);
+        if (inner.indexOf('=') < 0) {
+            try {
+                return block.getStateFromMeta(Integer.parseInt(inner));
+            } catch (RuntimeException ignored) {
+                return state;
+            }
+        }
         net.minecraft.block.state.BlockStateContainer definition = block.getBlockState();
-        for (String pair : s.substring(open + 1, close).split(",")) {
+        for (String pair : inner.split(",")) {
             int eq = pair.indexOf('=');
             if (eq > 0) {
                 IProperty<?> property = definition.getProperty(pair.substring(0, eq));
@@ -455,8 +512,12 @@ public final class SectionBlockFormat {
         if (open < 0 || open + 1 >= close) {
             return false;
         }
+        String inner = s.substring(open + 1, close);
+        if (inner.indexOf('=') < 0) {
+            return false;
+        }
         net.minecraft.block.state.BlockStateContainer definition = block.getBlockState();
-        for (String pair : s.substring(open + 1, close).split(",")) {
+        for (String pair : inner.split(",")) {
             int eq = pair.indexOf('=');
             if (eq > 0) {
                 IProperty<?> property = definition.getProperty(pair.substring(0, eq));

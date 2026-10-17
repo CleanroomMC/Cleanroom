@@ -262,7 +262,7 @@
          int i = compound.getInteger("xPos");
          int j = compound.getInteger("zPos");
          Chunk chunk = new Chunk(worldIn, i, j);
-@@ -321,19 +415,37 @@
+@@ -321,19 +415,36 @@
          chunk.setTerrainPopulated(compound.getBoolean("TerrainPopulated"));
          chunk.setLightPopulated(compound.getBoolean("LightPopulated"));
          chunk.setInhabitedTime(compound.getLong("InhabitedTime"));
@@ -282,30 +282,29 @@
 -            NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
 -            NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(nbttagcompound.getByteArray("Add")) : null;
 -            extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
++            com.cleanroommc.ids.RetainedContent.Section retainedSection = new com.cleanroommc.ids.RetainedContent.Section();
 +            switch (com.cleanroommc.ids.SectionBlockFormat.SectionFormat.detect(compound, nbttagcompound)) { // Cleanroom: one exhaustive dispatch over every section layout
-+                case com.cleanroommc.ids.SectionBlockFormat.SectionFormat.Native ignored -> {
-+                    com.cleanroommc.ids.RetainedContent.Section retainedSection = new com.cleanroommc.ids.RetainedContent.Section();
++                case com.cleanroommc.ids.SectionBlockFormat.SectionFormat.Native ignored ->
 +                    com.cleanroommc.ids.SectionBlockFormat.read(nbttagcompound, extendedblockstorage.getData(), blockPalette, retainedSection, chunk.getPos());
-+                    if (!retainedSection.isEmpty()) { // a later set() drops the name; an untouched cell writes it back
-+                        chunk.retained.section(i1, retainedSection);
-+                        extendedblockstorage.retained = retainedSection;
-+                    }
-+                }
 +                case com.cleanroommc.ids.SectionBlockFormat.SectionFormat.Jeid ignored -> // JEID/REID numeric palette, converted on the next save
-+                    com.cleanroommc.ids.SectionBlockFormat.readJeid(nbttagcompound, extendedblockstorage.getData());
++                    com.cleanroommc.ids.SectionBlockFormat.readJeid(nbttagcompound, extendedblockstorage.getData(), retainedSection, chunk.getPos());
 +                case com.cleanroommc.ids.SectionBlockFormat.SectionFormat.Neid ignored -> // NEID Blocks16, converted on the next save
-+                    com.cleanroommc.ids.SectionBlockFormat.readNeid(nbttagcompound, extendedblockstorage.getData());
++                    com.cleanroommc.ids.SectionBlockFormat.readNeid(nbttagcompound, extendedblockstorage.getData(), retainedSection, chunk.getPos());
 +                case com.cleanroommc.ids.SectionBlockFormat.SectionFormat.ForgeLegacy ignored -> { // Anvil sections from before the palette format, converted when the chunk is next saved
 +                    byte[] abyte = nbttagcompound.getByteArray("Blocks");
 +                    NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
 +                    NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(nbttagcompound.getByteArray("Add")) : null;
-+                    extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
++                    com.cleanroommc.ids.SectionBlockFormat.readLegacy(abyte, nibblearray, nibblearray1, extendedblockstorage.getData(), retainedSection, chunk.getPos());
 +                }
++            }
++            if (!retainedSection.isEmpty()) { // a later set() drops the name; an untouched cell writes it back
++                chunk.retained.section(i1, retainedSection);
++                extendedblockstorage.retained = retainedSection;
 +            }
              extendedblockstorage.setBlockLight(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
              if (flag) {
                  extendedblockstorage.setSkyLight(new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
-@@ -344,15 +456,39 @@
+@@ -344,15 +455,39 @@
          }
  
          chunk.setStorageArrays(aextendedblockstorage);
@@ -348,7 +347,7 @@
              chunk.setHasEntities(true);
          }
  
-@@ -363,6 +499,13 @@
+@@ -363,6 +498,13 @@
              TileEntity tileentity = TileEntity.create(worldIn, nbttagcompound2);
              if (tileentity != null) {
                  chunk.addTileEntity(tileentity);
@@ -362,7 +361,7 @@
              }
          }
  
-@@ -375,7 +518,7 @@
+@@ -375,7 +517,7 @@
                  if (nbttagcompound3.hasKey("i", 8)) {
                      block = Block.getBlockFromName(nbttagcompound3.getString("i"));
                  } else {
@@ -371,7 +370,7 @@
                  }
  
                  worldIn.scheduleBlockUpdate(
-@@ -386,8 +529,9 @@
+@@ -386,8 +528,9 @@
                  );
              }
          }
@@ -383,7 +382,7 @@
      }
  
      @Nullable
-@@ -481,4 +625,8 @@
+@@ -481,4 +624,8 @@
  
          return entity;
      }
