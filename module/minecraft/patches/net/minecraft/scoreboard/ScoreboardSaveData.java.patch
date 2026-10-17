@@ -1,0 +1,86 @@
+--- original/net/minecraft/scoreboard/ScoreboardSaveData.java
++++ modified/net/minecraft/scoreboard/ScoreboardSaveData.java
+@@ -12,6 +12,8 @@
+     private static final Logger LOGGER = LogManager.getLogger();
+     private Scoreboard scoreboard;
+     private NBTTagCompound delayedInitNbt;
++    private final java.util.List<NBTTagCompound> retainedObjectives = new java.util.ArrayList<>();
++    private final java.util.List<NBTTagCompound> retainedScores = new java.util.ArrayList<>();
+ 
+     public ScoreboardSaveData() {
+         this("scoreboard");
+@@ -116,10 +118,20 @@
+         }
+     }
+ 
++    private static boolean isRemovedCriteriaNamespace(String criteriaName) {
++        String[] parts = criteriaName.split("\\.");
++        if (parts.length >= 4 && "stat".equals(parts[0])) {
++            return com.cleanroommc.ids.RetainedContent.removedNamespaces().contains(parts[2]);
++        }
++        return false;
++    }
++
+     protected void readObjectives(NBTTagList nbt) {
++        this.retainedObjectives.clear();
+         for (int i = 0; i < nbt.tagCount(); i++) {
+             NBTTagCompound nbttagcompound = nbt.getCompoundTagAt(i);
+-            IScoreCriteria iscorecriteria = IScoreCriteria.INSTANCES.get(nbttagcompound.getString("CriteriaName"));
++            String criteriaName = nbttagcompound.getString("CriteriaName");
++            IScoreCriteria iscorecriteria = IScoreCriteria.INSTANCES.get(criteriaName);
+             if (iscorecriteria != null) {
+                 String s = nbttagcompound.getString("Name");
+                 if (s.length() > 16) {
+@@ -129,14 +141,27 @@
+                 ScoreObjective scoreobjective = this.scoreboard.addScoreObjective(s, iscorecriteria);
+                 scoreobjective.setDisplayName(nbttagcompound.getString("DisplayName"));
+                 scoreobjective.setRenderType(IScoreCriteria.EnumRenderType.getByName(nbttagcompound.getString("RenderType")));
++            } else if (!criteriaName.isEmpty() && !isRemovedCriteriaNamespace(criteriaName)) {
++                this.retainedObjectives.add(nbttagcompound.copy());
+             }
+         }
+     }
+ 
+     protected void readScores(NBTTagList nbt) {
++        this.retainedScores.clear();
+         for (int i = 0; i < nbt.tagCount(); i++) {
+             NBTTagCompound nbttagcompound = nbt.getCompoundTagAt(i);
+-            ScoreObjective scoreobjective = this.scoreboard.getObjective(nbttagcompound.getString("Objective"));
++            String objName = nbttagcompound.getString("Objective");
++            ScoreObjective scoreobjective = this.scoreboard.getObjective(objName);
++            if (scoreobjective == null) {
++                for (NBTTagCompound retObj : this.retainedObjectives) {
++                    if (objName.equals(retObj.getString("Name"))) {
++                        this.retainedScores.add(nbttagcompound.copy());
++                        break;
++                    }
++                }
++                continue;
++            }
+             String s = nbttagcompound.getString("Name");
+             if (s.length() > 40) {
+                 s = s.substring(0, 40);
+@@ -225,6 +250,11 @@
+                 nbttaglist.appendTag(nbttagcompound);
+             }
+         }
++        for (NBTTagCompound retained : this.retainedObjectives) {
++            if (this.scoreboard.getObjective(retained.getString("Name")) == null) {
++                nbttaglist.appendTag(retained.copy());
++            }
++        }
+ 
+         return nbttaglist;
+     }
+@@ -242,6 +272,11 @@
+                 nbttaglist.appendTag(nbttagcompound);
+             }
+         }
++        for (NBTTagCompound retainedScore : this.retainedScores) {
++            if (this.scoreboard.getObjective(retainedScore.getString("Objective")) == null) {
++                nbttaglist.appendTag(retainedScore.copy());
++            }
++        }
+ 
+         return nbttaglist;
+     }
