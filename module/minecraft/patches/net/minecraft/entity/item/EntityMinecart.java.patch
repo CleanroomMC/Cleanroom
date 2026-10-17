@@ -223,7 +223,7 @@
              int[][] aint = MATRIX[blockrailbase$enumraildirection.getMetadata()];
              double d0 = i + 0.5 + aint[0][0] * 0.5;
              double d1 = j + 0.0625 + aint[0][1] * 0.5;
-@@ -683,24 +711,75 @@
+@@ -683,24 +711,66 @@
              if (compound.hasKey("DisplayTile", 8)) {
                  block = Block.getBlockFromName(compound.getString("DisplayTile"));
              } else {
@@ -235,22 +235,24 @@
 -            this.setDisplayTile(block == null ? Blocks.AIR.getDefaultState() : block.getStateFromMeta(i));
 -            this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
 +            this.retainedDisplayStateTag = null;
-+            if (compound.hasKey("DisplayState", 10)) {
-+                NBTTagCompound stateTag = compound.getCompoundTag("DisplayState");
-+                String blockName = stateTag.getString("Name");
++            NBTTagCompound retained = com.cleanroommc.ids.RetainedContent.readRetainedBlockState(
++                compound, "DisplayState", "DisplayTile", "DisplayTile", false, false
++            );
++            if (retained != null) {
++                String blockName = retained.getString("Name");
++                IBlockState standIn = com.cleanroommc.ids.RetainedContent.standInForStateTag(retained);
++                if (!Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
++                    com.cleanroommc.ids.RetainedContent.noteMissingBlock(blockName, standIn, null);
++                }
++                this.setDisplayTile(standIn != null ? standIn : Blocks.AIR.getDefaultState());
++                this.retainedDisplayStateTag = retained;
++                this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
++            } else if (compound.hasKey("DisplayState", 10)) {
++                String blockName = compound.getCompoundTag("DisplayState").getString("Name");
 +                if (!blockName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
-+                    if (com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
-+                        com.cleanroommc.ids.RetainedContent.noteRemoved(blockName);
-+                        this.setHasDisplayTile(false);
-+                    } else {
-+                        IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(blockName);
-+                        com.cleanroommc.ids.RetainedContent.noteMissingBlock(blockName, standIn, null);
-+                        this.setDisplayTile(standIn != null ? standIn : Blocks.AIR.getDefaultState());
-+                        this.retainedDisplayStateTag = stateTag.copy();
-+                        this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
-+                    }
++                    this.setHasDisplayTile(false);
 +                } else {
-+                    this.setDisplayTile(net.minecraft.nbt.NBTUtil.readBlockState(stateTag));
++                    this.setDisplayTile(net.minecraft.nbt.NBTUtil.readBlockState(compound.getCompoundTag("DisplayState")));
 +                    this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
 +                }
 +            } else {
@@ -260,18 +262,7 @@
 +                    legacyTileName = leg == null ? null : leg.toString();
 +                }
 +                if (legacyTileName != null && !legacyTileName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(legacyTileName))) {
-+                    if (com.cleanroommc.ids.RetainedContent.isRemoved(legacyTileName)) {
-+                        com.cleanroommc.ids.RetainedContent.noteRemoved(legacyTileName);
-+                        this.setHasDisplayTile(false);
-+                    } else {
-+                        IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(legacyTileName);
-+                        com.cleanroommc.ids.RetainedContent.noteMissingBlock(legacyTileName, standIn, null);
-+                        this.setDisplayTile(standIn != null ? standIn : Blocks.AIR.getDefaultState());
-+                        NBTTagCompound synth = new NBTTagCompound();
-+                        synth.setString("Name", legacyTileName);
-+                        this.retainedDisplayStateTag = synth;
-+                        this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
-+                    }
++                    this.setHasDisplayTile(false);
 +                } else {
 +                    this.setDisplayTile(block == null ? Blocks.AIR.getDefaultState() : block.getStateFromMeta(i));
 +                    this.setDisplayTileOffset(compound.getInteger("DisplayOffset"));
@@ -306,7 +297,7 @@
              compound.setInteger("DisplayOffset", this.getDisplayTileOffset());
          }
      }
-@@ -708,6 +787,11 @@
+@@ -708,6 +778,11 @@
      /** Applies a velocity to the entities, to push them away from eachother. */
      @Override
      public void applyEntityCollision(Entity entityIn) {
@@ -318,7 +309,7 @@
          if (!this.world.isRemote) {
              if (!entityIn.noClip && !this.noClip) {
                  if (!this.isPassenger(entityIn)) {
-@@ -748,15 +832,14 @@
+@@ -748,15 +823,14 @@
  
                              double d7 = entityIn.motionX + this.motionX;
                              double d8 = entityIn.motionZ + this.motionZ;
@@ -337,7 +328,7 @@
                                  entityIn.motionX *= 0.2F;
                                  entityIn.motionZ *= 0.2F;
                                  entityIn.addVelocity(this.motionX + d0, 0.0, this.motionZ + d1);
-@@ -860,6 +943,7 @@
+@@ -860,6 +934,7 @@
      }
  
      public void setDisplayTile(IBlockState displayTile) {
@@ -345,7 +336,7 @@
          this.getDataManager().set(DISPLAY_TILE, Block.getStateId(displayTile));
          this.setHasDisplayTile(true);
      }
-@@ -874,9 +958,207 @@
+@@ -874,9 +949,207 @@
      }
  
      public void setHasDisplayTile(boolean showBlock) {

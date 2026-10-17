@@ -1,15 +1,34 @@
 --- original/net/minecraft/scoreboard/ScoreboardSaveData.java
 +++ modified/net/minecraft/scoreboard/ScoreboardSaveData.java
-@@ -12,6 +12,8 @@
+@@ -12,6 +12,9 @@
      private static final Logger LOGGER = LogManager.getLogger();
      private Scoreboard scoreboard;
      private NBTTagCompound delayedInitNbt;
 +    private final java.util.List<NBTTagCompound> retainedObjectives = new java.util.ArrayList<>();
 +    private final java.util.List<NBTTagCompound> retainedScores = new java.util.ArrayList<>();
++    private final String[] retainedDisplaySlots = new String[19];
  
      public ScoreboardSaveData() {
          this("scoreboard");
-@@ -116,10 +118,20 @@
+@@ -107,19 +110,38 @@
+     }
+ 
+     protected void readDisplayConfig(NBTTagCompound compound) {
++        java.util.Arrays.fill(this.retainedDisplaySlots, null);
+         for (int i = 0; i < 19; i++) {
+             if (compound.hasKey("slot_" + i, 8)) {
+                 String s = compound.getString("slot_" + i);
+                 ScoreObjective scoreobjective = this.scoreboard.getObjective(s);
+                 this.scoreboard.setObjectiveInDisplaySlot(i, scoreobjective);
++                if (scoreobjective == null) {
++                    for (NBTTagCompound retObj : this.retainedObjectives) {
++                        if (s.equals(retObj.getString("Name"))) {
++                            this.retainedDisplaySlots[i] = s;
++                            break;
++                        }
++                    }
++                }
+             }
          }
      }
  
@@ -31,7 +50,7 @@
              if (iscorecriteria != null) {
                  String s = nbttagcompound.getString("Name");
                  if (s.length() > 16) {
-@@ -129,14 +141,27 @@
+@@ -129,14 +151,27 @@
                  ScoreObjective scoreobjective = this.scoreboard.addScoreObjective(s, iscorecriteria);
                  scoreobjective.setDisplayName(nbttagcompound.getString("DisplayName"));
                  scoreobjective.setRenderType(IScoreCriteria.EnumRenderType.getByName(nbttagcompound.getString("RenderType")));
@@ -60,7 +79,17 @@
              String s = nbttagcompound.getString("Name");
              if (s.length() > 40) {
                  s = s.substring(0, 40);
-@@ -225,6 +250,11 @@
+@@ -204,6 +239,9 @@
+             if (scoreobjective != null) {
+                 nbttagcompound.setString("slot_" + i, scoreobjective.getName());
+                 flag = true;
++            } else if (this.retainedDisplaySlots[i] != null) {
++                nbttagcompound.setString("slot_" + i, this.retainedDisplaySlots[i]);
++                flag = true;
+             }
+         }
+ 
+@@ -225,6 +263,11 @@
                  nbttaglist.appendTag(nbttagcompound);
              }
          }
@@ -72,7 +101,7 @@
  
          return nbttaglist;
      }
-@@ -242,6 +272,11 @@
+@@ -242,6 +285,11 @@
                  nbttaglist.appendTag(nbttagcompound);
              }
          }
