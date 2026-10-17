@@ -396,6 +396,39 @@ public final class RetainedContent {
      * Centralized helper for reading an entity/tile-entity block-state compound (or legacy block string/id)
      * and returning a synthetic or copied state tag when the referenced block is currently absent and not removed.
      */
+    public static boolean hasUnresolvedBlockStateTag(NBTTagCompound stateTag) {
+        String blockName = stateTag.getString("Name");
+        if (blockName.isEmpty()) {
+            return false;
+        }
+        ResourceLocation rl = new ResourceLocation(blockName);
+        if (!Block.REGISTRY.containsKey(rl)) {
+            return true;
+        }
+        if (!stateTag.hasKey("Properties", 10)) {
+            return false;
+        }
+        Block block = Block.REGISTRY.getObject(rl);
+        net.minecraft.block.state.BlockStateContainer container = block.getBlockState();
+        NBTTagCompound props = stateTag.getCompoundTag("Properties");
+        for (String key : props.getKeySet()) {
+            net.minecraft.block.properties.IProperty<?> prop = container.getProperty(key);
+            if (prop == null || !prop.parseValue(props.getString(key)).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Nullable
+    public static IBlockState standInForStateTag(NBTTagCompound stateTag) {
+        String blockName = stateTag.getString("Name");
+        if (!blockName.isEmpty() && Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
+            return net.minecraft.nbt.NBTUtil.readBlockState(stateTag);
+        }
+        return StandIns.forMissing(blockName);
+    }
+
     @Nullable
     public static NBTTagCompound readRetainedBlockState(NBTTagCompound compound, String stateKey,
         @Nullable String legacyNameKey, @Nullable String legacyIdKey, boolean idIsShort, boolean idIsByte
@@ -403,7 +436,7 @@ public final class RetainedContent {
         if (compound.hasKey(stateKey, 10)) {
             NBTTagCompound stateTag = compound.getCompoundTag(stateKey);
             String blockName = stateTag.getString("Name");
-            if (!blockName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
+            if (hasUnresolvedBlockStateTag(stateTag)) {
                 if (isRemoved(blockName)) {
                     noteRemoved(blockName);
                     return null;

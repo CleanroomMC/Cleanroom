@@ -20,7 +20,7 @@
 -        this.pistonState = Block.getBlockById(compound.getInteger("blockId")).getStateFromMeta(compound.getInteger("blockData"));
 +        this.retainedBlockStateTag = com.cleanroommc.ids.RetainedContent.readRetainedBlockState(compound, "blockState", null, "blockId", false, false);
 +        if (this.retainedBlockStateTag != null) {
-+            IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(this.retainedBlockStateTag.getString("Name"));
++            IBlockState standIn = com.cleanroommc.ids.RetainedContent.standInForStateTag(this.retainedBlockStateTag);
 +            this.pistonState = standIn != null ? standIn : Blocks.AIR.getDefaultState();
 +        } else if (compound.hasKey("blockState", 10)) {
 +            this.pistonState = net.minecraft.nbt.NBTUtil.readBlockState(compound.getCompoundTag("blockState"));
