@@ -1,0 +1,26 @@
+--- original/net/minecraft/block/BlockStone.java
++++ modified/net/minecraft/block/BlockStone.java
+@@ -16,6 +16,7 @@
+ import net.minecraft.util.text.translation.I18n;
+ import net.minecraft.world.IBlockAccess;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockStone extends Block {
+     public static final PropertyEnum<BlockStone.EnumType> VARIANT = PropertyEnum.create("variant", BlockStone.EnumType.class);
+ 
+@@ -126,11 +127,11 @@
+ 
+         /** Returns an EnumType for the BlockState from a metadata value. */
+         public static BlockStone.EnumType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockStone.EnumType t : values()) { if (t.getMetadata() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override

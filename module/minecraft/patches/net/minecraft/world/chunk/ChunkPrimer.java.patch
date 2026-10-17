@@ -1,0 +1,20 @@
+--- original/net/minecraft/world/chunk/ChunkPrimer.java
++++ modified/net/minecraft/world/chunk/ChunkPrimer.java
+@@ -6,7 +6,7 @@
+ 
+ public class ChunkPrimer {
+     private static final IBlockState DEFAULT_STATE = Blocks.AIR.getDefaultState();
+-    private final char[] data = new char[65536];
++    private final int[] data = new int[65536]; // Cleanroom: runtime state ids can exceed a char
+ 
+     public IBlockState getBlockState(int x, int y, int z) {
+         IBlockState iblockstate = Block.BLOCK_STATE_IDS.getByValue(this.data[getBlockIndex(x, y, z)]);
+@@ -14,7 +14,7 @@
+     }
+ 
+     public void setBlockState(int x, int y, int z, IBlockState state) {
+-        this.data[getBlockIndex(x, y, z)] = (char)Block.BLOCK_STATE_IDS.get(state);
++        this.data[getBlockIndex(x, y, z)] = Block.BLOCK_STATE_IDS.get(state);
+     }
+ 
+     private static int getBlockIndex(int x, int y, int z) {

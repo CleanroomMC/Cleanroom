@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockPistonMoving.java
 +++ modified/net/minecraft/block/BlockPistonMoving.java
-@@ -131,13 +131,14 @@
+@@ -27,6 +27,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPistonMoving extends BlockContainer {
+     public static final PropertyDirection FACING = BlockPistonExtension.FACING;
+     public static final PropertyEnum<BlockPistonExtension.EnumPistonType> TYPE = BlockPistonExtension.TYPE;
+@@ -131,13 +132,14 @@
      /** Spawns this Block's drops into the World as EntityItems. */
      @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
@@ -16,7 +24,7 @@
      }
  
      /**
-@@ -253,6 +254,15 @@
+@@ -253,6 +255,15 @@
       * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
       */
      @Override

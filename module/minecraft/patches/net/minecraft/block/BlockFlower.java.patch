@@ -1,0 +1,30 @@
+--- original/net/minecraft/block/BlockFlower.java
++++ modified/net/minecraft/block/BlockFlower.java
+@@ -18,6 +18,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.IBlockAccess;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class BlockFlower extends BlockBush {
+     protected PropertyEnum<BlockFlower.EnumFlowerType> type;
+ 
+@@ -139,11 +140,15 @@
+         /** Get the given FlowerType from BlockType & metadata */
+         public static BlockFlower.EnumFlowerType getType(BlockFlower.EnumFlowerColor blockType, int meta) {
+             BlockFlower.EnumFlowerType[] ablockflower$enumflowertype = TYPES_FOR_BLOCK[blockType.ordinal()];
+-            if (meta < 0 || meta >= ablockflower$enumflowertype.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < ablockflower$enumflowertype.length && ablockflower$enumflowertype[meta] != null) {
++                return ablockflower$enumflowertype[meta];
+             }
+-
+-            return ablockflower$enumflowertype[meta];
++            for (BlockFlower.EnumFlowerType t : values()) {
++                if (t.getBlockType() == blockType && t.getMeta() == meta) {
++                    return t;
++                }
++            }
++            return ablockflower$enumflowertype[0];
+         }
+ 
+         /** Get all FlowerTypes that are applicable for the given Flower block ("yellow", "red") */

@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockDispenser.java
++++ modified/net/minecraft/block/BlockDispenser.java
+@@ -31,6 +31,7 @@
+ import net.minecraft.util.registry.RegistryDefaulted;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockDispenser extends BlockContainer {
+     public static final PropertyDirection FACING = BlockDirectional.FACING;
+     public static final PropertyBool TRIGGERED = PropertyBool.create("triggered");

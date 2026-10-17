@@ -1,0 +1,10 @@
+--- original/net/minecraft/util/datafix/fixes/BedItemColor.java
++++ modified/net/minecraft/util/datafix/fixes/BedItemColor.java
+@@ -4,6 +4,7 @@
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.util.datafix.IFixableData;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class BedItemColor implements IFixableData {
+     @Override
+     public int getFixVersion() {

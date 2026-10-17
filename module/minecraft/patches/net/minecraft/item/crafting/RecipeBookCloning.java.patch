@@ -10,7 +10,17 @@
      @Override
      public boolean matches(InventoryCrafting inv, World worldIn) {
          int i = 0;
-@@ -104,7 +103,6 @@
+@@ -65,6 +64,9 @@
+             ItemStack itemstack2 = new ItemStack(Items.WRITTEN_BOOK, i);
+             itemstack2.setTagCompound(itemstack.getTagCompound().copy());
+             itemstack2.getTagCompound().setInteger("generation", ItemWrittenBook.getGeneration(itemstack) + 1);
++            if (!itemstack.getComponents().asPatch().isEmpty()) {
++                itemstack2.getComponents().restorePatch(itemstack.getComponents().asPatch());
++            }
+             if (itemstack.hasDisplayName()) {
+                 itemstack2.setStackDisplayName(itemstack.getDisplayName());
+             }
+@@ -104,7 +106,6 @@
          return true;
      }
  

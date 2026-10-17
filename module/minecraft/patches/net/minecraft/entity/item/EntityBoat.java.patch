@@ -1,6 +1,14 @@
 --- original/net/minecraft/entity/item/EntityBoat.java
 +++ modified/net/minecraft/entity/item/EntityBoat.java
-@@ -413,6 +413,11 @@
+@@ -37,6 +37,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityBoat extends Entity {
+     private static final DataParameter<Integer> TIME_SINCE_HIT = EntityDataManager.createKey(EntityBoat.class, DataSerializers.VARINT);
+     private static final DataParameter<Integer> FORWARD_DIRECTION = EntityDataManager.createKey(EntityBoat.class, DataSerializers.VARINT);
+@@ -413,6 +414,11 @@
                      for (int i2 = i1; i2 < j1; i2++) {
                          blockpos$pooledmutableblockpos.setPos(l1, k1, i2);
                          IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
@@ -12,7 +20,7 @@
                          if (iblockstate.getMaterial() == Material.WATER) {
                              f = Math.max(f, BlockLiquid.getBlockLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos));
                          }
-@@ -467,7 +472,7 @@
+@@ -467,7 +473,7 @@
                                  IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
                                  iblockstate.addCollisionBoxToList(this.world, blockpos$pooledmutableblockpos, axisalignedbb1, list, this, false);
                                  if (!list.isEmpty()) {
@@ -21,7 +29,7 @@
                                      k1++;
                                  }
  
-@@ -502,6 +507,14 @@
+@@ -502,6 +508,14 @@
                      for (int i2 = i1; i2 < j1; i2++) {
                          blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                          IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
@@ -36,7 +44,7 @@
                          if (iblockstate.getMaterial() == Material.WATER) {
                              float f = BlockLiquid.getLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos);
                              this.waterLevel = Math.max(f, this.waterLevel);
-@@ -537,6 +550,17 @@
+@@ -537,6 +551,17 @@
                      for (int i2 = i1; i2 < j1; i2++) {
                          blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                          IBlockState iblockstate = this.world.getBlockState(blockpos$pooledmutableblockpos);
@@ -54,7 +62,7 @@
                          if (iblockstate.getMaterial() == Material.WATER
                              && d0 < BlockLiquid.getLiquidHeight(iblockstate, this.world, blockpos$pooledmutableblockpos)) {
                              if (iblockstate.getValue(BlockLiquid.LEVEL) != 0) {
-@@ -803,6 +827,21 @@
+@@ -803,6 +828,21 @@
          this.forwardInputDown = p_184442_3_;
          this.backInputDown = p_184442_4_;
      }

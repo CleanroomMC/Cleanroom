@@ -16,3 +16,70 @@
                  }
              } catch (ClassNotFoundException classnotfoundexception) {
              }
+@@ -64,20 +66,13 @@
+             j = i;
+         }
+ 
+-        if (j > 254) {
+-            throw new IllegalArgumentException("Data value id is too big with " + j + "! (Max is " + 254 + ")");
+-        }
+-
++        // Cleanroom: no 254 cap — data parameter ids travel as varints now
+         NEXT_ID_MAP.put(clazz, j);
+         return serializer.createKey(j);
+     }
+ 
+     public <T> void register(DataParameter<T> key, T value) {
+         int i = key.getId();
+-        if (i > 254) {
+-            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
+-        }
+-
+         if (this.entries.containsKey(i)) {
+             throw new IllegalArgumentException("Duplicate id value for " + i + "!");
+         }
+@@ -147,7 +142,7 @@
+             }
+         }
+ 
+-        buf.writeByte(255);
++        buf.writeVarInt(0); // Cleanroom: one-byte terminator, keys travel as id + 1
+     }
+ 
+     @Nullable
+@@ -182,7 +177,7 @@
+         }
+ 
+         this.lock.readLock().unlock();
+-        buf.writeByte(255);
++        buf.writeVarInt(0); // Cleanroom: one-byte terminator, keys travel as id + 1
+     }
+ 
+     @Nullable
+@@ -209,7 +204,7 @@
+             throw new EncoderException("Unknown serializer type " + dataparameter.getSerializer());
+         }
+ 
+-        buf.writeByte(dataparameter.getId());
++        buf.writeVarInt(dataparameter.getId() + 1); // Cleanroom: varint key + 1 so 0 terminates; ids are no longer capped at 254
+         buf.writeVarInt(i);
+         dataparameter.getSerializer().write(buf, entry.getValue());
+     }
+@@ -219,7 +214,7 @@
+         List<EntityDataManager.DataEntry<?>> list = null;
+ 
+         int i;
+-        while ((i = buf.readUnsignedByte()) != 255) {
++        while ((i = buf.readVarInt()) != 0) { // Cleanroom: varint key + 1, a single 0 byte terminates
+             if (list == null) {
+                 list = Lists.newArrayList();
+             }
+@@ -230,7 +225,7 @@
+                 throw new DecoderException("Unknown serializer type " + j);
+             }
+ 
+-            list.add(new EntityDataManager.DataEntry(dataserializer.createKey(i), dataserializer.read(buf)));
++            list.add(new EntityDataManager.DataEntry(dataserializer.createKey(i - 1), dataserializer.read(buf)));
+         }
+ 
+         return list;

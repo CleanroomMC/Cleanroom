@@ -8,7 +8,15 @@
  import net.minecraft.block.properties.PropertyEnum;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -126,6 +127,26 @@
+@@ -17,6 +18,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockQuartz extends Block {
+     public static final PropertyEnum<BlockQuartz.EnumType> VARIANT = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
+ 
+@@ -126,6 +128,26 @@
      protected BlockStateContainer createBlockState() {
          return new BlockStateContainer(this, VARIANT);
      }
@@ -35,3 +43,19 @@
  
      public enum EnumType implements IStringSerializable {
          DEFAULT(0, "default", "default"),
+@@ -155,11 +177,11 @@
+         }
+ 
+         public static BlockQuartz.EnumType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockQuartz.EnumType t : values()) { if (t.getMetadata() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override

@@ -1,0 +1,26 @@
+--- original/net/minecraft/block/BlockStoneBrick.java
++++ modified/net/minecraft/block/BlockStoneBrick.java
+@@ -9,6 +9,7 @@
+ import net.minecraft.util.IStringSerializable;
+ import net.minecraft.util.NonNullList;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockStoneBrick extends Block {
+     public static final PropertyEnum<BlockStoneBrick.EnumType> VARIANT = PropertyEnum.create("variant", BlockStoneBrick.EnumType.class);
+     public static final int DEFAULT_META = BlockStoneBrick.EnumType.DEFAULT.getMetadata();
+@@ -80,11 +81,11 @@
+         }
+ 
+         public static BlockStoneBrick.EnumType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockStoneBrick.EnumType t : values()) { if (t.getMetadata() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override

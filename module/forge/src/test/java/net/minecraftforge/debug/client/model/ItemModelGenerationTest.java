@@ -93,7 +93,7 @@ public class ItemModelGenerationTest
 
         private static void setCustomMRL(Item item)
         {
-            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+            ModelLoader.setCustomModelResourceLocation(item, new ModelResourceLocation(item.getRegistryName(), "inventory"));
         }
     }
 }

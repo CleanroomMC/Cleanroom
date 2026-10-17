@@ -76,6 +76,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mod(modid = ModelLoaderRegistryTest.MODID, name = "ForgeDebugModelLoaderRegistry", version = ModelLoaderRegistryTest.VERSION, acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class ModelLoaderRegistryTest
 {
     public static final boolean ENABLED = false;

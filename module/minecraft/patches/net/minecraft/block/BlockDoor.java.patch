@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockDoor.java
 +++ modified/net/minecraft/block/BlockDoor.java
-@@ -196,7 +196,7 @@
+@@ -29,6 +29,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockDoor extends Block {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     public static final PropertyBool OPEN = PropertyBool.create("open");
+@@ -196,7 +197,7 @@
                  flag1 = true;
              }
  
@@ -9,7 +17,7 @@
                  worldIn.setBlockToAir(pos);
                  flag1 = true;
                  if (iblockstate1.getBlock() == this) {
-@@ -231,11 +231,12 @@
+@@ -231,11 +232,12 @@
      /** Checks if this block can be placed exactly at the given position. */
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {

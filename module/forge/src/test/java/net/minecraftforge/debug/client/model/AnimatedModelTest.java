@@ -83,6 +83,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Mod(modid = AnimatedModelTest.MODID, name = "ForgeDebugModelAnimation", version = AnimatedModelTest.VERSION, acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class AnimatedModelTest
 {
     public static final String MODID = "forgedebugmodelanimation";

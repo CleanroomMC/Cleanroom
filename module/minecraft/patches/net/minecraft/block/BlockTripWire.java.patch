@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockTripWire.java
++++ modified/net/minecraft/block/BlockTripWire.java
+@@ -25,6 +25,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockTripWire extends Block {
+     public static final PropertyBool POWERED = PropertyBool.create("powered");
+     public static final PropertyBool ATTACHED = PropertyBool.create("attached");

@@ -38,6 +38,7 @@ import java.util.Collections;
 
 @Mod(modid = PathNodeTypeTest.MOD_ID, name = "AiNodeTypeTest", version = "1.0", acceptableRemoteVersions = "*")
 @Mod.EventBusSubscriber
+@SuppressWarnings("deprecation")
 public class PathNodeTypeTest
 {
     static final String MOD_ID = "ai_node_type_test";

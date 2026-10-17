@@ -1,0 +1,19 @@
+--- original/net/minecraft/item/ItemCarrotOnAStick.java
++++ modified/net/minecraft/item/ItemCarrotOnAStick.java
+@@ -12,6 +12,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemCarrotOnAStick extends Item {
+     public ItemCarrotOnAStick() {
+         this.setCreativeTab(CreativeTabs.TRANSPORTATION);
+@@ -43,7 +44,7 @@
+ 
+         if (playerIn.isRiding() && playerIn.getRidingEntity() instanceof EntityPig) {
+             EntityPig entitypig = (EntityPig)playerIn.getRidingEntity();
+-            if (itemstack.getMaxDamage() - itemstack.getMetadata() >= 7 && entitypig.boost()) {
++            if (itemstack.getMaxDamage() - itemstack.getDamageValue() >= 7 && entitypig.boost()) {
+                 itemstack.damageItem(7, playerIn);
+                 if (itemstack.isEmpty()) {
+                     ItemStack itemstack1 = new ItemStack(Items.FISHING_ROD);

@@ -1,0 +1,10 @@
+--- original/net/minecraft/entity/ai/EntityAINearestAttackableTarget.java
++++ modified/net/minecraft/entity/ai/EntityAINearestAttackableTarget.java
+@@ -20,6 +20,7 @@
+ import net.minecraft.util.EntitySelectors;
+ import net.minecraft.util.math.AxisAlignedBB;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends EntityAITarget {
+     protected final Class<T> targetClass;
+     private final int targetChance;

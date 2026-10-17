@@ -1,5 +1,16 @@
 --- original/net/minecraft/entity/monster/AbstractSkeleton.java
 +++ modified/net/minecraft/entity/monster/AbstractSkeleton.java
+@@ -120,8 +120,8 @@
+                 ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                 if (!itemstack.isEmpty()) {
+                     if (itemstack.isItemStackDamageable()) {
+-                        itemstack.setItemDamage(itemstack.getItemDamage() + this.rand.nextInt(2));
+-                        if (itemstack.getItemDamage() >= itemstack.getMaxDamage()) {
++                        itemstack.setDamageValue(itemstack.getDamageValue() + this.rand.nextInt(2));
++                        if (itemstack.getDamageValue() >= itemstack.getMaxDamage()) {
+                             this.renderBrokenItemStack(itemstack);
+                             this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
+                         }
 @@ -193,7 +193,8 @@
              this.tasks.removeTask(this.aiAttackOnCollide);
              this.tasks.removeTask(this.aiArrowAttack);

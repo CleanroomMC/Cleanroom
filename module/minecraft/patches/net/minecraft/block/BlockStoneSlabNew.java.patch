@@ -1,0 +1,35 @@
+--- original/net/minecraft/block/BlockStoneSlabNew.java
++++ modified/net/minecraft/block/BlockStoneSlabNew.java
+@@ -19,6 +19,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class BlockStoneSlabNew extends BlockSlab {
+     public static final PropertyBool SEAMLESS = PropertyBool.create("seamless");
+     public static final PropertyEnum<BlockStoneSlabNew.EnumType> VARIANT = PropertyEnum.create("variant", BlockStoneSlabNew.EnumType.class);
+@@ -66,7 +67,7 @@
+ 
+     @Override
+     public Comparable<?> getTypeForItem(ItemStack stack) {
+-        return BlockStoneSlabNew.EnumType.byMetadata(stack.getMetadata() & 7);
++        IBlockState carried = stack.getComponents().get(com.cleanroommc.component.DataComponents.BLOCK_STATE); if (carried != null && carried.getProperties().containsKey(VARIANT)) { return carried.getValue(VARIANT); } return BlockStoneSlabNew.EnumType.byMetadata(stack.getMetadata());
+     }
+ 
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */
+@@ -156,11 +157,11 @@
+         }
+ 
+         public static BlockStoneSlabNew.EnumType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockStoneSlabNew.EnumType t : values()) { if (t.getMetadata() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override

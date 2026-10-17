@@ -1,0 +1,23 @@
+--- original/net/minecraft/block/state/IBlockState.java
++++ modified/net/minecraft/block/state/IBlockState.java
+@@ -21,5 +21,20 @@
+     /** Get all properties of this BlockState. The returned Map maps from properties (IProperty) to the respective current value. */
+     ImmutableMap<IProperty<?>, Comparable<?>> getProperties();
+ 
++    /**
++     * Cleanroom: this state's index in its block's {@link BlockStateContainer#getValidStates()} list, or -1 for
++     * states a container does not list (e.g. extended-state wrappers).
++     */
++    default int getOrdinal() {
++        return getBlock().getBlockState().getValidStates().indexOf(this);
++    }
++
++    /**
++     * Cleanroom: this state's standalone runtime ID in {@link Block#BLOCK_STATE_IDS}.
++     */
++    default int getStateId() {
++        return Block.getStateId(this);
++    }
++
+     Block getBlock();
+ }

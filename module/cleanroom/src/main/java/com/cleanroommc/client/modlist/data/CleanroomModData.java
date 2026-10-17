@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class CleanroomModData implements IModData {
 
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation("forge",

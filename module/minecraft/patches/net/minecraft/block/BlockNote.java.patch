@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockNote.java
 +++ modified/net/minecraft/block/BlockNote.java
-@@ -75,7 +75,9 @@
+@@ -19,6 +19,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockNote extends BlockContainer {
+     private static final List<SoundEvent> INSTRUMENTS = Lists.newArrayList(
+         SoundEvents.BLOCK_NOTE_HARP,
+@@ -75,7 +76,9 @@
          TileEntity tileentity = worldIn.getTileEntity(pos);
          if (tileentity instanceof TileEntityNote) {
              TileEntityNote tileentitynote = (TileEntityNote)tileentity;
@@ -10,7 +18,7 @@
              tileentitynote.triggerNote(worldIn, pos);
              playerIn.addStat(StatList.NOTEBLOCK_TUNED);
          }
-@@ -114,6 +116,10 @@
+@@ -114,6 +117,10 @@
       */
      @Override
      public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param) {

@@ -1,6 +1,28 @@
 --- original/net/minecraft/entity/passive/EntityLlama.java
 +++ modified/net/minecraft/entity/passive/EntityLlama.java
-@@ -428,6 +428,9 @@
+@@ -48,6 +48,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityLlama extends AbstractChestHorse implements IRangedAttackMob {
+     private static final DataParameter<Integer> DATA_STRENGTH_ID = EntityDataManager.createKey(EntityLlama.class, DataSerializers.VARINT);
+     private static final DataParameter<Integer> DATA_COLOR_ID = EntityDataManager.createKey(EntityLlama.class, DataSerializers.VARINT);
+@@ -363,7 +364,12 @@
+ 
+     private void setColorByItem(ItemStack stack) {
+         if (this.isArmor(stack)) {
+-            this.setColor(EnumDyeColor.byMetadata(stack.getMetadata()));
++            net.minecraft.block.state.IBlockState state = stack.get(com.cleanroommc.component.DataComponents.BLOCK_STATE);
++            if (state != null && state.getProperties().containsKey(net.minecraft.block.BlockCarpet.COLOR)) {
++                this.setColor(state.getValue(net.minecraft.block.BlockCarpet.COLOR));
++            } else {
++                this.setColor(EnumDyeColor.byMetadata(stack.getMetadata()));
++            }
+         } else {
+             this.setColor(null);
+         }
+@@ -428,6 +434,9 @@
  
      @Override
      public void fall(float distance, float damageMultiplier) {

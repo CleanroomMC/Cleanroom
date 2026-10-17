@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockLilyPad.java
++++ modified/net/minecraft/block/BlockLilyPad.java
+@@ -13,6 +13,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockLilyPad extends BlockBush {
+     protected static final AxisAlignedBB LILY_PAD_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0625, 0.9375, 0.09375, 0.9375);
+ 

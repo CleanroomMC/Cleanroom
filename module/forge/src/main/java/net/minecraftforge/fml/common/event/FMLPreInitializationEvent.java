@@ -50,6 +50,7 @@ import javax.annotation.Nullable;
  * @see net.minecraftforge.fml.common.Mod.EventHandler for how to subscribe to this event
  * @author cpw
  */
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class FMLPreInitializationEvent extends FMLStateEvent
 {
     private ModMetadata modMetadata;

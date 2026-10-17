@@ -1,8 +1,10 @@
 --- original/net/minecraft/client/renderer/color/ItemColors.java
 +++ modified/net/minecraft/client/renderer/color/ItemColors.java
-@@ -23,7 +23,8 @@
+@@ -22,8 +22,10 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
  
  @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
  public class ItemColors {
 -    private final ObjectIntIdentityMap<IItemColor> mapItemColors = new ObjectIntIdentityMap<>(32);
 +    // FORGE: Use RegistryDelegates as non-Vanilla item ids are not constant
@@ -10,7 +12,16 @@
  
      public static ItemColors init(final BlockColors colors) {
          ItemColors itemcolors = new ItemColors();
-@@ -115,23 +116,28 @@
+@@ -99,7 +101,7 @@
+         itemcolors.registerItemColorHandler(new IItemColor() {
+             @Override
+             public int colorMultiplier(ItemStack stack, int tintIndex) {
+-                IBlockState iblockstate = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
++                IBlockState iblockstate = stack.get(com.cleanroommc.component.DataComponents.BLOCK_STATE); if (iblockstate == null) { iblockstate = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata()); }
+                 return colors.colorMultiplier(iblockstate, null, null, tintIndex);
+             }
+         }, Blocks.GRASS, Blocks.TALLGRASS, Blocks.VINE, Blocks.LEAVES, Blocks.LEAVES2, Blocks.WATERLILY);
+@@ -115,23 +117,28 @@
                  return tintIndex == 0 ? -1 : ItemMap.getColor(stack);
              }
          }, Items.FILLED_MAP);

@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockEnderChest.java
 +++ modified/net/minecraft/block/BlockEnderChest.java
-@@ -133,7 +133,7 @@
+@@ -29,6 +29,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockEnderChest extends BlockContainer {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     protected static final AxisAlignedBB ENDER_CHEST_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0625, 0.9375, 0.875, 0.9375);
+@@ -133,7 +134,7 @@
              return true;
          }
  

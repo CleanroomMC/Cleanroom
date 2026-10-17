@@ -176,6 +176,47 @@ public class EnumHelper
         return addEnum(HorseArmorType.class, name, new Class<?>[] { String.class, int.class }, new Object[] { textureLocation, armorStrength });
     }
 
+    /**
+     * Cleanroom: adds a new {@link net.minecraft.item.EnumDyeColor} and rebuilds any block/item state containers
+     * that use {@link net.minecraft.item.EnumDyeColor} (such as wool, carpet, concrete, stained glass and dye).
+     */
+    @Nullable
+    public static net.minecraft.item.EnumDyeColor addDyeColor(String enumName, int meta, int dyeDamage, String name, String unlocalizedName, int colorValue, net.minecraft.util.text.TextFormatting chatColor)
+    {
+        net.minecraft.item.EnumDyeColor color = addEnum(
+            net.minecraft.item.EnumDyeColor.class,
+            enumName,
+            new Class<?>[] { int.class, int.class, String.class, String.class, int.class, net.minecraft.util.text.TextFormatting.class },
+            new Object[] { meta, dyeDamage, name, unlocalizedName, colorValue, chatColor }
+        );
+        if (color != null)
+        {
+            for (net.minecraft.block.Block block : net.minecraft.block.Block.REGISTRY)
+            {
+                for (net.minecraft.block.properties.IProperty<?> prop : block.getBlockState().getProperties())
+                {
+                    if (prop.getValueClass() == net.minecraft.item.EnumDyeColor.class)
+                    {
+                        block.rebuildBlockState();
+                        break;
+                    }
+                }
+            }
+            for (net.minecraft.item.Item item : net.minecraft.item.Item.REGISTRY)
+            {
+                for (net.minecraft.block.properties.IProperty<?> prop : item.getItemState().getProperties())
+                {
+                    if (prop.getValueClass() == net.minecraft.item.EnumDyeColor.class)
+                    {
+                        item.rebuildItemState();
+                        break;
+                    }
+                }
+            }
+        }
+        return color;
+    }
+
     public static void setFailsafeFieldValue(Field field, @Nullable Object target, @Nullable Object value) throws Exception
     {
         Index.get().set(target, field, value);

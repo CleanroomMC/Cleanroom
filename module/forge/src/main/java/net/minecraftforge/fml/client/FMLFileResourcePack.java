@@ -34,6 +34,7 @@ import net.minecraft.client.resources.FileResourcePack;
 import net.minecraftforge.fml.common.FMLContainerHolder;
 import net.minecraftforge.fml.common.ModContainer;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class FMLFileResourcePack extends FileResourcePack implements FMLContainerHolder {
 
     private ModContainer container;

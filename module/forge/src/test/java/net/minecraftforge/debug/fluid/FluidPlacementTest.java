@@ -63,6 +63,7 @@ import java.util.List;
 import static net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack.FLUID_NBT_KEY;
 
 @Mod(modid = FluidPlacementTest.MODID, name = "ForgeDebugFluidPlacement", version = FluidPlacementTest.VERSION, acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class FluidPlacementTest
 {
     public static final String MODID = "forgedebugfluidplacement";
@@ -110,7 +111,7 @@ public class FluidPlacementTest
             ModelResourceLocation fluidLocation = new ModelResourceLocation(MODID.toLowerCase() + ":" + FiniteFluidBlock.name, "normal");
 
             Item fluid = Item.getItemFromBlock(FiniteFluidBlock.instance);
-            ModelLoader.setCustomModelResourceLocation(EmptyFluidContainer.instance, 0, new ModelResourceLocation("forge:bucket", "inventory"));
+            ModelLoader.setCustomModelResourceLocation(EmptyFluidContainer.instance, new ModelResourceLocation("forge:bucket", "inventory"));
             ModelLoader.setBucketModelDefinition(FluidContainer.instance);
             // no need to pass the locations here, since they'll be loaded by the block model logic.
             ModelBakery.registerItemVariants(fluid);

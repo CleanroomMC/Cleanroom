@@ -1,6 +1,19 @@
 --- original/net/minecraft/command/CommandFill.java
 +++ modified/net/minecraft/command/CommandFill.java
-@@ -81,11 +81,12 @@
+@@ -46,9 +46,12 @@
+         BlockPos blockpos = parseBlockPos(sender, args, 0, false);
+         BlockPos blockpos1 = parseBlockPos(sender, args, 3, false);
+         Block block = CommandBase.getBlockByText(sender, args[6]);
++        String inlineState = CommandBase.extractInlineBlockStateSpec(args[6]);
+         IBlockState iblockstate;
+         if (args.length >= 8) {
+             iblockstate = convertArgToBlockState(block, args[7]);
++        } else if (inlineState != null) {
++            iblockstate = convertArgToBlockState(block, inlineState);
+         } else {
+             iblockstate = block.getDefaultState();
+         }
+@@ -81,11 +84,12 @@
                  }
              }
  
@@ -17,7 +30,7 @@
                  try {
                      nbttagcompound = JsonToNBT.getTagFromJson(s);
                      flag = true;
-@@ -109,7 +110,7 @@
+@@ -109,7 +113,7 @@
                                      if (!world.isAirBlock(blockpos4)) {
                                          continue;
                                      }

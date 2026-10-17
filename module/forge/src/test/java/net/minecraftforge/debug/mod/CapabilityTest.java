@@ -228,7 +228,7 @@ public class CapabilityTest
     public void attachVillage(AttachCapabilitiesEvent<Village> event)
     {
         System.out.println(event.getObject());
-        event.addCapability(new ResourceLocation("forge.testcapmod:dummy_cap"), new Provider(event.getObject()));
+        event.addCapability(new ResourceLocation("forge.testcapmod:dummy_cap"), new Provider<>(event.getObject()));
     }
 
     //Detects if a player has entered the radius of a village

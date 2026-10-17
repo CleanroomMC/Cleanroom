@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockDropper.java
 +++ modified/net/minecraft/block/BlockDropper.java
-@@ -36,7 +36,8 @@
+@@ -12,6 +12,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockDropper extends BlockDispenser {
+     private final IBehaviorDispenseItem dropBehavior = new BehaviorDefaultDispenseItem();
+ 
+@@ -36,7 +37,8 @@
                  worldIn.playEvent(1001, pos, 0);
              } else {
                  ItemStack itemstack = tileentitydispenser.getStackInSlot(i);

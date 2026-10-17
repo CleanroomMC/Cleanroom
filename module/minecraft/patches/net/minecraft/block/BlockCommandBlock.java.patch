@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockCommandBlock.java
++++ modified/net/minecraft/block/BlockCommandBlock.java
+@@ -27,6 +27,7 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockCommandBlock extends BlockContainer {
+     private static final Logger LOGGER = LogManager.getLogger();
+     public static final PropertyDirection FACING = BlockDirectional.FACING;

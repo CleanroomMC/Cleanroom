@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/renderer/texture/SimpleTexture.java
++++ modified/net/minecraft/client/renderer/texture/SimpleTexture.java
+@@ -13,6 +13,7 @@
+ import org.apache.logging.log4j.Logger;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class SimpleTexture extends AbstractTexture {
+     private static final Logger LOGGER = LogManager.getLogger();
+     protected final ResourceLocation textureLocation;

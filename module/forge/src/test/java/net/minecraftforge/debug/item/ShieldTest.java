@@ -43,6 +43,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @ObjectHolder("shield_test")
 @EventBusSubscriber
 @Mod(modid = "shield_test", name = "Shield Test", version = "0.0.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class ShieldTest
 {
     public static final ItemShield DIAMOND_SHIELD = null;
@@ -99,7 +100,7 @@ public class ShieldTest
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
     {
-        ModelLoader.setCustomModelResourceLocation(DIAMOND_SHIELD, 0, new ModelResourceLocation("shield_test:diamond_shield", "inventory"));
-        ModelLoader.setCustomModelResourceLocation(HEAVY_DIAMOND_SWORD, 0, new ModelResourceLocation("minecraft:diamond_sword", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(DIAMOND_SHIELD, new ModelResourceLocation("shield_test:diamond_shield", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(HEAVY_DIAMOND_SWORD, new ModelResourceLocation("minecraft:diamond_sword", "inventory"));
     }
 }

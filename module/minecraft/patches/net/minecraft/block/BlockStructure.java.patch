@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockStructure.java
++++ modified/net/minecraft/block/BlockStructure.java
+@@ -17,6 +17,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockStructure extends BlockContainer {
+     public static final PropertyEnum<TileEntityStructure.Mode> MODE = PropertyEnum.create("mode", TileEntityStructure.Mode.class);
+ 

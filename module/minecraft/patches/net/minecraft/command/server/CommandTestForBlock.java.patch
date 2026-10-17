@@ -1,0 +1,48 @@
+--- original/net/minecraft/command/server/CommandTestForBlock.java
++++ modified/net/minecraft/command/server/CommandTestForBlock.java
+@@ -20,6 +20,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class CommandTestForBlock extends CommandBase {
+     /** Gets the name of the command */
+     @Override
+@@ -60,7 +61,7 @@
+ 
+         NBTTagCompound nbttagcompound = new NBTTagCompound();
+         boolean flag = false;
+-        if (args.length >= 6 && block.hasTileEntity()) {
++        IBlockState targetState = world.getBlockState(blockpos); if (args.length >= 6 && (block.hasTileEntity(targetState) || block.hasTileEntity())) {
+             String s = buildString(args, 5);
+ 
+             try {
+@@ -84,7 +85,9 @@
+             );
+         }
+ 
+-        if (args.length >= 5 && !CommandBase.convertArgToBlockStatePredicate(block, args[4]).apply(iblockstate)) {
++        String inlineState = CommandBase.extractInlineBlockStateSpec(args[3]);
++        String stateSpec = args.length >= 5 ? args[4] : inlineState;
++        if (stateSpec != null && !CommandBase.convertArgToBlockStatePredicate(block, stateSpec).apply(iblockstate)) {
+             try {
+                 int i = iblockstate.getBlock().getMetaFromState(iblockstate);
+                 throw new CommandException(
+@@ -93,7 +96,7 @@
+                     blockpos.getY(),
+                     blockpos.getZ(),
+                     i,
+-                    Integer.parseInt(args[4])
++                    Integer.parseInt(stateSpec)
+                 );
+             } catch (NumberFormatException numberformatexception) {
+                 throw new CommandException(
+@@ -102,7 +105,7 @@
+                     blockpos.getY(),
+                     blockpos.getZ(),
+                     iblockstate.toString(),
+-                    args[4]
++                    stateSpec
+                 );
+             }
+         } else {

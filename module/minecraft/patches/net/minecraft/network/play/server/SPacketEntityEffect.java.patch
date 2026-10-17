@@ -1,0 +1,59 @@
+--- original/net/minecraft/network/play/server/SPacketEntityEffect.java
++++ modified/net/minecraft/network/play/server/SPacketEntityEffect.java
+@@ -12,6 +12,7 @@
+ public class SPacketEntityEffect implements Packet<INetHandlerPlayClient> {
+     private int entityId;
+     private byte effectId;
++    private int fullEffectId; // Cleanroom: the potion id, effectId is its low byte for getEffectId() callers
+     private byte amplifier;
+     private int duration;
+     private byte flags;
+@@ -21,7 +22,8 @@
+ 
+     public SPacketEntityEffect(int entityIdIn, PotionEffect effect) {
+         this.entityId = entityIdIn;
+-        this.effectId = (byte)(Potion.getIdFromPotion(effect.getPotion()) & 0xFF);
++        this.fullEffectId = Potion.getIdFromPotion(effect.getPotion());
++        this.effectId = (byte)(this.fullEffectId & 0xFF);
+         this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
+         if (effect.getDuration() > 32767) {
+             this.duration = 32767;
+@@ -43,7 +45,8 @@
+     @Override
+     public void readPacketData(PacketBuffer buf) throws IOException {
+         this.entityId = buf.readVarInt();
+-        this.effectId = buf.readByte();
++        this.fullEffectId = buf.readVarInt(); // Cleanroom: potion ids past 255 (was a byte)
++        this.effectId = (byte)this.fullEffectId;
+         this.amplifier = buf.readByte();
+         this.duration = buf.readVarInt();
+         this.flags = buf.readByte();
+@@ -53,7 +56,7 @@
+     @Override
+     public void writePacketData(PacketBuffer buf) throws IOException {
+         buf.writeVarInt(this.entityId);
+-        buf.writeByte(this.effectId);
++        buf.writeVarInt(this.fullEffectId);
+         buf.writeByte(this.amplifier);
+         buf.writeVarInt(this.duration);
+         buf.writeByte(this.flags);
+@@ -74,12 +77,19 @@
+         return this.entityId;
+     }
+ 
++    /** The potion id's low byte; see {@link #getFullEffectId()} */
+     @SideOnly(Side.CLIENT)
+     public byte getEffectId() {
+         return this.effectId;
+     }
+ 
++    /** Cleanroom: the potion id */
+     @SideOnly(Side.CLIENT)
++    public int getFullEffectId() {
++        return this.fullEffectId;
++    }
++
++    @SideOnly(Side.CLIENT)
+     public byte getAmplifier() {
+         return this.amplifier;
+     }

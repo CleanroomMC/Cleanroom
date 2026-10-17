@@ -60,7 +60,7 @@ public class EnumHelperTest
         }
         catch (Exception e)
         {
-            Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

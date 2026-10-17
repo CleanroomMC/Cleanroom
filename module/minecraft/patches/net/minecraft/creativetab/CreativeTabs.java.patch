@@ -1,6 +1,14 @@
 --- original/net/minecraft/creativetab/CreativeTabs.java
 +++ modified/net/minecraft/creativetab/CreativeTabs.java
-@@ -135,7 +135,18 @@
+@@ -13,6 +13,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public abstract class CreativeTabs {
+     public static CreativeTabs[] CREATIVE_TAB_ARRAY = new CreativeTabs[12];
+     public static final CreativeTabs BUILDING_BLOCKS = new CreativeTabs(0, "buildingBlocks") {
+@@ -135,7 +136,18 @@
      private EnumEnchantmentType[] enchantmentTypes = new EnumEnchantmentType[0];
      private ItemStack icon;
  
@@ -19,7 +27,7 @@
          this.index = index;
          this.tabLabel = label;
          this.icon = ItemStack.EMPTY;
-@@ -203,12 +214,18 @@
+@@ -203,12 +215,18 @@
      /** returns index % 6 */
      @SideOnly(Side.CLIENT)
      public int getColumn() {
@@ -38,7 +46,7 @@
          return this.index < 6;
      }
  
-@@ -247,4 +264,43 @@
+@@ -247,4 +265,43 @@
              item.getSubItems(this, p_78018_1_);
          }
      }

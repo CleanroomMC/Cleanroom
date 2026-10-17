@@ -1,0 +1,13 @@
+--- original/net/minecraft/world/gen/layer/GenLayerVoronoiZoom.java
++++ modified/net/minecraft/world/gen/layer/GenLayerVoronoiZoom.java
+@@ -39,8 +39,8 @@
+                 this.initChunkSeed(l1 + i + 1 << 2, k1 + j + 1 << 2);
+                 double d7 = (this.nextInt(1024) / 1024.0 - 0.5) * 3.6 + 4.0;
+                 double d8 = (this.nextInt(1024) / 1024.0 - 0.5) * 3.6 + 4.0;
+-                int k2 = aint[l1 + 1 + (k1 + 0) * k] & 0xFF;
+-                int l2 = aint[l1 + 1 + (k1 + 1) * k] & 0xFF;
++                int k2 = aint[l1 + 1 + (k1 + 0) * k];
++                int l2 = aint[l1 + 1 + (k1 + 1) * k];
+ 
+                 for (int i3 = 0; i3 < 4; i3++) {
+                     int j3 = ((k1 << 2) + i3) * i1 + (l1 << 2);

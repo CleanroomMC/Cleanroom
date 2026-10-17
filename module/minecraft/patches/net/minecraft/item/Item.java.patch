@@ -1,19 +1,179 @@
 --- original/net/minecraft/item/Item.java
 +++ modified/net/minecraft/item/Item.java
-@@ -58,9 +58,9 @@
+@@ -58,9 +58,12 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class Item {
 -    public static final RegistryNamespaced<ResourceLocation, Item> REGISTRY = new RegistryNamespaced<>();
 -    private static final Map<Block, Item> BLOCK_TO_ITEM = Maps.newHashMap();
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 +public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Item> {
 +    public static final RegistryNamespaced<ResourceLocation, Item> REGISTRY = net.minecraftforge.registries.GameData.getWrapper(Item.class);
++    /** Cleanroom: dense runtime numbering of all valid {@link com.cleanroommc.component.IItemState}s, mirroring {@link Block#BLOCK_STATE_IDS}. */
++    public static final net.minecraft.util.ObjectIntIdentityMap<com.cleanroommc.component.IItemState> ITEM_STATE_IDS = net.minecraftforge.registries.GameData.getItemStateIDMap();
 +    private static final Map<Block, Item> BLOCK_TO_ITEM = net.minecraftforge.registries.GameData.getBlockItemMap();
      private static final IItemPropertyGetter DAMAGED_GETTER = new IItemPropertyGetter() {
          @SideOnly(Side.CLIENT)
          @Override
-@@ -193,7 +193,7 @@
+@@ -72,7 +75,7 @@
+         @SideOnly(Side.CLIENT)
+         @Override
+         public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
+-            return MathHelper.clamp((float)stack.getItemDamage() / stack.getMaxDamage(), 0.0F, 1.0F);
++            return MathHelper.clamp((float)stack.getDamageValue() / stack.getMaxDamage(), 0.0F, 1.0F);
+         }
+     };
+     private static final IItemPropertyGetter LEFTHANDED_GETTER = new IItemPropertyGetter() {
+@@ -101,6 +104,11 @@
+     private int maxDamage;
+     /** If true, render the object in full 3D, like weapons and tools. */
+     protected boolean bFull3D;
++    /** The item's default data components; built lazily, invalidated by {@link #setMaxDamage}/{@link #setMaxStackSize}. */
++    private com.cleanroommc.component.DataComponentMap components;
++    /** Cleanroom: this item's state container and default state, built lazily via {@link #createItemState()}. */
++    private com.cleanroommc.component.ItemStateContainer itemState;
++    private com.cleanroommc.component.IItemState defaultItemState;
+     /** Some items (like dyes) have multiple subtypes on same item, this is field define this behavior */
+     protected boolean hasSubtypes;
+     private Item containerItem;
+@@ -115,20 +123,103 @@
+         return REGISTRY.getObjectById(id);
+     }
+ 
++    /** Cleanroom: returns the dense runtime ID for {@code state} in {@link #ITEM_STATE_IDS}. */
++    public static int getStateId(com.cleanroommc.component.IItemState state) {
++        return ITEM_STATE_IDS.get(state == null ? Items.AIR.getDefaultItemState() : state);
++    }
++
++    /** Cleanroom: returns the {@link com.cleanroommc.component.IItemState} for {@code id} in {@link #ITEM_STATE_IDS}, or air's default state if out of range. */
++    public static com.cleanroommc.component.IItemState getStateById(int id) {
++        com.cleanroommc.component.IItemState state = ITEM_STATE_IDS.getByValue(id);
++        return state == null ? Items.AIR.getDefaultItemState() : state;
++    }
++
++    protected com.cleanroommc.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.component.ItemStateContainer(this);
++    }
++
++    public com.cleanroommc.component.ItemStateContainer getItemState() {
++        com.cleanroommc.component.ItemStateContainer c = this.itemState;
++        if (c == null) {
++            c = this.createItemState();
++            this.itemState = c;
++            if (this.defaultItemState == null) {
++                this.defaultItemState = c.getBaseState();
++            }
++        }
++        return c;
++    }
++
++    public final com.cleanroommc.component.IItemState getDefaultItemState() {
++        getItemState();
++        return this.defaultItemState;
++    }
++
++    /**
++     * Cleanroom: rebuilds this item's {@link com.cleanroommc.component.ItemStateContainer} (for example after
++     * a mod adds a new enum constant to a {@link net.minecraft.block.properties.PropertyEnum}), preserving the
++     * default state's property values.
++     */
++    @SuppressWarnings({ "rawtypes", "unchecked" })
++    public void rebuildItemState() {
++        if (this.itemState != null) {
++            for (net.minecraft.block.properties.IProperty<?> prop : this.itemState.getProperties()) {
++                if (prop instanceof net.minecraft.block.properties.PropertyEnum<?>) {
++                    ((net.minecraft.block.properties.PropertyEnum<?>) prop).refreshAllowedValues();
++                }
++            }
++        }
++        com.cleanroommc.component.IItemState oldDefault = this.defaultItemState;
++        this.itemState = this.createItemState();
++        com.cleanroommc.component.IItemState nextDefault = this.itemState.getBaseState();
++        if (oldDefault != null) {
++            for (java.util.Map.Entry<net.minecraft.block.properties.IProperty<?>, Comparable<?>> e : oldDefault.getProperties().entrySet()) {
++                net.minecraft.block.properties.IProperty prop = this.itemState.getProperty(e.getKey().getName());
++                if (prop != null && prop.getAllowedValues().contains(e.getValue())) {
++                    nextDefault = nextDefault.withProperty(prop, (Comparable) e.getValue());
++                }
++            }
++        }
++        this.defaultItemState = nextDefault;
++        if (ITEM_STATE_IDS instanceof net.minecraftforge.registries.ItemStateIdMap) {
++            ((net.minecraftforge.registries.ItemStateIdMap) ITEM_STATE_IDS).invalidate();
++        }
++    }
++
++    protected final void setDefaultItemState(com.cleanroommc.component.IItemState state) {
++        this.defaultItemState = state;
++    }
++
++    /**
++     * @deprecated Cleanroom: legacy metadata-to-state bridge; use {@link com.cleanroommc.component.IItemState} properties directly.
++     */
++    @Deprecated
++    public com.cleanroommc.component.IItemState getItemStateFromMeta(int meta) {
++        return getDefaultItemState();
++    }
++
++    /**
++     * @deprecated Cleanroom: legacy state-to-metadata bridge; use {@link com.cleanroommc.component.IItemState} properties directly.
++     */
++    @Deprecated
++    public int getMetaFromItemState(com.cleanroommc.component.IItemState state) {
++        return 0;
++    }
++
+     public static Item getItemFromBlock(Block blockIn) {
+         Item item = BLOCK_TO_ITEM.get(blockIn);
+         return item == null ? Items.AIR : item;
+     }
+ 
+-    /** Tries to get an Item by it's name (e.g. minecraft:apple) or a String representation of a numerical ID. If both fail, null is returned. */
++    /**
++     * Tries to get an Item by its registry name (e.g. {@code minecraft:apple}).
++     * Cleanroom: numeric ID strings are no longer resolved against session numbering; they log a once-per-name warning and return {@code null}.
++     */
+     @Nullable
+     public static Item getByNameOrId(String id) {
+         Item item = REGISTRY.getObject(new ResourceLocation(id));
+         if (item == null) {
+-            try {
+-                return getItemById(Integer.parseInt(id));
+-            } catch (NumberFormatException numberformatexception) {
+-            }
++            com.cleanroommc.ids.LegacyIds.warnIfNumericItemId(id);
+         }
+ 
+         return item;
+@@ -150,6 +241,18 @@
+         return !this.properties.getKeys().isEmpty();
+     }
+ 
++    /**
++     * Cleanroom: returns the model key for {@code stack} derived from its data components.
++     * Defaults to {@code 0} for damageable items and {@link com.cleanroommc.component.DataComponents#LEGACY_VARIANT} otherwise.
++     */
++    public int getModelKey(ItemStack stack) {
++        if (this.isDamageable()) {
++            return 0;
++        }
++        Integer variant = stack.get(com.cleanroommc.component.DataComponents.LEGACY_VARIANT);
++        return variant != null ? variant.intValue() : 0;
++    }
++
+     /** Called when an ItemStack with NBT data is read to potentially that ItemStack's NBT data */
+     public boolean updateItemStackNBT(NBTTagCompound nbt) {
+         return false;
+@@ -162,6 +265,7 @@
+ 
+     public Item setMaxStackSize(int maxStackSize) {
+         this.maxStackSize = maxStackSize;
++        this.components = null;
+         return this;
+     }
+ 
+@@ -193,26 +297,40 @@
          return stack;
      }
  
@@ -22,7 +182,33 @@
      public int getItemStackLimit() {
          return this.maxStackSize;
      }
-@@ -212,7 +212,7 @@
+ 
+-    /** Converts the given ItemStack damage value into a metadata value to be placed in the world when this Item is placed as a Block (mostly used with ItemBlocks). */
++    /**
++     * Converts the given ItemStack damage value into a metadata value to be placed in the world when this Item is placed as a Block (mostly used with ItemBlocks).
++     * @deprecated the legacy number L; block placement uses the stack-based overload
++     */
++    @Deprecated
+     public int getMetadata(int damage) {
+         return 0;
+     }
+ 
++    /**
++     * @deprecated kept as the flag that routes the legacy number L to {@code LEGACY_VARIANT}; new code
++     * sets components directly
++     */
++    @Deprecated
+     public boolean getHasSubtypes() {
+         return this.hasSubtypes;
+     }
+ 
++    /**
++     * @deprecated kept as the flag that routes the legacy number L to {@code LEGACY_VARIANT}; new code
++     * sets components directly
++     */
++    @Deprecated
+     public Item setHasSubtypes(boolean hasSubtypes) {
+         this.hasSubtypes = hasSubtypes;
          return this;
      }
  
@@ -31,7 +217,15 @@
      public int getMaxDamage() {
          return this.maxDamage;
      }
-@@ -306,7 +306,7 @@
+@@ -220,6 +338,7 @@
+     /** set max damage of an Item */
+     public Item setMaxDamage(int maxDamageIn) {
+         this.maxDamage = maxDamageIn;
++        this.components = null;
+         if (maxDamageIn > 0) {
+             this.addPropertyOverride(new ResourceLocation("damaged"), DAMAGED_GETTER);
+             this.addPropertyOverride(new ResourceLocation("damage"), DAMAGE_GETTER);
+@@ -306,7 +425,7 @@
          return this.containerItem;
      }
  
@@ -40,7 +234,7 @@
      public boolean hasContainerItem() {
          return this.containerItem != null;
      }
-@@ -357,14 +357,14 @@
+@@ -357,14 +476,14 @@
          return stack.isItemEnchanted();
      }
  
@@ -57,7 +251,7 @@
      }
  
      protected RayTraceResult rayTrace(World worldIn, EntityPlayer playerIn, boolean useLiquids) {
-@@ -381,8 +381,8 @@
+@@ -381,8 +500,8 @@
          float f6 = f3 * f4;
          float f7 = f5;
          float f8 = f2 * f4;
@@ -68,7 +262,7 @@
          return worldIn.rayTraceBlocks(vec3d, vec3d1, useLiquids, !useLiquids, false);
      }
  
-@@ -399,6 +399,9 @@
+@@ -399,6 +518,9 @@
      }
  
      protected boolean isInCreativeTab(CreativeTabs targetTab) {
@@ -78,7 +272,7 @@
          CreativeTabs creativetabs = this.getCreativeTab();
          return creativetabs != null && (targetTab == CreativeTabs.SEARCH || targetTab == creativetabs);
      }
-@@ -435,11 +438,722 @@
+@@ -435,11 +557,757 @@
          return false;
      }
  
@@ -464,6 +658,11 @@
 +     * @param stack
 +     * @return
 +     */
++    /**
++     * @deprecated the legacy number L; read {@code LEGACY_VARIANT} through
++     * {@link ItemStack#get(DataComponentType)}
++     */
++    @Deprecated
 +    public int getMetadata(ItemStack stack) {
 +        return stack.itemDamage;
 +    }
@@ -487,7 +686,7 @@
 +     * @return 0.0 for 100% (no damage / full bar), 1.0 for 0% (fully damaged / empty bar)
 +     */
 +    public double getDurabilityForDisplay(ItemStack stack) {
-+        return (double)stack.getItemDamage() / (double)stack.getMaxDamage();
++        return (double)stack.getDamageValue() / (double)stack.getMaxDamage();
 +    }
 +
 +    /**
@@ -509,7 +708,36 @@
 +     * @return the damage value
 +     */
 +    public int getMaxDamage(ItemStack stack) {
-+        return getMaxDamage();
++        Integer component = stack.get(com.cleanroommc.component.DataComponents.MAX_DAMAGE);
++        if (component != null) {
++            return component;
++        }
++        java.util.Optional<?> patchEntry = stack.getComponents().asPatch().get(com.cleanroommc.component.DataComponents.MAX_DAMAGE);
++        return patchEntry != null && patchEntry.isEmpty() ? 0 : getMaxDamage();
++    }
++
++    /**
++     * This item's default data components, built lazily and cached. A damageable item
++     * ({@code maxDamage > 0}) carries {@code cleanroom:max_damage}; every item carries
++     * {@code cleanroom:max_stack_size}. Subclasses add more through {@link #buildComponents}.
++     */
++    public com.cleanroommc.component.DataComponentMap getComponents() {
++        com.cleanroommc.component.DataComponentMap built = this.components;
++        if (built == null) {
++            com.cleanroommc.component.DataComponentMap.Builder builder = com.cleanroommc.component.DataComponentMap.builder();
++            if (this.maxDamage > 0) {
++                builder.set(com.cleanroommc.component.DataComponents.MAX_DAMAGE, this.maxDamage);
++            }
++            builder.set(com.cleanroommc.component.DataComponents.MAX_STACK_SIZE, this.maxStackSize);
++            buildComponents(builder);
++            built = builder.build();
++            this.components = built;
++        }
++        return built;
++    }
++
++    /** Adds this item's prototype components; called after the engine's own defaults are set. */
++    protected void buildComponents(com.cleanroommc.component.DataComponentMap.Builder builder) {
 +    }
 +
 +    /**
@@ -563,7 +791,8 @@
 +     * @return The maximum number this item can be stacked to
 +     */
 +    public int getItemStackLimit(ItemStack stack) {
-+        return this.getItemStackLimit();
++        Integer component = stack.get(com.cleanroommc.component.DataComponents.MAX_STACK_SIZE);
++        return component == null ? this.getItemStackLimit() : component;
 +    }
 +
 +    private java.util.Map<String, Integer> toolClasses = new java.util.HashMap<String, Integer>();
@@ -802,7 +1031,7 @@
      public static void registerItems() {
          registerItemBlock(Blocks.AIR, new ItemAir(Blocks.AIR));
          registerItemBlock(Blocks.STONE, new ItemMultiTexture(Blocks.STONE, Blocks.STONE, new ItemMultiTexture.Mapper() {
-@@ -999,6 +1713,8 @@
+@@ -999,6 +1867,8 @@
          private final float attackDamage;
          /** Defines the natural enchantability factor of the material. */
          private final int enchantability;
@@ -811,7 +1040,7 @@
  
          ToolMaterial(int harvestLevel, int maxUses, float efficiency, float damageVsEntity, int enchantability) {
              this.harvestLevel = harvestLevel;
-@@ -1033,6 +1749,7 @@
+@@ -1033,6 +1903,7 @@
              return this.enchantability;
          }
  
@@ -819,7 +1048,7 @@
          public Item getRepairItem() {
              if (this == WOOD) {
                  return Item.getItemFromBlock(Blocks.PLANKS);
-@@ -1046,5 +1763,19 @@
+@@ -1046,5 +1917,19 @@
                  return this == DIAMOND ? Items.DIAMOND : null;
              }
          }

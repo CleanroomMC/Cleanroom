@@ -1,15 +1,16 @@
 --- original/net/minecraft/block/BlockReed.java
 +++ modified/net/minecraft/block/BlockReed.java
-@@ -20,7 +20,7 @@
+@@ -20,7 +20,8 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class BlockReed extends Block {
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public class BlockReed extends Block implements net.minecraftforge.common.IPlantable {
      public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
      protected static final AxisAlignedBB REED_AABB = new AxisAlignedBB(0.125, 0.0, 0.125, 0.875, 1.0, 0.875);
  
-@@ -49,12 +49,16 @@
+@@ -49,12 +50,16 @@
  
                  if (i < 3) {
                      int j = state.getValue(AGE);
@@ -26,7 +27,7 @@
                  }
              }
          }
-@@ -63,7 +67,10 @@
+@@ -63,7 +68,10 @@
      /** Checks if this block can be placed exactly at the given position. */
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
@@ -38,7 +39,7 @@
          if (block == this) {
              return true;
          }
-@@ -157,6 +164,15 @@
+@@ -157,6 +165,15 @@
      }
  
      @Override

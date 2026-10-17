@@ -1,6 +1,39 @@
 --- original/net/minecraft/item/ItemBed.java
 +++ modified/net/minecraft/item/ItemBed.java
-@@ -74,7 +74,7 @@
+@@ -20,13 +20,32 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemBed extends Item {
++    public static final net.minecraft.block.properties.PropertyEnum<EnumDyeColor> COLOR = net.minecraft.block.properties.PropertyEnum.create("color", EnumDyeColor.class);
++
+     public ItemBed() {
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
+         this.setMaxDamage(0);
+         this.setHasSubtypes(true);
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));
+     }
+ 
++    @Override
++    protected com.cleanroommc.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.component.ItemStateContainer(this, COLOR);
++    }
++
++    @Override
++    public com.cleanroommc.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(COLOR, EnumDyeColor.byMetadata(meta));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.component.IItemState state) {
++        return state.getValue(COLOR).getMetadata();
++    }
++
+     /** Called when a Block is right-clicked with this Item */
+     @Override
+     public EnumActionResult onItemUse(
+@@ -74,7 +93,7 @@
                      .withProperty(BlockBed.PART, BlockBed.EnumPartType.FOOT);
                  worldIn.setBlockState(pos, iblockstate2, 10);
                  worldIn.setBlockState(blockpos, iblockstate2.withProperty(BlockBed.PART, BlockBed.EnumPartType.HEAD), 10);
@@ -9,3 +42,24 @@
                  worldIn.playSound(
                      null,
                      pos,
+@@ -112,15 +131,17 @@
+     /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
+     @Override
+     public String getTranslationKey(ItemStack stack) {
+-        return super.getTranslationKey() + "." + EnumDyeColor.byMetadata(stack.getMetadata()).getTranslationKey();
++        return super.getTranslationKey() + "." + stack.getItemState().getValue(COLOR).getTranslationKey();
+     }
+ 
+     /** returns a list of items with the same ID, but different meta (eg: dye returns 16 items) */
+     @Override
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+         if (this.isInCreativeTab(tab)) {
+-            for (int i = 0; i < 16; i++) {
+-                items.add(new ItemStack(this, 1, i));
++            for (com.cleanroommc.component.IItemState state : this.getItemState().getValidStates()) {
++                ItemStack stack = new ItemStack(this, 1, this.getMetaFromItemState(state));
++                stack.setItemState(state);
++                items.add(stack);
+             }
+         }
+     }

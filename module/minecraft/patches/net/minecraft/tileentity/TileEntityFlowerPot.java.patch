@@ -1,0 +1,95 @@
+--- original/net/minecraft/tileentity/TileEntityFlowerPot.java
++++ modified/net/minecraft/tileentity/TileEntityFlowerPot.java
+@@ -8,9 +8,16 @@
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraft.util.datafix.DataFixer;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TileEntityFlowerPot extends TileEntity {
+     private Item flowerPotItem;
+     private int flowerPotData;
++    @Nullable
++    private String retainedItemName;
++    @Nullable
++    private com.cleanroommc.component.PatchedDataComponentMap flowerPotComponents;
++    @Nullable
++    private NBTTagCompound retainedComponentsTag;
+ 
+     public TileEntityFlowerPot() {
+     }
+@@ -27,21 +34,48 @@
+     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+         super.writeToNBT(compound);
+         ResourceLocation resourcelocation = Item.REGISTRY.getNameForObject(this.flowerPotItem);
+-        compound.setString("Item", resourcelocation == null ? "" : resourcelocation.toString());
++        compound.setString("Item", resourcelocation == null ? (this.retainedItemName != null ? this.retainedItemName : "") : resourcelocation.toString());
+         compound.setInteger("Data", this.flowerPotData);
++        if (this.flowerPotItem != null && this.flowerPotComponents != null && !this.flowerPotComponents.asPatch().isEmpty()) {
++            com.cleanroommc.component.DataComponents.writeNbt(this.flowerPotComponents, null, compound);
++        } else if (this.flowerPotItem == null && this.retainedItemName != null && this.retainedComponentsTag != null) {
++            compound.setTag("Components", this.retainedComponentsTag.copy());
++        }
+         return compound;
+     }
+ 
+     @Override
+     public void readFromNBT(NBTTagCompound compound) {
+         super.readFromNBT(compound);
++        this.retainedItemName = null;
++        this.retainedComponentsTag = null;
+         if (compound.hasKey("Item", 8)) {
+-            this.flowerPotItem = Item.getByNameOrId(compound.getString("Item"));
++            String itemName = compound.getString("Item");
++            this.flowerPotItem = Item.getByNameOrId(itemName);
++            if (this.flowerPotItem == null && !itemName.isEmpty()) {
++                if (com.cleanroommc.ids.RetainedContent.isRemoved(itemName)) {
++                    com.cleanroommc.ids.RetainedContent.noteRemoved(itemName);
++                    this.flowerPotData = 0;
++                    this.flowerPotComponents = null;
++                    return;
++                }
++                com.cleanroommc.ids.RetainedContent.noteMissingItem(itemName);
++                this.retainedItemName = itemName;
++                if (compound.hasKey("Components", 10)) {
++                    this.retainedComponentsTag = compound.getCompoundTag("Components").copy();
++                }
++            }
+         } else {
+-            this.flowerPotItem = Item.getItemById(compound.getInteger("Item"));
++            this.flowerPotItem = com.cleanroommc.ids.LegacyIds.item(compound.getInteger("Item"));
+         }
+ 
+         this.flowerPotData = compound.getInteger("Data");
++        if (this.flowerPotItem != null && compound.hasKey("Components", 10)) {
++            this.flowerPotComponents = com.cleanroommc.component.DataComponents.newMap(this.flowerPotItem);
++            com.cleanroommc.component.DataComponents.readNbt(compound.getCompoundTag("Components"), this.flowerPotComponents, null);
++        } else {
++            this.flowerPotComponents = null;
++        }
+     }
+ 
+     /** Retrieves packet to send to the client whenever this Tile Entity is resynced via World.notifyBlockUpdate. For modded TE's, this packet comes back to you clientside in {@link #onDataPacket} */
+@@ -58,12 +92,22 @@
+     }
+ 
+     public void setItemStack(ItemStack stack) {
++        this.retainedItemName = null;
++        this.retainedComponentsTag = null;
+         this.flowerPotItem = stack.getItem();
+         this.flowerPotData = stack.getMetadata();
++        this.flowerPotComponents = stack.isEmpty() || stack.getComponents().asPatch().isEmpty() ? null : stack.getComponents().copy();
+     }
+ 
+     public ItemStack getFlowerItemStack() {
+-        return this.flowerPotItem == null ? ItemStack.EMPTY : new ItemStack(this.flowerPotItem, 1, this.flowerPotData);
++        if (this.flowerPotItem == null) {
++            return ItemStack.EMPTY;
++        }
++        ItemStack stack = new ItemStack(this.flowerPotItem, 1, this.flowerPotData);
++        if (this.flowerPotComponents != null) {
++            stack.getComponents().restorePatch(this.flowerPotComponents.asPatch());
++        }
++        return stack;
+     }
+ 
+     @Nullable

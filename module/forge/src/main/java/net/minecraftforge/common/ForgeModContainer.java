@@ -102,6 +102,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import javax.annotation.Nullable;
 
 @EventBusSubscriber(modid = "forge")
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class ForgeModContainer extends DummyModContainer implements WorldAccessContainer
 {
     public static final String VERSION_CHECK_CAT = "version_checking";
@@ -671,6 +672,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     @Subscribe
     public void mappingChanged(FMLModIdMappingEvent evt)
     {
+        com.cleanroommc.ids.PackedItems.clear();
         OreDictionary.rebakeMap();
         StatList.reinit();
         Ingredient.invalidateAll();

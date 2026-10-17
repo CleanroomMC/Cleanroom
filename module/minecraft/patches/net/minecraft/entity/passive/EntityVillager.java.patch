@@ -1,6 +1,14 @@
 --- original/net/minecraft/entity/passive/EntityVillager.java
 +++ modified/net/minecraft/entity/passive/EntityVillager.java
-@@ -111,12 +111,7 @@
+@@ -93,6 +93,7 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityVillager extends EntityAgeable implements INpc, IMerchant {
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static final DataParameter<Integer> PROFESSION = EntityDataManager.createKey(EntityVillager.class, DataSerializers.VARINT);
+@@ -111,12 +112,7 @@
      private boolean needsInitilization;
      private boolean isWillingToMate;
      private int wealth;
@@ -14,7 +22,7 @@
      private int careerId;
      /** This is the EntityVillager's career level value */
      private int careerLevel;
-@@ -465,7 +460,11 @@
+@@ -465,7 +461,11 @@
              return true;
          }
  
@@ -27,29 +35,47 @@
              if (this.buyingList == null) {
                  this.populateBuyingList();
              }
-@@ -528,6 +527,7 @@
+@@ -523,11 +523,15 @@
+         );
+     }
+ 
++    @Nullable
++    private String retainedProfessionName;
++
+     /** (abstract) Protected helper method to write subclass entity data to NBT. */
+     @Override
      public void writeEntityToNBT(NBTTagCompound compound) {
          super.writeEntityToNBT(compound);
          compound.setInteger("Profession", this.getProfession());
-+        compound.setString("ProfessionName", this.getProfessionForge().getRegistryName().toString());
++        compound.setString("ProfessionName", this.retainedProfessionName != null ? this.retainedProfessionName : this.getProfessionForge().getRegistryName().toString());
          compound.setInteger("Riches", this.wealth);
          compound.setInteger("Career", this.careerId);
          compound.setInteger("CareerLevel", this.careerLevel);
-@@ -553,6 +553,13 @@
+@@ -552,7 +556,23 @@
+     @Override
      public void readEntityFromNBT(NBTTagCompound compound) {
          super.readEntityFromNBT(compound);
++        this.retainedProfessionName = null;
          this.setProfession(compound.getInteger("Profession"));
 +        if (compound.hasKey("ProfessionName")) {
++            String profName = compound.getString("ProfessionName");
++            String pendingRetained = null;
 +            net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession p =
-+                net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new net.minecraft.util.ResourceLocation(compound.getString("ProfessionName")));
-+            if (p == null)
++                net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new net.minecraft.util.ResourceLocation(profName));
++            if (p == null) {
 +                p = net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new net.minecraft.util.ResourceLocation("minecraft:farmer"));
++                if (!profName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(profName)) {
++                    com.cleanroommc.ids.RetainedContent.noteMissing(profName, null);
++                    pendingRetained = profName;
++                }
++            }
 +            this.setProfession(p);
++            this.retainedProfessionName = pendingRetained;
 +        }
          this.wealth = compound.getInteger("Riches");
          this.careerId = compound.getInteger("Career");
          this.careerLevel = compound.getInteger("CareerLevel");
-@@ -603,13 +610,38 @@
+@@ -603,13 +623,39 @@
      }
  
      public void setProfession(int professionId) {
@@ -66,6 +92,7 @@
  
 +    private net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession prof;
 +    public void setProfession(net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession prof) {
++        this.retainedProfessionName = null;
 +        this.prof = prof;
 +        this.setProfession(net.minecraftforge.fml.common.registry.VillagerRegistry.getId(prof));
 +    }
@@ -90,7 +117,7 @@
      public boolean isMating() {
          return this.isMating;
      }
-@@ -638,7 +670,8 @@
+@@ -638,7 +684,8 @@
                      i = -3;
                  }
  
@@ -100,7 +127,7 @@
                  if (this.isEntityAlive()) {
                      this.world.setEntityState(this, (byte)13);
                  }
-@@ -653,7 +686,7 @@
+@@ -653,7 +700,7 @@
              Entity entity = cause.getTrueSource();
              if (entity != null) {
                  if (entity instanceof EntityPlayer) {
@@ -109,7 +136,7 @@
                  } else if (entity instanceof IMob) {
                      this.village.endMatingSeason();
                  }
-@@ -727,7 +760,7 @@
+@@ -727,7 +774,7 @@
              this.needsInitilization = true;
              this.isWillingToMate = true;
              if (this.buyingPlayer != null) {
@@ -118,7 +145,7 @@
              } else {
                  this.lastBuyingPlayer = null;
              }
-@@ -766,15 +799,14 @@
+@@ -766,15 +813,14 @@
              this.populateBuyingList();
          }
  
@@ -136,7 +163,7 @@
              this.careerLevel = 1;
          }
  
-@@ -784,14 +816,11 @@
+@@ -784,14 +830,11 @@
  
          int i = this.careerId - 1;
          int j = this.careerLevel - 1;
@@ -155,7 +182,7 @@
              }
          }
      }
-@@ -881,18 +910,15 @@
+@@ -881,18 +924,15 @@
                  s1 = "nitwit";
          }
  
@@ -182,7 +209,7 @@
      }
  
      @Override
-@@ -953,7 +979,7 @@
+@@ -953,7 +993,7 @@
      public IEntityLivingData finalizeMobSpawn(DifficultyInstance p_190672_1_, @Nullable IEntityLivingData p_190672_2_, boolean p_190672_3_) {
          p_190672_2_ = super.onInitialSpawn(p_190672_1_, p_190672_2_);
          if (p_190672_3_) {
@@ -191,7 +218,7 @@
          }
  
          this.setAdditionalAItasks();
-@@ -1034,7 +1060,12 @@
+@@ -1034,7 +1074,12 @@
  
      public boolean wantsMoreFood() {
          boolean flag = this.getProfession() == 0;
@@ -205,7 +232,30 @@
      }
  
      /** Returns true if villager has enough items in inventory */
-@@ -1192,6 +1223,10 @@
+@@ -1137,13 +1182,15 @@
+         public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random) {
+             int i = this.buyingPriceInfo.getPrice(random);
+             int j = this.sellingPriceInfo.getPrice(random);
+-            recipeList.add(
+-                new MerchantRecipe(
+-                    new ItemStack(this.buyingItemStack.getItem(), i, this.buyingItemStack.getMetadata()),
+-                    new ItemStack(Items.EMERALD),
+-                    new ItemStack(this.sellingItemstack.getItem(), j, this.sellingItemstack.getMetadata())
+-                )
+-            );
++            ItemStack buy = new ItemStack(this.buyingItemStack.getItem(), i, this.buyingItemStack.getMetadata());
++            if (!this.buyingItemStack.getComponents().asPatch().isEmpty()) {
++                buy.getComponents().restorePatch(this.buyingItemStack.getComponents().asPatch());
++            }
++            ItemStack sell = new ItemStack(this.sellingItemstack.getItem(), j, this.sellingItemstack.getMetadata());
++            if (!this.sellingItemstack.getComponents().asPatch().isEmpty()) {
++                sell.getComponents().restorePatch(this.sellingItemstack.getComponents().asPatch());
++            }
++            recipeList.add(new MerchantRecipe(buy, new ItemStack(Items.EMERALD), sell));
+         }
+     }
+ 
+@@ -1192,6 +1239,10 @@
          }
      }
  
@@ -216,7 +266,7 @@
      public static class ListItemForEmeralds implements EntityVillager.ITradeList {
          /** The item that is being bought for emeralds */
          public ItemStack itemToBuy;
-@@ -1202,6 +1237,9 @@
+@@ -1202,6 +1253,9 @@
              this.itemToBuy = new ItemStack(par1Item);
              this.priceInfo = priceInfo;
          }
@@ -226,3 +276,13 @@
  
          public ListItemForEmeralds(ItemStack stack, EntityVillager.PriceInfo priceInfo) {
              this.itemToBuy = stack;
+@@ -1224,6 +1278,9 @@
+                 itemstack = new ItemStack(Items.EMERALD, i, 0);
+                 itemstack1 = new ItemStack(this.itemToBuy.getItem(), 1, this.itemToBuy.getMetadata());
+             }
++            if (!this.itemToBuy.getComponents().asPatch().isEmpty()) {
++                itemstack1.getComponents().restorePatch(this.itemToBuy.getComponents().asPatch());
++            }
+ 
+             recipeList.add(new MerchantRecipe(itemstack, itemstack1));
+         }

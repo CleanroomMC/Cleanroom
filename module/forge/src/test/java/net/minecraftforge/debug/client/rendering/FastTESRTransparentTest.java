@@ -61,6 +61,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = FastTESRTransparentTest.MODID, name = "TransparentFastTESRTest", version = "1.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class FastTESRTransparentTest
 {
 

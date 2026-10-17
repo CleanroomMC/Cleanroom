@@ -1,6 +1,14 @@
 --- original/net/minecraft/potion/PotionHelper.java
 +++ modified/net/minecraft/potion/PotionHelper.java
-@@ -65,7 +65,8 @@
+@@ -11,6 +11,7 @@
+ import net.minecraft.item.ItemStack;
+ import net.minecraft.item.crafting.Ingredient;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class PotionHelper {
+     private static final List<PotionHelper.MixPredicate<PotionType>> POTION_TYPE_CONVERSIONS = Lists.newArrayList();
+     private static final List<PotionHelper.MixPredicate<Item>> POTION_ITEM_CONVERSIONS = Lists.newArrayList();
+@@ -65,7 +66,8 @@
  
          for (int j = POTION_ITEM_CONVERSIONS.size(); i < j; i++) {
              PotionHelper.MixPredicate<Item> mixpredicate = POTION_ITEM_CONVERSIONS.get(i);
@@ -10,7 +18,7 @@
                  return true;
              }
          }
-@@ -79,7 +80,8 @@
+@@ -79,7 +81,8 @@
  
          for (int j = POTION_TYPE_CONVERSIONS.size(); i < j; i++) {
              PotionHelper.MixPredicate<PotionType> mixpredicate = POTION_TYPE_CONVERSIONS.get(i);
@@ -20,7 +28,7 @@
                  return true;
              }
          }
-@@ -95,8 +97,9 @@
+@@ -95,8 +98,9 @@
  
              for (int j = POTION_ITEM_CONVERSIONS.size(); i < j; i++) {
                  PotionHelper.MixPredicate<Item> mixpredicate = POTION_ITEM_CONVERSIONS.get(i);
@@ -32,7 +40,7 @@
                  }
              }
  
-@@ -104,8 +107,9 @@
+@@ -104,8 +108,9 @@
  
              for (int k = POTION_TYPE_CONVERSIONS.size(); i < k; i++) {
                  PotionHelper.MixPredicate<PotionType> mixpredicate1 = POTION_TYPE_CONVERSIONS.get(i);
@@ -44,7 +52,7 @@
                  }
              }
          }
-@@ -190,15 +194,15 @@
+@@ -190,15 +195,15 @@
          POTION_TYPE_CONVERSIONS.add(new PotionHelper.MixPredicate<>(p_193356_0_, p_193356_1_, p_193356_2_));
      }
  

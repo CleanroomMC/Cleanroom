@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockTNT.java
++++ modified/net/minecraft/block/BlockTNT.java
+@@ -21,6 +21,7 @@
+ import net.minecraft.world.Explosion;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockTNT extends Block {
+     public static final PropertyBool EXPLODE = PropertyBool.create("explode");
+ 

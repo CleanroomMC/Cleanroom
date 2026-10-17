@@ -1,14 +1,41 @@
 --- original/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
 +++ modified/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
-@@ -95,8 +95,9 @@
+@@ -27,6 +27,7 @@
+ import org.apache.commons.lang3.StringUtils;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TileEntityItemStackRenderer {
+     private static final TileEntityShulkerBox[] SHULKER_BOXES = new TileEntityShulkerBox[16];
+     public static TileEntityItemStackRenderer instance;
+@@ -85,7 +86,7 @@
+                 GlStateManager.pushMatrix();
+                 GlStateManager.disableCull();
+                 TileEntitySkullRenderer.instance
+-                    .renderSkull(0.0F, 0.0F, 0.0F, EnumFacing.UP, 180.0F, itemStackIn.getMetadata(), gameprofile, -1, 0.0F);
++                    .renderSkull(0.0F, 0.0F, 0.0F, EnumFacing.UP, 180.0F, itemStackIn.getItemState().getValue(net.minecraft.item.ItemSkull.TYPE).getMetadata(), gameprofile, -1, 0.0F);
+                 GlStateManager.enableCull();
+                 GlStateManager.popMatrix();
+             }
+@@ -95,15 +96,18 @@
              TileEntityRendererDispatcher.instance.render(this.chestTrap, 0.0, 0.0, 0.0, 0.0F, partialTicks);
          } else if (Block.getBlockFromItem(item) instanceof BlockShulkerBox) {
              TileEntityRendererDispatcher.instance
 -                .render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0, 0.0, 0.0, 0.0F, partialTicks);
 -        } else {
-+            .render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0, 0.0, 0.0, 0.0F, partialTicks);
++            .render(SHULKER_BOXES[Math.max(0, Math.min(SHULKER_BOXES.length - 1, BlockShulkerBox.getColorFromItem(item).getMetadata()))], 0.0, 0.0, 0.0, 0.0F, partialTicks);
 +        } else if (Block.getBlockFromItem(item) != Blocks.CHEST) net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
 +        else {
              TileEntityRendererDispatcher.instance.render(this.chestBasic, 0.0, 0.0, 0.0, 0.0F, partialTicks);
          }
      }
+ 
+     static {
+         for (EnumDyeColor enumdyecolor : EnumDyeColor.values()) {
+-            SHULKER_BOXES[enumdyecolor.getMetadata()] = new TileEntityShulkerBox(enumdyecolor);
++            if (enumdyecolor.getMetadata() >= 0 && enumdyecolor.getMetadata() < SHULKER_BOXES.length) {
++                SHULKER_BOXES[enumdyecolor.getMetadata()] = new TileEntityShulkerBox(enumdyecolor);
++            }
+         }
+ 
+         instance = new TileEntityItemStackRenderer();

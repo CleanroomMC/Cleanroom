@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockPurpurSlab.java
++++ modified/net/minecraft/block/BlockPurpurSlab.java
+@@ -15,6 +15,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class BlockPurpurSlab extends BlockSlab {
+     public static final PropertyEnum<BlockPurpurSlab.Variant> VARIANT = PropertyEnum.create("variant", BlockPurpurSlab.Variant.class);
+ 

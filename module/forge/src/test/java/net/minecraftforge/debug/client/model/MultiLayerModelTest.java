@@ -36,6 +36,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @Mod(modid = MultiLayerModelTest.MODID, name = "ForgeDebugMultiLayerModel", version = MultiLayerModelTest.VERSION, acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class MultiLayerModelTest
 {
     private static final boolean ENABLED = true;
@@ -96,7 +97,7 @@ public class MultiLayerModelTest
         {
             if (!ENABLED)
                 return;
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(TEST_BLOCK), 0, new ModelResourceLocation(blockId, "inventory"));
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(TEST_BLOCK), new ModelResourceLocation(blockId, "inventory"));
         }
     }
 }

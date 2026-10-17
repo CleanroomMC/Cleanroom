@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockPistonExtension.java
++++ modified/net/minecraft/block/BlockPistonExtension.java
+@@ -24,6 +24,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPistonExtension extends BlockDirectional {
+     public static final PropertyEnum<BlockPistonExtension.EnumPistonType> TYPE = PropertyEnum.create(
+         "type", BlockPistonExtension.EnumPistonType.class

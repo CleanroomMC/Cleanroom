@@ -8,12 +8,13 @@
  import net.minecraft.block.state.BlockFaceShape;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -50,11 +51,11 @@
+@@ -50,11 +51,12 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class Block {
 -    /** ResourceLocation for the Air block */
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Block> {
      private static final ResourceLocation AIR_ID = new ResourceLocation("air");
 -    public static final RegistryNamespacedDefaultedByKey<ResourceLocation, Block> REGISTRY = new RegistryNamespacedDefaultedByKey<>(AIR_ID);
@@ -24,16 +25,118 @@
      public static final AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
      @Nullable
      public static final AxisAlignedBB NULL_AABB = null;
-@@ -82,7 +83,7 @@
+@@ -82,9 +84,9 @@
      protected final Material material;
      /** The Block's MapColor */
      protected final MapColor blockMapColor;
 -    /** Determines how much velocity is maintained while moving on top of this block */
 +    @Deprecated // Forge: State/world/pos/entity sensitive version below
      public float slipperiness = 0.6F;
-     protected final BlockStateContainer blockState;
+-    protected final BlockStateContainer blockState;
++    protected BlockStateContainer blockState;
      private IBlockState defaultBlockState;
-@@ -359,7 +360,7 @@
+     private String translationKey;
+ 
+@@ -92,39 +94,62 @@
+         return REGISTRY.getIDForObject(blockIn);
+     }
+ 
+-    /** Get a unique ID for the given BlockState, containing both BlockID and metadata */
++    /**
++     * Get the runtime ID for the given BlockState.
++     * Cleanroom: state ids are the dense numbers in {@link #BLOCK_STATE_IDS}; there is no block id or metadata
++     * packed into them anymore. States not listed in {@link BlockStateContainer#getValidStates()} resolve to
++     * their closest listed state in the map, and a null state resolves to air's id.
++     */
+     public static int getStateId(IBlockState state) {
+-        Block block = state.getBlock();
+-        return getIdFromBlock(block) + (block.getMetaFromState(state) << 12);
++        return BLOCK_STATE_IDS.get(state == null ? Blocks.AIR.getDefaultState() : state);
+     }
+ 
+     public static Block getBlockById(int id) {
+         return REGISTRY.getObjectById(id);
+     }
+ 
+-    /** Get a BlockState by it's ID (see getStateId) */
++    /** Get a BlockState by it's runtime ID (see getStateId); out-of-range ids give air */
+     public static IBlockState getStateById(int id) {
+-        int i = id & 4095;
+-        int j = id >> 12 & 15;
+-        return getBlockById(i).getStateFromMeta(j);
++        IBlockState state = BLOCK_STATE_IDS.getByValue(id);
++        return state == null ? Blocks.AIR.getDefaultState() : state;
+     }
+ 
+     public static Block getBlockFromItem(@Nullable Item itemIn) {
+         return itemIn instanceof ItemBlock ? ((ItemBlock)itemIn).getBlock() : Blocks.AIR;
+     }
+ 
++    private static final java.util.Set<String> WARNED_NUMERIC_BLOCK_IDS = java.util.concurrent.ConcurrentHashMap.newKeySet();
++
++    /**
++     * Tries to get a Block by its registry name (e.g. {@code minecraft:stone}).
++     * Cleanroom: numeric ID strings are no longer resolved against session numbering; they log a once-per-name warning and return {@code null}.
++     */
+     @Nullable
+     public static Block getBlockFromName(String name) {
+         ResourceLocation resourcelocation = new ResourceLocation(name);
+         if (REGISTRY.containsKey(resourcelocation)) {
+             return REGISTRY.getObject(resourcelocation);
+         }
++        if (isNumericId(name) && WARNED_NUMERIC_BLOCK_IDS.add(name)) {
++            net.minecraftforge.fml.common.FMLLog.log.warn("Numeric block ID '{}' is not supported; use a registry name instead", name);
++        }
++        return null;
++    }
+ 
+-        try {
+-            return REGISTRY.getObjectById(Integer.parseInt(name));
+-        } catch (NumberFormatException numberformatexception) {
+-            return null;
++    private static boolean isNumericId(String s) {
++        if (s == null || s.isEmpty()) {
++            return false;
+         }
++        int start = s.charAt(0) == '-' || s.charAt(0) == '+' ? 1 : 0;
++        if (start == s.length()) {
++            return false;
++        }
++        for (int i = start; i < s.length(); i++) {
++            if (!Character.isDigit(s.charAt(i))) {
++                return false;
++            }
++        }
++        return true;
+     }
+ 
+     /**
+@@ -209,13 +234,22 @@
+         return this.blockMapColor;
+     }
+ 
+-    /** Convert the given metadata into a BlockState for this Block */
++    /**
++     * Convert the given metadata into a BlockState for this Block.
++     * @deprecated metadata is a legacy view of the state; use {@link BlockStateContainer#getValidStates()} or
++     * {@link IBlockState#withProperty} instead. Kept for saved data and mod compatibility.
++     */
+     @Deprecated
+     public IBlockState getStateFromMeta(int meta) {
+         return this.getDefaultState();
+     }
+ 
+-    /** Convert the BlockState into the correct metadata value */
++    /**
++     * Convert the BlockState into the correct metadata value.
++     * @deprecated metadata is a legacy view of the state; use {@link IBlockState#getOrdinal()} or the state's
++     * properties directly instead. Kept for saved data and mod compatibility.
++     */
++    @Deprecated
+     public int getMetaFromState(IBlockState state) {
+         if (state.getPropertyKeys().isEmpty()) {
+             return 0;
+@@ -359,7 +393,7 @@
  
      /** Whether this Block can be replaced directly by other blocks (true for e.g. tall grass) */
      public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos) {
@@ -42,7 +145,7 @@
      }
  
      /** Sets how many hits it takes to break a block. */
-@@ -394,8 +395,9 @@
+@@ -394,8 +428,9 @@
          return this.needsRandomTick;
      }
  
@@ -53,7 +156,7 @@
      }
  
      /** @deprecated call via {@link IBlockState#getBoundingBox(IBlockAccess,BlockPos)} whenever possible. Implementing/overriding is fine. */
-@@ -408,11 +410,12 @@
+@@ -408,11 +443,12 @@
      @Deprecated
      @SideOnly(Side.CLIENT)
      public int getPackedLightmapCoords(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -68,7 +171,7 @@
          } else {
              return i;
          }
-@@ -455,7 +458,7 @@
+@@ -455,7 +491,7 @@
                  }
          }
  
@@ -77,7 +180,7 @@
      }
  
      /**
-@@ -562,6 +565,9 @@
+@@ -562,6 +598,9 @@
  
      /** Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated */
      public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
@@ -87,7 +190,7 @@
      }
  
      /** Returns the quantity of items to drop on block destruction. */
-@@ -580,14 +586,7 @@
+@@ -580,14 +619,7 @@
       */
      @Deprecated
      public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
@@ -103,7 +206,7 @@
      }
  
      /** Spawn this Block's drops into the World as EntityItems */
-@@ -597,15 +596,13 @@
+@@ -597,15 +629,13 @@
  
      /** Spawns this Block's drops into the World as EntityItems. */
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
@@ -125,7 +228,7 @@
                  }
              }
          }
-@@ -613,7 +610,11 @@
+@@ -613,7 +643,11 @@
  
      /** Spawns the given ItemStack as an EntityItem into the World at the given position */
      public static void spawnAsEntity(World worldIn, BlockPos pos, ItemStack stack) {
@@ -138,16 +241,36 @@
              float f = 0.5F;
              double d0 = worldIn.rand.nextFloat() * 0.5F + 0.25;
              double d1 = worldIn.rand.nextFloat() * 0.5F + 0.25;
-@@ -644,7 +645,7 @@
+@@ -639,12 +673,26 @@
+         }
+     }
+ 
+-    /** Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It returns the metadata of the dropped item based on the old metadata of the block. */
++    /**
++     * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It returns the metadata of the dropped item based on the old metadata of the block.
++     * @deprecated item damage is a legacy view; describe the dropped item by variant instead.
++     */
++    @Deprecated
+     public int damageDropped(IBlockState state) {
          return 0;
      }
  
 -    /** Returns how much this block can resist explosions from the passed in entity. */
++    /**
++     * Cleanroom: returns the standalone {@link IBlockState} that breaking or picking {@code state} yields.
++     * Defaults to {@code getStateFromMeta(damageDropped(state))} so legacy blocks keep their drop behaviour;
++     * blocks whose states stand by themselves without metadata can override this directly.
++     */
++    @SuppressWarnings("deprecation")
++    public IBlockState getStateForDrop(IBlockState state) {
++        try { return this.getStateFromMeta(this.damageDropped(state)); } catch (RuntimeException e) { return this.getDefaultState(); }
++    }
++
 +    @Deprecated //Forge: State sensitive version
      public float getExplosionResistance(Entity exploder) {
          return this.blockResistance / 5.0F;
      }
-@@ -690,7 +691,7 @@
+@@ -690,7 +738,7 @@
  
      /** Checks if this block can be placed exactly at the given position. */
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
@@ -156,7 +279,7 @@
      }
  
      /** Called when the block is right clicked by a player. */
-@@ -712,7 +713,8 @@
+@@ -712,7 +760,8 @@
      public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
      }
  
@@ -166,7 +289,7 @@
      public IBlockState getStateForPlacement(
          World worldIn,
          BlockPos pos,
-@@ -764,17 +766,30 @@
+@@ -764,21 +813,37 @@
      ) {
          player.addStat(StatList.getBlockStats(this));
          player.addExhaustion(0.005F);
@@ -200,15 +323,64 @@
      }
  
      protected ItemStack getSilkTouchDrop(IBlockState state) {
-@@ -858,6 +873,7 @@
+         Item item = Item.getItemFromBlock(this);
++        if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() == this) {
++            return ((ItemBlock) item).stackFor(state);
++        }
+         int i = 0;
+         if (item.getHasSubtypes()) {
+             i = this.getMetaFromState(state);
+@@ -858,8 +923,10 @@
          entityIn.motionY = 0.0;
      }
  
 +    @Deprecated // Forge: Use more sensitive version below: getPickBlock
      public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-         return new ItemStack(Item.getItemFromBlock(this), 1, this.damageDropped(state));
+-        return new ItemStack(Item.getItemFromBlock(this), 1, this.damageDropped(state));
++        Item item = Item.getItemFromBlock(this);
++        return item instanceof ItemBlock && ((ItemBlock) item).getBlock() == this ? ((ItemBlock) item).stackFor(state) : new ItemStack(item, 1, this.damageDropped(state));
      }
-@@ -956,6 +972,7 @@
+ 
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */
+@@ -926,6 +993,37 @@
+         return this.blockState;
+     }
+ 
++    /**
++     * Cleanroom: rebuilds this block's {@link BlockStateContainer} (for example after a mod adds a new
++     * enum constant to a {@link net.minecraft.block.properties.PropertyEnum} such as {@code EnumDyeColor}),
++     * preserving the default state's property values.
++     */
++    @SuppressWarnings({ "rawtypes", "unchecked" })
++    public void rebuildBlockState() {
++        for (net.minecraft.block.properties.IProperty<?> prop : this.blockState.getProperties()) {
++            if (prop instanceof net.minecraft.block.properties.PropertyEnum<?>) {
++                ((net.minecraft.block.properties.PropertyEnum<?>) prop).refreshAllowedValues();
++            }
++        }
++        IBlockState oldDefault = this.defaultBlockState;
++        this.blockState = this.createBlockState();
++        this.harvestTool = null;
++        this.harvestLevel = null;
++        IBlockState nextDefault = this.blockState.getBaseState();
++        if (oldDefault != null) {
++            for (java.util.Map.Entry<net.minecraft.block.properties.IProperty<?>, Comparable<?>> e : oldDefault.getProperties().entrySet()) {
++                net.minecraft.block.properties.IProperty prop = this.blockState.getProperty(e.getKey().getName());
++                if (prop != null && prop.getAllowedValues().contains(e.getValue())) {
++                    nextDefault = nextDefault.withProperty(prop, (Comparable) e.getValue());
++                }
++            }
++        }
++        this.defaultBlockState = nextDefault;
++        if (BLOCK_STATE_IDS instanceof net.minecraftforge.registries.BlockStateIdMap) {
++            ((net.minecraftforge.registries.BlockStateIdMap) BLOCK_STATE_IDS).invalidate();
++        }
++    }
++
+     protected final void setDefaultState(IBlockState state) {
+         this.defaultBlockState = state;
+     }
+@@ -956,6 +1054,7 @@
          );
      }
  
@@ -216,7 +388,7 @@
      public SoundType getSoundType() {
          return this.blockSoundType;
      }
-@@ -969,6 +986,1257 @@
+@@ -969,6 +1068,1327 @@
      public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
      }
  
@@ -552,7 +724,7 @@
 +        for (int i = 0; i < count; i++) {
 +            Item item = this.getItemDropped(state, rand, fortune);
 +            if (item != Items.AIR) {
-+                drops.add(new ItemStack(item, 1, this.damageDropped(state)));
++                drops.add(item instanceof ItemBlock && ((ItemBlock) item).getBlock() == this ? ((ItemBlock) item).stackFor(state) : new ItemStack(item, 1, this.damageDropped(state)));
 +            }
 +        }
 +    }
@@ -1175,8 +1347,35 @@
 +        return false;
 +    }
 +
-+    private String[] harvestTool = new String[16];;
-+    private int[] harvestLevel = new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
++    // Cleanroom: one entry per valid state, indexed by IBlockState.getOrdinal(); allocated lazily because the
++    // block's state container does not exist yet when the field initializers run
++    private String[] harvestTool;
++    private int[] harvestLevel;
++
++    private String[] harvestTools() {
++        if (this.harvestTool == null) {
++            this.harvestTool = new String[getBlockState().getValidStates().size()];
++        }
++        return this.harvestTool;
++    }
++
++    private int[] harvestLevels() {
++        if (this.harvestLevel == null) {
++            int[] levels = new int[getBlockState().getValidStates().size()];
++            java.util.Arrays.fill(levels, -1);
++            this.harvestLevel = levels;
++        }
++        return this.harvestLevel;
++    }
++
++    /** The harvest-table slot for a state: its ordinal, or its metadata fallback state's when unlisted (-1 if neither resolves) */
++    private int harvestIndex(IBlockState state) {
++        int idx = state.getOrdinal();
++        if (idx < 0) {
++            idx = getStateFromMeta(getMetaFromState(state)).getOrdinal();
++        }
++        return idx;
++    }
 +    /**
 +     * Sets or removes the tool and level required to harvest this block.
 +     *
@@ -1208,9 +1407,12 @@
 +     * @param state The specific state.
 +     */
 +    public void setHarvestLevel(String toolClass, int level, IBlockState state) {
-+        int idx = this.getMetaFromState(state);
-+        this.harvestTool[idx] = toolClass;
-+        this.harvestLevel[idx] = level;
++        int idx = this.harvestIndex(state);
++        if (idx < 0) {
++            throw new IllegalArgumentException("Cannot set harvest level on " + state + ": it and its metadata fallback are not valid states of " + this);
++        }
++        this.harvestTools()[idx] = toolClass;
++        this.harvestLevels()[idx] = level;
 +    }
 +
 +    /**
@@ -1218,7 +1420,8 @@
 +     * we assume that anything can harvest this block.
 +     */
 +    @Nullable public String getHarvestTool(IBlockState state) {
-+        return harvestTool[getMetaFromState(state)];
++        int idx = this.harvestIndex(state);
++        return idx < 0 ? null : harvestTools()[idx];
 +    }
 +
 +    /**
@@ -1228,7 +1431,8 @@
 +     * @return Harvest level, or -1 if not the specified tool type.
 +     */
 +    public int getHarvestLevel(IBlockState state) {
-+        return harvestLevel[getMetaFromState(state)];
++        int idx = this.harvestIndex(state);
++        return idx < 0 ? -1 : harvestLevels()[idx];
 +    }
 +
 +    /**
@@ -1411,9 +1615,47 @@
 +     * @param placer The entity placing the block
 +     * @param hand The player hand used to place this block
 +     * @return The state to be placed in the world
++     * @deprecated the {@code meta} argument is the item-damage legacy view; placement should derive the state
++     * from the item, not a metadata number.
 +     */
++    @Deprecated
 +    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 +        return getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer);
++    }
++
++    /**
++     * Stack-based placement: the stack's legacy number is resolved through the block item's
++     * {@code getMetadata} into the deprecated meta overload. Called by {@link ItemBlock#onItemUse}.
++     */
++    @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
++    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, ItemStack stack, EntityLivingBase placer, EnumHand hand) {
++        Item item = stack.getItem();
++        int meta = item instanceof ItemBlock ? item.getMetadata(stack.getDamageValue()) : 0;
++        IBlockState placed = getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
++        IBlockState carried = stack.getComponents().get(com.cleanroommc.component.DataComponents.BLOCK_STATE);
++        if (carried != null && carried.getBlock() == this) {
++            IBlockState result = carried;
++            if (placed != null && placed.getBlock() == this) {
++                IBlockState base;
++                try {
++                    base = this.getStateFromMeta(meta);
++                } catch (RuntimeException e) {
++                    base = this.getDefaultState();
++                }
++                IBlockState dropBase = this.getStateForDrop(carried);
++                for (net.minecraft.block.properties.IProperty prop : placed.getPropertyKeys()) {
++                    if (result.getProperties().containsKey(prop)
++                        && base != null
++                        && base.getProperties().containsKey(prop)
++                        && !java.util.Objects.equals(placed.getValue(prop), base.getValue(prop))
++                        && (dropBase == null || !dropBase.getProperties().containsKey(prop) || java.util.Objects.equals(carried.getValue(prop), dropBase.getValue(prop)))) {
++                        result = result.withProperty(prop, placed.getValue(prop));
++                    }
++                }
++            }
++            return result;
++        }
++        return placed;
 +    }
 +
 +    /**
@@ -1474,7 +1716,7 @@
      public static void registerBlocks() {
          registerBlock(0, AIR_ID, new BlockAir().setTranslationKey("air"));
          registerBlock(1, "stone", new BlockStone().setHardness(1.5F).setResistance(10.0F).setSoundType(SoundType.STONE).setTranslationKey("stone"));
-@@ -1520,7 +2788,7 @@
+@@ -1520,7 +2940,7 @@
              "quartz_stairs",
              new BlockStairs(block11.getDefaultState().withProperty(BlockQuartz.VARIANT, BlockQuartz.EnumType.DEFAULT)).setTranslationKey("stairsQuartz")
          );
@@ -1483,7 +1725,7 @@
          registerBlock(158, "dropper", new BlockDropper().setHardness(3.5F).setSoundType(SoundType.STONE).setTranslationKey("dropper"));
          registerBlock(
              159,
-@@ -1944,22 +3212,6 @@
+@@ -1944,22 +3364,6 @@
                  block15.useNeighborBrightness = flag;
              }
          }

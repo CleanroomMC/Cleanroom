@@ -1,0 +1,20 @@
+--- original/net/minecraft/block/material/MapColor.java
++++ modified/net/minecraft/block/material/MapColor.java
+@@ -4,6 +4,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class MapColor {
+     /** Holds all the 16 colors used on maps, very similar of a pallete system. */
+     public static final MapColor[] COLORS = new MapColor[64];
+@@ -101,7 +102,8 @@
+     }
+ 
+     public static MapColor getBlockColor(EnumDyeColor dyeColorIn) {
+-        return BLOCK_COLORS[dyeColorIn.getMetadata()];
++        int meta = dyeColorIn.getMetadata();
++        return meta >= 0 && meta < BLOCK_COLORS.length && BLOCK_COLORS[meta] != null ? BLOCK_COLORS[meta] : CLOTH;
+     }
+ 
+     static {

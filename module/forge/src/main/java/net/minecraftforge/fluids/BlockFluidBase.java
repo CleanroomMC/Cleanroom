@@ -64,6 +64,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * It is highly recommended that you extend this class or one of the Forge-provided child classes.
  *
  */
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public abstract class BlockFluidBase extends Block implements IFluidBlock
 {
     protected final static Map<Block, Boolean> defaultDisplacements = Maps.newHashMap();
@@ -662,7 +663,7 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
                 return 1;
             }
 
-            if (getMetaFromState(here) == getMaxRenderHeightMeta())
+            if (here.getValue(LEVEL) == getMaxRenderHeightMeta())
             {
                 return quantaFraction;
             }

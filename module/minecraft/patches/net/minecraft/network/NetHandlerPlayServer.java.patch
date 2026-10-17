@@ -1,6 +1,14 @@
 --- original/net/minecraft/network/NetHandlerPlayServer.java
 +++ modified/net/minecraft/network/NetHandlerPlayServer.java
-@@ -351,9 +351,11 @@
+@@ -121,6 +121,7 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable {
+     private static final Logger LOGGER = LogManager.getLogger();
+     public final NetworkManager netManager;
+@@ -351,9 +352,11 @@
                  }
  
                  entity.setPositionAndRotation(d3, d4, d5, f, f1);
@@ -12,7 +20,7 @@
                      this.netManager.sendPacket(new SPacketMoveVehicle(entity));
                      return;
                  }
-@@ -649,7 +651,11 @@
+@@ -649,7 +652,11 @@
                  double d1 = this.player.posY - (blockpos.getY() + 0.5) + 1.5;
                  double d2 = this.player.posZ - (blockpos.getZ() + 0.5);
                  double d3 = d0 * d0 + d1 * d1 + d2 * d2;
@@ -25,7 +33,7 @@
                      return;
                  } else if (blockpos.getY() >= this.server.getBuildLimit()) {
                      return;
-@@ -690,11 +696,13 @@
+@@ -690,11 +697,13 @@
          EnumFacing enumfacing = packetIn.getDirection();
          this.player.markPlayerActive();
          if (blockpos.getY() < this.server.getBuildLimit() - 1
@@ -43,7 +51,7 @@
                  this.player
                      .interactionManager
                      .processRightClickBlock(
-@@ -752,18 +760,19 @@
+@@ -752,18 +761,19 @@
                  this.player.dismountRidingEntity();
                  if (entity.world == this.player.world) {
                      this.player.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
@@ -67,7 +75,7 @@
                      this.server.getPlayerList().updatePermissionLevel(this.player);
                      worldserver1.removeEntityDangerously(this.player);
                      this.player.isDead = false;
-@@ -781,6 +790,7 @@
+@@ -781,6 +791,7 @@
                      this.player.interactionManager.setWorld(worldserver2);
                      this.server.getPlayerList().updateTimeAndWeatherForPlayer(this.player, worldserver2);
                      this.server.getPlayerList().syncPlayerInventory(this.player);
@@ -75,7 +83,7 @@
                  }
              }
          }
-@@ -877,7 +887,9 @@
+@@ -877,7 +888,9 @@
              if (s.startsWith("/")) {
                  this.handleSlashCommand(s);
              } else {
@@ -86,7 +94,7 @@
                  this.server.getPlayerList().sendMessage(itextcomponent, false);
              }
  
-@@ -982,6 +994,7 @@
+@@ -982,6 +995,7 @@
                      this.player.interactOn(entity, enumhand);
                  } else if (packetIn.getAction() == CPacketUseEntity.Action.INTERACT_AT) {
                      EnumHand enumhand1 = packetIn.getHand();
@@ -94,7 +102,7 @@
                      entity.applyPlayerInteraction(this.player, packetIn.getHitVec(), enumhand1);
                  } else if (packetIn.getAction() == CPacketUseEntity.Action.ATTACK) {
                      if (entity instanceof EntityItem || entity instanceof EntityXPOrb || entity instanceof EntityArrow || entity == this.player) {
-@@ -1013,7 +1026,8 @@
+@@ -1013,7 +1027,8 @@
                          return;
                      }
  
@@ -104,7 +112,7 @@
                      if (this.server.isHardcore()) {
                          this.player.setGameType(GameType.SPECTATOR);
                          this.player.getServerWorld().getGameRules().setOrCreateGameRule("spectatorsGenerateChunks", "false");
-@@ -1051,7 +1065,7 @@
+@@ -1051,7 +1066,7 @@
                  ItemStack itemstack2 = this.player
                      .openContainer
                      .slotClick(packetIn.getSlotId(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
@@ -113,7 +121,16 @@
                      this.player
                          .connection
                          .sendPacket(new SPacketConfirmTransaction(packetIn.getWindowId(), packetIn.getActionNumber(), true));
-@@ -1218,8 +1232,7 @@
+@@ -1126,7 +1141,7 @@
+             }
+ 
+             boolean flag1 = packetIn.getSlotId() >= 1 && packetIn.getSlotId() <= 45;
+-            boolean flag2 = itemstack.isEmpty() || itemstack.getMetadata() >= 0 && itemstack.getCount() <= 64 && !itemstack.isEmpty();
++            boolean flag2 = itemstack.isEmpty() || itemstack.getMetadata() >= 0 && itemstack.getCount() <= Math.max(64, itemstack.getMaxStackSize()) && !itemstack.isEmpty();
+             if (flag1 && flag2) {
+                 if (itemstack.isEmpty()) {
+                     this.player.inventoryContainer.putStackInSlot(packetIn.getSlotId(), ItemStack.EMPTY);
+@@ -1218,8 +1233,7 @@
          PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
          List<String> list = Lists.newArrayList();
  

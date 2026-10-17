@@ -1,0 +1,10 @@
+--- original/net/minecraft/entity/monster/EntitySkeleton.java
++++ modified/net/minecraft/entity/monster/EntitySkeleton.java
+@@ -16,6 +16,7 @@
+ import net.minecraft.world.World;
+ import net.minecraft.world.storage.loot.LootTableList;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntitySkeleton extends AbstractSkeleton {
+     public EntitySkeleton(World worldIn) {
+         super(worldIn);

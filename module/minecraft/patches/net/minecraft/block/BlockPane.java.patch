@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockPane.java
 +++ modified/net/minecraft/block/BlockPane.java
-@@ -130,22 +130,10 @@
+@@ -24,6 +24,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPane extends Block {
+     public static final PropertyBool NORTH = PropertyBool.create("north");
+     public static final PropertyBool EAST = PropertyBool.create("east");
+@@ -130,22 +131,10 @@
      /** Get the actual Block state of this Block at the given position. This applies properties not visible in the metadata, such as fence connections. */
      @Override
      public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
@@ -27,7 +35,7 @@
      }
  
      /** Get the Item that this Block should drop when harvested. */
-@@ -269,15 +257,23 @@
+@@ -269,15 +258,23 @@
          return new BlockStateContainer(this, NORTH, EAST, WEST, SOUTH);
      }
  

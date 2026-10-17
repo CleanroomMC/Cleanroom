@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockOldLeaf.java
 +++ modified/net/minecraft/block/BlockOldLeaf.java
-@@ -109,9 +109,13 @@
+@@ -16,6 +16,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockOldLeaf extends BlockLeaves {
+     public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.create(
+         "variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>() {
+@@ -109,9 +110,13 @@
      ) {
          if (!worldIn.isRemote && stack.getItem() == Items.SHEARS) {
              player.addStat(StatList.getBlockStats(this));

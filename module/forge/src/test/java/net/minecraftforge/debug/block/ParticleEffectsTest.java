@@ -134,7 +134,7 @@ public class ParticleEffectsTest
                     return normalLoc;
                 }
             });
-            ModelLoader.setCustomModelResourceLocation(PARTICLE_ITEM, 0, invLoc);
+            ModelLoader.setCustomModelResourceLocation(PARTICLE_ITEM, invLoc);
         }
     }
 }

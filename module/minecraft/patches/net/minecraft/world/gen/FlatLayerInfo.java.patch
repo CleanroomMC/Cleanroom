@@ -1,0 +1,10 @@
+--- original/net/minecraft/world/gen/FlatLayerInfo.java
++++ modified/net/minecraft/world/gen/FlatLayerInfo.java
+@@ -4,6 +4,7 @@
+ import net.minecraft.block.state.IBlockState;
+ import net.minecraft.util.ResourceLocation;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class FlatLayerInfo {
+     private final int version;
+     private IBlockState layerMaterial;

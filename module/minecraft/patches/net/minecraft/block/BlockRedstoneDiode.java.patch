@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRedstoneDiode.java
 +++ modified/net/minecraft/block/BlockRedstoneDiode.java
-@@ -41,11 +41,13 @@
+@@ -16,6 +16,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class BlockRedstoneDiode extends BlockHorizontal {
+     protected static final AxisAlignedBB REDSTONE_DIODE_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0);
+     /** Tells whether the repeater is powered or not */
+@@ -41,11 +42,13 @@
      /** Checks if this block can be placed exactly at the given position. */
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
@@ -16,7 +24,7 @@
      }
  
      /** Called randomly when setTickRandomly is set to true (used by e.g. crops to grow, etc.) */
-@@ -213,6 +215,8 @@
+@@ -213,6 +216,8 @@
      protected void notifyNeighbors(World worldIn, BlockPos pos, IBlockState state) {
          EnumFacing enumfacing = state.getValue(FACING);
          BlockPos blockpos = pos.offset(enumfacing.getOpposite());
@@ -25,7 +33,7 @@
          worldIn.neighborChanged(blockpos, this, pos);
          worldIn.notifyNeighborsOfStateExcept(blockpos, this, enumfacing);
      }
-@@ -283,15 +287,23 @@
+@@ -283,15 +288,23 @@
          return BlockRenderLayer.CUTOUT;
      }
  

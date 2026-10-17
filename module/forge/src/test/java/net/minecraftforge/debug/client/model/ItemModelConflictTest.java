@@ -35,6 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber
 @Mod(modid = ItemModelConflictTest.MODID, name = "Test mod for model conflicts", version = "1.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class ItemModelConflictTest
 {
     public static final String MODID = "item_model_conflict_test";
@@ -75,8 +76,8 @@ public class ItemModelConflictTest
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent event)
         {
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(TEST_BLOCK), 0, new ModelResourceLocation(TEST_BLOCK.getRegistryName(), "normal"));
-            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, 0, new ModelResourceLocation(MODID + ":test", "inventory"));
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(TEST_BLOCK), new ModelResourceLocation(TEST_BLOCK.getRegistryName(), "normal"));
+            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, new ModelResourceLocation(MODID + ":test", "inventory"));
         }
     }
 }

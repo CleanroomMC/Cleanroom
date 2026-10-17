@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockGrass.java
 +++ modified/net/minecraft/block/BlockGrass.java
-@@ -35,7 +35,8 @@
+@@ -15,6 +15,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockGrass extends Block implements IGrowable {
+     public static final PropertyBool SNOWY = PropertyBool.create("snowy");
+ 
+@@ -35,7 +36,8 @@
      @Override
      public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
          if (!worldIn.isRemote) {
@@ -10,7 +18,7 @@
                  worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
              } else {
                  if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
-@@ -48,9 +49,9 @@
+@@ -48,9 +50,9 @@
                          IBlockState iblockstate = worldIn.getBlockState(blockpos.up());
                          IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
                          if (iblockstate1.getBlock() == Blocks.DIRT
@@ -23,7 +31,7 @@
                              worldIn.setBlockState(blockpos, Blocks.GRASS.getDefaultState());
                          }
                      }
-@@ -95,14 +96,9 @@
+@@ -95,14 +97,9 @@
                  }
              }
  

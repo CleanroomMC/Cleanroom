@@ -8,7 +8,15 @@
  import net.minecraft.block.properties.PropertyInteger;
  import net.minecraft.block.state.BlockFaceShape;
  import net.minecraft.block.state.BlockStateContainer;
-@@ -47,7 +48,8 @@
+@@ -23,6 +24,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockChorusFlower extends Block {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 5);
+ 
+@@ -47,7 +49,8 @@
              BlockPos blockpos = pos.up();
              if (worldIn.isAirBlock(blockpos) && blockpos.getY() < 256) {
                  int i = state.getValue(AGE);
@@ -18,7 +26,7 @@
                      boolean flag = false;
                      boolean flag1 = false;
                      IBlockState iblockstate = worldIn.getBlockState(pos.down());
-@@ -110,6 +112,7 @@
+@@ -110,6 +113,7 @@
                      } else if (i == 4) {
                          this.placeDeadFlower(worldIn, pos);
                      }

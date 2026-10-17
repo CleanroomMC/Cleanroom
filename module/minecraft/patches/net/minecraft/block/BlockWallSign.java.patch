@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockWallSign.java
++++ modified/net/minecraft/block/BlockWallSign.java
+@@ -11,6 +11,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockWallSign extends BlockSign {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     protected static final AxisAlignedBB SIGN_EAST_AABB = new AxisAlignedBB(0.0, 0.28125, 0.0, 0.125, 0.78125, 1.0);

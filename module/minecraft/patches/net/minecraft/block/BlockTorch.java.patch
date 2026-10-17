@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockTorch.java
 +++ modified/net/minecraft/block/BlockTorch.java
-@@ -82,14 +82,8 @@
+@@ -23,6 +23,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockTorch extends Block {
+     public static final PropertyDirection FACING = PropertyDirection.create("facing", new Predicate<EnumFacing>() {
+         public boolean apply(@Nullable EnumFacing p_apply_1_) {
+@@ -82,14 +83,8 @@
      }
  
      private boolean canPlaceOn(World worldIn, BlockPos pos) {

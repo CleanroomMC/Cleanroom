@@ -1,0 +1,18 @@
+--- original/net/minecraft/block/ITileEntityProvider.java
++++ modified/net/minecraft/block/ITileEntityProvider.java
+@@ -4,8 +4,14 @@
+ import net.minecraft.tileentity.TileEntity;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public interface ITileEntityProvider {
+-    /** Returns a new instance of a block's tile entity class. Called on placing the block. */
++    /**
++     * Returns a new instance of a block's tile entity class. Called on placing the block.
++     * @deprecated the {@code meta} argument is a legacy view of the block state; a tile entity class should not
++     * depend on metadata.
++     */
++    @Deprecated
+     @Nullable
+     TileEntity createNewTileEntity(World var1, int var2);
+ }

@@ -1,6 +1,14 @@
 --- original/net/minecraft/tileentity/TileEntityHopper.java
 +++ modified/net/minecraft/tileentity/TileEntityHopper.java
-@@ -77,7 +77,8 @@
+@@ -28,6 +28,7 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper, ITickable {
+     private NonNullList<ItemStack> inventory = NonNullList.withSize(5, ItemStack.EMPTY);
+     private int transferCooldown = -1;
+@@ -77,7 +78,8 @@
      @Override
      public ItemStack decrStackSize(int index, int count) {
          this.fillWithLoot(null);
@@ -10,7 +18,7 @@
      }
  
      /** Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections). */
-@@ -180,6 +181,7 @@
+@@ -180,6 +182,7 @@
      }
  
      private boolean transferItemsOut() {
@@ -18,7 +26,7 @@
          IInventory iinventory = this.getInventoryForHopperTransfer();
          if (iinventory == null) {
              return false;
-@@ -263,6 +265,8 @@
+@@ -263,6 +266,8 @@
       * @return whether any items were successfully added to the hopper
       */
      public static boolean pullItems(IHopper hopper) {
@@ -27,7 +35,7 @@
          IInventory iinventory = getSourceInventory(hopper);
          if (iinventory != null) {
              EnumFacing enumfacing = EnumFacing.DOWN;
-@@ -337,7 +341,11 @@
+@@ -337,7 +342,11 @@
          return flag;
      }
  
@@ -40,7 +48,7 @@
      public static ItemStack putStackInInventoryAllSlots(IInventory source, IInventory destination, ItemStack stack, @Nullable EnumFacing direction) {
          if (destination instanceof ISidedInventory && direction != null) {
              ISidedInventory isidedinventory = (ISidedInventory)destination;
-@@ -441,8 +449,10 @@
+@@ -441,8 +450,10 @@
          int j = MathHelper.floor(y);
          int k = MathHelper.floor(z);
          BlockPos blockpos = new BlockPos(i, j, k);
@@ -53,7 +61,16 @@
              TileEntity tileentity = worldIn.getTileEntity(blockpos);
              if (tileentity instanceof IInventory) {
                  iinventory = (IInventory)tileentity;
-@@ -521,4 +531,6 @@
+@@ -471,6 +482,8 @@
+             return false;
+         } else if (stack1.getMetadata() != stack2.getMetadata()) {
+             return false;
++        } else if (!stack1.isStackable() || !stack2.isStackable()) {
++            return false;
+         } else {
+             return stack1.getCount() > stack1.getMaxStackSize() ? false : ItemStack.areItemStackTagsEqual(stack1, stack2);
+         }
+@@ -521,4 +534,6 @@
      protected NonNullList<ItemStack> getItems() {
          return this.inventory;
      }

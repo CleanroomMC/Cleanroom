@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockDirt.java
++++ modified/net/minecraft/block/BlockDirt.java
+@@ -15,6 +15,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockDirt extends Block {
+     public static final PropertyEnum<BlockDirt.DirtType> VARIANT = PropertyEnum.create("variant", BlockDirt.DirtType.class);
+     public static final PropertyBool SNOWY = PropertyBool.create("snowy");

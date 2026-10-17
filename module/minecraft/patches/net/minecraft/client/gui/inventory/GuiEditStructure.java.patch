@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/gui/inventory/GuiEditStructure.java
++++ modified/net/minecraft/client/gui/inventory/GuiEditStructure.java
+@@ -25,6 +25,7 @@
+ import org.lwjgl.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class GuiEditStructure extends GuiScreen {
+     private static final Logger LOGGER = LogManager.getLogger();
+     public static final int[] LEGAL_KEY_CODES = new int[]{203, 205, 14, 211, 199, 207};

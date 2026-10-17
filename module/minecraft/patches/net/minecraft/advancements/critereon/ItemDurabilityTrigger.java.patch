@@ -1,0 +1,11 @@
+--- original/net/minecraft/advancements/critereon/ItemDurabilityTrigger.java
++++ modified/net/minecraft/advancements/critereon/ItemDurabilityTrigger.java
+@@ -83,7 +83,7 @@
+             } else {
+                 return !this.durability.test(item.getMaxDamage() - p_193197_2_)
+                     ? false
+-                    : this.delta.test(item.getItemDamage() - p_193197_2_);
++                    : this.delta.test(item.getDamageValue() - p_193197_2_);
+             }
+         }
+     }

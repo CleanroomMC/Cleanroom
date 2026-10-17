@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockStairs.java
 +++ modified/net/minecraft/block/BlockStairs.java
-@@ -601,7 +601,29 @@
+@@ -31,6 +31,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockStairs extends Block {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     public static final PropertyEnum<BlockStairs.EnumHalf> HALF = PropertyEnum.create("half", BlockStairs.EnumHalf.class);
+@@ -601,7 +602,29 @@
      protected BlockStateContainer createBlockState() {
          return new BlockStateContainer(this, FACING, HALF, SHAPE);
      }

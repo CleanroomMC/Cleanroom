@@ -1,6 +1,35 @@
 --- original/net/minecraft/item/ItemMap.java
 +++ modified/net/minecraft/item/ItemMap.java
-@@ -39,7 +39,7 @@
+@@ -27,19 +27,34 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemMap extends ItemMapBase {
+     protected ItemMap() {
+         this.setHasSubtypes(true);
+     }
+ 
++    /** Cleanroom: reads the map id from {@link com.cleanroommc.component.DataComponents#MAP_ID}, falling back to legacy metadata. */
++    public static int getMapId(ItemStack stack) {
++        Integer id = stack.get(com.cleanroommc.component.DataComponents.MAP_ID);
++        return id != null ? id.intValue() : stack.getMetadata();
++    }
++
++    /** Cleanroom: writes the map id to {@link com.cleanroommc.component.DataComponents#MAP_ID} and keeps legacy metadata in sync. */
++    public static void setMapId(ItemStack stack, int mapId) {
++        stack.setItemDamage(mapId);
++        stack.set(com.cleanroommc.component.DataComponents.MAP_ID, mapId);
++    }
++
+     public static ItemStack setupNewMap(World worldIn, double worldX, double worldZ, byte scale, boolean trackingPosition, boolean unlimitedTracking) {
+-        ItemStack itemstack = new ItemStack(Items.FILLED_MAP, 1, worldIn.getUniqueDataId("map"));
+-        String s = "map_" + itemstack.getMetadata();
++        int id = worldIn.getUniqueDataId("map");
++        ItemStack itemstack = new ItemStack(Items.FILLED_MAP, 1, id);
++        setMapId(itemstack, id);
++        String s = "map_" + getMapId(itemstack);
+         MapData mapdata = new MapData(s);
          worldIn.setData(s, mapdata);
          mapdata.scale = scale;
          mapdata.calculateMapCenter(worldX, worldZ, mapdata.scale);
@@ -9,7 +38,18 @@
          mapdata.trackingPosition = trackingPosition;
          mapdata.unlimitedTracking = unlimitedTracking;
          mapdata.markDirty();
-@@ -63,7 +63,7 @@
+@@ -55,15 +70,15 @@
+ 
+     @Nullable
+     public MapData getMapData(ItemStack stack, World worldIn) {
+-        String s = "map_" + stack.getMetadata();
++        String s = "map_" + getMapId(stack);
+         MapData mapdata = (MapData)worldIn.loadData(MapData.class, s);
+         if (mapdata == null && !worldIn.isRemote) {
+-            stack.setItemDamage(worldIn.getUniqueDataId("map"));
+-            s = "map_" + stack.getMetadata();
++            setMapId(stack, worldIn.getUniqueDataId("map"));
++            s = "map_" + getMapId(stack);
              mapdata = new MapData(s);
              mapdata.scale = 3;
              mapdata.calculateMapCenter(worldIn.getWorldInfo().getSpawnX(), worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);
@@ -18,7 +58,7 @@
              mapdata.markDirty();
              worldIn.setData(s, mapdata);
          }
-@@ -72,7 +72,7 @@
+@@ -72,7 +87,7 @@
      }
  
      public void updateMapData(World worldIn, Entity viewer, MapData data) {
@@ -27,7 +67,7 @@
              int i = 1 << data.scale;
              int j = data.xCenter;
              int k = data.zCenter;
-@@ -206,10 +206,11 @@
+@@ -206,10 +221,11 @@
  
      /** Draws ambiguous landmasses representing unexplored terrain onto a treasure map */
      public static void renderBiomePreviewMap(World worldIn, ItemStack map) {
@@ -42,3 +82,40 @@
                      int i = 1 << mapdata.scale;
                      int j = mapdata.xCenter;
                      int k = mapdata.zCenter;
+@@ -334,22 +350,22 @@
+ 
+     protected static void scaleMap(ItemStack p_185063_0_, World p_185063_1_, int p_185063_2_) {
+         MapData mapdata = Items.FILLED_MAP.getMapData(p_185063_0_, p_185063_1_);
+-        p_185063_0_.setItemDamage(p_185063_1_.getUniqueDataId("map"));
+-        MapData mapdata1 = new MapData("map_" + p_185063_0_.getMetadata());
++        setMapId(p_185063_0_, p_185063_1_.getUniqueDataId("map"));
++        MapData mapdata1 = new MapData("map_" + getMapId(p_185063_0_));
+         if (mapdata != null) {
+             mapdata1.scale = (byte)MathHelper.clamp(mapdata.scale + p_185063_2_, 0, 4);
+             mapdata1.trackingPosition = mapdata.trackingPosition;
+             mapdata1.calculateMapCenter(mapdata.xCenter, mapdata.zCenter, mapdata1.scale);
+             mapdata1.dimension = mapdata.dimension;
+             mapdata1.markDirty();
+-            p_185063_1_.setData("map_" + p_185063_0_.getMetadata(), mapdata1);
++            p_185063_1_.setData("map_" + getMapId(p_185063_0_), mapdata1);
+         }
+     }
+ 
+     protected static void enableMapTracking(ItemStack p_185064_0_, World p_185064_1_) {
+         MapData mapdata = Items.FILLED_MAP.getMapData(p_185064_0_, p_185064_1_);
+-        p_185064_0_.setItemDamage(p_185064_1_.getUniqueDataId("map"));
+-        MapData mapdata1 = new MapData("map_" + p_185064_0_.getMetadata());
++        setMapId(p_185064_0_, p_185064_1_.getUniqueDataId("map"));
++        MapData mapdata1 = new MapData("map_" + getMapId(p_185064_0_));
+         mapdata1.trackingPosition = true;
+         if (mapdata != null) {
+             mapdata1.xCenter = mapdata.xCenter;
+@@ -357,7 +373,7 @@
+             mapdata1.scale = mapdata.scale;
+             mapdata1.dimension = mapdata.dimension;
+             mapdata1.markDirty();
+-            p_185064_1_.setData("map_" + p_185064_0_.getMetadata(), mapdata1);
++            p_185064_1_.setData("map_" + getMapId(p_185064_0_), mapdata1);
+         }
+     }
+ 

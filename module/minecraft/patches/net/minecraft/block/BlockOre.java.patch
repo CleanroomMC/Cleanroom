@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockOre.java
 +++ modified/net/minecraft/block/BlockOre.java
-@@ -67,22 +67,27 @@
+@@ -14,6 +14,7 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockOre extends Block {
+     public BlockOre() {
+         this(Material.ROCK.getMaterialMapColor());
+@@ -67,22 +68,27 @@
      @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
          super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);

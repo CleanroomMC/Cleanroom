@@ -18,7 +18,7 @@
                              return false;
                          }
  
-@@ -50,13 +50,13 @@
+@@ -50,16 +50,19 @@
                  if (!itemstack2.isEmpty()) {
                      if (Block.getBlockFromItem(itemstack2.getItem()) instanceof BlockShulkerBox) {
                          itemstack = itemstack2;
@@ -34,3 +34,9 @@
              if (itemstack.hasTagCompound()) {
                  itemstack3.setTagCompound(itemstack.getTagCompound().copy());
              }
++            if (!itemstack.getComponents().asPatch().isEmpty()) {
++                itemstack3.getComponents().restorePatch(itemstack.getComponents().asPatch());
++            }
+ 
+             return itemstack3;
+         }

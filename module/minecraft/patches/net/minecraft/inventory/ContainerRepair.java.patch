@@ -80,7 +80,7 @@
          );
  
          for (int i = 0; i < 3; i++) {
-@@ -147,8 +153,12 @@
+@@ -147,10 +153,14 @@
              Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
              j += itemstack.getRepairCost() + (itemstack2.isEmpty() ? 0 : itemstack2.getRepairCost());
              this.materialCost = 0;
@@ -92,17 +92,47 @@
 +                flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !ItemEnchantedBook.getEnchantments(itemstack2).isEmpty();
 +
                  if (itemstack1.isItemStackDamageable() && itemstack1.getItem().getIsRepairable(itemstack, itemstack2)) {
-                     int l2 = Math.min(itemstack1.getItemDamage(), itemstack1.getMaxDamage() / 4);
+-                    int l2 = Math.min(itemstack1.getItemDamage(), itemstack1.getMaxDamage() / 4);
++                    int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
                      if (l2 <= 0) {
-@@ -183,7 +193,7 @@
+                         this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
+                         this.maximumCost = 0;
+@@ -159,10 +169,10 @@
+ 
+                     int i3;
+                     for (i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); i3++) {
+-                        int j3 = itemstack1.getItemDamage() - l2;
+-                        itemstack1.setItemDamage(j3);
++                        int j3 = itemstack1.getDamageValue() - l2;
++                        itemstack1.setDamageValue(j3);
+                         i++;
+-                        l2 = Math.min(itemstack1.getItemDamage(), itemstack1.getMaxDamage() / 4);
++                        l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
+                     }
+ 
+                     this.materialCost = i3;
+@@ -174,8 +184,8 @@
+                     }
+ 
+                     if (itemstack1.isItemStackDamageable() && !flag) {
+-                        int l = itemstack.getMaxDamage() - itemstack.getItemDamage();
+-                        int i1 = itemstack2.getMaxDamage() - itemstack2.getItemDamage();
++                        int l = itemstack.getMaxDamage() - itemstack.getDamageValue();
++                        int i1 = itemstack2.getMaxDamage() - itemstack2.getDamageValue();
+                         int j1 = i1 + itemstack1.getMaxDamage() * 12 / 100;
+                         int k1 = l + j1;
+                         int l1 = itemstack1.getMaxDamage() - k1;
+@@ -183,8 +193,8 @@
                              l1 = 0;
                          }
  
 -                        if (l1 < itemstack1.getMetadata()) {
-+                        if (l1 < itemstack1.getItemDamage()) { // vanilla uses metadata here instead of damage.
-                             itemstack1.setItemDamage(l1);
+-                            itemstack1.setItemDamage(l1);
++                        if (l1 < itemstack1.getDamageValue()) { // vanilla uses metadata here instead of damage.
++                            itemstack1.setDamageValue(l1);
                              i += 2;
                          }
+                     }
 @@ -265,6 +275,7 @@
                  i += k;
                  itemstack1.setStackDisplayName(this.repairedItemName);

@@ -1,6 +1,14 @@
 --- original/net/minecraft/client/gui/GuiIngame.java
 +++ modified/net/minecraft/client/gui/GuiIngame.java
-@@ -359,8 +359,9 @@
+@@ -59,6 +59,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class GuiIngame extends Gui {
+     protected static final ResourceLocation VIGNETTE_TEX_PATH = new ResourceLocation("textures/misc/vignette.png");
+     protected static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
+@@ -359,8 +360,9 @@
                  }
  
                  BlockPos blockpos = raytraceresult.getBlockPos();
@@ -12,7 +20,7 @@
                      return;
                  }
              }
-@@ -419,7 +420,11 @@
+@@ -419,7 +421,11 @@
  
              for (PotionEffect potioneffect : Ordering.natural().reverse().sortedCopy(collection)) {
                  Potion potion = potioneffect.getPotion();
@@ -25,7 +33,7 @@
                      int k = resolution.getScaledWidth();
                      int l = 1;
                      if (this.mc.isDemo()) {
-@@ -451,7 +456,10 @@
+@@ -451,7 +457,10 @@
                      }
  
                      GlStateManager.color(1.0F, 1.0F, 1.0F, f);

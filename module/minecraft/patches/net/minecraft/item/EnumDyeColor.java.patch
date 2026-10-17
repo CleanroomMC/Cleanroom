@@ -1,0 +1,46 @@
+--- original/net/minecraft/item/EnumDyeColor.java
++++ modified/net/minecraft/item/EnumDyeColor.java
+@@ -5,6 +5,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public enum EnumDyeColor implements IStringSerializable {
+     WHITE(0, 15, "white", "white", 16383998, TextFormatting.WHITE),
+     ORANGE(1, 14, "orange", "orange", 16351261, TextFormatting.GOLD),
+@@ -77,19 +78,27 @@
+     }
+ 
+     public static EnumDyeColor byDyeDamage(int damage) {
+-        if (damage < 0 || damage >= DYE_DMG_LOOKUP.length) {
+-            damage = 0;
++        if (damage >= 0 && damage < DYE_DMG_LOOKUP.length && DYE_DMG_LOOKUP[damage] != null) {
++            return DYE_DMG_LOOKUP[damage];
+         }
+-
+-        return DYE_DMG_LOOKUP[damage];
++        for (EnumDyeColor c : values()) {
++            if (c.getDyeDamage() == damage) {
++                return c;
++            }
++        }
++        return WHITE;
+     }
+ 
+     public static EnumDyeColor byMetadata(int meta) {
+-        if (meta < 0 || meta >= META_LOOKUP.length) {
+-            meta = 0;
++        if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++            return META_LOOKUP[meta];
+         }
+-
+-        return META_LOOKUP[meta];
++        for (EnumDyeColor c : values()) {
++            if (c.getMetadata() == meta) {
++                return c;
++            }
++        }
++        return WHITE;
+     }
+ 
+     @Override

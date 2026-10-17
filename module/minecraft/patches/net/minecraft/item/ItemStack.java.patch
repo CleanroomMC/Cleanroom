@@ -1,15 +1,28 @@
 --- original/net/minecraft/item/ItemStack.java
 +++ modified/net/minecraft/item/ItemStack.java
-@@ -50,7 +50,7 @@
+@@ -50,7 +50,8 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public final class ItemStack {
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 +public final class ItemStack implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound> {
      public static final ItemStack EMPTY = new ItemStack((Item)null);
      public static final DecimalFormat DECIMALFORMAT = new DecimalFormat("#.##");
      /** Size of the stack. */
-@@ -69,6 +69,10 @@
+@@ -62,6 +63,11 @@
+     private NBTTagCompound stackTagCompound;
+     private boolean isEmpty;
+     int itemDamage;
++    /** This stack's components on top of {@code item.getComponents()}; the field above answers {@code DAMAGE}/{@code LEGACY_VARIANT} itself. */
++    private final com.cleanroommc.component.PatchedDataComponentMap components;
++    /** Saved {@code Components} entries whose type is no longer registered (or has no {@code NbtCodec}), kept verbatim for the next write. */
++    @Nullable
++    private NBTTagCompound unknownComponentTags;
+     /** Item frame this stack is on, or null if not on an item frame. */
+     private EntityItemFrame itemFrame;
+     private Block canDestroyCacheBlock;
+@@ -69,6 +75,10 @@
      private Block canPlaceOnCacheBlock;
      private boolean canPlaceOnCacheResult;
  
@@ -20,44 +33,107 @@
      public ItemStack(Block blockIn) {
          this(blockIn, 1);
      }
-@@ -89,7 +93,9 @@
+@@ -77,6 +87,11 @@
+         this(blockIn, amount, 0);
+     }
+ 
++    /**
++     * @deprecated the legacy number L is a component now; use {@link #ItemStack(Block, int)} or the
++     * {@link #ItemStack(Item, int, com.cleanroommc.component.DataComponentMap)} constructor
++     */
++    @Deprecated
+     public ItemStack(Block blockIn, int amount, int meta) {
+         this(Item.getItemFromBlock(blockIn), amount, meta);
+     }
+@@ -89,42 +104,96 @@
          this(itemIn, amount, 0);
      }
  
 -    public ItemStack(Item itemIn, int amount, int meta) {
++    /**
++     * @deprecated the meta argument is the legacy number L; use {@link #ItemStack(Item, int)} or the
++     * {@link #ItemStack(Item, int, com.cleanroommc.component.DataComponentMap)} constructor
++     */
++    @Deprecated
 +    public ItemStack(Item itemIn, int amount, int meta){ this(itemIn, amount, meta, null); }
++    /**
++     * @deprecated the meta argument is the legacy number L; use {@link #ItemStack(Item, int)} or the
++     * {@link #ItemStack(Item, int, com.cleanroommc.component.DataComponentMap)} constructor
++     */
++    @Deprecated
 +    public ItemStack(Item itemIn, int amount, int meta, @Nullable NBTTagCompound capNBT) {
 +        this.capNBT = capNBT;
          this.item = itemIn;
          this.itemDamage = meta;
          this.stackSize = amount;
-@@ -98,6 +104,7 @@
++        this.components = com.cleanroommc.component.DataComponents.newMap(itemIn);
+         if (this.itemDamage < 0) {
+             this.itemDamage = 0;
          }
  
          this.updateEmptyState();
 +        this.forgeInit();
      }
  
++    /** A stack of {@code amount} carrying {@code components} on top of the item's prototype defaults. */
++    public ItemStack(Item itemIn, int amount, com.cleanroommc.component.DataComponentMap components) {
++        this(itemIn, amount, 0, null);
++        com.cleanroommc.component.DataComponents.applyAll(this.components, components);
++    }
++
      private void updateEmptyState() {
-@@ -105,7 +112,8 @@
+         this.isEmpty = this.isEmpty();
      }
  
      public ItemStack(NBTTagCompound compound) {
 -        this.item = Item.getByNameOrId(compound.getString("id"));
+-        this.stackSize = compound.getByte("Count");
+-        this.itemDamage = Math.max(0, compound.getShort("Damage"));
++        String missingId = null; // Cleanroom: a saved item whose name no registry answers
++        if (compound.hasKey("id", 8)) {
++            String id = compound.getString("id");
++            if (!id.isEmpty() && !"minecraft:air".equals(id) && Item.getByNameOrId(id) == null && com.cleanroommc.ids.MissingItem.INSTANCE != null) {
++                missingId = id;
++                if (com.cleanroommc.ids.RetainedContent.isRemoved(id)) { // Cleanroom: a removed namespace's items become EMPTY
++                    com.cleanroommc.ids.RetainedContent.noteRemoved(id);
++                    missingId = null;
++                }
++            }
++        }
++
++        if (missingId != null) {
++            // Cleanroom: keep the whole compound verbatim under CleanroomRetained; it goes back out as it came in
++            this.item = com.cleanroommc.ids.MissingItem.INSTANCE;
++            this.stackSize = compound.getInteger("Count");
++            this.itemDamage = 0;
++            this.components = com.cleanroommc.component.DataComponents.newMap(this.item);
++            this.stackTagCompound = new NBTTagCompound();
++            this.stackTagCompound.setTag(com.cleanroommc.ids.MissingItem.RETAINED, compound.copy());
++            com.cleanroommc.ids.RetainedContent.noteMissingItem(missingId);
++        } else {
 +        this.capNBT = compound.hasKey("ForgeCaps") ? compound.getCompoundTag("ForgeCaps") : null;
 +        this.item = compound.hasKey("id", 8) ? Item.getByNameOrId(compound.getString("id")) : Items.AIR; //Forge fix tons of NumberFormatExceptions that are caused by deserializing EMPTY ItemStacks.
-         this.stackSize = compound.getByte("Count");
-         this.itemDamage = Math.max(0, compound.getShort("Damage"));
++        this.stackSize = compound.getInteger("Count");
++        this.itemDamage = Math.max(0, compound.getInteger("Damage")); // Cleanroom: short or int; carries the legacy number L
++        this.components = com.cleanroommc.component.DataComponents.newMap(this.item);
++        if (compound.hasKey("Components", 10)) {
++            this.unknownComponentTags = com.cleanroommc.component.DataComponents.readNbt(compound.getCompoundTag("Components"), this.components, this.unknownComponentTags);
++        }
          if (compound.hasKey("tag", 10)) {
-@@ -116,12 +124,17 @@
+             this.stackTagCompound = compound.getCompoundTag("tag");
+             if (this.item != null) {
+                 this.item.updateItemStackNBT(compound);
+             }
          }
++        }
  
          this.updateEmptyState();
 +        this.forgeInit();
      }
  
-+    private ItemStack(Item item, Object unused) {
++    private ItemStack(Item item, @Nullable com.cleanroommc.component.PatchedDataComponentMap components) {
 +        this.item = item;
++        this.components = components == null ? com.cleanroommc.component.DataComponents.newMap(item) : components;
 +    }
 +
      public boolean isEmpty() {
@@ -67,8 +143,12 @@
 +        } else if (this.getItemRaw() == null || this.getItemRaw() == Items.AIR) {
              return true;
          } else {
-             return this.stackSize <= 0 ? true : this.itemDamage < -32768 || this.itemDamage > 65535;
-@@ -144,7 +157,7 @@
+-            return this.stackSize <= 0 ? true : this.itemDamage < -32768 || this.itemDamage > 65535;
++            return this.stackSize <= 0; // Cleanroom: damage past 16 bits is valid now that packets and NBT carry it (was itemDamage < -32768 || itemDamage > 65535)
+         }
+     }
+ 
+@@ -144,7 +213,7 @@
  
      /** Returns the object corresponding to the stack. */
      public Item getItem() {
@@ -77,7 +157,7 @@
      }
  
      /** Called when the player uses this ItemStack on a Block (right-click). Places blocks, etc. (Legacy name: tryPlaceItemIntoWorld) */
-@@ -158,6 +171,7 @@
+@@ -158,6 +227,7 @@
          float hitY,
          float hitZ
      ) {
@@ -85,7 +165,7 @@
          EnumActionResult enumactionresult = this.getItem()
              .onItemUse(playerIn, worldIn, pos, hand, side, hitX, hitY, hitZ);
          if (enumactionresult == EnumActionResult.SUCCESS) {
-@@ -167,6 +181,26 @@
+@@ -167,6 +237,26 @@
          return enumactionresult;
      }
  
@@ -112,10 +192,43 @@
      public float getDestroySpeed(IBlockState blockIn) {
          return this.getItem().getDestroySpeed(this, blockIn);
      }
-@@ -191,12 +225,17 @@
+@@ -183,20 +273,48 @@
+ 
+     /** Write the stack fields to a NBT object. Return the new NBT object. */
+     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
++        if (this.item == com.cleanroommc.ids.MissingItem.INSTANCE && this.stackTagCompound != null
++                && this.stackTagCompound.hasKey(com.cleanroommc.ids.MissingItem.RETAINED, 10)) {
++            // Cleanroom: the original compound goes back out verbatim; only the count follows the live stack
++            NBTTagCompound retained = this.stackTagCompound.getCompoundTag(com.cleanroommc.ids.MissingItem.RETAINED);
++            for (String key : retained.getKeySet()) {
++                if (!"Slot".equals(key) || !nbt.hasKey("Slot")) {
++                    nbt.setTag(key, retained.getTag(key).copy());
++                }
++            }
++            if (this.stackSize >= Byte.MIN_VALUE && this.stackSize <= Byte.MAX_VALUE) {
++                nbt.setByte("Count", (byte)this.stackSize);
++            } else {
++                nbt.setInteger("Count", this.stackSize);
++            }
++            return nbt;
++        }
++
+         ResourceLocation resourcelocation = Item.REGISTRY.getNameForObject(this.item);
+         nbt.setString("id", resourcelocation == null ? "minecraft:air" : resourcelocation.toString());
+-        nbt.setByte("Count", (byte)this.stackSize);
+-        nbt.setShort("Damage", (short)this.itemDamage);
++        if (this.stackSize >= Byte.MIN_VALUE && this.stackSize <= Byte.MAX_VALUE) {
++            nbt.setByte("Count", (byte)this.stackSize);
++        } else {
++            nbt.setInteger("Count", this.stackSize);
++        }
++        nbt.setInteger("Damage", this.itemDamage); // Cleanroom: any damage (was a short)
+         if (this.stackTagCompound != null) {
              nbt.setTag("tag", this.stackTagCompound);
          }
  
++        com.cleanroommc.component.DataComponents.writeNbt(this.components, this.unknownComponentTags, nbt);
++
 +        if (this.capabilities != null) {
 +            NBTTagCompound cnbt = this.capabilities.serializeNBT();
 +            if (!cnbt.isEmpty()) nbt.setTag("ForgeCaps", cnbt);
@@ -131,7 +244,7 @@
      }
  
      /** Returns true if the ItemStack can hold 2 or more units of the item. */
-@@ -209,7 +248,7 @@
+@@ -209,7 +327,7 @@
          if (this.isEmpty) {
              return false;
          } else {
@@ -140,7 +253,7 @@
          }
      }
  
-@@ -219,27 +258,24 @@
+@@ -219,27 +337,194 @@
  
      /** returns true when a damageable item is damaged */
      public boolean isItemDamaged() {
@@ -148,24 +261,193 @@
 +        return this.isItemStackDamageable() && getItem().isDamaged(this);
      }
  
++    /**
++     * @deprecated the legacy number L; use {@link #getDamageValue()} for durability or read
++     * {@code LEGACY_VARIANT} through {@link #get(DataComponentType)}
++     */
++    @Deprecated
      public int getItemDamage() {
 -        return this.itemDamage;
 +        return getItem().getDamage(this);
      }
  
++    /**
++     * @deprecated the legacy number L; read {@code LEGACY_VARIANT} through {@link #get(DataComponentType)}
++     */
++    @Deprecated
      public int getMetadata() {
 -        return this.itemDamage;
 +        return getItem().getMetadata(this);
      }
  
++    /**
++     * @deprecated the legacy number L; use {@link #setDamageValue(int)} for durability or set
++     * {@code LEGACY_VARIANT} through {@link #set(DataComponentType, Object)}
++     */
++    @Deprecated
      public void setItemDamage(int meta) {
 -        this.itemDamage = meta;
 -        if (this.itemDamage < 0) {
 -            this.itemDamage = 0;
--        }
++        if (meta != this.itemDamage && this.item != null && !getItem().isDamageable()) {
++            this.components.remove(com.cleanroommc.component.DataComponents.BLOCK_STATE);
++            this.components.remove(com.cleanroommc.component.DataComponents.ITEM_STATE);
+         }
 +        getItem().setDamage(this, meta);
      }
  
++    /** This stack's component patch over the item's prototype. The two legacy components are virtual — see {@link #get}. */
++    public com.cleanroommc.component.PatchedDataComponentMap getComponents() {
++        return this.components;
++    }
++
++    /**
++     * Reads a data component. {@code cleanroom:damage} and {@code cleanroom:legacy_variant} are
++     * virtual: backed by {@link #itemDamage} itself — present iff the routing rule points at them
++     * (the item {@link Item#isDamageable() isDamageable} → {@code DAMAGE}, otherwise
++     * {@code LEGACY_VARIANT}); they never appear in {@link #getComponents()}' patch.
++     */
++    @Nullable
++    @SuppressWarnings("unchecked")
++    public <T> T get(com.cleanroommc.component.DataComponentType<? extends T> type) {
++        if (type == com.cleanroommc.component.DataComponents.DAMAGE) {
++            return (T) (this.item != null && this.getMaxDamage() > 0 ? Integer.valueOf(this.itemDamage) : null);
++        }
++        if (type == com.cleanroommc.component.DataComponents.LEGACY_VARIANT) {
++            return (T) (this.item != null && this.getMaxDamage() <= 0 ? Integer.valueOf(this.itemDamage) : null);
++        }
++        T val = this.components.get(type);
++        if (val == null && type == com.cleanroommc.component.DataComponents.BLOCK_STATE && this.item != null && getItem() instanceof ItemBlock) {
++            ItemBlock ib = (ItemBlock) getItem();
++            try { return (T) ib.getBlock().getStateFromMeta(ib.getMetadata(this.itemDamage)); } catch (RuntimeException e) { return (T) ib.getBlock().getDefaultState(); }
++        }
++        if (val == null && type == com.cleanroommc.component.DataComponents.ITEM_STATE && this.item != null) {
++            return (T) getItem().getItemStateFromMeta(this.itemDamage);
++        }
++        return val;
++    }
++
++    public <T> T getOrDefault(com.cleanroommc.component.DataComponentType<? extends T> type, T fallback) {
++        T value = get(type);
++        return value == null ? fallback : value;
++    }
++
++    public boolean has(com.cleanroommc.component.DataComponentType<?> type) {
++        if (type == com.cleanroommc.component.DataComponents.DAMAGE) {
++            return this.item != null && this.getMaxDamage() > 0;
++        }
++        if (type == com.cleanroommc.component.DataComponents.LEGACY_VARIANT) {
++            return this.item != null && this.getMaxDamage() <= 0;
++        }
++        if (type == com.cleanroommc.component.DataComponents.BLOCK_STATE && this.item != null && getItem() instanceof ItemBlock) {
++            return true;
++        }
++        if (type == com.cleanroommc.component.DataComponents.ITEM_STATE && this.item != null) {
++            return true;
++        }
++        return this.components.has(type);
++    }
++
++    /**
++     * Sets a component; {@code null} removes it. For the two virtual components the value writes the
++     * {@link #itemDamage} field — {@code DAMAGE} only exists on a damageable item and
++     * {@code LEGACY_VARIANT} only on a non-damageable one, so a mismatched type or a removal throws.
++     *
++     * @return the value in effect before this call
++     */
++    @Nullable
++    @SuppressWarnings("unchecked")
++    public <T> T set(com.cleanroommc.component.DataComponentType<? extends T> type, @Nullable T value) {
++        if (type == com.cleanroommc.component.DataComponents.DAMAGE || type == com.cleanroommc.component.DataComponents.LEGACY_VARIANT) {
++            boolean damageable = this.item != null && this.getMaxDamage() > 0;
++            if (value == null) {
++                throw new IllegalArgumentException(type.getRegistryName() + " is backed by the stack's damage field and cannot be removed");
++            }
++            if (type == com.cleanroommc.component.DataComponents.DAMAGE != damageable) {
++                throw new IllegalArgumentException(type.getRegistryName() + " does not apply to " + (damageable ? "a damageable" : "a non-damageable") + " item");
++            }
++            int previous = this.itemDamage;
++            this.itemDamage = Math.max(0, ((Number) value).intValue());
++            return (T) Integer.valueOf(previous);
++        }
++        if (type == com.cleanroommc.component.DataComponents.BLOCK_STATE && value instanceof net.minecraft.block.state.IBlockState && this.item != null && getItem() instanceof ItemBlock) {
++            ItemBlock ib = (ItemBlock) getItem();
++            net.minecraft.block.state.IBlockState state = (net.minecraft.block.state.IBlockState) value;
++            if (state.getBlock() == ib.getBlock()) {
++                T previous = get(type);
++                int dropMeta = ib.getBlock().damageDropped(state);
++                net.minecraft.block.state.IBlockState metaState;
++                try { metaState = ib.getBlock().getStateFromMeta(ib.getMetadata(dropMeta)); } catch (RuntimeException e) { metaState = null; }
++                if (state != metaState) {
++                    int stateMeta = ib.getBlock().getMetaFromState(state);
++                    if (stateMeta >= 0) {
++                        try {
++                            if (ib.getBlock().getStateFromMeta(ib.getMetadata(stateMeta)) == state) {
++                                dropMeta = stateMeta;
++                                metaState = state;
++                            }
++                        } catch (RuntimeException ignored) { }
++                    }
++                }
++                this.itemDamage = dropMeta;
++                if (state == metaState) {
++                    this.components.remove(type);
++                    return previous;
++                }
++            }
++        }
++        if (type == com.cleanroommc.component.DataComponents.ITEM_STATE && value instanceof com.cleanroommc.component.IItemState && this.item != null) {
++            com.cleanroommc.component.IItemState state = (com.cleanroommc.component.IItemState) value;
++            if (state.getItem() == getItem()) {
++                T previous = get(type);
++                if (!getItem().isDamageable()) {
++                    this.itemDamage = getItem().getMetaFromItemState(state);
++                    if (state == getItem().getItemStateFromMeta(this.itemDamage)) {
++                        this.components.remove(type);
++                        return previous;
++                    }
++                }
++            }
++        }
++        if (type == com.cleanroommc.component.DataComponents.MAP_ID && value instanceof Number && this.item instanceof ItemMap) { this.itemDamage = ((Number) value).intValue(); }
++        return this.components.set(type, value);
++    }
++
++    /** Cleanroom: returns this stack's standalone {@link com.cleanroommc.component.IItemState}. */
++    public com.cleanroommc.component.IItemState getItemState() {
++        return get(com.cleanroommc.component.DataComponents.ITEM_STATE);
++    }
++
++    /** Cleanroom: sets this stack's standalone {@link com.cleanroommc.component.IItemState} (and syncs legacy metadata on non-damageable items). */
++    public void setItemState(com.cleanroommc.component.IItemState state) {
++        set(com.cleanroommc.component.DataComponents.ITEM_STATE, state);
++    }
++
++    /** Removes a component. The two virtual components cannot be removed — they are the damage field. */
++    public <T> void remove(com.cleanroommc.component.DataComponentType<? extends T> type) {
++        if (type == com.cleanroommc.component.DataComponents.DAMAGE || type == com.cleanroommc.component.DataComponents.LEGACY_VARIANT) {
++            throw new IllegalArgumentException(type.getRegistryName() + " is backed by the stack's damage field and cannot be removed");
++        }
++        this.components.remove(type);
++    }
++
++    /** {@code getOrDefault(type, fallback)}, transformed, then {@link #set}. Returns the new value. */
++    public <T> T update(com.cleanroommc.component.DataComponentType<T> type, T fallback, java.util.function.UnaryOperator<T> updater) {
++        T value = updater.apply(getOrDefault(type, fallback));
++        set(type, value);
++        return value;
++    }
++
++    /** The stack's damage value — {@code DAMAGE} on a damageable item. Routes through {@link Item#getDamage}. */
++    public int getDamageValue() {
++        return getItem().getDamage(this);
++    }
++
++    /** Sets the stack's damage value. Routes through {@link Item#setDamage}. */
++    public void setDamageValue(int damage) {
++        getItem().setDamage(this, damage);
++    }
++
      /** Returns the max damage an item in the stack can take. */
      public int getMaxDamage() {
 -        return this.getItem().getMaxDamage();
@@ -173,18 +455,18 @@
      }
  
      /** Attempts to damage the ItemStack with par1 amount of damage, If the ItemStack has the Unbreaking enchantment there is a chance for each point of damage to be negated. Returns true if it takes more damage than getMaxDamage(). Returns false otherwise or if the ItemStack can't be damaged or if all points of damage are negated. */
-@@ -268,8 +304,8 @@
+@@ -268,8 +553,8 @@
              CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(damager, this, this.itemDamage + amount);
          }
  
 -        this.itemDamage += amount;
 -        return this.itemDamage > this.getMaxDamage();
-+        setItemDamage(getItemDamage() + amount); //Redirect through Item's callback if applicable.
-+        return getItemDamage() > getMaxDamage();
++        setDamageValue(getDamageValue() + amount); //Redirect through Item's callback if applicable.
++        return getDamageValue() > getMaxDamage();
      }
  
      /** Damages the item in the ItemStack */
-@@ -308,7 +344,7 @@
+@@ -308,7 +593,7 @@
  
      /** Check whether the given Block can be harvested using this ItemStack. */
      public boolean canHarvestBlock(IBlockState blockIn) {
@@ -193,7 +475,7 @@
      }
  
      public boolean interactWithEntity(EntityPlayer playerIn, EntityLivingBase entityIn, EnumHand hand) {
-@@ -317,13 +353,27 @@
+@@ -317,13 +602,30 @@
  
      /** Returns a new stack with the same properties. */
      public ItemStack copy() {
@@ -202,7 +484,7 @@
 +        if (this.isEmpty()) {
 +            return EMPTY;
 +        }
-+        ItemStack copy = new ItemStack(this.item, null);
++        ItemStack copy = new ItemStack(this.item, this.components.copy());
 +        copy.stackSize = this.stackSize;
 +        copy.itemDamage = this.itemDamage;
 +        copy.animationsToGo = this.animationsToGo;
@@ -210,6 +492,9 @@
 -            itemstack.stackTagCompound = this.stackTagCompound.copy();
 +            copy.stackTagCompound = this.stackTagCompound.copy();
          }
++        if (this.unknownComponentTags != null) {
++            copy.unknownComponentTags = this.unknownComponentTags.copy();
++        }
 +        if (this.capabilities != null) {
 +            copy.capNBT = this.capabilities.serializeNBT();
 +        }
@@ -225,19 +510,24 @@
      }
  
      public static boolean areItemStackTagsEqual(ItemStack stackA, ItemStack stackB) {
-@@ -333,8 +383,8 @@
+@@ -333,8 +635,9 @@
              return false;
          } else {
              return stackA.stackTagCompound == null && stackB.stackTagCompound != null
 -                ? false
 -                : stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound);
 +                   ? false
-+                   : (stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound)) && stackA.areCapsCompatible(stackB);
++                   : (stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound)) && stackA.areCapsCompatible(stackB)
++                     && stackA.components.equals(stackB.components) && java.util.Objects.equals(stackA.unknownComponentTags, stackB.unknownComponentTags);
          }
      }
  
-@@ -357,8 +407,8 @@
+@@ -355,10 +658,12 @@
              return false;
+         } else if (this.itemDamage != other.itemDamage) {
+             return false;
++        } else if (!this.components.equals(other.components) || !java.util.Objects.equals(this.unknownComponentTags, other.unknownComponentTags)) {
++            return false;
          } else {
              return this.stackTagCompound == null && other.stackTagCompound != null
 -                ? false
@@ -247,7 +537,40 @@
          }
      }
  
-@@ -646,6 +696,7 @@
+@@ -381,7 +686,11 @@
+ 
+     /** compares ItemStack argument to the instance ItemStack; returns true if the Items contained in both ItemStacks are equal */
+     public boolean isItemEqual(ItemStack other) {
+-        return !other.isEmpty() && this.item == other.item && this.itemDamage == other.itemDamage;
++        return !other.isEmpty()
++            && this.item == other.item
++            && this.itemDamage == other.itemDamage
++            && java.util.Objects.equals(this.components.get(com.cleanroommc.component.DataComponents.BLOCK_STATE), other.components.get(com.cleanroommc.component.DataComponents.BLOCK_STATE))
++            && java.util.Objects.equals(this.components.get(com.cleanroommc.component.DataComponents.ITEM_STATE), other.components.get(com.cleanroommc.component.DataComponents.ITEM_STATE));
+     }
+ 
+     public boolean isItemEqualIgnoreDurability(ItemStack stack) {
+@@ -539,7 +848,7 @@
+                 s = s + String.format("#%04d%s", i, s1);
+             }
+         } else if (!this.hasDisplayName() && this.item == Items.FILLED_MAP) {
+-            s = s + " #" + this.itemDamage;
++            s = s + " #" + ItemMap.getMapId(this);
+         }
+ 
+         list.add(s);
+@@ -558,9 +867,8 @@
+ 
+                 for (int j = 0; j < nbttaglist.tagCount(); j++) {
+                     NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(j);
+-                    int k = nbttagcompound.getShort("id");
+                     int l = nbttagcompound.getShort("lvl");
+-                    Enchantment enchantment = Enchantment.getEnchantmentByID(k);
++                    Enchantment enchantment = EnchantmentHelper.enchantmentFrom(nbttagcompound); // Cleanroom: name first, then id
+                     if (enchantment != null) {
+                         list.add(enchantment.getTranslatedName(l));
+                     }
+@@ -646,6 +954,7 @@
                                      I18n.translateToLocal("attribute.name." + entry.getKey())
                                  )
                          );
@@ -255,7 +578,16 @@
                      }
                  }
              }
-@@ -700,6 +751,7 @@
+@@ -691,7 +1000,7 @@
+ 
+         if (advanced.isAdvanced()) {
+             if (this.isItemDamaged()) {
+-                list.add(I18n.translateToLocalFormatted("item.durability", this.getMaxDamage() - this.getItemDamage(), this.getMaxDamage()));
++                list.add(I18n.translateToLocalFormatted("item.durability", this.getMaxDamage() - this.getDamageValue(), this.getMaxDamage()));
+             }
+ 
+             list.add(TextFormatting.DARK_GRAY + Item.REGISTRY.getNameForObject(this.item).toString());
+@@ -700,6 +1009,7 @@
              }
          }
  
@@ -263,7 +595,7 @@
          return list;
      }
  
-@@ -708,6 +760,7 @@
+@@ -708,6 +1018,7 @@
          return this.getItem().hasEffect(this);
      }
  
@@ -271,7 +603,29 @@
      public EnumRarity getRarity() {
          return this.getItem().getRarity(this);
      }
-@@ -808,7 +861,7 @@
+@@ -729,7 +1040,11 @@
+ 
+         NBTTagList nbttaglist = this.stackTagCompound.getTagList("ench", 10);
+         NBTTagCompound nbttagcompound = new NBTTagCompound();
+-        nbttagcompound.setShort("id", (short)Enchantment.getEnchantmentID(ench));
++        nbttagcompound.setInteger("id", Enchantment.getEnchantmentID(ench)); // Cleanroom: any id (was a short)
++        ResourceLocation enchName = Enchantment.REGISTRY.getNameForObject(ench); // Cleanroom: names are stable when ids shift
++        if (enchName != null) {
++            nbttagcompound.setString("name", enchName.toString());
++        }
+         nbttagcompound.setShort("lvl", (byte)level);
+         nbttaglist.appendTag(nbttagcompound);
+     }
+@@ -749,7 +1064,7 @@
+ 
+     /**
+      * Returns whether this stack is always allowed to edit the world. Forces {@link net.minecraft.entity.player.EntityPlayer#canPlayerEdit EntityPlayer#canPlayerEdit} to return {@code true}.
+-     *
++     * 
+      * @return whether this stack ignores other restrictions on how a player can modify the world.
+      * @see Item#canItemEditBlocks
+      */
+@@ -808,7 +1123,7 @@
                  }
              }
          } else {
@@ -280,7 +634,7 @@
          }
  
          return multimap;
-@@ -844,7 +897,7 @@
+@@ -844,7 +1159,7 @@
          if (!this.isEmpty) {
              NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
              itextcomponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -289,7 +643,19 @@
          }
  
          return itextcomponent;
-@@ -925,4 +978,110 @@
+@@ -874,9 +1189,9 @@
+ 
+     /**
+      * Returns whether this stack is explicitly allowed to be used on the given block via the {@code "CanPlaceOn"} NBT tag.
+-     *
++     * 
+      * @return whether the {@code "CanPlaceOn"} tag contains the given block.
+-     *
++     *  
+      * @param blockIn the block the NBT is being tested for
+      */
+     public boolean canPlaceOn(Block blockIn) {
+@@ -925,4 +1240,110 @@
      public void shrink(int quantity) {
          this.grow(-quantity);
      }

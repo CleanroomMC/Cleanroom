@@ -1,0 +1,34 @@
+--- original/net/minecraft/block/BlockColored.java
++++ modified/net/minecraft/block/BlockColored.java
+@@ -12,6 +12,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.IBlockAccess;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockColored extends Block {
+     public static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.create("color", EnumDyeColor.class);
+ 
+@@ -27,11 +28,21 @@
+         return state.getValue(COLOR).getMetadata();
+     }
+ 
++    @Override
++    public IBlockState getStateForDrop(IBlockState state) {
++        return state;
++    }
++
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */
+     @Override
+     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+-        for (EnumDyeColor enumdyecolor : EnumDyeColor.values()) {
+-            items.add(new ItemStack(this, 1, enumdyecolor.getMetadata()));
++        net.minecraft.item.Item item = net.minecraft.item.Item.getItemFromBlock(this);
++        for (IBlockState state : this.getBlockState().getValidStates()) {
++            if (item instanceof net.minecraft.item.ItemBlock) {
++                items.add(((net.minecraft.item.ItemBlock) item).stackFor(state));
++            } else {
++                items.add(new ItemStack(this, 1, this.damageDropped(state)));
++            }
+         }
+     }
+ 

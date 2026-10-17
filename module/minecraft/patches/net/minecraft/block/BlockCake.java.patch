@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockCake.java
++++ modified/net/minecraft/block/BlockCake.java
+@@ -21,6 +21,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockCake extends Block {
+     public static final PropertyInteger BITES = PropertyInteger.create("bites", 0, 6);
+     protected static final AxisAlignedBB[] CAKE_AABB = new AxisAlignedBB[]{

@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockSkull.java
 +++ modified/net/minecraft/block/BlockSkull.java
-@@ -144,16 +144,12 @@
+@@ -40,6 +40,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockSkull extends BlockContainer {
+     public static final PropertyDirection FACING = BlockDirectional.FACING;
+     public static final PropertyBool NODROP = PropertyBool.create("nodrop");
+@@ -144,16 +145,12 @@
  
      /** Spawns this Block's drops into the World as EntityItems. */
      @Override
@@ -18,7 +26,7 @@
  
          super.onBlockHarvested(worldIn, pos, state, player);
      }
-@@ -161,12 +157,18 @@
+@@ -161,12 +158,18 @@
      /** Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated */
      @Override
      public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
@@ -39,7 +47,7 @@
                      if (tileentityskull.getSkullType() == 3 && tileentityskull.getPlayerProfile() != null) {
                          itemstack.setTagCompound(new NBTTagCompound());
                          NBTTagCompound nbttagcompound = new NBTTagCompound();
-@@ -174,11 +176,9 @@
+@@ -174,11 +177,9 @@
                          itemstack.getTagCompound().setTag("SkullOwner", nbttagcompound);
                      }
  

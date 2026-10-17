@@ -1,6 +1,14 @@
 --- original/net/minecraft/client/renderer/BlockRendererDispatcher.java
 +++ modified/net/minecraft/client/renderer/BlockRendererDispatcher.java
-@@ -26,7 +26,7 @@
+@@ -18,6 +18,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRendererDispatcher implements IResourceManagerReloadListener {
+     private final BlockModelShapes blockModelShapes;
+     private final BlockModelRenderer blockModelRenderer;
+@@ -26,7 +27,7 @@
  
      public BlockRendererDispatcher(BlockModelShapes p_i46577_1_, BlockColors p_i46577_2_) {
          this.blockModelShapes = p_i46577_1_;
@@ -9,7 +17,7 @@
          this.fluidRenderer = new BlockFluidRenderer(p_i46577_2_);
      }
  
-@@ -38,7 +38,7 @@
+@@ -38,7 +39,7 @@
          if (state.getRenderType() == EnumBlockRenderType.MODEL) {
              state = state.getActualState(blockAccess, pos);
              IBakedModel ibakedmodel = this.blockModelShapes.getModelForState(state);
@@ -18,7 +26,7 @@
              this.blockModelRenderer.renderModel(blockAccess, ibakedmodel1, state, pos, Tessellator.getInstance().getBuffer(), true);
          }
      }
-@@ -59,7 +59,9 @@
+@@ -59,7 +60,9 @@
  
              switch (enumblockrendertype) {
                  case MODEL:

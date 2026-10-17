@@ -1,6 +1,14 @@
 --- original/net/minecraft/advancements/DisplayInfo.java
 +++ modified/net/minecraft/advancements/DisplayInfo.java
-@@ -120,7 +120,9 @@
+@@ -14,6 +14,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class DisplayInfo {
+     private final ITextComponent title;
+     private final ITextComponent description;
+@@ -120,7 +121,9 @@
  
          Item item = JsonUtils.getItem(object, "item");
          int i = JsonUtils.getInt(object, "data", 0);

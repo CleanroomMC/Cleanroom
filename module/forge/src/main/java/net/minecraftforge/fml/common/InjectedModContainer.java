@@ -33,6 +33,7 @@ import com.google.common.eventbus.EventBus;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class InjectedModContainer implements ModContainer
 {
     private final File source;

@@ -1,0 +1,19 @@
+--- original/net/minecraft/block/BlockWoodSlab.java
++++ modified/net/minecraft/block/BlockWoodSlab.java
+@@ -16,6 +16,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class BlockWoodSlab extends BlockSlab {
+     public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.create("variant", BlockPlanks.EnumType.class);
+ 
+@@ -63,7 +64,7 @@
+ 
+     @Override
+     public Comparable<?> getTypeForItem(ItemStack stack) {
+-        return BlockPlanks.EnumType.byMetadata(stack.getMetadata() & 7);
++        IBlockState carried = stack.getComponents().get(com.cleanroommc.component.DataComponents.BLOCK_STATE); if (carried != null && carried.getProperties().containsKey(VARIANT)) { return carried.getValue(VARIANT); } return BlockPlanks.EnumType.byMetadata(stack.getMetadata());
+     }
+ 
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */

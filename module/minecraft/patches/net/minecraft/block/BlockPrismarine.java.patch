@@ -1,0 +1,26 @@
+--- original/net/minecraft/block/BlockPrismarine.java
++++ modified/net/minecraft/block/BlockPrismarine.java
+@@ -13,6 +13,7 @@
+ import net.minecraft.util.text.translation.I18n;
+ import net.minecraft.world.IBlockAccess;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPrismarine extends Block {
+     public static final PropertyEnum<BlockPrismarine.EnumType> VARIANT = PropertyEnum.create("variant", BlockPrismarine.EnumType.class);
+     public static final int ROUGH_META = BlockPrismarine.EnumType.ROUGH.getMetadata();
+@@ -97,11 +98,11 @@
+         }
+ 
+         public static BlockPrismarine.EnumType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockPrismarine.EnumType t : values()) { if (t.getMetadata() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override

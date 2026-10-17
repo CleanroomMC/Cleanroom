@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRedstoneWire.java
 +++ modified/net/minecraft/block/BlockRedstoneWire.java
-@@ -123,13 +123,14 @@
+@@ -31,6 +31,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRedstoneWire extends Block {
+     public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> NORTH = PropertyEnum.create(
+         "north", BlockRedstoneWire.EnumAttachPosition.class
+@@ -123,13 +124,14 @@
      private BlockRedstoneWire.EnumAttachPosition getAttachPosition(IBlockAccess worldIn, BlockPos pos, EnumFacing direction) {
          BlockPos blockpos = pos.offset(direction);
          IBlockState iblockstate = worldIn.getBlockState(pos.offset(direction));
@@ -19,7 +27,7 @@
                      if (iblockstate.isBlockNormalCube()) {
                          return BlockRedstoneWire.EnumAttachPosition.UP;
                      }
-@@ -169,8 +170,10 @@
+@@ -169,8 +171,10 @@
      /** Checks if this block can be placed exactly at the given position. */
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
@@ -32,7 +40,7 @@
      }
  
      private IBlockState updateSurroundingRedstone(World worldIn, BlockPos pos, IBlockState state) {
-@@ -377,7 +380,7 @@
+@@ -377,7 +381,7 @@
          boolean flag1 = worldIn.getBlockState(pos.up()).isNormalCube();
          if (!flag1 && flag && canConnectUpwardsTo(worldIn, blockpos.up())) {
              return true;
@@ -41,7 +49,7 @@
              return true;
          } else {
              return iblockstate.getBlock() == Blocks.POWERED_REPEATER && iblockstate.getValue(BlockRedstoneDiode.FACING) == side
-@@ -387,14 +390,10 @@
+@@ -387,14 +391,10 @@
      }
  
      protected static boolean canConnectUpwardsTo(IBlockAccess worldIn, BlockPos pos) {
@@ -58,7 +66,7 @@
          Block block = blockState.getBlock();
          if (block == Blocks.REDSTONE_WIRE) {
              return true;
-@@ -403,8 +402,8 @@
+@@ -403,8 +403,8 @@
              return enumfacing == side || enumfacing.getOpposite() == side;
          } else {
              return Blocks.OBSERVER == blockState.getBlock()

@@ -39,6 +39,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = "playerinteracteventtest", name = "PlayerInteractEventTest", version = "0.0.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class PlayerInteractEventTest
 {
     // NOTE: Test with both this ON and OFF - ensure none of the test behaviours show when this is off!
