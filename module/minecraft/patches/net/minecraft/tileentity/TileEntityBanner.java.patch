@@ -71,3 +71,37 @@
          this.patterns = compound.getTagList("Patterns", 10);
          this.patternList = null;
          this.colorList = null;
+@@ -184,7 +223,17 @@
+                         if (bannerpattern != null) {
+                             this.patternList.add(bannerpattern);
+                             int j = nbttagcompound.getInteger("Color");
+-                            this.colorList.add(EnumDyeColor.byDyeDamage(j));
++                            EnumDyeColor patColor = null;
++                            if (nbttagcompound.hasKey("ColorName", 8)) {
++                                String cName = nbttagcompound.getString("ColorName");
++                                for (EnumDyeColor c : EnumDyeColor.values()) {
++                                    if (c.getName().equals(cName)) {
++                                        patColor = c;
++                                        break;
++                                    }
++                                }
++                            }
++                            this.colorList.add(patColor != null ? patColor : EnumDyeColor.byDyeDamage(j));
+                             this.patternResourceLocation = this.patternResourceLocation + bannerpattern.getHashname() + j;
+                         }
+                     }
+@@ -221,6 +270,14 @@
+ 
+     public static EnumDyeColor getColor(ItemStack p_190616_0_) {
+         NBTTagCompound nbttagcompound = p_190616_0_.getSubCompound("BlockEntityTag");
++        if (nbttagcompound != null && nbttagcompound.hasKey("BaseName", 8)) {
++            String bName = nbttagcompound.getString("BaseName");
++            for (EnumDyeColor c : EnumDyeColor.values()) {
++                if (c.getName().equals(bName)) {
++                    return c;
++                }
++            }
++        }
+         return nbttagcompound != null && nbttagcompound.hasKey("Base")
+             ? EnumDyeColor.byDyeDamage(nbttagcompound.getInteger("Base"))
+             : EnumDyeColor.BLACK;

@@ -107,6 +107,8 @@ public final class RetainedContent {
     public final List<NBTTagCompound> tileEntities = new ArrayList<>();
     /* Entity compounds that named no registered entity, kept verbatim (riders included). */
     public final List<NBTTagCompound> entities = new ArrayList<>();
+    /* Scheduled block-tick compounds that named no registered block, kept verbatim. */
+    public final List<NBTTagCompound> tileTicks = new ArrayList<>();
 
     /*
      * The world type this chunk's terrain was generated without, when the saved generator name named a

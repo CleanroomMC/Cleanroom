@@ -177,7 +177,7 @@
  
                  nbttagcompound.setByteArray("BlockLight", extendedblockstorage.getBlockLight().getData());
                  if (flag) {
-@@ -268,28 +318,62 @@
+@@ -268,52 +318,110 @@
          }
  
          compound.setTag("Sections", nbttaglist);
@@ -240,10 +240,49 @@
 +
          compound.setTag("TileEntities", nbttaglist2);
          List<NextTickListEntry> list = worldIn.getPendingBlockUpdates(chunkIn, false);
-         if (list != null) {
-@@ -310,10 +394,20 @@
+-        if (list != null) {
++        if (list != null || !chunkIn.retained.tileTicks.isEmpty()) {
+             long j = worldIn.getTotalWorldTime();
+             NBTTagList nbttaglist3 = new NBTTagList();
  
-             compound.setTag("TileTicks", nbttaglist3);
+-            for (NextTickListEntry nextticklistentry : list) {
+-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+-                ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(nextticklistentry.getBlock());
+-                nbttagcompound1.setString("i", resourcelocation == null ? "" : resourcelocation.toString());
+-                nbttagcompound1.setInteger("x", nextticklistentry.position.getX());
+-                nbttagcompound1.setInteger("y", nextticklistentry.position.getY());
+-                nbttagcompound1.setInteger("z", nextticklistentry.position.getZ());
+-                nbttagcompound1.setInteger("t", (int)(nextticklistentry.scheduledTime - j));
+-                nbttagcompound1.setInteger("p", nextticklistentry.priority);
+-                nbttaglist3.appendTag(nbttagcompound1);
++            if (list != null) {
++                for (NextTickListEntry nextticklistentry : list) {
++                    NBTTagCompound nbttagcompound1 = new NBTTagCompound();
++                    ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(nextticklistentry.getBlock());
++                    nbttagcompound1.setString("i", resourcelocation == null ? "" : resourcelocation.toString());
++                    nbttagcompound1.setInteger("x", nextticklistentry.position.getX());
++                    nbttagcompound1.setInteger("y", nextticklistentry.position.getY());
++                    nbttagcompound1.setInteger("z", nextticklistentry.position.getZ());
++                    nbttagcompound1.setInteger("t", (int)(nextticklistentry.scheduledTime - j));
++                    nbttagcompound1.setInteger("p", nextticklistentry.priority);
++                    nbttaglist3.appendTag(nbttagcompound1);
++                }
+             }
+ 
+-            compound.setTag("TileTicks", nbttaglist3);
++            for (NBTTagCompound retainedTick : chunkIn.retained.tileTicks) {
++                BlockPos tickPos = new BlockPos(retainedTick.getInteger("x"), retainedTick.getInteger("y"), retainedTick.getInteger("z"));
++                com.cleanroommc.ids.RetainedContent.Section retSec = chunkIn.retained.sectionOrNull(tickPos.getY() >> 4);
++                int cellIdx = (tickPos.getY() & 15) << 8 | (tickPos.getZ() & 15) << 4 | (tickPos.getX() & 15);
++                if (chunkIn.getBlockState(tickPos).getBlock() == net.minecraft.init.Blocks.AIR
++                    || (retSec != null && chunkIn.getBlockState(tickPos) == retSec.reads(cellIdx))) {
++                    nbttaglist3.appendTag(retainedTick.copy());
++                }
++            }
++
++            if (!nbttaglist3.isEmpty()) {
++                compound.setTag("TileTicks", nbttaglist3);
++            }
          }
 +
 +        if (chunkIn.getCapabilities() != null) {
@@ -262,7 +301,7 @@
          int i = compound.getInteger("xPos");
          int j = compound.getInteger("zPos");
          Chunk chunk = new Chunk(worldIn, i, j);
-@@ -321,19 +415,36 @@
+@@ -321,19 +429,36 @@
          chunk.setTerrainPopulated(compound.getBoolean("TerrainPopulated"));
          chunk.setLightPopulated(compound.getBoolean("LightPopulated"));
          chunk.setInhabitedTime(compound.getLong("InhabitedTime"));
@@ -304,7 +343,7 @@
              extendedblockstorage.setBlockLight(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
              if (flag) {
                  extendedblockstorage.setSkyLight(new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
-@@ -344,15 +455,39 @@
+@@ -344,15 +469,39 @@
          }
  
          chunk.setStorageArrays(aextendedblockstorage);
@@ -347,7 +386,7 @@
              chunk.setHasEntities(true);
          }
  
-@@ -363,6 +498,13 @@
+@@ -363,6 +512,13 @@
              TileEntity tileentity = TileEntity.create(worldIn, nbttagcompound2);
              if (tileentity != null) {
                  chunk.addTileEntity(tileentity);
@@ -361,17 +400,48 @@
              }
          }
  
-@@ -375,7 +517,7 @@
+@@ -371,23 +527,40 @@
+ 
+             for (int l1 = 0; l1 < nbttaglist3.tagCount(); l1++) {
+                 NBTTagCompound nbttagcompound3 = nbttaglist3.getCompoundTagAt(l1);
+-                Block block;
++                Block block = null;
++                String tickBlockName = null;
                  if (nbttagcompound3.hasKey("i", 8)) {
-                     block = Block.getBlockFromName(nbttagcompound3.getString("i"));
+-                    block = Block.getBlockFromName(nbttagcompound3.getString("i"));
++                    tickBlockName = nbttagcompound3.getString("i");
++                    block = Block.getBlockFromName(tickBlockName);
                  } else {
 -                    block = Block.getBlockById(nbttagcompound3.getInteger("i"));
-+                    block = com.cleanroommc.ids.LegacyIds.block(nbttagcompound3.getInteger("i"));
++                    int legacyId = nbttagcompound3.getInteger("i");
++                    ResourceLocation legRl = com.cleanroommc.ids.LegacyIds.blockName(legacyId);
++                    if (legRl != null && !Block.REGISTRY.containsKey(legRl)) {
++                        tickBlockName = legRl.toString();
++                    } else {
++                        block = com.cleanroommc.ids.LegacyIds.block(legacyId);
++                    }
                  }
  
-                 worldIn.scheduleBlockUpdate(
-@@ -386,8 +528,9 @@
-                 );
+-                worldIn.scheduleBlockUpdate(
+-                    new BlockPos(nbttagcompound3.getInteger("x"), nbttagcompound3.getInteger("y"), nbttagcompound3.getInteger("z")),
+-                    block,
+-                    nbttagcompound3.getInteger("t"),
+-                    nbttagcompound3.getInteger("p")
+-                );
++                if (block == null && tickBlockName != null && !tickBlockName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(tickBlockName))) {
++                    if (!com.cleanroommc.ids.RetainedContent.isRemoved(tickBlockName)) {
++                        NBTTagCompound retainedTick = nbttagcompound3.copy();
++                        retainedTick.setString("i", tickBlockName);
++                        chunk.retained.tileTicks.add(retainedTick);
++                    }
++                } else {
++                    worldIn.scheduleBlockUpdate(
++                        new BlockPos(nbttagcompound3.getInteger("x"), nbttagcompound3.getInteger("y"), nbttagcompound3.getInteger("z")),
++                        block,
++                        nbttagcompound3.getInteger("t"),
++                        nbttagcompound3.getInteger("p")
++                    );
++                }
              }
          }
 -
@@ -382,7 +452,7 @@
      }
  
      @Nullable
-@@ -481,4 +624,8 @@
+@@ -481,4 +654,8 @@
  
          return entity;
      }
