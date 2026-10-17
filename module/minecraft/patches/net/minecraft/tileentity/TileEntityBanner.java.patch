@@ -1,0 +1,73 @@
+--- original/net/minecraft/tileentity/TileEntityBanner.java
++++ modified/net/minecraft/tileentity/TileEntityBanner.java
+@@ -19,6 +19,9 @@
+ public class TileEntityBanner extends TileEntity implements IWorldNameable {
+     private String name;
+     private EnumDyeColor baseColor = EnumDyeColor.BLACK;
++    @Nullable
++    private String retainedBaseName;
++    private int retainedBaseDye = -1;
+     /** A list of all the banner patterns. */
+     private NBTTagList patterns;
+     private boolean patternDataSet;
+@@ -36,6 +39,8 @@
+             this.patterns = nbttagcompound.getTagList("Patterns", 10).copy();
+         }
+ 
++        this.retainedBaseName = null;
++        this.retainedBaseDye = -1;
+         this.baseColor = p_175112_2_ ? getColor(stack) : ItemBanner.getBaseColor(stack);
+         this.patternList = null;
+         this.colorList = null;
+@@ -99,7 +104,15 @@
+     @Override
+     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+         super.writeToNBT(compound);
+-        compound.setInteger("Base", this.baseColor.getDyeDamage());
++        if (this.retainedBaseName != null) {
++            compound.setInteger("Base", this.retainedBaseDye >= 0 ? this.retainedBaseDye : this.baseColor.getDyeDamage());
++            compound.setString("BaseName", this.retainedBaseName);
++        } else if (this.retainedBaseDye >= 16) {
++            compound.setInteger("Base", this.retainedBaseDye);
++        } else {
++            compound.setInteger("Base", this.baseColor.getDyeDamage());
++            compound.setString("BaseName", this.baseColor.getName());
++        }
+         if (this.patterns != null) {
+             compound.setTag("Patterns", this.patterns);
+         }
+@@ -118,7 +131,33 @@
+             this.name = compound.getString("CustomName");
+         }
+ 
+-        this.baseColor = EnumDyeColor.byDyeDamage(compound.getInteger("Base"));
++        this.retainedBaseName = null;
++        this.retainedBaseDye = -1;
++        int rawBase = compound.getInteger("Base");
++        if (compound.hasKey("BaseName", 8)) {
++            String bName = compound.getString("BaseName");
++            EnumDyeColor found = null;
++            for (EnumDyeColor c : EnumDyeColor.values()) {
++                if (c.getName().equals(bName)) {
++                    found = c;
++                    break;
++                }
++            }
++            if (found != null) {
++                this.baseColor = found;
++            } else if (!bName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(bName)) {
++                this.retainedBaseName = bName;
++                this.retainedBaseDye = rawBase;
++                this.baseColor = EnumDyeColor.BLACK;
++            } else {
++                this.baseColor = EnumDyeColor.byDyeDamage(rawBase);
++            }
++        } else {
++            this.baseColor = EnumDyeColor.byDyeDamage(rawBase);
++            if (this.baseColor.getDyeDamage() != rawBase && rawBase >= 16) {
++                this.retainedBaseDye = rawBase;
++            }
++        }
+         this.patterns = compound.getTagList("Patterns", 10);
+         this.patternList = null;
+         this.colorList = null;

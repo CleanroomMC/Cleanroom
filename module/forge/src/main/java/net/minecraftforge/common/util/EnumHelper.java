@@ -318,6 +318,20 @@ public class EnumHelper
         ImagineBreaker imagineBreaker = Index.get();
         T value = imagineBreaker.newEnum(enumType, enumName, enumType.getEnumConstants().length, paramTypes, paramValues);
         imagineBreaker.addEnum(enumType, value);
+        if (value != null && net.minecraft.util.IStringSerializable.class.isAssignableFrom(enumType) && net.minecraft.init.Bootstrap.isRegistered())
+        {
+            for (net.minecraft.block.Block block : net.minecraft.block.Block.REGISTRY)
+            {
+                for (net.minecraft.block.properties.IProperty<?> prop : block.getBlockState().getProperties())
+                {
+                    if (prop.getValueClass() == enumType)
+                    {
+                        block.rebuildBlockState();
+                        break;
+                    }
+                }
+            }
+        }
         return value;
     }
 

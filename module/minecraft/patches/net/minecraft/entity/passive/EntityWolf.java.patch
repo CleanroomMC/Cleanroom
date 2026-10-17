@@ -1,23 +1,64 @@
 --- original/net/minecraft/entity/passive/EntityWolf.java
 +++ modified/net/minecraft/entity/passive/EntityWolf.java
-@@ -52,6 +52,7 @@
- import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
+@@ -144,12 +145,24 @@
+         EntityLiving.registerFixesMob(fixer, EntityWolf.class);
+     }
  
-+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
- public class EntityWolf extends EntityTameable {
-     private static final DataParameter<Float> DATA_HEALTH_ID = EntityDataManager.createKey(EntityWolf.class, DataSerializers.FLOAT);
-     private static final DataParameter<Boolean> BEGGING = EntityDataManager.createKey(EntityWolf.class, DataSerializers.BOOLEAN);
-@@ -158,7 +159,7 @@
++    @Nullable
++    private String retainedCollarColorName;
++    private int retainedCollarColorDye = -1;
++
+     /** (abstract) Protected helper method to write subclass entity data to NBT. */
+     @Override
+     public void writeEntityToNBT(NBTTagCompound compound) {
+         super.writeEntityToNBT(compound);
+         compound.setBoolean("Angry", this.isAngry());
+-        compound.setByte("CollarColor", (byte)this.getCollarColor().getDyeDamage());
++        int collarDye = this.retainedCollarColorName != null && this.retainedCollarColorDye >= 0
++            ? this.retainedCollarColorDye
++            : this.getCollarColor().getDyeDamage();
++        if (collarDye >= 0 && collarDye <= Byte.MAX_VALUE) {
++            compound.setByte("CollarColor", (byte)collarDye);
++        } else {
++            compound.setInteger("CollarColor", collarDye);
++        }
++        compound.setString("CollarColorName", this.retainedCollarColorName != null ? this.retainedCollarColorName : this.getCollarColor().getName());
+     }
+ 
+     /** (abstract) Protected helper method to read subclass entity data from NBT. */
+@@ -157,8 +170,30 @@
+     public void readEntityFromNBT(NBTTagCompound compound) {
          super.readEntityFromNBT(compound);
          this.setAngry(compound.getBoolean("Angry"));
++        this.retainedCollarColorName = null;
++        this.retainedCollarColorDye = -1;
++        if (compound.hasKey("CollarColorName", 8)) {
++            String cName = compound.getString("CollarColorName");
++            EnumDyeColor found = null;
++            for (EnumDyeColor c : EnumDyeColor.values()) {
++                if (c.getName().equals(cName)) {
++                    found = c;
++                    break;
++                }
++            }
++            if (found != null) {
++                this.setCollarColor(found);
++                return;
++            }
++            if (!cName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(cName)) {
++                this.setCollarColor(EnumDyeColor.RED);
++                this.retainedCollarColorName = cName;
++                this.retainedCollarColorDye = compound.hasKey("CollarColor", 99) ? compound.getInteger("CollarColor") : EnumDyeColor.RED.getDyeDamage();
++                return;
++            }
++        }
          if (compound.hasKey("CollarColor", 99)) {
 -            this.setCollarColor(EnumDyeColor.byDyeDamage(compound.getByte("CollarColor")));
 +            this.setCollarColor(EnumDyeColor.byDyeDamage(compound.getInteger("CollarColor")));
          }
      }
  
-@@ -364,7 +365,7 @@
+@@ -364,7 +399,7 @@
                          return true;
                      }
                  } else if (itemstack.getItem() == Items.DYE) {
@@ -26,7 +67,7 @@
                      if (enumdyecolor != this.getCollarColor()) {
                          this.setCollarColor(enumdyecolor);
                          if (!player.capabilities.isCreativeMode) {
-@@ -388,7 +389,7 @@
+@@ -388,7 +423,7 @@
              }
  
              if (!this.world.isRemote) {
@@ -35,7 +76,7 @@
                      this.setTamedBy(player);
                      this.navigator.clearPath();
                      this.setAttackTarget(null);
-@@ -460,7 +461,7 @@
+@@ -460,10 +495,12 @@
      }
  
      public EnumDyeColor getCollarColor() {
@@ -44,3 +85,8 @@
      }
  
      public void setCollarColor(EnumDyeColor collarcolor) {
++        this.retainedCollarColorName = null;
++        this.retainedCollarColorDye = -1;
+         this.dataManager.set(COLLAR_COLOR, collarcolor.getDyeDamage());
+     }
+ 

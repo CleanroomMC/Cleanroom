@@ -1,0 +1,88 @@
+--- original/net/minecraft/entity/projectile/EntityTippedArrow.java
++++ modified/net/minecraft/entity/projectile/EntityTippedArrow.java
+@@ -139,10 +139,17 @@
+     }
+ 
+     /** (abstract) Protected helper method to write subclass entity data to NBT. */
++    @javax.annotation.Nullable
++    private String retainedPotionTypeName;
++    @javax.annotation.Nullable
++    private java.util.List<NBTTagCompound> retainedCustomPotionEffects;
++
+     @Override
+     public void writeEntityToNBT(NBTTagCompound compound) {
+         super.writeEntityToNBT(compound);
+-        if (this.potion != PotionTypes.EMPTY && this.potion != null) {
++        if (this.retainedPotionTypeName != null) {
++            compound.setString("Potion", this.retainedPotionTypeName);
++        } else if (this.potion != PotionTypes.EMPTY && this.potion != null) {
+             compound.setString("Potion", PotionType.REGISTRY.getNameForObject(this.potion).toString());
+         }
+ 
+@@ -150,12 +157,17 @@
+             compound.setInteger("Color", this.getColor());
+         }
+ 
+-        if (!this.customPotionEffects.isEmpty()) {
++        if (!this.customPotionEffects.isEmpty() || (this.retainedCustomPotionEffects != null && !this.retainedCustomPotionEffects.isEmpty())) {
+             NBTTagList nbttaglist = new NBTTagList();
+ 
+             for (PotionEffect potioneffect : this.customPotionEffects) {
+                 nbttaglist.appendTag(potioneffect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
+             }
++            if (this.retainedCustomPotionEffects != null) {
++                for (NBTTagCompound retainedTag : this.retainedCustomPotionEffects) {
++                    nbttaglist.appendTag(retainedTag.copy());
++                }
++            }
+ 
+             compound.setTag("CustomPotionEffects", nbttaglist);
+         }
+@@ -165,12 +177,44 @@
+     @Override
+     public void readEntityFromNBT(NBTTagCompound compound) {
+         super.readEntityFromNBT(compound);
++        this.retainedPotionTypeName = null;
++        this.retainedCustomPotionEffects = null;
+         if (compound.hasKey("Potion", 8)) {
+-            this.potion = PotionUtils.getPotionTypeFromNBT(compound);
++            String potTypeName = compound.getString("Potion");
++            if (!potTypeName.isEmpty() && !PotionType.REGISTRY.containsKey(new net.minecraft.util.ResourceLocation(potTypeName))) {
++                this.potion = PotionTypes.EMPTY;
++                if (!com.cleanroommc.ids.RetainedContent.isRemoved(potTypeName)) {
++                    this.retainedPotionTypeName = potTypeName;
++                }
++            } else {
++                this.potion = PotionUtils.getPotionTypeFromNBT(compound);
++            }
+         }
+ 
+-        for (PotionEffect potioneffect : PotionUtils.getFullEffectsFromTag(compound)) {
+-            this.addEffect(potioneffect);
++        if (compound.hasKey("CustomPotionEffects", 9)) {
++            NBTTagList nbttaglist = compound.getTagList("CustomPotionEffects", 10);
++            for (int i = 0; i < nbttaglist.tagCount(); i++) {
++                NBTTagCompound effectTag = nbttaglist.getCompoundTagAt(i);
++                PotionEffect potioneffect = PotionEffect.readCustomPotionEffectFromNBT(effectTag);
++                if (potioneffect != null) {
++                    this.addEffect(potioneffect);
++                } else {
++                    String potName = effectTag.hasKey("Name", 8) ? effectTag.getString("Name") : null;
++                    if ((potName == null || potName.isEmpty()) && effectTag.hasKey("Id", 99)) {
++                        int rawId = effectTag.getTagId("Id") == 1 ? (effectTag.getByte("Id") & 0xFF) : effectTag.getInteger("Id");
++                        net.minecraft.util.ResourceLocation leg = com.cleanroommc.ids.LegacyIds.potionName(rawId);
++                        potName = leg == null ? null : leg.toString();
++                    }
++                    if (potName != null && !potName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(potName)) {
++                        if (this.retainedCustomPotionEffects == null) {
++                            this.retainedCustomPotionEffects = new java.util.ArrayList<>();
++                        }
++                        NBTTagCompound copy = effectTag.copy();
++                        copy.setString("Name", potName);
++                        this.retainedCustomPotionEffects.add(copy);
++                    }
++                }
++            }
+         }
+ 
+         if (compound.hasKey("Color", 99)) {
