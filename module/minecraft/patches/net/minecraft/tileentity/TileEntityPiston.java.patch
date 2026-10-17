@@ -13,42 +13,22 @@
  
                  for (int i = 0; i < list1.size(); i++) {
                      Entity entity = list1.get(i);
-@@ -370,7 +373,42 @@
+@@ -370,7 +373,22 @@
      @Override
      public void readFromNBT(NBTTagCompound compound) {
          super.readFromNBT(compound);
 -        this.pistonState = Block.getBlockById(compound.getInteger("blockId")).getStateFromMeta(compound.getInteger("blockData"));
-+        this.retainedBlockStateTag = null;
-+        if (compound.hasKey("blockState", 10)) {
-+            NBTTagCompound stateTag = compound.getCompoundTag("blockState");
-+            String blockName = stateTag.getString("Name");
-+            if (!blockName.isEmpty() && !Block.REGISTRY.containsKey(new net.minecraft.util.ResourceLocation(blockName))) {
-+                if (com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
-+                    com.cleanroommc.ids.RetainedContent.noteRemoved(blockName);
-+                    this.pistonState = Blocks.AIR.getDefaultState();
-+                } else {
-+                    this.retainedBlockStateTag = stateTag.copy();
-+                    IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(blockName);
-+                    this.pistonState = standIn != null ? standIn : Blocks.AIR.getDefaultState();
-+                }
-+            } else {
-+                this.pistonState = net.minecraft.nbt.NBTUtil.readBlockState(stateTag);
-+            }
++        this.retainedBlockStateTag = com.cleanroommc.ids.RetainedContent.readRetainedBlockState(compound, "blockState", null, "blockId", false, false);
++        if (this.retainedBlockStateTag != null) {
++            IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(this.retainedBlockStateTag.getString("Name"));
++            this.pistonState = standIn != null ? standIn : Blocks.AIR.getDefaultState();
++        } else if (compound.hasKey("blockState", 10)) {
++            this.pistonState = net.minecraft.nbt.NBTUtil.readBlockState(compound.getCompoundTag("blockState"));
 +        } else {
 +            int legacyId = compound.getInteger("blockId");
 +            net.minecraft.util.ResourceLocation missingName = com.cleanroommc.ids.LegacyIds.blockName(legacyId);
 +            if (missingName != null && !Block.REGISTRY.containsKey(missingName)) {
-+                String blockName = missingName.toString();
-+                if (com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
-+                    com.cleanroommc.ids.RetainedContent.noteRemoved(blockName);
-+                    this.pistonState = Blocks.AIR.getDefaultState();
-+                } else {
-+                    NBTTagCompound synth = new NBTTagCompound();
-+                    synth.setString("Name", blockName);
-+                    this.retainedBlockStateTag = synth;
-+                    IBlockState standIn = com.cleanroommc.ids.StandIns.forMissing(blockName);
-+                    this.pistonState = standIn != null ? standIn : Blocks.AIR.getDefaultState();
-+                }
++                this.pistonState = Blocks.AIR.getDefaultState();
 +            } else {
 +                Block block = com.cleanroommc.ids.LegacyIds.block(legacyId); // Cleanroom: blockId is a Forge-era saved id
 +                this.pistonState = block == null ? Blocks.AIR.getDefaultState() : block.getStateFromMeta(compound.getInteger("blockData"));
@@ -57,7 +37,7 @@
          this.pistonFacing = EnumFacing.byIndex(compound.getInteger("facing"));
          this.progress = compound.getFloat("progress");
          this.lastProgress = this.progress;
-@@ -383,6 +421,7 @@
+@@ -383,6 +401,7 @@
          super.writeToNBT(compound);
          compound.setInteger("blockId", Block.getIdFromBlock(this.pistonState.getBlock()));
          compound.setInteger("blockData", this.pistonState.getBlock().getMetaFromState(this.pistonState));

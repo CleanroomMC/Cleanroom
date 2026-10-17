@@ -1,0 +1,36 @@
+--- original/net/minecraft/entity/item/EntityPainting.java
++++ modified/net/minecraft/entity/item/EntityPainting.java
+@@ -71,10 +71,13 @@
+         this.updateFacingWithBoundingBox(facing);
+     }
+ 
++    @Nullable
++    private String retainedMotive;
++
+     /** (abstract) Protected helper method to write subclass entity data to NBT. */
+     @Override
+     public void writeEntityToNBT(NBTTagCompound compound) {
+-        compound.setString("Motive", this.art.title);
++        compound.setString("Motive", this.retainedMotive != null ? this.retainedMotive : this.art.title);
+         super.writeEntityToNBT(compound);
+     }
+ 
+@@ -82,6 +85,8 @@
+     @Override
+     public void readEntityFromNBT(NBTTagCompound compound) {
+         String s = compound.getString("Motive");
++        this.retainedMotive = null;
++        this.art = null;
+ 
+         for (EntityPainting.EnumArt entitypainting$enumart : EntityPainting.EnumArt.values()) {
+             if (entitypainting$enumart.title.equals(s)) {
+@@ -90,6 +95,9 @@
+         }
+ 
+         if (this.art == null) {
++            if (!s.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(s)) {
++                this.retainedMotive = s;
++            }
+             this.art = EntityPainting.EnumArt.KEBAB;
+         }
+ 

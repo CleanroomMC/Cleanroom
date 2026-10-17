@@ -8,53 +8,28 @@
          this.potion = potionIn;
          if (!this.colorSet) {
              this.updateFixedColor();
-@@ -397,8 +398,18 @@
+@@ -397,23 +398,23 @@
              this.setColor(compound.getInteger("Color"));
          }
  
 +        this.retainedPotionTypeName = null;
-+        this.retainedEffects = null;
          if (compound.hasKey("Potion", 8)) {
--            this.setPotion(PotionUtils.getPotionTypeFromNBT(compound));
-+            String potTypeName = compound.getString("Potion");
-+            if (!potTypeName.isEmpty() && !PotionType.REGISTRY.containsKey(new net.minecraft.util.ResourceLocation(potTypeName))) {
-+                this.setPotion(PotionTypes.EMPTY);
-+                if (!com.cleanroommc.ids.RetainedContent.isRemoved(potTypeName)) {
-+                    this.retainedPotionTypeName = potTypeName;
-+                }
-+            } else {
-+                this.setPotion(PotionUtils.getPotionTypeFromNBT(compound));
-+            }
+             this.setPotion(PotionUtils.getPotionTypeFromNBT(compound));
++            this.retainedPotionTypeName = com.cleanroommc.ids.RetainedContent.readRetainedPotionType(compound, "Potion");
          }
  
          if (compound.hasKey("Effects", 9)) {
-@@ -406,14 +417,35 @@
+-            NBTTagList nbttaglist = compound.getTagList("Effects", 10);
              this.effects.clear();
- 
-             for (int i = 0; i < nbttaglist.tagCount(); i++) {
+-
+-            for (int i = 0; i < nbttaglist.tagCount(); i++) {
 -                PotionEffect potioneffect = PotionEffect.readCustomPotionEffectFromNBT(nbttaglist.getCompoundTagAt(i));
-+                NBTTagCompound effectTag = nbttaglist.getCompoundTagAt(i);
-+                PotionEffect potioneffect = PotionEffect.readCustomPotionEffectFromNBT(effectTag);
-                 if (potioneffect != null) {
-                     this.addEffect(potioneffect);
-+                } else {
-+                    String potName = effectTag.hasKey("Name", 8) ? effectTag.getString("Name") : null;
-+                    if ((potName == null || potName.isEmpty()) && effectTag.hasKey("Id", 99)) {
-+                        int rawId = effectTag.getTagId("Id") == 1 ? (effectTag.getByte("Id") & 0xFF) : effectTag.getInteger("Id");
-+                        net.minecraft.util.ResourceLocation leg = com.cleanroommc.ids.LegacyIds.potionName(rawId);
-+                        potName = leg == null ? null : leg.toString();
-+                    }
-+                    if (potName != null && !potName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(potName)) {
-+                        if (this.retainedEffects == null) {
-+                            this.retainedEffects = new java.util.ArrayList<>();
-+                        }
-+                        NBTTagCompound copy = effectTag.copy();
-+                        copy.setString("Name", potName);
-+                        this.retainedEffects.add(copy);
-+                    }
-                 }
-             }
+-                if (potioneffect != null) {
+-                    this.addEffect(potioneffect);
+-                }
+-            }
          }
++        this.retainedEffects = com.cleanroommc.ids.RetainedContent.readPotionEffects(compound, "Effects", this::addEffect);
      }
  
 +    @Nullable
@@ -65,7 +40,7 @@
      /** (abstract) Protected helper method to write subclass entity data to NBT. */
      @Override
      protected void writeEntityToNBT(NBTTagCompound compound) {
-@@ -436,16 +468,23 @@
+@@ -436,19 +437,13 @@
              compound.setInteger("Color", this.getColor());
          }
  
@@ -77,17 +52,15 @@
          }
  
 -        if (!this.effects.isEmpty()) {
-+        if (!this.effects.isEmpty() || (this.retainedEffects != null && !this.retainedEffects.isEmpty())) {
-             NBTTagList nbttaglist = new NBTTagList();
+-            NBTTagList nbttaglist = new NBTTagList();
+-
+-            for (PotionEffect potioneffect : this.effects) {
+-                nbttaglist.appendTag(potioneffect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
+-            }
+-
+-            compound.setTag("Effects", nbttaglist);
+-        }
++        com.cleanroommc.ids.RetainedContent.writePotionEffects(compound, "Effects", this.effects, this.retainedEffects);
+     }
  
-             for (PotionEffect potioneffect : this.effects) {
-                 nbttaglist.appendTag(potioneffect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
-             }
-+            if (this.retainedEffects != null) {
-+                for (NBTTagCompound retainedTag : this.retainedEffects) {
-+                    nbttaglist.appendTag(retainedTag.copy());
-+                }
-+            }
- 
-             compound.setTag("Effects", nbttaglist);
-         }
+     @Override

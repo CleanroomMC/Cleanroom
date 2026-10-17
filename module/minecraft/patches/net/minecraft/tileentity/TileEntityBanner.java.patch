@@ -19,59 +19,28 @@
          this.baseColor = p_175112_2_ ? getColor(stack) : ItemBanner.getBaseColor(stack);
          this.patternList = null;
          this.colorList = null;
-@@ -99,7 +104,15 @@
+@@ -99,7 +104,7 @@
      @Override
      public NBTTagCompound writeToNBT(NBTTagCompound compound) {
          super.writeToNBT(compound);
 -        compound.setInteger("Base", this.baseColor.getDyeDamage());
-+        if (this.retainedBaseName != null) {
-+            compound.setInteger("Base", this.retainedBaseDye >= 0 ? this.retainedBaseDye : this.baseColor.getDyeDamage());
-+            compound.setString("BaseName", this.retainedBaseName);
-+        } else if (this.retainedBaseDye >= 16) {
-+            compound.setInteger("Base", this.retainedBaseDye);
-+        } else {
-+            compound.setInteger("Base", this.baseColor.getDyeDamage());
-+            compound.setString("BaseName", this.baseColor.getName());
-+        }
++        com.cleanroommc.ids.RetainedContent.writeDyeColor(compound, "BaseName", "Base", true, false, this.baseColor, this.retainedBaseName, this.retainedBaseDye);
          if (this.patterns != null) {
              compound.setTag("Patterns", this.patterns);
          }
-@@ -118,7 +131,33 @@
+@@ -118,7 +123,10 @@
              this.name = compound.getString("CustomName");
          }
  
 -        this.baseColor = EnumDyeColor.byDyeDamage(compound.getInteger("Base"));
-+        this.retainedBaseName = null;
-+        this.retainedBaseDye = -1;
-+        int rawBase = compound.getInteger("Base");
-+        if (compound.hasKey("BaseName", 8)) {
-+            String bName = compound.getString("BaseName");
-+            EnumDyeColor found = null;
-+            for (EnumDyeColor c : EnumDyeColor.values()) {
-+                if (c.getName().equals(bName)) {
-+                    found = c;
-+                    break;
-+                }
-+            }
-+            if (found != null) {
-+                this.baseColor = found;
-+            } else if (!bName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(bName)) {
-+                this.retainedBaseName = bName;
-+                this.retainedBaseDye = rawBase;
-+                this.baseColor = EnumDyeColor.BLACK;
-+            } else {
-+                this.baseColor = EnumDyeColor.byDyeDamage(rawBase);
-+            }
-+        } else {
-+            this.baseColor = EnumDyeColor.byDyeDamage(rawBase);
-+            if (this.baseColor.getDyeDamage() != rawBase && rawBase >= 16) {
-+                this.retainedBaseDye = rawBase;
-+            }
-+        }
++        com.cleanroommc.ids.RetainedContent.DyeRead d = com.cleanroommc.ids.RetainedContent.readDyeColor(compound, "BaseName", "Base", true, EnumDyeColor.BLACK);
++        this.baseColor = d.color();
++        this.retainedBaseName = d.retainedName();
++        this.retainedBaseDye = d.retainedNumber();
          this.patterns = compound.getTagList("Patterns", 10);
          this.patternList = null;
          this.colorList = null;
-@@ -184,7 +223,17 @@
+@@ -184,7 +192,17 @@
                          if (bannerpattern != null) {
                              this.patternList.add(bannerpattern);
                              int j = nbttagcompound.getInteger("Color");
@@ -90,7 +59,7 @@
                              this.patternResourceLocation = this.patternResourceLocation + bannerpattern.getHashname() + j;
                          }
                      }
-@@ -221,6 +270,14 @@
+@@ -221,6 +239,14 @@
  
      public static EnumDyeColor getColor(ItemStack p_190616_0_) {
          NBTTagCompound nbttagcompound = p_190616_0_.getSubCompound("BlockEntityTag");

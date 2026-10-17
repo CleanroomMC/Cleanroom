@@ -311,4 +311,185 @@ public final class RetainedContent {
         return EntityList.getClass(new ResourceLocation(tag.getString("id"))) == null;
     }
 
+    /*
+     * Centralized helper for reading a list of PotionEffects (ActiveEffects, Effects, CustomPotionEffects)
+     * while retaining any entries whose Potion belongs to a temporarily absent mod (and was not removed).
+     */
+    @Nullable
+    public static List<NBTTagCompound> readPotionEffects(NBTTagCompound compound, String key,
+        java.util.function.Consumer<net.minecraft.potion.PotionEffect> liveConsumer
+    ) {
+        if (!compound.hasKey(key, 9)) {
+            return null;
+        }
+        net.minecraft.nbt.NBTTagList list = compound.getTagList(key, 10);
+        List<NBTTagCompound> retained = null;
+        for (int i = 0; i < list.tagCount(); i++) {
+            NBTTagCompound effectTag = list.getCompoundTagAt(i);
+            net.minecraft.potion.PotionEffect effect = net.minecraft.potion.PotionEffect.readCustomPotionEffectFromNBT(effectTag
+            );
+            if (effect != null) {
+                liveConsumer.accept(effect);
+            } else {
+                String potName = effectTag.hasKey("Name", 8) ? effectTag.getString("Name") : null;
+                if ((potName == null || potName.isEmpty()) && effectTag.hasKey("Id", 99)) {
+                    int rawId = effectTag.getTagId("Id") == 1
+                        ? (effectTag.getByte("Id") & 0xFF)
+                        : effectTag.getInteger("Id");
+                    ResourceLocation leg = LegacyIds.potionName(rawId);
+                    potName = leg == null ? null : leg.toString();
+                }
+                if (potName != null && !potName.isEmpty() && !isRemoved(potName)) {
+                    if (retained == null) {
+                        retained = new ArrayList<>();
+                    }
+                    NBTTagCompound copy = effectTag.copy();
+                    copy.setString("Name", potName);
+                    retained.add(copy);
+                }
+            }
+        }
+        return retained;
+    }
+
+    /*
+     * Centralized helper for writing live PotionEffects alongside any retained missing-mod effect tags.
+     */
+    public static void writePotionEffects(NBTTagCompound compound, String key,
+        java.util.Collection<net.minecraft.potion.PotionEffect> liveEffects,
+        @Nullable List<NBTTagCompound> retainedEffects
+    ) {
+        if (liveEffects.isEmpty() && (retainedEffects == null || retainedEffects.isEmpty())) {
+            return;
+        }
+        net.minecraft.nbt.NBTTagList list = new net.minecraft.nbt.NBTTagList();
+        for (net.minecraft.potion.PotionEffect effect : liveEffects) {
+            list.appendTag(effect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
+        }
+        if (retainedEffects != null) {
+            for (NBTTagCompound retainedTag : retainedEffects) {
+                list.appendTag(retainedTag.copy());
+            }
+        }
+        compound.setTag(key, list);
+    }
+
+    /*
+     * Centralized helper for reading a PotionType key ("Potion") and returning the raw string to retain
+     * when the PotionType is unregistered and not removed.
+     */
+    @Nullable
+    public static String readRetainedPotionType(NBTTagCompound compound, String key) {
+        if (!compound.hasKey(key, 8)) {
+            return null;
+        }
+        String name = compound.getString(key);
+        if (!name.isEmpty() &&
+            !net.minecraft.potion.PotionType.REGISTRY.containsKey(new ResourceLocation(name)) &&
+            !isRemoved(name)) {
+            return name;
+        }
+        return null;
+    }
+
+    /*
+     * Centralized helper for reading an entity/tile-entity block-state compound (or legacy block string/id)
+     * and returning a synthetic or copied state tag when the referenced block is currently absent and not removed.
+     */
+    @Nullable
+    public static NBTTagCompound readRetainedBlockState(NBTTagCompound compound, String stateKey,
+        @Nullable String legacyNameKey, @Nullable String legacyIdKey, boolean idIsShort, boolean idIsByte
+    ) {
+        if (compound.hasKey(stateKey, 10)) {
+            NBTTagCompound stateTag = compound.getCompoundTag(stateKey);
+            String blockName = stateTag.getString("Name");
+            if (!blockName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
+                if (isRemoved(blockName)) {
+                    noteRemoved(blockName);
+                    return null;
+                }
+                return stateTag.copy();
+            }
+            return null;
+        }
+        String legacyName = null;
+        if (legacyNameKey != null && compound.hasKey(legacyNameKey, 8)) {
+            legacyName = compound.getString(legacyNameKey);
+        } else if (legacyIdKey != null && compound.hasKey(legacyIdKey, 99)) {
+            int legId = idIsShort
+                ? (compound.getShort(legacyIdKey) & 0xFFFF)
+                : (idIsByte ? (compound.getByte(legacyIdKey) & 0xFF) : compound.getInteger(legacyIdKey));
+            ResourceLocation legRl = LegacyIds.blockName(legId);
+            if (legRl != null && !Block.REGISTRY.containsKey(legRl)) {
+                legacyName = legRl.toString();
+            }
+        }
+        if (legacyName != null &&
+            !legacyName.isEmpty() &&
+            !Block.REGISTRY.containsKey(new ResourceLocation(legacyName))) {
+            if (isRemoved(legacyName)) {
+                noteRemoved(legacyName);
+                return null;
+            }
+            NBTTagCompound synth = new NBTTagCompound();
+            synth.setString("Name", legacyName);
+            return synth;
+        }
+        return null;
+    }
+
+    public record DyeRead(net.minecraft.item.EnumDyeColor color, @Nullable String retainedName, int retainedNumber) { }
+
+    /*
+     * Centralized helper for reading a named/numbered EnumDyeColor (Bed, Banner, Sheep, Wolf)
+     * and retaining custom dye colors from temporarily absent mods.
+     */
+    @SuppressWarnings("deprecation")
+    public static DyeRead readDyeColor(NBTTagCompound compound, String nameKey, String numberKey, boolean byDyeDamage,
+        net.minecraft.item.EnumDyeColor fallbackWhenMissing
+    ) {
+        int rawNumber = compound.hasKey(numberKey, 99)
+            ? compound.getInteger(numberKey)
+            : (byDyeDamage ? fallbackWhenMissing.getDyeDamage() : fallbackWhenMissing.getMetadata());
+        if (compound.hasKey(nameKey, 8)) {
+            String cName = compound.getString(nameKey);
+            for (net.minecraft.item.EnumDyeColor c : net.minecraft.item.EnumDyeColor.values()) {
+                if (c.getName().equals(cName)) {
+                    return new DyeRead(c, null, -1);
+                }
+            }
+            if (!cName.isEmpty() && !isRemoved(cName)) {
+                return new DyeRead(fallbackWhenMissing, cName, rawNumber);
+            }
+        }
+        net.minecraft.item.EnumDyeColor resolved = byDyeDamage
+            ? net.minecraft.item.EnumDyeColor.byDyeDamage(rawNumber)
+            : net.minecraft.item.EnumDyeColor.byMetadata(rawNumber);
+        int resolvedNum = byDyeDamage ? resolved.getDyeDamage() : resolved.getMetadata();
+        if (resolvedNum != rawNumber && rawNumber >= 16) {
+            return new DyeRead(resolved, null, rawNumber);
+        }
+        return new DyeRead(resolved, null, -1);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void writeDyeColor(NBTTagCompound compound, String nameKey, String numberKey, boolean byDyeDamage,
+        boolean byteForSmall, net.minecraft.item.EnumDyeColor liveColor, @Nullable String retainedName,
+        int retainedNumber
+    ) {
+        int num = (retainedName != null || retainedNumber >= 16) && retainedNumber >= 0
+            ? retainedNumber
+            : (byDyeDamage ? liveColor.getDyeDamage() : liveColor.getMetadata());
+        if (byteForSmall && num >= 0 && num <= Byte.MAX_VALUE) {
+            compound.setByte(numberKey, (byte) num);
+        } else {
+            compound.setInteger(numberKey, num);
+        }
+        if (retainedName != null) {
+            compound.setString(nameKey, retainedName);
+        } else if (retainedNumber < 16) {
+            compound.setString(nameKey, liveColor.getName());
+        }
+    }
+
 }
