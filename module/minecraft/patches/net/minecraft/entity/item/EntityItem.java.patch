@@ -1,6 +1,14 @@
 --- original/net/minecraft/entity/item/EntityItem.java
 +++ modified/net/minecraft/entity/item/EntityItem.java
-@@ -40,6 +40,11 @@
+@@ -27,6 +27,7 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityItem extends Entity {
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static final DataParameter<ItemStack> ITEM = EntityDataManager.createKey(EntityItem.class, DataSerializers.ITEM_STACK);
+@@ -40,6 +41,11 @@
      /** The EntityItem's random initial float height. */
      public float hoverStart = (float)(Math.random() * Math.PI * 2.0);
  
@@ -12,7 +20,7 @@
      public EntityItem(World worldIn, double x, double y, double z) {
          super(worldIn);
          this.setSize(0.25F, 0.25F);
-@@ -53,6 +58,7 @@
+@@ -53,6 +59,7 @@
      public EntityItem(World worldIn, double x, double y, double z, ItemStack stack) {
          this(worldIn, x, y, z);
          this.setItem(stack);
@@ -20,7 +28,7 @@
      }
  
      /** returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for spiders and wolves to prevent them from trampling crops */
-@@ -75,6 +81,7 @@
+@@ -75,6 +82,7 @@
      /** Called to update the entity's position/logic. */
      @Override
      public void onUpdate() {
@@ -28,7 +36,7 @@
          if (this.getItem().isEmpty()) {
              this.setDead();
          } else {
-@@ -120,17 +127,9 @@
+@@ -120,17 +128,9 @@
  
              float f = 0.98F;
              if (this.onGround) {
@@ -49,7 +57,7 @@
              }
  
              this.motionX *= f;
-@@ -155,7 +154,14 @@
+@@ -155,7 +155,14 @@
                  }
              }
  
@@ -65,16 +73,16 @@
                  this.setDead();
              }
          }
-@@ -208,6 +214,8 @@
+@@ -208,6 +215,8 @@
  
                  if (itemstack1.getCount() + itemstack.getCount() > itemstack1.getMaxStackSize()) {
                      return false;
-+                } else if (!itemstack.areCapsCompatible(itemstack1)) {
++                } else if (!ItemStack.areItemStackTagsEqual(itemstack1, itemstack)) {
 +                    return false;
                  }
  
                  itemstack1.grow(itemstack.getCount());
-@@ -254,6 +262,7 @@
+@@ -254,6 +263,7 @@
      /** Called when the entity is attacked. */
      @Override
      public boolean attackEntityFrom(DamageSource source, float amount) {
@@ -82,7 +90,7 @@
          if (this.isEntityInvulnerable(source)) {
              return false;
          }
-@@ -281,6 +290,8 @@
+@@ -281,6 +291,8 @@
          compound.setShort("Health", (short)this.health);
          compound.setShort("Age", (short)this.age);
          compound.setShort("PickupDelay", (short)this.pickupDelay);
@@ -91,7 +99,7 @@
          if (this.getThrower() != null) {
              compound.setString("Thrower", this.thrower);
          }
-@@ -316,20 +327,28 @@
+@@ -316,20 +328,28 @@
          if (this.getItem().isEmpty()) {
              this.setDead();
          }
@@ -124,7 +132,7 @@
                      this.setDead();
                      itemstack.setCount(i);
                  }
-@@ -367,8 +386,9 @@
+@@ -367,8 +387,9 @@
  
      @Nullable
      @Override
@@ -136,7 +144,7 @@
          if (!this.world.isRemote && entity instanceof EntityItem) {
              ((EntityItem)entity).searchForOtherItemsNearby();
          }
-@@ -434,6 +454,6 @@
+@@ -434,6 +455,6 @@
  
      public void makeFakeItem() {
          this.setInfinitePickupDelay();

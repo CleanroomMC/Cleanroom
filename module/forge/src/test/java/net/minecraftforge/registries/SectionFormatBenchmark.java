@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * timings; only asserts that both formats round-trip.
  */
 @ForgeTestRunner.Isolated
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class SectionFormatBenchmark
 {
     private static final int SECTIONS = 512;

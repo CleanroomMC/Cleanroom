@@ -72,6 +72,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author cpw
  */
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class GuiModList extends GuiScreen implements LegacyModListScreen
 {
     private enum SortType implements Comparator<ModContainer>

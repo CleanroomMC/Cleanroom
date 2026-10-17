@@ -71,6 +71,7 @@ import com.google.common.collect.Sets;
 
 import javax.annotation.Nonnull;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class GameRegistry
 {
     private static Set<IWorldGenerator> worldGenerators = Sets.newHashSet();
@@ -334,13 +335,20 @@ public class GameRegistry
      * @param stackSize the stack size
      * @param nbtString an nbt stack as a string, will be processed by {@link JsonToNBT}
      * @return a new itemstack
+     * @deprecated Cleanroom: use {@link #makeItemStack(String, int, com.cleanroommc.component.DataComponentPredicate, String)}
      */
+    @Deprecated
     @Nonnull
     public static ItemStack makeItemStack(String itemName, int meta, int stackSize, String nbtString)
     {
         if (itemName == null)
         {
             throw new IllegalArgumentException("The itemName cannot be null");
+        }
+        int bracket = itemName.indexOf('[');
+        if (bracket >= 0)
+        {
+            return makeItemStack(itemName, stackSize, com.cleanroommc.component.DataComponentPredicate.EMPTY, nbtString);
         }
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName));
         if (item == null)
@@ -349,6 +357,55 @@ public class GameRegistry
             return ItemStack.EMPTY;
         }
         ItemStack is = new ItemStack(item, stackSize, meta);
+        if (!Strings.isNullOrEmpty(nbtString))
+        {
+            try
+            {
+                is.setTagCompound(JsonToNBT.getTagFromJson(nbtString));
+            }
+            catch (NBTException e)
+            {
+                throw new RuntimeException("Encountered an exception parsing ItemStack NBT string " + nbtString, e);
+            }
+        }
+        return is;
+    }
+
+    /**
+     * Cleanroom: makes an {@link ItemStack} from a registry name (optionally suffixed with
+     * {@code [component=value,...]}), stack size, component predicate and optional NBT string.
+     */
+    @Nonnull
+    public static ItemStack makeItemStack(String itemName, int stackSize, com.cleanroommc.component.DataComponentPredicate components, @javax.annotation.Nullable String nbtString)
+    {
+        if (itemName == null)
+        {
+            throw new IllegalArgumentException("The itemName cannot be null");
+        }
+        int bracket = itemName.indexOf('[');
+        String baseName = bracket >= 0 ? itemName.substring(0, bracket) : itemName;
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(baseName));
+        if (item == null)
+        {
+            FMLLog.log.trace("Unable to find item with name {}", baseName);
+            return ItemStack.EMPTY;
+        }
+        ItemStack is = new ItemStack(item, stackSize);
+        if (bracket >= 0 && itemName.endsWith("]"))
+        {
+            try
+            {
+                com.cleanroommc.component.DataComponentPredicate.parseBracketSpec(itemName.substring(bracket)).applyTo(is);
+            }
+            catch (com.cleanroommc.component.ComponentFormatException e)
+            {
+                throw new RuntimeException("Invalid component specification in " + itemName, e);
+            }
+        }
+        if (components != null)
+        {
+            components.applyTo(is);
+        }
         if (!Strings.isNullOrEmpty(nbtString))
         {
             try

@@ -1,15 +1,16 @@
 --- original/net/minecraft/block/BlockLeaves.java
 +++ modified/net/minecraft/block/BlockLeaves.java
-@@ -17,7 +17,7 @@
+@@ -17,7 +17,8 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public abstract class BlockLeaves extends Block {
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public abstract class BlockLeaves extends Block implements net.minecraftforge.common.IShearable {
      public static final PropertyBool DECAYABLE = PropertyBool.create("decayable");
      public static final PropertyBool CHECK_DECAY = PropertyBool.create("check_decay");
      protected boolean leavesFancy;
-@@ -46,8 +46,9 @@
+@@ -46,8 +47,9 @@
                      for (int l1 = -1; l1 <= 1; l1++) {
                          BlockPos blockpos = pos.add(j1, k1, l1);
                          IBlockState iblockstate = worldIn.getBlockState(blockpos);
@@ -21,7 +22,7 @@
                          }
                      }
                  }
-@@ -71,7 +72,8 @@
+@@ -71,7 +73,8 @@
                      this.surroundings = new int[32768];
                  }
  
@@ -31,7 +32,7 @@
                      BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
                      for (int i2 = -4; i2 <= 4; i2++) {
-@@ -79,8 +81,9 @@
+@@ -79,8 +82,9 @@
                              for (int k2 = -4; k2 <= 4; k2++) {
                                  IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2));
                                  Block block = iblockstate.getBlock();
@@ -43,7 +44,7 @@
                                          this.surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -2;
                                      } else {
                                          this.surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -1;
-@@ -171,30 +174,7 @@
+@@ -171,30 +175,7 @@
      /** Spawns this Block's drops into the World as EntityItems. */
      @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
@@ -75,7 +76,7 @@
      }
  
      protected void dropApple(World worldIn, BlockPos pos, IBlockState state, int chance) {
-@@ -234,7 +214,52 @@
+@@ -234,7 +215,52 @@
  
      public abstract BlockPlanks.EnumType getWoodType(int var1);
  

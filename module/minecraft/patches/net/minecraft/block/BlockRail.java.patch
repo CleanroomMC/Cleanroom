@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockRail.java
++++ modified/net/minecraft/block/BlockRail.java
+@@ -9,6 +9,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRail extends BlockRailBase {
+     public static final PropertyEnum<BlockRailBase.EnumRailDirection> SHAPE = PropertyEnum.create(
+         "shape", BlockRailBase.EnumRailDirection.class

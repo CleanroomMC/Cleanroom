@@ -1,15 +1,16 @@
 --- original/net/minecraft/block/BlockVine.java
 +++ modified/net/minecraft/block/BlockVine.java
-@@ -27,7 +27,7 @@
+@@ -27,7 +27,8 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class BlockVine extends Block {
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public class BlockVine extends Block implements net.minecraftforge.common.IShearable {
      public static final PropertyBool UP = PropertyBool.create("up");
      public static final PropertyBool NORTH = PropertyBool.create("north");
      public static final PropertyBool EAST = PropertyBool.create("east");
-@@ -195,7 +195,7 @@
+@@ -195,7 +196,7 @@
      @Override
      public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
          if (!worldIn.isRemote) {
@@ -18,7 +19,7 @@
                  int i = 4;
                  int j = 5;
                  boolean flag = false;
-@@ -236,7 +236,7 @@
+@@ -236,7 +237,7 @@
                          BlockPos blockpos4 = pos.down();
                          IBlockState iblockstate2 = worldIn.getBlockState(blockpos4);
                          Block block1 = iblockstate2.getBlock();
@@ -27,7 +28,7 @@
                              IBlockState iblockstate3 = state;
  
                              for (EnumFacing enumfacing4 : EnumFacing.Plane.HORIZONTAL) {
-@@ -273,7 +273,8 @@
+@@ -273,7 +274,8 @@
                      BlockPos blockpos3 = pos.offset(enumfacing2);
                      IBlockState iblockstate = worldIn.getBlockState(blockpos3);
                      Block block = iblockstate.getBlock();
@@ -37,7 +38,7 @@
                          EnumFacing enumfacing = enumfacing2.rotateY();
                          EnumFacing enumfacing1 = enumfacing2.rotateYCCW();
                          boolean flag1 = state.getValue(getPropertyFor(enumfacing));
-@@ -462,15 +463,16 @@
+@@ -462,15 +464,16 @@
          return i;
      }
  

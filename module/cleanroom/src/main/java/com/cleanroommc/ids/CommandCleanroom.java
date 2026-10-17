@@ -45,7 +45,8 @@ public final class CommandCleanroom extends CommandBase {
     public static List<String> summarizeAll() {
         List<String> lines = new ArrayList<>();
         lines.add("Cleanroom IDs (save format " + IdFormatContainer.SAVE_FORMAT + ", network format " +
-                IdFormatContainer.advertisedFormat() + "): " + Block.BLOCK_STATE_IDS.size() + " block states"
+                IdFormatContainer.advertisedFormat() + "): " + Block.BLOCK_STATE_IDS.size() + " block states, " +
+                Item.ITEM_STATE_IDS.size() + " item states"
         );
         List<ResourceLocation> names = new ArrayList<>(RegistryManager.ACTIVE.getRegistryNames());
         names.sort(Comparator.comparing(ResourceLocation::toString));

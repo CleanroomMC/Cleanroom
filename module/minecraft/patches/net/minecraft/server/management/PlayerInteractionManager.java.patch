@@ -1,6 +1,14 @@
 --- original/net/minecraft/server/management/PlayerInteractionManager.java
 +++ modified/net/minecraft/server/management/PlayerInteractionManager.java
-@@ -85,7 +85,8 @@
+@@ -26,6 +26,7 @@
+ import net.minecraft.world.World;
+ import net.minecraft.world.WorldServer;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class PlayerInteractionManager {
+     /** The world object that this object is connected to. */
+     public World world;
+@@ -85,7 +86,8 @@
          if (this.receivedFinishDiggingPacket) {
              int i = this.curblockDamage - this.initialBlockDamage;
              IBlockState iblockstate = this.world.getBlockState(this.delayedDestroyPos);
@@ -10,7 +18,7 @@
                  this.receivedFinishDiggingPacket = false;
              } else {
                  float f = iblockstate.getPlayerRelativeBlockHardness(this.player, this.player.world, this.delayedDestroyPos) * (i + 1);
-@@ -102,13 +103,14 @@
+@@ -102,13 +104,14 @@
              }
          } else if (this.isDestroyingBlock) {
              IBlockState iblockstate1 = this.world.getBlockState(this.destroyPos);
@@ -27,7 +35,7 @@
                  int l = (int)(f1 * 10.0F);
                  if (l != this.durabilityRemainingOnBlock) {
                      this.world.sendBlockBreakProgress(this.player.getEntityId(), this.destroyPos, l);
-@@ -120,6 +122,15 @@
+@@ -120,6 +123,15 @@
  
      /** If not creative, it calls sendBlockBreakProgress until the block is broken first. tryHarvestBlock can also be the result of this call. */
      public void onBlockClicked(BlockPos pos, EnumFacing side) {
@@ -43,7 +51,7 @@
          if (this.isCreative()) {
              if (!this.world.extinguishFire(null, pos, side)) {
                  this.tryHarvestBlock(pos);
-@@ -144,15 +155,30 @@
+@@ -144,15 +156,30 @@
                  }
              }
  
@@ -78,7 +86,7 @@
                  this.tryHarvestBlock(pos);
              } else {
                  this.isDestroyingBlock = true;
-@@ -168,8 +194,10 @@
+@@ -168,8 +195,10 @@
          if (pos.equals(this.destroyPos)) {
              int i = this.curblockDamage - this.initialDamage;
              IBlockState iblockstate = this.world.getBlockState(pos);
@@ -91,7 +99,7 @@
                  if (f >= 0.7F) {
                      this.isDestroyingBlock = false;
                      this.world.sendBlockBreakProgress(this.player.getEntityId(), pos, -1);
-@@ -192,9 +220,13 @@
+@@ -192,9 +221,13 @@
  
      /** Removes a block and triggers the appropriate events */
      private boolean removeBlock(BlockPos pos) {
@@ -107,7 +115,7 @@
          if (flag) {
              iblockstate.getBlock().onPlayerDestroy(this.world, pos, iblockstate);
          }
-@@ -204,9 +236,8 @@
+@@ -204,9 +237,8 @@
  
      /** Attempts to harvest a block */
      public boolean tryHarvestBlock(BlockPos pos) {
@@ -119,7 +127,7 @@
              return false;
          }
  
-@@ -218,40 +249,34 @@
+@@ -218,40 +250,34 @@
              return false;
          }
  
@@ -172,7 +180,7 @@
          return flag1;
      }
  
-@@ -264,8 +289,11 @@
+@@ -264,11 +290,14 @@
              return EnumActionResult.PASS;
          }
  
@@ -183,8 +191,18 @@
 +        ItemStack copyBeforeUse = stack.copy();
          ActionResult<ItemStack> actionresult = stack.useItemRightClick(worldIn, player, hand);
          ItemStack itemstack = actionresult.getResult();
-         if (itemstack == stack && itemstack.getCount() == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j) {
-@@ -285,6 +313,7 @@
+-        if (itemstack == stack && itemstack.getCount() == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j) {
++        if (itemstack == stack && itemstack.getCount() == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j && itemstack.getComponents().equals(copyBeforeUse.getComponents())) {
+             return actionresult.getType();
+         }
+ 
+@@ -280,11 +309,12 @@
+         if (this.isCreative()) {
+             itemstack.setCount(i);
+             if (itemstack.isItemStackDamageable()) {
+-                itemstack.setItemDamage(j);
++                itemstack.setDamageValue(j);
+             }
          }
  
          if (itemstack.isEmpty()) {
@@ -192,7 +210,7 @@
              player.setHeldItem(hand, ItemStack.EMPTY);
          }
  
-@@ -326,11 +355,24 @@
+@@ -326,11 +356,24 @@
  
              return EnumActionResult.PASS;
          } else {
@@ -221,18 +239,20 @@
                  }
              }
  
-@@ -352,14 +394,20 @@
+@@ -352,14 +395,22 @@
              if (this.isCreative()) {
                  int j = stack.getMetadata();
                  int i = stack.getCount();
 -                EnumActionResult enumactionresult = stack.onItemUse(
 -                    player, worldIn, pos, hand, facing, hitX, hitY, hitZ
 -                );
++                com.cleanroommc.component.PatchedDataComponentMap savedComponents = stack.getComponents().copy();
 +                if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
 +                        || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
 +                EnumActionResult enumactionresult = stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
                  stack.setItemDamage(j);
                  stack.setCount(i);
++                stack.getComponents().restorePatch(savedComponents.asPatch());
                  return enumactionresult;
 +                } else return result;
              } else {
@@ -246,7 +266,7 @@
              }
          }
      }
-@@ -368,4 +416,14 @@
+@@ -368,4 +419,14 @@
      public void setWorld(WorldServer serverWorld) {
          this.world = serverWorld;
      }

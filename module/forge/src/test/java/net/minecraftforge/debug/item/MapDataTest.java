@@ -81,7 +81,7 @@ public class MapDataTest
     @SubscribeEvent
     public void registerModels(ModelRegistryEvent evt)
     {
-        ModelLoader.setCustomModelResourceLocation(EMPTY_CUSTOM_MAP, 0, new ModelResourceLocation("map", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(EMPTY_CUSTOM_MAP, new ModelResourceLocation("map", "inventory"));
         ModelLoader.setCustomMeshDefinition(CUSTOM_MAP, s -> new ModelResourceLocation("filled_map", "inventory"));
         ModelBakery.registerItemVariants(CUSTOM_MAP, new ModelResourceLocation("filled_map", "inventory"));
     }
@@ -126,8 +126,9 @@ public class MapDataTest
         // copy of super with own map prefix
         public static ItemStack setupNewMap(World worldIn, double worldX, double worldZ, byte scale, boolean trackingPosition, boolean unlimitedTracking)
         {
-            ItemStack itemstack = new ItemStack(CUSTOM_MAP, 1, worldIn.getUniqueDataId(PREFIX));
-            String s = PREFIX + "_" + itemstack.getMetadata();
+            ItemStack itemstack = new ItemStack(CUSTOM_MAP);
+            setMapId(itemstack, worldIn.getUniqueDataId(PREFIX));
+            String s = PREFIX + "_" + getMapId(itemstack);
             MapData mapdata = new CustomMapData(s);
             worldIn.setData(s, mapdata);
             mapdata.scale = scale;
@@ -153,13 +154,13 @@ public class MapDataTest
         @Override
         public CustomMapData getMapData(ItemStack stack, World worldIn)
         {
-            String s = PREFIX + "_" + stack.getMetadata();
+            String s = PREFIX + "_" + getMapId(stack);
             CustomMapData mapdata = (CustomMapData) worldIn.loadData(CustomMapData.class, s);
 
             if (mapdata == null && !worldIn.isRemote)
             {
-                stack.setItemDamage(worldIn.getUniqueDataId(PREFIX));
-                s = PREFIX + "_" + stack.getMetadata();
+                setMapId(stack, worldIn.getUniqueDataId(PREFIX));
+                s = PREFIX + "_" + getMapId(stack);
                 mapdata = new CustomMapData(s);
                 mapdata.scale = 3;
                 mapdata.calculateMapCenter((double) worldIn.getWorldInfo().getSpawnX(), (double) worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);

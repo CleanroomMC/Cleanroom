@@ -1,5 +1,13 @@
 --- original/net/minecraft/entity/monster/EntityZombieVillager.java
 +++ modified/net/minecraft/entity/monster/EntityZombieVillager.java
+@@ -31,6 +31,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityZombieVillager extends EntityZombie {
+     private static final DataParameter<Boolean> CONVERTING = EntityDataManager.createKey(EntityZombieVillager.class, DataSerializers.BOOLEAN);
+     private static final DataParameter<Integer> PROFESSION = EntityDataManager.createKey(EntityZombieVillager.class, DataSerializers.VARINT);
 @@ -52,10 +53,13 @@
  
      public void setProfession(int profession) {

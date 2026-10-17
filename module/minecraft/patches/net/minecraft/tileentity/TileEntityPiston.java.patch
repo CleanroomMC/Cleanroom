@@ -1,5 +1,13 @@
 --- original/net/minecraft/tileentity/TileEntityPiston.java
 +++ modified/net/minecraft/tileentity/TileEntityPiston.java
+@@ -22,8 +22,11 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class TileEntityPiston extends TileEntity implements ITickable {
+     private IBlockState pistonState;
++    @javax.annotation.Nullable
 +    private NBTTagCompound retainedBlockStateTag;
      private EnumFacing pistonFacing;
      /** if this piston is extending or not */

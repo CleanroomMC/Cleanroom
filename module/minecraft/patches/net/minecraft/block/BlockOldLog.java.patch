@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockOldLog.java
++++ modified/net/minecraft/block/BlockOldLog.java
+@@ -13,6 +13,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.IBlockAccess;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockOldLog extends BlockLog {
+     public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.create(
+         "variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>() {

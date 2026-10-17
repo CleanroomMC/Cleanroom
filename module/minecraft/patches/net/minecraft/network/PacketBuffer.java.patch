@@ -1,6 +1,14 @@
 --- original/net/minecraft/network/PacketBuffer.java
 +++ modified/net/minecraft/network/PacketBuffer.java
-@@ -257,17 +257,17 @@
+@@ -31,6 +31,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class PacketBuffer extends ByteBuf {
+     private final ByteBuf buf;
+ 
+@@ -257,20 +258,21 @@
          }
      }
  
@@ -24,7 +32,11 @@
              }
  
              this.writeCompoundTag(nbttagcompound);
-@@ -278,15 +278,15 @@
++            com.cleanroommc.component.DataComponents.writePatch(stack, this);
+         }
+ 
+         return this;
+@@ -278,15 +280,16 @@
  
      /** Reads an ItemStack from this buffer */
      public ItemStack readItemStack() throws IOException {
@@ -41,6 +53,7 @@
          ItemStack itemstack = new ItemStack(Item.getItemById(i), j, k);
 -        itemstack.setTagCompound(this.readCompoundTag());
 +        itemstack.getItem().readNBTShareTag(itemstack, this.readCompoundTag());
++        com.cleanroommc.component.DataComponents.readPatch(itemstack, this);
          return itemstack;
      }
  

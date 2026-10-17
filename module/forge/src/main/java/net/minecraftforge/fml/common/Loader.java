@@ -128,7 +128,7 @@ import javax.annotation.Nullable;
  * @author cpw
  *
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "deprecation"})
 public class Loader
 {
     public static final String MC_VERSION = ForgeVersion.mcVersion;

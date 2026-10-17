@@ -1,7 +1,23 @@
 --- original/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
 +++ modified/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
-@@ -85,15 +85,18 @@
-         } else if (item == Item.getItemFromBlock(Blocks.TRAPPED_CHEST)) {
+@@ -27,6 +27,7 @@
+ import org.apache.commons.lang3.StringUtils;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TileEntityItemStackRenderer {
+     private static final TileEntityShulkerBox[] SHULKER_BOXES = new TileEntityShulkerBox[16];
+     public static TileEntityItemStackRenderer instance;
+@@ -85,7 +86,7 @@
+                 GlStateManager.pushMatrix();
+                 GlStateManager.disableCull();
+                 TileEntitySkullRenderer.instance
+-                    .renderSkull(0.0F, 0.0F, 0.0F, EnumFacing.UP, 180.0F, itemStackIn.getMetadata(), gameprofile, -1, 0.0F);
++                    .renderSkull(0.0F, 0.0F, 0.0F, EnumFacing.UP, 180.0F, itemStackIn.getItemState().getValue(net.minecraft.item.ItemSkull.TYPE).getMetadata(), gameprofile, -1, 0.0F);
+                 GlStateManager.enableCull();
+                 GlStateManager.popMatrix();
+             }
+@@ -95,15 +96,18 @@
              TileEntityRendererDispatcher.instance.render(this.chestTrap, 0.0, 0.0, 0.0, 0.0F, partialTicks);
          } else if (Block.getBlockFromItem(item) instanceof BlockShulkerBox) {
              TileEntityRendererDispatcher.instance

@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockEndPortalFrame.java
++++ modified/net/minecraft/block/BlockEndPortalFrame.java
+@@ -28,6 +28,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockEndPortalFrame extends Block {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     public static final PropertyBool EYE = PropertyBool.create("eye");

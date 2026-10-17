@@ -165,6 +165,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class ForgeHooks
 {
     //TODO: Loot tables?
@@ -893,6 +894,7 @@ public class ForgeHooks
         {
             nbt = itemstack.getTagCompound().copy();
         }
+        com.cleanroommc.component.PatchedDataComponentMap oldComponents = itemstack.getComponents().copy();
 
         if (!(itemstack.getItem() instanceof ItemBucket)) // if not bucket
         {
@@ -912,6 +914,7 @@ public class ForgeHooks
             {
                 newNBT = itemstack.getTagCompound().copy();
             }
+            com.cleanroommc.component.PatchedDataComponentMap newComponents = itemstack.getComponents().copy();
             BlockEvent.PlaceEvent placeEvent = null;
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>)world.capturedBlockSnapshots.clone();
@@ -924,6 +927,7 @@ public class ForgeHooks
             {
                 itemstack.setTagCompound(nbt);
             }
+            itemstack.getComponents().restorePatch(oldComponents.asPatch());
             if (blockSnapshots.size() > 1)
             {
                 placeEvent = ForgeEventFactory.onPlayerMultiBlockPlace(player, blockSnapshots, side, hand);
@@ -953,6 +957,7 @@ public class ForgeHooks
                 {
                     itemstack.setTagCompound(newNBT);
                 }
+                itemstack.getComponents().restorePatch(newComponents.asPatch());
 
                 for (BlockSnapshot snap : blockSnapshots)
                 {

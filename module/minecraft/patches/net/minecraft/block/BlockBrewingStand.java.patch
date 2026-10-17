@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockBrewingStand.java
++++ modified/net/minecraft/block/BlockBrewingStand.java
+@@ -32,6 +32,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockBrewingStand extends BlockContainer {
+     public static final PropertyBool[] HAS_BOTTLE = new PropertyBool[]{
+         PropertyBool.create("has_bottle_0"), PropertyBool.create("has_bottle_1"), PropertyBool.create("has_bottle_2")

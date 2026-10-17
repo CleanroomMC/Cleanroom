@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRailPowered.java
 +++ modified/net/minecraft/block/BlockRailPowered.java
-@@ -27,8 +27,15 @@
+@@ -12,6 +12,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRailPowered extends BlockRailBase {
+     public static final PropertyEnum<BlockRailBase.EnumRailDirection> SHAPE = PropertyEnum.create(
+         "shape",
+@@ -27,8 +28,15 @@
      );
      public static final PropertyBool POWERED = PropertyBool.create("powered");
  
@@ -16,7 +24,7 @@
          this.setDefaultState(
              this.blockState.getBaseState().withProperty(SHAPE, BlockRailBase.EnumRailDirection.NORTH_SOUTH).withProperty(POWERED, false)
          );
-@@ -111,7 +118,8 @@
+@@ -111,7 +119,8 @@
  
      protected boolean isSameRailWithPower(World worldIn, BlockPos pos, boolean p_176567_3_, int distance, BlockRailBase.EnumRailDirection p_176567_5_) {
          IBlockState iblockstate = worldIn.getBlockState(pos);

@@ -1,6 +1,71 @@
 --- original/net/minecraft/item/ItemSkull.java
 +++ modified/net/minecraft/item/ItemSkull.java
-@@ -48,11 +48,16 @@
+@@ -23,15 +23,64 @@
+ import net.minecraft.world.World;
+ import org.apache.commons.lang3.StringUtils;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemSkull extends Item {
+     private static final String[] SKULL_TYPES = new String[]{"skeleton", "wither", "zombie", "char", "creeper", "dragon"};
++    public static final net.minecraft.block.properties.PropertyEnum<SkullType> TYPE = net.minecraft.block.properties.PropertyEnum.create("type", SkullType.class);
+ 
++    public enum SkullType implements net.minecraft.util.IStringSerializable {
++        SKELETON(0, "skeleton"),
++        WITHER(1, "wither"),
++        ZOMBIE(2, "zombie"),
++        CHAR(3, "char"),
++        CREEPER(4, "creeper"),
++        DRAGON(5, "dragon");
++
++        private final int meta;
++        private final String name;
++
++        SkullType(int meta, String name) {
++            this.meta = meta;
++            this.name = name;
++        }
++
++        public int getMetadata() {
++            return this.meta;
++        }
++
++        @Override
++        public String getName() {
++            return this.name;
++        }
++
++        public static SkullType byMetadata(int meta) {
++            for (SkullType t : values()) { if (t.getMetadata() == meta) { return t; } }
++            return SKELETON;
++        }
++    }
++
+     public ItemSkull() {
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
+         this.setMaxDamage(0);
+         this.setHasSubtypes(true);
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(TYPE, SkullType.SKELETON));
+     }
+ 
++    @Override
++    protected com.cleanroommc.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.component.ItemStateContainer(this, TYPE);
++    }
++
++    @Override
++    public com.cleanroommc.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(TYPE, SkullType.byMetadata(meta));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.component.IItemState state) {
++        return state.getValue(TYPE).getMetadata();
++    }
++
+     /** Called when a Block is right-clicked with this Item */
+     @Override
+     public EnumActionResult onItemUse(
+@@ -48,11 +97,16 @@
              return EnumActionResult.FAIL;
          }
  
@@ -18,3 +83,55 @@
                  return EnumActionResult.FAIL;
              }
  
+@@ -77,7 +131,8 @@
+         TileEntity tileentity = worldIn.getTileEntity(pos);
+         if (tileentity instanceof TileEntitySkull) {
+             TileEntitySkull tileentityskull = (TileEntitySkull)tileentity;
+-            if (itemstack.getMetadata() == 3) {
++            SkullType skullType = itemstack.getItemState().getValue(TYPE);
++            if (skullType == SkullType.CHAR) {
+                 GameProfile gameprofile = null;
+                 if (itemstack.hasTagCompound()) {
+                     NBTTagCompound nbttagcompound = itemstack.getTagCompound();
+@@ -90,7 +145,7 @@
+ 
+                 tileentityskull.setPlayerProfile(gameprofile);
+             } else {
+-                tileentityskull.setType(itemstack.getMetadata());
++                tileentityskull.setType(skullType.getMetadata());
+             }
+ 
+             tileentityskull.setSkullRotation(i);
+@@ -109,8 +164,10 @@
+     @Override
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+         if (this.isInCreativeTab(tab)) {
+-            for (int i = 0; i < SKULL_TYPES.length; i++) {
+-                items.add(new ItemStack(this, 1, i));
++            for (com.cleanroommc.component.IItemState state : this.getItemState().getValidStates()) {
++                ItemStack stack = new ItemStack(this, 1, this.getMetaFromItemState(state));
++                stack.setItemState(state);
++                items.add(stack);
+             }
+         }
+     }
+@@ -124,17 +181,12 @@
+     /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
+     @Override
+     public String getTranslationKey(ItemStack stack) {
+-        int i = stack.getMetadata();
+-        if (i < 0 || i >= SKULL_TYPES.length) {
+-            i = 0;
+-        }
+-
+-        return super.getTranslationKey() + "." + SKULL_TYPES[i];
++        return super.getTranslationKey() + "." + stack.getItemState().getValue(TYPE).getName();
+     }
+ 
+     @Override
+     public String getItemStackDisplayName(ItemStack stack) {
+-        if (stack.getMetadata() == 3 && stack.hasTagCompound()) {
++        if (stack.getItemState().getValue(TYPE) == SkullType.CHAR && stack.hasTagCompound()) {
+             if (stack.getTagCompound().hasKey("SkullOwner", 8)) {
+                 return I18n.translateToLocalFormatted("item.skull.player.name", stack.getTagCompound().getString("SkullOwner"));
+             }

@@ -4,6 +4,7 @@
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
  
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
  public class ShieldRecipes {
 -    public static class Decoration implements IRecipe {
 +    public static class Decoration extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {

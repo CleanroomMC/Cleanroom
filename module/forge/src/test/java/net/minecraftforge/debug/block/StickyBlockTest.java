@@ -44,6 +44,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(modid = StickyBlockTest.MODID, name = "ForgeDebugCustomSlimeBlock", version = StickyBlockTest.VERSION, acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class StickyBlockTest
 {
     public static final String MODID = "forgedebugcustomslimeblock";

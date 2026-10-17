@@ -1,5 +1,13 @@
 --- original/net/minecraft/block/BlockJukebox.java
 +++ modified/net/minecraft/block/BlockJukebox.java
+@@ -22,6 +22,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockJukebox extends BlockContainer {
+     public static final PropertyBool HAS_RECORD = PropertyBool.create("has_record");
+ 
 @@ -125,7 +126,7 @@
          if (tileentity instanceof BlockJukebox.TileEntityJukebox) {
              ItemStack itemstack = ((BlockJukebox.TileEntityJukebox)tileentity).getRecord();

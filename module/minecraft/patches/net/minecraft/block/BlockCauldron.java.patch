@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockCauldron.java
++++ modified/net/minecraft/block/BlockCauldron.java
+@@ -31,6 +31,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockCauldron extends Block {
+     public static final PropertyInteger LEVEL = PropertyInteger.create("level", 0, 3);
+     protected static final AxisAlignedBB AABB_LEGS = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.3125, 1.0);

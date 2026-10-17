@@ -32,6 +32,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
 
 @Mod(modid = ObjectHolderAnnotationTest.MODID, name = "ObjectHolderTests", version = "1.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class ObjectHolderAnnotationTest
 {
     public static final String MODID = "objectholdertest";

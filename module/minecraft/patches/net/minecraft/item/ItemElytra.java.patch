@@ -1,0 +1,11 @@
+--- original/net/minecraft/item/ItemElytra.java
++++ modified/net/minecraft/item/ItemElytra.java
+@@ -32,7 +32,7 @@
+     }
+ 
+     public static boolean isUsable(ItemStack stack) {
+-        return stack.getItemDamage() < stack.getMaxDamage() - 1;
++        return stack.getDamageValue() < stack.getMaxDamage() - 1;
+     }
+ 
+     /**

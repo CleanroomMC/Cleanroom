@@ -4,6 +4,7 @@
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
  
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
  public class RecipesBanners {
 -    public static class RecipeAddPattern implements IRecipe {
 +    public static class RecipeAddPattern extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {

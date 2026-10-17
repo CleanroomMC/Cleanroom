@@ -8,7 +8,15 @@
  import net.minecraft.block.properties.PropertyDirection;
  import net.minecraft.block.properties.PropertyInteger;
  import net.minecraft.block.state.BlockFaceShape;
-@@ -98,11 +99,8 @@
+@@ -23,6 +24,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockBanner extends BlockContainer {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     public static final PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
+@@ -98,11 +100,8 @@
      /** Spawns this Block's drops into the World as EntityItems. */
      @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
@@ -21,7 +29,7 @@
          }
      }
  
-@@ -139,6 +137,19 @@
+@@ -139,6 +138,19 @@
          return BlockFaceShape.UNDEFINED;
      }
  

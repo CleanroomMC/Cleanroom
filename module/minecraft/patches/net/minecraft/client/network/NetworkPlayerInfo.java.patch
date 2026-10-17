@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/network/NetworkPlayerInfo.java
++++ modified/net/minecraft/client/network/NetworkPlayerInfo.java
+@@ -19,6 +19,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class NetworkPlayerInfo {
+     /** The GameProfile for the player represented by this NetworkPlayerInfo instance */
+     private final GameProfile gameProfile;

@@ -1,15 +1,16 @@
 --- original/net/minecraft/block/BlockDoublePlant.java
 +++ modified/net/minecraft/block/BlockDoublePlant.java
-@@ -23,7 +23,7 @@
+@@ -23,7 +23,8 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
  
 -public class BlockDoublePlant extends BlockBush implements IGrowable {
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecraftforge.common.IShearable {
      public static final PropertyEnum<BlockDoublePlant.EnumPlantType> VARIANT = PropertyEnum.create(
          "variant", BlockDoublePlant.EnumPlantType.class
      );
-@@ -85,21 +85,22 @@
+@@ -85,21 +86,22 @@
              BlockPos blockpos1 = flag ? pos.down() : pos;
              Block block = flag ? this : worldIn.getBlockState(blockpos).getBlock();
              Block block1 = flag ? worldIn.getBlockState(blockpos1).getBlock() : this;
@@ -35,7 +36,7 @@
          if (state.getValue(HALF) == BlockDoublePlant.EnumBlockHalf.UPPER) {
              return worldIn.getBlockState(pos.down()).getBlock() == this;
          }
-@@ -156,10 +157,7 @@
+@@ -156,10 +158,7 @@
      public void harvestBlock(
          World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
      ) {
@@ -47,7 +48,7 @@
              super.harvestBlock(worldIn, player, pos, state, te, stack);
          }
      }
-@@ -201,9 +199,6 @@
+@@ -201,9 +200,6 @@
          }
  
          player.addStat(StatList.getBlockStats(this));
@@ -57,7 +58,7 @@
          return true;
      }
  
-@@ -279,6 +274,22 @@
+@@ -279,6 +275,22 @@
          return Block.EnumOffsetType.XZ;
      }
  
@@ -80,3 +81,19 @@
      public enum EnumBlockHalf implements IStringSerializable {
          UPPER,
          LOWER;
+@@ -327,11 +339,11 @@
+         }
+ 
+         public static BlockDoublePlant.EnumPlantType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockDoublePlant.EnumPlantType t : values()) { if (t.getMeta() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override

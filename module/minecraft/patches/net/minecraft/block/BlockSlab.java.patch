@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockSlab.java
 +++ modified/net/minecraft/block/BlockSlab.java
-@@ -90,6 +90,18 @@
+@@ -19,6 +19,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class BlockSlab extends Block {
+     public static final PropertyEnum<BlockSlab.EnumBlockHalf> HALF = PropertyEnum.create("half", BlockSlab.EnumBlockHalf.class);
+     protected static final AxisAlignedBB AABB_BOTTOM_HALF = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
+@@ -90,6 +91,18 @@
  
      /** Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the IBlockstate */
      @Override
@@ -19,7 +27,7 @@
      public IBlockState getStateForPlacement(
          World worldIn,
          BlockPos pos,
-@@ -133,26 +145,28 @@
+@@ -133,26 +146,28 @@
  
          if (side != EnumFacing.UP && side != EnumFacing.DOWN && !super.shouldSideBeRendered(blockState, blockAccess, pos, side)) {
              return false;

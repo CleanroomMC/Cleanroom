@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockEndGateway.java
++++ modified/net/minecraft/block/BlockEndGateway.java
+@@ -19,6 +19,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockEndGateway extends BlockContainer {
+     protected BlockEndGateway(Material p_i46687_1_) {
+         super(p_i46687_1_);

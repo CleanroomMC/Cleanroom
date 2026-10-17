@@ -1,6 +1,14 @@
 --- original/net/minecraft/entity/monster/EntityShulker.java
 +++ modified/net/minecraft/entity/monster/EntityShulker.java
-@@ -435,6 +435,12 @@
+@@ -48,6 +48,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityShulker extends EntityGolem implements IMob {
+     private static final UUID COVERED_ARMOR_BONUS_ID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
+     private static final AttributeModifier COVERED_ARMOR_BONUS_MODIFIER = new AttributeModifier(COVERED_ARMOR_BONUS_ID, "Covered armor bonus", 20.0, 0).setSaved(false);
+@@ -435,6 +436,12 @@
                      }
  
                      if (flag) {
@@ -13,7 +21,7 @@
                          this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
                          this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(blockpos1));
                          this.dataManager.set(PEEK_TICK, (byte)0);
-@@ -476,6 +482,7 @@
+@@ -476,6 +483,7 @@
                  this.posX = blockpos.getX() + 0.5;
                  this.posY = blockpos.getY();
                  this.posZ = blockpos.getZ() + 0.5;

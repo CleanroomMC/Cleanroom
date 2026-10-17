@@ -1,0 +1,56 @@
+--- original/net/minecraft/item/ItemBanner.java
++++ modified/net/minecraft/item/ItemBanner.java
+@@ -28,15 +28,34 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemBanner extends ItemBlock {
++    public static final net.minecraft.block.properties.PropertyEnum<EnumDyeColor> COLOR = net.minecraft.block.properties.PropertyEnum.create("color", EnumDyeColor.class);
++
+     public ItemBanner() {
+         super(Blocks.STANDING_BANNER);
+         this.maxStackSize = 16;
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
+         this.setHasSubtypes(true);
+         this.setMaxDamage(0);
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(COLOR, EnumDyeColor.BLACK));
+     }
+ 
++    @Override
++    protected com.cleanroommc.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.component.ItemStateContainer(this, COLOR);
++    }
++
++    @Override
++    public com.cleanroommc.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(COLOR, EnumDyeColor.byDyeDamage(meta));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.component.IItemState state) {
++        return state.getValue(COLOR).getDyeDamage();
++    }
++
+     /** Called when a Block is right-clicked with this Item */
+     @Override
+     public EnumActionResult onItemUse(
+@@ -130,6 +149,7 @@
+ 
+     public static ItemStack makeBanner(EnumDyeColor color, @Nullable NBTTagList patterns) {
+         ItemStack itemstack = new ItemStack(Items.BANNER, 1, color.getDyeDamage());
++        itemstack.setItemState(Items.BANNER.getDefaultItemState().withProperty(COLOR, color));
+         if (patterns != null && !patterns.isEmpty()) {
+             itemstack.getOrCreateSubCompound("BlockEntityTag").setTag("Patterns", patterns.copy());
+         }
+@@ -144,6 +164,9 @@
+     }
+ 
+     public static EnumDyeColor getBaseColor(ItemStack stack) {
+-        return EnumDyeColor.byDyeDamage(stack.getMetadata() & 15);
++        if (stack.getItem() == Items.BANNER) {
++            return stack.getItemState().getValue(COLOR);
++        }
++        return EnumDyeColor.byDyeDamage(stack.getMetadata());
+     }
+ }

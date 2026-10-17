@@ -1,6 +1,14 @@
 --- original/net/minecraft/inventory/Container.java
 +++ modified/net/minecraft/inventory/Container.java
-@@ -78,9 +78,11 @@
+@@ -19,6 +19,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public abstract class Container {
+     /** the list of all items(stacks) for the corresponding slot */
+     public NonNullList<ItemStack> inventoryItemStacks = NonNullList.create();
+@@ -78,9 +79,11 @@
              ItemStack itemstack = this.inventorySlots.get(i).getStack();
              ItemStack itemstack1 = this.inventoryItemStacks.get(i);
              if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
@@ -12,7 +20,30 @@
                  for (int j = 0; j < this.listeners.size(); j++) {
                      this.listeners.get(j).sendSlotContents(this, i, itemstack1);
                  }
-@@ -460,14 +462,16 @@
+@@ -244,6 +247,8 @@
+                             }
+                         } else if (slot6.isItemValid(itemstack11)) {
+                             if (itemstack8.getItem() == itemstack11.getItem()
++                                && itemstack8.isStackable()
++                                && itemstack11.isStackable()
+                                 && itemstack8.getMetadata() == itemstack11.getMetadata()
+                                 && ItemStack.areItemStackTagsEqual(itemstack8, itemstack11)) {
+                                 int k2 = dragType == 0 ? itemstack11.getCount() : 1;
+@@ -263,6 +268,8 @@
+                             }
+                         } else if (itemstack8.getItem() == itemstack11.getItem()
+                             && itemstack11.getMaxStackSize() > 1
++                            && itemstack8.isStackable()
++                            && itemstack11.isStackable()
+                             && (!itemstack8.getHasSubtypes() || itemstack8.getMetadata() == itemstack11.getMetadata())
+                             && ItemStack.areItemStackTagsEqual(itemstack8, itemstack11)
+                             && !itemstack8.isEmpty()) {
+@@ -456,18 +463,21 @@
+                 Slot slot = this.inventorySlots.get(i);
+                 ItemStack itemstack = slot.getStack();
+                 if (!itemstack.isEmpty()
++                    && itemstack.isStackable()
+                     && itemstack.getItem() == stack.getItem()
                      && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack.getMetadata())
                      && ItemStack.areItemStackTagsEqual(stack, itemstack)) {
                      int j = itemstack.getCount() + stack.getCount();
@@ -33,7 +64,16 @@
                          slot.onSlotChanged();
                          flag = true;
                      }
-@@ -561,7 +565,7 @@
+@@ -546,7 +556,7 @@
+     /** Checks if it's possible to add the given itemstack to the given slot. */
+     public static boolean canAddItemToSlot(@Nullable Slot slotIn, ItemStack stack, boolean stackSizeMatters) {
+         boolean flag = slotIn == null || !slotIn.getHasStack();
+-        return !flag && stack.isItemEqual(slotIn.getStack()) && ItemStack.areItemStackTagsEqual(slotIn.getStack(), stack)
++        return !flag && stack.isStackable() && slotIn.getStack().isStackable() && stack.isItemEqual(slotIn.getStack()) && ItemStack.areItemStackTagsEqual(slotIn.getStack(), stack)
+             ? slotIn.getStack().getCount() + (stackSizeMatters ? 0 : stack.getCount()) <= stack.getMaxStackSize()
+             : flag;
+     }
+@@ -561,7 +571,7 @@
                  stack.setCount(1);
                  break;
              case 2:

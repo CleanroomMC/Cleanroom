@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockDaylightDetector.java
++++ modified/net/minecraft/block/BlockDaylightDetector.java
+@@ -24,6 +24,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockDaylightDetector extends BlockContainer {
+     public static final PropertyInteger POWER = PropertyInteger.create("power", 0, 15);
+     protected static final AxisAlignedBB DAYLIGHT_DETECTOR_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.375, 1.0);

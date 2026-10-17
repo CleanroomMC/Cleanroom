@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/gui/GuiCreateFlatWorld.java
++++ modified/net/minecraft/client/gui/GuiCreateFlatWorld.java
+@@ -19,6 +19,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class GuiCreateFlatWorld extends GuiScreen {
+     private final GuiCreateWorld createWorldGui;
+     private FlatGeneratorInfo generatorInfo = FlatGeneratorInfo.getDefaultFlatGenerator();

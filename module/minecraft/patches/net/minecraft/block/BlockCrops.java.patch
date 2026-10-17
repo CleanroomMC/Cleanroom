@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockCrops.java
 +++ modified/net/minecraft/block/BlockCrops.java
-@@ -71,12 +71,16 @@
+@@ -14,6 +14,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockCrops extends BlockBush implements IGrowable {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 7);
+     private static final AxisAlignedBB[] CROPS_AABB = new AxisAlignedBB[]{
+@@ -71,12 +72,16 @@
      @Override
      public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
          super.updateTick(worldIn, pos, state, rand);
@@ -18,7 +26,7 @@
                  }
              }
          }
-@@ -104,9 +108,11 @@
+@@ -104,9 +109,11 @@
              for (int j = -1; j <= 1; j++) {
                  float f1 = 0.0F;
                  IBlockState iblockstate = worldIn.getBlockState(blockpos.add(i, 0, j));
@@ -32,7 +40,7 @@
                          f1 = 3.0F;
                      }
                  }
-@@ -144,8 +150,8 @@
+@@ -144,8 +151,8 @@
  
      @Override
      public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
@@ -43,7 +51,7 @@
      }
  
      protected Item getSeed() {
-@@ -158,9 +164,26 @@
+@@ -158,9 +165,26 @@
  
      /** Spawns this Block's drops into the World as EntityItems. */
      @Override

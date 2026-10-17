@@ -69,7 +69,7 @@ public class ContinuousUseItemTest
         {
             if (ENABLED)
             {
-                ModelLoader.setCustomModelResourceLocation(TEST_ITEM, 0, new ModelResourceLocation("minecraft:stick", "inventory"));
+                ModelLoader.setCustomModelResourceLocation(TEST_ITEM, new ModelResourceLocation("minecraft:stick", "inventory"));
             }
         }
     }

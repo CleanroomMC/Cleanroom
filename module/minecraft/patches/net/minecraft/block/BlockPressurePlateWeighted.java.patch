@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockPressurePlateWeighted.java
++++ modified/net/minecraft/block/BlockPressurePlateWeighted.java
+@@ -12,6 +12,7 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPressurePlateWeighted extends BlockBasePressurePlate {
+     public static final PropertyInteger POWER = PropertyInteger.create("power", 0, 15);
+     private final int maxWeight;

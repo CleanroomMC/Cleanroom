@@ -1,5 +1,13 @@
 --- original/net/minecraft/client/renderer/tileentity/TileEntityShulkerBoxRenderer.java
 +++ modified/net/minecraft/client/renderer/tileentity/TileEntityShulkerBoxRenderer.java
+@@ -11,6 +11,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TileEntityShulkerBoxRenderer extends TileEntitySpecialRenderer<TileEntityShulkerBox> {
+     private final ModelShulker model;
+ 
 @@ -41,7 +42,7 @@
              GlStateManager.translate(0.0625F, 0.0625F, 0.0625F);
              GlStateManager.matrixMode(5888);

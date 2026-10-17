@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockNetherWart.java
 +++ modified/net/minecraft/block/BlockNetherWart.java
-@@ -45,24 +45,27 @@
+@@ -15,6 +15,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockNetherWart extends BlockBush {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
+     private static final AxisAlignedBB[] NETHER_WART_AABB = new AxisAlignedBB[]{
+@@ -45,24 +46,27 @@
  
      @Override
      public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
@@ -34,7 +42,7 @@
              int i = 1;
              if (state.getValue(AGE) >= 3) {
                  i = 2 + worldIn.rand.nextInt(3);
-@@ -107,6 +110,20 @@
+@@ -107,6 +111,20 @@
      }
  
      @Override

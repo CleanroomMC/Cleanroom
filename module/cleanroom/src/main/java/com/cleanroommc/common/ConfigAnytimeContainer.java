@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class ConfigAnytimeContainer extends DummyModContainer {
 
     public ConfigAnytimeContainer() {

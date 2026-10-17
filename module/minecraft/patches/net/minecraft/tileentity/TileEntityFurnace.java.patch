@@ -1,6 +1,14 @@
 --- original/net/minecraft/tileentity/TileEntityFurnace.java
 +++ modified/net/minecraft/tileentity/TileEntityFurnace.java
-@@ -146,9 +146,9 @@
+@@ -32,6 +32,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory {
+     private static final int[] SLOTS_TOP = new int[]{0};
+     private static final int[] SLOTS_BOTTOM = new int[]{2, 1};
+@@ -146,9 +147,9 @@
          super.readFromNBT(compound);
          this.furnaceItemStacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
          ItemStackHelper.loadAllItems(compound, this.furnaceItemStacks);
@@ -13,7 +21,7 @@
          this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks.get(1));
          if (compound.hasKey("CustomName", 8)) {
              this.furnaceCustomName = compound.getString("CustomName");
-@@ -158,9 +158,9 @@
+@@ -158,9 +159,9 @@
      @Override
      public NBTTagCompound writeToNBT(NBTTagCompound compound) {
          super.writeToNBT(compound);
@@ -26,7 +34,7 @@
          ItemStackHelper.saveAllItems(compound, this.furnaceItemStacks);
          if (this.hasCustomName()) {
              compound.setString("CustomName", this.furnaceCustomName);
-@@ -206,8 +206,8 @@
+@@ -206,8 +207,8 @@
                              Item item = itemstack.getItem();
                              itemstack.shrink(1);
                              if (itemstack.isEmpty()) {
@@ -37,9 +45,12 @@
                              }
                          }
                      }
-@@ -257,10 +257,10 @@
+@@ -255,12 +256,12 @@
+                 ItemStack itemstack1 = this.furnaceItemStacks.get(2);
+                 if (itemstack1.isEmpty()) {
                      return true;
-                 } else if (!itemstack1.isItemEqual(itemstack)) {
+-                } else if (!itemstack1.isItemEqual(itemstack)) {
++                } else if (!itemstack1.isItemEqual(itemstack) || !ItemStack.areItemStackTagsEqual(itemstack1, itemstack)) {
                      return false;
 +                } else if (itemstack1.getCount() + itemstack.getCount() <= this.getInventoryStackLimit() && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize()) { // Forge fix: make furnace respect stack sizes in furnace recipes
 +                    return true;
@@ -51,7 +62,7 @@
                  }
              }
          }
-@@ -275,7 +275,7 @@
+@@ -275,7 +276,7 @@
              if (itemstack2.isEmpty()) {
                  this.furnaceItemStacks.set(2, itemstack1.copy());
              } else if (itemstack2.getItem() == itemstack1.getItem()) {
@@ -60,7 +71,7 @@
              }
  
              if (itemstack.getItem() == Item.getItemFromBlock(Blocks.SPONGE)
-@@ -294,6 +294,8 @@
+@@ -294,6 +295,8 @@
          if (stack.isEmpty()) {
              return 0;
          } else {
@@ -69,7 +80,7 @@
              Item item = stack.getItem();
              if (item == Item.getItemFromBlock(Blocks.WOODEN_SLAB)) {
                  return 150;
-@@ -457,4 +459,22 @@
+@@ -457,4 +460,22 @@
      public void clear() {
          this.furnaceItemStacks.clear();
      }

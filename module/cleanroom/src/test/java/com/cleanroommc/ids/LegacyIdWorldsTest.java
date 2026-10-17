@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.registry.MinecraftTestHarness;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ForgeTestRunner.Isolated
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class LegacyIdWorldsTest {
 
     @BeforeAll

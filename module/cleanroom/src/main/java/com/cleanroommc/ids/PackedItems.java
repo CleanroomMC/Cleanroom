@@ -10,22 +10,32 @@
 
 package com.cleanroommc.ids;
 
+import com.cleanroommc.component.PatchedDataComponentMap;
+
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-/*
- * RecipeItemHelper packs (item id, damage) into one int as id << 16 | damage & 0xFFFF. That collides once item
- * ids pass 65535, overflows into the negative sign bit at item id 32768, and truncates damage past 65535. Pairs
- * that fit the positive 31-bit vanilla layout (0 <= id < 32768 and 0 <= meta <= 65535) keep it verbatim; every
- * other pair gets a session-local negative key (Integer.MIN_VALUE | n) so positive and negative encodings never
- * overlap and 0 stays reserved for ItemStack.EMPTY.
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The recipe book's packed item ints ({@code RecipeItemHelper.pack/unpack}, {@code Ingredient.getValidItemStacksPacked}).
+ * These ints are only compared and counted inside one game session: no packet or save carries them.
+ * <p>
+ * Vanilla's {@code item id << 16 | meta} is an exact encoding while it fits in 31 bits (item id below 32768, meta
+ * below 65536) and the stack carries no non-legacy state component, costs nothing, and keeps the values mods may
+ * already compute, so it is used there. The sign bit is the only thing that decides it: it is not a limit on ids.
+ * Every other stack or pair is numbered exactly, the first time it is packed, as {@code Integer.MIN_VALUE | n}.
+ * Both ranges identify an item and state/meta exactly, with no collisions.
  */
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public final class PackedItems {
 
     private static final Object2IntOpenHashMap<Key> NUMBERS = new Object2IntOpenHashMap<>();
-    private static final java.util.List<Key> KEYS = new java.util.ArrayList<>();
+    private static final List<Key> KEYS = new ArrayList<>();
 
     static {
         NUMBERS.defaultReturnValue(-1);
@@ -39,7 +49,10 @@ public final class PackedItems {
         }
         Item item = stack.getItem();
         int meta = item.getHasSubtypes() ? stack.getMetadata() : 0;
-        return pack(item, meta);
+        if (stack.getComponents().asPatch().isEmpty()) {
+            return pack(item, meta);
+        }
+        return packKey(new Key(item, meta, stack.getComponents().copy()));
     }
 
     public static int pack(Item item, int meta) {
@@ -47,12 +60,12 @@ public final class PackedItems {
         if (id >= 0 && id < 32768 && meta >= 0 && meta <= 0xFFFF) {
             return id << 16 | meta;
         }
-        return packKey(new Key(item, meta));
+        return packKey(new Key(item, meta, null));
     }
 
     /* Negative-range key (Integer.MIN_VALUE | n) for OreDictionary entries past item id 65535 or damage 32766. */
     public static int oreKey(Item item, int meta) {
-        return packKey(new Key(item, meta));
+        return packKey(new Key(item, meta, null));
     }
 
     public static void clear() {
@@ -86,9 +99,16 @@ public final class PackedItems {
             int n = packed & Integer.MAX_VALUE;
             key = n < KEYS.size() ? KEYS.get(n) : null;
         }
-        return key == null ? ItemStack.EMPTY : new ItemStack(key.item(), 1, key.meta());
+        if (key == null) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack stack = new ItemStack(key.item(), 1, key.meta());
+        if (key.components() != null) {
+            stack.getComponents().restorePatch(key.components().asPatch());
+        }
+        return stack;
     }
 
-    private record Key(Item item, int meta) { }
+    private record Key(Item item, int meta, @Nullable PatchedDataComponentMap components) { }
 
 }

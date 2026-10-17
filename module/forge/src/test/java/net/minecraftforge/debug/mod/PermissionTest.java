@@ -41,6 +41,7 @@ import net.minecraftforge.server.permission.context.BlockPosContext;
 import net.minecraftforge.server.permission.context.ContextKey;
 
 @Mod(modid = PermissionTest.MOD_ID, name = "PermissionTest", version = "1.0.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class PermissionTest
 {
     public static final String MOD_ID = "permission_test";

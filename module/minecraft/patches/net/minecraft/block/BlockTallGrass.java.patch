@@ -1,15 +1,16 @@
 --- original/net/minecraft/block/BlockTallGrass.java
 +++ modified/net/minecraft/block/BlockTallGrass.java
-@@ -21,7 +21,7 @@
+@@ -21,7 +21,8 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
  
 -public class BlockTallGrass extends BlockBush implements IGrowable {
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraftforge.common.IShearable {
      public static final PropertyEnum<BlockTallGrass.EnumType> TYPE = PropertyEnum.create("type", BlockTallGrass.EnumType.class);
      protected static final AxisAlignedBB TALL_GRASS_AABB = new AxisAlignedBB(0.099999994F, 0.0, 0.099999994F, 0.9F, 0.8F, 0.9F);
  
-@@ -38,7 +38,7 @@
+@@ -38,7 +39,7 @@
  
      @Override
      public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
@@ -18,7 +19,7 @@
      }
  
      /** Whether this Block can be replaced directly by other blocks (true for e.g. tall grass) */
-@@ -50,7 +50,7 @@
+@@ -50,7 +51,7 @@
      /** Get the Item that this Block should drop when harvested. */
      @Override
      public Item getItemDropped(IBlockState state, Random rand, int fortune) {
@@ -27,7 +28,23 @@
      }
  
      /** Get the quantity dropped based on the given fortune level */
-@@ -173,4 +173,21 @@
+@@ -155,11 +156,11 @@
+         }
+ 
+         public static BlockTallGrass.EnumType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockTallGrass.EnumType t : values()) { if (t.getMeta() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override
+@@ -173,4 +174,21 @@
              }
          }
      }

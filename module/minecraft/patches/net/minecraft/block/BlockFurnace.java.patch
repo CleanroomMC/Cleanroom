@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockFurnace.java
++++ modified/net/minecraft/block/BlockFurnace.java
+@@ -28,6 +28,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockFurnace extends BlockContainer {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     private final boolean isBurning;

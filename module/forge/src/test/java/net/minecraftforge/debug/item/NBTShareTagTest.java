@@ -69,7 +69,7 @@ public class NBTShareTagTest
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent event)
         {
-            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, 0, new ModelResourceLocation(itemName, "inventory"));
+            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, new ModelResourceLocation(itemName, "inventory"));
         }
     }
 

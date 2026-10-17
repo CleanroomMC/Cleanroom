@@ -84,7 +84,7 @@
      }
  
      /** returns true if a sheeps wool has been sheared */
-@@ -340,7 +347,24 @@
+@@ -340,21 +347,38 @@
          return livingdata;
      }
  
@@ -101,12 +101,36 @@
 +
 +        java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
 +        for (int j = 0; j < i; ++j)
-+            ret.add(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, this.getFleeceColor().getMetadata()));
++            ret.add(((net.minecraft.item.ItemBlock) Item.getItemFromBlock(Blocks.WOOL)).stackFor(Blocks.WOOL.getDefaultState().withProperty(net.minecraft.block.BlockColored.COLOR, this.getFleeceColor())));
 +
 +        this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
 +        return ret;
 +    }
 +
      private EnumDyeColor getDyeColorMixFromParents(EntityAnimal father, EntityAnimal mother) {
-         int i = ((EntitySheep)father).getFleeceColor().getDyeDamage();
-         int j = ((EntitySheep)mother).getFleeceColor().getDyeDamage();
+-        int i = ((EntitySheep)father).getFleeceColor().getDyeDamage();
+-        int j = ((EntitySheep)mother).getFleeceColor().getDyeDamage();
+-        this.inventoryCrafting.getStackInSlot(0).setItemDamage(i);
+-        this.inventoryCrafting.getStackInSlot(1).setItemDamage(j);
++        EnumDyeColor fatherColor = ((EntitySheep)father).getFleeceColor();
++        EnumDyeColor motherColor = ((EntitySheep)mother).getFleeceColor();
++        ItemStack slot0 = this.inventoryCrafting.getStackInSlot(0);
++        ItemStack slot1 = this.inventoryCrafting.getStackInSlot(1);
++        slot0.setItemDamage(fatherColor.getDyeDamage());
++        slot0.setItemState(Items.DYE.getDefaultItemState().withProperty(net.minecraft.item.ItemDye.COLOR, fatherColor));
++        slot1.setItemDamage(motherColor.getDyeDamage());
++        slot1.setItemState(Items.DYE.getDefaultItemState().withProperty(net.minecraft.item.ItemDye.COLOR, motherColor));
+         ItemStack itemstack = CraftingManager.findMatchingResult(this.inventoryCrafting, ((EntitySheep)father).world);
+-        int k;
+         if (itemstack.getItem() == Items.DYE) {
+-            k = itemstack.getMetadata();
+-        } else {
+-            k = this.world.rand.nextBoolean() ? i : j;
++            return itemstack.getItemState().getValue(net.minecraft.item.ItemDye.COLOR);
+         }
+-
+-        return EnumDyeColor.byDyeDamage(k);
++        return this.world.rand.nextBoolean() ? fatherColor : motherColor;
+     }
+ 
+     @Override

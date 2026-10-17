@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockBed.java
 +++ modified/net/minecraft/block/BlockBed.java
-@@ -88,7 +88,9 @@
+@@ -35,6 +35,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockBed extends BlockHorizontal implements ITileEntityProvider {
+     public static final PropertyEnum<BlockBed.EnumPartType> PART = PropertyEnum.create("part", BlockBed.EnumPartType.class);
+     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
+@@ -88,7 +89,9 @@
              }
          }
  

@@ -61,7 +61,7 @@ public class MendingRepairTest
         public static void registerModels(ModelRegistryEvent event)
         {
             if (!ENABLED) return;
-            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, 0, new ModelResourceLocation("minecraft:blaze_rod", "inventory"));
+            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, new ModelResourceLocation("minecraft:blaze_rod", "inventory"));
         }
     }
 
@@ -81,7 +81,7 @@ public class MendingRepairTest
             {
                 ItemStack stack = new ItemStack(this);
                 stack.addEnchantment(Enchantments.MENDING, 1);
-                stack.setItemDamage(stack.getMaxDamage());
+                stack.setDamageValue(stack.getMaxDamage());
                 items.add(stack);
             }
         }

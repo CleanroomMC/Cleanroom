@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/renderer/entity/layers/LayerSnowmanHead.java
++++ modified/net/minecraft/client/renderer/entity/layers/LayerSnowmanHead.java
+@@ -11,6 +11,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class LayerSnowmanHead implements LayerRenderer<EntitySnowman> {
+     private final RenderSnowMan snowManRenderer;
+ 

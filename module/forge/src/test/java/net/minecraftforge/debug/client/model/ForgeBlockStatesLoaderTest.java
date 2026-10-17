@@ -42,6 +42,7 @@ import java.util.Map.Entry;
 
 @Mod(modid = ForgeBlockStatesLoaderTest.MODID, name = "ForgeBlockStatesLoader", version = "1.0", acceptableRemoteVersions = "*")
 @Mod.EventBusSubscriber
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class ForgeBlockStatesLoaderTest
 {
     public static final String MODID = "forgeblockstatesloader";

@@ -42,6 +42,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid = RecipeMatchingTest.MODID, name = "Recipe test mod", version = "1.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class RecipeMatchingTest
 {
     public static final String MODID = "recipetest";
@@ -117,7 +118,7 @@ public class RecipeMatchingTest
         public void registerItem(RegistryEvent.Register<Item> event)
         {
             super.registerItem(event);
-            ModelLoader.setCustomModelResourceLocation(TOOL, 0, new ModelResourceLocation("minecraft:stick#inventory"));
+            ModelLoader.setCustomModelResourceLocation(TOOL, new ModelResourceLocation("minecraft:stick#inventory"));
         }
     }
 }

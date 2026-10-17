@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockShulkerBox.java
++++ modified/net/minecraft/block/BlockShulkerBox.java
+@@ -40,6 +40,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockShulkerBox extends BlockContainer {
+     public static final PropertyEnum<EnumFacing> FACING = PropertyDirection.create("facing");
+     private final EnumDyeColor color;

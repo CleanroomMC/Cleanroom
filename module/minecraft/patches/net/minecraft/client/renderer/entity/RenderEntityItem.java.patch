@@ -1,6 +1,14 @@
 --- original/net/minecraft/client/renderer/entity/RenderEntityItem.java
 +++ modified/net/minecraft/client/renderer/entity/RenderEntityItem.java
-@@ -37,7 +37,7 @@
+@@ -16,6 +16,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class RenderEntityItem extends Render<EntityItem> {
+     private final RenderItem itemRenderer;
+     private final Random random = new Random();
+@@ -37,7 +38,7 @@
          boolean flag = p_177077_9_.isGui3d();
          int i = this.getModelCount(itemstack);
          float f = 0.25F;
@@ -9,7 +17,7 @@
          float f2 = p_177077_9_.getItemCameraTransforms().getTransform(ItemCameraTransforms.TransformType.GROUND).scale.y;
          GlStateManager.translate((float)p_177077_2_, (float)p_177077_4_ + f1 + 0.25F * f2, (float)p_177077_6_);
          if (flag || this.renderManager.options != null) {
-@@ -88,14 +88,11 @@
+@@ -88,14 +89,11 @@
          GlStateManager.pushMatrix();
          IBakedModel ibakedmodel = this.itemRenderer.getItemModelWithOverrides(itemstack, entity.world, null);
          int j = this.transformModelCount(entity, x, y, z, partialTicks, ibakedmodel);
@@ -27,7 +35,7 @@
              GlStateManager.translate(f3, f4, f5);
          }
  
-@@ -111,11 +108,11 @@
+@@ -111,11 +109,11 @@
                      float f7 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                      float f9 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                      float f6 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
@@ -42,7 +50,7 @@
                  GlStateManager.popMatrix();
              } else {
                  GlStateManager.pushMatrix();
-@@ -125,10 +122,10 @@
+@@ -125,10 +123,10 @@
                      GlStateManager.translate(f8, f10, 0.0F);
                  }
  
@@ -56,7 +64,7 @@
              }
          }
  
-@@ -152,4 +149,23 @@
+@@ -152,4 +150,23 @@
      protected ResourceLocation getEntityTexture(EntityItem entity) {
          return TextureMap.LOCATION_BLOCKS_TEXTURE;
      }

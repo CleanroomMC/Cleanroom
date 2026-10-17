@@ -1,0 +1,71 @@
+--- original/net/minecraft/item/ItemAppleGold.java
++++ modified/net/minecraft/item/ItemAppleGold.java
+@@ -9,12 +9,31 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemAppleGold extends ItemFood {
++    public static final net.minecraft.block.properties.PropertyBool ENCHANTED = net.minecraft.block.properties.PropertyBool.create("enchanted");
++
+     public ItemAppleGold(int amount, float saturation, boolean isWolfFood) {
+         super(amount, saturation, isWolfFood);
+         this.setHasSubtypes(true);
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(ENCHANTED, Boolean.FALSE));
+     }
+ 
++    @Override
++    protected com.cleanroommc.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.component.ItemStateContainer(this, ENCHANTED);
++    }
++
++    @Override
++    public com.cleanroommc.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(ENCHANTED, Boolean.valueOf(meta > 0));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.component.IItemState state) {
++        return state.getValue(ENCHANTED).booleanValue() ? 1 : 0;
++    }
++
+     /**
+      * Returns true if this item has an enchantment glint. By default, this returns <code>stack.isItemEnchanted()</code>, but other items can override it (for instance, written books always return true).
+      *
+@@ -23,19 +42,19 @@
+     @SideOnly(Side.CLIENT)
+     @Override
+     public boolean hasEffect(ItemStack stack) {
+-        return super.hasEffect(stack) || stack.getMetadata() > 0;
++        return super.hasEffect(stack) || stack.getItemState().getValue(ENCHANTED).booleanValue();
+     }
+ 
+     /** Return an item rarity from EnumRarity */
+     @Override
+     public EnumRarity getRarity(ItemStack stack) {
+-        return stack.getMetadata() == 0 ? EnumRarity.RARE : EnumRarity.EPIC;
++        return !stack.getItemState().getValue(ENCHANTED).booleanValue() ? EnumRarity.RARE : EnumRarity.EPIC;
+     }
+ 
+     @Override
+     protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+         if (!worldIn.isRemote) {
+-            if (stack.getMetadata() > 0) {
++            if (stack.getItemState().getValue(ENCHANTED).booleanValue()) {
+                 player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 400, 1));
+                 player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 6000, 0));
+                 player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 6000, 0));
+@@ -51,8 +70,11 @@
+     @Override
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+         if (this.isInCreativeTab(tab)) {
+-            items.add(new ItemStack(this));
+-            items.add(new ItemStack(this, 1, 1));
++            for (com.cleanroommc.component.IItemState state : this.getItemState().getValidStates()) {
++                ItemStack stack = new ItemStack(this, 1, this.getMetaFromItemState(state));
++                stack.setItemState(state);
++                items.add(stack);
++            }
+         }
+     }
+ }

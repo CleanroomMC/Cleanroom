@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRedstoneComparator.java
 +++ modified/net/minecraft/block/BlockRedstoneComparator.java
-@@ -341,7 +341,21 @@
+@@ -32,6 +32,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITileEntityProvider {
+     public static final PropertyBool POWERED = PropertyBool.create("powered");
+     public static final PropertyEnum<BlockRedstoneComparator.Mode> MODE = PropertyEnum.create("mode", BlockRedstoneComparator.Mode.class);
+@@ -341,7 +342,21 @@
              .withProperty(POWERED, false)
              .withProperty(MODE, BlockRedstoneComparator.Mode.COMPARE);
      }

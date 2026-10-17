@@ -1,15 +1,16 @@
 --- original/net/minecraft/block/BlockCactus.java
 +++ modified/net/minecraft/block/BlockCactus.java
-@@ -19,7 +19,7 @@
+@@ -19,7 +19,8 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class BlockCactus extends Block {
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public class BlockCactus extends Block implements net.minecraftforge.common.IPlantable {
      public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
      protected static final AxisAlignedBB CACTUS_COLLISION_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0625, 0.9375, 0.9375, 0.9375);
      protected static final AxisAlignedBB CACTUS_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0625, 0.9375, 1.0, 0.9375);
-@@ -33,6 +33,7 @@
+@@ -33,6 +34,7 @@
  
      @Override
      public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
@@ -17,7 +18,7 @@
          BlockPos blockpos = pos.up();
          if (worldIn.isAirBlock(blockpos)) {
              int i = 1;
-@@ -43,6 +44,8 @@
+@@ -43,6 +45,8 @@
  
              if (i < 3) {
                  int j = state.getValue(AGE);
@@ -26,7 +27,7 @@
                  if (j == 15) {
                      worldIn.setBlockState(blockpos, this.getDefaultState());
                      IBlockState iblockstate = state.withProperty(AGE, 0);
-@@ -51,6 +54,8 @@
+@@ -51,6 +55,8 @@
                  } else {
                      worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
                  }
@@ -35,7 +36,7 @@
              }
          }
      }
-@@ -108,9 +113,8 @@
+@@ -108,9 +114,8 @@
              }
          }
  
@@ -47,7 +48,7 @@
      }
  
      /** Called When an Entity Collided with the Block */
-@@ -139,6 +143,16 @@
+@@ -139,6 +144,16 @@
      }
  
      @Override

@@ -1,16 +1,39 @@
 --- original/net/minecraft/item/crafting/RecipesMapCloning.java
 +++ modified/net/minecraft/item/crafting/RecipesMapCloning.java
-@@ -6,8 +6,7 @@
+@@ -6,8 +6,8 @@
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
  
 -public class RecipesMapCloning implements IRecipe {
 -    /** Used to check if a recipe matches current crafting inventory */
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 +public class RecipesMapCloning extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
      @Override
      public boolean matches(InventoryCrafting inv, World worldIn) {
          int i = 0;
-@@ -88,9 +87,7 @@
+@@ -61,7 +61,9 @@
+         }
+ 
+         if (!itemstack.isEmpty() && i >= 1) {
+-            ItemStack itemstack2 = new ItemStack(Items.FILLED_MAP, i + 1, itemstack.getMetadata());
++            int mapId = net.minecraft.item.ItemMap.getMapId(itemstack);
++            ItemStack itemstack2 = new ItemStack(Items.FILLED_MAP, i + 1, mapId);
++            net.minecraft.item.ItemMap.setMapId(itemstack2, mapId);
+             if (itemstack.hasDisplayName()) {
+                 itemstack2.setStackDisplayName(itemstack.getDisplayName());
+             }
+@@ -69,6 +71,10 @@
+             if (itemstack.hasTagCompound()) {
+                 itemstack2.setTagCompound(itemstack.getTagCompound());
+             }
++            if (!itemstack.getComponents().asPatch().isEmpty()) {
++                itemstack2.getComponents().restorePatch(itemstack.getComponents().asPatch());
++                net.minecraft.item.ItemMap.setMapId(itemstack2, mapId);
++            }
+ 
+             return itemstack2;
+         } else {
+@@ -88,9 +94,7 @@
  
          for (int i = 0; i < nonnulllist.size(); i++) {
              ItemStack itemstack = inv.getStackInSlot(i);
@@ -21,7 +44,7 @@
          }
  
          return nonnulllist;
-@@ -102,7 +99,6 @@
+@@ -102,7 +106,6 @@
          return true;
      }
  

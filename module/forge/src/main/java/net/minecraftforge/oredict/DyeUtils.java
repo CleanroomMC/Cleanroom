@@ -73,7 +73,7 @@ public class DyeUtils
         if (stack.isEmpty()) return OptionalInt.empty();
         if (stack.getItem() == net.minecraft.init.Items.DYE)
         {
-            return OptionalInt.of(EnumDyeColor.byDyeDamage(stack.getMetadata()).getMetadata());
+            return OptionalInt.of(stack.getItemState().getValue(net.minecraft.item.ItemDye.COLOR).getMetadata());
         }
         return Arrays.stream(OreDictionary.getOreIDs(stack))
                 .mapToObj(OreDictionary::getOreName)
@@ -103,7 +103,7 @@ public class DyeUtils
         if (stack.isEmpty()) return OptionalInt.empty();
         if (stack.getItem() == net.minecraft.init.Items.DYE)
         {
-            return OptionalInt.of(EnumDyeColor.byDyeDamage(stack.getMetadata()).getDyeDamage());
+            return OptionalInt.of(stack.getItemState().getValue(net.minecraft.item.ItemDye.COLOR).getDyeDamage());
         }
         final OptionalInt meta = metaFromStack(stack);
         return meta.isPresent() ? OptionalInt.of(EnumDyeColor.byMetadata(meta.getAsInt()).getDyeDamage()) : OptionalInt.empty();

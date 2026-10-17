@@ -1,15 +1,16 @@
 --- original/net/minecraft/tileentity/TileEntity.java
 +++ modified/net/minecraft/tileentity/TileEntity.java
-@@ -21,7 +21,7 @@
+@@ -21,7 +21,8 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
 -public abstract class TileEntity {
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 +public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound> {
      private static final Logger LOGGER = LogManager.getLogger();
      private static final RegistryNamespaced<ResourceLocation, Class<? extends TileEntity>> REGISTRY = new RegistryNamespaced<>();
      /** the instance of the world the tile entity is in. */
-@@ -41,6 +41,11 @@
+@@ -41,6 +42,11 @@
          return REGISTRY.getNameForObject(clazz);
      }
  
@@ -21,7 +22,7 @@
      /** Returns the worldObj for this tileEntity. */
      public World getWorld() {
          return this.world;
-@@ -58,6 +63,8 @@
+@@ -58,6 +64,8 @@
  
      public void readFromNBT(NBTTagCompound compound) {
          this.pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
@@ -30,7 +31,7 @@
      }
  
      public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-@@ -74,6 +81,8 @@
+@@ -74,6 +82,8 @@
          compound.setInteger("x", this.pos.getX());
          compound.setInteger("y", this.pos.getY());
          compound.setInteger("z", this.pos.getZ());
@@ -39,7 +40,7 @@
          return compound;
      }
  
-@@ -81,14 +90,17 @@
+@@ -81,14 +91,17 @@
      public static TileEntity create(World worldIn, NBTTagCompound compound) {
          TileEntity tileentity = null;
          String s = compound.getString("id");
@@ -59,7 +60,7 @@
          }
  
          if (tileentity != null) {
-@@ -97,18 +109,34 @@
+@@ -97,18 +110,38 @@
                  tileentity.readFromNBT(compound);
              } catch (Throwable throwable) {
                  LOGGER.error("Failed to load data for block entity {}", s, throwable);
@@ -92,10 +93,14 @@
 +        return this.world.getBlockState(this.pos);
 +    }
 +
++    /**
++     * @deprecated Cleanroom: use {@link #getBlockState()} instead of the 4-bit metadata view.
++     */
++    @Deprecated
      public int getBlockMetadata() {
          if (this.blockMetadata == -1) {
              IBlockState iblockstate = this.world.getBlockState(this.pos);
-@@ -121,8 +149,7 @@
+@@ -121,8 +154,7 @@
      /** For tile entities, ensures the chunk containing the tile entity is saved to disk later - the game won't think it hasn't changed and skip it. */
      public void markDirty() {
          if (this.world != null) {
@@ -105,7 +110,7 @@
              this.world.markChunkDirty(this.pos, this);
              if (this.getBlockType() != Blocks.AIR) {
                  this.world.updateComparatorOutputLevel(this.pos, this.getBlockType());
-@@ -130,7 +157,6 @@
+@@ -130,7 +162,6 @@
          }
      }
  
@@ -113,7 +118,7 @@
      public double getDistanceSq(double x, double y, double z) {
          double d0 = this.pos.getX() + 0.5 - x;
          double d1 = this.pos.getY() + 0.5 - y;
-@@ -212,7 +238,7 @@
+@@ -212,7 +243,7 @@
  
                          try {
                              return String.format(
@@ -122,7 +127,7 @@
                              );
                          } catch (Throwable throwable) {
                              return "ID #" + i;
-@@ -266,6 +292,177 @@
+@@ -266,6 +297,177 @@
      public void mirror(Mirror mirrorIn) {
      }
  

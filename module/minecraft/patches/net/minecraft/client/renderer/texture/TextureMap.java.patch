@@ -1,6 +1,14 @@
 --- original/net/minecraft/client/renderer/texture/TextureMap.java
 +++ modified/net/minecraft/client/renderer/texture/TextureMap.java
-@@ -41,6 +41,14 @@
+@@ -24,6 +24,7 @@
+ import org.apache.logging.log4j.Logger;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TextureMap extends AbstractTexture implements ITickableTextureObject {
+     private static final Logger LOGGER = LogManager.getLogger();
+     public static final ResourceLocation LOCATION_MISSING_TEXTURE = new ResourceLocation("missingno");
+@@ -41,6 +42,14 @@
      }
  
      public TextureMap(String basePathIn, @Nullable ITextureMapPopulator iconCreatorIn) {
@@ -15,7 +23,7 @@
          this.basePath = basePathIn;
          this.iconCreator = iconCreatorIn;
      }
-@@ -63,6 +71,7 @@
+@@ -63,6 +72,7 @@
  
      public void loadSprites(IResourceManager resourceManager, ITextureMapPopulator iconCreatorIn) {
          this.mapRegisteredSprites.clear();
@@ -23,7 +31,7 @@
          iconCreatorIn.registerSprites(this);
          this.initMissingImage();
          this.deleteGlTexture();
-@@ -76,23 +85,58 @@
+@@ -76,23 +86,58 @@
          this.listAnimatedSprites.clear();
          int j = Integer.MAX_VALUE;
          int k = 1 << this.mipmapLevels;
@@ -90,7 +98,7 @@
              } finally {
                  IOUtils.closeQuietly(iresource);
              }
-@@ -100,22 +144,33 @@
+@@ -100,22 +145,33 @@
              j = Math.min(j, Math.min(textureatlassprite.getIconWidth(), textureatlassprite.getIconHeight()));
              int j1 = Math.min(Integer.lowestOneBit(textureatlassprite.getIconWidth()), Integer.lowestOneBit(textureatlassprite.getIconHeight()));
              if (j1 < k) {
@@ -126,7 +134,7 @@
          if (i1 < this.mipmapLevels) {
              LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.basePath, this.mipmapLevels, i1, l);
              this.mipmapLevels = i1;
-@@ -123,19 +178,25 @@
+@@ -123,19 +179,25 @@
  
          this.missingImage.generateMipmaps(this.mipmapLevels);
          stitcher.addSprite(this.missingImage);
@@ -153,7 +161,7 @@
                  String s = textureatlassprite1.getIconName();
                  map.remove(s);
                  this.mapUploadedSprites.put(s, textureatlassprite1);
-@@ -167,23 +228,27 @@
+@@ -167,23 +229,27 @@
          for (TextureAtlasSprite textureatlassprite2 : map.values()) {
              textureatlassprite2.copyFrom(this.missingImage);
          }
@@ -192,7 +200,7 @@
          }
  
          try {
-@@ -239,7 +304,7 @@
+@@ -239,7 +305,7 @@
              throw new IllegalArgumentException("Location cannot be null!");
          }
  
@@ -201,7 +209,7 @@
          if (textureatlassprite == null) {
              textureatlassprite = TextureAtlasSprite.makeAtlasSprite(location);
              this.mapRegisteredSprites.put(location.toString(), textureatlassprite);
-@@ -260,4 +325,47 @@
+@@ -260,4 +326,47 @@
      public TextureAtlasSprite getMissingSprite() {
          return this.missingImage;
      }

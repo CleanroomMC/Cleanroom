@@ -1,6 +1,14 @@
 --- original/net/minecraft/entity/item/EntityMinecartFurnace.java
 +++ modified/net/minecraft/entity/item/EntityMinecartFurnace.java
-@@ -125,6 +125,9 @@
+@@ -19,6 +19,7 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityMinecartFurnace extends EntityMinecart {
+     private static final DataParameter<Boolean> POWERED = EntityDataManager.createKey(EntityMinecartFurnace.class, DataSerializers.BOOLEAN);
+     private int fuel;
+@@ -125,6 +126,9 @@
      @Override
      public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
          ItemStack itemstack = player.getHeldItem(hand);

@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockFire.java
 +++ modified/net/minecraft/block/BlockFire.java
-@@ -38,14 +38,14 @@
+@@ -25,6 +25,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockFire extends Block {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
+     public static final PropertyBool NORTH = PropertyBool.create("north");
+@@ -38,14 +39,14 @@
      /** Get the actual Block state of this Block at the given position. This applies properties not visible in the metadata, such as fence connections. */
      @Override
      public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
@@ -23,7 +31,7 @@
      }
  
      protected BlockFire() {
-@@ -104,6 +104,7 @@
+@@ -104,6 +105,7 @@
      }
  
      public void setFireInfo(Block blockIn, int encouragement, int flammability) {
@@ -31,7 +39,7 @@
          this.encouragements.put(blockIn, encouragement);
          this.flammabilities.put(blockIn, flammability);
      }
-@@ -145,15 +146,13 @@
+@@ -145,15 +147,13 @@
      @Override
      public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
          if (worldIn.getGameRules().getBoolean("doFireTick")) {
@@ -49,7 +57,7 @@
  
              int i = state.getValue(AGE);
              if (!flag && worldIn.isRaining() && this.canDie(worldIn, pos) && rand.nextFloat() < 0.2F + i * 0.03F) {
-@@ -167,14 +166,14 @@
+@@ -167,14 +167,14 @@
                  worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn) + rand.nextInt(10));
                  if (!flag) {
                      if (!this.canNeighborCatchFire(worldIn, pos)) {
@@ -66,7 +74,7 @@
                          worldIn.setBlockToAir(pos);
                          return;
                      }
-@@ -186,12 +185,12 @@
+@@ -186,12 +186,12 @@
                      j = -50;
                  }
  
@@ -85,7 +93,7 @@
  
                  for (int k = -1; k <= 1; k++) {
                      for (int l = -1; l <= 1; l++) {
-@@ -240,18 +239,26 @@
+@@ -240,18 +240,26 @@
          return false;
      }
  
@@ -113,7 +121,7 @@
          if (random.nextInt(chance) < i) {
              IBlockState iblockstate = worldIn.getBlockState(pos);
              if (random.nextInt(age + 10) < 5 && !worldIn.isRainingAt(pos)) {
-@@ -273,7 +280,7 @@
+@@ -273,7 +281,7 @@
  
      private boolean canNeighborCatchFire(World worldIn, BlockPos pos) {
          for (EnumFacing enumfacing : EnumFacing.values()) {
@@ -122,7 +130,7 @@
                  return true;
              }
          }
-@@ -289,7 +296,7 @@
+@@ -289,7 +297,7 @@
          int i = 0;
  
          for (EnumFacing enumfacing : EnumFacing.values()) {
@@ -131,7 +139,7 @@
          }
  
          return i;
-@@ -301,9 +308,9 @@
+@@ -301,9 +309,9 @@
          return false;
      }
  
@@ -143,7 +151,7 @@
      }
  
      /** Checks if this block can be placed exactly at the given position. */
-@@ -349,9 +356,9 @@
+@@ -349,9 +357,9 @@
              );
          }
  
@@ -156,7 +164,7 @@
                  for (int j = 0; j < 2; j++) {
                      double d3 = pos.getX() + rand.nextDouble() * 0.1F;
                      double d8 = pos.getY() + rand.nextDouble();
-@@ -360,7 +367,7 @@
+@@ -360,7 +368,7 @@
                  }
              }
  
@@ -165,7 +173,7 @@
                  for (int k = 0; k < 2; k++) {
                      double d4 = pos.getX() + 1 - rand.nextDouble() * 0.1F;
                      double d9 = pos.getY() + rand.nextDouble();
-@@ -369,7 +376,7 @@
+@@ -369,7 +377,7 @@
                  }
              }
  
@@ -174,7 +182,7 @@
                  for (int l = 0; l < 2; l++) {
                      double d5 = pos.getX() + rand.nextDouble();
                      double d10 = pos.getY() + rand.nextDouble();
-@@ -378,7 +385,7 @@
+@@ -378,7 +386,7 @@
                  }
              }
  
@@ -183,7 +191,7 @@
                  for (int i1 = 0; i1 < 2; i1++) {
                      double d6 = pos.getX() + rand.nextDouble();
                      double d11 = pos.getY() + rand.nextDouble();
-@@ -387,7 +394,7 @@
+@@ -387,7 +395,7 @@
                  }
              }
  
@@ -192,7 +200,7 @@
                  for (int j1 = 0; j1 < 2; j1++) {
                      double d7 = pos.getX() + rand.nextDouble();
                      double d12 = pos.getY() + 1 - rand.nextDouble() * 0.1F;
-@@ -438,14 +445,20 @@
+@@ -438,14 +446,20 @@
          return new BlockStateContainer(this, AGE, NORTH, EAST, SOUTH, WEST, UPPER);
      }
  

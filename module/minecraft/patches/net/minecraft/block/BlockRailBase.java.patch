@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRailBase.java
 +++ modified/net/minecraft/block/BlockRailBase.java
-@@ -31,7 +31,7 @@
+@@ -20,6 +20,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public abstract class BlockRailBase extends Block {
+     protected static final AxisAlignedBB FLAT_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0);
+     protected static final AxisAlignedBB ASCENDING_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
+@@ -31,7 +32,7 @@
  
      public static boolean isRailBlock(IBlockState state) {
          Block block = state.getBlock();
@@ -9,7 +17,7 @@
      }
  
      protected BlockRailBase(boolean isPowered) {
-@@ -60,8 +60,8 @@
+@@ -60,8 +61,8 @@
      @Override
      public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
          BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = state.getBlock() == this
@@ -20,7 +28,7 @@
          return blockrailbase$enumraildirection != null && blockrailbase$enumraildirection.isAscending() ? ASCENDING_AABB : FLAT_AABB;
      }
  
-@@ -87,7 +87,7 @@
+@@ -87,7 +88,7 @@
      /** Checks if this block can be placed exactly at the given position. */
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
@@ -29,7 +37,7 @@
      }
  
      /** Called after the block is set in the Chunk data, but before the Tile Entity is set */
-@@ -105,27 +105,25 @@
+@@ -105,27 +106,25 @@
      @Override
      public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
          if (!worldIn.isRemote) {
@@ -66,7 +74,7 @@
                  this.dropBlockAsItem(worldIn, pos, state, 0);
                  worldIn.setBlockToAir(pos);
              } else {
-@@ -160,7 +158,8 @@
+@@ -160,7 +159,8 @@
      @Override
      public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
          super.breakBlock(worldIn, pos, state);
@@ -76,7 +84,7 @@
              worldIn.notifyNeighborsOfStateChange(pos.up(), this, false);
          }
  
-@@ -170,8 +169,94 @@
+@@ -170,8 +170,94 @@
          }
      }
  
@@ -171,7 +179,7 @@
      public enum EnumRailDirection implements IStringSerializable {
          NORTH_SOUTH(0, "north_south"),
          EAST_WEST(1, "east_west"),
-@@ -233,14 +318,16 @@
+@@ -233,14 +319,16 @@
          private IBlockState state;
          private final boolean isPowered;
          private final List<BlockPos> connectedRails = Lists.newArrayList();
@@ -190,7 +198,7 @@
              this.updateConnectedRails(blockrailbase$enumraildirection);
          }
  
-@@ -398,7 +485,7 @@
+@@ -398,7 +486,7 @@
                  }
              }
  
@@ -199,7 +207,7 @@
                  if (BlockRailBase.isRailBlock(this.world, blockpos.up())) {
                      blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_NORTH;
                  }
-@@ -408,7 +495,7 @@
+@@ -408,7 +496,7 @@
                  }
              }
  
@@ -208,7 +216,7 @@
                  if (BlockRailBase.isRailBlock(this.world, blockpos3.up())) {
                      blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_EAST;
                  }
-@@ -518,7 +605,7 @@
+@@ -518,7 +606,7 @@
                  }
              }
  
@@ -217,7 +225,7 @@
                  if (BlockRailBase.isRailBlock(this.world, blockpos.up())) {
                      blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_NORTH;
                  }
-@@ -528,7 +615,7 @@
+@@ -528,7 +616,7 @@
                  }
              }
  

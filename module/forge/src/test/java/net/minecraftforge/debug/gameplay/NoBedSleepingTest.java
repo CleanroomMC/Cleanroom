@@ -78,7 +78,7 @@ public class NoBedSleepingTest
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent event)
         {
-            ModelLoader.setCustomModelResourceLocation(SLEEPING_PILL, 0, new ModelResourceLocation(SLEEPING_PILL.getRegistryName(), "inventory"));
+            ModelLoader.setCustomModelResourceLocation(SLEEPING_PILL, new ModelResourceLocation(SLEEPING_PILL.getRegistryName(), "inventory"));
         }
     }
 

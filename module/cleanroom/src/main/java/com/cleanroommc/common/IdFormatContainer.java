@@ -41,6 +41,7 @@ import java.util.Map;
  * Worlds record the format in level.dat. A world saved before it (or by an older format) is backed up with Forge's
  * world backup before it is opened, because chunks are rewritten in the new format as they are saved.
  */
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class IdFormatContainer extends DummyModContainer implements WorldAccessContainer {
 
     public static final String MOD_ID = "cleanroom_ids";
@@ -108,6 +109,7 @@ public class IdFormatContainer extends DummyModContainer implements WorldAccessC
     public void construct(FMLConstructionEvent event) {
         NetworkRegistry.INSTANCE.register(this, this.getClass(), null, event.getASMHarvestedData());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(com.cleanroommc.ids.MissingItem.class); // missing-content retention (its Register<Item> handler sets MissingItem.INSTANCE)
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(com.cleanroommc.component.DataComponents.class); // builtin data component types register in cleanroom:data_component_types
     }
 
     @Subscribe

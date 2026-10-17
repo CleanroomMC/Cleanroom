@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockLiquid.java
 +++ modified/net/minecraft/block/BlockLiquid.java
-@@ -353,13 +353,13 @@
+@@ -26,6 +26,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class BlockLiquid extends Block {
+     public static final PropertyInteger LEVEL = PropertyInteger.create("level", 0, 15);
+ 
+@@ -353,13 +354,13 @@
              if (flag) {
                  Integer integer = state.getValue(LEVEL);
                  if (integer == 0) {
@@ -16,7 +24,7 @@
                      this.triggerMixEffects(worldIn, pos);
                      return true;
                  }
-@@ -444,7 +444,33 @@
+@@ -444,7 +445,33 @@
       * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
       */
      @Override

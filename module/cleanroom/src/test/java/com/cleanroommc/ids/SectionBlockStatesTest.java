@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /** The name format and section storage round-trip every vanilla block state. */
 @ForgeTestRunner.Isolated
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class SectionBlockStatesTest {
 
     @BeforeAll

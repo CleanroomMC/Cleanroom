@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockChest.java
 +++ modified/net/minecraft/block/BlockChest.java
-@@ -416,7 +416,7 @@
+@@ -33,6 +33,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockChest extends BlockContainer {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     protected static final AxisAlignedBB NORTH_CHEST_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0, 0.9375, 0.875, 0.9375);
+@@ -416,7 +417,7 @@
              BlockPos blockpos = pos.offset(enumfacing);
              Block block = worldIn.getBlockState(blockpos).getBlock();
              if (block == this) {
@@ -9,7 +17,7 @@
                      return null;
                  }
  
-@@ -476,7 +476,7 @@
+@@ -476,7 +477,7 @@
      }
  
      private boolean isBelowSolidBlock(World worldIn, BlockPos pos) {
@@ -18,7 +26,7 @@
      }
  
      private boolean isOcelotSittingOnChest(World worldIn, BlockPos pos) {
-@@ -569,4 +569,9 @@
+@@ -569,4 +570,9 @@
          BASIC,
          TRAP;
      }

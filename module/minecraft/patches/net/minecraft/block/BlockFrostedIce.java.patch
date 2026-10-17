@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockFrostedIce.java
++++ modified/net/minecraft/block/BlockFrostedIce.java
+@@ -10,6 +10,7 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockFrostedIce extends BlockIce {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
+ 

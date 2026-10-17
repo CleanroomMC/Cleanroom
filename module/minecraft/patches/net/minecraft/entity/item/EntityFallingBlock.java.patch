@@ -1,10 +1,26 @@
 --- original/net/minecraft/entity/item/EntityFallingBlock.java
 +++ modified/net/minecraft/entity/item/EntityFallingBlock.java
+@@ -32,8 +32,11 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class EntityFallingBlock extends Entity {
+     private IBlockState fallTile;
++    @Nullable
 +    private NBTTagCompound retainedBlockStateTag;
      public int fallTime;
      public boolean shouldDropItem = true;
      private boolean dontSetBlock;
-@@ -148,6 +151,8 @@
+@@ -141,13 +144,15 @@
+                     if (this.fallTime > 100 && !this.world.isRemote && (blockpos1.getY() < 1 || blockpos1.getY() > 256)
+                         || this.fallTime > 600) {
+                         if (this.shouldDropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
+-                            this.entityDropItem(new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
++                            net.minecraft.item.Item dropItem = net.minecraft.item.Item.getItemFromBlock(block); this.entityDropItem(dropItem instanceof net.minecraft.item.ItemBlock && ((net.minecraft.item.ItemBlock) dropItem).getBlock() == block ? ((net.minecraft.item.ItemBlock) dropItem).stackFor(this.fallTile) : new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
+                         }
+ 
+                         this.setDead();
                      }
                  } else {
                      IBlockState iblockstate = this.world.getBlockState(blockpos1);
@@ -32,6 +48,15 @@
                                      TileEntity tileentity = this.world.getTileEntity(blockpos1);
                                      if (tileentity != null) {
                                          NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
+@@ -186,7 +191,7 @@
+                                     }
+                                 }
+                             } else if (this.shouldDropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
+-                                this.entityDropItem(new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
++                                net.minecraft.item.Item dropItem = net.minecraft.item.Item.getItemFromBlock(block); this.entityDropItem(dropItem instanceof net.minecraft.item.ItemBlock && ((net.minecraft.item.ItemBlock) dropItem).getBlock() == block ? ((net.minecraft.item.ItemBlock) dropItem).stackFor(this.fallTile) : new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
+                             }
+                         } else if (block instanceof BlockFalling) {
+                             ((BlockFalling)block).onBroken(this.world, blockpos1);
 @@ -234,9 +239,18 @@
      @Override
      protected void writeEntityToNBT(NBTTagCompound compound) {

@@ -58,7 +58,7 @@ public class CustomRarityTest
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent event)
         {
-            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, 0, new ModelResourceLocation("minecraft:book#inventory"));
+            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, new ModelResourceLocation("minecraft:book#inventory"));
         }
     }
 

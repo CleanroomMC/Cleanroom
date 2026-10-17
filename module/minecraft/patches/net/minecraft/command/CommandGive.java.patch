@@ -1,0 +1,25 @@
+--- original/net/minecraft/command/CommandGive.java
++++ modified/net/minecraft/command/CommandGive.java
+@@ -14,6 +14,7 @@
+ import net.minecraft.util.SoundCategory;
+ import net.minecraft.util.math.BlockPos;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class CommandGive extends CommandBase {
+     /** Gets the name of the command */
+     @Override
+@@ -42,9 +43,12 @@
+ 
+         EntityPlayer entityplayer = getPlayer(server, sender, args[0]);
+         Item item = getItemByText(sender, args[1]);
+-        int i = args.length >= 3 ? parseInt(args[2], 1, item.getItemStackLimit()) : 1;
++        com.cleanroommc.component.DataComponentPredicate components = parseItemComponents(args[1]);
+         int j = args.length >= 4 ? parseInt(args[3]) : 0;
+-        ItemStack itemstack = new ItemStack(item, i, j);
++        ItemStack itemstack = new ItemStack(item, 1, j);
++        components.applyTo(itemstack);
++        int i = args.length >= 3 ? parseInt(args[2], 1, itemstack.getMaxStackSize()) : 1;
++        itemstack.setCount(i);
+         if (args.length >= 5) {
+             String s = buildString(args, 4);
+ 

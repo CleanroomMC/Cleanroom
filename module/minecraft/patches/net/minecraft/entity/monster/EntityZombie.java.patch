@@ -1,6 +1,14 @@
 --- original/net/minecraft/entity/monster/EntityZombie.java
 +++ modified/net/minecraft/entity/monster/EntityZombie.java
-@@ -100,7 +100,7 @@
+@@ -52,6 +52,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityZombie extends EntityMob {
+     /** The attribute which determines the chance that this mob will spawn reinforcements */
+     protected static final IAttribute SPAWN_REINFORCEMENTS_CHANCE = new RangedAttribute(null, "zombie.spawnReinforcements", 0.0, 0.0, 1.0)
+@@ -100,7 +101,7 @@
          this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
          this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
          this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0);
@@ -9,7 +17,18 @@
      }
  
      @Override
-@@ -220,28 +220,42 @@
+@@ -188,8 +189,8 @@
+                 ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                 if (!itemstack.isEmpty()) {
+                     if (itemstack.isItemStackDamageable()) {
+-                        itemstack.setItemDamage(itemstack.getItemDamage() + this.rand.nextInt(2));
+-                        if (itemstack.getItemDamage() >= itemstack.getMaxDamage()) {
++                        itemstack.setDamageValue(itemstack.getDamageValue() + this.rand.nextInt(2));
++                        if (itemstack.getDamageValue() >= itemstack.getMaxDamage()) {
+                             this.renderBrokenItemStack(itemstack);
+                             this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
+                         }
+@@ -220,28 +221,42 @@
                  entitylivingbase = (EntityLivingBase)source.getTrueSource();
              }
  
@@ -63,7 +82,7 @@
                              entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), null);
                              this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05F, 0));
                              entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05F, 0));
-@@ -406,7 +420,7 @@
+@@ -406,7 +421,7 @@
          float f = difficulty.getClampedAdditionalDifficulty();
          this.setCanPickUpLoot(this.rand.nextFloat() < 0.55F * f);
          if (livingdata == null) {

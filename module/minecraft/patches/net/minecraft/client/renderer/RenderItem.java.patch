@@ -1,6 +1,14 @@
 --- original/net/minecraft/client/renderer/RenderItem.java
 +++ modified/net/minecraft/client/renderer/RenderItem.java
-@@ -70,7 +70,7 @@
+@@ -58,6 +58,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class RenderItem implements IResourceManagerReloadListener {
+     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+     /** False when the renderer is rendering the item's effects into a GUI */
+@@ -70,7 +71,7 @@
  
      public RenderItem(TextureManager p_i46552_1_, ModelManager p_i46552_2_, ItemColors p_i46552_3_) {
          this.textureManager = p_i46552_1_;
@@ -9,7 +17,7 @@
          this.registerItems();
          this.itemColors = p_i46552_3_;
      }
-@@ -104,6 +104,10 @@
+@@ -104,6 +105,10 @@
      }
  
      private void renderModel(IBakedModel model, int color, ItemStack stack) {
@@ -20,7 +28,7 @@
          Tessellator tessellator = Tessellator.getInstance();
          BufferBuilder bufferbuilder = tessellator.getBuffer();
          bufferbuilder.begin(7, DefaultVertexFormats.ITEM);
-@@ -123,7 +127,7 @@
+@@ -123,7 +128,7 @@
              if (model.isBuiltInRenderer()) {
                  GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                  GlStateManager.enableRescaleNormal();
@@ -29,7 +37,7 @@
              } else {
                  this.renderModel(model, stack);
                  if (stack.hasEffect()) {
-@@ -191,7 +195,7 @@
+@@ -191,7 +196,7 @@
                  k |= -16777216;
              }
  
@@ -38,7 +46,7 @@
          }
      }
  
-@@ -209,15 +213,7 @@
+@@ -209,15 +214,7 @@
  
      public IBakedModel getItemModelWithOverrides(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entitylivingbaseIn) {
          IBakedModel ibakedmodel = this.itemModelMesher.getItemModel(stack);
@@ -55,7 +63,7 @@
      }
  
      public void renderItem(ItemStack stack, EntityLivingBase entitylivingbaseIn, ItemCameraTransforms.TransformType transform, boolean leftHanded) {
-@@ -242,11 +238,8 @@
+@@ -242,11 +239,8 @@
                  GlStateManager.DestFactor.ZERO
              );
              GlStateManager.pushMatrix();
@@ -69,7 +77,7 @@
  
              this.renderItem(stack, bakedmodel);
              GlStateManager.cullFace(GlStateManager.CullFace.BACK);
-@@ -278,7 +271,7 @@
+@@ -278,7 +272,7 @@
          GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          this.setupGuiTransform(x, y, bakedmodel.isGui3d());
@@ -78,7 +86,7 @@
          this.renderItem(stack, bakedmodel);
          GlStateManager.disableAlpha();
          GlStateManager.disableRescaleNormal();
-@@ -318,6 +311,7 @@
+@@ -318,6 +312,7 @@
                          return String.valueOf(p_184391_2_.getItem());
                      }
                  });
@@ -86,7 +94,7 @@
                  crashreportcategory.addDetail("Item Aux", new ICrashReportDetail<String>() {
                      public String call() throws Exception {
                          return String.valueOf(p_184391_2_.getMetadata());
-@@ -355,9 +349,12 @@
+@@ -355,9 +350,12 @@
                  fr.drawStringWithShadow(s, xPosition + 19 - 2 - fr.getStringWidth(s), yPosition + 6 + 3, 16777215);
                  GlStateManager.enableLighting();
                  GlStateManager.enableDepth();
@@ -100,7 +108,7 @@
                  GlStateManager.disableLighting();
                  GlStateManager.disableDepth();
                  GlStateManager.disableTexture2D();
-@@ -365,11 +362,10 @@
+@@ -365,11 +363,10 @@
                  GlStateManager.disableBlend();
                  Tessellator tessellator = Tessellator.getInstance();
                  BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -116,7 +124,7 @@
                  this.draw(bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
                  this.draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
                  GlStateManager.enableBlend();
-@@ -1058,6 +1054,7 @@
+@@ -1058,6 +1055,7 @@
          this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.LOAD.getModeId(), "structure_block");
          this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.CORNER.getModeId(), "structure_block");
          this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.DATA.getModeId(), "structure_block");

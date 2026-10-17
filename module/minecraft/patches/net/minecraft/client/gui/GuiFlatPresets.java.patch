@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/gui/GuiFlatPresets.java
++++ modified/net/minecraft/client/gui/GuiFlatPresets.java
+@@ -26,6 +26,7 @@
+ import org.lwjgl.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class GuiFlatPresets extends GuiScreen {
+     private static final List<GuiFlatPresets.LayerItem> FLAT_WORLD_PRESETS = Lists.newArrayList();
+     /** The parent GUI */

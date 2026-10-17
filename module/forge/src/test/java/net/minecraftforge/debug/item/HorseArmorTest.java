@@ -71,7 +71,7 @@ public class HorseArmorTest
         public static void registerModels(ModelRegistryEvent event) 
         {
             if(ENABLED) 
-                ModelLoader.setCustomModelResourceLocation(TEST_ARMOR, 0, new ModelResourceLocation(TEST_ARMOR.getRegistryName(), "inventory"));
+                ModelLoader.setCustomModelResourceLocation(TEST_ARMOR, new ModelResourceLocation(TEST_ARMOR.getRegistryName(), "inventory"));
         }
     }
 

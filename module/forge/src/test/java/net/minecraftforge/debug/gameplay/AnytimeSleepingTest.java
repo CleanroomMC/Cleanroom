@@ -70,7 +70,7 @@ public class AnytimeSleepingTest
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent evt)
         {
-            ModelLoader.setCustomModelResourceLocation(SLEEP_CHARM, 0, new ModelResourceLocation("minecraft:totem", "inventory"));
+            ModelLoader.setCustomModelResourceLocation(SLEEP_CHARM, new ModelResourceLocation("minecraft:totem", "inventory"));
         }
     }
 

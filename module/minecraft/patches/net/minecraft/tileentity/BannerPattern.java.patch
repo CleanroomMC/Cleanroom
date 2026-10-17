@@ -1,0 +1,10 @@
+--- original/net/minecraft/tileentity/BannerPattern.java
++++ modified/net/minecraft/tileentity/BannerPattern.java
+@@ -8,6 +8,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public enum BannerPattern {
+     BASE("base", "b"),
+     SQUARE_BOTTOM_LEFT("square_bottom_left", "bl", "   ", "   ", "#  "),

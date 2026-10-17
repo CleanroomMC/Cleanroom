@@ -36,6 +36,7 @@ import net.minecraftforge.fml.common.FMLContainerHolder;
 import net.minecraftforge.fml.common.ModContainer;
 import org.jspecify.annotations.NonNull;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class FMLFolderResourcePack extends FolderResourcePack implements FMLContainerHolder {
 
     private final ModContainer container;

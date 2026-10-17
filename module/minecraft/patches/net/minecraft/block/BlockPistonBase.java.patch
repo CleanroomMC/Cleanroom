@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockPistonBase.java
 +++ modified/net/minecraft/block/BlockPistonBase.java
-@@ -245,7 +245,7 @@
+@@ -27,6 +27,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPistonBase extends BlockDirectional {
+     public static final PropertyBool EXTENDED = PropertyBool.create("extended");
+     protected static final AxisAlignedBB PISTON_BASE_EAST_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 0.75, 1.0, 1.0);
+@@ -245,7 +246,7 @@
                  }
  
                  if (!flag1
@@ -9,7 +17,7 @@
                      && canPush(iblockstate, worldIn, blockpos, enumfacing.getOpposite(), false, enumfacing)
                      && (iblockstate.getPushReaction() == EnumPushReaction.NORMAL || block == Blocks.PISTON || block == Blocks.STICKY_PISTON)) {
                      this.doMove(worldIn, pos, enumfacing, false);
-@@ -307,7 +307,7 @@
+@@ -307,7 +308,7 @@
                      return false;
                  }
  
@@ -18,7 +26,7 @@
              } else {
                  return false;
              }
-@@ -342,7 +342,9 @@
+@@ -342,7 +343,9 @@
          for (int j = list2.size() - 1; j >= 0; j--) {
              BlockPos blockpos1 = list2.get(j);
              IBlockState iblockstate = worldIn.getBlockState(blockpos1);
@@ -29,7 +37,7 @@
              worldIn.setBlockState(blockpos1, Blocks.AIR.getDefaultState(), 4);
              aiblockstate[--k] = iblockstate;
          }
-@@ -441,6 +443,13 @@
+@@ -441,6 +444,13 @@
       * @return an approximation of the form of the given face
       * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible. Implementing/overriding is fine.
       */

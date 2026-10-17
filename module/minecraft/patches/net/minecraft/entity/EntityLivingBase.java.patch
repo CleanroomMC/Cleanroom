@@ -1,6 +1,11 @@
 --- original/net/minecraft/entity/EntityLivingBase.java
 +++ modified/net/minecraft/entity/EntityLivingBase.java
-@@ -81,11 +81,7 @@
+@@ -77,15 +77,12 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public abstract class EntityLivingBase extends Entity {
      private static final Logger LOGGER = LogManager.getLogger();
      private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
      private static final AttributeModifier SPRINTING_SPEED_BOOST = new AttributeModifier(SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", 0.3F, 2).setSaved(false);
@@ -13,7 +18,7 @@
      protected static final DataParameter<Byte> HAND_STATES = EntityDataManager.createKey(EntityLivingBase.class, DataSerializers.BYTE);
      private static final DataParameter<Float> HEALTH = EntityDataManager.createKey(EntityLivingBase.class, DataSerializers.FLOAT);
      private static final DataParameter<Integer> POTION_EFFECTS = EntityDataManager.createKey(EntityLivingBase.class, DataSerializers.VARINT);
-@@ -223,6 +219,7 @@
+@@ -223,6 +220,7 @@
          this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
          this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR);
          this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
@@ -21,7 +26,7 @@
      }
  
      @Override
-@@ -233,9 +230,10 @@
+@@ -233,9 +231,10 @@
  
          if (!this.world.isRemote && this.fallDistance > 3.0F && onGroundIn) {
              float f = MathHelper.ceil(this.fallDistance - 3.0F);
@@ -33,7 +38,7 @@
                  ((WorldServer)this.world)
                      .spawnParticle(
                          EnumParticleTypes.BLOCK_DUST,
-@@ -314,7 +312,7 @@
+@@ -314,7 +313,7 @@
                      }
                  }
  
@@ -42,7 +47,7 @@
                      this.dismountRidingEntity();
                  }
              }
-@@ -392,6 +390,7 @@
+@@ -392,6 +391,7 @@
                  && (this.isPlayer() || this.recentlyHit > 0 && this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot"))) {
                  int i = this.getExperiencePoints(this.attackingPlayer);
  
@@ -50,7 +55,7 @@
                  while (i > 0) {
                      int j = EntityXPOrb.getXPSplit(i);
                      i -= j;
-@@ -520,12 +519,17 @@
+@@ -520,12 +520,17 @@
              }
          }
  
@@ -69,7 +74,7 @@
  
              compound.setTag("ActiveEffects", nbttaglist);
          }
-@@ -533,19 +537,31 @@
+@@ -533,6 +538,9 @@
          compound.setBoolean("FallFlying", this.isElytraFlying());
      }
  
@@ -79,8 +84,7 @@
      /** (abstract) Protected helper method to read subclass entity data from NBT. */
      @Override
      public void readEntityFromNBT(NBTTagCompound compound) {
-         this.setAbsorptionAmount(compound.getFloat("AbsorptionAmount"));
-         if (compound.hasKey("Attributes", 9) && this.world != null && !this.world.isRemote) {
+@@ -541,6 +549,7 @@
              SharedMonsterAttributes.setAttributeModifiers(this.getAttributeMap(), compound.getTagList("Attributes", 10));
          }
  
@@ -88,8 +92,7 @@
          if (compound.hasKey("ActiveEffects", 9)) {
              NBTTagList nbttaglist = compound.getTagList("ActiveEffects", 10);
  
-             for (int i = 0; i < nbttaglist.tagCount(); i++) {
-                 NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+@@ -549,6 +558,23 @@
                  PotionEffect potioneffect = PotionEffect.readCustomPotionEffectFromNBT(nbttagcompound);
                  if (potioneffect != null) {
                      this.activePotionsMap.put(potioneffect.getPotion(), potioneffect);
@@ -113,7 +116,7 @@
                  }
              }
          }
-@@ -581,7 +597,7 @@
+@@ -581,7 +607,7 @@
                  Potion potion = iterator.next();
                  PotionEffect potioneffect = this.activePotionsMap.get(potion);
                  if (!potioneffect.onUpdate(this)) {
@@ -122,7 +125,7 @@
                          iterator.remove();
                          this.onFinishedPotionEffect(potioneffect);
                      }
-@@ -639,8 +638,10 @@
+@@ -639,8 +665,10 @@
              this.setInvisible(false);
          } else {
              Collection<PotionEffect> collection = this.activePotionsMap.values();
@@ -135,7 +138,7 @@
              this.setInvisible(this.isPotionActive(MobEffects.INVISIBILITY));
          }
      }
-@@ -667,7 +668,10 @@
+@@ -667,7 +695,10 @@
              Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
  
              while (iterator.hasNext()) {
@@ -147,7 +150,7 @@
                  iterator.remove();
              }
          }
-@@ -695,6 +699,8 @@
+@@ -695,6 +726,8 @@
      public void addPotionEffect(PotionEffect potioneffectIn) {
          if (this.isPotionApplicable(potioneffectIn)) {
              PotionEffect potioneffect = this.activePotionsMap.get(potioneffectIn.getPotion());
@@ -156,7 +159,7 @@
              if (potioneffect == null) {
                  this.activePotionsMap.put(potioneffectIn.getPotion(), potioneffectIn);
                  this.onNewPotionEffect(potioneffectIn);
-@@ -706,6 +712,9 @@
+@@ -706,6 +739,9 @@
      }
  
      public boolean isPotionApplicable(PotionEffect potioneffectIn) {
@@ -166,7 +169,7 @@
          if (this.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
              Potion potion = potioneffectIn.getPotion();
              if (potion == MobEffects.REGENERATION || potion == MobEffects.POISON) {
-@@ -729,6 +738,7 @@
+@@ -729,6 +765,7 @@
  
      /** Removes the given potion effect. */
      public void removePotionEffect(Potion potionIn) {
@@ -174,7 +177,7 @@
          PotionEffect potioneffect = this.removeActivePotionEffect(potionIn);
          if (potioneffect != null) {
              this.onFinishedPotionEffect(potioneffect);
-@@ -760,6 +770,8 @@
+@@ -760,6 +797,8 @@
  
      /** Heal living entity (param: amount of half-hearts) */
      public void heal(float healAmount) {
@@ -183,7 +186,7 @@
          float f = this.getHealth();
          if (f > 0.0F) {
              this.setHealth(f + healAmount);
-@@ -777,6 +789,7 @@
+@@ -777,6 +816,7 @@
      /** Called when the entity is attacked. */
      @Override
      public boolean attackEntityFrom(DamageSource source, float amount) {
@@ -191,7 +194,7 @@
          if (this.isEntityInvulnerable(source)) {
              return false;
          }
-@@ -843,8 +856,8 @@
+@@ -843,8 +883,8 @@
              if (entity1 instanceof EntityPlayer) {
                  this.recentlyHit = 100;
                  this.attackingPlayer = (EntityPlayer)entity1;
@@ -202,7 +205,7 @@
                  if (entitywolf.isTamed()) {
                      this.recentlyHit = 100;
                      this.attackingPlayer = null;
-@@ -991,7 +1004,7 @@
+@@ -991,7 +1031,7 @@
  
      /** Renders broken item particles using the given ItemStack */
      public void renderBrokenItemStack(ItemStack stack) {
@@ -211,7 +214,7 @@
  
          for (int i = 0; i < 5; i++) {
              Vec3d vec3d = new Vec3d((this.rand.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
-@@ -1002,22 +1015,28 @@
+@@ -1002,22 +1042,28 @@
              vec3d1 = vec3d1.rotatePitch(-this.rotationPitch * (float) (Math.PI / 180.0));
              vec3d1 = vec3d1.rotateYaw(-this.rotationYaw * (float) (Math.PI / 180.0));
              vec3d1 = vec3d1.add(this.posX, this.posY + this.getEyeHeight(), this.posZ);
@@ -227,7 +230,7 @@
 -                    Item.getIdFromItem(stack.getItem())
 -                );
 +            if (this.world instanceof WorldServer) //Forge: Fix MC-2518 spawnParticle is nooped on server, need to use server specific variant
-+                ((WorldServer)this.world).spawnParticle(EnumParticleTypes.ITEM_CRACK, vec3d1.x, vec3d1.y, vec3d1.z, 0,  vec3d.x, vec3d.y + 0.05, vec3d.z, 0.0, Item.getIdFromItem(stack.getItem()), stack.getMetadata());
++                ((WorldServer)this.world).spawnParticle(EnumParticleTypes.ITEM_CRACK, vec3d1.x, vec3d1.y, vec3d1.z, 0,  vec3d.x, vec3d.y + 0.05, vec3d.z, 0.0, Item.getIdFromItem(stack.getItem()), stack.getItem().getModelKey(stack));
 +            else //Fix the fact that spawning ItemCrack uses TWO arguments.
 +                this.world
 +            .spawnParticle(
@@ -239,7 +242,7 @@
 +                vec3d.y + 0.05,
 +                vec3d.z,
 +                Item.getIdFromItem(stack.getItem()),
-+                stack.getMetadata()
++                stack.getItem().getModelKey(stack)
 +            );
 +
          }
@@ -251,7 +254,7 @@
          if (!this.dead) {
              Entity entity = cause.getTrueSource();
              EntityLivingBase entitylivingbase = this.getAttackingEntity();
-@@ -1032,15 +1051,23 @@
+@@ -1032,15 +1078,23 @@
              this.dead = true;
              this.getCombatTracker().reset();
              if (!this.world.isRemote) {
@@ -279,7 +282,7 @@
              }
  
              this.world.setEntityState(this, (byte)3);
-@@ -1063,7 +1090,10 @@
+@@ -1063,7 +1117,10 @@
       * The entity's existing horizontal velocity is halved, and if the entity is on the ground the Y-velocity is too.
       */
      public void knockBack(Entity entityIn, float strength, double xRatio, double zRatio) {
@@ -291,7 +294,7 @@
              this.isAirBorne = true;
              float f = MathHelper.sqrt(xRatio * xRatio + zRatio * zRatio);
              this.motionX /= 2.0;
-@@ -1110,9 +1140,7 @@
+@@ -1110,9 +1167,7 @@
          BlockPos blockpos = new BlockPos(i, j, k);
          IBlockState iblockstate = this.world.getBlockState(blockpos);
          Block block = iblockstate.getBlock();
@@ -302,7 +305,7 @@
      }
  
      private boolean canGoThroughtTrapDoorOnLadder(BlockPos pos, IBlockState state) {
-@@ -1135,6 +1163,9 @@
+@@ -1135,6 +1190,9 @@
  
      @Override
      public void fall(float distance, float damageMultiplier) {
@@ -312,7 +315,7 @@
          super.fall(distance, damageMultiplier);
          PotionEffect potioneffect = this.getActivePotionEffect(MobEffects.JUMP_BOOST);
          float f = potioneffect == null ? 0.0F : potioneffect.getAmplifier() + 1;
-@@ -1147,7 +1178,7 @@
+@@ -1147,7 +1205,7 @@
              int l = MathHelper.floor(this.posZ);
              IBlockState iblockstate = this.world.getBlockState(new BlockPos(j, k, l));
              if (iblockstate.getMaterial() != Material.AIR) {
@@ -321,7 +324,7 @@
                  this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
              }
          }
-@@ -1214,15 +1245,18 @@
+@@ -1214,15 +1272,18 @@
      /** Deals damage to the entity. This will take the armor of the entity into consideration before damaging the health bar. */
      protected void damageEntity(DamageSource damageSrc, float damageAmount) {
          if (!this.isEntityInvulnerable(damageSrc)) {
@@ -341,7 +344,7 @@
                  this.setAbsorptionAmount(this.getAbsorptionAmount() - damageAmount);
              }
          }
-@@ -1269,6 +1303,10 @@
+@@ -1269,6 +1330,10 @@
      }
  
      public void swingArm(EnumHand hand) {
@@ -352,7 +355,7 @@
          if (!this.isSwingInProgress || this.swingProgressInt >= this.getArmSwingAnimationEnd() / 2 || this.swingProgressInt < 0) {
              this.swingProgressInt = -1;
              this.isSwingInProgress = true;
-@@ -1473,20 +1511,21 @@
+@@ -1473,20 +1538,21 @@
                      double d12 = d6 + d10;
                      AxisAlignedBB axisalignedbb1 = axisalignedbb.offset(d9, 0.0, d10);
                      if (!this.world.collidesWithAnyBlock(axisalignedbb1)) {
@@ -378,7 +381,7 @@
                          d1 = d11;
                          d13 = this.posY + 2.0;
                          d14 = d12;
-@@ -1543,15 +1582,16 @@
+@@ -1543,15 +1609,16 @@
          }
  
          this.isAirBorne = true;
@@ -397,7 +400,7 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -1617,7 +1657,8 @@
+@@ -1617,7 +1684,8 @@
                              this.posX, this.getEntityBoundingBox().minY - 1.0, this.posZ
                          );
                          if (this.onGround) {
@@ -407,7 +410,7 @@
                          }
  
                          float f7 = 0.16277136F / (f6 * f6 * f6);
-@@ -1631,15 +1672,11 @@
+@@ -1631,15 +1699,11 @@
                          this.moveRelative(strafe, vertical, forward, f8);
                          f6 = 0.91F;
                          if (this.onGround) {
@@ -428,7 +431,7 @@
                          }
  
                          if (this.isOnLadder()) {
-@@ -1769,6 +1806,7 @@
+@@ -1769,6 +1833,7 @@
      /** Called to update the entity's position/logic. */
      @Override
      public void onUpdate() {
@@ -436,7 +439,7 @@
          super.onUpdate();
          this.updateActiveHand();
          if (!this.world.isRemote) {
-@@ -1799,9 +1837,12 @@
+@@ -1799,9 +1864,12 @@
  
                  ItemStack itemstack1 = this.getItemStackFromSlot(entityequipmentslot);
                  if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
@@ -451,7 +454,7 @@
                      if (!itemstack.isEmpty()) {
                          this.getAttributeMap().removeAttributeModifiers(itemstack.getAttributeModifiers(entityequipmentslot));
                      }
-@@ -2210,6 +2251,36 @@
+@@ -2210,6 +2278,36 @@
          this.potionsNeedUpdate = true;
      }
  
@@ -488,7 +491,7 @@
      public abstract EnumHandSide getPrimaryHand();
  
      public boolean isHandActive() {
-@@ -2223,12 +2294,20 @@
+@@ -2223,12 +2321,20 @@
      protected void updateActiveHand() {
          if (this.isHandActive()) {
              ItemStack itemstack = this.getHeldItem(this.getActiveHand());
@@ -510,7 +513,7 @@
                      this.onItemUseFinish();
                  }
              } else {
-@@ -2240,8 +2319,11 @@
+@@ -2240,8 +2346,11 @@
      public void setActiveHand(EnumHand hand) {
          ItemStack itemstack = this.getHeldItem(hand);
          if (!itemstack.isEmpty() && !this.isHandActive()) {
@@ -523,7 +526,26 @@
              if (!this.world.isRemote) {
                  int i = 1;
                  if (hand == EnumHand.OFF_HAND) {
-@@ -2327,7 +2409,10 @@
+@@ -2286,7 +2395,8 @@
+                     vec3d1 = vec3d1.rotatePitch(-this.rotationPitch * (float) (Math.PI / 180.0));
+                     vec3d1 = vec3d1.rotateYaw(-this.rotationYaw * (float) (Math.PI / 180.0));
+                     vec3d1 = vec3d1.add(this.posX, this.posY + this.getEyeHeight(), this.posZ);
+-                    if (stack.getHasSubtypes()) {
++                    int modelKey = stack.getItem().getModelKey(stack);
++                    if (stack.getHasSubtypes() || modelKey != 0) {
+                         this.world
+                             .spawnParticle(
+                                 EnumParticleTypes.ITEM_CRACK,
+@@ -2297,7 +2407,7 @@
+                                 vec3d.y + 0.05,
+                                 vec3d.z,
+                                 Item.getIdFromItem(stack.getItem()),
+-                                stack.getMetadata()
++                                modelKey
+                             );
+                     } else {
+                         this.world
+@@ -2327,7 +2437,10 @@
      protected void onItemUseFinish() {
          if (!this.activeItemStack.isEmpty() && this.isHandActive()) {
              this.updateItemUse(this.activeItemStack, 16);
@@ -535,7 +557,7 @@
              this.resetActiveHand();
          }
      }
-@@ -2346,7 +2431,8 @@
+@@ -2346,7 +2459,8 @@
  
      public void stopActiveHand() {
          if (!this.activeItemStack.isEmpty()) {
@@ -545,7 +567,7 @@
          }
  
          this.resetActiveHand();
-@@ -2443,6 +2529,28 @@
+@@ -2443,6 +2557,28 @@
          return true;
      }
  
@@ -574,7 +596,7 @@
      public boolean attackable() {
          return true;
      }
-@@ -2456,4 +2564,27 @@
+@@ -2456,4 +2592,27 @@
      @SideOnly(Side.CLIENT)
      public void setPartying(BlockPos pos, boolean isPartying) {
      }

@@ -86,6 +86,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Mod(modid = DynBucketTest.MODID, name = "DynBucketTest", version = "0.1", dependencies = "after:" + ModelFluidTest.MODID, acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class DynBucketTest
 {
     public static final String MODID = "dynbuckettest";

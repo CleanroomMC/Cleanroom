@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockGlazedTerracotta.java
++++ modified/net/minecraft/block/BlockGlazedTerracotta.java
+@@ -14,6 +14,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockGlazedTerracotta extends BlockHorizontal {
+     public BlockGlazedTerracotta(EnumDyeColor color) {
+         super(Material.ROCK, MapColor.getBlockColor(color));

@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRailDetector.java
 +++ modified/net/minecraft/block/BlockRailDetector.java
-@@ -163,6 +163,8 @@
+@@ -23,6 +23,7 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRailDetector extends BlockRailBase {
+     public static final PropertyEnum<BlockRailBase.EnumRailDirection> SHAPE = PropertyEnum.create(
+         "shape",
+@@ -163,6 +164,8 @@
      @Override
      public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
          if (blockState.getValue(POWERED)) {

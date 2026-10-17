@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockSponge.java
 +++ modified/net/minecraft/block/BlockSponge.java
-@@ -58,7 +58,7 @@
+@@ -21,6 +21,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockSponge extends Block {
+     public static final PropertyBool WET = PropertyBool.create("wet");
+ 
+@@ -58,7 +59,7 @@
      protected void tryAbsorb(World worldIn, BlockPos pos, IBlockState state) {
          if (!state.getValue(WET) && this.absorb(worldIn, pos)) {
              worldIn.setBlockState(pos, state.withProperty(WET, true), 2);

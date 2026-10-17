@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRotatedPillar.java
 +++ modified/net/minecraft/block/BlockRotatedPillar.java
-@@ -29,6 +29,18 @@
+@@ -13,6 +13,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRotatedPillar extends Block {
+     public static final PropertyEnum<EnumFacing.Axis> AXIS = PropertyEnum.create("axis", EnumFacing.Axis.class);
+ 
+@@ -29,6 +30,18 @@
       * @deprecated call via {@link IBlockState#withRotation(Rotation)} whenever possible. Implementing/overriding is fine.
       */
      @Override

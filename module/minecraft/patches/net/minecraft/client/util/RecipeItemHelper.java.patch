@@ -1,6 +1,12 @@
 --- original/net/minecraft/client/util/RecipeItemHelper.java
 +++ modified/net/minecraft/client/util/RecipeItemHelper.java
-@@ -21,17 +21,19 @@
+@@ -16,22 +16,25 @@
+ import net.minecraft.item.crafting.IRecipe;
+ import net.minecraft.item.crafting.Ingredient;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class RecipeItemHelper {
+     /** Map from {@link #pack} packed ids to counts */
      public final Int2IntMap itemToCount = new Int2IntOpenHashMap();
  
      public void accountStack(ItemStack stack) {
@@ -24,7 +30,7 @@
      }
  
      public boolean containsItem(int packedItem) {
-@@ -69,7 +71,7 @@
+@@ -69,7 +72,7 @@
      }
  
      public static ItemStack unpack(int packedItem) {

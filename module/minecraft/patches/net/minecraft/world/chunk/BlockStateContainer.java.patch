@@ -1,8 +1,10 @@
 --- original/net/minecraft/world/chunk/BlockStateContainer.java
 +++ modified/net/minecraft/world/chunk/BlockStateContainer.java
-@@ -11,14 +11,18 @@
+@@ -10,15 +10,20 @@
+ import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
  public class BlockStateContainer implements IBlockStatePaletteResizer {
 +    private static final long[] EMPTY_STORAGE = new long[0];
      private static final IBlockStatePalette REGISTRY_BASED_PALETTE = new BlockStatePaletteRegistry();
@@ -21,7 +23,7 @@
      }
  
      private static int getIndex(int x, int y, int z) {
-@@ -26,16 +30,27 @@
+@@ -26,16 +31,27 @@
      }
  
      private void setBits(int bitsIn) {
@@ -50,7 +52,7 @@
              }
  
              this.palette.idFor(AIR_BLOCK_STATE);
-@@ -43,17 +58,78 @@
+@@ -43,17 +59,78 @@
          }
      }
  
@@ -133,7 +135,7 @@
          }
  
          return this.palette.idFor(state);
-@@ -65,7 +141,9 @@
+@@ -65,7 +142,9 @@
  
      protected void set(int index, IBlockState state) {
          int i = this.palette.idFor(state);
@@ -144,7 +146,7 @@
      }
  
      public IBlockState get(int x, int y, int z) {
-@@ -73,7 +151,7 @@
+@@ -73,7 +152,7 @@
      }
  
      protected IBlockState get(int index) {
@@ -153,7 +155,7 @@
          return iblockstate == null ? AIR_BLOCK_STATE : iblockstate;
      }
  
-@@ -81,43 +159,23 @@
+@@ -81,43 +160,23 @@
      public void read(PacketBuffer buf) {
          int i = buf.readByte();
          if (this.bits != i) {
@@ -204,7 +206,7 @@
      public void setDataFromNBT(byte[] blockIds, NibbleArray data, @Nullable NibbleArray blockIdExtension) {
          for (int i = 0; i < 4096; i++) {
              int j = i & 15;
-@@ -125,14 +183,62 @@
+@@ -125,14 +184,62 @@
              int l = i >> 4 & 15;
              int i1 = blockIdExtension == null ? 0 : blockIdExtension.get(j, k, l);
              int j1 = i1 << 12 | (blockIds[i] & 255) << 4 | data.get(j, k, l);

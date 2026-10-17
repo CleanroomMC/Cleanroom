@@ -1,5 +1,13 @@
 --- original/net/minecraft/entity/item/EntityMinecart.java
 +++ modified/net/minecraft/entity/item/EntityMinecart.java
+@@ -36,6 +36,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class EntityMinecart extends Entity implements IWorldNameable {
+     private static final DataParameter<Integer> ROLLING_AMPLITUDE = EntityDataManager.createKey(EntityMinecart.class, DataSerializers.VARINT);
+     private static final DataParameter<Integer> ROLLING_DIRECTION = EntityDataManager.createKey(EntityMinecart.class, DataSerializers.VARINT);
 @@ -71,6 +72,20 @@
      @SideOnly(Side.CLIENT)
      private double velocityZ;

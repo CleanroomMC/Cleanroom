@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockRedstoneOre.java
 +++ modified/net/minecraft/block/BlockRedstoneOre.java
-@@ -101,10 +101,14 @@
+@@ -17,6 +17,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRedstoneOre extends Block {
+     private final boolean isOn;
+ 
+@@ -101,10 +102,14 @@
      @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
          super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);

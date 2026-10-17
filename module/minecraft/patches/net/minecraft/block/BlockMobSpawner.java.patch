@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockMobSpawner.java
 +++ modified/net/minecraft/block/BlockMobSpawner.java
-@@ -42,10 +42,13 @@
+@@ -15,6 +15,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockMobSpawner extends BlockContainer {
+     protected BlockMobSpawner() {
+         super(Material.ROCK);
+@@ -42,10 +43,13 @@
      @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
          super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);

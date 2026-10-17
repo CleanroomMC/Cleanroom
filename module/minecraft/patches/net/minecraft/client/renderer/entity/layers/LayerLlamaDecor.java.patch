@@ -1,5 +1,13 @@
 --- original/net/minecraft/client/renderer/entity/layers/LayerLlamaDecor.java
 +++ modified/net/minecraft/client/renderer/entity/layers/LayerLlamaDecor.java
+@@ -8,6 +8,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class LayerLlamaDecor implements LayerRenderer<EntityLlama> {
+     private static final ResourceLocation[] LLAMA_DECOR_TEXTURES = new ResourceLocation[]{
+         new ResourceLocation("textures/entity/llama/decor/decor_white.png"),
 @@ -45,7 +46,7 @@
          float scale
      ) {

@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockStainedHardenedClay.java
 +++ modified/net/minecraft/block/BlockStainedHardenedClay.java
-@@ -36,6 +36,6 @@
+@@ -6,6 +6,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.IBlockAccess;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class BlockStainedHardenedClay extends BlockColored {
+     private static final MapColor[] MAP_COLORS = new MapColor[]{
+         MapColor.WHITE_STAINED_HARDENED_CLAY,
+@@ -36,6 +37,6 @@
       */
      @Override
      public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {

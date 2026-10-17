@@ -1,6 +1,19 @@
 --- original/net/minecraft/village/MerchantRecipeList.java
 +++ modified/net/minecraft/village/MerchantRecipeList.java
-@@ -105,7 +105,10 @@
+@@ -51,11 +51,7 @@
+     }
+ 
+     private boolean areItemStacksExactlyEqual(ItemStack stack1, ItemStack stack2) {
+-        return ItemStack.areItemsEqual(stack1, stack2)
+-            && (
+-                !stack2.hasTagCompound()
+-                    || stack1.hasTagCompound() && NBTUtil.areNBTEquals(stack2.getTagCompound(), stack1.getTagCompound(), false)
+-            );
++        return com.cleanroommc.component.DataComponents.matchesMerchantBuyItem(stack1, stack2);
+     }
+ 
+     public void writeToBuf(PacketBuffer buffer) {
+@@ -109,7 +105,10 @@
  
          for (int i = 0; i < nbttaglist.tagCount(); i++) {
              NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);

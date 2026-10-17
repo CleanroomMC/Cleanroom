@@ -45,6 +45,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 
 @Mod(modid = TileEntityLoadingTest.MODID, name = "TileEntity#onLoad() test mod", version = "1.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation")
 public class TileEntityLoadingTest
 {
     public static final boolean ENABLED = false;

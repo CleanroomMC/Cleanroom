@@ -1,5 +1,13 @@
 --- original/net/minecraft/entity/projectile/EntityArrow.java
 +++ modified/net/minecraft/entity/projectile/EntityArrow.java
+@@ -37,6 +37,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public abstract class EntityArrow extends Entity implements IProjectile {
+     private static final Predicate<Entity> ARROW_TARGETS = Predicates.and(
+         EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, new Predicate<Entity>() {
 @@ -51,6 +52,11 @@
      private int zTile = -1;
      private Block inTile;

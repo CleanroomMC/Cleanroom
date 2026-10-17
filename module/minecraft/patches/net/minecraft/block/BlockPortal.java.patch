@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockPortal.java
 +++ modified/net/minecraft/block/BlockPortal.java
-@@ -108,12 +108,14 @@
+@@ -29,6 +29,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPortal extends BlockBreakable {
+     public static final PropertyEnum<EnumFacing.Axis> AXIS = PropertyEnum.create(
+         "axis", EnumFacing.Axis.class, EnumFacing.Axis.X, EnumFacing.Axis.Z
+@@ -108,12 +109,14 @@
  
      public boolean trySpawnPortal(World worldIn, BlockPos pos) {
          BlockPortal.Size blockportal$size = new BlockPortal.Size(worldIn, pos, EnumFacing.Axis.X);

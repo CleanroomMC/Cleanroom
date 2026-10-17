@@ -1,6 +1,14 @@
 --- original/net/minecraft/client/multiplayer/PlayerControllerMP.java
 +++ modified/net/minecraft/client/multiplayer/PlayerControllerMP.java
-@@ -112,6 +112,7 @@
+@@ -48,6 +48,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class PlayerControllerMP {
+     /** The Minecraft instance. */
+     private final Minecraft mc;
+@@ -112,6 +113,7 @@
  
              if (!this.mc.player.isAllowEdit()) {
                  ItemStack itemstack = this.mc.player.getHeldItemMainhand();
@@ -8,7 +16,7 @@
                  if (itemstack.isEmpty()) {
                      return false;
                  }
-@@ -122,42 +123,49 @@
+@@ -122,42 +124,49 @@
              }
          }
  
@@ -84,7 +92,7 @@
      }
  
      /** Called when the player is hitting a block with an item. */
-@@ -188,30 +196,34 @@
+@@ -188,30 +197,34 @@
                  .getTutorial()
                  .onHitBlock(this.mc.world, loc, this.mc.world.getBlockState(loc), 1.0F);
              this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
@@ -128,7 +136,7 @@
                      .world
                      .sendBlockBreakProgress(this.mc.player.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
              }
-@@ -264,7 +276,7 @@
+@@ -264,7 +277,7 @@
              this.curBlockDamageMP = this.curBlockDamageMP
                  + iblockstate.getPlayerRelativeBlockHardness(this.mc.player, this.mc.player.world, posBlock);
              if (this.stepSoundTickCounter % 4.0F == 0.0F) {
@@ -137,7 +145,7 @@
                  this.mc
                      .getSoundHandler()
                      .playSound(
-@@ -302,7 +314,8 @@
+@@ -302,7 +315,8 @@
  
      /** player reach distance = 4F */
      public float getBlockReachDistance() {
@@ -147,7 +155,7 @@
      }
  
      public void updateController() {
-@@ -318,9 +331,7 @@
+@@ -318,9 +332,7 @@
          ItemStack itemstack = this.mc.player.getHeldItemMainhand();
          boolean flag = this.currentItemHittingBlock.isEmpty() && itemstack.isEmpty();
          if (!this.currentItemHittingBlock.isEmpty() && !itemstack.isEmpty()) {
@@ -158,7 +166,7 @@
          }
  
          return pos.equals(this.currentBlock) && flag;
-@@ -344,77 +355,110 @@
+@@ -344,77 +356,112 @@
          float f1 = (float)(vec.y - pos.getY());
          float f2 = (float)(vec.z - pos.getZ());
          boolean flag = false;
@@ -247,10 +255,12 @@
 +                if (this.currentGameType.isCreative()) {
 +                    int i = itemstack.getMetadata();
 +                    int j = itemstack.getCount();
++                    com.cleanroommc.component.PatchedDataComponentMap savedComponents = itemstack.getComponents().copy();
 +                    if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) {
 +                    EnumActionResult enumactionresult = itemstack.onItemUse(player, worldIn, pos, hand, direction, f, f1, f2);
 +                    itemstack.setItemDamage(i);
 +                    itemstack.setCount(j);
++                    itemstack.getComponents().restorePatch(savedComponents.asPatch());
 +                    return enumactionresult;
 +                    } else return result;
 +                } else {
@@ -320,7 +330,7 @@
      }
  
      public EntityPlayerSP createPlayer(World p_192830_1_, StatisticsManager p_192830_2_, RecipeBook p_192830_3_) {
-@@ -447,6 +491,9 @@
+@@ -447,6 +494,9 @@
              ray.hitVec.z - target.posZ
          );
          this.connection.sendPacket(new CPacketUseEntity(target, hand, vec3d));

@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockCocoa.java
 +++ modified/net/minecraft/block/BlockCocoa.java
-@@ -55,10 +55,12 @@
+@@ -22,6 +22,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockCocoa extends BlockHorizontal implements IGrowable {
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 2);
+     protected static final AxisAlignedBB[] COCOA_EAST_AABB = new AxisAlignedBB[]{
+@@ -55,10 +56,12 @@
      public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
          if (!this.canBlockStay(worldIn, pos, state)) {
              this.dropBlock(worldIn, pos, state);
@@ -15,7 +23,7 @@
              }
          }
      }
-@@ -161,14 +163,20 @@
+@@ -161,14 +164,20 @@
      /** Spawns this Block's drops into the World as EntityItems. */
      @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {

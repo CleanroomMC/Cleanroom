@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockWall.java
 +++ modified/net/minecraft/block/BlockWall.java
-@@ -216,10 +216,10 @@
+@@ -22,6 +22,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockWall extends Block {
+     public static final PropertyBool UP = PropertyBool.create("up");
+     public static final PropertyBool NORTH = PropertyBool.create("north");
+@@ -216,10 +217,10 @@
      /** Get the actual Block state of this Block at the given position. This applies properties not visible in the metadata, such as fence connections. */
      @Override
      public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
@@ -15,7 +23,7 @@
          boolean flag4 = flag && !flag1 && flag2 && !flag3 || !flag && flag1 && !flag2 && flag3;
          return state.withProperty(UP, !flag4 || !worldIn.isAirBlock(pos.up()))
              .withProperty(NORTH, flag)
-@@ -245,7 +245,23 @@
+@@ -245,7 +246,23 @@
      public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
          return face != EnumFacing.UP && face != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THICK : BlockFaceShape.CENTER_BIG;
      }
@@ -39,3 +47,19 @@
      public enum EnumType implements IStringSerializable {
          NORMAL(0, "cobblestone", "normal"),
          MOSSY(1, "mossy_cobblestone", "mossy");
+@@ -271,11 +288,11 @@
+         }
+ 
+         public static BlockWall.EnumType byMetadata(int meta) {
+-            if (meta < 0 || meta >= META_LOOKUP.length) {
+-                meta = 0;
++            if (meta >= 0 && meta < META_LOOKUP.length && META_LOOKUP[meta] != null) {
++                return META_LOOKUP[meta];
+             }
+-
+-            return META_LOOKUP[meta];
++            for (BlockWall.EnumType t : values()) { if (t.getMetadata() == meta) { return t; } }
++            return META_LOOKUP[0];
+         }
+ 
+         @Override

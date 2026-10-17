@@ -1,0 +1,10 @@
+--- original/net/minecraft/item/ItemMultiTexture.java
++++ modified/net/minecraft/item/ItemMultiTexture.java
+@@ -2,6 +2,7 @@
+ 
+ import net.minecraft.block.Block;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemMultiTexture extends ItemBlock {
+     protected final Block unused;
+     protected final ItemMultiTexture.Mapper nameFunction;

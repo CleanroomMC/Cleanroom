@@ -60,7 +60,7 @@ public class ItemLayerModelTest
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent event)
         {
-            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, 0, new ModelResourceLocation(MODID.toLowerCase() + ":" + TestItem.name, "inventory"));
+            ModelLoader.setCustomModelResourceLocation(TEST_ITEM, new ModelResourceLocation(MODID.toLowerCase() + ":" + TestItem.name, "inventory"));
         }
     }
 

@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/storage/loot/functions/SetDamage.java
++++ modified/net/minecraft/world/storage/loot/functions/SetDamage.java
+@@ -27,7 +27,7 @@
+     public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
+         if (stack.isItemStackDamageable()) {
+             float f = 1.0F - this.damageRange.generateFloat(rand);
+-            stack.setItemDamage(MathHelper.floor(f * stack.getMaxDamage()));
++            stack.setDamageValue(MathHelper.floor(f * stack.getMaxDamage()));
+         } else {
+             LOGGER.warn("Couldn't set damage of loot item {}", stack);
+         }

@@ -1,0 +1,10 @@
+--- original/net/minecraft/entity/item/EntityMinecartTNT.java
++++ modified/net/minecraft/entity/item/EntityMinecartTNT.java
+@@ -18,6 +18,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class EntityMinecartTNT extends EntityMinecart {
+     private int minecartTNTFuse = -1;
+ 

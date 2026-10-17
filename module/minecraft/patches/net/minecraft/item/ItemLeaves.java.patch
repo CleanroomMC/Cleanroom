@@ -1,0 +1,18 @@
+--- original/net/minecraft/item/ItemLeaves.java
++++ modified/net/minecraft/item/ItemLeaves.java
+@@ -2,6 +2,7 @@
+ 
+ import net.minecraft.block.BlockLeaves;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemLeaves extends ItemBlock {
+     private final BlockLeaves leaves;
+ 
+@@ -21,6 +22,6 @@
+     /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
+     @Override
+     public String getTranslationKey(ItemStack stack) {
+-        return super.getTranslationKey() + "." + this.leaves.getWoodType(stack.getMetadata()).getTranslationKey();
++        net.minecraft.block.state.IBlockState carried = stack.getComponents().get(com.cleanroommc.component.DataComponents.BLOCK_STATE); if (carried != null && carried.getBlock() == this.leaves) { for (net.minecraft.block.properties.IProperty<?> prop : carried.getProperties().keySet()) { if ("variant".equals(prop.getName()) && carried.getValue(prop) instanceof net.minecraft.block.BlockPlanks.EnumType) { return super.getTranslationKey() + "." + ((net.minecraft.block.BlockPlanks.EnumType) carried.getValue(prop)).getTranslationKey(); } } } return super.getTranslationKey() + "." + this.leaves.getWoodType(stack.getMetadata()).getTranslationKey();
+     }
+ }

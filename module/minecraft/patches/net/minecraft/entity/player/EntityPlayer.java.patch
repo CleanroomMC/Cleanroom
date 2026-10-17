@@ -1,8 +1,10 @@
 --- original/net/minecraft/entity/player/EntityPlayer.java
 +++ modified/net/minecraft/entity/player/EntityPlayer.java
-@@ -94,7 +94,12 @@
+@@ -93,8 +93,14 @@
+ import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
  public abstract class EntityPlayer extends EntityLivingBase {
 -    /** The absorption data parameter */
 +    public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
@@ -14,7 +16,7 @@
      private static final DataParameter<Float> ABSORPTION = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.FLOAT);
      private static final DataParameter<Integer> PLAYER_SCORE = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.VARINT);
      protected static final DataParameter<Byte> PLAYER_MODEL_FLAG = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.BYTE);
-@@ -187,6 +192,7 @@
+@@ -187,6 +193,7 @@
          this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.1F);
          this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_SPEED);
          this.getAttributeMap().registerAttribute(SharedMonsterAttributes.LUCK);
@@ -22,7 +24,7 @@
      }
  
      @Override
-@@ -203,6 +209,7 @@
+@@ -203,6 +210,7 @@
      /** Called to update the entity's position/logic. */
      @Override
      public void onUpdate() {
@@ -30,7 +32,7 @@
          this.noClip = this.isSpectator();
          if (this.isSpectator()) {
              this.onGround = false;
-@@ -221,7 +228,7 @@
+@@ -221,7 +229,7 @@
              if (!this.world.isRemote) {
                  if (!this.isInBed()) {
                      this.wakeUpPlayer(true, true, false);
@@ -39,7 +41,7 @@
                      this.wakeUpPlayer(false, true, true);
                  }
              }
-@@ -350,6 +357,7 @@
+@@ -350,6 +358,7 @@
                  this.setSize(f, f1);
              }
          }
@@ -47,7 +49,7 @@
      }
  
      /** Return the amount of time this entity should stay in a portal before being transported. */
-@@ -432,10 +440,11 @@
+@@ -432,10 +441,11 @@
              this.prevCameraYaw = this.cameraYaw;
              this.cameraYaw = 0.0F;
              this.addMountedMovementStat(this.posX - d0, this.posY - d1, this.posZ - d2);
@@ -61,7 +63,7 @@
              }
          }
      }
-@@ -561,10 +570,15 @@
+@@ -561,10 +571,15 @@
      /** Called when the mob's health reaches 0. */
      @Override
      public void onDeath(DamageSource cause) {
@@ -77,7 +79,7 @@
          if ("Notch".equals(this.getName())) {
              this.dropItem(new ItemStack(Items.APPLE, 1), true, false);
          }
-@@ -574,6 +588,9 @@
+@@ -574,6 +589,9 @@
              this.inventory.dropAllItems();
          }
  
@@ -87,7 +89,7 @@
          if (cause != null) {
              this.motionX = -MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float) (Math.PI / 180.0)) * 0.1F;
              this.motionZ = -MathHelper.sin((this.attackedAtYaw + this.rotationYaw) * (float) (Math.PI / 180.0)) * 0.1F;
-@@ -614,15 +631,16 @@
+@@ -614,15 +632,16 @@
      /** Drop one item out of the currently selected stack if {@code dropAll} is false. If {@code dropItem} is true the entire stack is dropped. */
      @Nullable
      public EntityItem dropItem(boolean dropAll) {
@@ -113,7 +115,7 @@
      }
  
      /**
-@@ -632,7 +650,7 @@
+@@ -632,7 +651,7 @@
       */
      @Nullable
      public EntityItem dropItem(ItemStack itemStackIn, boolean unused) {
@@ -122,7 +124,7 @@
      }
  
      /**
-@@ -689,11 +707,18 @@
+@@ -689,11 +708,18 @@
      }
  
      public ItemStack dropItemAndGetStack(EntityItem p_184816_1_) {
@@ -141,7 +143,7 @@
          float f = this.inventory.getDestroySpeed(state);
          if (f > 1.0F) {
              int i = EnchantmentHelper.getEfficiencyModifier(this);
-@@ -735,11 +760,12 @@
+@@ -735,11 +761,12 @@
              f /= 5.0F;
          }
  
@@ -156,7 +158,7 @@
      }
  
      public static void registerFixesPlayer(DataFixer fixer) {
-@@ -797,6 +823,16 @@
+@@ -797,6 +824,16 @@
              this.spawnForced = compound.getBoolean("SpawnForced");
          }
  
@@ -173,7 +175,7 @@
          this.foodStats.readNBT(compound);
          this.capabilities.readCapabilitiesFromNBT(compound);
          if (compound.hasKey("EnderItems", 9)) {
-@@ -827,6 +863,8 @@
+@@ -827,6 +864,8 @@
          compound.setInteger("XpTotal", this.experienceTotal);
          compound.setInteger("XpSeed", this.xpSeed);
          compound.setInteger("Score", this.getScore());
@@ -182,7 +184,7 @@
          if (this.spawnPos != null) {
              compound.setInteger("SpawnX", this.spawnPos.getX());
              compound.setInteger("SpawnY", this.spawnPos.getY());
-@@ -834,6 +872,26 @@
+@@ -834,6 +873,26 @@
              compound.setBoolean("SpawnForced", this.spawnForced);
          }
  
@@ -209,7 +211,7 @@
          this.foodStats.writeNBT(compound);
          this.capabilities.writeCapabilitiesToNBT(compound);
          compound.setTag("EnderItems", this.enderChest.saveInventoryToNBT());
-@@ -849,6 +907,7 @@
+@@ -849,6 +908,7 @@
      /** Called when the entity is attacked. */
      @Override
      public boolean attackEntityFrom(DamageSource source, float amount) {
@@ -217,7 +219,7 @@
          if (this.isEntityInvulnerable(source)) {
              return false;
          }
-@@ -887,7 +946,8 @@
+@@ -887,7 +947,8 @@
      @Override
      protected void blockUsingShield(EntityLivingBase p_190629_1_) {
          super.blockUsingShield(p_190629_1_);
@@ -227,7 +229,7 @@
              this.disableShield(true);
          }
      }
-@@ -909,11 +969,14 @@
+@@ -909,11 +970,14 @@
  
      @Override
      protected void damageShield(float damage) {
@@ -243,7 +245,7 @@
                  if (enumhand == EnumHand.MAIN_HAND) {
                      this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
                  } else {
-@@ -943,11 +1006,15 @@
+@@ -943,11 +1007,15 @@
      @Override
      protected void damageEntity(DamageSource damageSrc, float damageAmount) {
          if (!this.isEntityInvulnerable(damageSrc)) {
@@ -260,7 +262,7 @@
              if (damageAmount != 0.0F) {
                  this.addExhaustion(damageSrc.getHungerDamage());
                  float f1 = this.getHealth();
-@@ -996,6 +1063,8 @@
+@@ -996,6 +1064,8 @@
  
              return EnumActionResult.PASS;
          } else {
@@ -269,7 +271,7 @@
              ItemStack itemstack = this.getHeldItem(hand);
              ItemStack itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
              if (entityToInteractOn.processInitialInteract(this, hand)) {
-@@ -1004,7 +1073,9 @@
+@@ -1004,7 +1074,9 @@
                   {
                      itemstack.setCount(itemstack1.getCount());
                  }
@@ -280,7 +282,7 @@
                  return EnumActionResult.SUCCESS;
              } else {
                  if (!itemstack.isEmpty() && entityToInteractOn instanceof EntityLivingBase) {
-@@ -1014,6 +1085,7 @@
+@@ -1014,6 +1086,7 @@
  
                      if (itemstack.interactWithEntity(this, (EntityLivingBase)entityToInteractOn, hand)) {
                          if (itemstack.isEmpty() && !this.capabilities.isCreativeMode) {
@@ -288,7 +290,7 @@
                              this.setHeldItem(hand, ItemStack.EMPTY);
                          }
  
-@@ -1041,6 +1113,7 @@
+@@ -1041,6 +1114,7 @@
  
      /** Attacks for the player the targeted entity with the currently equipped item.  The equipped item has hitEntity called on it. Args: targetEntity */
      public void attackTargetEntityWithCurrentItem(Entity targetEntity) {
@@ -296,7 +298,7 @@
          if (targetEntity.canBeAttackedWithItem()) {
              if (!targetEntity.hitByEntity(this)) {
                  float f = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
-@@ -1085,8 +1158,11 @@
+@@ -1085,8 +1159,11 @@
                          && !this.isRiding()
                          && targetEntity instanceof EntityLivingBase;
                      flag2 = flag2 && !this.isSprinting();
@@ -309,7 +311,7 @@
                      }
  
                      f += f1;
-@@ -1241,8 +1317,10 @@
+@@ -1241,8 +1318,10 @@
                          }
  
                          if (!itemstack1.isEmpty() && entity instanceof EntityLivingBase) {
@@ -320,7 +322,7 @@
                                  this.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
                              }
                          }
-@@ -1300,7 +1378,7 @@
+@@ -1300,7 +1379,7 @@
          }
  
          if (this.rand.nextFloat() < f) {
@@ -329,7 +331,7 @@
              this.resetActiveHand();
              this.world.setEntityState(this, (byte)30);
          }
-@@ -1363,7 +1441,12 @@
+@@ -1363,7 +1442,12 @@
      }
  
      public EntityPlayer.SleepResult trySleep(BlockPos bedLocation) {
@@ -343,7 +345,7 @@
          if (!this.world.isRemote) {
              if (this.isPlayerSleeping() || !this.isEntityAlive()) {
                  return EntityPlayer.SleepResult.OTHER_PROBLEM;
-@@ -1373,7 +1456,7 @@
+@@ -1373,7 +1457,7 @@
                  return EntityPlayer.SleepResult.NOT_POSSIBLE_HERE;
              }
  
@@ -352,7 +354,7 @@
                  return EntityPlayer.SleepResult.NOT_POSSIBLE_NOW;
              }
  
-@@ -1407,7 +1490,8 @@
+@@ -1407,7 +1491,8 @@
  
          this.spawnShoulderEntities();
          this.setSize(0.2F, 0.2F);
@@ -362,7 +364,7 @@
              float f1 = 0.5F + enumfacing.getXOffset() * 0.4F;
              float f = 0.5F + enumfacing.getZOffset() * 0.4F;
              this.setRenderOffsetForSleep(enumfacing);
-@@ -1434,6 +1518,8 @@
+@@ -1434,6 +1519,8 @@
              && Math.abs(this.posY - p_190774_1_.getY()) <= 2.0
              && Math.abs(this.posZ - p_190774_1_.getZ()) <= 3.0) {
              return true;
@@ -371,7 +373,7 @@
          }
  
          BlockPos blockpos = p_190774_1_.offset(p_190774_2_.getOpposite());
-@@ -1449,16 +1535,21 @@
+@@ -1449,16 +1536,21 @@
  
      /** Wake up the player if they're sleeping. */
      public void wakeUpPlayer(boolean immediately, boolean updateWorldFlag, boolean setSpawn) {
@@ -397,7 +399,7 @@
          }
  
          this.sleeping = false;
-@@ -1473,14 +1564,16 @@
+@@ -1473,14 +1565,16 @@
      }
  
      private boolean isInBed() {
@@ -417,7 +419,7 @@
              if (!forceSpawn) {
                  return null;
              }
-@@ -1489,15 +1582,17 @@
+@@ -1489,15 +1583,17 @@
              boolean flag1 = worldIn.getBlockState(bedLocation.up()).getBlock().canSpawnInBlock();
              return flag && flag1 ? bedLocation : null;
          } else {
@@ -438,7 +440,7 @@
              switch (enumfacing) {
                  case SOUTH:
                      return 90.0F;
-@@ -1533,14 +1628,21 @@
+@@ -1533,14 +1629,21 @@
      }
  
      public BlockPos getBedLocation() {
@@ -462,7 +464,7 @@
          if (pos != null) {
              this.spawnPos = pos;
              this.spawnForced = forced;
-@@ -1681,6 +1783,8 @@
+@@ -1681,6 +1784,8 @@
              }
  
              super.fall(distance, damageMultiplier);
@@ -471,7 +473,7 @@
          }
      }
  
-@@ -2018,7 +2122,10 @@
+@@ -2018,7 +2123,10 @@
       */
      @Override
      public ITextComponent getDisplayName() {
@@ -483,7 +485,7 @@
          itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + this.getName() + " "));
          itextcomponent.getStyle().setHoverEvent(this.getHoverEvent());
          itextcomponent.getStyle().setInsertion(this.getName());
-@@ -2027,7 +2134,8 @@
+@@ -2027,7 +2135,8 @@
  
      @Override
      public float getEyeHeight() {
@@ -493,7 +495,7 @@
          if (this.isPlayerSleeping()) {
              f = 0.2F;
          } else if (this.isSneaking() || this.height == 1.65F) {
-@@ -2213,6 +2321,150 @@
+@@ -2213,6 +2322,150 @@
          return this.capabilities.isCreativeMode && this.canUseCommand(2, "");
      }
  

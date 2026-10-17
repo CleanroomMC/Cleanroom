@@ -1,0 +1,85 @@
+--- original/net/minecraft/item/ItemCoal.java
++++ modified/net/minecraft/item/ItemCoal.java
+@@ -3,25 +3,79 @@
+ import net.minecraft.creativetab.CreativeTabs;
+ import net.minecraft.util.NonNullList;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ItemCoal extends Item {
++    public static final net.minecraft.block.properties.PropertyEnum<CoalType> TYPE = net.minecraft.block.properties.PropertyEnum.create("type", CoalType.class);
++
++    public enum CoalType implements net.minecraft.util.IStringSerializable {
++        COAL(0, "coal", "item.coal"),
++        CHARCOAL(1, "charcoal", "item.charcoal");
++
++        private final int meta;
++        private final String name;
++        private final String translationKey;
++
++        CoalType(int meta, String name, String translationKey) {
++            this.meta = meta;
++            this.name = name;
++            this.translationKey = translationKey;
++        }
++
++        public int getMetadata() {
++            return this.meta;
++        }
++
++        public String getTranslationKey() {
++            return this.translationKey;
++        }
++
++        @Override
++        public String getName() {
++            return this.name;
++        }
++
++        public static CoalType byMetadata(int meta) {
++            for (CoalType t : values()) { if (t.getMetadata() == meta) { return t; } } return COAL;
++        }
++    }
++
+     public ItemCoal() {
+         this.setHasSubtypes(true);
+         this.setMaxDamage(0);
+         this.setCreativeTab(CreativeTabs.MATERIALS);
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(TYPE, CoalType.COAL));
+     }
+ 
++    @Override
++    protected com.cleanroommc.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.component.ItemStateContainer(this, TYPE);
++    }
++
++    @Override
++    public com.cleanroommc.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(TYPE, CoalType.byMetadata(meta));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.component.IItemState state) {
++        return state.getValue(TYPE).getMetadata();
++    }
++
+     /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
+     @Override
+     public String getTranslationKey(ItemStack stack) {
+-        return stack.getMetadata() == 1 ? "item.charcoal" : "item.coal";
++        return stack.getItemState().getValue(TYPE).getTranslationKey();
+     }
+ 
+     /** returns a list of items with the same ID, but different meta (eg: dye returns 16 items) */
+     @Override
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+         if (this.isInCreativeTab(tab)) {
+-            items.add(new ItemStack(this, 1, 0));
+-            items.add(new ItemStack(this, 1, 1));
++            for (com.cleanroommc.component.IItemState state : this.getItemState().getValidStates()) {
++                ItemStack stack = new ItemStack(this, 1, this.getMetaFromItemState(state));
++                stack.setItemState(state);
++                items.add(stack);
++            }
+         }
+     }
+ }

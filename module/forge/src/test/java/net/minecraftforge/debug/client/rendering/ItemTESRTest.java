@@ -48,6 +48,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import static org.lwjgl.opengl.GL11.*;
 
 @Mod(modid = ItemTESRTest.MODID, name = "ForgeDebugItemTile", version = "1.0", acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class ItemTESRTest
 {
     public static final String MODID = "forgedebugitemtile";

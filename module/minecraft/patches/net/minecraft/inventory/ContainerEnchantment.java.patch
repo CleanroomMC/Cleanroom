@@ -1,6 +1,14 @@
 --- original/net/minecraft/inventory/ContainerEnchantment.java
 +++ modified/net/minecraft/inventory/ContainerEnchantment.java
-@@ -71,10 +71,12 @@
+@@ -22,6 +22,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class ContainerEnchantment extends Container {
+     /** A 2-slot InventoryBasic anonymous subclass (see constructor) that holds the item to be enchanted and the lapis. */
+     public IInventory tableInventory = new InventoryBasic("Enchant", true, 2) {
+@@ -71,10 +72,12 @@
              }
          });
          this.addSlotToContainer(new Slot(this.tableInventory, 1, 35, 47) {
@@ -15,7 +23,7 @@
              }
          });
  
-@@ -142,43 +144,21 @@
+@@ -142,43 +145,21 @@
              ItemStack itemstack = inventoryIn.getStackInSlot(0);
              if (!itemstack.isEmpty() && itemstack.isItemEnchantable()) {
                  if (!this.world.isRemote) {
@@ -66,7 +74,7 @@
                                  }
                              }
                          }
-@@ -187,12 +167,13 @@
+@@ -187,12 +168,13 @@
                      this.rand.setSeed(this.xpSeed);
  
                      for (int i1 = 0; i1 < 3; i1++) {
@@ -81,15 +89,18 @@
                      }
  
                      for (int j1 = 0; j1 < 3; j1++) {
-@@ -346,9 +327,8 @@
+@@ -346,12 +328,8 @@
                      return ItemStack.EMPTY;
                  }
  
 -                if (itemstack1.hasTagCompound() && itemstack1.getCount() == 1) {
 -                    this.inventorySlots.get(0).putStack(itemstack1.copy());
 -                    itemstack1.setCount(0);
-+                if (itemstack1.hasTagCompound()) { // Forge: Fix MC-17431
+-                } else if (!itemstack1.isEmpty()) {
+-                    this.inventorySlots.get(0).putStack(new ItemStack(itemstack1.getItem(), 1, itemstack1.getMetadata()));
+-                    itemstack1.shrink(1);
++                if (!itemstack1.isEmpty()) { // Forge: Fix MC-17431; Cleanroom: splitStack(1) also preserves DataComponents
 +                    this.inventorySlots.get(0).putStack(itemstack1.splitStack(1));
-                 } else if (!itemstack1.isEmpty()) {
-                     this.inventorySlots.get(0).putStack(new ItemStack(itemstack1.getItem(), 1, itemstack1.getMetadata()));
-                     itemstack1.shrink(1);
+                 }
+             }
+ 

@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/gui/inventory/GuiBeacon.java
++++ modified/net/minecraft/client/gui/inventory/GuiBeacon.java
+@@ -25,6 +25,7 @@
+ import org.apache.logging.log4j.Logger;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class GuiBeacon extends GuiContainer {
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static final ResourceLocation BEACON_GUI_TEXTURES = new ResourceLocation("textures/gui/container/beacon.png");

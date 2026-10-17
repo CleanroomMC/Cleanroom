@@ -1,0 +1,32 @@
+--- original/net/minecraft/block/BlockCarpet.java
++++ modified/net/minecraft/block/BlockCarpet.java
+@@ -18,6 +18,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockCarpet extends Block {
+     public static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.create("color", EnumDyeColor.class);
+     protected static final AxisAlignedBB CARPET_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.0625, 1.0);
+@@ -106,9 +107,19 @@
+ 
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */
+     @Override
++    public IBlockState getStateForDrop(IBlockState state) {
++        return state;
++    }
++
++    @Override
+     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+-        for (int i = 0; i < 16; i++) {
+-            items.add(new ItemStack(this, 1, i));
++        net.minecraft.item.Item item = net.minecraft.item.Item.getItemFromBlock(this);
++        for (IBlockState state : this.getBlockState().getValidStates()) {
++            if (item instanceof net.minecraft.item.ItemBlock) {
++                items.add(((net.minecraft.item.ItemBlock) item).stackFor(state));
++            } else {
++                items.add(new ItemStack(this, 1, this.damageDropped(state)));
++            }
+         }
+     }
+ 

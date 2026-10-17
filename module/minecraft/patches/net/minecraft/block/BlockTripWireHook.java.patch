@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockTripWireHook.java
++++ modified/net/minecraft/block/BlockTripWireHook.java
+@@ -26,6 +26,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockTripWireHook extends Block {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     public static final PropertyBool POWERED = PropertyBool.create("powered");

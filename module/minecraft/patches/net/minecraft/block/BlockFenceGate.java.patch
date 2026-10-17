@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockFenceGate.java
 +++ modified/net/minecraft/block/BlockFenceGate.java
-@@ -57,13 +57,13 @@
+@@ -21,6 +21,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockFenceGate extends BlockHorizontal {
+     public static final PropertyBool OPEN = PropertyBool.create("open");
+     public static final PropertyBool POWERED = PropertyBool.create("powered");
+@@ -57,13 +58,13 @@
          EnumFacing.Axis enumfacing$axis = state.getValue(FACING).getAxis();
          if (enumfacing$axis == EnumFacing.Axis.Z
                  && (
@@ -18,7 +26,7 @@
                  )) {
              state = state.withProperty(IN_WALL, true);
          }
-@@ -228,15 +228,22 @@
+@@ -228,15 +229,22 @@
          return new BlockStateContainer(this, FACING, OPEN, POWERED, IN_WALL);
      }
  

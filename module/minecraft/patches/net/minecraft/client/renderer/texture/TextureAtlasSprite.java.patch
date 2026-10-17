@@ -1,6 +1,14 @@
 --- original/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 +++ modified/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
-@@ -45,12 +45,10 @@
+@@ -16,6 +16,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TextureAtlasSprite {
+     private final String iconName;
+     protected List<int[][]> framesTextureData = Lists.newArrayList();
+@@ -45,12 +46,10 @@
          this.originX = originInX;
          this.originY = originInY;
          this.rotated = rotatedIn;
@@ -17,7 +25,7 @@
      }
  
      public void copyFrom(TextureAtlasSprite atlasSpirit) {
-@@ -354,4 +352,37 @@
+@@ -354,4 +353,37 @@
              + this.maxV
              + '}';
      }

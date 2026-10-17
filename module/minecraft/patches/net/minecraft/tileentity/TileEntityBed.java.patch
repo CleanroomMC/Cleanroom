@@ -1,0 +1,24 @@
+--- original/net/minecraft/tileentity/TileEntityBed.java
++++ modified/net/minecraft/tileentity/TileEntityBed.java
+@@ -9,11 +9,12 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class TileEntityBed extends TileEntity {
+     private EnumDyeColor color = EnumDyeColor.RED;
+ 
+     public void setItemValues(ItemStack p_193051_1_) {
+-        this.setColor(EnumDyeColor.byMetadata(p_193051_1_.getMetadata()));
++        this.setColor(p_193051_1_.getItem() == Items.BED ? p_193051_1_.getItemState().getValue(net.minecraft.item.ItemBed.COLOR) : EnumDyeColor.byMetadata(p_193051_1_.getMetadata()));
+     }
+ 
+     @Override
+@@ -58,6 +59,6 @@
+     }
+ 
+     public ItemStack getItemStack() {
+-        return new ItemStack(Items.BED, 1, this.color.getMetadata());
++        ItemStack stack = new ItemStack(Items.BED, 1, this.color.getMetadata()); stack.setItemState(Items.BED.getDefaultItemState().withProperty(net.minecraft.item.ItemBed.COLOR, this.color)); return stack;
+     }
+ }

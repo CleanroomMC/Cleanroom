@@ -52,7 +52,7 @@ public class SwimSpeedAttributeTest
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent evt)
         {
-            ModelLoader.setCustomModelResourceLocation(PLATE, 0, new ModelResourceLocation("minecraft:diamond_chestplate", "inventory"));
+            ModelLoader.setCustomModelResourceLocation(PLATE, new ModelResourceLocation("minecraft:diamond_chestplate", "inventory"));
         }
     }
 

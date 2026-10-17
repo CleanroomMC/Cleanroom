@@ -1,5 +1,13 @@
 --- original/net/minecraft/entity/monster/EntityEnderman.java
 +++ modified/net/minecraft/entity/monster/EntityEnderman.java
+@@ -47,6 +47,7 @@
+ import net.minecraft.world.World;
+ import net.minecraft.world.storage.loot.LootTableList;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class EntityEnderman extends EntityMob {
+     private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
+     private static final AttributeModifier ATTACKING_SPEED_BOOST = new AttributeModifier(ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.15F, 0).setSaved(false);
 @@ -151,13 +152,24 @@
      }
  

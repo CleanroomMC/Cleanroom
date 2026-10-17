@@ -1,5 +1,13 @@
 --- original/net/minecraft/network/NetHandlerPlayServer.java
 +++ modified/net/minecraft/network/NetHandlerPlayServer.java
+@@ -121,6 +121,7 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable {
+     private static final Logger LOGGER = LogManager.getLogger();
+     public final NetworkManager netManager;
 @@ -351,9 +352,11 @@
                  }
  

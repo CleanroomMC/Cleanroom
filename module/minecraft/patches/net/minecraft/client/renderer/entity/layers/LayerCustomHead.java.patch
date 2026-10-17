@@ -1,0 +1,10 @@
+--- original/net/minecraft/client/renderer/entity/layers/LayerCustomHead.java
++++ modified/net/minecraft/client/renderer/entity/layers/LayerCustomHead.java
+@@ -23,6 +23,7 @@
+ import org.apache.commons.lang3.StringUtils;
+ 
+ @SideOnly(Side.CLIENT)
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public class LayerCustomHead implements LayerRenderer<EntityLivingBase> {
+     private final ModelRenderer modelRenderer;
+ 

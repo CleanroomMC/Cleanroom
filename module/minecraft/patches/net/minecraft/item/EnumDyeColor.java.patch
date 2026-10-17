@@ -1,6 +1,14 @@
 --- original/net/minecraft/item/EnumDyeColor.java
 +++ modified/net/minecraft/item/EnumDyeColor.java
-@@ -77,19 +77,27 @@
+@@ -5,6 +5,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
+ public enum EnumDyeColor implements IStringSerializable {
+     WHITE(0, 15, "white", "white", 16383998, TextFormatting.WHITE),
+     ORANGE(1, 14, "orange", "orange", 16351261, TextFormatting.GOLD),
+@@ -77,19 +78,27 @@
      }
  
      public static EnumDyeColor byDyeDamage(int damage) {

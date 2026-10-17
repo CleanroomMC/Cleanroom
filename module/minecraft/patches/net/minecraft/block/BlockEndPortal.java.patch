@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockEndPortal.java
++++ modified/net/minecraft/block/BlockEndPortal.java
+@@ -20,6 +20,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockEndPortal extends BlockContainer {
+     protected static final AxisAlignedBB END_PORTAL_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.75, 1.0);
+ 

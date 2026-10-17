@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockChorusPlant.java
++++ modified/net/minecraft/block/BlockChorusPlant.java
+@@ -23,6 +23,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockChorusPlant extends Block {
+     public static final PropertyBool NORTH = PropertyBool.create("north");
+     public static final PropertyBool EAST = PropertyBool.create("east");

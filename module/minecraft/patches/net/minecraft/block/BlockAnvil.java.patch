@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockAnvil.java
++++ modified/net/minecraft/block/BlockAnvil.java
+@@ -31,6 +31,7 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockAnvil extends BlockFalling {
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+     public static final PropertyInteger DAMAGE = PropertyInteger.create("damage", 0, 2);

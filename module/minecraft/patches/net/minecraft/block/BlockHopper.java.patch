@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockHopper.java
++++ modified/net/minecraft/block/BlockHopper.java
+@@ -33,6 +33,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockHopper extends BlockContainer {
+     public static final PropertyDirection FACING = PropertyDirection.create("facing", new Predicate<EnumFacing>() {
+         public boolean apply(@Nullable EnumFacing p_apply_1_) {

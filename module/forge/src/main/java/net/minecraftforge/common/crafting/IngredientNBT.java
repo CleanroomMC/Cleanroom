@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class IngredientNBT extends Ingredient
 {
     private final ItemStack stack;

@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mod(modid = ModelBakeEventTest.MODID, name = "ForgeDebugModelBakeEvent", version = ModelBakeEventTest.VERSION, acceptableRemoteVersions = "*")
+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class ModelBakeEventTest
 {
     public static final String MODID = "forgedebugmodelbakeevent";

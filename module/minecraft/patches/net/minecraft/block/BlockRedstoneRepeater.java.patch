@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockRedstoneRepeater.java
++++ modified/net/minecraft/block/BlockRedstoneRepeater.java
+@@ -22,6 +22,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockRedstoneRepeater extends BlockRedstoneDiode {
+     public static final PropertyBool LOCKED = PropertyBool.create("locked");
+     public static final PropertyInteger DELAY = PropertyInteger.create("delay", 1, 4);

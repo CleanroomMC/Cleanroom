@@ -160,6 +160,7 @@ public class TestNetworkHandshake
         listener.addEndpoint(InetAddress.getLocalHost(), 54321);
         final Field networkManagers = listener.getClass().getDeclaredField("networkManagers");
         networkManagers.setAccessible(true);
+        @SuppressWarnings("unchecked")
         final List<NetworkManager> nmList = (List<NetworkManager>)networkManagers.get(listener);
         client = NetworkManager.createNetworkManagerAndConnect(InetAddress.getLocalHost(), 54321, true);
         while (nmList.isEmpty())

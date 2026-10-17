@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockPumpkin.java
 +++ modified/net/minecraft/block/BlockPumpkin.java
-@@ -131,8 +131,8 @@
+@@ -25,6 +25,7 @@
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockPumpkin extends BlockHorizontal {
+     private BlockPattern snowmanBasePattern;
+     private BlockPattern snowmanPattern;
+@@ -131,8 +132,8 @@
      /** Checks if this block can be placed exactly at the given position. */
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {

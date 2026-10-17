@@ -1,6 +1,14 @@
 --- original/net/minecraft/block/BlockEnchantmentTable.java
 +++ modified/net/minecraft/block/BlockEnchantmentTable.java
-@@ -59,7 +59,8 @@
+@@ -23,6 +23,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockEnchantmentTable extends BlockContainer {
+     protected static final AxisAlignedBB AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.75, 1.0);
+ 
+@@ -59,7 +60,8 @@
                  if (rand.nextInt(16) == 0) {
                      for (int k = 0; k <= 1; k++) {
                          BlockPos blockpos = pos.add(i, k, j);

@@ -1,0 +1,10 @@
+--- original/net/minecraft/block/BlockBeacon.java
++++ modified/net/minecraft/block/BlockBeacon.java
+@@ -23,6 +23,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
++@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
+ public class BlockBeacon extends BlockContainer {
+     public BlockBeacon() {
+         super(Material.GLASS, MapColor.DIAMOND);
