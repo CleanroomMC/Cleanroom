@@ -44,13 +44,13 @@
  
          for (Entry<String, JsonElement> entry : jsonobject.entrySet()) {
              StatBase statbase = StatList.getOneShotStat(entry.getKey());
-@@ -103,13 +116,25 @@
+@@ -103,13 +116,18 @@
  
                  map.put(statbase, tupleintjsonserializable);
              } else {
 -                LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.statsFile, entry.getKey());
 +                String statKey = entry.getKey();
-+                if (!isRemovedStatNamespace(statKey)) {
++                if (!com.cleanroommc.ids.RetainedContent.isRemovedStatKey(statKey)) {
 +                    this.retainedStats.put(statKey, entry.getValue());
 +                }
 +                LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.statsFile, statKey);
@@ -60,13 +60,6 @@
          return map;
      }
  
-+    private static boolean isRemovedStatNamespace(String statKey) {
-+        String[] parts = statKey.split("\\.");
-+        if (parts.length >= 4 && "stat".equals(parts[0])) {
-+            return com.cleanroommc.ids.RetainedContent.removedNamespaces().contains(parts[2]);
-+        }
-+        return false;
-+    }
 +
      public static String dumpJson(Map<StatBase, TupleIntJsonSerializable> p_150880_0_) {
          JsonObject jsonobject = new JsonObject();

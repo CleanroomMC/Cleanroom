@@ -1,0 +1,11 @@
+--- original/net/minecraft/potion/PotionUtils.java
++++ modified/net/minecraft/potion/PotionUtils.java
+@@ -144,7 +144,7 @@
+         }
+ 
+         NBTTagCompound nbttagcompound = MoreObjects.firstNonNull(itemIn.getTagCompound(), new NBTTagCompound());
+-        NBTTagList nbttaglist = nbttagcompound.getTagList("CustomPotionEffects", 9);
++        NBTTagList nbttaglist = nbttagcompound.getTagList("CustomPotionEffects", 10);
+ 
+         for (PotionEffect potioneffect : effects) {
+             nbttaglist.appendTag(potioneffect.writeCustomPotionEffectToNBT(new NBTTagCompound()));

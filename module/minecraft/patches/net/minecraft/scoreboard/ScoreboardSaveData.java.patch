@@ -10,7 +10,7 @@
  
      public ScoreboardSaveData() {
          this("scoreboard");
-@@ -107,19 +110,38 @@
+@@ -107,19 +110,31 @@
      }
  
      protected void readDisplayConfig(NBTTagCompound compound) {
@@ -32,13 +32,6 @@
          }
      }
  
-+    private static boolean isRemovedCriteriaNamespace(String criteriaName) {
-+        String[] parts = criteriaName.split("\\.");
-+        if (parts.length >= 4 && "stat".equals(parts[0])) {
-+            return com.cleanroommc.ids.RetainedContent.removedNamespaces().contains(parts[2]);
-+        }
-+        return false;
-+    }
 +
      protected void readObjectives(NBTTagList nbt) {
 +        this.retainedObjectives.clear();
@@ -50,11 +43,11 @@
              if (iscorecriteria != null) {
                  String s = nbttagcompound.getString("Name");
                  if (s.length() > 16) {
-@@ -129,14 +151,27 @@
+@@ -129,14 +144,27 @@
                  ScoreObjective scoreobjective = this.scoreboard.addScoreObjective(s, iscorecriteria);
                  scoreobjective.setDisplayName(nbttagcompound.getString("DisplayName"));
                  scoreobjective.setRenderType(IScoreCriteria.EnumRenderType.getByName(nbttagcompound.getString("RenderType")));
-+            } else if (!criteriaName.isEmpty() && !isRemovedCriteriaNamespace(criteriaName)) {
++            } else if (!criteriaName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemovedStatKey(criteriaName)) {
 +                this.retainedObjectives.add(nbttagcompound.copy());
              }
          }
@@ -79,7 +72,7 @@
              String s = nbttagcompound.getString("Name");
              if (s.length() > 40) {
                  s = s.substring(0, 40);
-@@ -204,6 +239,9 @@
+@@ -204,6 +232,9 @@
              if (scoreobjective != null) {
                  nbttagcompound.setString("slot_" + i, scoreobjective.getName());
                  flag = true;
@@ -89,7 +82,7 @@
              }
          }
  
-@@ -225,6 +263,11 @@
+@@ -225,6 +256,11 @@
                  nbttaglist.appendTag(nbttagcompound);
              }
          }
@@ -101,7 +94,7 @@
  
          return nbttaglist;
      }
-@@ -242,6 +285,11 @@
+@@ -242,6 +278,11 @@
                  nbttaglist.appendTag(nbttagcompound);
              }
          }

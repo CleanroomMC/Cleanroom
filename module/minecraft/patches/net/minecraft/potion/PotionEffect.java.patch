@@ -78,7 +78,7 @@
      }
  
      /** Toggle the isPotionDurationMax field. */
-@@ -209,14 +228,82 @@
+@@ -209,14 +228,87 @@
      public int compareTo(PotionEffect p_compareTo_1_) {
          int i = 32147;
          return (this.getDuration() <= 32147 || p_compareTo_1_.getDuration() <= 32147) && (!this.getIsAmbient() || !p_compareTo_1_.getIsAmbient())
@@ -162,9 +162,14 @@
 +            java.util.List<net.minecraft.item.ItemStack> items = new java.util.ArrayList<net.minecraft.item.ItemStack>();
 +            net.minecraft.nbt.NBTTagList list = nbt.getTagList("CurativeItems", net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND);
 +            for (int i = 0; i < list.tagCount(); i++) {
-+                items.add(new net.minecraft.item.ItemStack(list.getCompoundTagAt(i)));
++                net.minecraft.item.ItemStack stack = new net.minecraft.item.ItemStack(list.getCompoundTagAt(i));
++                if (!stack.isEmpty()) {
++                    items.add(stack);
++                }
 +            }
-+            effect.setCurativeItems(items);
++            if (!items.isEmpty() || list.tagCount() == 0) {
++                effect.setCurativeItems(items);
++            }
 +        }
 +
 +        return effect;

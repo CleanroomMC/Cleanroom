@@ -525,4 +525,12 @@ public final class RetainedContent {
         }
     }
 
+    public static boolean isRemovedStatKey(String statKey) {
+        String[] parts = statKey.split("\\.");
+        if (parts.length >= 4 && "stat".equals(parts[0])) {
+            return removedNamespaces().contains(parts[2]);
+        }
+        return false;
+    }
+
 }
