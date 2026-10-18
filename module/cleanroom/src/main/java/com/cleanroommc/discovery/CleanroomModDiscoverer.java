@@ -184,7 +184,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     public Set<String> modsFromSource(File source) {
-        return Collections.unmodifiableSet(fileToModIds.get(source.getAbsoluteFile()));
+        return Collections.unmodifiableSet(fileToModIds.get(normalize(source)));
     }
 
     public boolean isModBuiltIn(String modId) {
@@ -328,7 +328,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
         for (URL url : Launch.classLoader.getURLs()) {
             try {
-                File file = new File(url.toURI()).getAbsoluteFile();
+                File file = new File(url.toURI());
                 if (isArchive(file)) {
                     scan(file, true);
                 }
@@ -345,7 +345,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void scan(File file, boolean onClasspath) {
-        File absolute = file.getAbsoluteFile();
+        File absolute = normalize(file);
         DiscoveredMod cached = discoveredFiles.get(absolute);
         if (cached != null) {
             return;
@@ -586,8 +586,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private void addClasspathCandidates(ModClassLoader modClassLoader, List<ModCandidate> modCandidates, Set<File> seen
     ) {
         File[] minecraftSources = modClassLoader.getParentSources();
+        File forgeLocation = FMLForgePlugin.forgeLocation == null ? null : normalize(FMLForgePlugin.forgeLocation);
         List<File> devPaths = new ArrayList<>();
-        for (File source : minecraftSources) {
+        for (File rawSource : minecraftSources) {
+            File source = normalize(rawSource);
             if (source.isFile()) {
                 DiscoveredMod discovered = discoveredFiles.get(source);
                 if (CoreModManager.getIgnoredMods().contains(source.getName()) &&
@@ -597,7 +599,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     CleanroomLog.get().trace("Leaving {} to the mods directory pass", source.getName());
                 } else if (discovered != null &&
                     discovered.modIds().isEmpty() &&
-                    !source.equals(FMLForgePlugin.forgeLocation)) {
+                    !source.equals(forgeLocation)) {
                     CleanroomLog.get().trace("Skipping library file {}", source.getAbsolutePath());
                 } else {
                     CleanroomLog.get()
@@ -606,7 +608,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                         );
                     addCandidate(modCandidates, seen, new ModCandidate(source, source, ContainerType.JAR, false, true));
                 }
-            } else if (source.equals(FMLForgePlugin.forgeLocation)) {
+            } else if (source.equals(forgeLocation)) {
                 CleanroomLog.get()
                     .debug("Found the loader's classes at {}, examining for annotations", source.getAbsolutePath());
                 addCandidate(modCandidates, seen, new ModCandidate(source, source, ContainerType.DIR, false, true));
@@ -661,6 +663,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 addCandidate(modCandidates, seen, new ModCandidate(mod, mod, ContainerType.JAR));
             }
         }
+    }
+
+    private static File normalize(File file) {
+        return file.toPath().toAbsolutePath().normalize().toFile();
     }
 
     private Attributes readManifestAttributes(File file, JarFile jarFile) {

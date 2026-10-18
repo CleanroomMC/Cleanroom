@@ -71,7 +71,8 @@ public class LibraryManager
 
     public static void setup(File minecraftHome)
     {
-        LibraryManager.minecraftHome = minecraftHome.toPath().toAbsolutePath().normalize().toFile();
+        minecraftHome = minecraftHome.toPath().toAbsolutePath().normalize().toFile();
+        LibraryManager.minecraftHome = minecraftHome;
         File libDir = findLibraryFolder(minecraftHome);
         FMLLog.log.debug("Determined Minecraft Libraries Root: {}", libDir);
         Repository old = Repository.replace(libDir, "libraries");
