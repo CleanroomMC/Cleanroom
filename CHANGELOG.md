@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.7.9-alpha - 2026-10-18
+
+### Bug Fix
+
+- **sdl**: Skip NVIDIA EGL exit teardown on Wayland *[commit by [@Rongmario](https://github.com/Rongmario) in [ae1b930](https://github.com/CleanroomMC/Cleanroom/commit/ae1b9302daeda1df4d9a5da897fd057aeedf7f58)]*
+    *[Fixes issue #699 by [@teamnotus](https://github.com/teamnotus)]*
+- **discovery**: Normalize game dir before gathering mod candidates *[commit by [@Rongmario](https://github.com/Rongmario) in [1de3e00](https://github.com/CleanroomMC/Cleanroom/commit/1de3e00b0dff281fca9cb4c31231199c91459b21)]*
+    *[Fixes issue #697 by [@teamnotus](https://github.com/teamnotus)]*
+
+### Documentation
+
+- Add RELICENSING.md *[commit by [@tttsaurus](https://github.com/tttsaurus) in [35349b1](https://github.com/CleanroomMC/Cleanroom/commit/35349b181be6f21f8a27309d7d7744ffa6e4ee49)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.8-alpha...0.7.9-alpha
+
 ## 0.7.8-alpha - 2026-10-17
 
 ### Bug Fix
