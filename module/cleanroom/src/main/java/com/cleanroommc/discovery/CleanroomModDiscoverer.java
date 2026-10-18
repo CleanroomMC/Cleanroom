@@ -162,6 +162,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return name.endsWith(".jar") || name.endsWith(".zip");
     }
 
+    private static File normalize(File file) {
+        return file.toPath().toAbsolutePath().normalize().toFile();
+    }
+
     public boolean hasForgeMods() {
         return hasForgeMods;
     }
@@ -597,9 +601,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     CleanroomLog.get().trace("Skipping already parsed coremod or tweaker {}", source.getName());
                 } else if (discovered != null && !discovered.onClasspath()) {
                     CleanroomLog.get().trace("Leaving {} to the mods directory pass", source.getName());
-                } else if (discovered != null &&
-                    discovered.modIds().isEmpty() &&
-                    !source.equals(forgeLocation)) {
+                } else if (discovered != null && discovered.modIds().isEmpty() && !source.equals(forgeLocation)) {
                     CleanroomLog.get().trace("Skipping library file {}", source.getAbsolutePath());
                 } else {
                     CleanroomLog.get()
@@ -663,10 +665,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 addCandidate(modCandidates, seen, new ModCandidate(mod, mod, ContainerType.JAR));
             }
         }
-    }
-
-    private static File normalize(File file) {
-        return file.toPath().toAbsolutePath().normalize().toFile();
     }
 
     private Attributes readManifestAttributes(File file, JarFile jarFile) {
