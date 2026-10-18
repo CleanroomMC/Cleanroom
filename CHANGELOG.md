@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.10-alpha - 2026-10-18
+
+### Bug Fix
+
+- **discovery**: Normalize mod paths when deduplicating candidates *[commit by [@Rongmario](https://github.com/Rongmario) in [3f52821](https://github.com/CleanroomMC/Cleanroom/commit/3f528210ef8bb46186b15b0bceacd37ae09e5de6)]*
+    *[Fixes issue #703 by [@D3nnis3n](https://github.com/D3nnis3n)]*
+
+### Build and Dependencies
+
+- **deps**: Update foundation to 0.22.2 *[commit by [@Rongmario](https://github.com/Rongmario) in [141f0e9](https://github.com/CleanroomMC/Cleanroom/commit/141f0e9545d23ef93b8851e6ec46d60d944abfce)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.9-alpha...0.7.10-alpha
+
 ## 0.7.9-alpha - 2026-10-18
 
 ### Bug Fix
