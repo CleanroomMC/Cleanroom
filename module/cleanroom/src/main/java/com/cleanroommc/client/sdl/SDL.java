@@ -38,8 +38,12 @@ import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLHints;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLLog;
+import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.sdl.SDL_LogOutputFunction;
+import org.lwjgl.system.JNI;
 import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.Platform;
+import org.lwjgl.system.linux.DynamicLinkLoader;
 
 import java.awt.image.BufferedImage;
 
@@ -222,8 +226,27 @@ public final class SDL {
         if (initializedBits == 0) {
             return;
         }
+        boolean wayland = "wayland".equals(SDLVideo.SDL_GetCurrentVideoDriver());
         SDLInit.SDL_Quit();
         initializedBits = 0;
+        if (wayland && Platform.get() == Platform.LINUX) {
+            skipNativeExitHandlers();
+        }
+    }
+
+    /*
+     * JVM calls exit() off the main thread. With two or more EGL contexts created, NVIDIA's EGL atexit
+     * teardown races its worker threads and segfaults. Registered last, _exit runs first and ends the
+     * process with the JVM's status once shutdown hooks are done.
+     * on_exit is glibc only.
+     */
+    private static void skipNativeExitHandlers() {
+        long self = DynamicLinkLoader.dlopen((CharSequence) null, DynamicLinkLoader.RTLD_LAZY);
+        long onExit = DynamicLinkLoader.dlsym(self, "on_exit");
+        long exit = DynamicLinkLoader.dlsym(self, "_exit");
+        if (onExit != 0L && exit != 0L) {
+            JNI.invokePPI(exit, 0L, onExit);
+        }
     }
 
     private static void installLog() {
