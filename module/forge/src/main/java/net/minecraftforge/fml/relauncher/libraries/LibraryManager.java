@@ -71,7 +71,7 @@ public class LibraryManager
 
     public static void setup(File minecraftHome)
     {
-        LibraryManager.minecraftHome = minecraftHome;
+        LibraryManager.minecraftHome = minecraftHome.toPath().toAbsolutePath().normalize().toFile();
         File libDir = findLibraryFolder(minecraftHome);
         FMLLog.log.debug("Determined Minecraft Libraries Root: {}", libDir);
         Repository old = Repository.replace(libDir, "libraries");
@@ -437,7 +437,7 @@ public class LibraryManager
         Set<File> seen = new HashSet<>();
 
         String extrapath = System.getProperty("crl.dev.extrapath");
-        if (extrapath != null) 
+        if (extrapath != null)
         {
             for (String mod : extrapath.split(File.pathSeparator))
             {
