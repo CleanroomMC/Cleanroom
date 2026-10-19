@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.11-alpha - 2026-10-19
+
+### Bug Fix
+
+- **patch**: Erroneous variables being read in lightmap hook *[commit by [@Rongmario](https://github.com/Rongmario) in [873a9ab](https://github.com/CleanroomMC/Cleanroom/commit/873a9ab10ee58ebd9ca28a4fbad749379fd32083)]*
+
+### Build and Dependencies
+
+- **deps**: Update lwjgly to 2.3.0 *[commit by [@Rongmario](https://github.com/Rongmario) in [dcc04f2](https://github.com/CleanroomMC/Cleanroom/commit/dcc04f26a9da81ec9590a7dff7c44ab7478885cf)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.10-alpha...0.7.11-alpha
+
 ## 0.7.10-alpha - 2026-10-18
 
 ### Bug Fix
