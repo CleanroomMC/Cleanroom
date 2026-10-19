@@ -238,8 +238,8 @@ dependencies {
     api 'org.lwjgl:lwjgl-stb'
     api 'org.lwjgl:lwjgl-sdl'
     // TODO
-    compileOnly 'com.cleanroommc:lwjgly-spi:2.1.0'
-    api 'com.cleanroommc:lwjgly:2.1.0'
+    compileOnly 'com.cleanroommc:lwjgly-spi:2.3.0'
+    api 'com.cleanroommc:lwjgly:2.3.0'
     lwjglNative "org.lwjgl:lwjgl:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-jemalloc:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-opengl:${lwjgl_version}"
