@@ -14,7 +14,6 @@ import com.cleanroommc.cleanmix.CleanMixModContainer;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.ConfigAnytimeContainer;
-import com.cleanroommc.common.IdFormatContainer;
 import com.cleanroommc.kirino.KirinoCommonCore;
 import com.cleanroommc.util.CleanroomLog;
 import zone.rong.mixinbooter.MixinBooterModContainer;
@@ -126,12 +125,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private static boolean isCorePluginBlacklisted(String fmlCorePlugin) {
-        if ("org.dimdev.jeid.JEIDLoadingPlugin".equals(fmlCorePlugin) ||
-            "org.dimdev.jeid.core.JEIDLoadingPlugin".equals(fmlCorePlugin) ||
-            "ru.fewizz.neid.asm.Plugin".equals(fmlCorePlugin) ||
-            "com.cleanroommc.hadenoughids.core.HadEnoughIDsPlugin".equals(fmlCorePlugin)) {
-            return true;
-        }
         for (String plugin : ForgeEarlyConfig.LOADING_PLUGIN_BLACKLIST) {
             if (plugin.equals(fmlCorePlugin)) {
                 return true;
@@ -210,8 +203,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     public void discoverMixinMods() {
         for (DiscoveredMod mod : discoveredFiles.values()) {
-            if (!mod.hasMixinManifestAttributes() ||
-                (mod.coremod() != null && isCorePluginBlacklisted(mod.coremod()))) {
+            if (!mod.hasMixinManifestAttributes()) {
                 continue;
             }
             if (mod.coremod() == null) {
@@ -289,7 +281,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         mods.add(new InjectedModContainer(mcp, new File("minecraft.jar")));
         // Cleanroom
         mods.add(CleanroomContainer.instance());
-        mods.add(new InjectedModContainer(new IdFormatContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new CleanMixModContainer(), CleanMixModContainer.location()));
         // Included Mods
         this.builtInMods
@@ -306,7 +297,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 continue;
             }
             String coremod = discovered.coremod();
-            if (coremod == null || isCorePluginBlacklisted(coremod) || CoreModManager.isCoreModLoaded(coremod)) {
+            if (coremod == null || CoreModManager.isCoreModLoaded(coremod)) {
                 continue;
             }
             if (CoreModManager.loadCoreModFromDiscoveredJar(Launch.classLoader, coremod, discovered.file())) {
@@ -399,18 +390,16 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     modIds.add("jsonpaintings");
                 }
             }
-            if (coremod == null || !isCorePluginBlacklisted(coremod)) {
-                if (modIds.isEmpty()) {
-                    ZipEntry entry = jarFile.getEntry("mcmod.info");
-                    if (entry != null) {
-                        parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
-                    }
-                    scanModAnnotations(jarFile, modIds);
+            if (modIds.isEmpty()) {
+                ZipEntry entry = jarFile.getEntry("mcmod.info");
+                if (entry != null) {
+                    parseMcmodInfo(file, jarFile.getInputStream(entry), modIds);
                 }
-                for (String modId : modIds) {
-                    if (recordMod(modId, absolute)) {
-                        return;
-                    }
+                scanModAnnotations(jarFile, modIds);
+            }
+            for (String modId : modIds) {
+                if (recordMod(modId, absolute)) {
+                    return;
                 }
             }
             String atList = attributes == null ? null : attributes.getValue(ModAccessTransformer.FMLAT);
@@ -453,16 +442,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                         CleanroomEnvironment.side(), modSide
                     );
                 CoreModManager.getIgnoredMods().add(file.getName());
-                return;
-            }
-
-            fmlCorePlugin = discoveredMod.coremod();
-            if (fmlCorePlugin != null && isCorePluginBlacklisted(fmlCorePlugin)) {
-                CoreModManager.getIgnoredMods().add(file.getName());
-                CleanroomLog.get()
-                    .warn("Loading plugin {} for mod {} is blacklisted (Cleanroom includes native wide IDs) and won't be loaded.",
-                        fmlCorePlugin, file.getName()
-                    );
                 return;
             }
 

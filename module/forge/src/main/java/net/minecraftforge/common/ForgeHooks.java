@@ -1430,7 +1430,7 @@ public class ForgeHooks
         if (type == ConnectionType.VANILLA)
         {
             ForgeRegistry<IRecipe> recipes_ = (ForgeRegistry<IRecipe>)ForgeRegistries.RECIPES;
-            java.util.Set<ResourceLocation> vanilla = recipes_.getVanillaBaseline().keySet();
+            Set<ResourceLocation> vanilla = recipes_.getVanillaBaseline().keySet();
             if (!recipes.isEmpty())
                 recipes = recipes.stream().filter(r -> vanilla.contains(r.getRegistryName())).collect(Collectors.toList());
             if (!display.isEmpty())

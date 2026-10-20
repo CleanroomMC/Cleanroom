@@ -5,7 +5,7 @@
      private int tickRefCount;
      private final BlockStateContainer data;
 +    /** Cleanroom: cells whose saved block-state string named no registered block; a write to the cell drops the name. Null for fresh sections. */
-+    public com.cleanroommc.ids.RetainedContent.Section retained;
++    public com.cleanroommc.cleanroom.common.id.RetainedContent.Section retained;
      /** The NibbleArray containing a block of Block-light data. */
      private NibbleArray blockLight;
      /**

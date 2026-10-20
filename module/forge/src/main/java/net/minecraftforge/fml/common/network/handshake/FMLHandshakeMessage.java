@@ -22,9 +22,15 @@ package net.minecraftforge.fml.common.network.handshake;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import com.cleanroommc.common.CleanroomContainer;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -120,7 +126,7 @@ public abstract class FMLHandshakeMessage {
         }
         public ModList(List<ModContainer> modList)
         {
-            this(modList, java.util.Collections.emptyList());
+            this(modList, Collections.emptyList());
         }
 
         public ModList(List<ModContainer> modList, List<RegistrySync.Entry> entries)
@@ -129,6 +135,10 @@ public abstract class FMLHandshakeMessage {
             for (ModContainer mod : modList)
             {
                 modTags.put(mod.getModId(), mod.getVersion());
+            }
+            if (!modList.isEmpty())
+            {
+                modTags.put(CleanroomContainer.MOD_ID, CleanroomContainer.advertisedFormat());
             }
         }
         private Map<String,String> modTags = Maps.newHashMap();

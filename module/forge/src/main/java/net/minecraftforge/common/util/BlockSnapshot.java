@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -49,15 +50,12 @@ public class BlockSnapshot
     private final int dimId;
     @Nullable
     private IBlockState replacedBlock;
-    @Nullable
-    private NBTTagCompound retainedStateTag;
     private int flag;
     @Nullable
     private final NBTTagCompound nbt;
     @Nullable
     private WeakReference<World> world;
     private final ResourceLocation registryName;
-    private final int meta;
 
     public BlockSnapshot(World world, BlockPos pos, IBlockState state)
     {
@@ -71,7 +69,6 @@ public class BlockSnapshot
         this.pos = pos.toImmutable();
         this.setReplacedBlock(state);
         this.registryName = state.getBlock().getRegistryName();
-        this.meta = state.getBlock().getMetaFromState(state);
         this.setFlag(3);
         this.nbt = nbt;
         if (DEBUG)
@@ -105,7 +102,9 @@ public class BlockSnapshot
         this.pos = pos.toImmutable();
         this.setFlag(flag);
         this.registryName = registryName;
-        this.meta = meta;
+        this.replacedBlock = ForgeRegistries.BLOCKS.containsKey(registryName)
+            ? ForgeRegistries.BLOCKS.getValue(registryName).getStateFromMeta(meta)
+            : null;
         this.nbt = nbt;
     }
 
@@ -128,22 +127,9 @@ public class BlockSnapshot
                 tag.getInteger("metadata"),
                 tag.getInteger("flag"),
                 tag.getBoolean("hasTE") ? tag.getCompoundTag("tileEntity") : null);
-        if (tag.hasKey("state", 10))
+        if (tag.hasKey("state", 10) && ForgeRegistries.BLOCKS.containsKey(snapshot.getRegistryName()))
         {
-            // Name + properties written by writeToNBT; "metadata" alone only describes one of every sixteen states
-            NBTTagCompound stateTag = tag.getCompoundTag("state");
-            if (ForgeRegistries.BLOCKS.containsKey(snapshot.getRegistryName()))
-            {
-                snapshot.setReplacedBlock(net.minecraft.nbt.NBTUtil.readBlockState(stateTag));
-                if (com.cleanroommc.ids.RetainedContent.hasUnresolvedBlockStateTag(stateTag))
-                {
-                    snapshot.retainedStateTag = stateTag.copy();
-                }
-            }
-            else
-            {
-                snapshot.retainedStateTag = stateTag.copy();
-            }
+            snapshot.setReplacedBlock(NBTUtil.readBlockState(tag.getCompoundTag("state")));
         }
         return snapshot;
     }
@@ -177,18 +163,17 @@ public class BlockSnapshot
     {
         if (this.replacedBlock == null)
         {
-            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(getMeta());
+            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(0);
         }
         return this.replacedBlock;
     }
 
-    /** The replaced state, or null when the block is not registered — keeps equals/hashCode safe on dead snapshots */
     @Nullable
     private IBlockState replacedBlockOrNull()
     {
         if (this.replacedBlock == null && ForgeRegistries.BLOCKS.containsKey(getRegistryName()))
         {
-            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(getMeta());
+            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(0);
         }
         return this.replacedBlock;
     }
@@ -264,14 +249,9 @@ public class BlockSnapshot
         compound.setInteger("flag", getFlag());
         compound.setInteger("dimension", getDimId());
         compound.setInteger("metadata", getMeta());
-        // Name + properties, so the state survives both missing-block retention and >16-state blocks
         if (this.replacedBlock != null)
         {
-            compound.setTag("state", net.minecraft.nbt.NBTUtil.writeBlockState(new NBTTagCompound(), this.replacedBlock));
-        }
-        else if (this.retainedStateTag != null)
-        {
-            compound.setTag("state", this.retainedStateTag.copy());
+            compound.setTag("state", NBTUtil.writeBlockState(new NBTTagCompound(), this.replacedBlock));
         }
 
         compound.setBoolean("hasTE", getNbt() != null);
@@ -302,10 +282,6 @@ public class BlockSnapshot
         {
             return false;
         }
-        if (this.getMeta() != other.getMeta())
-        {
-            return false;
-        }
         if (this.getDimId() != other.getDimId())
         {
             return false;
@@ -329,7 +305,7 @@ public class BlockSnapshot
     public int hashCode()
     {
         int hash = 7;
-        hash = 73 * hash + (this.replacedBlockOrNull() != null ? this.replacedBlockOrNull().hashCode() : this.getMeta());
+        hash = 73 * hash + Objects.hashCode(this.replacedBlockOrNull());
         hash = 73 * hash + this.getDimId();
         hash = 73 * hash + this.getPos().hashCode();
         hash = 73 * hash + this.getRegistryName().hashCode();
@@ -359,5 +335,9 @@ public class BlockSnapshot
      * @deprecated use {@link #getReplacedBlock()}; metadata cannot describe states past fifteen.
      */
     @Deprecated
-    public int getMeta() { return meta; }
+    public int getMeta()
+    {
+        IBlockState state = replacedBlockOrNull();
+        return state != null ? state.getBlock().getMetaFromState(state) : 0;
+    }
 }

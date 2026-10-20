@@ -20,7 +20,7 @@
 -        Item item = stack.getItem();
 -        int i = item.getHasSubtypes() ? stack.getMetadata() : 0;
 -        return Item.REGISTRY.getIDForObject(item) << 16 | i & 65535;
-+        return com.cleanroommc.ids.PackedItems.pack(stack); // Cleanroom: item ids past 65535, wide damage values, and non-legacy state components
++        return com.cleanroommc.cleanroom.common.id.PackedItems.pack(stack); // Cleanroom: item ids past 65535, wide damage values, and non-legacy state components
      }
  
      public boolean containsItem(int packedItem) {
@@ -29,7 +29,7 @@
  
      public static ItemStack unpack(int packedItem) {
 -        return packedItem == 0 ? ItemStack.EMPTY : new ItemStack(Item.getItemById(packedItem >> 16 & 65535), 1, packedItem & 65535);
-+        return com.cleanroommc.ids.PackedItems.unpack(packedItem);
++        return com.cleanroommc.cleanroom.common.id.PackedItems.unpack(packedItem);
      }
  
      public void clear() {

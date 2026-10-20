@@ -33,7 +33,7 @@
 +                // Cleanroom: a mod's world type, missing now; retained verbatim and written back so the world returns to it when the mod does
 +                this.retainedGeneratorName = s1;
 +                this.retainedGeneratorVersion = nbt.getInteger("generatorVersion");
-+                com.cleanroommc.ids.RetainedContent.noteMissing("world type " + s1, null);
++                com.cleanroommc.cleanroom.common.id.RetainedContent.noteMissing("world type " + s1, null);
                  this.terrainType = WorldType.DEFAULT;
              } else if (this.terrainType.isVersioned()) {
                  int i = 0;

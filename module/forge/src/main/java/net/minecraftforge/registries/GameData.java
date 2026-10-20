@@ -662,10 +662,6 @@ public class GameData
 
         if (filter.test(BLOCKS))
         {
-            List<ResourceLocation> open = keys.stream().filter(filter).collect(Collectors.toList());
-            MinecraftForge.EVENT_BUS.post(new RegistryEvent.RegisterAll(open));
-            ObjectHolderRegistry.INSTANCE.applyObjectHolders(); // inject anything registered through RegisterAll
-
             MinecraftForge.EVENT_BUS.post(RegistryManager.ACTIVE.getRegistry(BLOCKS).getRegisterEvent(BLOCKS));
             ObjectHolderRegistry.INSTANCE.applyObjectHolders(); // inject any blocks
         }

@@ -19,6 +19,7 @@
 
 package net.minecraftforge.registries;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,7 +80,7 @@ public class RegistryManager
 
     public Set<ResourceLocation> getRegistryNames()
     {
-        return java.util.Collections.unmodifiableSet(this.registries.keySet());
+        return Collections.unmodifiableSet(this.registries.keySet());
     }
 
     public <V extends IForgeRegistryEntry<V>> IForgeRegistry<V> getRegistry(Class<V> cls)

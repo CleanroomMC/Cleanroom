@@ -1,6 +1,6 @@
 --- original/net/minecraft/block/BlockFlowerPot.java
 +++ modified/net/minecraft/block/BlockFlowerPot.java
-@@ -157,13 +158,15 @@
+@@ -157,13 +157,15 @@
      /** Checks if this block can be placed exactly at the given position. */
      @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
@@ -18,7 +18,7 @@
              this.dropBlockAsItem(worldIn, pos, state, 0);
              worldIn.setBlockToAir(pos);
          }
-@@ -172,11 +175,6 @@
+@@ -172,11 +174,6 @@
      /** Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated */
      @Override
      public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
@@ -30,7 +30,7 @@
          super.breakBlock(worldIn, pos, state);
      }
  
-@@ -388,6 +386,32 @@
+@@ -388,6 +385,28 @@
          return BlockFaceShape.UNDEFINED;
      }
  
@@ -39,12 +39,8 @@
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 +        super.getDrops(drops, world, pos, state, fortune);
 +        TileEntityFlowerPot te = world.getTileEntity(pos) instanceof TileEntityFlowerPot ? (TileEntityFlowerPot)world.getTileEntity(pos) : null;
-+        if (te != null) {
-+            ItemStack flower = te.getFlowerItemStack();
-+            if (!flower.isEmpty()) {
-+                drops.add(flower);
-+            }
-+        }
++        if (te != null && te.getFlowerPotItem() != null)
++            drops.add(new ItemStack(te.getFlowerPotItem(), 1, te.getFlowerPotData()));
 +    }
 +
 +    @Override

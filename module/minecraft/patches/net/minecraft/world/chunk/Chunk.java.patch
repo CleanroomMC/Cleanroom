@@ -13,9 +13,9 @@
 -    /** Contains a 16x16 mapping on the X/Z plane of the biome ID to which each colum belongs. */
 -    private final byte[] blockBiomeArray = new byte[256];
 +    /** Cleanroom: full biome ids; there is no byte[] backing array anymore (see getBiomeArray) */
-+    private final com.cleanroommc.ids.ChunkBiomes biomeIds;
++    private final com.cleanroommc.cleanroom.common.id.ChunkBiomes biomeIds;
 +    /** Cleanroom: names no registry resolved when this chunk was read, written back verbatim so the content returns with its mod */
-+    public final com.cleanroommc.ids.RetainedContent retained = new com.cleanroommc.ids.RetainedContent();
++    public final com.cleanroommc.cleanroom.common.id.RetainedContent retained = new com.cleanroommc.cleanroom.common.id.RetainedContent();
      /** A map, similar to heightMap, that tracks how far down precipitation can fall. */
      private final int[] precipitationHeightMap = new int[256];
      /** Which columns need their skylightMaps updated. */
@@ -24,7 +24,7 @@
  
          Arrays.fill(this.precipitationHeightMap, -999);
 -        Arrays.fill(this.blockBiomeArray, (byte)-1);
-+        this.biomeIds = new com.cleanroommc.ids.ChunkBiomes(this);
++        this.biomeIds = new com.cleanroommc.cleanroom.common.id.ChunkBiomes(this);
 +        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
      }
  
@@ -421,7 +421,7 @@
 -        if (k == 255) {
 -            Biome biome = provider.getBiome(pos, Biomes.PLAINS);
 +        int k = this.biomeIds.get(i, y, j); // Cleanroom: full ids, 3D-indexed (1 layer today)
-+        if (k == com.cleanroommc.ids.ChunkBiomes.UNSET) {
++        if (k == com.cleanroommc.cleanroom.common.id.ChunkBiomes.UNSET) {
 +            // Forge: checking for client ensures that biomes are only generated on integrated server
 +            // in singleplayer. Generating biomes on the client may corrupt the biome ID arrays on
 +            // the server while they are being generated because IntCache can't be thread safe,
@@ -439,7 +439,7 @@
  
 -    /** Returns an array containing a 16x16 mapping on the X/Z of block positions in this Chunk to biome IDs. */
 +    /** Cleanroom: this chunk's biomes as full ids; use it instead of {@link #getBiomeArray()}, which only holds their low bytes */
-+    public com.cleanroommc.ids.ChunkBiomes getBiomeIds() {
++    public com.cleanroommc.cleanroom.common.id.ChunkBiomes getBiomeIds() {
 +        return this.biomeIds;
 +    }
 +
@@ -451,7 +451,7 @@
 +    @Deprecated
      public byte[] getBiomeArray() {
 -        return this.blockBiomeArray;
-+        return com.cleanroommc.ids.ChunkBiomes.snapshotBytes(this);
++        return com.cleanroommc.cleanroom.common.id.ChunkBiomes.snapshotBytes(this);
      }
  
      /** Accepts a 256-entry array that contains a 16x16 mapping on the X/Z plane of block positions in this Chunk to biome IDs. */

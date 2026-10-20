@@ -5,6 +5,6 @@
  
      public boolean askToOpenWorld() {
 -        return this.versionId > 1343;
-+        return this.versionId > 1343 && this.versionId != com.cleanroommc.ids.LegacyIdWorlds.JEID_DATA_VERSION;
++        return this.versionId > 1343 && this.versionId != com.cleanroommc.cleanroom.common.id.LegacyIdWorlds.JEID_DATA_VERSION;
      }
  }

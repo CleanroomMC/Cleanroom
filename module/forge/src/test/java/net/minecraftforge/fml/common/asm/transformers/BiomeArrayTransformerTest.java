@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.cleanroommc.ids.ChunkBiomes;
+import com.cleanroommc.cleanroom.common.id.ChunkBiomes;
 
 /**
  * {@link BiomeArrayTransformer} on real javac output from {@code testmods.biomearray.BiomeArrayFixture}:
@@ -284,7 +284,7 @@ public class BiomeArrayTransformerTest
         for (AbstractInsnNode insn : fill.instructions)
         {
             if (insn.getOpcode() == Opcodes.INVOKESTATIC && insn instanceof MethodInsnNode
-                    && "com/cleanroommc/ids/ChunkBiomes".equals(((MethodInsnNode)insn).owner)
+                    && "com/cleanroommc/cleanroom/common/id/ChunkBiomes".equals(((MethodInsnNode)insn).owner)
                     && "storeByte".equals(((MethodInsnNode)insn).name))
             {
                 storeByte = true;

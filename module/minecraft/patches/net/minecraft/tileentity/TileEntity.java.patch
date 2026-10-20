@@ -21,25 +21,27 @@
      /** Returns the worldObj for this tileEntity. */
      public World getWorld() {
          return this.world;
-@@ -58,6 +63,8 @@
+@@ -58,6 +63,9 @@
  
      public void readFromNBT(NBTTagCompound compound) {
          this.pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
 +        if (compound.hasKey("ForgeData")) this.customTileData = compound.getCompoundTag("ForgeData");
 +        if (this.capabilities != null && compound.hasKey("ForgeCaps")) this.capabilities.deserializeNBT(compound.getCompoundTag("ForgeCaps"));
++        com.cleanroommc.cleanroom.common.id.IdDataFixers.beforeTileEntityRead(this, compound);
      }
  
      public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-@@ -74,6 +81,8 @@
+@@ -74,6 +82,9 @@
          compound.setInteger("x", this.pos.getX());
          compound.setInteger("y", this.pos.getY());
          compound.setInteger("z", this.pos.getZ());
 +        if (this.customTileData != null) compound.setTag("ForgeData", this.customTileData);
 +        if (this.capabilities != null) compound.setTag("ForgeCaps", this.capabilities.serializeNBT());
++        com.cleanroommc.cleanroom.common.id.IdDataFixers.afterTileEntityWrite(this, compound);
          return compound;
      }
  
-@@ -81,14 +90,17 @@
+@@ -81,14 +92,17 @@
      public static TileEntity create(World worldIn, NBTTagCompound compound) {
          TileEntity tileentity = null;
          String s = compound.getString("id");
@@ -59,7 +61,7 @@
          }
  
          if (tileentity != null) {
-@@ -97,18 +109,34 @@
+@@ -97,18 +111,34 @@
                  tileentity.readFromNBT(compound);
              } catch (Throwable throwable) {
                  LOGGER.error("Failed to load data for block entity {}", s, throwable);
@@ -95,7 +97,7 @@
      public int getBlockMetadata() {
          if (this.blockMetadata == -1) {
              IBlockState iblockstate = this.world.getBlockState(this.pos);
-@@ -121,8 +149,7 @@
+@@ -121,8 +151,7 @@
      /** For tile entities, ensures the chunk containing the tile entity is saved to disk later - the game won't think it hasn't changed and skip it. */
      public void markDirty() {
          if (this.world != null) {
@@ -105,7 +107,7 @@
              this.world.markChunkDirty(this.pos, this);
              if (this.getBlockType() != Blocks.AIR) {
                  this.world.updateComparatorOutputLevel(this.pos, this.getBlockType());
-@@ -130,7 +157,6 @@
+@@ -130,7 +159,6 @@
          }
      }
  
@@ -113,7 +115,7 @@
      public double getDistanceSq(double x, double y, double z) {
          double d0 = this.pos.getX() + 0.5 - x;
          double d1 = this.pos.getY() + 0.5 - y;
-@@ -212,7 +238,7 @@
+@@ -212,7 +240,7 @@
  
                          try {
                              return String.format(
@@ -122,7 +124,7 @@
                              );
                          } catch (Throwable throwable) {
                              return "ID #" + i;
-@@ -266,6 +292,177 @@
+@@ -266,6 +294,177 @@
      public void mirror(Mirror mirrorIn) {
      }
  

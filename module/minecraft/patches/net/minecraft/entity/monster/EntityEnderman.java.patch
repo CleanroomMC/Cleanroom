@@ -1,101 +1,6 @@
 --- original/net/minecraft/entity/monster/EntityEnderman.java
 +++ modified/net/minecraft/entity/monster/EntityEnderman.java
-@@ -151,13 +152,24 @@
-     }
- 
-     /** (abstract) Protected helper method to write subclass entity data to NBT. */
-+    @Nullable
-+    private NBTTagCompound retainedCarriedStateTag;
-+
-     @Override
-     public void writeEntityToNBT(NBTTagCompound compound) {
-         super.writeEntityToNBT(compound);
-         IBlockState iblockstate = this.getHeldBlockState();
--        if (iblockstate != null) {
--            compound.setShort("carried", (short)Block.getIdFromBlock(iblockstate.getBlock()));
-+        if (this.retainedCarriedStateTag != null) {
-+            compound.setString("carried", this.retainedCarriedStateTag.getString("Name"));
-+            compound.setShort("carriedData", (short)0);
-+            compound.setTag("carriedBlockState", this.retainedCarriedStateTag.copy());
-+        } else if (iblockstate != null) {
-+            ResourceLocation carriedName = Block.REGISTRY.getNameForObject(iblockstate.getBlock());
-+            if (carriedName != null) {
-+                compound.setString("carried", carriedName.toString());
-+            }
-             compound.setShort("carriedData", (short)iblockstate.getBlock().getMetaFromState(iblockstate));
-+            compound.setTag("carriedBlockState", net.minecraft.nbt.NBTUtil.writeBlockState(new NBTTagCompound(), iblockstate)); // Cleanroom: by name; the short tags wrap past 32767
-         }
-     }
- 
-@@ -165,18 +177,63 @@
-     @Override
-     public void readEntityFromNBT(NBTTagCompound compound) {
-         super.readEntityFromNBT(compound);
-+        NBTTagCompound pendingRetained = null;
-         IBlockState iblockstate;
--        if (compound.hasKey("carried", 8)) {
--            iblockstate = Block.getBlockFromName(compound.getString("carried")).getStateFromMeta(compound.getShort("carriedData") & 65535);
-+        if (compound.hasKey("carriedBlockState", 10)) {
-+            NBTTagCompound stateTag = compound.getCompoundTag("carriedBlockState");
-+            String blockName = stateTag.getString("Name");
-+            if (!blockName.isEmpty() && !Block.REGISTRY.containsKey(new ResourceLocation(blockName))) {
-+                if (com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
-+                    com.cleanroommc.ids.RetainedContent.noteRemoved(blockName);
-+                    iblockstate = null;
-+                } else {
-+                    pendingRetained = stateTag.copy();
-+                    iblockstate = com.cleanroommc.ids.StandIns.forMissing(blockName);
-+                    com.cleanroommc.ids.RetainedContent.noteMissingBlock(blockName, iblockstate, null);
-+                }
-+            } else {
-+                iblockstate = net.minecraft.nbt.NBTUtil.readBlockState(stateTag);
-+            }
-+        } else if (compound.hasKey("carried", 8)) {
-+            String carriedName = compound.getString("carried");
-+            Block carriedBlock = Block.getBlockFromName(carriedName);
-+            if (carriedBlock == null && !carriedName.isEmpty() && !com.cleanroommc.ids.RetainedContent.isRemoved(carriedName)) {
-+                NBTTagCompound synth = new NBTTagCompound();
-+                synth.setString("Name", carriedName);
-+                pendingRetained = synth;
-+                iblockstate = com.cleanroommc.ids.StandIns.forMissing(carriedName);
-+                com.cleanroommc.ids.RetainedContent.noteMissingBlock(carriedName, iblockstate, null);
-+            } else {
-+                iblockstate = carriedBlock == null ? null : carriedBlock.getStateFromMeta(compound.getShort("carriedData") & 65535);
-+            }
-+        } else if (compound.hasKey("carried", 99)) {
-+            int legacyId = compound.getShort("carried") & 0xFFFF;
-+            ResourceLocation missingName = com.cleanroommc.ids.LegacyIds.blockName(legacyId);
-+            if (missingName != null && !Block.REGISTRY.containsKey(missingName)) {
-+                String blockName = missingName.toString();
-+                if (!com.cleanroommc.ids.RetainedContent.isRemoved(blockName)) {
-+                    NBTTagCompound synth = new NBTTagCompound();
-+                    synth.setString("Name", blockName);
-+                    pendingRetained = synth;
-+                    iblockstate = com.cleanroommc.ids.StandIns.forMissing(blockName);
-+                    com.cleanroommc.ids.RetainedContent.noteMissingBlock(blockName, iblockstate, null);
-+                } else {
-+                    iblockstate = null;
-+                }
-+            } else {
-+                Block carriedBlock = com.cleanroommc.ids.LegacyIds.block(legacyId); // Cleanroom: the short is a Forge-era saved id
-+                iblockstate = carriedBlock == null ? null : carriedBlock.getStateFromMeta(compound.getShort("carriedData") & 65535);
-+            }
-         } else {
--            iblockstate = Block.getBlockById(compound.getShort("carried")).getStateFromMeta(compound.getShort("carriedData") & 65535);
-+            iblockstate = null;
-         }
- 
--        if (iblockstate == null || iblockstate.getBlock() == null || iblockstate.getMaterial() == Material.AIR) {
-+        if (pendingRetained == null && (iblockstate == null || iblockstate.getBlock() == null || iblockstate.getMaterial() == Material.AIR)) {
-             iblockstate = null;
-         }
- 
-         this.setHeldBlockState(iblockstate);
-+        this.retainedCarriedStateTag = pendingRetained;
-     }
- 
-     /** Checks to see if this enderman should be attacking this player */
-@@ -267,7 +324,10 @@
+@@ -267,7 +267,10 @@
  
      /** Teleport the enderman */
      private boolean teleportTo(double x, double y, double z) {
@@ -107,15 +12,7 @@
          if (flag) {
              this.world
                  .playSound(null, this.prevPosX, this.prevPosY, this.prevPosZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
-@@ -312,6 +372,7 @@
- 
-     /** Sets this enderman's held block state */
-     public void setHeldBlockState(@Nullable IBlockState state) {
-+        this.retainedCarriedStateTag = null;
-         this.dataManager.set(CARRIED_BLOCK, Optional.fromNullable(state));
-     }
- 
-@@ -346,6 +407,16 @@
+@@ -346,6 +349,16 @@
          }
      }
  
@@ -132,7 +29,7 @@
      public boolean isScreaming() {
          return this.dataManager.get(SCREAMING);
      }
-@@ -473,7 +544,7 @@
+@@ -473,7 +486,7 @@
              if (this.enderman.getHeldBlockState() == null) {
                  return false;
              } else {
@@ -141,7 +38,7 @@
                      ? false
                      : this.enderman.getRNG().nextInt(2000) == 0;
              }
-@@ -491,7 +562,16 @@
+@@ -491,7 +504,16 @@
              IBlockState iblockstate = world.getBlockState(blockpos);
              IBlockState iblockstate1 = world.getBlockState(blockpos.down());
              IBlockState iblockstate2 = this.enderman.getHeldBlockState();
@@ -159,7 +56,7 @@
                  world.setBlockState(blockpos, iblockstate2, 3);
                  this.enderman.setHeldBlockState(null);
              }
-@@ -521,7 +601,7 @@
+@@ -521,7 +543,7 @@
              if (this.enderman.getHeldBlockState() != null) {
                  return false;
              } else {

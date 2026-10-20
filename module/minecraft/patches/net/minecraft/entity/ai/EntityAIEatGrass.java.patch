@@ -9,14 +9,12 @@
                      this.entityWorld.destroyBlock(blockpos, false);
                  }
  
-@@ -80,8 +80,8 @@
+@@ -80,7 +80,7 @@
              } else {
                  BlockPos blockpos1 = blockpos.down();
                  if (this.entityWorld.getBlockState(blockpos1).getBlock() == Blocks.GRASS) {
 -                    if (this.entityWorld.getGameRules().getBoolean("mobGriefing")) {
--                        this.entityWorld.playEvent(2001, blockpos1, Block.getIdFromBlock(Blocks.GRASS));
 +                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity)) {
-+                        this.entityWorld.playEvent(2001, blockpos1, Block.getStateId(Blocks.GRASS.getDefaultState()));
+                         this.entityWorld.playEvent(2001, blockpos1, Block.getIdFromBlock(Blocks.GRASS));
                          this.entityWorld.setBlockState(blockpos1, Blocks.DIRT.getDefaultState(), 2);
                      }
- 

@@ -27,12 +27,3 @@
          }
      }
  
-@@ -64,7 +78,7 @@
-         if (this.breakingTime == 240 && this.entity.world.getDifficulty() == EnumDifficulty.HARD) {
-             this.entity.world.setBlockToAir(this.doorPosition);
-             this.entity.world.playEvent(1021, this.doorPosition, 0);
--            this.entity.world.playEvent(2001, this.doorPosition, Block.getIdFromBlock(this.doorBlock));
-+            this.entity.world.playEvent(2001, this.doorPosition, Block.getStateId(this.doorBlock.getDefaultState()));
-         }
-     }
- }

@@ -1,22 +1,6 @@
 --- original/net/minecraft/world/gen/structure/StructureVillagePieces.java
 +++ modified/net/minecraft/world/gen/structure/StructureVillagePieces.java
-+        String name = tag.hasKey(nameKey, 8) ? tag.getString(nameKey) : null;
-+        if ((name == null || name.isEmpty()) && tag.hasKey(idKey, 99)) {
-+            net.minecraft.util.ResourceLocation leg = com.cleanroommc.ids.LegacyIds.blockName(tag.getInteger(idKey));
-+            name = leg == null ? null : leg.toString();
-+        }
-+        if (name != null && !name.isEmpty()
-+            && !Block.REGISTRY.containsKey(new net.minecraft.util.ResourceLocation(name))
-+            && !com.cleanroommc.ids.RetainedContent.isRemoved(name)) {
-+            return name;
-+        }
-+        return null;
-+    }
-+
-     public static void registerVillagePieces() {
-         MapGenStructureIO.registerStructureComponent(StructureVillagePieces.House1.class, "ViBH");
-         MapGenStructureIO.registerStructureComponent(StructureVillagePieces.Field1.class, "ViDF");
-@@ -88,6 +104,7 @@
+@@ -88,6 +88,7 @@
                  StructureVillagePieces.House3.class, 8, MathHelper.getInt(random, 0 + size, 3 + size * 2)
              )
          );
@@ -24,7 +8,7 @@
          Iterator<StructureVillagePieces.PieceWeight> iterator = list.iterator();
  
          while (iterator.hasNext()) {
-@@ -164,6 +181,8 @@
+@@ -164,6 +165,8 @@
              structurevillagepieces$village = StructureVillagePieces.House3.createPiece(
                  start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
              );
@@ -33,84 +17,7 @@
          }
  
          return structurevillagepieces$village;
-@@ -438,6 +457,11 @@
-             this.cropTypeD = this.getRandomCropType(rand);
-         }
- 
-+        @Nullable private String retainedCAName;
-+        @Nullable private String retainedCBName;
-+        @Nullable private String retainedCCName;
-+        @Nullable private String retainedCDName;
-+
-         /** (abstract) Helper method to write subclass data to NBT */
-         @Override
-         protected void writeStructureToNBT(NBTTagCompound tagCompound) {
-@@ -446,16 +470,24 @@
-             tagCompound.setInteger("CB", Block.REGISTRY.getIDForObject(this.cropTypeB));
-             tagCompound.setInteger("CC", Block.REGISTRY.getIDForObject(this.cropTypeC));
-             tagCompound.setInteger("CD", Block.REGISTRY.getIDForObject(this.cropTypeD));
-+            if (this.retainedCAName != null) tagCompound.setString("CAName", this.retainedCAName); else if (Block.REGISTRY.getNameForObject(this.cropTypeA) != null) tagCompound.setString("CAName", Block.REGISTRY.getNameForObject(this.cropTypeA).toString());
-+            if (this.retainedCBName != null) tagCompound.setString("CBName", this.retainedCBName); else if (Block.REGISTRY.getNameForObject(this.cropTypeB) != null) tagCompound.setString("CBName", Block.REGISTRY.getNameForObject(this.cropTypeB).toString());
-+            if (this.retainedCCName != null) tagCompound.setString("CCName", this.retainedCCName); else if (Block.REGISTRY.getNameForObject(this.cropTypeC) != null) tagCompound.setString("CCName", Block.REGISTRY.getNameForObject(this.cropTypeC).toString());
-+            if (this.retainedCDName != null) tagCompound.setString("CDName", this.retainedCDName); else if (Block.REGISTRY.getNameForObject(this.cropTypeD) != null) tagCompound.setString("CDName", Block.REGISTRY.getNameForObject(this.cropTypeD).toString());
-         }
- 
-         /** (abstract) Helper method to read subclass data from NBT */
-         @Override
-         protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_) {
-             super.readStructureFromNBT(tagCompound, p_143011_2_);
--            this.cropTypeA = Block.getBlockById(tagCompound.getInteger("CA"));
--            this.cropTypeB = Block.getBlockById(tagCompound.getInteger("CB"));
--            this.cropTypeC = Block.getBlockById(tagCompound.getInteger("CC"));
--            this.cropTypeD = Block.getBlockById(tagCompound.getInteger("CD"));
-+            this.retainedCAName = retainMissingCropName(tagCompound, "CAName", "CA");
-+            this.retainedCBName = retainMissingCropName(tagCompound, "CBName", "CB");
-+            this.retainedCCName = retainMissingCropName(tagCompound, "CCName", "CC");
-+            this.retainedCDName = retainMissingCropName(tagCompound, "CDName", "CD");
-+            this.cropTypeA = tagCompound.hasKey("CAName", 8) ? Block.getBlockFromName(tagCompound.getString("CAName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CA"));
-+            this.cropTypeB = tagCompound.hasKey("CBName", 8) ? Block.getBlockFromName(tagCompound.getString("CBName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CB"));
-+            this.cropTypeC = tagCompound.hasKey("CCName", 8) ? Block.getBlockFromName(tagCompound.getString("CCName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CC"));
-+            this.cropTypeD = tagCompound.hasKey("CDName", 8) ? Block.getBlockFromName(tagCompound.getString("CDName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CD"));
-             if (!(this.cropTypeA instanceof BlockCrops)) {
-                 this.cropTypeA = Blocks.WHEAT;
-             }
-@@ -581,20 +613,33 @@
-             this.cropTypeB = this.getRandomCropType(rand);
-         }
- 
-+        @Nullable private String retainedCAName;
-+        @Nullable private String retainedCBName;
-+
-         /** (abstract) Helper method to write subclass data to NBT */
-         @Override
-         protected void writeStructureToNBT(NBTTagCompound tagCompound) {
-             super.writeStructureToNBT(tagCompound);
-             tagCompound.setInteger("CA", Block.REGISTRY.getIDForObject(this.cropTypeA));
-             tagCompound.setInteger("CB", Block.REGISTRY.getIDForObject(this.cropTypeB));
-+            if (this.retainedCAName != null) tagCompound.setString("CAName", this.retainedCAName); else if (Block.REGISTRY.getNameForObject(this.cropTypeA) != null) tagCompound.setString("CAName", Block.REGISTRY.getNameForObject(this.cropTypeA).toString());
-+            if (this.retainedCBName != null) tagCompound.setString("CBName", this.retainedCBName); else if (Block.REGISTRY.getNameForObject(this.cropTypeB) != null) tagCompound.setString("CBName", Block.REGISTRY.getNameForObject(this.cropTypeB).toString());
-         }
- 
-         /** (abstract) Helper method to read subclass data from NBT */
-         @Override
-         protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_) {
-             super.readStructureFromNBT(tagCompound, p_143011_2_);
--            this.cropTypeA = Block.getBlockById(tagCompound.getInteger("CA"));
--            this.cropTypeB = Block.getBlockById(tagCompound.getInteger("CB"));
-+            this.retainedCAName = retainMissingCropName(tagCompound, "CAName", "CA");
-+            this.retainedCBName = retainMissingCropName(tagCompound, "CBName", "CB");
-+            this.cropTypeA = tagCompound.hasKey("CAName", 8) ? Block.getBlockFromName(tagCompound.getString("CAName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CA"));
-+            this.cropTypeB = tagCompound.hasKey("CBName", 8) ? Block.getBlockFromName(tagCompound.getString("CBName")) : com.cleanroommc.ids.LegacyIds.block(tagCompound.getInteger("CB"));
-+            if (!(this.cropTypeA instanceof BlockCrops)) {
-+                this.cropTypeA = Blocks.WHEAT;
-+            }
-+            if (!(this.cropTypeB instanceof BlockCrops)) {
-+                this.cropTypeB = Blocks.CARROTS;
-+            }
-         }
- 
-         private Block getRandomCropType(Random rand) {
-@@ -1631,6 +1676,7 @@
+@@ -1631,6 +1634,7 @@
          public List<StructureVillagePieces.PieceWeight> structureVillageWeightedPieceList;
          public List<StructureComponent> pendingHouses = Lists.newArrayList();
          public List<StructureComponent> pendingRoads = Lists.newArrayList();
@@ -118,7 +25,7 @@
  
          public Start() {
          }
-@@ -1649,6 +1695,8 @@
+@@ -1649,6 +1653,8 @@
              this.structureVillageWeightedPieceList = p_i2104_6_;
              this.terrainType = p_i2104_7_;
              Biome biome = biomeProviderIn.getBiome(new BlockPos(p_i2104_4_, 0, p_i2104_5_), Biomes.DEFAULT);
@@ -127,7 +34,7 @@
              if (biome instanceof BiomeDesert) {
                  this.structureType = 1;
              } else if (biome instanceof BiomeSavanna) {
-@@ -1717,6 +1765,7 @@
+@@ -1717,6 +1723,7 @@
          private int villagersSpawned;
          protected int structureType;
          protected boolean isZombieInfested;
@@ -135,7 +42,7 @@
  
          public Village() {
          }
-@@ -1726,6 +1775,7 @@
+@@ -1726,6 +1733,7 @@
              if (start != null) {
                  this.structureType = start.structureType;
                  this.isZombieInfested = start.isZombieInfested;
@@ -143,7 +50,7 @@
              }
          }
  
-@@ -1908,13 +1958,14 @@
+@@ -1908,13 +1916,14 @@
                          EntityZombieVillager entityzombievillager = new EntityZombieVillager(worldIn);
                          entityzombievillager.setLocationAndAngles(j + 0.5, k, l + 0.5, 0.0F, 0.0F);
                          entityzombievillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombievillager)), null);
@@ -160,7 +67,7 @@
                          entityvillager.finalizeMobSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), null, false);
                          worldIn.spawnEntity(entityvillager);
                      }
-@@ -1922,11 +1973,19 @@
+@@ -1922,11 +1931,19 @@
              }
          }
  

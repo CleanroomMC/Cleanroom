@@ -20,7 +20,7 @@
  
      public Entity(World worldIn) {
 -        this.entityId = nextEntityID++;
-+        this.entityId = com.cleanroommc.ids.EntityIds.allocate(nextEntityID);
++        this.entityId = com.cleanroommc.cleanroom.common.id.EntityIds.allocate(nextEntityID);
 +        nextEntityID = this.entityId + 1;
          this.riddenByEntities = Lists.newArrayList();
          this.boundingBox = ZERO_AABB;
@@ -119,7 +119,7 @@
  
              if (!this.tags.isEmpty()) {
                  NBTTagList nbttaglist = new NBTTagList();
-@@ -1553,6 +1574,9 @@
+@@ -1553,7 +1574,11 @@
                  compound.setTag("Tags", nbttaglist);
              }
  
@@ -127,9 +127,11 @@
 +            if (this.capabilities != null) compound.setTag("ForgeCaps", this.capabilities.serializeNBT());
 +
              this.writeEntityToNBT(compound);
++            com.cleanroommc.cleanroom.common.id.IdDataFixers.afterEntityWrite(this, compound);
              if (this.isBeingRidden()) {
                  NBTTagList nbttaglist1 = new NBTTagList();
-@@ -1640,6 +1664,11 @@
+ 
+@@ -1640,6 +1665,11 @@
              this.setSilent(compound.getBoolean("Silent"));
              this.setNoGravity(compound.getBoolean("NoGravity"));
              this.setGlowing(compound.getBoolean("Glowing"));
@@ -141,7 +143,17 @@
              if (compound.hasKey("Tags", 9)) {
                  this.tags.clear();
                  NBTTagList nbttaglist1 = compound.getTagList("Tags", 8);
-@@ -1720,7 +1749,11 @@
+@@ -1650,7 +1680,9 @@
+                 }
+             }
+ 
++            com.cleanroommc.cleanroom.common.id.IdDataFixers.beforeEntityRead(this, compound);
+             this.readEntityFromNBT(compound);
++            com.cleanroommc.cleanroom.common.id.IdDataFixers.afterEntityRead(this, compound);
+             if (this.shouldSetPosAfterLoading()) {
+                 this.setPosition(this.posX, this.posY, this.posZ);
+             }
+@@ -1720,7 +1752,11 @@
  
          EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY + offsetY, this.posZ, stack);
          entityitem.setDefaultPickupDelay();
@@ -154,7 +166,7 @@
          return entityitem;
      }
  
-@@ -1775,6 +1808,7 @@
+@@ -1775,6 +1811,7 @@
              this.motionX = 0.0;
              this.motionY = 0.0;
              this.motionZ = 0.0;
@@ -162,7 +174,7 @@
              this.onUpdate();
              if (this.isRiding()) {
                  entity.updatePassenger(this);
-@@ -1814,6 +1848,7 @@
+@@ -1814,6 +1851,7 @@
              }
          }
  
@@ -170,7 +182,7 @@
          if (force || this.canBeRidden(entityIn) && entityIn.canFitPassenger(this)) {
              if (this.isRiding()) {
                  this.dismountRidingEntity();
-@@ -1842,6 +1877,7 @@
+@@ -1842,6 +1880,7 @@
      public void dismountRidingEntity() {
          if (this.ridingEntity != null) {
              Entity entity = this.ridingEntity;
@@ -178,7 +190,7 @@
              this.ridingEntity = null;
              entity.removePassenger(this);
          }
-@@ -2260,14 +2296,22 @@
+@@ -2260,14 +2299,22 @@
  
      @Nullable
      public Entity changeDimension(int dimensionIn) {
@@ -202,7 +214,7 @@
                  worldserver1 = minecraftserver.getWorld(0);
                  this.dimension = 0;
              }
-@@ -2276,20 +2320,23 @@
+@@ -2276,20 +2323,23 @@
              this.isDead = false;
              this.world.profiler.startSection("reposition");
              BlockPos blockpos;
@@ -233,7 +245,7 @@
                      d0 = MathHelper.clamp(
                          d0 * 8.0, worldserver1.getWorldBorder().minX() + 16.0, worldserver1.getWorldBorder().maxX() - 16.0
                      );
-@@ -2302,8 +2349,7 @@
+@@ -2302,8 +2352,7 @@
                  d1 = MathHelper.clamp((int)d1, -29999872, 29999872);
                  float f = this.rotationYaw;
                  this.setLocationAndAngles(d0, this.posY, d1, 90.0F, 0.0F);
@@ -243,7 +255,7 @@
                  blockpos = new BlockPos(this);
              }
  
-@@ -2312,7 +2358,8 @@
+@@ -2312,7 +2361,8 @@
              Entity entity = EntityList.newEntity((Class<? extends Entity>)this.getClass(), worldserver1);
              if (entity != null) {
                  entity.copyDataFromOld(this);
@@ -253,7 +265,7 @@
                      BlockPos blockpos1 = worldserver1.getTopSolidOrLiquidBlock(worldserver1.getSpawnPoint());
                      entity.moveToBlockPosAndAngles(blockpos1, entity.rotationYaw, entity.rotationPitch);
                  } else {
-@@ -2344,7 +2391,7 @@
+@@ -2344,7 +2394,7 @@
  
      /** Explosion resistance of a block relative to this entity */
      public float getExplosionResistance(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn) {
@@ -262,7 +274,7 @@
      }
  
      public boolean canExplosionDestroyBlock(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn, float p_174816_5_) {
-@@ -2639,7 +2686,185 @@
+@@ -2639,7 +2689,185 @@
          EnchantmentHelper.applyArthropodEnchantments(entityLivingBaseIn, entityIn);
      }
  
@@ -369,7 +381,7 @@
 +     */
 +    @Deprecated // TODO: remove (1.13?)
 +    public final void resetEntityId() {
-+        this.entityId = com.cleanroommc.ids.EntityIds.allocate(nextEntityID);
++        this.entityId = com.cleanroommc.cleanroom.common.id.EntityIds.allocate(nextEntityID);
 +        nextEntityID = this.entityId + 1;
 +    }
 +

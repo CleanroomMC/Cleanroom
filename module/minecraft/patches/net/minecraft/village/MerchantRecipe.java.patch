@@ -8,9 +8,9 @@
 +        return this.toolUses >= this.maxTradeUses
 +            || this.itemToBuy.isEmpty()
 +            || this.itemToSell.isEmpty()
-+            || this.itemToBuy.getItem() == com.cleanroommc.ids.MissingItem.INSTANCE
-+            || this.secondItemToBuy.getItem() == com.cleanroommc.ids.MissingItem.INSTANCE
-+            || this.itemToSell.getItem() == com.cleanroommc.ids.MissingItem.INSTANCE;
++            || this.itemToBuy.getItem() == com.cleanroommc.cleanroom.common.id.MissingItem.INSTANCE
++            || this.secondItemToBuy.getItem() == com.cleanroommc.cleanroom.common.id.MissingItem.INSTANCE
++            || this.itemToSell.getItem() == com.cleanroommc.cleanroom.common.id.MissingItem.INSTANCE;
      }
  
      /** Compensates {@link net.minecraft.village.MerchantRecipe#toolUses toolUses} with {@link net.minecraft.village.MerchantRecipe#maxTradeUses maxTradeUses} */

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.zip.DeflaterOutputStream;
 
-import com.cleanroommc.ids.SectionBlockFormat;
+import com.cleanroommc.cleanroom.common.id.SectionBlockFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

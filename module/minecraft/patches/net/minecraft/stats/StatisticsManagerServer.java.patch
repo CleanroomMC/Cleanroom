@@ -1,33 +1,6 @@
 --- original/net/minecraft/stats/StatisticsManagerServer.java
 +++ modified/net/minecraft/stats/StatisticsManagerServer.java
-@@ -27,6 +27,7 @@
-     private final MinecraftServer server;
-     private final File statsFile;
-     private final Set<StatBase> dirty = Sets.newHashSet();
-+    private final Map<String, JsonElement> retainedStats = Maps.newLinkedHashMap();
-     private int lastStatRequest = -300;
- 
-     public StatisticsManagerServer(MinecraftServer serverIn, File statsFileIn) {
-@@ -49,7 +50,17 @@
- 
-     public void saveStatFile() {
-         try {
--            FileUtils.writeStringToFile(this.statsFile, dumpJson(this.statsData));
-+            String dumped = dumpJson(this.statsData);
-+            if (!this.retainedStats.isEmpty()) {
-+                JsonObject obj = JsonParser.parseString(dumped).getAsJsonObject();
-+                for (Entry<String, JsonElement> retained : this.retainedStats.entrySet()) {
-+                    if (!obj.has(retained.getKey())) {
-+                        obj.add(retained.getKey(), retained.getValue());
-+                    }
-+                }
-+                dumped = obj.toString();
-+            }
-+            FileUtils.writeStringToFile(this.statsFile, dumped);
-         } catch (IOException ioexception) {
-             LOGGER.error("Couldn't save stats", ioexception);
-         }
-@@ -69,13 +80,15 @@
+@@ -69,7 +69,8 @@
      }
  
      public Map<StatBase, TupleIntJsonSerializable> parseJson(String p_150881_1_) {
@@ -37,30 +10,3 @@
          if (!jsonelement.isJsonObject()) {
              return Maps.newHashMap();
          }
- 
-         JsonObject jsonobject = jsonelement.getAsJsonObject();
-         Map<StatBase, TupleIntJsonSerializable> map = Maps.newHashMap();
-+        this.retainedStats.clear();
- 
-         for (Entry<String, JsonElement> entry : jsonobject.entrySet()) {
-             StatBase statbase = StatList.getOneShotStat(entry.getKey());
-@@ -103,13 +116,18 @@
- 
-                 map.put(statbase, tupleintjsonserializable);
-             } else {
--                LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.statsFile, entry.getKey());
-+                String statKey = entry.getKey();
-+                if (!com.cleanroommc.ids.RetainedContent.isRemovedStatKey(statKey)) {
-+                    this.retainedStats.put(statKey, entry.getValue());
-+                }
-+                LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.statsFile, statKey);
-             }
-         }
- 
-         return map;
-     }
- 
-+
-     public static String dumpJson(Map<StatBase, TupleIntJsonSerializable> p_150880_0_) {
-         JsonObject jsonobject = new JsonObject();
- 

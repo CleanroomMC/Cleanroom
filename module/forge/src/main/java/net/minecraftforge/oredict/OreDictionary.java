@@ -46,6 +46,7 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.cleanroommc.cleanroom.common.id.PackedItems;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -765,6 +766,6 @@ public class OreDictionary
         {
             return damage == WILDCARD_VALUE ? id : (id | ((damage + 1) << 16));
         }
-        return com.cleanroommc.ids.PackedItems.oreKey(item, damage);
+        return PackedItems.oreKey(item, damage);
     }
 }

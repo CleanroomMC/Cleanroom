@@ -64,14 +64,6 @@ public final class BlockStateIdMap extends ObjectIntIdentityMap<IBlockState>
         List<IBlockState> states = new ArrayList<>();
         for (Block block : registry)
         {
-            boolean changed = false;
-            for (net.minecraft.block.properties.IProperty<?> prop : block.getBlockState().getProperties())
-            {
-                if (prop instanceof net.minecraft.block.properties.PropertyEnum<?> pe && pe.refreshAllowedValues())
-                    changed = true;
-            }
-            if (changed)
-                block.rebuildBlockState();
             for (IBlockState state : block.getBlockState().getValidStates())
             {
                 if (ids.putIfAbsent(state, states.size()) < 0)

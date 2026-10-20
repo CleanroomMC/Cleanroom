@@ -49,10 +49,10 @@
 +        String missingId = null; // Cleanroom: a saved item whose name no registry answers
 +        if (compound.hasKey("id", 8)) {
 +            String id = compound.getString("id");
-+            if (!id.isEmpty() && !"minecraft:air".equals(id) && Item.getByNameOrId(id) == null && com.cleanroommc.ids.MissingItem.INSTANCE != null) {
++            if (!id.isEmpty() && !"minecraft:air".equals(id) && Item.getByNameOrId(id) == null && com.cleanroommc.cleanroom.common.id.MissingItem.INSTANCE != null) {
 +                missingId = id;
-+                if (com.cleanroommc.ids.RetainedContent.isRemoved(id)) { // Cleanroom: a removed namespace's items become EMPTY
-+                    com.cleanroommc.ids.RetainedContent.noteRemoved(id);
++                if (com.cleanroommc.cleanroom.common.id.RetainedContent.isRemoved(id)) { // Cleanroom: a removed namespace's items become EMPTY
++                    com.cleanroommc.cleanroom.common.id.RetainedContent.noteRemoved(id);
 +                    missingId = null;
 +                }
 +            }
@@ -60,12 +60,12 @@
 +
 +        if (missingId != null) {
 +            // Cleanroom: keep the whole compound verbatim under CleanroomRetained; it goes back out as it came in
-+            this.item = com.cleanroommc.ids.MissingItem.INSTANCE;
++            this.item = com.cleanroommc.cleanroom.common.id.MissingItem.INSTANCE;
 +            this.stackSize = compound.getInteger("Count");
 +            this.itemDamage = 0;
 +            this.stackTagCompound = new NBTTagCompound();
-+            this.stackTagCompound.setTag(com.cleanroommc.ids.MissingItem.RETAINED, compound.copy());
-+            com.cleanroommc.ids.RetainedContent.noteMissingItem(missingId);
++            this.stackTagCompound.setTag(com.cleanroommc.cleanroom.common.id.MissingItem.RETAINED, compound.copy());
++            com.cleanroommc.cleanroom.common.id.RetainedContent.noteMissingItem(missingId);
 +        } else {
 +        this.capNBT = compound.hasKey("ForgeCaps") ? compound.getCompoundTag("ForgeCaps") : null;
 +        this.item = compound.hasKey("id", 8) ? Item.getByNameOrId(compound.getString("id")) : Items.AIR; //Forge fix tons of NumberFormatExceptions that are caused by deserializing EMPTY ItemStacks.
@@ -143,14 +143,14 @@
      public float getDestroySpeed(IBlockState blockIn) {
          return this.getItem().getDestroySpeed(this, blockIn);
      }
-@@ -183,20 +239,36 @@
+@@ -183,20 +239,38 @@
  
      /** Write the stack fields to a NBT object. Return the new NBT object. */
      public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-+        if (this.item == com.cleanroommc.ids.MissingItem.INSTANCE && this.stackTagCompound != null
-+                && this.stackTagCompound.hasKey(com.cleanroommc.ids.MissingItem.RETAINED, 10)) {
++        if (this.item == com.cleanroommc.cleanroom.common.id.MissingItem.INSTANCE && this.stackTagCompound != null
++                && this.stackTagCompound.hasKey(com.cleanroommc.cleanroom.common.id.MissingItem.RETAINED, 10)) {
 +            // Cleanroom: the original compound goes back out verbatim; only the count follows the live stack
-+            NBTTagCompound retained = this.stackTagCompound.getCompoundTag(com.cleanroommc.ids.MissingItem.RETAINED);
++            NBTTagCompound retained = this.stackTagCompound.getCompoundTag(com.cleanroommc.cleanroom.common.id.MissingItem.RETAINED);
 +            for (String key : retained.getKeySet()) {
 +                if (!"Slot".equals(key) || !nbt.hasKey("Slot")) {
 +                    nbt.setTag(key, retained.getTag(key).copy());
@@ -185,7 +185,7 @@
      }
  
      /** Returns true if the ItemStack can hold 2 or more units of the item. */
-@@ -209,7 +281,7 @@
+@@ -209,7 +283,7 @@
          if (this.isEmpty) {
              return false;
          } else {
@@ -194,7 +194,7 @@
          }
      }
  
-@@ -219,27 +291,24 @@
+@@ -219,27 +293,24 @@
  
      /** returns true when a damageable item is damaged */
      public boolean isItemDamaged() {
@@ -227,7 +227,7 @@
      }
  
      /** Attempts to damage the ItemStack with par1 amount of damage, If the ItemStack has the Unbreaking enchantment there is a chance for each point of damage to be negated. Returns true if it takes more damage than getMaxDamage(). Returns false otherwise or if the ItemStack can't be damaged or if all points of damage are negated. */
-@@ -268,8 +337,8 @@
+@@ -268,8 +339,8 @@
              CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(damager, this, this.itemDamage + amount);
          }
  
@@ -238,7 +238,7 @@
      }
  
      /** Damages the item in the ItemStack */
-@@ -308,7 +377,7 @@
+@@ -308,7 +379,7 @@
  
      /** Check whether the given Block can be harvested using this ItemStack. */
      public boolean canHarvestBlock(IBlockState blockIn) {
@@ -247,7 +247,7 @@
      }
  
      public boolean interactWithEntity(EntityPlayer playerIn, EntityLivingBase entityIn, EnumHand hand) {
-@@ -317,13 +386,27 @@
+@@ -317,13 +388,27 @@
  
      /** Returns a new stack with the same properties. */
      public ItemStack copy() {
@@ -279,7 +279,7 @@
      }
  
      public static boolean areItemStackTagsEqual(ItemStack stackA, ItemStack stackB) {
-@@ -333,8 +416,8 @@
+@@ -333,8 +418,8 @@
              return false;
          } else {
              return stackA.stackTagCompound == null && stackB.stackTagCompound != null
@@ -290,7 +290,7 @@
          }
      }
  
-@@ -357,8 +440,8 @@
+@@ -357,8 +442,8 @@
              return false;
          } else {
              return this.stackTagCompound == null && other.stackTagCompound != null
@@ -301,7 +301,7 @@
          }
      }
  
-@@ -558,9 +641,8 @@
+@@ -558,9 +643,8 @@
  
                  for (int j = 0; j < nbttaglist.tagCount(); j++) {
                      NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(j);
@@ -312,7 +312,7 @@
                      if (enchantment != null) {
                          list.add(enchantment.getTranslatedName(l));
                      }
-@@ -646,6 +728,7 @@
+@@ -646,6 +730,7 @@
                                      I18n.translateToLocal("attribute.name." + entry.getKey())
                                  )
                          );
@@ -320,7 +320,7 @@
                      }
                  }
              }
-@@ -700,6 +783,7 @@
+@@ -700,6 +785,7 @@
              }
          }
  
@@ -328,7 +328,7 @@
          return list;
      }
  
-@@ -708,6 +792,7 @@
+@@ -708,6 +794,7 @@
          return this.getItem().hasEffect(this);
      }
  
@@ -336,7 +336,7 @@
      public EnumRarity getRarity() {
          return this.getItem().getRarity(this);
      }
-@@ -729,7 +814,11 @@
+@@ -729,7 +816,11 @@
  
          NBTTagList nbttaglist = this.stackTagCompound.getTagList("ench", 10);
          NBTTagCompound nbttagcompound = new NBTTagCompound();
@@ -349,7 +349,7 @@
          nbttagcompound.setShort("lvl", (byte)level);
          nbttaglist.appendTag(nbttagcompound);
      }
-@@ -808,7 +897,7 @@
+@@ -808,7 +899,7 @@
                  }
              }
          } else {
@@ -358,7 +358,7 @@
          }
  
          return multimap;
-@@ -844,7 +933,7 @@
+@@ -844,7 +935,7 @@
          if (!this.isEmpty) {
              NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
              itextcomponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -367,7 +367,7 @@
          }
  
          return itextcomponent;
-@@ -925,4 +1014,110 @@
+@@ -925,4 +1016,110 @@
      public void shrink(int quantity) {
          this.grow(-quantity);
      }

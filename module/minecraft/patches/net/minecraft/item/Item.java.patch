@@ -30,7 +30,7 @@
 -                return getItemById(Integer.parseInt(id));
 -            } catch (NumberFormatException numberformatexception) {
 -            }
-+            com.cleanroommc.ids.LegacyIds.warnIfNumericItemId(id);
++            com.cleanroommc.cleanroom.common.id.LegacyIds.warnIfNumericItemId(id);
          }
  
          return item;

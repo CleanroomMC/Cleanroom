@@ -23,8 +23,8 @@
 -                this.potentialSpawns.add(new WeightedSpawnerEntity(nbttaglist.getCompoundTagAt(i)));
 +                NBTTagCompound entry = nbttaglist.getCompoundTagAt(i);
 +                String entityId = entry.getCompoundTag("Entity").getString("id");
-+                if (!entityId.isEmpty() && com.cleanroommc.ids.RetainedContent.isRemoved(entityId)) {
-+                    com.cleanroommc.ids.RetainedContent.noteRemoved(entityId);
++                if (!entityId.isEmpty() && com.cleanroommc.cleanroom.common.id.RetainedContent.isRemoved(entityId)) {
++                    com.cleanroommc.cleanroom.common.id.RetainedContent.noteRemoved(entityId);
 +                    continue;
 +                }
 +                this.potentialSpawns.add(new WeightedSpawnerEntity(entry));
@@ -35,8 +35,8 @@
 -            this.setNextSpawnData(new WeightedSpawnerEntity(1, nbt.getCompoundTag("SpawnData")));
 +            NBTTagCompound spawnTag = nbt.getCompoundTag("SpawnData");
 +            String entityId = spawnTag.getString("id");
-+            if (!entityId.isEmpty() && com.cleanroommc.ids.RetainedContent.isRemoved(entityId)) {
-+                com.cleanroommc.ids.RetainedContent.noteRemoved(entityId);
++            if (!entityId.isEmpty() && com.cleanroommc.cleanroom.common.id.RetainedContent.isRemoved(entityId)) {
++                com.cleanroommc.cleanroom.common.id.RetainedContent.noteRemoved(entityId);
 +                this.setNextSpawnData(this.potentialSpawns.isEmpty() ? new WeightedSpawnerEntity() : WeightedRandom.getRandomItem(this.getSpawnerWorld() != null ? this.getSpawnerWorld().rand : new java.util.Random(), this.potentialSpawns));
 +            } else {
 +                this.setNextSpawnData(new WeightedSpawnerEntity(1, spawnTag));

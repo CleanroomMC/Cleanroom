@@ -24,6 +24,7 @@
 
 package net.minecraftforge.fml.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
@@ -75,7 +76,7 @@ public class GuiRetainRemove extends GuiNotification
         this.drawDefaultBackground();
 
         int wrapWidth = this.width - 40;
-        List<String> lines = new java.util.ArrayList<>();
+        List<String> lines = new ArrayList<>();
         for (String line : query.getText().split("\n"))
         {
             lines.addAll(this.fontRenderer.listFormattedStringToWidth(line, wrapWidth));

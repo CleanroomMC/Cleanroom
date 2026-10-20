@@ -64,7 +64,7 @@
 +        } else {
 +            // Cleanroom: saves from before ids were widened wrote a signed byte, so 128..255 are negative there;
 +            // the number is a Forge-era saved id, resolved through the world's legacy name table
-+            potion = com.cleanroommc.ids.LegacyIds.potion(nbt.getTagId("Id") == 1 ? nbt.getByte("Id") & 0xFF : nbt.getInteger("Id"));
++            potion = com.cleanroommc.cleanroom.common.id.LegacyIds.potion(nbt.getTagId("Id") == 1 ? nbt.getByte("Id") & 0xFF : nbt.getInteger("Id"));
 +        }
          if (potion == null) {
              return null;
@@ -78,7 +78,7 @@
      }
  
      /** Toggle the isPotionDurationMax field. */
-@@ -209,14 +228,87 @@
+@@ -209,14 +228,82 @@
      public int compareTo(PotionEffect p_compareTo_1_) {
          int i = 32147;
          return (this.getDuration() <= 32147 || p_compareTo_1_.getDuration() <= 32147) && (!this.getIsAmbient() || !p_compareTo_1_.getIsAmbient())
@@ -162,14 +162,9 @@
 +            java.util.List<net.minecraft.item.ItemStack> items = new java.util.ArrayList<net.minecraft.item.ItemStack>();
 +            net.minecraft.nbt.NBTTagList list = nbt.getTagList("CurativeItems", net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND);
 +            for (int i = 0; i < list.tagCount(); i++) {
-+                net.minecraft.item.ItemStack stack = new net.minecraft.item.ItemStack(list.getCompoundTagAt(i));
-+                if (!stack.isEmpty()) {
-+                    items.add(stack);
-+                }
++                items.add(new net.minecraft.item.ItemStack(list.getCompoundTagAt(i)));
 +            }
-+            if (!items.isEmpty() || list.tagCount() == 0) {
-+                effect.setCurativeItems(items);
-+            }
++            effect.setCurativeItems(items);
 +        }
 +
 +        return effect;

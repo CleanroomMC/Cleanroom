@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.cleanroommc.common.CleanroomVersion;
-import com.cleanroommc.common.IdFormatContainer;
+import com.cleanroommc.common.CleanroomContainer;
 
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
@@ -73,14 +73,14 @@ enum FMLHandshakeServerState implements IHandshakeState<FMLHandshakeServerState>
             // The Cleanroom format check precedes any registry comparison. A client without the
             // cleanroom_ids entry is a pre-format Cleanroom, Forge or vanilla: refuse with a plain
             // text a legacy client can render.
-            String clientFormat = client.modList().get(IdFormatContainer.MOD_ID);
+            String clientFormat = client.modList().get(CleanroomContainer.MOD_ID);
             if (clientFormat == null)
             {
                 cons.accept(ERROR);
                 dispatcher.rejectHandshake(MismatchMessages.legacyRemoteMessage(CleanroomVersion.BUILD_VERSION));
                 return;
             }
-            String formatProblem = MismatchMessages.formatMismatch(IdFormatContainer.advertisedFormat(), CleanroomVersion.BUILD_VERSION,
+            String formatProblem = MismatchMessages.formatMismatch(CleanroomContainer.advertisedFormat(), CleanroomVersion.BUILD_VERSION,
                     clientFormat, client.modList().get(CleanroomVersion.MOD_ID), false);
             if (formatProblem != null)
             {

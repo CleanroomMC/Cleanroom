@@ -1,49 +1,6 @@
 --- original/net/minecraft/entity/passive/EntityWolf.java
 +++ modified/net/minecraft/entity/passive/EntityWolf.java
-@@ -144,12 +145,16 @@
-         EntityLiving.registerFixesMob(fixer, EntityWolf.class);
-     }
- 
-+    @Nullable
-+    private String retainedCollarColorName;
-+    private int retainedCollarColorDye = -1;
-+
-     /** (abstract) Protected helper method to write subclass entity data to NBT. */
-     @Override
-     public void writeEntityToNBT(NBTTagCompound compound) {
-         super.writeEntityToNBT(compound);
-         compound.setBoolean("Angry", this.isAngry());
--        compound.setByte("CollarColor", (byte)this.getCollarColor().getDyeDamage());
-+        com.cleanroommc.ids.RetainedContent.writeDyeColor(compound, "CollarColorName", "CollarColor", true, true, this.getCollarColor(), this.retainedCollarColorName, this.retainedCollarColorDye);
-     }
- 
-     /** (abstract) Protected helper method to read subclass entity data from NBT. */
-@@ -157,8 +162,13 @@
-     public void readEntityFromNBT(NBTTagCompound compound) {
-         super.readEntityFromNBT(compound);
-         this.setAngry(compound.getBoolean("Angry"));
--        if (compound.hasKey("CollarColor", 99)) {
--            this.setCollarColor(EnumDyeColor.byDyeDamage(compound.getByte("CollarColor")));
-+        this.retainedCollarColorName = null;
-+        this.retainedCollarColorDye = -1;
-+        if (compound.hasKey("CollarColorName", 8) || compound.hasKey("CollarColor", 99)) {
-+            com.cleanroommc.ids.RetainedContent.DyeRead d = com.cleanroommc.ids.RetainedContent.readDyeColor(compound, "CollarColorName", "CollarColor", true, EnumDyeColor.RED);
-+            this.setCollarColor(d.color());
-+            this.retainedCollarColorName = d.retainedName();
-+            this.retainedCollarColorDye = d.retainedNumber();
-         }
-     }
- 
-@@ -364,7 +374,7 @@
-                         return true;
-                     }
-                 } else if (itemstack.getItem() == Items.DYE) {
--                    EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(itemstack.getMetadata());
-+                    EnumDyeColor enumdyecolor = itemstack.getItemState().getValue(net.minecraft.item.ItemDye.COLOR);
-                     if (enumdyecolor != this.getCollarColor()) {
-                         this.setCollarColor(enumdyecolor);
-                         if (!player.capabilities.isCreativeMode) {
-@@ -388,7 +398,7 @@
+@@ -388,7 +388,7 @@
              }
  
              if (!this.world.isRemote) {
@@ -52,17 +9,3 @@
                      this.setTamedBy(player);
                      this.navigator.clearPath();
                      this.setAttackTarget(null);
-@@ -460,10 +470,12 @@
-     }
- 
-     public EnumDyeColor getCollarColor() {
--        return EnumDyeColor.byDyeDamage(this.dataManager.get(COLLAR_COLOR) & 15);
-+        return EnumDyeColor.byDyeDamage(this.dataManager.get(COLLAR_COLOR));
-     }
- 
-     public void setCollarColor(EnumDyeColor collarcolor) {
-+        this.retainedCollarColorName = null;
-+        this.retainedCollarColorDye = -1;
-         this.dataManager.set(COLLAR_COLOR, collarcolor.getDyeDamage());
-     }
- 

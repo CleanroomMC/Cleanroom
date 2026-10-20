@@ -59,7 +59,7 @@
 +            String missingWorldType = this.world.getWorldInfo().getRetainedGeneratorName(); // Cleanroom: terrain generated without the world's real type is stand-in vanilla
 +            if (missingWorldType != null) {
 +                chunk.retained.setGeneratedWithoutWorldType(missingWorldType);
-+                com.cleanroommc.ids.RetainedContent.noteStandInTerrain(chunk.getPos(), missingWorldType);
++                com.cleanroommc.cleanroom.common.id.RetainedContent.noteStandInTerrain(chunk.getPos(), missingWorldType);
 +            }
              chunk.onLoad();
              chunk.populate(this, this.chunkGenerator);

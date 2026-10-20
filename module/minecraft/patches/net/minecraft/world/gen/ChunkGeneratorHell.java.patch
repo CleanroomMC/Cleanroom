@@ -33,7 +33,7 @@
          Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
          Biome[] abiome = this.world.getBiomeProvider().getBiomes(null, x * 16, z * 16, 16, 16);
 -        byte[] abyte = chunk.getBiomeArray();
-+        com.cleanroommc.ids.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
++        com.cleanroommc.cleanroom.common.id.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
  
 -        for (int i = 0; i < abyte.length; i++) {
 -            abyte[i] = (byte)Biome.getIdForBiome(abiome[i]);

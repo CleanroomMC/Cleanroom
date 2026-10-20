@@ -87,7 +87,7 @@
 -        } catch (NumberFormatException numberformatexception) {
 -            return null;
 -        }
-+        com.cleanroommc.ids.LegacyIds.warnIfNumericBlockId(name);
++        com.cleanroommc.cleanroom.common.id.LegacyIds.warnIfNumericBlockId(name);
 +        return null;
      }
  
@@ -267,54 +267,7 @@
      public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
          return new ItemStack(Item.getItemFromBlock(this), 1, this.damageDropped(state));
      }
-@@ -926,6 +945,46 @@
-         return this.blockState;
-     }
- 
-+    /**
-+     * Cleanroom: rebuilds this block's {@link BlockStateContainer} (for example after a mod adds a new
-+     * enum constant to a {@link net.minecraft.block.properties.PropertyEnum}), preserving the default state's
-+     * property values and resizing the per-state harvest tables.
-+     */
-+    @SuppressWarnings({ "rawtypes", "unchecked" })
-+    public void rebuildBlockState() {
-+        for (net.minecraft.block.properties.IProperty<?> prop : this.blockState.getProperties()) {
-+            if (prop instanceof net.minecraft.block.properties.PropertyEnum<?>) {
-+                ((net.minecraft.block.properties.PropertyEnum<?>) prop).refreshAllowedValues();
-+            }
-+        }
-+        IBlockState oldDefault = this.defaultBlockState;
-+        this.blockState = this.createBlockState();
-+        IBlockState nextDefault = this.blockState.getBaseState();
-+        if (oldDefault != null) {
-+            for (java.util.Map.Entry<net.minecraft.block.properties.IProperty<?>, Comparable<?>> e : oldDefault.getProperties().entrySet()) {
-+                net.minecraft.block.properties.IProperty prop = this.blockState.getProperty(e.getKey().getName());
-+                if (prop != null && prop.getAllowedValues().contains(e.getValue())) {
-+                    nextDefault = nextDefault.withProperty(prop, (Comparable) e.getValue());
-+                }
-+            }
-+        }
-+        this.setDefaultState(nextDefault);
-+        int stateCount = this.blockState.getValidStates().size();
-+        if (this.harvestTool != null) {
-+            this.harvestTool = java.util.Arrays.copyOf(this.harvestTool, stateCount);
-+        }
-+        if (this.harvestLevel != null) {
-+            int prevLen = this.harvestLevel.length;
-+            this.harvestLevel = java.util.Arrays.copyOf(this.harvestLevel, stateCount);
-+            if (stateCount > prevLen) {
-+                java.util.Arrays.fill(this.harvestLevel, prevLen, stateCount, -1);
-+            }
-+        }
-+        if (BLOCK_STATE_IDS instanceof net.minecraftforge.registries.BlockStateIdMap) {
-+            ((net.minecraftforge.registries.BlockStateIdMap) BLOCK_STATE_IDS).invalidate();
-+        }
-+    }
-+
-     protected final void setDefaultState(IBlockState state) {
-         this.defaultBlockState = state;
-     }
-@@ -956,6 +1015,7 @@
+@@ -956,6 +975,7 @@
          );
      }
  
@@ -322,7 +275,7 @@
      public SoundType getSoundType() {
          return this.blockSoundType;
      }
-@@ -969,6 +1029,1289 @@
+@@ -969,6 +989,1289 @@
      public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
      }
  
@@ -1612,7 +1565,7 @@
      public static void registerBlocks() {
          registerBlock(0, AIR_ID, new BlockAir().setTranslationKey("air"));
          registerBlock(1, "stone", new BlockStone().setHardness(1.5F).setResistance(10.0F).setSoundType(SoundType.STONE).setTranslationKey("stone"));
-@@ -1520,7 +2863,7 @@
+@@ -1520,7 +2823,7 @@
              "quartz_stairs",
              new BlockStairs(block11.getDefaultState().withProperty(BlockQuartz.VARIANT, BlockQuartz.EnumType.DEFAULT)).setTranslationKey("stairsQuartz")
          );
@@ -1621,7 +1574,7 @@
          registerBlock(158, "dropper", new BlockDropper().setHardness(3.5F).setSoundType(SoundType.STONE).setTranslationKey("dropper"));
          registerBlock(
              159,
-@@ -1944,22 +3287,6 @@
+@@ -1944,22 +3247,6 @@
                  block15.useNeighborBrightness = flag;
              }
          }

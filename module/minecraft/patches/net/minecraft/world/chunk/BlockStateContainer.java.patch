@@ -1,10 +1,8 @@
 --- original/net/minecraft/world/chunk/BlockStateContainer.java
 +++ modified/net/minecraft/world/chunk/BlockStateContainer.java
-@@ -10,15 +10,20 @@
- import net.minecraftforge.fml.relauncher.Side;
+@@ -11,14 +11,18 @@
  import net.minecraftforge.fml.relauncher.SideOnly;
  
-+@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
  public class BlockStateContainer implements IBlockStatePaletteResizer {
 +    private static final long[] EMPTY_STORAGE = new long[0];
      private static final IBlockStatePalette REGISTRY_BASED_PALETTE = new BlockStatePaletteRegistry();
@@ -23,7 +21,7 @@
      }
  
      private static int getIndex(int x, int y, int z) {
-@@ -26,16 +31,27 @@
+@@ -26,16 +30,27 @@
      }
  
      private void setBits(int bitsIn) {
@@ -52,11 +50,11 @@
              }
  
              this.palette.idFor(AIR_BLOCK_STATE);
-@@ -43,17 +59,78 @@
+@@ -43,17 +58,78 @@
          }
      }
  
-+    /** Cleanroom: bits per entry in {@link #getRawStorage()}, for the save format (com.cleanroommc.ids.SectionBlockFormat) */
++    /** Cleanroom: bits per entry in {@link #getRawStorage()}, for the save format (com.cleanroommc.cleanroom.common.id.SectionBlockFormat) */
 +    public int getRawBits() {
 +        return this.bits;
 +    }
@@ -135,7 +133,7 @@
          }
  
          return this.palette.idFor(state);
-@@ -65,7 +142,9 @@
+@@ -65,7 +141,9 @@
  
      protected void set(int index, IBlockState state) {
          int i = this.palette.idFor(state);
@@ -146,7 +144,7 @@
      }
  
      public IBlockState get(int x, int y, int z) {
-@@ -73,7 +152,7 @@
+@@ -73,7 +151,7 @@
      }
  
      protected IBlockState get(int index) {
@@ -155,7 +153,7 @@
          return iblockstate == null ? AIR_BLOCK_STATE : iblockstate;
      }
  
-@@ -81,58 +160,76 @@
+@@ -81,43 +159,23 @@
      public void read(PacketBuffer buf) {
          int i = buf.readByte();
          if (this.bits != i) {
@@ -182,10 +180,7 @@
 -    @Nullable
 -    public NibbleArray getDataForNBT(byte[] blockIds, NibbleArray data) {
 -        NibbleArray nibblearray = null;
-+    public void setDataFromNBT(byte[] blockIds, NibbleArray data, @Nullable NibbleArray blockIdExtension) {
-+        com.cleanroommc.ids.SectionBlockFormat.readLegacy(blockIds, data, blockIdExtension, this, null, null);
-+    }
- 
+-
 -        for (int i = 0; i < 4096; i++) {
 -            int j = Block.BLOCK_STATE_IDS.get(this.get(i));
 -            int k = i & 15;
@@ -195,14 +190,41 @@
 -                if (nibblearray == null) {
 -                    nibblearray = new NibbleArray();
 -                }
-+    public int getSerializedSize() {
-+        return 1
-+            + this.palette.getSerializedSize()
+-
+-                nibblearray.set(k, l, i1, j >> 12 & 15);
+-            }
+-
+-            blockIds[i] = (byte)(j >> 4 & 0xFF);
+-            data.set(k, l, i1, j & 15);
+-        }
+-
+-        return nibblearray;
+-    }
+-
+     public void setDataFromNBT(byte[] blockIds, NibbleArray data, @Nullable NibbleArray blockIdExtension) {
+         for (int i = 0; i < 4096; i++) {
+             int j = i & 15;
+@@ -125,14 +183,62 @@
+             int l = i >> 4 & 15;
+             int i1 = blockIdExtension == null ? 0 : blockIdExtension.get(j, k, l);
+             int j1 = i1 << 12 | (blockIds[i] & 255) << 4 | data.get(j, k, l);
+-            this.set(i, Block.BLOCK_STATE_IDS.getByValue(j1));
++            // Cleanroom: the stored id << 4 | meta is a Forge-era id; resolve it through the world's
++            // saved name table so modded blocks decode correctly under derived numbering
++            Block block = com.cleanroommc.cleanroom.common.id.LegacyIds.block(j1 >> 4);
++            this.set(i, block == null ? null : block.getStateFromMeta(j1 & 15));
+         }
+     }
+ 
+     public int getSerializedSize() {
+         return 1
+             + this.palette.getSerializedSize()
+-            + PacketBuffer.getVarIntSize(this.storage.size())
+-            + this.storage.getBackingLongArray().length * 8;
 +            + PacketBuffer.getVarIntSize(this.storage == null ? 0 : this.storage.size())
 +            + (this.storage == null ? 0 : this.storage.getBackingLongArray().length * 8);
-+    }
- 
--                nibblearray.set(k, l, i1, j >> 12 & 15);
+     }
++
 +    /**
 +     * Cleanroom: the palette of a uniform section at zero bits: every cell holds one state and no packed
 +     * storage exists. On the wire it is one varint state id followed by an empty long array. A second
@@ -221,48 +243,30 @@
 +        public int idFor(IBlockState stateIn) {
 +            if (stateIn == this.state) {
 +                return 0;
-             }
++            }
 +            return this.resizer.onResize(4, stateIn);
 +        }
- 
--            blockIds[i] = (byte)(j >> 4 & 0xFF);
--            data.set(k, l, i1, j & 15);
++
 +        @Nullable
 +        @Override
 +        public IBlockState getBlockState(int indexKey) {
 +            return indexKey == 0 ? (this.state == null ? AIR_BLOCK_STATE : this.state) : null;
-         }
- 
--        return nibblearray;
--    }
++        }
++
 +        @SideOnly(Side.CLIENT)
 +        @Override
 +        public void read(PacketBuffer buf) {
 +            this.state = Block.getStateById(buf.readVarInt());
 +        }
- 
--    public void setDataFromNBT(byte[] blockIds, NibbleArray data, @Nullable NibbleArray blockIdExtension) {
--        for (int i = 0; i < 4096; i++) {
--            int j = i & 15;
--            int k = i >> 8 & 15;
--            int l = i >> 4 & 15;
--            int i1 = blockIdExtension == null ? 0 : blockIdExtension.get(j, k, l);
--            int j1 = i1 << 12 | (blockIds[i] & 255) << 4 | data.get(j, k, l);
--            this.set(i, Block.BLOCK_STATE_IDS.getByValue(j1));
++
 +        @Override
 +        public void write(PacketBuffer buf) {
 +            buf.writeVarInt(Block.BLOCK_STATE_IDS.get(this.getBlockState(0)));
-         }
--    }
- 
--    public int getSerializedSize() {
--        return 1
--            + this.palette.getSerializedSize()
--            + PacketBuffer.getVarIntSize(this.storage.size())
--            + this.storage.getBackingLongArray().length * 8;
++        }
++
 +        @Override
 +        public int getSerializedSize() {
 +            return PacketBuffer.getVarIntSize(Block.BLOCK_STATE_IDS.get(this.getBlockState(0)));
 +        }
-     }
++    }
  }

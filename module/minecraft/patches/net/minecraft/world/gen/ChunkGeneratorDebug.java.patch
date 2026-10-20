@@ -5,7 +5,7 @@
          chunk.generateSkylightMap();
          Biome[] abiome = this.world.getBiomeProvider().getBiomes(null, x * 16, z * 16, 16, 16);
 -        byte[] abyte = chunk.getBiomeArray();
-+        com.cleanroommc.ids.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
++        com.cleanroommc.cleanroom.common.id.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
  
 -        for (int i1 = 0; i1 < abyte.length; i1++) {
 -            abyte[i1] = (byte)Biome.getIdForBiome(abiome[i1]);

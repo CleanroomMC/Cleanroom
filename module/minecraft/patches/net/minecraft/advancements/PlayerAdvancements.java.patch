@@ -1,42 +1,6 @@
 --- original/net/minecraft/advancements/PlayerAdvancements.java
 +++ modified/net/minecraft/advancements/PlayerAdvancements.java
-@@ -40,6 +40,7 @@
-     private final MinecraftServer server;
-     private final File progressFile;
-     private final Map<Advancement, AdvancementProgress> progress = Maps.newLinkedHashMap();
-+    private final Map<ResourceLocation, AdvancementProgress> retainedProgress = Maps.newLinkedHashMap();
-     private final Set<Advancement> visible = Sets.newLinkedHashSet();
-     private final Set<Advancement> visibilityChanged = Sets.newLinkedHashSet();
-     private final Set<Advancement> progressChanged = Sets.newLinkedHashSet();
-@@ -68,6 +69,7 @@
-     public void reload() {
-         this.dispose();
-         this.progress.clear();
-+        this.retainedProgress.clear();
-         this.visible.clear();
-         this.visibilityChanged.clear();
-         this.progressChanged.clear();
-@@ -120,6 +122,9 @@
-                 for (Entry<ResourceLocation, AdvancementProgress> entry : stream.collect(Collectors.toList())) {
-                     Advancement advancement = this.server.getAdvancementManager().getAdvancement(entry.getKey());
-                     if (advancement == null) {
-+                        if (entry.getValue().hasProgress() && !com.cleanroommc.ids.RetainedContent.isRemoved(entry.getKey().toString())) {
-+                            this.retainedProgress.put(entry.getKey(), entry.getValue());
-+                        }
-                         LOGGER.warn(
-                             "Ignored advancement '" + entry.getKey() + "' in progress file " + this.progressFile + " - it doesn't exist anymore?"
-                         );
-@@ -148,6 +153,9 @@
-                 map.put(entry.getKey().getId(), advancementprogress);
-             }
-         }
-+        for (Entry<ResourceLocation, AdvancementProgress> retained : this.retainedProgress.entrySet()) {
-+            map.putIfAbsent(retained.getKey(), retained.getValue());
-+        }
- 
-         if (this.progressFile.getParentFile() != null) {
-             this.progressFile.getParentFile().mkdirs();
-@@ -161,6 +169,9 @@
+@@ -161,6 +161,9 @@
      }
  
      public boolean grantCriterion(Advancement p_192750_1_, String p_192750_2_) {
@@ -46,7 +10,7 @@
          boolean flag = false;
          AdvancementProgress advancementprogress = this.getProgress(p_192750_1_);
          boolean flag1 = advancementprogress.isDone();
-@@ -183,6 +194,8 @@
+@@ -183,6 +186,8 @@
                              )
                          );
                  }

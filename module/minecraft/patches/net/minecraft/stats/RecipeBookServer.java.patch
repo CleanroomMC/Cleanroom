@@ -1,6 +1,6 @@
 --- original/net/minecraft/stats/RecipeBookServer.java
 +++ modified/net/minecraft/stats/RecipeBookServer.java
-@@ -47,10 +47,12 @@
+@@ -47,8 +47,7 @@
      }
  
      private void sendPacket(SPacketRecipeBook.State state, EntityPlayerMP player, List<IRecipe> recipesIn) {
@@ -9,61 +9,8 @@
 +        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable);
      }
  
-+    private final List<String> retainedRecipes = Lists.newArrayList();
-+    private final List<String> retainedDisplayedRecipes = Lists.newArrayList();
-+
      public NBTTagCompound write() {
-         NBTTagCompound nbttagcompound = new NBTTagCompound();
-         nbttagcompound.setBoolean("isGuiOpen", this.isGuiOpen);
-@@ -60,6 +62,9 @@
-         for (IRecipe irecipe : this.getRecipes()) {
-             nbttaglist.appendTag(new NBTTagString(CraftingManager.REGISTRY.getNameForObject(irecipe).toString()));
-         }
-+        for (String retained : this.retainedRecipes) {
-+            nbttaglist.appendTag(new NBTTagString(retained));
-+        }
- 
-         nbttagcompound.setTag("recipes", nbttaglist);
-         NBTTagList nbttaglist1 = new NBTTagList();
-@@ -67,6 +72,9 @@
-         for (IRecipe irecipe1 : this.getDisplayedRecipes()) {
-             nbttaglist1.appendTag(new NBTTagString(CraftingManager.REGISTRY.getNameForObject(irecipe1).toString()));
-         }
-+        for (String retainedDisp : this.retainedDisplayedRecipes) {
-+            nbttaglist1.appendTag(new NBTTagString(retainedDisp));
-+        }
- 
-         nbttagcompound.setTag("toBeDisplayed", nbttaglist1);
-         return nbttagcompound;
-@@ -75,12 +83,17 @@
-     public void read(NBTTagCompound tag) {
-         this.isGuiOpen = tag.getBoolean("isGuiOpen");
-         this.isFilteringCraftable = tag.getBoolean("isFilteringCraftable");
-+        this.retainedRecipes.clear();
-+        this.retainedDisplayedRecipes.clear();
-         NBTTagList nbttaglist = tag.getTagList("recipes", 8);
- 
-         for (int i = 0; i < nbttaglist.tagCount(); i++) {
-             ResourceLocation resourcelocation = new ResourceLocation(nbttaglist.getStringTagAt(i));
-             IRecipe irecipe = CraftingManager.getRecipe(resourcelocation);
-             if (irecipe == null) {
-+                if (!com.cleanroommc.ids.RetainedContent.isRemoved(resourcelocation.toString())) {
-+                    this.retainedRecipes.add(resourcelocation.toString());
-+                }
-                 LOGGER.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation);
-             } else {
-                 this.unlock(irecipe);
-@@ -93,6 +106,9 @@
-             ResourceLocation resourcelocation1 = new ResourceLocation(nbttaglist1.getStringTagAt(j));
-             IRecipe irecipe1 = CraftingManager.getRecipe(resourcelocation1);
-             if (irecipe1 == null) {
-+                if (!com.cleanroommc.ids.RetainedContent.isRemoved(resourcelocation1.toString())) {
-+                    this.retainedDisplayedRecipes.add(resourcelocation1.toString());
-+                }
-                 LOGGER.info("Tried to load unrecognized recipe: {} removed now.", resourcelocation1);
-             } else {
-                 this.markNew(irecipe1);
-@@ -121,9 +137,6 @@
+@@ -121,9 +120,6 @@
      }
  
      public void init(EntityPlayerMP player) {

@@ -1,33 +1,11 @@
 --- original/net/minecraft/block/BlockJukebox.java
 +++ modified/net/minecraft/block/BlockJukebox.java
-@@ -125,7 +126,7 @@
+@@ -125,7 +125,7 @@
          if (tileentity instanceof BlockJukebox.TileEntityJukebox) {
              ItemStack itemstack = ((BlockJukebox.TileEntityJukebox)tileentity).getRecord();
              if (!itemstack.isEmpty()) {
 -                return Item.getIdFromItem(itemstack.getItem()) + 1 - Item.getIdFromItem(Items.RECORD_13);
 +                return net.minecraft.util.math.MathHelper.clamp(Item.getIdFromItem(itemstack.getItem()) + 1 - Item.getIdFromItem(Items.RECORD_13), 1, 15);
-             }
-         }
- 
-@@ -167,7 +168,20 @@
-             if (compound.hasKey("RecordItem", 10)) {
-                 this.setRecord(new ItemStack(compound.getCompoundTag("RecordItem")));
-             } else if (compound.getInteger("Record") > 0) {
--                this.setRecord(new ItemStack(Item.getItemById(compound.getInteger("Record"))));
-+                int recordId = compound.getInteger("Record");
-+                Item recordItem = com.cleanroommc.ids.LegacyIds.item(recordId);
-+                if (recordItem != null) {
-+                    this.setRecord(new ItemStack(recordItem));
-+                } else {
-+                    net.minecraft.util.ResourceLocation missingRecord = com.cleanroommc.ids.LegacyIds.itemName(recordId);
-+                    if (missingRecord != null) {
-+                        NBTTagCompound recordTag = new NBTTagCompound();
-+                        recordTag.setString("id", missingRecord.toString());
-+                        recordTag.setByte("Count", (byte)1);
-+                        recordTag.setShort("Damage", (short)0);
-+                        this.setRecord(new ItemStack(recordTag));
-+                    }
-+                }
              }
          }
  

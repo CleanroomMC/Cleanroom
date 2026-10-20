@@ -25,7 +25,7 @@
 -                    if (itemstack2.getItem() == Items.DYE) {
 -                        list.add(ItemDye.DYE_COLORS[itemstack2.getMetadata() & 15]);
 +                    if (net.minecraftforge.oredict.DyeUtils.isDye(itemstack2)) {
-+                        list.add(net.minecraftforge.oredict.DyeUtils.fireworkColorFromDyeDamage(net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack2)));
++                        list.add(ItemDye.DYE_COLORS[net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack2) & 15]);
                      } else if (itemstack2.getItem() == Items.GLOWSTONE_DUST) {
                          nbttagcompound2.setBoolean("Flicker", true);
                      } else if (itemstack2.getItem() == Items.DIAMOND) {
@@ -36,7 +36,7 @@
 -                    if (itemstack1.getItem() == Items.DYE) {
 -                        list1.add(ItemDye.DYE_COLORS[itemstack1.getMetadata() & 15]);
 +                    if (net.minecraftforge.oredict.DyeUtils.isDye(itemstack1)) {
-+                        list1.add(net.minecraftforge.oredict.DyeUtils.fireworkColorFromDyeDamage(net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack1)));
++                        list1.add(ItemDye.DYE_COLORS[net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack1) & 15]);
                      } else if (itemstack1.getItem() == Items.FIREWORK_CHARGE) {
                          this.resultItem = itemstack1.copy();
                          this.resultItem.setCount(1);

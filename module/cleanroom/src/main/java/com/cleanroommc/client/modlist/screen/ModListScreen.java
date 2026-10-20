@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({ "CodeBlock2Expr", "deprecation" })
+@SuppressWarnings("CodeBlock2Expr")
 public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
     private static final Favourites FAVOURITES = new Favourites();

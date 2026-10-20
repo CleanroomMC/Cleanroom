@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import com.cleanroommc.common.CleanroomVersion;
-import com.cleanroommc.common.IdFormatContainer;
+import com.cleanroommc.common.CleanroomContainer;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Futures;
 
@@ -123,8 +123,8 @@ enum FMLHandshakeClientState implements IHandshakeState<FMLHandshakeClientState>
             ctx.channel().attr(REMOTE_MOD_LIST).set(pkt.modList());
             // The Cleanroom format check precedes any registry comparison: different formats cannot
             // read each other's chunk data, so no reconciliation is even attempted.
-            String formatProblem = MismatchMessages.formatMismatch(IdFormatContainer.advertisedFormat(), CleanroomVersion.BUILD_VERSION,
-                    pkt.modList().get(IdFormatContainer.MOD_ID), pkt.modList().get(CleanroomVersion.MOD_ID), true);
+            String formatProblem = MismatchMessages.formatMismatch(CleanroomContainer.advertisedFormat(), CleanroomVersion.BUILD_VERSION,
+                    pkt.modList().get(CleanroomContainer.MOD_ID), pkt.modList().get(CleanroomVersion.MOD_ID), true);
             if (formatProblem != null)
             {
                 cons.accept(ERROR);

@@ -1,7 +1,6 @@
 --- original/net/minecraft/item/crafting/RecipesBanners.java
 +++ modified/net/minecraft/item/crafting/RecipesBanners.java
-@@ -13,8 +13,9 @@
- import net.minecraft.util.NonNullList;
+@@ -14,7 +14,7 @@
  import net.minecraft.world.World;
  
  public class RecipesBanners {
@@ -10,7 +9,7 @@
          /** Used to check if a recipe matches current crafting inventory */
          @Override
          public boolean matches(InventoryCrafting inv, World worldIn) {
-@@ -58,8 +59,9 @@
+@@ -58,8 +58,9 @@
  
                  for (int j = 0; j < inv.getSizeInventory(); j++) {
                      ItemStack itemstack2 = inv.getStackInSlot(j);
@@ -22,7 +21,7 @@
                          break;
                      }
                  }
-@@ -94,9 +96,7 @@
+@@ -94,9 +95,7 @@
  
              for (int i = 0; i < nonnulllist.size(); i++) {
                  ItemStack itemstack = inv.getStackInSlot(i);
@@ -33,7 +32,7 @@
              }
  
              return nonnulllist;
-@@ -114,7 +114,7 @@
+@@ -114,7 +113,7 @@
                          for (int i = 0; i < p_190933_1_.getSizeInventory() && flag; i++) {
                              ItemStack itemstack = p_190933_1_.getStackInSlot(i);
                              if (!itemstack.isEmpty() && itemstack.getItem() != Items.BANNER) {
@@ -42,32 +41,16 @@
                                      if (flag2) {
                                          flag = false;
                                          break;
-@@ -143,12 +143,13 @@
+@@ -143,7 +142,7 @@
                              int i1 = k % 3;
                              ItemStack itemstack1 = p_190933_1_.getStackInSlot(k);
                              if (!itemstack1.isEmpty() && itemstack1.getItem() != Items.BANNER) {
 -                                if (itemstack1.getItem() != Items.DYE) {
-+                                int dyeDamage = net.minecraftforge.oredict.DyeUtils.rawDyeDamageFromStack(itemstack1);
-+                                if (dyeDamage == -1) {
++                                if (!net.minecraftforge.oredict.DyeUtils.isDye(itemstack1)) {
                                      flag = false;
                                      break;
                                  }
- 
--                                if (j != -1 && j != itemstack1.getMetadata()) {
-+                                if (j != -1 && j != dyeDamage) {
-                                     flag = false;
-                                     break;
-                                 }
-@@ -158,7 +159,7 @@
-                                     break;
-                                 }
- 
--                                j = itemstack1.getMetadata();
-+                                j = dyeDamage;
-                             } else if (bannerpattern.getPatterns()[l].charAt(i1) != ' ') {
-                                 flag = false;
-                                 break;
-@@ -190,7 +191,7 @@
+@@ -190,7 +189,7 @@
          }
      }
  
@@ -76,7 +59,7 @@
          /** Used to check if a recipe matches current crafting inventory */
          @Override
          public boolean matches(InventoryCrafting inv, World worldIn) {
-@@ -269,8 +270,8 @@
+@@ -269,8 +268,8 @@
              for (int i = 0; i < nonnulllist.size(); i++) {
                  ItemStack itemstack = inv.getStackInSlot(i);
                  if (!itemstack.isEmpty()) {

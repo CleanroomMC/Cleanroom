@@ -1,30 +1,6 @@
 --- original/net/minecraft/entity/projectile/EntityArrow.java
 +++ modified/net/minecraft/entity/projectile/EntityArrow.java
-@@ -51,6 +52,11 @@
-     private int zTile = -1;
-     private Block inTile;
-     private int inData;
-+    /** Cleanroom: the exact state the arrow is stuck in; compared by identity since metadata is a legacy view */
-+    @Nullable
-+    private IBlockState inState;
-+    @Nullable
-+    private NBTTagCompound retainedInStateTag;
-     protected boolean inGround;
-     protected int timeInGround;
-     /** 1 if the player can pick up the arrow */
-@@ -193,8 +199,9 @@
-         }
- 
-         if (this.inGround) {
--            int j = block.getMetaFromState(iblockstate);
--            if ((block != this.inTile || j != this.inData) && !this.world.collidesWithAnyBlock(this.getEntityBoundingBox().grow(0.05))) {
-+            // Arrows loaded from an old save have no inState and keep comparing the saved block + data byte
-+            boolean same = this.inState != null ? iblockstate == this.inState : block == this.inTile && block.getMetaFromState(iblockstate) == this.inData;
-+            if (!same && !this.world.collidesWithAnyBlock(this.getEntityBoundingBox().grow(0.05))) {
-                 this.inGround = false;
-                 this.motionX = this.motionX * (this.rand.nextFloat() * 0.2F);
-                 this.motionY = this.motionY * (this.rand.nextFloat() * 0.2F);
-@@ -235,7 +242,7 @@
+@@ -235,7 +235,7 @@
                  }
              }
  
@@ -33,57 +9,3 @@
                  this.onHit(raytraceresult);
              }
  
-@@ -396,6 +403,8 @@
-             IBlockState iblockstate = this.world.getBlockState(blockpos);
-             this.inTile = iblockstate.getBlock();
-             this.inData = this.inTile.getMetaFromState(iblockstate);
-+            this.inState = iblockstate;
-+            this.retainedInStateTag = null;
-             this.motionX = (float)(raytraceResultIn.hitVec.x - this.posX);
-             this.motionY = (float)(raytraceResultIn.hitVec.y - this.posY);
-             this.motionZ = (float)(raytraceResultIn.hitVec.z - this.posZ);
-@@ -470,9 +479,18 @@
-         compound.setInteger("yTile", this.yTile);
-         compound.setInteger("zTile", this.zTile);
-         compound.setShort("life", (short)this.ticksInGround);
--        ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(this.inTile);
--        compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
--        compound.setByte("inData", (byte)this.inData);
-+        if (this.retainedInStateTag != null) {
-+            compound.setString("inTile", this.retainedInStateTag.getString("Name"));
-+            compound.setByte("inData", (byte)this.inData);
-+            compound.setTag("inBlockState", this.retainedInStateTag.copy());
-+        } else {
-+            ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(this.inTile);
-+            compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-+            compound.setByte("inData", (byte)this.inData);
-+            if (this.inState != null) {
-+                compound.setTag("inBlockState", net.minecraft.nbt.NBTUtil.writeBlockState(new NBTTagCompound(), this.inState));
-+            }
-+        }
-         compound.setByte("shake", (byte)this.arrowShake);
-         compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
-         compound.setByte("pickup", (byte)this.pickupStatus.ordinal());
-@@ -490,10 +508,21 @@
-         if (compound.hasKey("inTile", 8)) {
-             this.inTile = Block.getBlockFromName(compound.getString("inTile"));
-         } else {
--            this.inTile = Block.getBlockById(compound.getByte("inTile") & 255);
-+            this.inTile = com.cleanroommc.ids.LegacyIds.block(compound.getByte("inTile") & 255);
-         }
- 
-         this.inData = compound.getByte("inData") & 255;
-+        this.retainedInStateTag = com.cleanroommc.ids.RetainedContent.readRetainedBlockState(
-+            compound, "inBlockState", "inTile", "inTile", false, true
-+        );
-+        if (this.retainedInStateTag != null) {
-+            IBlockState standIn = com.cleanroommc.ids.RetainedContent.standInForStateTag(this.retainedInStateTag);
-+            this.inState = standIn != null ? standIn : net.minecraft.init.Blocks.AIR.getDefaultState();
-+            this.inTile = this.inState.getBlock();
-+        } else if (compound.hasKey("inBlockState", 10)) {
-+            this.inState = net.minecraft.nbt.NBTUtil.readBlockState(compound.getCompoundTag("inBlockState"));
-+            this.inTile = this.inState.getBlock();
-+        }
-         this.arrowShake = compound.getByte("shake") & 255;
-         this.inGround = compound.getByte("inGround") == 1;
-         if (compound.hasKey("damage", 99)) {

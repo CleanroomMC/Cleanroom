@@ -24,7 +24,7 @@ import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Map;
 
-import com.cleanroommc.ids.LegacyIds;
+import com.cleanroommc.cleanroom.common.id.LegacyIds;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
