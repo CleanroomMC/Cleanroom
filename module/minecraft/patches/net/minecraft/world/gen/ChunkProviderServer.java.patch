@@ -52,19 +52,7 @@
          return chunk;
      }
  
-@@ -113,6 +139,11 @@
-             }
- 
-             this.loadedChunks.put(i, chunk);
-+            String missingWorldType = this.world.getWorldInfo().getRetainedGeneratorName(); // Cleanroom: terrain generated without the world's real type is stand-in vanilla
-+            if (missingWorldType != null) {
-+                chunk.retained.setGeneratedWithoutWorldType(missingWorldType);
-+                com.cleanroommc.cleanroom.common.id.RetainedContent.noteStandInTerrain(chunk.getPos(), missingWorldType);
-+            }
-             chunk.onLoad();
-             chunk.populate(this, this.chunkGenerator);
-         }
-@@ -187,6 +218,10 @@
+@@ -187,6 +213,10 @@
      public boolean tick() {
          if (!this.world.disableLevelSaving) {
              if (!this.droppedChunks.isEmpty()) {
@@ -75,7 +63,7 @@
                  Iterator<Long> iterator = this.droppedChunks.iterator();
  
                  for (int i = 0; i < 100 && iterator.hasNext(); iterator.remove()) {
-@@ -194,6 +229,7 @@
+@@ -194,6 +224,7 @@
                      Chunk chunk = this.loadedChunks.get(olong);
                      if (chunk != null && chunk.unloadQueued) {
                          chunk.onUnload();
@@ -83,7 +71,7 @@
                          this.saveChunkData(chunk);
                          this.saveChunkExtraData(chunk);
                          this.loadedChunks.remove(olong);
-@@ -202,6 +238,8 @@
+@@ -202,6 +233,8 @@
                  }
              }
  

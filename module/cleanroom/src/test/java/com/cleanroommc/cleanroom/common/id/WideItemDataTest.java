@@ -286,26 +286,4 @@ public class WideItemDataTest {
         assertThat(pkt.getBlockState()).isSameAs(net.minecraft.init.Blocks.AIR.getDefaultState());
     }
 
-    @Test
-    void glassStandInsPreserveColorAndConnections() {
-        net.minecraft.block.state.IBlockState standInGlass = StandIns.forMissing("absent_mod:stained_glass[color=blue]");
-        assertThat(standInGlass).isEqualTo(net.minecraft
-                .init
-                .Blocks
-                .STAINED_GLASS
-                .getDefaultState()
-                .withProperty(net.minecraft.block.BlockStainedGlass.COLOR, net.minecraft.item.EnumDyeColor.BLUE)
-        );
-        net.minecraft.block.state.IBlockState standInPane = StandIns.forMissing("absent_mod:stained_glass_pane[color=red,north=true]"
-        );
-        assertThat(standInPane).isEqualTo(net.minecraft
-                .init
-                .Blocks
-                .STAINED_GLASS_PANE
-                .getDefaultState()
-                .withProperty(net.minecraft.block.BlockStainedGlassPane.COLOR, net.minecraft.item.EnumDyeColor.RED)
-                .withProperty(net.minecraft.block.BlockPane.NORTH, true)
-        );
-    }
-
 }

@@ -1,15 +1,6 @@
 --- original/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
 +++ modified/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
-@@ -14,6 +14,8 @@
-     /** Contains the number of blocks in this block storage's parent chunk that require random ticking. Used to cull the Chunk from random tick updates for performance reasons. */
-     private int tickRefCount;
-     private final BlockStateContainer data;
-+    /** Cleanroom: cells whose saved block-state string named no registered block; a write to the cell drops the name. Null for fresh sections. */
-+    public com.cleanroommc.cleanroom.common.id.RetainedContent.Section retained;
-     /** The NibbleArray containing a block of Block-light data. */
-     private NibbleArray blockLight;
-     /**
-@@ -37,9 +39,14 @@
+@@ -37,6 +37,8 @@
      }
  
      public void set(int x, int y, int z, IBlockState state) {
@@ -18,27 +9,3 @@
          IBlockState iblockstate = this.get(x, y, z);
          Block block = iblockstate.getBlock();
          Block block1 = state.getBlock();
-+        if (this.retained != null) { // Cleanroom: writing the cell wins over the retained name
-+            this.retained.clear((y & 15) << 8 | (z & 15) << 4 | x & 15);
-+        }
-         if (block != Blocks.AIR) {
-             this.blockRefCount--;
-             if (block.getTickRandomly()) {
-@@ -93,6 +100,17 @@
-     }
- 
-     public void recalculateRefCounts() {
-+        if (this.data.getRawBits() == 0) {
-+            Block block = this.data.get(0, 0, 0).getBlock();
-+            if (block == Blocks.AIR) {
-+                this.blockRefCount = 0;
-+                this.tickRefCount = 0;
-+            } else {
-+                this.blockRefCount = 4096;
-+                this.tickRefCount = block.getTickRandomly() ? 4096 : 0;
-+            }
-+            return;
-+        }
-         this.blockRefCount = 0;
-         this.tickRefCount = 0;
- 

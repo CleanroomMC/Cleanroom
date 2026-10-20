@@ -11,25 +11,20 @@
 package com.cleanroommc.common;
 
 import com.cleanroommc.cleanroom.common.id.CommandRegistry;
-import com.cleanroommc.cleanroom.common.id.MissingItem;
-import com.cleanroommc.cleanroom.common.id.RetentionFile;
 import com.cleanroommc.util.CleanroomLog;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import net.minecraft.init.Bootstrap;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
-import net.minecraftforge.fml.common.StartupQuery;
 import net.minecraftforge.fml.common.WorldAccessContainer;
 import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
@@ -130,7 +125,6 @@ public class CleanroomContainer extends DummyModContainer implements WorldAccess
     @Subscribe
     public void construct(FMLConstructionEvent event) {
         NetworkRegistry.INSTANCE.register(this, this.getClass(), null, event.getASMHarvestedData());
-        MinecraftForge.EVENT_BUS.register(MissingItem.class);
     }
 
     @Subscribe
@@ -142,13 +136,6 @@ public class CleanroomContainer extends DummyModContainer implements WorldAccess
     public NBTTagCompound getDataForWriting(SaveHandler handler, WorldInfo info) {
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString("Format", SAVE_FORMAT);
-        if (Bootstrap.isRegistered()) {
-            try {
-                RetentionFile.capture(info).write(handler.getWorldDirectory());
-            } catch (Exception e) {
-                CleanroomLog.get().warn("Could not update " + RetentionFile.FILE_NAME, e);
-            }
-        }
         return tag;
     }
 
@@ -159,16 +146,6 @@ public class CleanroomContainer extends DummyModContainer implements WorldAccess
             effectiveTag = legacyTag;
         }
         checkFormat(handler.getWorldDirectory(), effectiveTag);
-        if (!Bootstrap.isRegistered()) {
-            return;
-        }
-        try {
-            RetentionFile.onWorldLoad(handler.getWorldDirectory(), info);
-        } catch (StartupQuery.AbortedException e) {
-            throw e;
-        } catch (Exception e) {
-            CleanroomLog.get().warn("Retention check failed; loading anyway", e);
-        }
     }
 
     private void checkFormat(File world, NBTTagCompound tag) {

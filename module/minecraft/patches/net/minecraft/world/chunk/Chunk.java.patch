@@ -1,6 +1,6 @@
 --- original/net/minecraft/world/chunk/Chunk.java
 +++ modified/net/minecraft/world/chunk/Chunk.java
-@@ -41,13 +41,15 @@
+@@ -41,13 +41,13 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -14,12 +14,10 @@
 -    private final byte[] blockBiomeArray = new byte[256];
 +    /** Cleanroom: full biome ids; there is no byte[] backing array anymore (see getBiomeArray) */
 +    private final com.cleanroommc.cleanroom.common.id.ChunkBiomes biomeIds;
-+    /** Cleanroom: names no registry resolved when this chunk was read, written back verbatim so the content returns with its mod */
-+    public final com.cleanroommc.cleanroom.common.id.RetainedContent retained = new com.cleanroommc.cleanroom.common.id.RetainedContent();
      /** A map, similar to heightMap, that tracks how far down precipitation can fall. */
      private final int[] precipitationHeightMap = new int[256];
      /** Which columns need their skylightMaps updated. */
-@@ -98,7 +100,8 @@
+@@ -98,7 +98,8 @@
          }
  
          Arrays.fill(this.precipitationHeightMap, -999);
@@ -29,7 +27,7 @@
      }
  
      public Chunk(World worldIn, ChunkPrimer primer, int x, int z) {
-@@ -171,7 +174,8 @@
+@@ -171,7 +172,8 @@
  
                  for (int l = i + 16; l > 0; l--) {
                      IBlockState iblockstate = this.getBlockState(j, l - 1, k);
@@ -39,7 +37,7 @@
                          this.heightMap[k << 4 | j] = l;
                          if (l < this.heightMapMinimum) {
                              this.heightMapMinimum = l;
-@@ -378,11 +382,12 @@
+@@ -378,11 +380,12 @@
      }
  
      public int getBlockLightOpacity(BlockPos pos) {
@@ -54,17 +52,7 @@
      }
  
      public IBlockState getBlockState(BlockPos pos) {
-@@ -426,90 +431,101 @@
- 
-     @Nullable
-     public IBlockState setBlockState(BlockPos pos, IBlockState state) {
-+        // Cleanroom: checkLight() raises isTerrainPopulated before the generator populates (trees and ores land in this chunk
-+        // and its neighbours afterwards), so population is recognised by Forge's cascading-worldgen marker instead; a write
-+        // outside any population window is gameplay and wins the stand-in-terrain mark
-+        if (this.retained.getGeneratedWithoutWorldType() != null && this.isTerrainPopulated && populating == null) {
-+            this.retained.setGeneratedWithoutWorldType(null);
-+        }
-         int i = pos.getX() & 15;
+@@ -430,86 +433,91 @@
          int j = pos.getY();
          int k = pos.getZ() & 15;
          int l = k << 4 | i;
@@ -213,7 +201,7 @@
      }
  
      public int getLightFor(EnumSkyBlock type, BlockPos pos) {
-@@ -587,11 +603,13 @@
+@@ -587,11 +595,13 @@
              k = this.entityLists.length - 1;
          }
  
@@ -227,7 +215,7 @@
      }
  
      /** removes entity using its y chunk coordinate as its index */
-@@ -610,6 +628,7 @@
+@@ -610,6 +620,7 @@
          }
  
          this.entityLists[index].remove(entityIn);
@@ -235,7 +223,7 @@
      }
  
      public boolean canSeeSky(BlockPos pos) {
-@@ -623,24 +642,27 @@
+@@ -623,24 +634,27 @@
      private TileEntity createNewTileEntity(BlockPos pos) {
          IBlockState iblockstate = this.getBlockState(pos);
          Block block = iblockstate.getBlock();
@@ -270,7 +258,7 @@
          }
  
          return tileentity;
-@@ -654,9 +676,11 @@
+@@ -654,9 +668,11 @@
      }
  
      public void addTileEntity(BlockPos pos, TileEntity tileEntityIn) {
@@ -283,7 +271,7 @@
              if (this.tileEntities.containsKey(pos)) {
                  this.tileEntities.get(pos).invalidate();
              }
-@@ -681,12 +705,14 @@
+@@ -681,12 +697,14 @@
          this.world.addTileEntities(this.tileEntities.values());
  
          for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists) {
@@ -299,7 +287,7 @@
          this.loaded = false;
  
          for (TileEntity tileentity : this.tileEntities.values()) {
-@@ -696,6 +722,7 @@
+@@ -696,6 +714,7 @@
          for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists) {
              this.world.unloadEntities(classinheritancemultimap);
          }
@@ -307,7 +295,7 @@
      }
  
      /** Sets the isModified flag for this Chunk */
-@@ -705,8 +732,8 @@
+@@ -705,8 +724,8 @@
  
      /** Fills the given list of all entities that intersect within the given bounding box that aren't the passed entity. */
      public void getEntitiesWithinAABBForEntity(@Nullable Entity entityIn, AxisAlignedBB aabb, List<Entity> listToFill, Predicate<? super Entity> filter) {
@@ -318,7 +306,7 @@
          i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
          j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
  
-@@ -739,8 +766,8 @@
+@@ -739,8 +758,8 @@
      public <T extends Entity> void getEntitiesOfTypeWithinAABB(
          Class<? extends T> entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate<? super T> filter
      ) {
@@ -329,7 +317,7 @@
          i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
          j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
  
-@@ -807,6 +834,9 @@
+@@ -807,6 +826,9 @@
      }
  
      protected void populate(IChunkGenerator generator) {
@@ -339,7 +327,7 @@
          if (this.isTerrainPopulated()) {
              if (generator.generateStructures(this, this.x, this.z)) {
                  this.markDirty();
-@@ -814,8 +844,10 @@
+@@ -814,8 +836,10 @@
          } else {
              this.checkLight();
              generator.populate(this.x, this.z);
@@ -350,7 +338,7 @@
      }
  
      public BlockPos getPrecipitationHeight(BlockPos pos) {
-@@ -856,7 +888,8 @@
+@@ -856,7 +880,8 @@
  
          while (!this.tileEntityPosQueue.isEmpty()) {
              BlockPos blockpos = this.tileEntityPosQueue.poll();
@@ -360,7 +348,7 @@
                  TileEntity tileentity = this.createNewTileEntity(blockpos);
                  this.world.setTileEntity(blockpos, tileentity);
                  this.world.markBlockRangeForRenderUpdate(blockpos, blockpos);
-@@ -912,6 +945,16 @@
+@@ -912,6 +937,16 @@
       */
      @SideOnly(Side.CLIENT)
      public void read(PacketBuffer buf, int availableSections, boolean groundUpContinuous) {
@@ -377,7 +365,7 @@
          boolean flag = this.world.provider.hasSkyLight();
  
          for (int i = 0; i < this.storageArrays.length; i++) {
-@@ -935,7 +978,18 @@
+@@ -935,7 +970,18 @@
          }
  
          if (groundUpContinuous) {
@@ -397,7 +385,7 @@
          }
  
          for (int j = 0; j < this.storageArrays.length; j++) {
-@@ -948,36 +1002,60 @@
+@@ -948,36 +994,60 @@
          this.isTerrainPopulated = true;
          this.generateHeightMap();
  
@@ -467,7 +455,7 @@
          }
      }
  
-@@ -1005,10 +1083,11 @@
+@@ -1005,10 +1075,11 @@
                      BlockPos blockpos1 = blockpos.add(k, (j << 4) + i1, l);
                      boolean flag = i1 == 0 || i1 == 15 || k == 0 || k == 15 || l == 0 || l == 15;
                      if (this.storageArrays[j] == NULL_BLOCK_STORAGE && flag
@@ -481,7 +469,7 @@
                                  this.world.checkLight(blockpos2);
                              }
                          }
-@@ -1104,7 +1183,8 @@
+@@ -1104,7 +1175,8 @@
  
          for (int l = blockpos$mutableblockpos.getY(); l > 0; l--) {
              blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), l, blockpos$mutableblockpos.getZ());
@@ -491,7 +479,7 @@
                  this.world.checkLight(blockpos$mutableblockpos);
              }
          }
-@@ -1134,6 +1214,7 @@
+@@ -1134,6 +1206,7 @@
              LOGGER.warn("Could not set level chunk heightmap, array length is {} instead of {}", newHeightMap.length, this.heightMap.length);
          } else {
              System.arraycopy(newHeightMap, 0, this.heightMap, 0, this.heightMap.length);
@@ -499,7 +487,7 @@
          }
      }
  
-@@ -1190,4 +1271,48 @@
+@@ -1190,4 +1263,48 @@
          QUEUED,
          CHECK;
      }

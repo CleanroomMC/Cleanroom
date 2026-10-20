@@ -43,20 +43,6 @@
          double d0 = 0.03125;
          this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, x * 16, z * 16, 16, 16, 0.0625, 0.0625, 1.0);
  
-@@ -204,10 +226,10 @@
-         }
- 
-         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
--        byte[] abyte = chunk.getBiomeArray();
-+        com.cleanroommc.cleanroom.common.id.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
- 
--        for (int i = 0; i < abyte.length; i++) {
--            abyte[i] = (byte)Biome.getIdForBiome(this.biomesForGeneration[i]);
-+        for (int i = 0; i < 256; i++) {
-+            biomeIds.set(i, Biome.getIdForBiome(this.biomesForGeneration[i]));
-         }
- 
-         chunk.generateSkylightMap();
 @@ -349,6 +371,9 @@
          this.rand.setSeed(x * k + z * l ^ this.world.getSeed());
          boolean flag = false;

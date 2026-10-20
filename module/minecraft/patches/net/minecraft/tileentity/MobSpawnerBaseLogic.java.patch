@@ -16,35 +16,7 @@
                              ((EntityLiving)entity).onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), null);
                          }
  
-@@ -170,12 +172,25 @@
-             NBTTagList nbttaglist = nbt.getTagList("SpawnPotentials", 10);
- 
-             for (int i = 0; i < nbttaglist.tagCount(); i++) {
--                this.potentialSpawns.add(new WeightedSpawnerEntity(nbttaglist.getCompoundTagAt(i)));
-+                NBTTagCompound entry = nbttaglist.getCompoundTagAt(i);
-+                String entityId = entry.getCompoundTag("Entity").getString("id");
-+                if (!entityId.isEmpty() && com.cleanroommc.cleanroom.common.id.RetainedContent.isRemoved(entityId)) {
-+                    com.cleanroommc.cleanroom.common.id.RetainedContent.noteRemoved(entityId);
-+                    continue;
-+                }
-+                this.potentialSpawns.add(new WeightedSpawnerEntity(entry));
-             }
-         }
- 
-         if (nbt.hasKey("SpawnData", 10)) {
--            this.setNextSpawnData(new WeightedSpawnerEntity(1, nbt.getCompoundTag("SpawnData")));
-+            NBTTagCompound spawnTag = nbt.getCompoundTag("SpawnData");
-+            String entityId = spawnTag.getString("id");
-+            if (!entityId.isEmpty() && com.cleanroommc.cleanroom.common.id.RetainedContent.isRemoved(entityId)) {
-+                com.cleanroommc.cleanroom.common.id.RetainedContent.noteRemoved(entityId);
-+                this.setNextSpawnData(this.potentialSpawns.isEmpty() ? new WeightedSpawnerEntity() : WeightedRandom.getRandomItem(this.getSpawnerWorld() != null ? this.getSpawnerWorld().rand : new java.util.Random(), this.potentialSpawns));
-+            } else {
-+                this.setNextSpawnData(new WeightedSpawnerEntity(1, spawnTag));
-+            }
-         } else if (!this.potentialSpawns.isEmpty()) {
-             this.setNextSpawnData(WeightedRandom.getRandomItem(this.getSpawnerWorld().rand, this.potentialSpawns));
-         }
-@@ -270,4 +285,7 @@
+@@ -270,4 +272,7 @@
      public double getPrevMobRotation() {
          return this.prevMobRotation;
      }

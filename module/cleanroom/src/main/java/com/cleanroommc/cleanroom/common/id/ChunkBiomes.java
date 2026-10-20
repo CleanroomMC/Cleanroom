@@ -20,7 +20,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
@@ -263,26 +262,10 @@ public final class ChunkBiomes {
                 int savedId = bytes[i] & 0xFF;
                 // The byte is a Forge-era saved id; resolve its name through the world's legacy table
                 Biome biome = LegacyIds.biome(savedId);
-                if (biome != null) {
-                    newIds[i] = Biome.getIdForBiome(biome);
-                } else {
-                    ResourceLocation missingName = LegacyIds.biomeName(savedId);
-                    if (missingName != null && !RetainedContent.isRemoved(missingName.toString())) {
-                        String s = missingName.toString();
-                        if (retained == null) {
-                            retained = new String[SIZE];
-                        }
-                        retained[i] = s;
-                        Biome standIn = StandIns.forMissingBiome(s);
-                        newIds[i] = standIn == null ? UNSET : Biome.getIdForBiome(standIn);
-                    } else {
-                        newIds[i] = UNSET;
-                    }
-                }
+                newIds[i] = biome == null ? UNSET : Biome.getIdForBiome(biome);
             }
         }
         setAll(newIds);
-        this.retainedNames = retained;
     }
 
     /* {@code Chunk.setBiomeArray(byte[])}: resolve each byte column by column (0xFF = unset); lossy above 255. */
@@ -306,29 +289,12 @@ public final class ChunkBiomes {
             throw new IllegalArgumentException("Chunk biomes need " + SIZE + " ids, got " + newIds.length + ".");
         }
         int[] resolved = new int[SIZE];
-        String[] retained = null;
         for (int i = 0; i < SIZE; i++) {
             int savedId = newIds[i];
             Biome biome = LegacyIds.biome(savedId);
-            if (biome != null) {
-                resolved[i] = Biome.getIdForBiome(biome);
-            } else {
-                ResourceLocation missingName = LegacyIds.biomeName(savedId);
-                if (missingName != null && !RetainedContent.isRemoved(missingName.toString())) {
-                    String s = missingName.toString();
-                    if (retained == null) {
-                        retained = new String[SIZE];
-                    }
-                    retained[i] = s;
-                    Biome standIn = StandIns.forMissingBiome(s);
-                    resolved[i] = standIn == null ? UNSET : Biome.getIdForBiome(standIn);
-                } else {
-                    resolved[i] = UNSET;
-                }
-            }
+            resolved[i] = biome == null ? UNSET : Biome.getIdForBiome(biome);
         }
         setAll(resolved);
-        this.retainedNames = retained;
     }
 
     /*
@@ -471,16 +437,7 @@ public final class ChunkBiomes {
                 Biome biome = name.isEmpty() ? null : Biome.REGISTRY.getObject(new ResourceLocation(name));
                 byIndex[i] = biome == null ? UNSET : Biome.getIdForBiome(biome);
                 if (!name.isEmpty() && biome == null) {
-                    if (RetainedContent.isRemoved(name)) {
-                        RetainedContent.noteRemoved(name); // removed: the column resolves through the provider and the name is gone
-                        continue;
-                    }
-                    missing[i] = name; // a mod's biome, missing now: reads as its stand-in, the name survives
-                    Biome standIn = StandIns.forMissingBiome(name);
-                    if (standIn != null) {
-                        byIndex[i] = Biome.getIdForBiome(standIn);
-                    }
-                    RetainedContent.noteMissingBiome(name, standIn, new ChunkPos(chunk.x, chunk.z));
+                    missing[i] = name;
                 }
             }
             if (byIndex.length == 0) {

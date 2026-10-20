@@ -44,20 +44,6 @@
          this.rand.setSeed(x * 341873128712L + z * 132897987541L);
          ChunkPrimer chunkprimer = new ChunkPrimer();
          this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
-@@ -165,10 +181,10 @@
-         }
- 
-         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
--        byte[] abyte = chunk.getBiomeArray();
-+        com.cleanroommc.cleanroom.common.id.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
- 
--        for (int i = 0; i < abyte.length; i++) {
--            abyte[i] = (byte)Biome.getIdForBiome(this.biomesForGeneration[i]);
-+        for (int i = 0; i < 256; i++) {
-+            biomeIds.set(i, Biome.getIdForBiome(this.biomesForGeneration[i]));
-         }
- 
-         chunk.generateSkylightMap();
 @@ -219,6 +235,10 @@
      }
  

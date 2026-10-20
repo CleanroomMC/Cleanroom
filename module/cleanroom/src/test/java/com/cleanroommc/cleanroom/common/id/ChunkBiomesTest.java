@@ -53,7 +53,6 @@ public class ChunkBiomesTest {
     @BeforeAll
     public static void setup() {
         MinecraftTestHarness.bootstrap();
-        StandIns.load(null);
     }
 
     private static Chunk chunk() {
@@ -428,27 +427,6 @@ public class ChunkBiomesTest {
         }
         assertThat(marshKept).isTrue();
         assertThat(desertThere).isTrue();
-    }
-
-    /* A retained biome column reads as its vanilla stand-in immediately; the saved name still writes back. */
-    @Test
-    public void missingBiomeReadsAsItsStandIn() {
-        Chunk chunk = chunk();
-        ChunkBiomes biomes = chunk.getBiomeIds();
-        NBTTagCompound tag = new NBTTagCompound();
-        NBTTagList palette = new NBTTagList();
-        palette.appendTag(new NBTTagString("gone_mod:bayou_marsh"));
-        tag.setInteger(ChunkBiomes.LAYERS, 1);
-        tag.setTag(ChunkBiomes.PALETTE, palette);
-        assertThat(biomes.readNBT(tag)).isTrue();
-        for (int i = 0; i < 256; i++) {
-            assertThat(biomes.get(i)).isEqualTo(Biome.getIdForBiome(Biomes.SWAMPLAND));
-        }
-        NBTTagCompound out = new NBTTagCompound();
-        biomes.writeNBT(out);
-        NBTTagList outPalette = out.getTagList(ChunkBiomes.PALETTE, 8);
-        assertThat(outPalette.tagCount()).isEqualTo(1);
-        assertThat(outPalette.getStringTagAt(0)).isEqualTo("gone_mod:bayou_marsh");
     }
 
     /* No stand-in for an unmatched name: the column stays UNSET and the provider fills it as before. */

@@ -149,12 +149,7 @@
              this.addChunkToPending(chunkIn.getPos(), nbttagcompound);
          } catch (Exception exception) {
              LOGGER.error("Failed to save chunk", exception);
-@@ -239,22 +293,18 @@
-         compound.setBoolean("TerrainPopulated", chunkIn.isTerrainPopulated());
-         compound.setBoolean("LightPopulated", chunkIn.isLightPopulated());
-         compound.setLong("InhabitedTime", chunkIn.getInhabitedTime());
-+        chunkIn.retained.writeLevelTags(compound); // Cleanroom: the stand-in-terrain mark survives saves
-+        com.cleanroommc.cleanroom.common.id.RetainedContent.indexStandInChunk(chunkIn.retained.getGeneratedWithoutWorldType(), worldIn.provider.getDimension(), chunkIn.getPos()); // Cleanroom: index the mark for the load-time regen prompt
+@@ -242,19 +296,13 @@
          ExtendedBlockStorage[] aextendedblockstorage = chunkIn.getBlockStorageArray();
          NBTTagList nbttaglist = new NBTTagList();
          boolean flag = worldIn.provider.hasSkyLight();
@@ -173,11 +168,11 @@
 -                    nbttagcompound.setByteArray("Add", nibblearray1.getData());
 -                }
 +                nbttagcompound.setInteger("Y", extendedblockstorage.getYLocation() >> 4); // Cleanroom: an int, so the format never caps section count or sign; readers take the old byte too
-+                com.cleanroommc.cleanroom.common.id.SectionBlockFormat.write(extendedblockstorage.getData(), nbttagcompound, blockPalette, chunkIn.retained.sectionOrNull(extendedblockstorage.getYLocation() >> 4)); // Cleanroom: palette by name instead of Blocks/Data/Add; retained names keep their slots
++                com.cleanroommc.cleanroom.common.id.SectionBlockFormat.write(extendedblockstorage.getData(), nbttagcompound, blockPalette); // Cleanroom: palette by name instead of Blocks/Data/Add
  
                  nbttagcompound.setByteArray("BlockLight", extendedblockstorage.getBlockLight().getData());
                  if (flag) {
-@@ -268,28 +318,62 @@
+@@ -268,17 +316,24 @@
          }
  
          compound.setTag("Sections", nbttaglist);
@@ -186,7 +181,6 @@
 +        chunkIn.getBiomeIds().writeNBT(compound); // Cleanroom: biome names (BiomePalette/BiomeIndices) instead of id bytes
          chunkIn.setHasEntities(false);
          NBTTagList nbttaglist1 = new NBTTagList();
-+        java.util.Set<java.util.UUID> writtenEntities = null; // Cleanroom
  
          for (int i = 0; i < chunkIn.getEntityLists().length; i++) {
              for (Entity entity : chunkIn.getEntityLists()[i]) {
@@ -196,10 +190,6 @@
                  if (entity.writeToNBTOptional(nbttagcompound2)) {
                      chunkIn.setHasEntities(true);
                      nbttaglist1.appendTag(nbttagcompound2);
-+                    if (writtenEntities == null) { // Cleanroom
-+                        writtenEntities = new java.util.HashSet<>();
-+                    }
-+                    writtenEntities.add(entity.getUniqueID());
                  }
 +                } catch (Exception e) {
 +                    net.minecraftforge.fml.common.FMLLog.log.error("An Entity type {} has thrown an exception trying to write state. It will not persist. Report this to the mod author",
@@ -208,13 +198,7 @@
              }
          }
  
-+        for (NBTTagCompound retainedEntity : chunkIn.retained.entities) { // Cleanroom: an entity whose id resolved in the meantime is live and already written
-+            if (writtenEntities == null || !writtenEntities.contains(new java.util.UUID(retainedEntity.getLong("UUIDMost"), retainedEntity.getLong("UUIDLeast")))) {
-+                nbttaglist1.appendTag(retainedEntity);
-+            }
-+        }
-+
-         compound.setTag("Entities", nbttaglist1);
+@@ -286,8 +341,13 @@
          NBTTagList nbttaglist2 = new NBTTagList();
  
          for (TileEntity tileentity : chunkIn.getTileEntityMap().values()) {
@@ -227,21 +211,8 @@
 +            }
          }
  
-+        for (NBTTagCompound retainedTile : chunkIn.retained.tileEntities) { // Cleanroom: a live tile entity or a real block at its position wins
-+            BlockPos retainedPos = new BlockPos(retainedTile.getInteger("x"), retainedTile.getInteger("y"), retainedTile.getInteger("z"));
-+            com.cleanroommc.cleanroom.common.id.RetainedContent.Section retSec = chunkIn.retained.sectionOrNull(retainedPos.getY() >> 4);
-+            int cellIdx = (retainedPos.getY() & 15) << 8 | (retainedPos.getZ() & 15) << 4 | (retainedPos.getX() & 15);
-+            if (!chunkIn.getTileEntityMap().containsKey(retainedPos)
-+                && (chunkIn.getBlockState(retainedPos).getBlock() == net.minecraft.init.Blocks.AIR
-+                    || (retSec != null && chunkIn.getBlockState(retainedPos) == retSec.reads(cellIdx)))) {
-+                nbttaglist2.appendTag(retainedTile);
-+            }
-+        }
-+
          compound.setTag("TileEntities", nbttaglist2);
-         List<NextTickListEntry> list = worldIn.getPendingBlockUpdates(chunkIn, false);
-         if (list != null) {
-@@ -310,10 +394,20 @@
+@@ -310,10 +370,20 @@
  
              compound.setTag("TileTicks", nbttaglist3);
          }
@@ -262,16 +233,11 @@
          int i = compound.getInteger("xPos");
          int j = compound.getInteger("zPos");
          Chunk chunk = new Chunk(worldIn, i, j);
-@@ -321,19 +415,37 @@
-         chunk.setTerrainPopulated(compound.getBoolean("TerrainPopulated"));
-         chunk.setLightPopulated(compound.getBoolean("LightPopulated"));
-         chunk.setInhabitedTime(compound.getLong("InhabitedTime"));
-+        chunk.retained.readLevelTags(compound); // Cleanroom: the stand-in-terrain mark survives loads
-         NBTTagList nbttaglist = compound.getTagList("Sections", 10);
+@@ -325,15 +395,26 @@
          int k = 16;
          ExtendedBlockStorage[] aextendedblockstorage = new ExtendedBlockStorage[16];
          boolean flag = worldIn.provider.hasSkyLight();
-+        com.cleanroommc.cleanroom.common.id.SectionBlockFormat.ChunkPaletteRead blockPalette = com.cleanroommc.cleanroom.common.id.SectionBlockFormat.isPaletted(compound) ? com.cleanroommc.cleanroom.common.id.SectionBlockFormat.readChunkPalette(compound) : null; // Cleanroom
++        net.minecraft.block.state.IBlockState[] blockPalette = com.cleanroommc.cleanroom.common.id.SectionBlockFormat.isPaletted(compound) ? com.cleanroommc.cleanroom.common.id.SectionBlockFormat.readChunkPalette(compound) : null; // Cleanroom
  
          for (int l = 0; l < nbttaglist.tagCount(); l++) {
              NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(l);
@@ -283,17 +249,11 @@
 -            NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(nbttagcompound.getByteArray("Add")) : null;
 -            extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
 +            switch (com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.detect(compound, nbttagcompound)) { // Cleanroom: one exhaustive dispatch over every section layout
-+                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Native ignored -> {
-+                    com.cleanroommc.cleanroom.common.id.RetainedContent.Section retainedSection = new com.cleanroommc.cleanroom.common.id.RetainedContent.Section();
-+                    com.cleanroommc.cleanroom.common.id.SectionBlockFormat.read(nbttagcompound, extendedblockstorage.getData(), blockPalette, retainedSection, chunk.getPos());
-+                    if (!retainedSection.isEmpty()) { // a later set() drops the name; an untouched cell writes it back
-+                        chunk.retained.section(i1, retainedSection);
-+                        extendedblockstorage.retained = retainedSection;
-+                    }
-+                }
++                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Native ignored ->
++                    com.cleanroommc.cleanroom.common.id.SectionBlockFormat.read(nbttagcompound, extendedblockstorage.getData(), blockPalette);
 +                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Jeid ignored -> // JEID/REID numeric palette, converted on the next save
 +                    com.cleanroommc.cleanroom.common.id.SectionBlockFormat.readJeid(nbttagcompound, extendedblockstorage.getData());
-+                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Neid ignored -> // NEID Blocks16, converted on the next save
++                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Neid ignored -> // NEID 1.12.2, converted on the next save
 +                    com.cleanroommc.cleanroom.common.id.SectionBlockFormat.readNeid(nbttagcompound, extendedblockstorage.getData());
 +                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.ForgeLegacy ignored -> { // Anvil sections from before the palette format, converted when the chunk is next saved
 +                    byte[] abyte = nbttagcompound.getByteArray("Blocks");
@@ -305,7 +265,7 @@
              extendedblockstorage.setBlockLight(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
              if (flag) {
                  extendedblockstorage.setSkyLight(new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
-@@ -344,15 +456,39 @@
+@@ -344,10 +425,26 @@
          }
  
          chunk.setStorageArrays(aextendedblockstorage);
@@ -334,35 +294,7 @@
          NBTTagList nbttaglist1 = compound.getTagList("Entities", 10);
  
          for (int j1 = 0; j1 < nbttaglist1.tagCount(); j1++) {
-             NBTTagCompound nbttagcompound1 = nbttaglist1.getCompoundTagAt(j1);
--            readChunkEntity(nbttagcompound1, worldIn, chunk);
-+            Entity entity = readChunkEntity(nbttagcompound1, worldIn, chunk);
-+            if (entity == null && com.cleanroommc.cleanroom.common.id.RetainedContent.unknownEntity(nbttagcompound1)) { // Cleanroom: retain the compound so the entity returns with its mod
-+                if (com.cleanroommc.cleanroom.common.id.RetainedContent.isRemoved(nbttagcompound1.getString("id"))) {
-+                    com.cleanroommc.cleanroom.common.id.RetainedContent.noteRemoved(nbttagcompound1.getString("id")); // Cleanroom: a removed namespace's compounds are dropped, not retained
-+                } else {
-+                    chunk.retained.entities.add(nbttagcompound1);
-+                    com.cleanroommc.cleanroom.common.id.RetainedContent.noteMissing(nbttagcompound1.getString("id"), chunk.getPos());
-+                }
-+            }
-             chunk.setHasEntities(true);
-         }
- 
-@@ -363,6 +499,13 @@
-             TileEntity tileentity = TileEntity.create(worldIn, nbttagcompound2);
-             if (tileentity != null) {
-                 chunk.addTileEntity(tileentity);
-+            } else if (com.cleanroommc.cleanroom.common.id.RetainedContent.unknownTileEntity(nbttagcompound2)) { // Cleanroom: retain the compound so the block entity returns with its mod
-+                if (com.cleanroommc.cleanroom.common.id.RetainedContent.isRemoved(nbttagcompound2.getString("id"))) {
-+                    com.cleanroommc.cleanroom.common.id.RetainedContent.noteRemoved(nbttagcompound2.getString("id"));
-+                } else {
-+                    chunk.retained.tileEntities.add(nbttagcompound2);
-+                    com.cleanroommc.cleanroom.common.id.RetainedContent.noteMissing(nbttagcompound2.getString("id"), chunk.getPos());
-+                }
-             }
-         }
- 
-@@ -375,7 +518,7 @@
+@@ -375,7 +472,7 @@
                  if (nbttagcompound3.hasKey("i", 8)) {
                      block = Block.getBlockFromName(nbttagcompound3.getString("i"));
                  } else {
@@ -371,7 +303,7 @@
                  }
  
                  worldIn.scheduleBlockUpdate(
-@@ -386,8 +529,9 @@
+@@ -386,8 +483,9 @@
                  );
              }
          }
@@ -383,7 +315,7 @@
      }
  
      @Nullable
-@@ -481,4 +625,8 @@
+@@ -481,4 +579,8 @@
  
          return entity;
      }

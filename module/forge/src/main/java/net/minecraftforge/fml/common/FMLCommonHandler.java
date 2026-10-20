@@ -39,7 +39,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 import com.cleanroommc.cleanroom.common.id.LegacyIds;
-import com.cleanroommc.cleanroom.common.id.RetainedContent;
 import com.cleanroommc.common.CleanroomVersion;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -522,7 +521,6 @@ public class FMLCommonHandler
     public void handleServerStopped()
     {
         LegacyIds.clear(); // the next world opened in this session may have a different table, or none
-        RetainedContent.clearWorldState(); // per-world Retain/Remove decisions and per-name logging reset with it
         sidedDelegate.serverStopped();
         MinecraftServer server = getMinecraftServerInstance();
         Loader.instance().serverStopped();

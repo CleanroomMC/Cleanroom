@@ -28,20 +28,6 @@
          int i = this.world.getSeaLevel() + 1;
          double d0 = 0.03125;
          this.slowsandNoise = this.slowsandGravelNoiseGen.generateNoiseOctaves(this.slowsandNoise, p_185937_1_ * 16, p_185937_2_ * 16, 0, 16, 16, 1, 0.03125, 0.03125, 1.0);
-@@ -225,10 +239,10 @@
- 
-         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
-         Biome[] abiome = this.world.getBiomeProvider().getBiomes(null, x * 16, z * 16, 16, 16);
--        byte[] abyte = chunk.getBiomeArray();
-+        com.cleanroommc.cleanroom.common.id.ChunkBiomes biomeIds = chunk.getBiomeIds(); // Cleanroom: full ids, not bytes
- 
--        for (int i = 0; i < abyte.length; i++) {
--            abyte[i] = (byte)Biome.getIdForBiome(abiome[i]);
-+        for (int i = 0; i < 256; i++) {
-+            biomeIds.set(i, Biome.getIdForBiome(abiome[i]));
-         }
- 
-         chunk.resetRelightChecks();
 @@ -240,6 +254,10 @@
              p_185938_1_ = new double[p_185938_5_ * p_185938_6_ * p_185938_7_];
          }

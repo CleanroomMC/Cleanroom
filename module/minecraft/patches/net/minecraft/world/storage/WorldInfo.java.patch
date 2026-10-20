@@ -1,16 +1,6 @@
 --- original/net/minecraft/world/storage/WorldInfo.java
 +++ modified/net/minecraft/world/storage/WorldInfo.java
-@@ -30,6 +30,9 @@
-     /** Holds the seed of the currently world. */
-     private long randomSeed;
-     private WorldType terrainType = WorldType.DEFAULT;
-+    /** Cleanroom: a generator name no mod registered when this level.dat was read, written back verbatim so the world type returns with the mod (otherwise "default" overwrites it forever). */
-+    private String retainedGeneratorName;
-+    private int retainedGeneratorVersion;
-     private String generatorOptions = "";
-     /** The spawn zone position X coordinate. */
-     private int spawnX;
-@@ -79,13 +82,9 @@
+@@ -79,13 +79,9 @@
      private double borderDamagePerBlock = 0.2;
      private int borderWarningDistance = 5;
      private int borderWarningTime = 15;
@@ -26,18 +16,7 @@
  
      protected WorldInfo() {
      }
-@@ -116,6 +115,10 @@
-             String s1 = nbt.getString("generatorName");
-             this.terrainType = WorldType.byName(s1);
-             if (this.terrainType == null) {
-+                // Cleanroom: a mod's world type, missing now; retained verbatim and written back so the world returns to it when the mod does
-+                this.retainedGeneratorName = s1;
-+                this.retainedGeneratorVersion = nbt.getInteger("generatorVersion");
-+                com.cleanroommc.cleanroom.common.id.RetainedContent.noteMissing("world type " + s1, null);
-                 this.terrainType = WorldType.DEFAULT;
-             } else if (this.terrainType.isVersioned()) {
-                 int i = 0;
-@@ -227,7 +230,7 @@
+@@ -227,7 +223,7 @@
              NBTTagCompound nbttagcompound1 = nbt.getCompoundTag("DimensionData");
  
              for (String s : nbttagcompound1.getKeySet()) {
@@ -46,32 +25,7 @@
              }
          }
      }
-@@ -252,6 +255,8 @@
-     public WorldInfo(WorldInfo worldInformation) {
-         this.randomSeed = worldInformation.randomSeed;
-         this.terrainType = worldInformation.terrainType;
-+        this.retainedGeneratorName = worldInformation.retainedGeneratorName;
-+        this.retainedGeneratorVersion = worldInformation.retainedGeneratorVersion;
-         this.generatorOptions = worldInformation.generatorOptions;
-         this.gameType = worldInformation.gameType;
-         this.mapFeaturesEnabled = worldInformation.mapFeaturesEnabled;
-@@ -306,8 +311,13 @@
-         nbt.setTag("Version", nbttagcompound);
-         nbt.setInteger("DataVersion", 1343);
-         nbt.setLong("RandomSeed", this.randomSeed);
--        nbt.setString("generatorName", this.terrainType.getName());
--        nbt.setInteger("generatorVersion", this.terrainType.getVersion());
-+        if (this.retainedGeneratorName != null && this.terrainType == WorldType.DEFAULT) { // Cleanroom
-+            nbt.setString("generatorName", this.retainedGeneratorName);
-+            nbt.setInteger("generatorVersion", this.retainedGeneratorVersion);
-+        } else {
-+            nbt.setString("generatorName", this.terrainType.getName());
-+            nbt.setInteger("generatorVersion", this.terrainType.getVersion());
-+        }
-         nbt.setString("generatorOptions", this.generatorOptions);
-         nbt.setInteger("GameType", this.gameType.getID());
-         nbt.setBoolean("MapFeatures", this.mapFeaturesEnabled);
-@@ -337,6 +347,8 @@
+@@ -337,6 +333,8 @@
          nbt.setDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
          nbt.setDouble("BorderWarningBlocks", this.borderWarningDistance);
          nbt.setDouble("BorderWarningTime", this.borderWarningTime);
@@ -80,7 +34,7 @@
          if (this.difficulty != null) {
              nbt.setByte("Difficulty", (byte)this.difficulty.getId());
          }
-@@ -345,8 +357,9 @@
+@@ -345,8 +343,9 @@
          nbt.setTag("GameRules", this.gameRules.writeToNBT());
          NBTTagCompound nbttagcompound1 = new NBTTagCompound();
  
@@ -92,25 +46,7 @@
          }
  
          nbt.setTag("DimensionData", nbttagcompound1);
-@@ -532,8 +545,17 @@
-         return this.terrainType;
-     }
- 
-+    /** Cleanroom: the saved generator name that no mod registered (world is running on DEFAULT), else null. */
-+    @Nullable
-+    public String getRetainedGeneratorName() {
-+        return this.retainedGeneratorName;
-+    }
-+
-     public void setTerrainType(WorldType type) {
-         this.terrainType = type;
-+        // Cleanroom: a deliberate choice drops the retained modded generator name
-+        this.retainedGeneratorName = null;
-+        this.retainedGeneratorVersion = 0;
-     }
- 
-     public String getGeneratorOptions() {
-@@ -658,6 +680,7 @@
+@@ -658,6 +657,7 @@
      }
  
      public void setDifficulty(EnumDifficulty newDifficulty) {
@@ -118,7 +54,7 @@
          this.difficulty = newDifficulty;
      }
  
-@@ -757,16 +780,42 @@
+@@ -757,16 +757,42 @@
              }
          );
      }

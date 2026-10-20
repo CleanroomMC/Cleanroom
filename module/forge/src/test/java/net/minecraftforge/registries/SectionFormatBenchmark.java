@@ -118,7 +118,7 @@ public class SectionFormatBenchmark
 
     private static void readPaletteChunk(NBTTagCompound chunk)
     {
-        SectionBlockFormat.ChunkPaletteRead palette = SectionBlockFormat.readChunkPalette(chunk);
+        IBlockState[] palette = SectionBlockFormat.readChunkPalette(chunk);
         net.minecraft.nbt.NBTTagList list = chunk.getTagList("Sections", 10);
         for (int s = 0; s < list.tagCount(); s++)
         {
@@ -199,7 +199,7 @@ public class SectionFormatBenchmark
         System.out.printf("[SectionFormatBenchmark]   read   legacy %6.1f us  palette %6.1f us%n", legacyRead / 1e3 / SECTIONS, paletteRead / 1e3 / SECTIONS);
         System.out.printf("[SectionFormatBenchmark]   size   legacy %6d B   palette %6d B (deflated, per section)%n", legacyBytes / SECTIONS, paletteBytes / SECTIONS);
 
-        SectionBlockFormat.ChunkPaletteRead chunkPalette = SectionBlockFormat.readChunkPalette(palette[0]);
+        IBlockState[] chunkPalette = SectionBlockFormat.readChunkPalette(palette[0]);
         net.minecraft.nbt.NBTTagList list = palette[0].getTagList("Sections", 10);
         for (int s = 0; s < 16; s++)
         {

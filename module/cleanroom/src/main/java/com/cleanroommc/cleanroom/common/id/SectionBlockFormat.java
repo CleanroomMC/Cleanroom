@@ -11,8 +11,6 @@
 package com.cleanroommc.cleanroom.common.id;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.jspecify.annotations.Nullable;
 
@@ -28,13 +26,10 @@ import net.minecraft.nbt.NBTTagLongArray;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.BitArray;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.BlockStateContainer;
 import net.minecraft.world.chunk.NibbleArray;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,12 +75,6 @@ public final class SectionBlockFormat {
     }
 
     public static void readJeid(NBTTagCompound section, BlockStateContainer data) {
-        readJeid(section, data, null, null);
-    }
-
-    public static void readJeid(NBTTagCompound section, BlockStateContainer data,
-        RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
-    ) {
         int[] palette = section.getIntArray(PALETTE);
         byte[] blocks = section.getByteArray("Blocks");
         byte[] nibbles = section.getByteArray("Data");
@@ -105,17 +94,11 @@ public final class SectionBlockFormat {
             if (index >= palette.length) {
                 throw corrupt(section, "refers to JEID palette entry " + index + " of " + palette.length);
             }
-            setFromPacked(i, palette[index], data, retained, pos);
+            setFromPacked(i, palette[index], data);
         }
     }
 
     public static void readNeid(NBTTagCompound section, BlockStateContainer data) {
-        readNeid(section, data, null, null);
-    }
-
-    public static void readNeid(NBTTagCompound section, BlockStateContainer data,
-        RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
-    ) {
         byte[] blocks = section.getByteArray("Blocks");
         byte[] nibbles = section.getByteArray("Data");
         byte[] add2Bytes = section.getByteArray("Add2");
@@ -133,12 +116,12 @@ public final class SectionBlockFormat {
             int add2 = add2Nibbles.get(x, y, z);
             int blockId = (add2 << 12) | (add << 8) | (blocks[i] & 255);
             int meta = dataNibbles.get(x, y, z);
-            setFromPacked(i, blockId << 4 | meta, data, retained, pos);
+            setFromPacked(i, blockId << 4 | meta, data);
         }
     }
 
     public static void readLegacy(byte[] blockIds, NibbleArray dataNibbles, @Nullable NibbleArray blockIdExtension,
-        BlockStateContainer data, RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
+        BlockStateContainer data
     ) {
         for (int i = 0; i < SIZE; i++) {
             int x = i & 15;
@@ -146,37 +129,16 @@ public final class SectionBlockFormat {
             int z = i >> 4 & 15;
             int ext = blockIdExtension == null ? 0 : blockIdExtension.get(x, y, z);
             int packed = ext << 12 | (blockIds[i] & 255) << 4 | dataNibbles.get(x, y, z);
-            setFromPacked(i, packed, data, retained, pos);
+            setFromPacked(i, packed, data);
         }
     }
 
-    private static void setFromPacked(int cellIndex, int packed, BlockStateContainer data,
-        RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
-    ) {
+    private static void setFromPacked(int cellIndex, int packed, BlockStateContainer data) {
         int x = cellIndex & 15;
         int y = cellIndex >> 8 & 15;
         int z = cellIndex >> 4 & 15;
         int blockId = LegacyIdWorlds.jeidBlockId(packed);
         int meta = LegacyIdWorlds.jeidMeta(packed);
-        ResourceLocation missingName = LegacyIds.blockName(blockId);
-        if (missingName != null && !Block.REGISTRY.containsKey(missingName)) {
-            if (retained != null) {
-                String baseName = missingName.toString();
-                if (RetainedContent.isRemoved(baseName)) {
-                    RetainedContent.noteRemoved(baseName);
-                    data.set(x, y, z, Blocks.AIR.getDefaultState());
-                    return;
-                }
-                String spec = meta == 0 ? baseName : baseName + "[" + meta + "]";
-                IBlockState standIn = StandIns.forMissing(spec);
-                data.set(x, y, z, standIn != null ? standIn : Blocks.AIR.getDefaultState());
-                retained.retain(cellIndex, spec, standIn);
-                RetainedContent.noteMissingBlock(spec, standIn, pos);
-                return;
-            }
-            data.set(x, y, z, Blocks.AIR.getDefaultState());
-            return;
-        }
         Block block = LegacyIds.block(blockId);
         if (block != null) {
             data.set(x, y, z, block.getStateFromMeta(meta));
@@ -203,58 +165,23 @@ public final class SectionBlockFormat {
         return list;
     }
 
-    public static ChunkPaletteRead readChunkPalette(NBTTagCompound chunk) {
+    public static IBlockState[] readChunkPalette(NBTTagCompound chunk) {
         NBTTagList list = chunkPaletteTag(chunk);
         IBlockState[] states = new IBlockState[list.tagCount()];
-        String[] unresolved = null;
-        IBlockState[] standIns = null;
         for (int i = 0; i < states.length; i++) {
-            String s = list.getStringTagAt(i);
-            states[i] = parse(s);
-            int open = s.indexOf('[');
-            ResourceLocation blockKey = new ResourceLocation(open < 0 ? s : s.substring(0, open));
-            if (!Block.REGISTRY.containsKey(blockKey)) {
-                if (RetainedContent.isRemoved(s)) {
-                    RetainedContent.noteRemoved(s); // a namespace the user chose to drop: air, no stand-in, no retained name
-                    continue;
-                }
-                if (unresolved == null) {
-                    unresolved = new String[states.length];
-                    standIns = new IBlockState[states.length];
-                }
-                unresolved[i] = s; // a mod's block, missing now: reads as its stand-in, writes back verbatim
-                standIns[i] = StandIns.forMissing(s);
-                if (standIns[i] != null) {
-                    states[i] = standIns[i];
-                }
-            } else if (open >= 0 && hasUnresolvedProperty(states[i].getBlock(), s, open)) {
-                if (unresolved == null) {
-                    unresolved = new String[states.length];
-                    standIns = new IBlockState[states.length];
-                }
-                unresolved[i] = s; // registered block with a missing mod's property value (e.g. custom EnumDyeColor)
-                standIns[i] = states[i];
-            }
+            states[i] = parse(list.getStringTagAt(i));
         }
-        return new ChunkPaletteRead(states, unresolved, standIns);
+        return states;
     }
 
     public static void write(BlockStateContainer data, NBTTagCompound section, ChunkPalette chunkPalette) {
-        write(data, section, chunkPalette, null);
-    }
-
-    public static void write(BlockStateContainer data, NBTTagCompound section, ChunkPalette chunkPalette,
-        RetainedContent.@Nullable Section retained
-    ) {
         IBlockState[] local = data.getLocalPalette();
         int[] values;
-        Object[] entries;
+        IBlockState[] entries;
         if (local != null) {
-            // The section's own palette, in storage order: storage values are already palette indices
             entries = local;
             values = null;
         } else {
-            // Global state ids (more than 256 states in the section): number the states the section uses
             BitArray storage = data.getRawStorage();
             Int2IntOpenHashMap localOf = new Int2IntOpenHashMap();
             localOf.defaultReturnValue(-1);
@@ -270,39 +197,11 @@ public final class SectionBlockFormat {
                 }
                 values[i] = index;
             }
-            entries = used.toArray();
-        }
-        if (retained != null && !retained.isEmpty()) {
-            // A cell that still reads as its stand-in (air when none) keeps its saved name; any other state
-            // wins (ExtendedBlockStorage.set drops the name, so this guards only writes that bypassed it)
-            List<Object> grown = new ArrayList<>(Arrays.asList(entries));
-            Map<String, Integer> retainedEntries = new HashMap<>();
-            if (values == null) {
-                BitArray storage = data.getRawStorage(); // null at zero bits: every cell is palette index 0
-                values = new int[SIZE];
-                for (int i = 0; i < SIZE; i++) {
-                    values[i] = storage == null ? 0 : storage.getAt(i);
-                }
-            }
-            for (Int2ObjectMap.Entry<RetainedContent.Retained> cell : retained.cells().int2ObjectEntrySet()) {
-                int i = cell.getIntKey();
-                if (data.get(i & 15, i >> 8, i >> 4 & 15) == retained.reads(i)) {
-                    Integer index = retainedEntries.get(cell.getValue().name());
-                    if (index == null) {
-                        index = grown.size();
-                        grown.add(cell.getValue().name());
-                        retainedEntries.put(cell.getValue().name(), index);
-                    }
-                    values[i] = index;
-                }
-            }
-            entries = grown.toArray();
+            entries = used.toArray(new IBlockState[0]);
         }
         int[] palette = new int[entries.length];
         for (int i = 0; i < entries.length; i++) {
-            palette[i] = entries[i] instanceof String name
-                ? chunkPalette.indexOf(name)
-                : chunkPalette.indexOf((IBlockState) entries[i]);
+            palette[i] = chunkPalette.indexOf(entries[i]);
         }
         section.setTag(PALETTE, new NBTTagIntArray(palette));
         if (entries.length == 1) {
@@ -312,7 +211,6 @@ public final class SectionBlockFormat {
         int bits = bitsFor(entries.length);
         long[] longs;
         if (values == null && bits == data.getRawBits()) {
-            // Storage already holds these palette indices in the on-disk layout: copy it verbatim
             longs = data.getRawStorage().getBackingLongArray().clone();
         } else {
             if (values == null) {
@@ -328,42 +226,23 @@ public final class SectionBlockFormat {
     }
 
     public static void read(NBTTagCompound section, BlockStateContainer data, IBlockState[] chunkPalette) {
-        read(section, data, new ChunkPaletteRead(chunkPalette, null, null), null, null);
-    }
-
-    public static void read(NBTTagCompound section, BlockStateContainer data, ChunkPaletteRead chunkPalette) {
-        read(section, data, chunkPalette, null, null);
-    }
-
-    public static void read(NBTTagCompound section, BlockStateContainer data, ChunkPaletteRead chunkPalette,
-        RetainedContent.@Nullable Section retained, @Nullable ChunkPos pos
-    ) {
         int[] palette = section.getIntArray(PALETTE);
         if (palette.length == 0) {
             throw corrupt(section, "has an empty block palette");
         }
         IBlockState[] entries = new IBlockState[palette.length];
         for (int i = 0; i < palette.length; i++) {
-            if (palette[i] < 0 || palette[i] >= chunkPalette.states().length) {
+            if (palette[i] < 0 || palette[i] >= chunkPalette.length) {
                 throw corrupt(section,
-                    "refers to chunk palette entry " + palette[i] + " of " + chunkPalette.states().length
+                    "refers to chunk palette entry " + palette[i] + " of " + chunkPalette.length
                 );
             }
-            entries[i] = chunkPalette.states()[palette[i]];
+            entries[i] = chunkPalette[palette[i]];
         }
         if (entries.length == 1) {
             if (!data.loadLocalPalette(entries, 0)) {
                 for (int i = 0; i < SIZE; i++) {
                     data.set(i & 15, i >> 8, i >> 4 & 15, entries[0]);
-                }
-            }
-            if (retained != null) {
-                String name = chunkPalette.unresolved(palette[0]);
-                if (name != null) {
-                    RetainedContent.noteMissingBlock(name, chunkPalette.standIn(palette[0]), pos);
-                    for (int i = 0; i < SIZE; i++) {
-                        retained.retain(i, name, chunkPalette.standIn(palette[0]));
-                    }
                 }
             }
             return;
@@ -387,38 +266,19 @@ public final class SectionBlockFormat {
                 }
             }
         }
-        // false: the palette can't take the entries in saved order (no air first, or more than 256 of them)
         boolean local = data.loadLocalPalette(entries, bits);
         if (local) {
-            // The saved layout is the storage layout at every bit width: one copy, no repack
             System.arraycopy(longs, 0, data.getRawStorage().getBackingLongArray(), 0, longs.length);
         } else {
             if (values == null) {
                 values = unpack(longs, bits);
             }
-            BitArray storage = data.getRawStorage();
             for (int i = 0; i < SIZE; i++) {
-                if (local) {
-                    storage.setAt(i, values[i]);
-                } else {
-                    data.set(i & 15, i >> 8, i >> 4 & 15, entries[values[i]]);
-                }
-            }
-        }
-        if (retained != null && chunkPalette.unresolved() != null) {
-            BitArray storage = data.getRawStorage();
-            for (int i = 0; i < SIZE; i++) {
-                int index = local ? storage.getAt(i) : values[i];
-                String name = chunkPalette.unresolved(palette[index]);
-                if (name != null) {
-                    retained.retain(i, name, chunkPalette.standIn(palette[index]));
-                    RetainedContent.noteMissingBlock(name, chunkPalette.standIn(palette[index]), pos);
-                }
+                data.set(i & 15, i >> 8, i >> 4 & 15, entries[values[i]]);
             }
         }
     }
 
-    /* Validates 4-bit indices in place, without unpacking them. */
     private static void checkNibbles(long[] longs, int paletteSize, NBTTagCompound section) {
         if (paletteSize >= 16) {
             return;
@@ -494,28 +354,6 @@ public final class SectionBlockFormat {
         return property.parseValue(value).toJavaUtil().map(v -> state.withProperty(property, v)).orElse(state);
     }
 
-    private static boolean hasUnresolvedProperty(Block block, String s, int open) {
-        int close = s.endsWith("]") ? s.length() - 1 : s.length();
-        if (open < 0 || open + 1 >= close) {
-            return false;
-        }
-        String inner = s.substring(open + 1, close);
-        if (inner.indexOf('=') < 0) {
-            return false;
-        }
-        net.minecraft.block.state.BlockStateContainer definition = block.getBlockState();
-        for (String pair : inner.split(",")) {
-            int eq = pair.indexOf('=');
-            if (eq > 0) {
-                IProperty<?> property = definition.getProperty(pair.substring(0, eq));
-                if (property == null || !property.parseValue(pair.substring(eq + 1)).isPresent()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     static int bitsFor(int paletteSize) {
         return Math.max(4, 32 - Integer.numberOfLeadingZeros(paletteSize - 1));
     }
@@ -544,10 +382,6 @@ public final class SectionBlockFormat {
         return indices;
     }
 
-    /*
-     * Which section layout one section is in. Detected once per section and switched exhaustively by the
-     * reader, so a format added later cannot be handled in one place and forgotten in another.
-     */
     public sealed interface SectionFormat {
 
         static SectionFormat detect(NBTTagCompound chunk, NBTTagCompound section) {
@@ -563,30 +397,23 @@ public final class SectionBlockFormat {
             return new ForgeLegacy();
         }
 
-        /* Our format: chunk-level name palette plus per-section packed indices. */
         record Native() implements SectionFormat { }
 
-        /* Pre-palette Anvil: byte {@code Blocks}, nibble {@code Data}, optional nibble {@code Add}. */
         record ForgeLegacy() implements SectionFormat { }
 
-        /* JEID/REID: int {@code Palette} of packed state ids plus 12-bit {@code Blocks}/{@code Data}. */
         record Jeid() implements SectionFormat { }
 
-        /* NEID: big-endian {@code Blocks16} plus nibble {@code Data}. */
         record Neid() implements SectionFormat { }
 
     }
 
-    /* The states one chunk's sections use, while writing it. Entries are states or raw retained strings. */
     public static final class ChunkPalette {
 
         private final Reference2IntOpenHashMap<IBlockState> indexOf = new Reference2IntOpenHashMap<>();
-        private final Object2IntOpenHashMap<String> nameIndex = new Object2IntOpenHashMap<>();
-        private final List<Object> entries = new ArrayList<>();
+        private final List<IBlockState> entries = new ArrayList<>();
 
         public ChunkPalette() {
             indexOf.defaultReturnValue(-1);
-            nameIndex.defaultReturnValue(-1);
         }
 
         int indexOf(IBlockState state) {
@@ -599,48 +426,12 @@ public final class SectionBlockFormat {
             return index;
         }
 
-        /* A retained name goes back in as it came out; the state it means does not exist to dedupe by. */
-        int indexOf(String rawName) {
-            int index = nameIndex.getInt(rawName);
-            if (index < 0) {
-                index = entries.size();
-                nameIndex.put(rawName, index);
-                entries.add(rawName);
-            }
-            return index;
-        }
-
         public NBTTagList toNBT() {
             NBTTagList list = new NBTTagList();
-            for (Object entry : entries) {
-                list.appendTag(new NBTTagString(entry instanceof String name
-                        ? name
-                        : SectionBlockFormat.toString((IBlockState) entry)
-                ));
+            for (IBlockState entry : entries) {
+                list.appendTag(new NBTTagString(SectionBlockFormat.toString(entry)));
             }
             return list;
-        }
-
-    }
-
-    /*
-     * The chunk palette as read: the resolved states (a vanilla stand-in for an unknown block name, air when
-     * none applies) plus the original string and stand-in of every unresolved entry ({@code null} when all
-     * resolved).
-     */
-    public record ChunkPaletteRead(IBlockState[] states,
-        @Nullable String[] unresolved,
-        @Nullable IBlockState[] standIns
-    ) {
-
-        @Nullable
-        public String unresolved(int index) {
-            return unresolved == null ? null : unresolved[index];
-        }
-
-        @Nullable
-        public IBlockState standIn(int index) {
-            return standIns == null ? null : standIns[index];
         }
 
     }
