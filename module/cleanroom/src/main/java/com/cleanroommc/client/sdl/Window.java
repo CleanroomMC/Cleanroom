@@ -40,6 +40,8 @@ import org.lwjgl.sdl.SDL_TextInputEvent;
 import org.lwjgl.sdl.SDL_WindowEvent;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
@@ -1062,7 +1064,11 @@ public final class Window implements AutoCloseable {
                     context = this.gl.createContext(handle);
                     SDL.check(SDLVideo.SDL_GL_MakeCurrent(handle, context), "SDL_GL_MakeCurrent");
                     SDL.tryCheck(SDLVideo.SDL_GL_SetSwapInterval(this.vsync ? 1 : 0), "SDL_GL_SetSwapInterval");
-                    GL.createCapabilities();
+                    // Bare GLES context LWJGL still returns capabilities
+                    if (!GL.createCapabilities().OpenGL11) {
+                        throw new IllegalStateException("The graphics driver does not provide desktop OpenGL. " +
+                            "A translation layer such as GL4ES is required.");
+                    }
                 }
                 Window window = new Window(handle, context, this.title, this.width, this.height);
                 window.fullscreen = this.fullscreen;
@@ -1087,6 +1093,7 @@ public final class Window implements AutoCloseable {
 
     public static final class GLConfig {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger("SDL3");
         private static final int[] VERSIONS = { 46, 45, 44, 43, 42, 41, 40, 33, 32, 31, 30, 21 };
 
         private int major = ForgeEarlyConfig.OPENGL_VERSION_MAJOR;
@@ -1138,7 +1145,6 @@ public final class Window implements AutoCloseable {
 
         private long createContext(long handle) {
             int requested = this.major * 10 + this.minor;
-            long context = 0L;
             for (int version : VERSIONS) {
                 if (version > requested && version != 21) {
                     continue;
@@ -1154,12 +1160,17 @@ public final class Window implements AutoCloseable {
                         ? 0
                         : core ? SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE : SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY
                 );
-                context = SDLVideo.SDL_GL_CreateContext(handle);
+                long context = SDLVideo.SDL_GL_CreateContext(handle);
                 if (context != 0L) {
-                    break;
+                    return context;
                 }
             }
-            return SDL.checkHandle(context, "SDL_GL_CreateContext");
+            LOGGER.warn("No desktop OpenGL context could be created, falling back to GLES 2. " +
+                "This only works with a desktop OpenGL translation layer such as GL4ES.");
+            attribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+            attribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, 0);
+            attribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, SDLVideo.SDL_GL_CONTEXT_PROFILE_ES);
+            return SDL.checkHandle(SDLVideo.SDL_GL_CreateContext(handle), "SDL_GL_CreateContext");
         }
 
     }
