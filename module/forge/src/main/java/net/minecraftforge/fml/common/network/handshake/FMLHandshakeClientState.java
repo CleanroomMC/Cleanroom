@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import com.cleanroommc.common.CleanroomVersion;
+import com.cleanroommc.cleanroom.common.id.MismatchMessages;
 import com.cleanroommc.common.CleanroomContainer;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Futures;
@@ -139,7 +140,7 @@ enum FMLHandshakeClientState implements IHandshakeState<FMLHandshakeClientState>
             if (modRejections != null)
             {
                 cons.accept(ERROR);
-                dispatcher.rejectHandshake(rejectionReason(modRejections, mismatches));
+                dispatcher.rejectHandshake(MismatchMessages.rejectionReason(modRejections, mismatches));
                 return;
             }
             if (!mismatches.isEmpty())
@@ -307,26 +308,6 @@ enum FMLHandshakeClientState implements IHandshakeState<FMLHandshakeClientState>
                 names.put(name, new ArrayList<ResourceLocation>());
             }
         }
-    }
-
-    // One reject reason for a login refused at the mod-list step: mod problems first, then the
-    // registries whose hashes did not match.
-    static String rejectionReason(String modRejections, List<ResourceLocation> mismatches)
-    {
-        StringBuilder sb = new StringBuilder(modRejections);
-        if (!mismatches.isEmpty())
-        {
-            sb.append("\nRegistry hash mismatches: ");
-            for (int i = 0; i < mismatches.size(); i++)
-            {
-                if (i > 0)
-                {
-                    sb.append(", ");
-                }
-                sb.append(mismatches.get(i));
-            }
-        }
-        return sb.toString();
     }
 
     /** The shown reason: one line per mod owning the missing names. */

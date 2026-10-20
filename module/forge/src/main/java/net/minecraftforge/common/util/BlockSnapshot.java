@@ -41,7 +41,6 @@ import javax.annotation.Nullable;
  * Unlike Block, which only one object can exist per coordinate, BlockSnapshot
  * can exist multiple times for any given Block.
  */
-@SuppressWarnings("deprecation") // Cleanroom: metadata uses in this file are the legacy view
 public class BlockSnapshot
 {
     private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("forge.debugBlockSnapshot", "false"));

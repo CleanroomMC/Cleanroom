@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.common.network.handshake;
+package com.cleanroommc.cleanroom.common.id;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +26,7 @@ public class FMLHandshakeRejectionTest
         List<ResourceLocation> mismatches = Arrays.asList(
                 new ResourceLocation("minecraft", "blocks"),
                 new ResourceLocation("somemod", "things"));
-        String reason = FMLHandshakeClientState.rejectionReason("Mod rejections: [somemod]", mismatches);
+        String reason = MismatchMessages.rejectionReason("Mod rejections: [somemod]", mismatches);
         assertTrue(reason.startsWith("Mod rejections: [somemod]"), reason);
         assertTrue(reason.contains("minecraft:blocks"), reason);
         assertTrue(reason.contains("somemod:things"), reason);
@@ -36,7 +36,7 @@ public class FMLHandshakeRejectionTest
     @Test
     public void rejectionReasonWithoutMismatchesIsTheModReason()
     {
-        assertEquals("Mod rejections: [x]", FMLHandshakeClientState.rejectionReason("Mod rejections: [x]", Collections.emptyList()));
+        assertEquals("Mod rejections: [x]", MismatchMessages.rejectionReason("Mod rejections: [x]", Collections.emptyList()));
     }
 
     private static Map<ResourceLocation, List<ResourceLocation>> missing(Object... registryAndNames)

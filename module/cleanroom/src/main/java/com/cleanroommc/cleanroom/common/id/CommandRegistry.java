@@ -34,7 +34,6 @@ import java.util.Map;
 /**
  * {@code /registry count [registry]} and {@code /registry countAll}: reports registry entry counts.
  */
-@SuppressWarnings("deprecation")
 public final class CommandRegistry extends CommandBase {
 
     public static String formatCount(ResourceLocation name, ForgeRegistry<?> reg) {

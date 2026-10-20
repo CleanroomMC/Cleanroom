@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.cleanroommc.common.CleanroomVersion;
+import com.cleanroommc.cleanroom.common.id.MismatchMessages;
 import com.cleanroommc.common.CleanroomContainer;
 
 import net.minecraftforge.fml.common.FMLLog;

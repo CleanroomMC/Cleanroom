@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.minecraftforge.fml.common.network.handshake;
+package com.cleanroommc.cleanroom.common.id;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -252,5 +252,23 @@ public final class MismatchMessages
     public static String legacyRemoteMessage(String localVersion)
     {
         return String.format("This server runs Cleanroom %s with wide IDs; your game is too old to join", localVersion);
+    }
+
+    public static String rejectionReason(String modRejections, List<ResourceLocation> mismatches)
+    {
+        StringBuilder sb = new StringBuilder(modRejections);
+        if (!mismatches.isEmpty())
+        {
+            sb.append("\nRegistry hash mismatches: ");
+            for (int i = 0; i < mismatches.size(); i++)
+            {
+                if (i > 0)
+                {
+                    sb.append(", ");
+                }
+                sb.append(mismatches.get(i));
+            }
+        }
+        return sb.toString();
     }
 }

@@ -41,7 +41,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 
-@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class CleanroomContainer extends DummyModContainer implements WorldAccessContainer {
 
     public static final String MOD_ID = "cleanroom_ids";
