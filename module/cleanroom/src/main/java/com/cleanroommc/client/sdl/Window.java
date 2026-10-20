@@ -715,7 +715,12 @@ public final class Window implements AutoCloseable {
         boolean flipped = event.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED;
         int sign = flipped ? -1 : 1;
         float amount = event.y() * sign;
-        this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), amount, event.timestamp());
+        // High-resolution wheels report one notch as several fractional events, but LWJGL 2 consumers treat every
+        // wheel event as a single step, so the legacy queue only receives whole notches
+        int notches = event.integer_y() * sign;
+        if (notches != 0) {
+            this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), notches, event.timestamp());
+        }
         SDL.events()
             .post(new MouseEvent.Wheel(event.which(), this.id, event.timestamp(), event.mouse_x(), event.mouse_y(),
                 event.x() * sign, amount, event.integer_x() * sign, event.integer_y() * sign, flipped
