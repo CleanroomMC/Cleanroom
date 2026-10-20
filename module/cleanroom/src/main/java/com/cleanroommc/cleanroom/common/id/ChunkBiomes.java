@@ -65,9 +65,6 @@ public final class ChunkBiomes {
     private int layers = 1;
     private int[] ids = new int[SIZE];
 
-    /* Names no biome registry answered on load, kept verbatim to write back ({@code null} until needed). */
-    private String[] retainedNames;
-
     public ChunkBiomes(Chunk chunk) {
         this.chunk = chunk;
         Arrays.fill(ids, UNSET);
@@ -160,9 +157,6 @@ public final class ChunkBiomes {
 
     public void set(int index, int id) {
         ids[index] = id;
-        if (retainedNames != null) {
-            retainedNames[index] = null; // a real write wins over the retained name
-        }
     }
 
     public void set(int x, int y, int z, int id) {
@@ -195,13 +189,6 @@ public final class ChunkBiomes {
             System.arraycopy(ids, 0, expanded, layer << 8, SIZE);
         }
         ids = expanded;
-        if (retainedNames != null) {
-            String[] expandedRetained = new String[MAX_LAYERS * SIZE];
-            for (int layer = 0; layer < MAX_LAYERS; layer++) {
-                System.arraycopy(retainedNames, 0, expandedRetained, layer << 8, SIZE);
-            }
-            retainedNames = expandedRetained;
-        }
         layers = MAX_LAYERS;
     }
 
@@ -244,7 +231,6 @@ public final class ChunkBiomes {
             ids = new int[newIds.length];
         }
         System.arraycopy(newIds, 0, ids, 0, newIds.length);
-        retainedNames = null; // a wholesale set replaces every column, retained names included
     }
 
     /* Old-format bytes, which are full ids (worlds from before the format held at most 256 biomes). */
@@ -254,13 +240,11 @@ public final class ChunkBiomes {
             );
         }
         int[] newIds = new int[SIZE];
-        String[] retained = null;
         for (int i = 0; i < SIZE; i++) {
             if (bytes[i] == (byte) 0xFF) {
                 newIds[i] = UNSET;
             } else {
                 int savedId = bytes[i] & 0xFF;
-                // The byte is a Forge-era saved id; resolve its name through the world's legacy table
                 Biome biome = LegacyIds.biome(savedId);
                 newIds[i] = biome == null ? UNSET : Biome.getIdForBiome(biome);
             }
@@ -280,7 +264,6 @@ public final class ChunkBiomes {
         for (int i = 0; i < SIZE; i++) {
             ids[i] = bytes[i] == (byte) 0xFF ? UNSET : resolve(bytes[i] & 0xFF, i);
         }
-        retainedNames = null;
     }
 
     /* JEID/REID save one full biome id per column; the ids are saved ids, resolved like {@link #setLegacy}. */
@@ -316,21 +299,6 @@ public final class ChunkBiomes {
         set(col & 15, col >> 4, resolvedId);
     }
 
-    /*
-     * What a byte a mod wrote into {@code getBiomeArray()} means. A mod never invents the byte: it came from
-     * {@code Biome.getIdForBiome} (the low byte of a full id), most often read out of this same array a moment
-     * earlier. So, in order:
-     * <ol>
-     * <li>Only one biome has that low byte: it. (Always the case with at most 256 biomes.)</li>
-     * <li>One of the candidates is already somewhere in this chunk: that one. A read-modify-write of the array
-     * (the common pattern: feature generators, decorators) resolves every unchanged cell exactly, and a cell
-     * copied from a neighbour resolves to the neighbour's biome.</li>
-     * <li>The world's biome provider places one of the candidates at this column: that one. Chunk generators
-     * writing what they just computed from the provider land here.</li>
-     * <li>Otherwise the lowest candidate, with a warning naming the mod. This is a biome past 255, new to the
-     * chunk, that disagrees with the provider: a byte cannot carry it. The mod needs {@link #set}.</li>
-     * </ol>
-     */
     private int resolve(int lowByte, int index) {
         int[] candidates = GameData.getBiomeIdsWithLowByte(lowByte);
         if (candidates.length <= 1) {
@@ -380,12 +348,9 @@ public final class ChunkBiomes {
         int total = ids.length;
         int[] rawIndices = null;
         for (int i = 0; i < total; i++) {
-            String name = retainedNames == null ? null : retainedNames[i];
-            if (name == null) {
-                Biome biome = ids[i] == UNSET ? null : Biome.getBiome(ids[i]);
-                ResourceLocation biomeName = biome == null ? null : biome.getRegistryName();
-                name = biomeName == null ? "" : biomeName.toString();
-            }
+            Biome biome = ids[i] == UNSET ? null : Biome.getBiome(ids[i]);
+            ResourceLocation biomeName = biome == null ? null : biome.getRegistryName();
+            String name = biomeName == null ? "" : biomeName.toString();
             int index = indexOf.getInt(name);
             if (index < 0) {
                 index = indexOf.size();
@@ -431,26 +396,17 @@ public final class ChunkBiomes {
                 throw corrupt("has " + palette.tagCount() + " biome palette entries for " + total + " cells");
             }
             int[] byIndex = new int[palette.tagCount()];
-            String[] missing = new String[byIndex.length];
             for (int i = 0; i < byIndex.length; i++) {
                 String name = palette.getStringTagAt(i);
                 Biome biome = name.isEmpty() ? null : Biome.REGISTRY.getObject(new ResourceLocation(name));
                 byIndex[i] = biome == null ? UNSET : Biome.getIdForBiome(biome);
-                if (!name.isEmpty() && biome == null) {
-                    missing[i] = name;
-                }
             }
             if (byIndex.length == 0) {
                 throw corrupt("has an empty biome palette");
             }
             int[] newIds = new int[total];
-            String[] retained = null;
             if (byIndex.length == 1) {
                 Arrays.fill(newIds, byIndex[0]);
-                if (missing[0] != null) {
-                    retained = new String[total];
-                    Arrays.fill(retained, missing[0]);
-                }
             } else if (chunkTag.hasKey(INDICES, 11)) {
                 int[] indices = chunkTag.getIntArray(INDICES);
                 if (indices.length != total) {
@@ -464,12 +420,6 @@ public final class ChunkBiomes {
                         throw corrupt("refers to biome palette entry " + index + " of " + byIndex.length);
                     }
                     newIds[i] = byIndex[index];
-                    if (missing[index] != null) {
-                        if (retained == null) {
-                            retained = new String[total];
-                        }
-                        retained[i] = missing[index];
-                    }
                 }
             } else {
                 byte[] indices = chunkTag.getByteArray(INDICES);
@@ -484,16 +434,9 @@ public final class ChunkBiomes {
                         throw corrupt("refers to biome palette entry " + index + " of " + byIndex.length);
                     }
                     newIds[i] = byIndex[index];
-                    if (missing[index] != null) {
-                        if (retained == null) {
-                            retained = new String[total];
-                        }
-                        retained[i] = missing[index];
-                    }
                 }
             }
             setAll(newIds);
-            retainedNames = retained;
             return true;
         }
         if (chunkTag.hasKey("Biomes")) {

@@ -394,41 +394,6 @@ public class ChunkBiomesTest {
         assertThat(biomes.get(1)).isEqualTo(Biome.getIdForBiome(marsh));
     }
 
-    /* An unknown biome name resolves UNSET, survives provider fill and writes back verbatim; a set() wins. */
-    @Test
-    public void unknownBiomeKeepsItsNameThroughProviderResolution() {
-        Chunk chunk = new Chunk(desertWorld(), 0, 0);
-        ChunkBiomes biomes = chunk.getBiomeIds();
-        NBTTagCompound tag = new NBTTagCompound();
-        NBTTagList palette = new NBTTagList();
-        palette.appendTag(new NBTTagString("gone_mod:xyzzy"));
-        tag.setInteger(ChunkBiomes.LAYERS, 1);
-        tag.setTag(ChunkBiomes.PALETTE, palette);
-        assertThat(biomes.readNBT(tag)).isTrue();
-        assertThat(biomes.get(0)).isEqualTo(ChunkBiomes.UNSET);
-        biomes.resolveUnset(chunk);
-        for (int i = 0; i < 256; i++) {
-            assertThat(biomes.get(i)).isEqualTo(Biome.getIdForBiome(Biomes.DESERT));
-        }
-        NBTTagCompound out = new NBTTagCompound();
-        biomes.writeNBT(out);
-        NBTTagList outPalette = out.getTagList(ChunkBiomes.PALETTE, 8);
-        assertThat(outPalette.tagCount()).isEqualTo(1);
-        assertThat(outPalette.getStringTagAt(0)).isEqualTo("gone_mod:xyzzy");
-        biomes.set(0, Biome.getIdForBiome(Biomes.DESERT));
-        out = new NBTTagCompound();
-        biomes.writeNBT(out);
-        outPalette = out.getTagList(ChunkBiomes.PALETTE, 8);
-        boolean marshKept = false;
-        boolean desertThere = false;
-        for (int i = 0; i < outPalette.tagCount(); i++) {
-            marshKept |= outPalette.getStringTagAt(i).equals("gone_mod:xyzzy");
-            desertThere |= outPalette.getStringTagAt(i).equals("minecraft:desert");
-        }
-        assertThat(marshKept).isTrue();
-        assertThat(desertThere).isTrue();
-    }
-
     /* No stand-in for an unmatched name: the column stays UNSET and the provider fills it as before. */
     @Test
     public void unmatchedBiomeStillFallsBackToTheProvider() {
@@ -445,27 +410,6 @@ public class ChunkBiomesTest {
         for (int i = 0; i < 256; i++) {
             assertThat(biomes.get(i)).isEqualTo(Biome.getIdForBiome(Biomes.DESERT));
         }
-    }
-
-    /* The retained name resolves to a real column once its biome is registered again. */
-    @Test
-    public void retainedBiomeReturnsWhenTheModDoes() {
-        Chunk chunk = chunk();
-        NBTTagCompound tag = new NBTTagCompound();
-        NBTTagList palette = new NBTTagList();
-        palette.appendTag(new NBTTagString("gone_mod:marsh"));
-        tag.setInteger(ChunkBiomes.LAYERS, 1);
-        tag.setTag(ChunkBiomes.PALETTE, palette);
-        assertThat(chunk.getBiomeIds().readNBT(tag)).isTrue();
-        NBTTagCompound out = new NBTTagCompound();
-        chunk.getBiomeIds().writeNBT(out);
-        Biome marsh = new Biome(new Biome.BiomeProperties("marsh")) { };
-        marsh.setRegistryName(new ResourceLocation("gone_mod", "marsh"));
-        ForgeRegistries.BIOMES.register(marsh);
-        Chunk back = chunk();
-        assertThat(back.getBiomeIds().readNBT(out)).isTrue();
-        assertThat(back.getBiomeIds().get(0)).isEqualTo(Biome.getIdForBiome(marsh));
-        assertThat(back.getBiomeIds().get(255)).isEqualTo(Biome.getIdForBiome(marsh));
     }
 
     @Test

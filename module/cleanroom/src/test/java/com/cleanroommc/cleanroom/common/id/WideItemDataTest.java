@@ -58,30 +58,6 @@ public class WideItemDataTest {
     }
 
     @Test
-    public void byteShortAndIntTagsCompareByValue() {
-        assertThat(new NBTTagShort((short) 34)).isEqualTo(new NBTTagInt(34));
-        assertThat(new NBTTagInt(34)).isEqualTo(new NBTTagShort((short) 34));
-        assertThat(new NBTTagInt(34)).isEqualTo(new NBTTagByte((byte) 34));
-        assertThat(new NBTTagShort((short) 34).hashCode()).isEqualTo(new NBTTagInt(34).hashCode());
-        assertThat(new NBTTagByte((byte) 34).hashCode()).isEqualTo(new NBTTagInt(34).hashCode());
-        assertThat(new NBTTagShort((short) 34)).isNotEqualTo(new NBTTagInt(35));
-        assertThat(new NBTTagLong(34)).isNotEqualTo(new NBTTagInt(34));
-        assertThat(new NBTTagFloat(34)).isNotEqualTo(new NBTTagInt(34));
-        NBTTagCompound a = new NBTTagCompound();
-        a.setShort("id", (short) 34);
-        NBTTagCompound b = new NBTTagCompound();
-        b.setInteger("id", 34);
-        assertThat(b).isEqualTo(a);
-        assertThat(b.hashCode()).isEqualTo(a.hashCode());
-        NBTTagList shorts = new NBTTagList();
-        shorts.appendTag(new NBTTagShort((short) 7));
-        NBTTagList ints = new NBTTagList();
-        ints.appendTag(new NBTTagInt(7));
-        assertThat(ints).isEqualTo(shorts);
-        assertThat(ints.hashCode()).isEqualTo(shorts.hashCode());
-    }
-
-    @Test
     public void aStackWithAShortEnchantmentIdEqualsOneWithAnInt() {
         ItemStack ours = new ItemStack(Items.DIAMOND_SWORD);
         ours.addEnchantment(Enchantments.SHARPNESS, 3);

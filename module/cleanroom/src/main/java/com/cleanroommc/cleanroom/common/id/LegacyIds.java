@@ -23,7 +23,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 /**
  * The per-world id table recorded in level.dat ({@code FML}/{@code Registries}). Live registry ids are
@@ -45,7 +43,6 @@ import java.util.function.Supplier;
  */
 public final class LegacyIds {
 
-    private static final ScopedValue<LegacyIds> SCOPED = ScopedValue.newInstance();
     private static final ThreadLocal<LegacyIds> THREAD_SCOPED = new ThreadLocal<>();
     private static final Set<String> WARNED_NUMERIC_BLOCK_IDS = ConcurrentHashMap.newKeySet();
     private static final Set<String> WARNED_NUMERIC_ITEM_IDS = ConcurrentHashMap.newKeySet();
@@ -85,9 +82,6 @@ public final class LegacyIds {
 
     @Nullable
     public static LegacyIds current() {
-        if (SCOPED.isBound()) {
-            return SCOPED.get();
-        }
         LegacyIds local = THREAD_SCOPED.get();
         return local != null ? local : current;
     }
@@ -109,25 +103,6 @@ public final class LegacyIds {
         } else {
             THREAD_SCOPED.set(prev);
         }
-    }
-
-    /*
-     * Binds {@code table} for the duration of {@code op} on the current thread (used by
-     * {@code AnvilChunkLoader} so chunk and entity loads use the save's own table even on worker threads).
-     */
-    public static <T> T callWith(@Nullable LegacyIds table, Supplier<T> op) {
-        if (table == null) {
-            return op.get();
-        }
-        return ScopedValue.where(SCOPED, table).call(op::get);
-    }
-
-    public static void runWith(@Nullable LegacyIds table, Runnable op) {
-        if (table == null) {
-            op.run();
-            return;
-        }
-        ScopedValue.where(SCOPED, table).run(op);
     }
 
     /*
@@ -153,13 +128,6 @@ public final class LegacyIds {
         return Block.getBlockById(savedId);
     }
 
-    /* The saved registry name for a legacy block id in the world's table, or null when not in the table. */
-    @Nullable
-    public static ResourceLocation blockName(int savedId) {
-        LegacyIds table = current();
-        return table == null ? null : table.lookup(GameData.BLOCKS, savedId);
-    }
-
     /* A saved item id (jukeboxes, flower pots). Falls back to the live id. */
     @Nullable
     public static Item item(int savedId) {
@@ -171,13 +139,6 @@ public final class LegacyIds {
             }
         }
         return Item.getItemById(savedId);
-    }
-
-    /* The saved registry name for a legacy item id in the world's table, or null when not in the table. */
-    @Nullable
-    public static ResourceLocation itemName(int savedId) {
-        LegacyIds table = current();
-        return table == null ? null : table.lookup(GameData.ITEMS, savedId);
     }
 
     /* A saved biome id (legacy biome bytes, JEID int arrays). Falls back to the live id. */
@@ -193,13 +154,6 @@ public final class LegacyIds {
         return Biome.getBiome(savedId);
     }
 
-    /* The saved registry name for a legacy biome id in the world's table, or null when not in the table. */
-    @Nullable
-    public static ResourceLocation biomeName(int savedId) {
-        LegacyIds table = current();
-        return table == null ? null : table.lookup(GameData.BIOMES, savedId);
-    }
-
     /* A saved potion id (PotionEffect, beacons). Falls back to the live id. */
     @Nullable
     public static Potion potion(int savedId) {
@@ -213,13 +167,6 @@ public final class LegacyIds {
         return Potion.getPotionById(savedId);
     }
 
-    /* The saved registry name for a legacy potion id in the world's table, or null when not in the table. */
-    @Nullable
-    public static ResourceLocation potionName(int savedId) {
-        LegacyIds table = current();
-        return table == null ? null : table.lookup(GameData.POTIONS, savedId);
-    }
-
     /* A saved enchantment id. Falls back to the live id. */
     @Nullable
     public static Enchantment enchantment(int savedId) {
@@ -231,13 +178,6 @@ public final class LegacyIds {
             }
         }
         return Enchantment.getEnchantmentByID(savedId);
-    }
-
-    /* The saved registry name for a legacy enchantment id in the world's table, or null when not in the table. */
-    @Nullable
-    public static ResourceLocation enchantmentName(int savedId) {
-        LegacyIds table = current();
-        return table == null ? null : table.lookup(GameData.ENCHANTMENTS, savedId);
     }
 
     public static void writePotionName(NBTTagCompound compound, String key, @Nullable Potion potion) {
@@ -261,17 +201,13 @@ public final class LegacyIds {
 
     public static void warnIfNumericBlockId(String name) {
         if (isNumericId(name) && WARNED_NUMERIC_BLOCK_IDS.add(name)) {
-            FMLLog.log.warn("Numeric block ID '{}' is not supported; use a registry name instead",
-                name
-            );
+            CleanroomLog.get().warn("Numeric block ID '{}' is not supported; use a registry name instead", name);
         }
     }
 
     public static void warnIfNumericItemId(String id) {
         if (isNumericId(id) && WARNED_NUMERIC_ITEM_IDS.add(id)) {
-            FMLLog.log.warn("Numeric item ID '{}' is not supported; use a registry name instead",
-                id
-            );
+            CleanroomLog.get().warn("Numeric item ID '{}' is not supported; use a registry name instead", id);
         }
     }
 

@@ -131,7 +131,12 @@ public class LegacyIdsTest {
             assertThat(LegacyIds.block(2)).isSameAs(Blocks.GRASS);
             LegacyIds scoped = new LegacyIds(registriesTag());
             LegacyIds.clear();
-            assertThat(LegacyIds.callWith(scoped, () -> LegacyIds.block(ORE_SAVED_ID))).isSameAs(ore());
+            LegacyIds prev = LegacyIds.push(scoped);
+            try {
+                assertThat(LegacyIds.block(ORE_SAVED_ID)).isSameAs(ore());
+            } finally {
+                LegacyIds.pop(prev);
+            }
         } finally {
             LegacyIds.clear();
         }
@@ -221,7 +226,12 @@ public class LegacyIdsTest {
         assertThat(LegacyIds.block(2)).isSameAs(Blocks.GRASS);
         LegacyIds scoped = new LegacyIds(registriesTag());
         LegacyIds.clear();
-        assertThat(LegacyIds.callWith(scoped, () -> LegacyIds.block(ORE_SAVED_ID))).isSameAs(ore());
+        LegacyIds prev = LegacyIds.push(scoped);
+        try {
+            assertThat(LegacyIds.block(ORE_SAVED_ID)).isSameAs(ore());
+        } finally {
+            LegacyIds.pop(prev);
+        }
         assertThat(LegacyIds.block(Block.getIdFromBlock(Blocks.STONE))).isSameAs(Blocks.STONE);
     }
 

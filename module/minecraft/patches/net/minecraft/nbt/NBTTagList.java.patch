@@ -9,17 +9,7 @@
      private static final Logger LOGGER = LogManager.getLogger();
      /** The array list containing the tags encapsulated in this list. */
      private List<NBTBase> tagList = Lists.newArrayList();
-@@ -218,7 +218,8 @@
-         }
- 
-         NBTTagList nbttaglist = (NBTTagList)p_equals_1_;
--        return this.tagType == nbttaglist.tagType && Objects.equals(this.tagList, nbttaglist.tagList);
-+        boolean sameType = this.tagType == nbttaglist.tagType || this.tagType >= 1 && this.tagType <= 3 && nbttaglist.tagType >= 1 && nbttaglist.tagType <= 3; // Cleanroom: byte/short/int lists compare by value
-+        return sameType && Objects.equals(this.tagList, nbttaglist.tagList);
-     }
- 
-     @Override
-@@ -229,4 +230,5 @@
+@@ -229,4 +229,5 @@
      public int getTagType() {
          return this.tagType;
      }

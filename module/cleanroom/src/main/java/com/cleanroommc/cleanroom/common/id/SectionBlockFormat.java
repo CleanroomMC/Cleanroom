@@ -137,8 +137,8 @@ public final class SectionBlockFormat {
         int x = cellIndex & 15;
         int y = cellIndex >> 8 & 15;
         int z = cellIndex >> 4 & 15;
-        int blockId = LegacyIdWorlds.jeidBlockId(packed);
-        int meta = LegacyIdWorlds.jeidMeta(packed);
+        int blockId = packed >>> 4;
+        int meta = packed & 15;
         Block block = LegacyIds.block(blockId);
         if (block != null) {
             data.set(x, y, z, block.getStateFromMeta(meta));

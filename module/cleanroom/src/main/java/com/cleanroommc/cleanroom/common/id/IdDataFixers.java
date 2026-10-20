@@ -12,9 +12,12 @@ package com.cleanroommc.cleanroom.common.id;
 
 import com.cleanroommc.common.CleanroomVersion;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityMinecart;
@@ -26,6 +29,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
@@ -40,10 +44,8 @@ import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 
-import java.lang.reflect.Field;
-
 /**
- * DataFixer stages and centralized TileEntity/Entity NBT normalizers for Cleanroom Wide IDs,
+ * DataFixer stages and centralized TileEntity/Entity/ItemStack NBT normalizers for Cleanroom Wide IDs,
  * converting legacy Forge numeric IDs to registry names and avoiding scattered per-class patches.
  */
 @SuppressWarnings("deprecation")
@@ -51,35 +53,7 @@ public final class IdDataFixers {
 
     public static final int VERSION = 1;
 
-    private static final Field BEACON_PRIMARY;
-    private static final Field BEACON_SECONDARY;
-    private static final Field PISTON_STATE;
-    private static final Field FALLING_TILE;
-
-    static {
-        BEACON_PRIMARY = findField(TileEntityBeacon.class, "primaryEffect", "field_146013_m");
-        BEACON_SECONDARY = findField(TileEntityBeacon.class, "secondaryEffect", "field_146010_n");
-        PISTON_STATE = findField(TileEntityPiston.class, "pistonState", "field_174932_a");
-        FALLING_TILE = findField(EntityFallingBlock.class, "fallTile", "field_175132_d");
-    }
-
     private IdDataFixers() { }
-
-    private static Field findField(Class<?> owner, String mcpName, String srgName) {
-        try {
-            Field f = owner.getDeclaredField(mcpName);
-            f.setAccessible(true);
-            return f;
-        } catch (NoSuchFieldException e) {
-            try {
-                Field f = owner.getDeclaredField(srgName);
-                f.setAccessible(true);
-                return f;
-            } catch (NoSuchFieldException ex) {
-                throw new ExceptionInInitializerError(ex);
-            }
-        }
-    }
 
     public static void register(CompoundDataFixer fixer) {
         ModFixs modFixs = fixer.init(CleanroomVersion.MOD_ID, VERSION);
@@ -109,6 +83,55 @@ public final class IdDataFixers {
             }
 
         });
+        modFixs.registerFix(FixTypes.ITEM_INSTANCE, new IFixableData() {
+
+            @Override
+            public int getFixVersion() {
+                return VERSION;
+            }
+
+            @Override
+            public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
+                if (compound.hasKey("tag", 10)) {
+                    normalizeStackTag(compound.getCompoundTag("tag"));
+                }
+                return compound;
+            }
+
+        });
+    }
+
+    public static void normalizeStackTag(@Nullable NBTTagCompound tag) {
+        if (tag == null) {
+            return;
+        }
+        normalizeEnchantmentList(tag, "ench");
+        normalizeEnchantmentList(tag, "StoredEnchantments");
+    }
+
+    private static void normalizeEnchantmentList(NBTTagCompound tag, String listKey) {
+        if (!tag.hasKey(listKey, 9)) {
+            return;
+        }
+        NBTTagList list = tag.getTagList(listKey, 10);
+        for (int i = 0; i < list.tagCount(); i++) {
+            NBTTagCompound entry = list.getCompoundTagAt(i);
+            if (entry.hasKey("id", 99)) {
+                int rawId = entry.getTagId("id") == 2 ? (entry.getShort("id") & 0xFFFF) : entry.getInteger("id");
+                Enchantment ench = entry.hasKey("name", 8)
+                    ? Enchantment.REGISTRY.getObject(new ResourceLocation(entry.getString("name")))
+                    : LegacyIds.enchantment(rawId);
+                if (ench != null) {
+                    entry.setInteger("id", Enchantment.getEnchantmentID(ench));
+                    ResourceLocation rl = Enchantment.REGISTRY.getNameForObject(ench);
+                    if (rl != null) {
+                        entry.setString("name", rl.toString());
+                    }
+                } else if (entry.getTagId("id") != 3) {
+                    entry.setInteger("id", rawId);
+                }
+            }
+        }
     }
 
     public static NBTTagCompound fixBlockEntityTag(NBTTagCompound compound) {
@@ -124,16 +147,6 @@ public final class IdDataFixers {
             if (recordItem != null) {
                 compound.setTag("RecordItem", new ItemStack(recordItem).writeToNBT(new NBTTagCompound()));
                 compound.removeTag("Record");
-            } else {
-                ResourceLocation missingRecord = LegacyIds.itemName(recordId);
-                if (missingRecord != null) {
-                    NBTTagCompound recordTag = new NBTTagCompound();
-                    recordTag.setString("id", missingRecord.toString());
-                    recordTag.setByte("Count", (byte) 1);
-                    recordTag.setShort("Damage", (short) 0);
-                    compound.setTag("RecordItem", recordTag);
-                    compound.removeTag("Record");
-                }
             }
         }
         if (!compound.hasKey("Item", 8) && compound.hasKey("Item", 99)) {
@@ -170,12 +183,10 @@ public final class IdDataFixers {
                 ? compound.getInteger("TileID")
                 : (compound.getByte("Tile") & 0xFF);
             Block block = LegacyIds.block(legacyId);
-            if (block != null) {
-                ResourceLocation rl = Block.REGISTRY.getNameForObject(block);
-                if (rl != null) {
-                    compound.setString("Block", rl.toString());
-                }
-            }
+            ResourceLocation rl = block == null ? null : Block.REGISTRY.getNameForObject(block);
+            compound.setString("Block", rl != null ? rl.toString() : "minecraft:sand");
+        } else if (compound.hasKey("Block", 8) && Block.getBlockFromName(compound.getString("Block")) == null) {
+            compound.setString("Block", "minecraft:sand");
         }
         if (!compound.hasKey("carried", 8) && compound.hasKey("carried", 99)) {
             Block block = LegacyIds.block(compound.getShort("carried") & 0xFFFF);
@@ -239,21 +250,15 @@ public final class IdDataFixers {
     }
 
     public static void afterTileEntityWrite(TileEntity te, NBTTagCompound compound) {
-        if (te instanceof TileEntityBeacon) {
-            try {
-                Potion primary = (Potion) BEACON_PRIMARY.get(te);
-                Potion secondary = (Potion) BEACON_SECONDARY.get(te);
-                LegacyIds.writePotionName(compound, "PrimaryName", primary);
-                LegacyIds.writePotionName(compound, "SecondaryName", secondary);
-            } catch (IllegalAccessException ignored) {
-            }
-        } else if (te instanceof TileEntityPiston) {
-            try {
-                IBlockState state = (IBlockState) PISTON_STATE.get(te);
-                if (state != null) {
-                    compound.setTag("blockState", NBTUtil.writeBlockState(new NBTTagCompound(), state));
-                }
-            } catch (IllegalAccessException ignored) {
+        if (te instanceof TileEntityBeacon beacon) {
+            int p = beacon.getField(1);
+            int s = beacon.getField(2);
+            LegacyIds.writePotionName(compound, "PrimaryName", p < 0 ? null : Potion.getPotionById(p));
+            LegacyIds.writePotionName(compound, "SecondaryName", s < 0 ? null : Potion.getPotionById(s));
+        } else if (te instanceof TileEntityPiston piston) {
+            IBlockState state = piston.getPistonState();
+            if (state != null) {
+                compound.setTag("blockState", NBTUtil.writeBlockState(new NBTTagCompound(), state));
             }
         }
     }
@@ -263,12 +268,7 @@ public final class IdDataFixers {
     }
 
     public static void afterEntityRead(Entity entity, NBTTagCompound compound) {
-        if (entity instanceof EntityFallingBlock && compound.hasKey("BlockState", 10)) {
-            try {
-                FALLING_TILE.set(entity, NBTUtil.readBlockState(compound.getCompoundTag("BlockState")));
-            } catch (IllegalAccessException ignored) {
-            }
-        } else if (entity instanceof EntityEnderman enderman && compound.hasKey("carriedState", 10)) {
+        if (entity instanceof EntityEnderman enderman && compound.hasKey("carriedState", 10)) {
             enderman.setHeldBlockState(NBTUtil.readBlockState(compound.getCompoundTag("carriedState")));
         } else if (entity instanceof EntityMinecart minecart &&
             compound.getBoolean("CustomDisplayTile") &&

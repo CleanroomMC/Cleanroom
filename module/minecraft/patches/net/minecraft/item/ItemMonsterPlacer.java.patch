@@ -1,20 +1,6 @@
 --- original/net/minecraft/item/ItemMonsterPlacer.java
 +++ modified/net/minecraft/item/ItemMonsterPlacer.java
-@@ -40,9 +40,12 @@
-     @Override
-     public String getItemStackDisplayName(ItemStack stack) {
-         String s = ("" + I18n.translateToLocal(this.getTranslationKey() + ".name")).trim();
--        String s1 = EntityList.getTranslationName(getNamedIdFrom(stack));
-+        ResourceLocation entityId = getNamedIdFrom(stack);
-+        String s1 = EntityList.getTranslationName(entityId);
-         if (s1 != null) {
-             s = s + " " + I18n.translateToLocal("entity." + s1 + ".name");
-+        } else if (entityId != null) {
-+            s = s + " (" + entityId + ")";
-         }
- 
-         return s;
-@@ -197,6 +200,7 @@
+@@ -197,6 +197,7 @@
                      entity.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(worldIn.rand.nextFloat() * 360.0F), 0.0F);
                      entityliving.rotationYawHead = entityliving.rotationYaw;
                      entityliving.renderYawOffset = entityliving.rotationYaw;

@@ -9,19 +9,7 @@
      private static final Logger LOGGER = LogManager.getLogger();
      private static final RegistryNamespaced<ResourceLocation, Class<? extends TileEntity>> REGISTRY = new RegistryNamespaced<>();
      /** the instance of the world the tile entity is in. */
-@@ -41,6 +41,11 @@
-         return REGISTRY.getNameForObject(clazz);
-     }
- 
-+    /** Cleanroom: every registered tile entity id, for the retention file's registry census. */
-+    public static java.util.Set<ResourceLocation> getRegisteredKeys() {
-+        return REGISTRY.getKeys();
-+    }
-+
-     /** Returns the worldObj for this tileEntity. */
-     public World getWorld() {
-         return this.world;
-@@ -58,6 +63,9 @@
+@@ -58,6 +58,9 @@
  
      public void readFromNBT(NBTTagCompound compound) {
          this.pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
@@ -31,7 +19,7 @@
      }
  
      public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-@@ -74,6 +82,9 @@
+@@ -74,6 +77,9 @@
          compound.setInteger("x", this.pos.getX());
          compound.setInteger("y", this.pos.getY());
          compound.setInteger("z", this.pos.getZ());
@@ -41,7 +29,7 @@
          return compound;
      }
  
-@@ -81,14 +92,17 @@
+@@ -81,14 +87,17 @@
      public static TileEntity create(World worldIn, NBTTagCompound compound) {
          TileEntity tileentity = null;
          String s = compound.getString("id");
@@ -61,7 +49,7 @@
          }
  
          if (tileentity != null) {
-@@ -97,18 +111,34 @@
+@@ -97,6 +106,8 @@
                  tileentity.readFromNBT(compound);
              } catch (Throwable throwable) {
                  LOGGER.error("Failed to load data for block entity {}", s, throwable);
@@ -70,22 +58,7 @@
                  tileentity = null;
              }
          } else {
--            LOGGER.warn("Skipping BlockEntity with id {}", s);
-+            if (oclass == null) {
-+                LOGGER.debug("Skipping BlockEntity with id {}", s); // Cleanroom: AnvilChunkLoader retains the compound; the once-per-name INFO line replaced this spam
-+            } else {
-+                LOGGER.warn("Skipping BlockEntity with id {}", s);
-+            }
-         }
- 
-         return tileentity;
-     }
- 
-+    /** Cleanroom: whether the id names a registered block entity class (AnvilChunkLoader's missing-content retention). */
-+    public static boolean isRegistered(String id) {
-+        return REGISTRY.getObject(new ResourceLocation(id)) != null;
-+    }
-+
+@@ -109,6 +120,11 @@
      protected void setWorldCreate(World worldIn) {
      }
  
@@ -97,7 +70,7 @@
      public int getBlockMetadata() {
          if (this.blockMetadata == -1) {
              IBlockState iblockstate = this.world.getBlockState(this.pos);
-@@ -121,8 +151,7 @@
+@@ -121,8 +137,7 @@
      /** For tile entities, ensures the chunk containing the tile entity is saved to disk later - the game won't think it hasn't changed and skip it. */
      public void markDirty() {
          if (this.world != null) {
@@ -107,7 +80,7 @@
              this.world.markChunkDirty(this.pos, this);
              if (this.getBlockType() != Blocks.AIR) {
                  this.world.updateComparatorOutputLevel(this.pos, this.getBlockType());
-@@ -130,7 +159,6 @@
+@@ -130,7 +145,6 @@
          }
      }
  
@@ -115,7 +88,7 @@
      public double getDistanceSq(double x, double y, double z) {
          double d0 = this.pos.getX() + 0.5 - x;
          double d1 = this.pos.getY() + 0.5 - y;
-@@ -212,7 +240,7 @@
+@@ -212,7 +226,7 @@
  
                          try {
                              return String.format(
@@ -124,7 +97,7 @@
                              );
                          } catch (Throwable throwable) {
                              return "ID #" + i;
-@@ -266,6 +294,177 @@
+@@ -266,6 +280,177 @@
      public void mirror(Mirror mirrorIn) {
      }
  
