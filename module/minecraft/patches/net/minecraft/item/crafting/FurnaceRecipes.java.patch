@@ -8,7 +8,23 @@
          this.smeltingList.put(input, stack);
          this.experienceList.put(stack, experience);
      }
-@@ -145,6 +146,9 @@
+@@ -134,10 +135,12 @@
+         return ItemStack.EMPTY;
+     }
+ 
+-    /** Compares two itemstacks to ensure that they are the same. This checks both the item and the metadata of the item. */
++    /** Compares two itemstacks to ensure that they are the same. This checks the item, any patched data components on the template, and the legacy metadata/wildcard. */
+     private boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
+-        return stack2.getItem() == stack1.getItem()
+-            && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
++        if (stack2.getItem() != stack1.getItem() || !com.cleanroommc.cleanroom.common.component.DataComponents.matchesPatchedComponents(stack2, stack1)) {
++            return false;
++        }
++        return stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata();
+     }
+ 
+     public Map<ItemStack, ItemStack> getSmeltingList() {
+@@ -145,6 +148,9 @@
      }
  
      public float getSmeltingExperience(ItemStack stack) {

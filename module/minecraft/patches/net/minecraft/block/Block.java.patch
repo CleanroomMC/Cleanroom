@@ -197,16 +197,31 @@
              float f = 0.5F;
              double d0 = worldIn.rand.nextFloat() * 0.5F + 0.25;
              double d1 = worldIn.rand.nextFloat() * 0.5F + 0.25;
-@@ -644,7 +648,7 @@
+@@ -640,11 +644,22 @@
+     }
+ 
+     /** Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It returns the metadata of the dropped item based on the old metadata of the block. */
++    @Deprecated
+     public int damageDropped(IBlockState state) {
          return 0;
      }
  
 -    /** Returns how much this block can resist explosions from the passed in entity. */
++    /**
++     * Cleanroom: returns the standalone {@link IBlockState} that breaking or picking {@code state} yields.
++     * Defaults to {@code getStateFromMeta(damageDropped(state))} so legacy blocks keep their drop behaviour;
++     * blocks whose states stand by themselves without metadata can override this directly.
++     */
++    @SuppressWarnings("deprecation")
++    public IBlockState getStateForDrop(IBlockState state) {
++        try { return this.getStateFromMeta(this.damageDropped(state)); } catch (RuntimeException e) { return this.getDefaultState(); }
++    }
++
 +    @Deprecated //Forge: State sensitive version
      public float getExplosionResistance(Entity exploder) {
          return this.blockResistance / 5.0F;
      }
-@@ -690,7 +694,7 @@
+@@ -690,7 +705,7 @@
  
      /** Checks if this block can be placed exactly at the given position. */
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
@@ -215,7 +230,7 @@
      }
  
      /** Called when the block is right clicked by a player. */
-@@ -712,7 +716,8 @@
+@@ -712,7 +727,8 @@
      public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
      }
  
@@ -225,7 +240,7 @@
      public IBlockState getStateForPlacement(
          World worldIn,
          BlockPos pos,
-@@ -764,17 +769,30 @@
+@@ -764,21 +780,37 @@
      ) {
          player.addStat(StatList.getBlockStats(this));
          player.addExhaustion(0.005F);
@@ -259,15 +274,26 @@
      }
  
      protected ItemStack getSilkTouchDrop(IBlockState state) {
-@@ -858,6 +876,7 @@
+         Item item = Item.getItemFromBlock(this);
++        if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() == this) {
++            return ((ItemBlock) item).stackFor(state);
++        }
+         int i = 0;
+         if (item.getHasSubtypes()) {
+             i = this.getMetaFromState(state);
+@@ -858,8 +890,10 @@
          entityIn.motionY = 0.0;
      }
  
 +    @Deprecated // Forge: Use more sensitive version below: getPickBlock
      public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-         return new ItemStack(Item.getItemFromBlock(this), 1, this.damageDropped(state));
+-        return new ItemStack(Item.getItemFromBlock(this), 1, this.damageDropped(state));
++        Item item = Item.getItemFromBlock(this);
++        return item instanceof ItemBlock && ((ItemBlock) item).getBlock() == this ? ((ItemBlock) item).stackFor(state) : new ItemStack(item, 1, this.damageDropped(state));
      }
-@@ -956,6 +975,7 @@
+ 
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */
+@@ -956,6 +990,7 @@
          );
      }
  
@@ -275,7 +301,7 @@
      public SoundType getSoundType() {
          return this.blockSoundType;
      }
-@@ -969,6 +989,1289 @@
+@@ -969,6 +1004,1321 @@
      public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
      }
  
@@ -611,7 +637,7 @@
 +        for (int i = 0; i < count; i++) {
 +            Item item = this.getItemDropped(state, rand, fortune);
 +            if (item != Items.AIR) {
-+                drops.add(new ItemStack(item, 1, this.damageDropped(state)));
++                drops.add(item instanceof ItemBlock && ((ItemBlock) item).getBlock() == this ? ((ItemBlock) item).stackFor(state) : new ItemStack(item, 1, this.damageDropped(state)));
 +            }
 +        }
 +    }
@@ -1503,8 +1529,40 @@
 +     * @param hand The player hand used to place this block
 +     * @return The state to be placed in the world
 +     */
++    @Deprecated
 +    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 +        return getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer);
++    }
++
++    @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
++    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, ItemStack stack, EntityLivingBase placer, EnumHand hand) {
++        Item item = stack.getItem();
++        int meta = item instanceof ItemBlock ? item.getMetadata(stack.getDamageValue()) : 0;
++        IBlockState placed = getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
++        IBlockState carried = stack.getComponents().get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE);
++        if (carried != null && carried.getBlock() == this) {
++            IBlockState result = carried;
++            if (placed != null && placed.getBlock() == this) {
++                IBlockState base;
++                try {
++                    base = this.getStateFromMeta(meta);
++                } catch (RuntimeException e) {
++                    base = this.getDefaultState();
++                }
++                IBlockState dropBase = this.getStateForDrop(carried);
++                for (net.minecraft.block.properties.IProperty prop : placed.getPropertyKeys()) {
++                    if (result.getProperties().containsKey(prop)
++                        && base != null
++                        && base.getProperties().containsKey(prop)
++                        && !java.util.Objects.equals(placed.getValue(prop), base.getValue(prop))
++                        && (dropBase == null || !dropBase.getProperties().containsKey(prop) || java.util.Objects.equals(carried.getValue(prop), dropBase.getValue(prop)))) {
++                        result = result.withProperty(prop, placed.getValue(prop));
++                    }
++                }
++            }
++            return result;
++        }
++        return placed;
 +    }
 +
 +    /**
@@ -1565,7 +1623,7 @@
      public static void registerBlocks() {
          registerBlock(0, AIR_ID, new BlockAir().setTranslationKey("air"));
          registerBlock(1, "stone", new BlockStone().setHardness(1.5F).setResistance(10.0F).setSoundType(SoundType.STONE).setTranslationKey("stone"));
-@@ -1520,7 +2823,7 @@
+@@ -1520,7 +2870,7 @@
              "quartz_stairs",
              new BlockStairs(block11.getDefaultState().withProperty(BlockQuartz.VARIANT, BlockQuartz.EnumType.DEFAULT)).setTranslationKey("stairsQuartz")
          );
@@ -1574,7 +1632,7 @@
          registerBlock(158, "dropper", new BlockDropper().setHardness(3.5F).setSoundType(SoundType.STONE).setTranslationKey("dropper"));
          registerBlock(
              159,
-@@ -1944,22 +3247,6 @@
+@@ -1944,22 +3294,6 @@
                  block15.useNeighborBrightness = flag;
              }
          }

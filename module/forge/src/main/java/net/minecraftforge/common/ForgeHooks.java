@@ -165,6 +165,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class ForgeHooks
 {
     //TODO: Loot tables?
@@ -893,6 +894,7 @@ public class ForgeHooks
         {
             nbt = itemstack.getTagCompound().copy();
         }
+        com.cleanroommc.cleanroom.common.component.PatchedDataComponentMap oldComponents = itemstack.getComponents().copy();
 
         if (!(itemstack.getItem() instanceof ItemBucket)) // if not bucket
         {
@@ -912,6 +914,7 @@ public class ForgeHooks
             {
                 newNBT = itemstack.getTagCompound().copy();
             }
+            com.cleanroommc.cleanroom.common.component.PatchedDataComponentMap newComponents = itemstack.getComponents().copy();
             BlockEvent.PlaceEvent placeEvent = null;
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>)world.capturedBlockSnapshots.clone();
@@ -924,6 +927,7 @@ public class ForgeHooks
             {
                 itemstack.setTagCompound(nbt);
             }
+            itemstack.getComponents().restorePatch(oldComponents.asPatch());
             if (blockSnapshots.size() > 1)
             {
                 placeEvent = ForgeEventFactory.onPlayerMultiBlockPlace(player, blockSnapshots, side, hand);
@@ -953,6 +957,7 @@ public class ForgeHooks
                 {
                     itemstack.setTagCompound(newNBT);
                 }
+                itemstack.getComponents().restorePatch(newComponents.asPatch());
 
                 for (BlockSnapshot snap : blockSnapshots)
                 {
@@ -1430,7 +1435,7 @@ public class ForgeHooks
         if (type == ConnectionType.VANILLA)
         {
             ForgeRegistry<IRecipe> recipes_ = (ForgeRegistry<IRecipe>)ForgeRegistries.RECIPES;
-            Set<ResourceLocation> vanilla = recipes_.getVanillaBaseline().keySet();
+            java.util.Set<ResourceLocation> vanilla = recipes_.getVanillaBaseline().keySet();
             if (!recipes.isEmpty())
                 recipes = recipes.stream().filter(r -> vanilla.contains(r.getRegistryName())).collect(Collectors.toList());
             if (!display.isEmpty())

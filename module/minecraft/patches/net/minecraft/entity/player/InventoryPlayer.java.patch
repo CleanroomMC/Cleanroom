@@ -1,6 +1,45 @@
 --- original/net/minecraft/entity/player/InventoryPlayer.java
 +++ modified/net/minecraft/entity/player/InventoryPlayer.java
-@@ -258,7 +258,8 @@
+@@ -59,6 +59,7 @@
+         return !stack1.isEmpty()
+             && this.stackEqualExact(stack1, stack2)
+             && stack1.isStackable()
++            && stack2.isStackable()
+             && stack1.getCount() < stack1.getMaxStackSize()
+             && stack1.getCount() < this.getInventoryStackLimit();
+     }
+@@ -190,6 +191,11 @@
+      * @return The number of items removed from the inventory.
+      */
+     public int clearMatchingItems(@Nullable Item itemIn, int metadataIn, int removeCount, @Nullable NBTTagCompound itemNBT) {
++        return this.clearMatchingItems(itemIn, metadataIn, removeCount, itemNBT, null);
++    }
++
++    /** Cleanroom: overload with a data-component predicate for {@code /clear <player> item[component=value]}. */
++    public int clearMatchingItems(@Nullable Item itemIn, int metadataIn, int removeCount, @Nullable NBTTagCompound itemNBT, @Nullable java.util.function.Predicate<ItemStack> componentPredicate) {
+         int i = 0;
+ 
+         for (int j = 0; j < this.getSizeInventory(); j++) {
+@@ -197,6 +203,7 @@
+             if (!itemstack.isEmpty()
+                 && (itemIn == null || itemstack.getItem() == itemIn)
+                 && (metadataIn <= -1 || itemstack.getMetadata() == metadataIn)
++                && (componentPredicate == null || componentPredicate.test(itemstack))
+                 && (itemNBT == null || NBTUtil.areNBTEquals(itemNBT, itemstack.getTagCompound(), true))) {
+                 int k = removeCount <= 0 ? itemstack.getCount() : Math.min(removeCount - i, itemstack.getCount());
+                 i += k;
+@@ -222,6 +229,10 @@
+                 return i;
+             }
+ 
++            if (componentPredicate != null && !componentPredicate.test(this.itemStack)) {
++                return i;
++            }
++
+             if (itemNBT != null && !NBTUtil.areNBTEquals(itemNBT, this.itemStack.getTagCompound(), true)) {
+                 return i;
+             }
+@@ -258,7 +269,8 @@
          int i = p_191973_2_.getCount();
          ItemStack itemstack = this.getStackInSlot(p_191973_1_);
          if (itemstack.isEmpty()) {
@@ -10,7 +49,7 @@
              if (p_191973_2_.hasTagCompound()) {
                  itemstack.setTagCompound(p_191973_2_.getTagCompound().copy());
              }
-@@ -313,6 +314,13 @@
+@@ -313,6 +325,13 @@
                  }
              }
          }
@@ -24,7 +63,7 @@
      }
  
      /** Adds the item stack to the inventory, returns false if it is impossible. */
-@@ -365,6 +373,8 @@
+@@ -365,6 +384,8 @@
              CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
              crashreportcategory.addCrashSection("Item ID", Item.getIdFromItem(p_191971_2_.getItem()));
              crashreportcategory.addCrashSection("Item data", p_191971_2_.getMetadata());

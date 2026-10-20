@@ -10,6 +10,7 @@
 
 package com.cleanroommc.common;
 
+import com.cleanroommc.cleanroom.common.component.DataComponents;
 import com.cleanroommc.cleanroom.common.id.CommandRegistry;
 import com.cleanroommc.util.CleanroomLog;
 
@@ -20,6 +21,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.LoadController;
@@ -124,6 +126,7 @@ public class CleanroomContainer extends DummyModContainer implements WorldAccess
     @Subscribe
     public void construct(FMLConstructionEvent event) {
         NetworkRegistry.INSTANCE.register(this, this.getClass(), null, event.getASMHarvestedData());
+        MinecraftForge.EVENT_BUS.register(DataComponents.class);
     }
 
     @Subscribe

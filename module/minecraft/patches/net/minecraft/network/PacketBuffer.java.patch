@@ -1,6 +1,6 @@
 --- original/net/minecraft/network/PacketBuffer.java
 +++ modified/net/minecraft/network/PacketBuffer.java
-@@ -257,17 +257,17 @@
+@@ -257,20 +257,21 @@
          }
      }
  
@@ -24,7 +24,11 @@
              }
  
              this.writeCompoundTag(nbttagcompound);
-@@ -278,15 +278,15 @@
++            com.cleanroommc.cleanroom.common.component.DataComponents.writePatch(stack, this);
+         }
+ 
+         return this;
+@@ -278,15 +279,16 @@
  
      /** Reads an ItemStack from this buffer */
      public ItemStack readItemStack() throws IOException {
@@ -41,6 +45,7 @@
          ItemStack itemstack = new ItemStack(Item.getItemById(i), j, k);
 -        itemstack.setTagCompound(this.readCompoundTag());
 +        itemstack.getItem().readNBTShareTag(itemstack, this.readCompoundTag());
++        com.cleanroommc.cleanroom.common.component.DataComponents.readPatch(itemstack, this);
          return itemstack;
      }
  

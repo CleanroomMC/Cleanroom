@@ -31,7 +31,22 @@
      }
  
      public IBakedModel getItemModel(ItemStack stack) {
-@@ -58,8 +62,8 @@
+@@ -49,8 +53,13 @@
+         return ibakedmodel;
+     }
+ 
++    /**
++     * @deprecated Cleanroom: delegates to {@link Item#getModelKey(ItemStack)}; prefer {@link Item#getModelKey(ItemStack)}
++     * or {@link #register(Item, ItemMeshDefinition)}.
++     */
++    @Deprecated
+     protected int getMetadata(ItemStack stack) {
+-        return stack.getMaxDamage() > 0 ? 0 : stack.getMetadata();
++        return stack.getMaxDamage() > 0 ? 0 : stack.getItem().getModelKey(stack);
+     }
+ 
+     @Nullable
+@@ -58,10 +67,20 @@
          return this.simpleShapesCache.get(this.getIndex(item, meta));
      }
  
@@ -41,8 +56,20 @@
 +        return (long)Item.getIdFromItem(item) << 32 | meta & 0xFFFFFFFFL; // Cleanroom: id << 16 | meta collided past item id 65535
      }
  
++    /** Cleanroom: registers the single model for a flattened (one-id) item. */
++    public void register(Item item, ModelResourceLocation location) {
++        this.register(item, 0, location);
++    }
++
++    /**
++     * @deprecated Cleanroom: use {@link #register(Item, ModelResourceLocation)} for one-id items or
++     * {@link #register(Item, ItemMeshDefinition)} for component-driven models.
++     */
++    @Deprecated
      public void register(Item item, int meta, ModelResourceLocation location) {
-@@ -78,7 +82,7 @@
+         this.simpleShapes.put(this.getIndex(item, meta), location);
+         this.simpleShapesCache.put(this.getIndex(item, meta), this.modelManager.getModel(location));
+@@ -78,7 +97,7 @@
      public void rebuildCache() {
          this.simpleShapesCache.clear();
  

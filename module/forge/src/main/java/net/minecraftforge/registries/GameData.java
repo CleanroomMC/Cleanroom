@@ -19,6 +19,8 @@
 
 package net.minecraftforge.registries;
 
+import com.cleanroommc.cleanroom.common.component.DataComponentType;
+import com.cleanroommc.cleanroom.common.component.IItemState;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -96,9 +98,11 @@ public class GameData
     public static final ResourceLocation RECIPES      = new ResourceLocation("minecraft:recipes");
     public static final ResourceLocation PROFESSIONS  = new ResourceLocation("minecraft:villagerprofessions");
     public static final ResourceLocation SERIALIZERS  = new ResourceLocation("minecraft:dataserializers");
+    public static final ResourceLocation DATA_COMPONENT_TYPES = new ResourceLocation("cleanroom:data_component_types");
 
     private static final ResourceLocation BLOCK_TO_ITEM         = new ResourceLocation("minecraft:blocktoitemmap");
     private static final ResourceLocation BLOCKSTATE_TO_ID      = new ResourceLocation("minecraft:blockstatetoid");
+    private static final ResourceLocation ITEMSTATE_TO_ID       = new ResourceLocation("minecraft:itemstatetoid");
 
     private static final ResourceLocation ENTITY_CLASS_TO_ENTRY = new ResourceLocation("forge:entity_class_to_entry");
     private static final ResourceLocation SERIALIZER_TO_ENTRY   = new ResourceLocation("forge:serializer_to_entry");
@@ -132,6 +136,7 @@ public class GameData
         makeRegistry(PROFESSIONS,  VillagerProfession.class).create();
         makeRegistry(SERIALIZERS,  DataSerializerEntry.class).disableSaving().disableOverrides().addCallback(SerializerCallbacks.INSTANCE).create();
         entityRegistry = (ForgeRegistry<EntityEntry>)makeRegistry(ENTITIES, EntityEntry.class).addCallback(EntityCallbacks.INSTANCE).create();
+        makeRegistry(DATA_COMPONENT_TYPES, DataComponentType.class).disableSaving().create();
     }
 
     private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(ResourceLocation name, Class<T> type)
@@ -174,6 +179,13 @@ public class GameData
     public static ObjectIntIdentityMap<IBlockState> getBlockStateIDMap()
     {
         return GameRegistry.findRegistry(Block.class).getSlaveMap(BLOCKSTATE_TO_ID, ObjectIntIdentityMap.class);
+    }
+
+    /** Runtime item state numbers, see {@link ItemStateIdMap}. */
+    @SuppressWarnings("unchecked")
+    public static ObjectIntIdentityMap<IItemState> getItemStateIDMap()
+    {
+        return GameRegistry.findRegistry(Item.class).getSlaveMap(ITEMSTATE_TO_ID, ObjectIntIdentityMap.class);
     }
 
 
@@ -381,6 +393,8 @@ public class GameData
         @Override
         public void onAdd(IForgeRegistryInternal<Item> owner, RegistryManager stage, int id, Item item, @Nullable Item oldItem)
         {
+            owner.getSlaveMap(ITEMSTATE_TO_ID, ItemStateIdMap.class).invalidate();
+
             if (oldItem instanceof ItemBlock)
             {
                 @SuppressWarnings("unchecked")
@@ -398,12 +412,14 @@ public class GameData
         @Override
         public void onClear(IForgeRegistryInternal<Item> owner, RegistryManager stage)
         {
+            owner.getSlaveMap(ITEMSTATE_TO_ID, ItemStateIdMap.class).invalidate();
             owner.getSlaveMap(BLOCK_TO_ITEM, BiMap.class).clear();
         }
 
         @Override
         public void onCreate(IForgeRegistryInternal<Item> owner, RegistryManager stage)
         {
+            owner.setSlaveMap(ITEMSTATE_TO_ID, new ItemStateIdMap((ForgeRegistry<Item>) owner, stage == RegistryManager.ACTIVE));
             // We share the blockItem map between items and blocks registries
             BiMap<?, ?> map = stage.getRegistry(BLOCKS).getSlaveMap(BLOCK_TO_ITEM, BiMap.class);
             owner.setSlaveMap(BLOCK_TO_ITEM, map);

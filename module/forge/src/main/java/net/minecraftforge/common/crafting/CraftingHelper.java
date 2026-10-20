@@ -33,7 +33,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +87,7 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class CraftingHelper {
 
     private static final boolean DEBUG_LOAD_MINECRAFT = false;
@@ -154,7 +154,7 @@ public class CraftingHelper {
             {
                 Ingredient ing = CraftingHelper.getIngredient(ele, context);
 
-                if (ing.getClass() == Ingredient.class)
+                if (ing.getClass() == Ingredient.class && ing.getComponentPredicate().isEmpty())
                 {
                     //Vanilla, Due to how we read it splits each itemstack, so we pull out to re-merge later
                     vanilla.add(ing);
@@ -216,8 +216,12 @@ public class CraftingHelper {
         if (item == null)
             throw new JsonSyntaxException("Unknown item '" + itemName + "'");
 
-        if (item.getHasSubtypes() && !json.has("data"))
+        if (item.getHasSubtypes() && !json.has("data") && !json.has("components"))
             throw new JsonParseException("Missing data for item '" + itemName + "'");
+
+        com.cleanroommc.cleanroom.common.component.DataComponentPredicate components = json.has("components")
+            ? com.cleanroommc.cleanroom.common.component.DataComponentPredicate.fromJson(JsonUtils.getJsonObject(json, "components"))
+            : com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY;
 
         if (json.has("nbt"))
         {
@@ -243,7 +247,9 @@ public class CraftingHelper {
                 tmp.setInteger("Count", JsonUtils.getInt(json, "count", 1));
                 tmp.setInteger("Damage", JsonUtils.getInt(json, "data", 0));
 
-                return new ItemStack(tmp);
+                ItemStack stack = new ItemStack(tmp);
+                components.applyTo(stack);
+                return stack;
             }
             catch (NBTException e)
             {
@@ -251,7 +257,9 @@ public class CraftingHelper {
             }
         }
 
-        return new ItemStack(item, JsonUtils.getInt(json, "count", 1), JsonUtils.getInt(json, "data", 0));
+        ItemStack stack = new ItemStack(item, JsonUtils.getInt(json, "count", 1), JsonUtils.getInt(json, "data", 0));
+        components.applyTo(stack);
+        return stack;
     }
 
 
@@ -264,10 +272,15 @@ public class CraftingHelper {
         if (item == null)
             throw new JsonSyntaxException("Unknown item '" + itemName + "'");
 
-        if (item.getHasSubtypes() && !json.has("data"))
+        if (item.getHasSubtypes() && !json.has("data") && !json.has("components"))
             throw new JsonParseException("Missing data for item '" + itemName + "'");
 
-        return new ItemStack(item, 1, JsonUtils.getInt(json, "data", 0));
+        ItemStack stack = new ItemStack(item, 1, JsonUtils.getInt(json, "data", 0));
+        if (json.has("components"))
+        {
+            com.cleanroommc.cleanroom.common.component.DataComponentPredicate.fromJson(JsonUtils.getJsonObject(json, "components")).applyTo(stack);
+        }
+        return stack;
     }
 
     public static class ShapedPrimer {
@@ -544,7 +557,20 @@ public class CraftingHelper {
         registerR("forge:ore_shaped", ShapedOreRecipe::factory);
         registerR("forge:ore_shapeless", ShapelessOreRecipe::factory);
 
-        registerI("minecraft:item", (context, json) -> Ingredient.fromStacks(CraftingHelper.getItemStackBasic(json, context)));
+        registerI("minecraft:item", (context, json) -> {
+            ItemStack stack = CraftingHelper.getItemStackBasic(json, context);
+            if (json.has("components"))
+            {
+                com.cleanroommc.cleanroom.common.component.DataComponentPredicate pred = com.cleanroommc.cleanroom.common.component.DataComponentPredicate.fromJson(JsonUtils.getJsonObject(json, "components"));
+                if (!json.has("data"))
+                {
+                    stack.setItemDamage(OreDictionary.WILDCARD_VALUE);
+                    pred.applyTo(stack);
+                }
+                return Ingredient.of(pred, stack);
+            }
+            return Ingredient.fromStacks(stack);
+        });
         registerI("minecraft:empty", (context, json) -> Ingredient.EMPTY);
         registerI("minecraft:item_nbt", (context, json) -> new IngredientNBT(CraftingHelper.getItemStack(json, context)));
         registerI("forge:ore_dict", (context, json) -> new OreIngredient(JsonUtils.getString(json, "ore")));
@@ -629,7 +655,7 @@ public class CraftingHelper {
     public static void rememberCodeRecipes()
     {
         ForgeRegistry<IRecipe> reg = (ForgeRegistry<IRecipe>)ForgeRegistries.RECIPES;
-        codeRecipeNames = new HashSet<ResourceLocation>(reg.getKeys());
+        codeRecipeNames = new java.util.HashSet<ResourceLocation>(reg.getKeys());
     }
 
     /**

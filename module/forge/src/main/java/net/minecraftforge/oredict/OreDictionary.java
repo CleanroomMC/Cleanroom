@@ -46,7 +46,6 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.common.MinecraftForge;
 
-import com.cleanroommc.cleanroom.common.id.PackedItems;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,6 +58,7 @@ import net.minecraftforge.registries.GameData;
 
 import javax.annotation.Nonnull;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class OreDictionary
 {
     private static final boolean DEBUG = false;
@@ -73,7 +73,11 @@ public class OreDictionary
     /**
      * Minecraft changed from -1 to Short.MAX_VALUE in 1.5 release for the "block wildcard". Use this in case it
      * changes again.
+     *
+     * @deprecated Cleanroom: legacy "any {@code legacy_variant}" sentinel for old recipe/ingredient entry points;
+     * prefer {@link net.minecraft.item.crafting.Ingredient#fromItems(Item...)} or component predicates.
      */
+    @Deprecated
     public static final int WILDCARD_VALUE = Short.MAX_VALUE;
 
     static {
@@ -644,7 +648,17 @@ public class OreDictionary
         {
             return false;
         }
-        return (target.getItem() == input.getItem() && ((target.getMetadata() == WILDCARD_VALUE && !strict) || target.getMetadata() == input.getMetadata()));
+        if (target.getItem() != input.getItem())
+        {
+            return false;
+        }
+        if (target.getMetadata() == WILDCARD_VALUE && !strict)
+        {
+            return true;
+        }
+        return target.getMetadata() == input.getMetadata()
+            && java.util.Objects.equals(target.getComponents().get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE), input.getComponents().get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE))
+            && java.util.Objects.equals(target.getComponents().get(com.cleanroommc.cleanroom.common.component.DataComponents.ITEM_STATE), input.getComponents().get(com.cleanroommc.cleanroom.common.component.DataComponents.ITEM_STATE));
     }
 
     //Convenience functions that make for cleaner code mod side. They all drill down to registerOre(String, int, ItemStack)
@@ -766,6 +780,6 @@ public class OreDictionary
         {
             return damage == WILDCARD_VALUE ? id : (id | ((damage + 1) << 16));
         }
-        return PackedItems.oreKey(item, damage);
+        return com.cleanroommc.cleanroom.common.id.PackedItems.oreKey(item, damage);
     }
 }
