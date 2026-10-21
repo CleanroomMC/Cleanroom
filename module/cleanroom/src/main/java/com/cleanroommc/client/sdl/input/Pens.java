@@ -74,11 +74,14 @@ public final class Pens {
                 boolean down = type == SDLEvents.SDL_EVENT_PEN_DOWN;
                 remember(touch.which()).position(touch.x(), touch.y(), touch.pen_state());
                 SDL.events()
-                    .post(down
-                            ? new PenEvent.Down(touch.which(), touch.windowID(), touch.timestamp(), touch.x(),
-                                touch.y(), touch.pen_state(), touch.eraser()
+                    .post(
+                        down
+                            ? new PenEvent.Down(
+                                touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
+                                touch.pen_state(), touch.eraser()
                             )
-                            : new PenEvent.Up(touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
+                            : new PenEvent.Up(
+                                touch.which(), touch.windowID(), touch.timestamp(), touch.x(), touch.y(),
                                 touch.pen_state(), touch.eraser()
                             )
                     );
@@ -87,16 +90,18 @@ public final class Pens {
                 SDL_PenMotionEvent motion = event.pmotion();
                 remember(motion.which()).position(motion.x(), motion.y(), motion.pen_state());
                 SDL.events()
-                    .post(new PenEvent.Motion(motion.which(), motion.windowID(), motion.timestamp(), motion.x(),
-                        motion.y(), motion.pen_state()
+                    .post(new PenEvent.Motion(
+                        motion.which(), motion.windowID(), motion.timestamp(), motion.x(), motion.y(),
+                        motion.pen_state()
                     ));
             }
             case SDLEvents.SDL_EVENT_PEN_BUTTON_DOWN, SDLEvents.SDL_EVENT_PEN_BUTTON_UP -> {
                 SDL_PenButtonEvent button = event.pbutton();
                 remember(button.which()).position(button.x(), button.y(), button.pen_state());
                 SDL.events()
-                    .post(new PenEvent.Button(button.which(), button.windowID(), button.timestamp(), button.x(),
-                        button.y(), button.pen_state(), button.button() & 0xFF, button.down()
+                    .post(new PenEvent.Button(
+                        button.which(), button.windowID(), button.timestamp(), button.x(), button.y(),
+                        button.pen_state(), button.button() & 0xFF, button.down()
                     ));
             }
             case SDLEvents.SDL_EVENT_PEN_AXIS -> {
@@ -109,12 +114,12 @@ public final class Pens {
                 pen.position(axis.x(), axis.y(), axis.pen_state());
                 pen.axis(kind, axis.value());
                 SDL.events()
-                    .post(new PenEvent.Axis(axis.which(), axis.windowID(), axis.timestamp(), axis.x(), axis.y(),
-                        axis.pen_state(), kind, axis.value()
+                    .post(new PenEvent.Axis(
+                        axis.which(), axis.windowID(), axis.timestamp(), axis.x(), axis.y(), axis.pen_state(), kind,
+                        axis.value()
                     ));
             }
-            default -> {
-            }
+            default -> { }
         }
     }
 

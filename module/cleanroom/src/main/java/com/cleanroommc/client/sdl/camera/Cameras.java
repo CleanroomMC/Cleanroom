@@ -89,8 +89,7 @@ public final class Cameras {
                 }
             }
             case SDLEvents.SDL_EVENT_CAMERA_DEVICE_DENIED -> SDL.events().post(new CameraEvent.Denied(id, timestampNs));
-            default -> {
-            }
+            default -> { }
         }
     }
 

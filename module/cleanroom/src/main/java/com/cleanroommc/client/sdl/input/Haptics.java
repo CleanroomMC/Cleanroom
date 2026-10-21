@@ -34,14 +34,6 @@ public final class Haptics {
 
     Haptics() { }
 
-    synchronized void ensure() {
-        if (started) {
-            return;
-        }
-        SDL.ensureSubsystem(SDLInit.SDL_INIT_HAPTIC);
-        started = true;
-    }
-
     public synchronized int[] ids() {
         ensure();
         IntBuffer ids = SDLHaptic.SDL_GetHaptics();
@@ -101,6 +93,14 @@ public final class Haptics {
             return null;
         }
         return track(handle);
+    }
+
+    synchronized void ensure() {
+        if (started) {
+            return;
+        }
+        SDL.ensureSubsystem(SDLInit.SDL_INIT_HAPTIC);
+        started = true;
     }
 
     synchronized void forget(Haptic haptic) {

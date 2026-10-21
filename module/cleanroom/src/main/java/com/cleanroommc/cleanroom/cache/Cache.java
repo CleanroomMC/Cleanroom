@@ -80,7 +80,8 @@ public final class Cache {
      */
     public static Cache global() {
         String override = System.getProperty("cleanroom.cache.root.global");
-        return at(override != null ? Path.of(override) : Path.of(System.getProperty("user.home"), ".cleanroom", "cache")
+        return at(
+            override != null ? Path.of(override) : Path.of(System.getProperty("user.home"), ".cleanroom", "cache")
         );
     }
 
@@ -114,8 +115,9 @@ public final class Cache {
      */
     public CacheRequest fromUrl(URI uri) {
         String scheme = uri.getScheme();
-        Preconditions.checkArgument("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme),
-            "Only HTTP(S) URLs can be cached: %s", uri
+        Preconditions.checkArgument(
+            "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme), "Only HTTP(S) URLs can be cached: %s",
+            uri
         );
         return new CacheRequest(this, new CacheRequest.Remote(uri));
     }
@@ -200,10 +202,8 @@ public final class Cache {
 
     // Rejecting backslashes and colons on every OS covers drive letters and UNC prefixes
     private Path resolve(String name) {
-        Preconditions.checkArgument(!name.isEmpty() &&
-                name.indexOf('\0') < 0 &&
-                name.indexOf('\\') < 0 &&
-                name.indexOf(':') < 0,
+        Preconditions.checkArgument(
+            !name.isEmpty() && name.indexOf('\0') < 0 && name.indexOf('\\') < 0 && name.indexOf(':') < 0,
             "Not a valid cache path: %s", name
         );
         Path path = root.resolve(name).normalize();
@@ -212,7 +212,8 @@ public final class Cache {
         // Entries keep their files beside them under these suffixes
         for (Path segment : root.relativize(path)) {
             String part = segment.toString();
-            Preconditions.checkArgument(!part.endsWith(META) && !part.endsWith(LOCK) && !part.endsWith(VERSIONS),
+            Preconditions.checkArgument(
+                !part.endsWith(META) && !part.endsWith(LOCK) && !part.endsWith(VERSIONS),
                 "Cache path uses a reserved suffix: %s", name
             );
         }

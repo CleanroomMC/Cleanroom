@@ -85,8 +85,7 @@ public class CompatibilityBenchmark {
         if (this.corpus.isEmpty()) {
             Path root = Path.of(Block.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             try (Stream<Path> files = Files.walk(root)) {
-                for (Path file : (Iterable<Path>) files.filter(f -> f.toString().endsWith(".class"))
-                    .sorted()::iterator) {
+                for (Path file : (Iterable<Path>) files.filter(f -> f.toString().endsWith(".class")).sorted()::iterator) {
                     all.add(Files.readAllBytes(file));
                 }
             }
@@ -127,19 +126,13 @@ public class CompatibilityBenchmark {
         }
         this.classes = all.toArray(new byte[0][]);
         this.hits = scanned.toArray(new byte[0][]);
-        System.out.printf("%d classes, %d at Java 8 or older, %d bytes on average, %d pass the prefilter, %d rewritten%n",
-            all.size(), java8, bytes / all.size(), scanned.size(), rewritten
+        System.out.printf(
+            "%d classes, %d at Java 8 or older, %d bytes on average, %d pass the prefilter, %d rewritten%n", all.size(),
+            java8, bytes / all.size(), scanned.size(), rewritten
         );
         for (int i = 0; i < FIXES.length; i++) {
             System.out.printf("  %s %d%n", FIXES[i], perFix[i]);
         }
-    }
-
-    private byte[] next(byte[][] from) {
-        if (this.next >= from.length) {
-            this.next = 0;
-        }
-        return from[this.next++];
     }
 
     @Benchmark
@@ -164,15 +157,14 @@ public class CompatibilityBenchmark {
     public byte[] asmRewrite() {
         ClassReader reader = new ClassReader(next(this.classes));
         ClassWriter writer = new ClassWriter(reader, 0);
-        reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
+        reader.accept(
+            new ClassVisitor(Opcodes.ASM9, writer) {
 
                 @Override
-                public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
-                    String[] exceptions
-                ) {
-                    return new MethodVisitor(Opcodes.ASM9,
-                        super.visitMethod(access, name, descriptor, signature, exceptions)
-                    ) { };
+                public MethodVisitor visitMethod(
+                    int access, String name, String descriptor, String signature, String[] exceptions) {
+                    return new MethodVisitor(
+                        Opcodes.ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) { };
                 }
 
             },
@@ -189,6 +181,13 @@ public class CompatibilityBenchmark {
     @Benchmark
     public int classFileParse() {
         return ClassFile.of().parse(next(this.classes)).constantPool().size();
+    }
+
+    private byte[] next(byte[][] from) {
+        if (this.next >= from.length) {
+            this.next = 0;
+        }
+        return from[this.next++];
     }
 
 }

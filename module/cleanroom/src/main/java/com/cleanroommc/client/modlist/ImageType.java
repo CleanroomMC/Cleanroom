@@ -72,21 +72,21 @@ public enum ImageType {
         try {
             BufferedImage image = this.readImage(data, resource);
             if (image == null) {
-                ModListConstants.LOG.warn("Failed to locate {} image resource '{}' for mod '{}'", this.type, resource,
-                    data.getModId()
+                ModListConstants.LOG.warn(
+                    "Failed to locate {} image resource '{}' for mod '{}'", this.type, resource, data.getModId()
                 );
                 return Optional.empty();
             }
             return this.validate(data, image) ? Optional.of(this.registerTexture(data, image)) : Optional.empty();
         } catch (ResourcePackFileNotFoundException e) {
             // Remove stack trace if getPackImage errored
-            ModListConstants.LOG.warn("Failed to locate {} image {} for mod '{}'", this.type, e.getMessage(),
-                data.getModId()
+            ModListConstants.LOG.warn(
+                "Failed to locate {} image {} for mod '{}'", this.type, e.getMessage(), data.getModId()
             );
             return Optional.empty();
         } catch (IOException e) {
-            ModListConstants.LOG.warn("Failed to load {} image resource '{}' for mod '{}'", this.type, resource,
-                data.getModId(), e
+            ModListConstants.LOG.warn(
+                "Failed to load {} image resource '{}' for mod '{}'", this.type, resource, data.getModId(), e
             );
             return Optional.empty();
         }

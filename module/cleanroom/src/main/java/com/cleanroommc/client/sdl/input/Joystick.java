@@ -176,15 +176,17 @@ public final class Joystick {
     }
 
     public Joystick rumble(float low, float high, int durationMs) {
-        SDL.check(SDLJoystick.SDL_RumbleJoystick(handle, Gamepad.toStrength(low), Gamepad.toStrength(high), durationMs),
+        SDL.check(
+            SDLJoystick.SDL_RumbleJoystick(handle, Gamepad.toStrength(low), Gamepad.toStrength(high), durationMs),
             "SDL_RumbleJoystick"
         );
         return this;
     }
 
     public Joystick rumbleTriggers(float left, float right, int durationMs) {
-        SDL.check(SDLJoystick.SDL_RumbleJoystickTriggers(handle, Gamepad.toStrength(left), Gamepad.toStrength(right),
-                durationMs
+        SDL.check(
+            SDLJoystick.SDL_RumbleJoystickTriggers(
+                handle, Gamepad.toStrength(left), Gamepad.toStrength(right), durationMs
             ),
             "SDL_RumbleJoystickTriggers"
         );

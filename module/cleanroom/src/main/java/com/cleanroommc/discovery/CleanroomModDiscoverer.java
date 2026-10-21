@@ -112,8 +112,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return INSTANCE;
     }
 
-    private static void addContainedDepsToClasspath(LaunchClassLoader classLoader, Attributes attributes,
-        File containedDepsDir
+    private static void addContainedDepsToClasspath(
+        LaunchClassLoader classLoader, Attributes attributes, File containedDepsDir
     ) throws MalformedURLException {
         String containedDeps = attributes.getValue(LibraryManager.MODCONTAINSDEPS);
         if (containedDeps == null || containedDeps.isEmpty()) {
@@ -138,17 +138,15 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         try {
             coreModDir = coreModDir.getCanonicalFile();
         } catch (IOException e) {
-            throw new RuntimeException(String.format("Unable to canonicalize the coremod dir at %s",
-                    minecraftDirectory.getName()
-                ),
-                e
+            throw new RuntimeException(
+                String.format("Unable to canonicalize the coremod dir at %s", minecraftDirectory.getName()), e
             );
         }
         if (!coreModDir.exists()) {
             coreModDir.mkdir();
         } else if (!coreModDir.isDirectory()) {
-            throw new RuntimeException(String.format("Found a coremod file in %s that's not a directory",
-                minecraftDirectory.getName()
+            throw new RuntimeException(String.format(
+                "Found a coremod file in %s that's not a directory", minecraftDirectory.getName()
             ));
         }
         return coreModDir;
@@ -245,9 +243,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
-    public IdentifiedMods identifyMods(ModClassLoader modClassLoader, List<String> injectedContainers,
-        List<ModContainer> builtInMods
-    ) {
+    public IdentifiedMods identifyMods(
+        ModClassLoader modClassLoader, List<String> injectedContainers, List<ModContainer> builtInMods) {
         List<ModCandidate> modCandidates = new ArrayList<>();
         List<File> nonModLibs = new ArrayList<>();
 
@@ -306,7 +303,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             }
             if (CoreModManager.loadCoreModFromDiscoveredJar(Launch.classLoader, coremod, discovered.file())) {
                 CleanroomLog.get()
-                    .warn("{} declares both a MixinTweaker TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.",
+                    .warn(
+                        "{} declares both a MixinTweaker TweakClass and FMLCorePlugin. Forge skips the coremod in this case and {} was loaded by Cleanroom.",
                         discovered.file().getName(), coremod
                     );
             } else {
@@ -316,7 +314,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (discovered.coreModContainsMod()) {
                 CoreModManager.getReparseableCoremods().add(discovered.file().getName());
                 CleanroomLog.get()
-                    .warn("Added {} back to reparseable collection, ready to be identified as a mod.",
+                    .warn(
+                        "Added {} back to reparseable collection, ready to be identified as a mod.",
                         discovered.file().getName()
                     );
             }
@@ -336,13 +335,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 if (isArchive(file)) {
                     scan(file, true);
                 }
-            } catch (URISyntaxException ignored) {
-            }
+            } catch (URISyntaxException ignored) { }
         }
 
         long elapsedMillis = (System.nanoTime() - startTime) / 1_000_000L;
         CleanroomLog.get()
-            .info("Finished discovering mods. Found {} discovered mod ids in {} ms.", modIdToFiles.keySet().size(),
+            .info(
+                "Finished discovering mods. Found {} discovered mod ids in {} ms.", modIdToFiles.keySet().size(),
                 elapsedMillis
             );
         CleanroomLog.get().debug("Discovered mod ids: {}", String.join(", ", modIdToFiles.keySet()));
@@ -355,8 +354,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             return;
         }
         if (!isArchive(absolute)) {
-            DiscoveredMod info = new DiscoveredMod(absolute, null, List.of(), ManifestAttributes.CLEANROOMMODTYPE,
-                false, false, false, null, null, onClasspath, Map.of()
+            DiscoveredMod info = new DiscoveredMod(
+                absolute, null, List.of(), ManifestAttributes.CLEANROOMMODTYPE, false, false, false, null, null,
+                onClasspath, Map.of()
             );
             discoveredFiles.put(absolute, info);
             return;
@@ -414,9 +414,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             CleanroomLog.get().error("Failed to read mod metadata from {}", absolute.getName(), e);
         }
 
-        DiscoveredMod info = new DiscoveredMod(absolute, attributes, List.copyOf(modIds), modType,
-            hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker, onClasspath,
-            accessTransformers
+        DiscoveredMod info = new DiscoveredMod(
+            absolute, attributes, List.copyOf(modIds), modType, hasMixinManifestAttributes, mixinTweakerForceMod,
+            coreModContainsMod, coremod, tweaker, onClasspath, accessTransformers
         );
         discoveredFiles.put(absolute, info);
 
@@ -425,9 +425,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
-    private void discoverCoreMod(LaunchClassLoader classLoader, FMLTweaker tweaker, DiscoveredMod discoveredMod,
-        File containedDepsDir
-    ) {
+    private void discoverCoreMod(
+        LaunchClassLoader classLoader, FMLTweaker tweaker, DiscoveredMod discoveredMod, File containedDepsDir) {
         File file = discoveredMod.file();
         CleanroomLog.get().debug("Examining for coremod candidacy {}", file.getName());
         Attributes attributes;
@@ -442,7 +441,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             String modSide = attributes.getValue(LibraryManager.MODSIDE);
             if (modSide != null && !"BOTH".equals(modSide) && !modSide.equals(CleanroomEnvironment.side().name())) {
                 CleanroomLog.get()
-                    .debug("Skipping {}, as we're on {} side and the mod is on {} side", file.getName(),
+                    .debug(
+                        "Skipping {}, as we're on {} side and the mod is on {} side", file.getName(),
                         CleanroomEnvironment.side(), modSide
                     );
                 CoreModManager.getIgnoredMods().add(file.getName());
@@ -458,8 +458,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
                 CleanroomLog.get().info("Cascading tweaker {} from {}", discoveredMod.tweaker(), file.getName());
                 Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(attributes.getValue("TweakOrder")));
-                CoreModManager.injectDiscoveredCascadingTweaker(file, discoveredMod.tweaker(), classLoader, tweaker,
-                    sortOrder == null ? 0 : sortOrder
+                CoreModManager.injectDiscoveredCascadingTweaker(
+                    file, discoveredMod.tweaker(), classLoader, tweaker, sortOrder == null ? 0 : sortOrder
                 );
                 if (discoveredMod.mixinTweakerForceMod() || discoveredMod.coreModContainsMod()) {
                     CoreModManager.getReparseableCoremods().add(file.getName());
@@ -472,7 +472,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (!ManifestAttributes.FORGEMODTYPE.equals(modType) &&
                 !ManifestAttributes.CLEANROOMMODTYPE.equals(modType)) {
                 CleanroomLog.get()
-                    .warn("Adding {} to the list of things to skip. It is not an FML or Cleanroom mod, it is of type: {}",
+                    .warn(
+                        "Adding {} to the list of things to skip. It is not an FML or Cleanroom mod, it is of type: {}",
                         file.getName(), modType
                     );
                 CoreModManager.getIgnoredMods().add(file.getName());
@@ -486,7 +487,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (isCorePluginBlacklisted(fmlCorePlugin)) {
                 CoreModManager.getIgnoredMods().add(file.getName());
                 CleanroomLog.get()
-                    .warn("Loading plugin {} for mod {} is in the forge_early.cfg blacklist and won't be loaded.",
+                    .warn(
+                        "Loading plugin {} for mod {} is in the forge_early.cfg blacklist and won't be loaded.",
                         fmlCorePlugin, file.getName()
                     );
                 return;
@@ -538,17 +540,20 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
         if (!derpMods.isEmpty()) {
             CleanroomLog.get()
-                .error("Cleanroom detected files with .jar.zip as the extension. These are usually failed downloads or jars renamed as zips. Download them again as .jar files before continuing."
+                .error(
+                    "Cleanroom detected files with .jar.zip as the extension. These are usually failed downloads or jars renamed as zips. Download them again as .jar files before continuing."
                 );
             for (Path derpMod : derpMods) {
                 CleanroomLog.get().error("Problem file: {}", derpMod.getFileName());
             }
-            throw new RuntimeException("Cleanroom detected files with .jar.zip as the extension! Check the logs for more information!"
+            throw new RuntimeException(
+                "Cleanroom detected files with .jar.zip as the extension! Check the logs for more information!"
             );
         }
         if (!extractedPaths.isEmpty()) {
             CleanroomLog.get()
-                .error("Cleanroom detected META-INF directories. These look like extracted mod jars and cannot be loaded correctly."
+                .error(
+                    "Cleanroom detected META-INF directories. These look like extracted mod jars and cannot be loaded correctly."
                 );
             CleanroomLog.get()
                 .error("Remove these extracted directories and add the jar directly into the mods directory.");
@@ -571,7 +576,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
             } catch (LoaderException le) {
                 CleanroomLog.get()
-                    .warn("Identified a problem with the mod candidate {}, ignoring this source",
+                    .warn(
+                        "Identified a problem with the mod candidate {}, ignoring this source",
                         candidate.getModContainer(), le
                     );
             }
@@ -587,8 +593,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
-    private void addClasspathCandidates(ModClassLoader modClassLoader, List<ModCandidate> modCandidates, Set<File> seen
-    ) {
+    private void addClasspathCandidates(
+        ModClassLoader modClassLoader, List<ModCandidate> modCandidates, Set<File> seen) {
         File[] minecraftSources = modClassLoader.getParentSources();
         File forgeLocation = FMLForgePlugin.forgeLocation == null ? null : normalize(FMLForgePlugin.forgeLocation);
         List<File> devPaths = new ArrayList<>();
@@ -605,7 +611,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                     CleanroomLog.get().trace("Skipping library file {}", source.getAbsolutePath());
                 } else {
                     CleanroomLog.get()
-                        .debug("Found a minecraft related file at {}, examining for mod candidates",
+                        .debug(
+                            "Found a minecraft related file at {}, examining for mod candidates",
                             source.getAbsolutePath()
                         );
                     addCandidate(modCandidates, seen, new ModCandidate(source, source, ContainerType.JAR, false, true));
@@ -616,7 +623,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 addCandidate(modCandidates, seen, new ModCandidate(source, source, ContainerType.DIR, false, true));
             } else if (source.isDirectory()) {
                 CleanroomLog.get()
-                    .debug("Found a minecraft related directory at {}, collecting as developing mod",
+                    .debug(
+                        "Found a minecraft related directory at {}, collecting as developing mod",
                         source.getAbsolutePath()
                     );
                 devPaths.add(source);
@@ -738,8 +746,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                         }
                     }
                 }
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
         }
     }
 

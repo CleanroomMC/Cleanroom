@@ -163,18 +163,6 @@ public final class CompatibilityTransformer {
 
     private CompatibilityTransformer() { }
 
-    private static int bits(String... needles) {
-        int bits = 0;
-        for (String needle : needles) {
-            bits |= 1 << Arrays.asList(NEEDLES).indexOf(needle);
-        }
-        return bits;
-    }
-
-    private static int slot(int length, byte first, byte last) {
-        return (length * 31 + first) * 31 + last & SLOT_COUNT - 1;
-    }
-
     public static void install() {
         if (CompatibilityConfig.reflectFields) {
             Index.get().enableFinalFieldMutation();
@@ -232,40 +220,6 @@ public final class CompatibilityTransformer {
         }
     }
 
-    private static boolean isFromCleanroomMod() {
-        LoadingContext context = LoadingContext.current();
-        Manifest manifest = context == null ? null : context.manifest();
-        return manifest != null &&
-            ManifestAttributes.CLEANROOMMODTYPE.equals(manifest.getMainAttributes().getValue(ManifestAttributes.MODTYPE)
-            );
-    }
-
-    /**
-     * Most classes that name {@link java.lang.reflect.Field} never call its accessors, so this resolves the
-     * constant pool through ASM's own index and looks for a method reference that {@link Fixer} would redirect.
-     */
-    private static boolean accessesFields(ClassReader reader, byte[] bytes) {
-        char[] buffer = new char[reader.getMaxStringLength()];
-        for (int entry = 1; entry < reader.getItemCount(); entry++) {
-            // ASM gives the offset just past an entry's tag, or 0 for the unused slot after a 2 slotter
-            int entryOffset = reader.getItem(entry);
-            if (entryOffset == 0 ||
-                bytes[entryOffset - 1] != PoolEntry.TAG_METHODREF ||
-                !FIELD.equals(reader.readClass(entryOffset, buffer))) {
-                continue;
-            }
-            // A Methodref holds an U2 class index, U2 NameAndType index
-            // Name => Descriptor
-            int nameAndTypeOffset = reader.getItem(reader.readUnsignedShort(entryOffset + 2));
-            String name = reader.readUTF8(nameAndTypeOffset, buffer);
-            if ((name.startsWith("get") || name.startsWith("set")) &&
-                reader.readUTF8(nameAndTypeOffset + 2, buffer).startsWith("(Ljava/lang/Object;")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Walks the CP once and returns the fixes whose signatures all appear in it.
      * Each entry is an U1 tag followed by a body.
@@ -283,8 +237,8 @@ public final class CompatibilityTransformer {
                     offset += 3;
                     int needle = NEEDLE_SLOTS[slot(length, bytes[offset], bytes[offset + length - 1])] - 1;
                     if (needle >= 0 &&
-                        Arrays.equals(bytes, offset, offset + length, NEEDLE_BYTES[needle], 0,
-                            NEEDLE_BYTES[needle].length
+                        Arrays.equals(
+                            bytes, offset, offset + length, NEEDLE_BYTES[needle], 0, NEEDLE_BYTES[needle].length
                         )) {
                         found |= 1 << needle;
                     }
@@ -355,6 +309,53 @@ public final class CompatibilityTransformer {
             fixes |= JAKARTA;
         }
         return fixes;
+    }
+
+    private static int bits(String... needles) {
+        int bits = 0;
+        for (String needle : needles) {
+            bits |= 1 << Arrays.asList(NEEDLES).indexOf(needle);
+        }
+        return bits;
+    }
+
+    private static int slot(int length, byte first, byte last) {
+        return (length * 31 + first) * 31 + last & SLOT_COUNT - 1;
+    }
+
+    private static boolean isFromCleanroomMod() {
+        LoadingContext context = LoadingContext.current();
+        Manifest manifest = context == null ? null : context.manifest();
+        return manifest != null &&
+            ManifestAttributes.CLEANROOMMODTYPE.equals(
+                manifest.getMainAttributes().getValue(ManifestAttributes.MODTYPE)
+            );
+    }
+
+    /**
+     * Most classes that name {@link java.lang.reflect.Field} never call its accessors, so this resolves the
+     * constant pool through ASM's own index and looks for a method reference that {@link Fixer} would redirect.
+     */
+    private static boolean accessesFields(ClassReader reader, byte[] bytes) {
+        char[] buffer = new char[reader.getMaxStringLength()];
+        for (int entry = 1; entry < reader.getItemCount(); entry++) {
+            // ASM gives the offset just past an entry's tag, or 0 for the unused slot after a 2 slotter
+            int entryOffset = reader.getItem(entry);
+            if (entryOffset == 0 ||
+                bytes[entryOffset - 1] != PoolEntry.TAG_METHODREF ||
+                !FIELD.equals(reader.readClass(entryOffset, buffer))) {
+                continue;
+            }
+            // A Methodref holds an U2 class index, U2 NameAndType index
+            // Name => Descriptor
+            int nameAndTypeOffset = reader.getItem(reader.readUnsignedShort(entryOffset + 2));
+            String name = reader.readUTF8(nameAndTypeOffset, buffer);
+            if ((name.startsWith("get") || name.startsWith("set")) &&
+                reader.readUTF8(nameAndTypeOffset + 2, buffer).startsWith("(Ljava/lang/Object;")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -481,8 +482,8 @@ public final class CompatibilityTransformer {
         }
 
         @Override
-        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces
-        ) {
+        public void visit(
+            int version, int access, String name, String signature, String superName, String[] interfaces) {
             if (SCRIPT_ENGINE_MANAGER.equals(superName)) {
                 this.fixes &= ~SCRIPT_ENGINE;
             }
@@ -490,9 +491,8 @@ public final class CompatibilityTransformer {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
-            String[] exceptions
-        ) {
+        public MethodVisitor visitMethod(
+            int access, String name, String descriptor, String signature, String[] exceptions) {
             MethodVisitor visitor = super.visitMethod(access, name, descriptor, signature, exceptions);
             return visitor == null || (this.fixes & ~REMAPS) == 0 ? visitor : new MethodFixer(visitor, this);
         }
@@ -524,24 +524,6 @@ public final class CompatibilityTransformer {
             this.fixes = fixer.fixes;
         }
 
-        private void release() {
-            int held = this.held;
-            if (held == NONE) {
-                return;
-            }
-            this.held = NONE;
-            if (held == TO_ARRAY) {
-                super.visitMethodInsn(this.heldOpcode, this.heldOwner, "toArray", TO_ARRAY_DESC, this.heldInterface);
-            } else {
-                super.visitTypeInsn(Opcodes.CHECKCAST, URL_CLASS_LOADER);
-            }
-        }
-
-        private void hook(String name, String descriptor) {
-            this.fixer.dirty = true;
-            super.visitMethodInsn(Opcodes.INVOKESTATIC, HOOKS, name, descriptor, false);
-        }
-
         @Override
         public void visitTypeInsn(int opcode, String type) {
             // Only a cast to an array of objects or of arrays has a toArray(T[]) form
@@ -557,8 +539,9 @@ public final class CompatibilityTransformer {
                 this.grewStack = true;
                 super.visitInsn(Opcodes.ICONST_0);
                 super.visitTypeInsn(Opcodes.ANEWARRAY, Type.getType(type.substring(1)).getInternalName());
-                super.visitMethodInsn(this.heldOpcode, this.heldOwner, "toArray",
-                    "([Ljava/lang/Object;)[Ljava/lang/Object;", this.heldInterface
+                super.visitMethodInsn(
+                    this.heldOpcode, this.heldOwner, "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;",
+                    this.heldInterface
                 );
                 super.visitTypeInsn(opcode, type);
                 return;
@@ -622,8 +605,9 @@ public final class CompatibilityTransformer {
                 case SCRIPT_ENGINE_MANAGER -> {
                     if ((fixes & SCRIPT_ENGINE) != 0 && name.equals("<init>")) {
                         this.fixer.dirty = true;
-                        super.visitMethodInsn(opcode, "com/cleanroommc/loader/scripting/CleanroomScriptEngineManager",
-                            name, descriptor, false
+                        super.visitMethodInsn(
+                            opcode, "com/cleanroommc/loader/scripting/CleanroomScriptEngineManager", name, descriptor,
+                            false
                         );
                         return;
                     }
@@ -631,8 +615,8 @@ public final class CompatibilityTransformer {
                 case SUN_REFLECTION_CLASS -> {
                     if ((fixes & SUN_REFLECTION) != 0) {
                         this.fixer.dirty = true;
-                        super.visitMethodInsn(opcode, "com/cleanroommc/cleanroom/compatibility/SunReflection", name,
-                            descriptor, false
+                        super.visitMethodInsn(
+                            opcode, "com/cleanroommc/cleanroom/compatibility/SunReflection", name, descriptor, false
                         );
                         return;
                     }
@@ -649,8 +633,7 @@ public final class CompatibilityTransformer {
                         return;
                     }
                 }
-                default -> {
-                }
+                default -> { }
             }
             if ((fixes & TO_ARRAY_CAST) != 0 &&
                 name.equals("toArray") &&
@@ -697,9 +680,8 @@ public final class CompatibilityTransformer {
         }
 
         @Override
-        public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle,
-            Object... bootstrapMethodArguments
-        ) {
+        public void visitInvokeDynamicInsn(
+            String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
             release();
             super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         }
@@ -753,10 +735,28 @@ public final class CompatibilityTransformer {
         }
 
         @Override
-        public AnnotationVisitor visitInsnAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible
-        ) {
+        public AnnotationVisitor visitInsnAnnotation(
+            int typeRef, TypePath typePath, String descriptor, boolean visible) {
             release();
             return super.visitInsnAnnotation(typeRef, typePath, descriptor, visible);
+        }
+
+        private void release() {
+            int held = this.held;
+            if (held == NONE) {
+                return;
+            }
+            this.held = NONE;
+            if (held == TO_ARRAY) {
+                super.visitMethodInsn(this.heldOpcode, this.heldOwner, "toArray", TO_ARRAY_DESC, this.heldInterface);
+            } else {
+                super.visitTypeInsn(Opcodes.CHECKCAST, URL_CLASS_LOADER);
+            }
+        }
+
+        private void hook(String name, String descriptor) {
+            this.fixer.dirty = true;
+            super.visitMethodInsn(Opcodes.INVOKESTATIC, HOOKS, name, descriptor, false);
         }
 
     }

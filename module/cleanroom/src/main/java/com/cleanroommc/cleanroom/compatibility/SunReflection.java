@@ -46,15 +46,16 @@ public final class SunReflection {
     public static void ensureMemberAccess(Class<?> currentClass, Class<?> memberClass, Object target, int modifiers)
         throws IllegalAccessException {
         if (!verifyMemberAccess(currentClass, memberClass, target, modifiers)) {
-            throw new IllegalAccessException("Class " + currentClass.getName() + " can not access a member of class " +
-                    memberClass.getName() + " with modifiers \"" + Modifier.toString(modifiers) + "\""
+            throw new IllegalAccessException(
+                "Class " + currentClass.getName() + " can not access a member of class " + memberClass.getName() +
+                    " with modifiers \"" + Modifier.toString(modifiers) + "\""
             );
         }
     }
 
     // Java 8's rules, which predate modules and nestmates.
-    public static boolean verifyMemberAccess(Class<?> currentClass, Class<?> memberClass, Object target, int modifiers
-    ) {
+    public static boolean verifyMemberAccess(
+        Class<?> currentClass, Class<?> memberClass, Object target, int modifiers) {
         if (currentClass == memberClass) {
             return true;
         }
@@ -79,19 +80,6 @@ public final class SunReflection {
             isSubclassOf(target.getClass(), currentClass);
     }
 
-    private static boolean isSamePackage(Class<?> a, Class<?> b) {
-        return a.getClassLoader() == b.getClassLoader() && a.getPackageName().equals(b.getPackageName());
-    }
-
-    private static boolean isSubclassOf(Class<?> clazz, Class<?> superclass) {
-        for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
-            if (current == superclass) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static synchronized void registerFieldsToFilter(Class<?> containingClass, String... fieldNames) { }
 
     public static synchronized void registerMethodsToFilter(Class<?> containingClass, String... methodNames) { }
@@ -105,6 +93,19 @@ public final class SunReflection {
     }
 
     public static boolean isCallerSensitive(Method method) {
+        return false;
+    }
+
+    private static boolean isSamePackage(Class<?> a, Class<?> b) {
+        return a.getClassLoader() == b.getClassLoader() && a.getPackageName().equals(b.getPackageName());
+    }
+
+    private static boolean isSubclassOf(Class<?> clazz, Class<?> superclass) {
+        for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
+            if (current == superclass) {
+                return true;
+            }
+        }
         return false;
     }
 

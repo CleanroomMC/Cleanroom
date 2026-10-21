@@ -37,9 +37,8 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
     private boolean paused;
     private String pausedText;
 
-    public SuggestionUpdater(SuggestionList suggestionList, TabCompleter tabCompleter, GuiTextField field,
-        boolean commandBlockMode
-    ) {
+    public SuggestionUpdater(
+        SuggestionList suggestionList, TabCompleter tabCompleter, GuiTextField field, boolean commandBlockMode) {
         this.suggestionList = suggestionList;
         this.tabCompleter = tabCompleter;
         this.field = field;
@@ -116,8 +115,8 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         // Client-side commands
         ClientCommandHandler.instance.autoComplete(prefix);
         // Server-side completions (command-block GUIs flag a target block, mirroring vanilla's TabCompleter)
-        mc.player.connection.sendPacket(new CPacketTabComplete(prefix, this.tabCompleter.getTargetBlockPos(),
-            this.commandBlockMode
+        mc.player.connection.sendPacket(new CPacketTabComplete(
+            prefix, this.tabCompleter.getTargetBlockPos(), this.commandBlockMode
         ));
         this.pendingReplies++;
     }

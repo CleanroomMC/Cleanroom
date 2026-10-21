@@ -44,8 +44,7 @@ public class CleanMixModContainer extends DummyModContainer {
                 path = path.substring(0, index);
             }
             return new File(new URI(path)).getAbsoluteFile();
-        } catch (Exception ignore) {
-        }
+        } catch (Exception ignore) { }
         return FMLSanityChecker.fmlLocation;
     }
 
@@ -61,8 +60,7 @@ public class CleanMixModContainer extends DummyModContainer {
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (IOException ignored) {
-                }
+                } catch (IOException ignored) { }
             }
         }
     }

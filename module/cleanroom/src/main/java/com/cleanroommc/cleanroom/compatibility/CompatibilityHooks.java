@@ -270,12 +270,17 @@ public final class CompatibilityHooks {
         }
     }
 
+    public static <V> void addCallback(ListenableFuture<V> future, FutureCallback<? super V> callback) {
+        Futures.addCallback(future, callback, MoreExecutors.directExecutor());
+    }
+
     private static UUID oldFromString(String uuid) {
         String[] components = uuid.split("-");
         if (components.length != 5) {
             throw new IllegalArgumentException("Invalid UUID string: " + uuid);
         }
-        FMLLog.log.error("UUID [{}] is being processed with the approach from Java 8 for compatibility's sake. This UUID is malformed!",
+        FMLLog.log.error(
+            "UUID [{}] is being processed with the approach from Java 8 for compatibility's sake. This UUID is malformed!",
             uuid
         );
         for (int i = 0; i < 5; i++) {
@@ -292,10 +297,6 @@ public final class CompatibilityHooks {
         leastSigBits |= Long.decode(components[4]);
 
         return new UUID(mostSigBits, leastSigBits);
-    }
-
-    public static <V> void addCallback(ListenableFuture<V> future, FutureCallback<? super V> callback) {
-        Futures.addCallback(future, callback, MoreExecutors.directExecutor());
     }
 
     /**

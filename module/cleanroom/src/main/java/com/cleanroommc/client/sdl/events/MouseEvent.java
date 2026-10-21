@@ -113,9 +113,8 @@ public abstract class MouseEvent extends Event {
         private final boolean pressed;
         private final int clicks;
 
-        public Button(int mouse, int windowId, long timestampNs, float x, float y, int rawButton, boolean pressed,
-            int clicks
-        ) {
+        public Button(
+            int mouse, int windowId, long timestampNs, float x, float y, int rawButton, boolean pressed, int clicks) {
             super(mouse, windowId, timestampNs, x, y);
             this.rawButton = rawButton;
             this.pressed = pressed;
@@ -162,9 +161,9 @@ public abstract class MouseEvent extends Event {
         private final int integerVertical;
         private final boolean flipped;
 
-        public Wheel(int mouse, int windowId, long timestampNs, float x, float y, float horizontal, float vertical,
-            int integerHorizontal, int integerVertical, boolean flipped
-        ) {
+        public Wheel(
+            int mouse, int windowId, long timestampNs, float x, float y, float horizontal, float vertical,
+            int integerHorizontal, int integerVertical, boolean flipped) {
             super(mouse, windowId, timestampNs, x, y);
             this.horizontal = horizontal;
             this.vertical = vertical;

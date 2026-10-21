@@ -47,7 +47,8 @@ public class ModListTextField extends GuiTextField {
 
         boolean bordered = this.getEnableBackgroundDrawing();
         if (bordered) {
-            drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1,
+            drawRect(
+                this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1,
                 this.isFocused() ? 0xFFFFFFFF : 0xFFA0A0A0
             );
             drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xFF000000);
@@ -58,8 +59,8 @@ public class ModListTextField extends GuiTextField {
         int cursorPosRel = this.cursorPosition - this.lineScrollOffset;
         int selectionEndRel = this.selectionEnd - this.lineScrollOffset;
 
-        String visibleText = this.fontRenderer.trimStringToWidth(this.getText().substring(this.lineScrollOffset),
-            this.getWidth()
+        String visibleText = this.fontRenderer.trimStringToWidth(
+            this.getText().substring(this.lineScrollOffset), this.getWidth()
         );
 
         boolean cursorVisible = cursorPosRel >= 0 && cursorPosRel <= visibleText.length();
@@ -76,8 +77,8 @@ public class ModListTextField extends GuiTextField {
 
         if (!visibleText.isEmpty()) {
             String beforeText = cursorVisible ? visibleText.substring(0, cursorPosRel) : visibleText;
-            textX = this.fontRenderer.drawStringWithShadow(this.formatText(beforeText, this.lineScrollOffset),
-                textStartX, textY, color
+            textX = this.fontRenderer.drawStringWithShadow(
+                this.formatText(beforeText, this.lineScrollOffset), textStartX, textY, color
             );
         }
 
@@ -94,8 +95,8 @@ public class ModListTextField extends GuiTextField {
 
         if (!visibleText.isEmpty() && cursorVisible && cursorPosRel < visibleText.length()) {
             String afterText = visibleText.substring(cursorPosRel);
-            textX = this.fontRenderer.drawStringWithShadow(this.formatText(afterText, this.cursorPosition), textX,
-                textY, color
+            textX = this.fontRenderer.drawStringWithShadow(
+                this.formatText(afterText, this.cursorPosition), textX, textY, color
             );
         }
 
@@ -105,8 +106,8 @@ public class ModListTextField extends GuiTextField {
 
         if (!textTruncated && !this.suggestion.isEmpty() && !SDLHooks.composing()) {
             int suggestionDrawX = this.getText().isEmpty() ? cursorX : cursorX - 1;
-            String suggestion = this.fontRenderer.trimStringToWidth(this.suggestion,
-                textStartX + this.getWidth() - suggestionDrawX
+            String suggestion = this.fontRenderer.trimStringToWidth(
+                this.suggestion, textStartX + this.getWidth() - suggestionDrawX
             );
             this.fontRenderer.drawStringWithShadow(suggestion, suggestionDrawX, textY, 0x808080);
         }
@@ -126,10 +127,6 @@ public class ModListTextField extends GuiTextField {
         }
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    private String formatText(String text, int cursorPos) {
-        return this.formatter != null ? this.formatter.apply(text, cursorPos) : text;
     }
 
     @Override
@@ -154,6 +151,10 @@ public class ModListTextField extends GuiTextField {
 
     public void setFormatter(@Nullable BiFunction<String, Integer, String> formatter) {
         this.formatter = formatter;
+    }
+
+    private String formatText(String text, int cursorPos) {
+        return this.formatter != null ? this.formatter.apply(text, cursorPos) : text;
     }
 
 }

@@ -32,8 +32,8 @@ public final class Display {
     }
 
     static DisplayMode snapshot(SDL_DisplayMode mode) {
-        return new DisplayMode(mode.displayID(), mode.format(), mode.w(), mode.h(), mode.pixel_density(),
-            mode.refresh_rate()
+        return new DisplayMode(
+            mode.displayID(), mode.format(), mode.w(), mode.h(), mode.pixel_density(), mode.refresh_rate()
         );
     }
 
@@ -87,6 +87,16 @@ public final class Display {
         }
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Display display && display.id == id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     DisplayMode match(int width, int height, float refreshRate) {
         DisplayMode best = null;
         for (DisplayMode mode : modes()) {
@@ -113,16 +123,6 @@ public final class Display {
             }
             return new Bounds(rect.x(), rect.y(), rect.w(), rect.h());
         }
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return other instanceof Display display && display.id == id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
     }
 
     public record Bounds(int x, int y, int width, int height) { }

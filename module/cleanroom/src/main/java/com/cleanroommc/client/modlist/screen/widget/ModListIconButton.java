@@ -31,21 +31,19 @@ public class ModListIconButton extends ModListTextButton {
         this(x, y, u, v, 20, "", onPress);
     }
 
-    public ModListIconButton(int x, int y, int u, int v, int width, int height,
-        @Nullable Consumer<ModListTextButton> onPress
-    ) {
+    public ModListIconButton(
+        int x, int y, int u, int v, int width, int height, @Nullable Consumer<ModListTextButton> onPress) {
         this(x, y, u, v, width, height, "", onPress);
     }
 
-    public ModListIconButton(int x, int y, int u, int v, int width, String label,
-        @Nullable Consumer<ModListTextButton> onPress
-    ) {
+    public ModListIconButton(
+        int x, int y, int u, int v, int width, String label, @Nullable Consumer<ModListTextButton> onPress) {
         this(x, y, u, v, width, 20, label, onPress);
     }
 
-    public ModListIconButton(int x, int y, int u, int v, int width, int height, String label,
-        @Nullable Consumer<ModListTextButton> onPress
-    ) {
+    public ModListIconButton(
+        int x, int y, int u, int v, int width, int height, String label,
+        @Nullable Consumer<ModListTextButton> onPress) {
         super(x, y, width, height, label, onPress);
         this.u = u;
         this.v = v;

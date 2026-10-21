@@ -165,9 +165,8 @@ public final class CleanMixHooks {
         }
     }
 
-    private static boolean findAndAddMixinMetadata(StringBuilder mixinMetadataBuilder, String className,
-        ClassInfo classInfo
-    ) {
+    private static boolean findAndAddMixinMetadata(
+        StringBuilder mixinMetadataBuilder, String className, ClassInfo classInfo) {
         Set<IMixinInfo> mixinInfos = classInfo.getMixins();
         if (!mixinInfos.isEmpty()) {
             mixinMetadataBuilder.append("\n\t");

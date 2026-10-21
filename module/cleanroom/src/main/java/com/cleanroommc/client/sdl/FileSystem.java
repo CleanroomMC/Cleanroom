@@ -73,8 +73,9 @@ public final class FileSystem {
             if (!SDLFileSystem.SDL_GetPathInfo(path, nativeInfo)) {
                 return Optional.empty();
             }
-            return Optional.of(new PathInfo(PathKind.of(nativeInfo.type()), nativeInfo.size(), nativeInfo.create_time(),
-                nativeInfo.modify_time(), nativeInfo.access_time()
+            return Optional.of(new PathInfo(
+                PathKind.of(nativeInfo.type()), nativeInfo.size(), nativeInfo.create_time(), nativeInfo.modify_time(),
+                nativeInfo.access_time()
             ));
         }
     }

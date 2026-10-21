@@ -38,15 +38,6 @@ public final class Gamepads {
 
     Gamepads() { }
 
-    synchronized void ensure() {
-        if (started) {
-            return;
-        }
-        SDL.ensureSubsystem(SDLInit.SDL_INIT_GAMEPAD);
-        started = true;
-        openConnected();
-    }
-
     public synchronized List<Gamepad> list() {
         ensure();
         return List.copyOf(pads.values());
@@ -60,6 +51,15 @@ public final class Gamepads {
     public synchronized Gamepad byId(int instanceId) {
         ensure();
         return pads.get(instanceId);
+    }
+
+    synchronized void ensure() {
+        if (started) {
+            return;
+        }
+        SDL.ensureSubsystem(SDLInit.SDL_INIT_GAMEPAD);
+        started = true;
+        openConnected();
     }
 
     /**
@@ -102,8 +102,9 @@ public final class Gamepads {
                 }
                 boolean down = type != SDLEvents.SDL_EVENT_GAMEPAD_TOUCHPAD_UP;
                 SDL.events()
-                    .post(new GamepadEvent.Touchpad(touch.timestamp(), pad, touch.touchpad(), touch.finger(), touch.x(),
-                        touch.y(), touch.pressure(), down
+                    .post(new GamepadEvent.Touchpad(
+                        touch.timestamp(), pad, touch.touchpad(), touch.finger(), touch.x(), touch.y(),
+                        touch.pressure(), down
                     ));
             }
             case SDLEvents.SDL_EVENT_GAMEPAD_SENSOR_UPDATE -> {
@@ -117,8 +118,7 @@ public final class Gamepads {
                 SDL.events()
                     .post(new GamepadEvent.Sensor(update.timestamp(), pad, sensor, data, update.sensor_timestamp()));
             }
-            default -> {
-            }
+            default -> { }
         }
     }
 
@@ -128,6 +128,20 @@ public final class Gamepads {
         }
         pads.clear();
         started = false;
+    }
+
+    /** Package-visible for tests that inject add/remove without SDL events. */
+    synchronized Gamepad injectAdded(int instanceId, long handle) {
+        started = true;
+        Gamepad pad = new Gamepad(instanceId, handle);
+        pads.put(instanceId, pad);
+        SDL.events().post(new GamepadEvent.Added(SDLTimer.SDL_GetTicksNS(), pad));
+        return pad;
+    }
+
+    synchronized void injectRemoved(int instanceId) {
+        pads.remove(instanceId);
+        SDL.events().post(new GamepadEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
     }
 
     private void openConnected() {
@@ -156,20 +170,6 @@ public final class Gamepads {
         Gamepad pad = new Gamepad(instanceId, handle);
         pads.put(instanceId, pad);
         return pad;
-    }
-
-    /** Package-visible for tests that inject add/remove without SDL events. */
-    synchronized Gamepad injectAdded(int instanceId, long handle) {
-        started = true;
-        Gamepad pad = new Gamepad(instanceId, handle);
-        pads.put(instanceId, pad);
-        SDL.events().post(new GamepadEvent.Added(SDLTimer.SDL_GetTicksNS(), pad));
-        return pad;
-    }
-
-    synchronized void injectRemoved(int instanceId) {
-        pads.remove(instanceId);
-        SDL.events().post(new GamepadEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

@@ -47,13 +47,6 @@ final class LegacyInputQueues {
     private double deltaY;
     private double wheel;
 
-    private static <T> void append(Deque<T> queue, T event) {
-        if (queue.size() == CAPACITY) {
-            queue.removeFirst();
-        }
-        queue.addLast(event);
-    }
-
     /**
      * Resolves the character LWJGL 2 reported for a key press.
      *
@@ -83,6 +76,13 @@ final class LegacyInputQueues {
             return keypad(key, (mod & SDL_KMOD_NUM) != 0);
         }
         return printable(key);
+    }
+
+    private static <T> void append(Deque<T> queue, T event) {
+        if (queue.size() == CAPACITY) {
+            queue.removeFirst();
+        }
+        queue.addLast(event);
     }
 
     private static char printable(int key) {

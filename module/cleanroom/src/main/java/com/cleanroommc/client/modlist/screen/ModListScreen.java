@@ -76,7 +76,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     // Creative tabs whose icon lookup threw; some mods build their icon from state that isn't available here
     private static final Set<CreativeTabs> BROKEN_TAB_ICONS = new ReferenceOpenHashSet<>();
     private static final ResourceLocation MISSING_BANNER = ModListConstants.resource("textures/gui/missing_banner.png");
-    private static final ResourceLocation MISSING_BACKGROUND = ModListConstants.resource("textures/gui/missing_background.png"
+    private static final ResourceLocation MISSING_BACKGROUND = ModListConstants.resource(
+        "textures/gui/missing_background.png"
     );
     private static final ResourceLocation MINECRAFT_LOGO = ModListConstants.resource("textures/gui/minecraft.png");
     private static final ImageInfo MISSING_BANNER_INFO = new ImageInfo(MISSING_BANNER, 120, 120);
@@ -84,7 +85,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     private static final Comparator<ModListEntry> SORT_ALPHABETICALLY = Comparator.comparing(o -> o.getData()
         .getDisplayName());
     private static final Comparator<ModListEntry> SORT_ALPHABETICALLY_REVERSED = SORT_ALPHABETICALLY.reversed();
-    private static final Comparator<ModListEntry> SORT_FAVOURITES_FIRST = Comparator.comparing(ModListEntry::getData,
+    private static final Comparator<ModListEntry> SORT_FAVOURITES_FIRST = Comparator.comparing(
+        ModListEntry::getData,
         Comparator.comparing(data -> FAVOURITES.has(data.getModId()))
     )
         .reversed()
@@ -97,7 +99,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     private static final Map<String, ModData> CACHED_MODS = new HashMap<>();
     private static final TextFormatting SEARCH_FILTER_KEY = TextFormatting.GOLD;
     private static final TextFormatting SEARCH_FILTER_VALUE = TextFormatting.WHITE;
-    private static final Map<String, SearchFilter> SEARCH_FILTERS = Map.of("dependencies",
+    private static final Map<String, SearchFilter> SEARCH_FILTERS = Map.of(
+        "dependencies",
         new SearchFilter((query, data) -> {
             ModData target = CACHED_MODS.get(query.toLowerCase(Locale.ENGLISH));
             return target != null && target.modData.getDependencies().contains(data.getModId());
@@ -219,11 +222,12 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         this.modList = new ModList(150, ModListScreen.this.height, 46, ModListScreen.this.height - 35);
         this.modList.setSlotXBoundsFromLeft(10);
 
-        this.addButton(new ModListTextButton(10, this.modList.bottom + 8, 127, 20, I18n.format("gui.back"),
+        this.addButton(new ModListTextButton(
+            10, this.modList.bottom + 8, 127, 20, I18n.format("gui.back"),
             _ -> this.mc.displayGuiScreen(this.parentScreen)
         ));
-        this.modFolderButton = this.addButton(new ModListIconButton(140, this.modList.bottom + 8, 0, 0,
-            _ -> OpenGlHelper.openFile(PlatformUtils.getModDirectory())
+        this.modFolderButton = this.addButton(new ModListIconButton(
+            140, this.modList.bottom + 8, 0, 0, _ -> OpenGlHelper.openFile(PlatformUtils.getModDirectory())
         ));
 
         int padding = 10;
@@ -231,26 +235,28 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         int contentWidth = this.width - contentLeft - padding;
         int buttonWidth = (contentWidth - padding) / 3;
 
-        this.configButton = this.addButton(new ModListIconButton(contentLeft, 105, 10, 0, buttonWidth,
-            I18n.format("cleanroom.gui.config"), _ -> this.selectedModData.openConfigScreen(this.mc, this)
+        this.configButton = this.addButton(new ModListIconButton(
+            contentLeft, 105, 10, 0, buttonWidth, I18n.format("cleanroom.gui.config"),
+            _ -> this.selectedModData.openConfigScreen(this.mc, this)
         ));
         this.configButton.visible = false;
 
-        this.websiteButton = this.addButton(new ModListIconButton(contentLeft + buttonWidth + 5, 105, 20, 0,
-            buttonWidth, I18n.format("cleanroom.gui.website"), _ -> this.openLink(this.selectedModData.getHomepage())
+        this.websiteButton = this.addButton(new ModListIconButton(
+            contentLeft + buttonWidth + 5, 105, 20, 0, buttonWidth, I18n.format("cleanroom.gui.website"),
+            _ -> this.openLink(this.selectedModData.getHomepage())
         ));
         this.websiteButton.visible = false;
 
-        this.issueButton = this.addButton(new ModListIconButton(contentLeft + buttonWidth + buttonWidth + 10, 105, 30,
-            0, buttonWidth, I18n.format("cleanroom.gui.submit_bug"),
-            _ -> this.openLink(this.selectedModData.getIssueTracker())
+        this.issueButton = this.addButton(new ModListIconButton(
+            contentLeft + buttonWidth + buttonWidth + 10, 105, 30, 0, buttonWidth,
+            I18n.format("cleanroom.gui.submit_bug"), _ -> this.openLink(this.selectedModData.getIssueTracker())
         ));
         this.issueButton.visible = false;
 
         this.descriptionList = new StringList(contentWidth + padding * 2, 50, contentLeft - padding, 130);
 
-        this.optionsButton = this.addButton(new ModListIconButton(this.modList.right - 16, 6, 40, 0, 16, 16,
-            button -> this.buildMenu().toggle(button)
+        this.optionsButton = this.addButton(new ModListIconButton(
+            this.modList.right - 16, 6, 40, 0, 16, 16, button -> this.buildMenu().toggle(button)
         ));
 
         this.modList.filterAndUpdateList();
@@ -271,69 +277,11 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
     }
 
-    private DropdownMenu buildMenu() {
-        return DropdownMenu.builder(this)
-            .setMinItemSize(100, 16)
-            .setAlignment(DropdownMenu.Alignment.BELOW_RIGHT)
-            .addMenu(I18n.format("cleanroom.gui.filters"),
-                DropdownMenu.builder(this)
-                    .setMinItemSize(60, 16)
-                    .setAlignment(DropdownMenu.Alignment.END_TOP)
-                    .addCheckbox(I18n.format("cleanroom.gui.filters.configs_only"), OPTION_CONFIGS_ONLY, _ -> {
-                        this.modList.filterAndUpdateList();
-                        return false;
-                    })
-                    .addCheckbox(I18n.format("cleanroom.gui.filters.updates_only"), OPTION_UPDATES_ONLY, _ -> {
-                        this.modList.filterAndUpdateList();
-                        return false;
-                    })
-                    .addCheckbox(I18n.format("cleanroom.gui.filters.favourites"), OPTION_FAVOURITES_ONLY, _ -> {
-                        this.modList.filterAndUpdateList();
-                        return false;
-                    })
-            )
-            .addMenu(I18n.format("cleanroom.gui.sort"),
-                DropdownMenu.builder(this)
-                    .setMinItemSize(60, 16)
-                    .setAlignment(DropdownMenu.Alignment.END_TOP)
-                    .addItem(I18n.format("cleanroom.gui.sort.alphabetically"), () -> {
-                        optionSort = SORT_ALPHABETICALLY;
-                        this.modList.filterAndUpdateList();
-                    })
-                    .addItem(I18n.format("cleanroom.gui.sort.alphabetically_reverse"), () -> {
-                        optionSort = SORT_ALPHABETICALLY_REVERSED;
-                        this.modList.filterAndUpdateList();
-                    })
-                    .addItem(I18n.format("cleanroom.gui.sort.favourites_first"), () -> {
-                        optionSort = SORT_FAVOURITES_FIRST;
-                        this.modList.filterAndUpdateList();
-                    })
-            )
-            .addCheckbox(I18n.format("cleanroom.gui.hide_libraries"), OPTION_HIDE_LIBRARIES, _ -> {
-                this.modList.filterAndUpdateList();
-                return false;
-            })
-            .addCheckbox(I18n.format("cleanroom.gui.hide_child_mods"), OPTION_HIDE_CHILD_MODS, _ -> {
-                this.modList.filterAndUpdateList();
-                return false;
-            })
-            .build();
-    }
-
     @Override
     public void onGuiClosed() {
         super.onGuiClosed();
         Keyboard.enableRepeatEvents(false);
         FAVOURITES.save();
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        if (button instanceof ModListTextButton textButton) {
-            textButton.onClick();
-            return;
-        }
-        super.actionPerformed(button);
     }
 
     @Override
@@ -355,13 +303,13 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         ImageInfo iconInfo = cleanroomData != null ? cleanroomData.icon : null;
         if (iconInfo != null) {
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO
+            GlStateManager.tryBlendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
             );
             this.mc.getTextureManager().bindTexture(iconInfo.resource());
-            drawScaledCustomSizeModalRect(10, 9, 0.0F, 0.0F, iconInfo.width(), iconInfo.height(), 10, 10,
-                iconInfo.width(), iconInfo.height()
+            drawScaledCustomSizeModalRect(
+                10, 9, 0.0F, 0.0F, iconInfo.width(), iconInfo.height(), 10, 10, iconInfo.width(), iconInfo.height()
             );
             GlStateManager.disableBlend();
         }
@@ -371,9 +319,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             int iconX = this.searchTextField.x + this.searchTextField.width - 15;
             int iconY = this.searchTextField.y + (this.searchTextField.height - 10) / 2;
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO
+            GlStateManager.tryBlendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
             );
             this.mc.getTextureManager().bindTexture(ModListIconButton.ICON_TEXTURE);
             drawModalRectWithCustomSizedTexture(iconX, iconY, 20, 10, 10, 10, 64, 64);
@@ -414,6 +362,21 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
     }
 
     @Override
+    public void updateScreen() {
+        super.updateScreen();
+        this.searchTextField.updateCursorCounter();
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button instanceof ModListTextButton textButton) {
+            textButton.onClick();
+            return;
+        }
+        super.actionPerformed(button);
+    }
+
+    @Override
     protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
         // Menu widget with top priority
         if (this.menu != null) {
@@ -434,7 +397,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             String displayVersion = this.selectedModData.getVersion();
             String innerVersion = this.selectedModData.getInnerVersion();
             boolean useInnerAsMain = displayVersion.isBlank() && !innerVersion.isBlank();
-            String version = I18n.format(useInnerAsMain ? "cleanroom.gui.inner_version" : "cleanroom.gui.version",
+            String version = I18n.format(
+                useInnerAsMain ? "cleanroom.gui.inner_version" : "cleanroom.gui.version",
                 useInnerAsMain ? innerVersion : displayVersion
             );
             int versionWidth = this.fontRenderer.getStringWidth(version);
@@ -449,8 +413,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         // Search Text Field
         this.searchTextField.mouseClicked(mouseX, mouseY, button);
-        if (RenderUtils.isMouseWithin(this.searchTextField.x, this.searchTextField.y, this.searchTextField.width,
-            this.searchTextField.height, mouseX, mouseY
+        if (RenderUtils.isMouseWithin(
+            this.searchTextField.x, this.searchTextField.y, this.searchTextField.width, this.searchTextField.height,
+            mouseX, mouseY
         )) {
             // Right click to empty
             if (button == 1) {
@@ -482,10 +447,55 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         super.keyTyped(typedChar, key);
     }
 
-    @Override
-    public void updateScreen() {
-        super.updateScreen();
-        this.searchTextField.updateCursorCounter();
+    private DropdownMenu buildMenu() {
+        return DropdownMenu.builder(this)
+            .setMinItemSize(100, 16)
+            .setAlignment(DropdownMenu.Alignment.BELOW_RIGHT)
+            .addMenu(
+                I18n.format("cleanroom.gui.filters"),
+                DropdownMenu.builder(this)
+                    .setMinItemSize(60, 16)
+                    .setAlignment(DropdownMenu.Alignment.END_TOP)
+                    .addCheckbox(I18n.format("cleanroom.gui.filters.configs_only"), OPTION_CONFIGS_ONLY, _ -> {
+                        this.modList.filterAndUpdateList();
+                        return false;
+                    })
+                    .addCheckbox(I18n.format("cleanroom.gui.filters.updates_only"), OPTION_UPDATES_ONLY, _ -> {
+                        this.modList.filterAndUpdateList();
+                        return false;
+                    })
+                    .addCheckbox(I18n.format("cleanroom.gui.filters.favourites"), OPTION_FAVOURITES_ONLY, _ -> {
+                        this.modList.filterAndUpdateList();
+                        return false;
+                    })
+            )
+            .addMenu(
+                I18n.format("cleanroom.gui.sort"),
+                DropdownMenu.builder(this)
+                    .setMinItemSize(60, 16)
+                    .setAlignment(DropdownMenu.Alignment.END_TOP)
+                    .addItem(I18n.format("cleanroom.gui.sort.alphabetically"), () -> {
+                        optionSort = SORT_ALPHABETICALLY;
+                        this.modList.filterAndUpdateList();
+                    })
+                    .addItem(I18n.format("cleanroom.gui.sort.alphabetically_reverse"), () -> {
+                        optionSort = SORT_ALPHABETICALLY_REVERSED;
+                        this.modList.filterAndUpdateList();
+                    })
+                    .addItem(I18n.format("cleanroom.gui.sort.favourites_first"), () -> {
+                        optionSort = SORT_FAVOURITES_FIRST;
+                        this.modList.filterAndUpdateList();
+                    })
+            )
+            .addCheckbox(I18n.format("cleanroom.gui.hide_libraries"), OPTION_HIDE_LIBRARIES, _ -> {
+                this.modList.filterAndUpdateList();
+                return false;
+            })
+            .addCheckbox(I18n.format("cleanroom.gui.hide_child_mods"), OPTION_HIDE_CHILD_MODS, _ -> {
+                this.modList.filterAndUpdateList();
+                return false;
+            })
+            .build();
     }
 
     /**
@@ -507,10 +517,12 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         this.drawString(this.fontRenderer, title, titleLeft, 10, 0xFFFFFF);
 
         int countLabelWidth = this.fontRenderer.getStringWidth(countLabel);
-        if (RenderUtils.isMouseWithin(titleLeft + titleWidth - countLabelWidth, 10, countLabelWidth,
-            this.fontRenderer.FONT_HEIGHT, mouseX, mouseY
+        if (RenderUtils.isMouseWithin(
+            titleLeft + titleWidth - countLabelWidth, 10, countLabelWidth, this.fontRenderer.FONT_HEIGHT, mouseX,
+            mouseY
         )) {
-            List<String> lines = List.of(I18n.format("cleanroom.gui.mod_count", totalMods),
+            List<String> lines = List.of(
+                I18n.format("cleanroom.gui.mod_count", totalMods),
                 I18n.format("cleanroom.gui.library_count", totalLibraries)
             );
             this.setActiveTooltip(lines);
@@ -587,8 +599,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             boolean useInnerAsMain = displayVersion.isBlank() && !innerVersion.isBlank();
             String drawKey = useInnerAsMain ? "cleanroom.gui.inner_version" : "cleanroom.gui.version";
             String drawVersion = useInnerAsMain ? innerVersion : displayVersion;
-            this.drawStringWithLabel(drawKey, drawVersion, contentLeft, 92, contentWidth, mouseX, mouseY,
-                TextFormatting.GRAY, TextFormatting.WHITE
+            this.drawStringWithLabel(
+                drawKey, drawVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY,
+                TextFormatting.WHITE
             );
             int versionWidth = this.fontRenderer.getStringWidth(I18n.format(drawKey, drawVersion));
 
@@ -596,7 +609,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             if (!useInnerAsMain &&
                 !displayVersion.equals(innerVersion) &&
                 !innerVersion.isBlank() &&
-                RenderUtils.isMouseWithin(contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY
+                RenderUtils.isMouseWithin(
+                    contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY
                 )) {
                 this.setActiveTooltip(I18n.format("cleanroom.gui.inner_version", innerVersion));
             }
@@ -621,16 +635,18 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             // Draw child mods
             String childMods = this.selectedModData.getChildModNames();
             if (childMods != null && !childMods.isBlank()) {
-                this.drawStringWithLabel("cleanroom.gui.child_mods", childMods, contentLeft, labelOffset, contentWidth,
-                    mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE
+                this.drawStringWithLabel(
+                    "cleanroom.gui.child_mods", childMods, contentLeft, labelOffset, contentWidth, mouseX, mouseY,
+                    TextFormatting.GRAY, TextFormatting.WHITE
                 );
                 labelOffset -= 15;
             }
 
             String parentMod = this.selectedModData.getParentModName();
             if (parentMod != null && !parentMod.isBlank()) {
-                this.drawStringWithLabel("cleanroom.gui.parent_mod", parentMod, contentLeft, labelOffset, contentWidth,
-                    mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE
+                this.drawStringWithLabel(
+                    "cleanroom.gui.parent_mod", parentMod, contentLeft, labelOffset, contentWidth, mouseX, mouseY,
+                    TextFormatting.GRAY, TextFormatting.WHITE
                 );
                 labelOffset -= 15;
             }
@@ -638,8 +654,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             // Draw license
             String license = this.selectedModData.getLicense();
             if (license != null && !license.isBlank()) {
-                this.drawStringWithLabel("cleanroom.gui.licenses", license, contentLeft, labelOffset, contentWidth,
-                    mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE
+                this.drawStringWithLabel(
+                    "cleanroom.gui.licenses", license, contentLeft, labelOffset, contentWidth, mouseX, mouseY,
+                    TextFormatting.GRAY, TextFormatting.WHITE
                 );
                 labelOffset -= 15;
             }
@@ -647,8 +664,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             // Draw credits
             String credits = this.selectedModData.getCredits();
             if (credits != null && !credits.isBlank()) {
-                this.drawStringWithLabel("cleanroom.gui.credits", credits, contentLeft, labelOffset, contentWidth,
-                    mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE
+                this.drawStringWithLabel(
+                    "cleanroom.gui.credits", credits, contentLeft, labelOffset, contentWidth, mouseX, mouseY,
+                    TextFormatting.GRAY, TextFormatting.WHITE
                 );
                 labelOffset -= 15;
             }
@@ -656,14 +674,15 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             // Draw authors
             String authors = this.selectedModData.getAuthors();
             if (authors != null && !authors.isBlank()) {
-                this.drawStringWithLabel("cleanroom.gui.authors", authors, contentLeft, labelOffset, contentWidth,
-                    mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE
+                this.drawStringWithLabel(
+                    "cleanroom.gui.authors", authors, contentLeft, labelOffset, contentWidth, mouseX, mouseY,
+                    TextFormatting.GRAY, TextFormatting.WHITE
                 );
             }
         } else {
             String message = TextFormatting.GRAY + I18n.format("cleanroom.gui.no_selection");
-            this.drawCenteredString(this.fontRenderer, message, contentLeft + contentWidth / 2, this.height / 2 - 5,
-                0xFFFFFF
+            this.drawCenteredString(
+                this.fontRenderer, message, contentLeft + contentWidth / 2, this.height / 2 - 5, 0xFFFFFF
             );
         }
     }
@@ -682,9 +701,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
      * @param mouseY   the current mouse y position
      */
     @SuppressWarnings("SameParameterValue")
-    private void drawStringWithLabel(String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY,
-        TextFormatting labelColor, TextFormatting contentColor
-    ) {
+    private void drawStringWithLabel(
+        String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY, TextFormatting labelColor,
+        TextFormatting contentColor) {
         String formatted = labelColor + I18n.format(format, contentColor + text);
         if (this.fontRenderer.getStringWidth(formatted) > maxWidth) {
             formatted = this.fontRenderer.trimStringToWidth(formatted, maxWidth - 7) + "...";
@@ -792,8 +811,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
         ImageInfo background = cachedBackground != null ? cachedBackground : MISSING_BACKGROUND_INFO;
         int backgroundHeight = MathHelper.clamp(this.height / 3, 128, 180);
-        RenderUtils.drawCoverFade(this.mc, background, contentLeft, contentTop, contentWidth, backgroundHeight,
-            this.zLevel, 1.0F, 1.0F, 0.65F, 0.25F, 0.0F
+        RenderUtils.drawCoverFade(
+            this.mc, background, contentLeft, contentTop, contentWidth, backgroundHeight, this.zLevel, 1.0F, 1.0F,
+            0.65F, 0.25F, 0.0F
         );
     }
 
@@ -822,13 +842,14 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO
+            GlStateManager.tryBlendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
             );
             this.mc.getTextureManager().bindTexture(info.resource());
-            drawScaledCustomSizeModalRect(x, y, 0.0F, 0.0F, info.width(), info.height(), displayWidth, displayHeight,
-                info.width(), info.height()
+            drawScaledCustomSizeModalRect(
+                x, y, 0.0F, 0.0F, info.width(), info.height(), displayWidth, displayHeight, info.width(),
+                info.height()
             );
             GlStateManager.disableBlend();
         }
@@ -1018,8 +1039,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
 
             try {
-                Files.write(this.file, this.mods, StandardCharsets.UTF_8, StandardOpenOption.WRITE,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+                Files.write(
+                    this.file, this.mods, StandardCharsets.UTF_8, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
                 );
                 this.needsSave = false;
             } catch (IOException | SecurityException e) {
@@ -1118,6 +1140,28 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
+        public int getListWidth() {
+            return this.getListRight() - this.getListLeft();
+        }
+
+        @Override
+        public void handleMouseInput() {
+            this.hideFavourites = Mouse.getEventDWheel() != 0;
+            super.handleMouseInput();
+        }
+
+        @Override
+        public boolean mouseReleased(int mouseX, int mouseY, int button) {
+            this.hideFavourites = false;
+            return super.mouseReleased(mouseX, mouseY, button);
+        }
+
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+        public boolean shouldHideFavourites() {
+            return this.hideFavourites;
+        }
+
+        @Override
         protected int getScrollBarX() {
             return this.shouldShowScrollBar() ? this.right - 6 : this.right + 1;
         }
@@ -1138,11 +1182,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        public int getListWidth() {
-            return this.getListRight() - this.getListLeft();
-        }
-
-        @Override
         protected void drawContainerBackground(Tessellator tessellator) {
             if (this.mc.world != null) {
                 drawRect(this.left, this.top, this.right, this.bottom, 0x66000000);
@@ -1150,23 +1189,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 return;
             }
             super.drawContainerBackground(tessellator);
-        }
-
-        @Override
-        public void handleMouseInput() {
-            this.hideFavourites = Mouse.getEventDWheel() != 0;
-            super.handleMouseInput();
-        }
-
-        @Override
-        public boolean mouseReleased(int mouseX, int mouseY, int button) {
-            this.hideFavourites = false;
-            return super.mouseReleased(mouseX, mouseY, button);
-        }
-
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-        public boolean shouldHideFavourites() {
-            return this.hideFavourites;
         }
 
     }
@@ -1189,24 +1211,26 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        public void drawEntry(int index, int left, int top, int rowWidth, int rowHeight, int mouseX, int mouseY,
-            boolean hovered, float partialTicks
-        ) {
+        public void drawEntry(
+            int index, int left, int top, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean hovered,
+            float partialTicks) {
             this.hovered = hovered;
             // Draws mod name and version
             boolean inOptionsMenu = ModListScreen.this.menu != null;
             boolean drawFavouriteIcon = !inOptionsMenu &&
                     this.data.getType() != IModData.Type.CHILD &&
                     !this.list.shouldHideFavourites() &&
-                    RenderUtils.isMouseWithin(left + rowWidth - rowHeight - 4, top, rowHeight + 4, rowHeight, mouseX,
-                        mouseY
+                    RenderUtils.isMouseWithin(
+                        left + rowWidth - rowHeight - 4, top, rowHeight + 4, rowHeight, mouseX, mouseY
                     ) ||
                 FAVOURITES.has(this.data.getModId());
-            ModListScreen.this.drawString(ModListScreen.this.fontRenderer, this.getFormattedModName(drawFavouriteIcon),
-                left + 24, top + 2, 0xFFFFFF
+            ModListScreen.this.drawString(
+                ModListScreen.this.fontRenderer, this.getFormattedModName(drawFavouriteIcon), left + 24, top + 2,
+                0xFFFFFF
             );
-            ModListScreen.this.drawString(ModListScreen.this.fontRenderer,
-                this.getFormattedModVersion(drawFavouriteIcon), left + 24, top + 12, 0xFFFFFF
+            ModListScreen.this.drawString(
+                ModListScreen.this.fontRenderer, this.getFormattedModVersion(drawFavouriteIcon), left + 24, top + 12,
+                0xFFFFFF
             );
 
             // Draw image icon or fallback to item icon
@@ -1232,6 +1256,53 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             }
         }
 
+        public IModData getData() {
+            return this.data;
+        }
+
+        @Override
+        public boolean mousePressed(
+            int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY) {
+            if (mouseButton == 1) {
+                DropdownMenu.Builder builder = DropdownMenu.builder(ModListScreen.this)
+                    .setMinItemSize(0, 16)
+                    .setAlignment(DropdownMenu.Alignment.BELOW_LEFT)
+                    .addItem(I18n.format("cleanroom.gui.show_dependencies"), () -> {
+                        String filter = "@dependencies:" + this.data.getModId();
+                        ModListScreen.this.searchTextField.setText(filter);
+                    })
+                    .addItem(I18n.format("cleanroom.gui.show_dependents"), () -> {
+                        String filter = "@dependents:" + this.data.getModId();
+                        ModListScreen.this.searchTextField.setText(filter);
+                    });
+                if (this.data.getType() == IModData.Type.CHILD) {
+                    builder.addItem(I18n.format("cleanroom.gui.show_parent_mod"), () -> {
+                        String filter = "@parentmod:" + this.data.getModId();
+                        ModListScreen.this.searchTextField.setText(filter);
+                    });
+                } else if (!this.data.getChildMods().isEmpty()) {
+                    builder.addItem(I18n.format("cleanroom.gui.show_child_mods"), () -> {
+                        String filter = "@childmods:" + this.data.getModId();
+                        ModListScreen.this.searchTextField.setText(filter);
+                    });
+                }
+                DropdownMenu menu = builder.build();
+                menu.toggle(mouseX, mouseY);
+                return true;
+            } else if (mouseButton == 0) {
+                if (this.button.mousePressed(ModListScreen.this.mc, mouseX, mouseY)) {
+                    FAVOURITES.toggle(this.data.getModId());
+                    ModListEntry.this.list.filterAndUpdateList();
+                    this.button.playPressSound(ModListScreen.this.mc.getSoundHandler());
+                    return true;
+                }
+                ModListScreen.this.setSelectedModData(this.data);
+                this.list.setSelected(this);
+                return true;
+            }
+            return false;
+        }
+
         private void drawIcon(int top, int left) {
             ModListScreen.this.loadAndCacheIcon(this.cachedData);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1239,13 +1310,14 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             ImageInfo iconInfo = this.cachedData.icon;
             if (iconInfo != null) {
                 GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                    GlStateManager.DestFactor.ZERO
+                GlStateManager.tryBlendFuncSeparate(
+                    GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
                 );
                 ModListScreen.this.mc.getTextureManager().bindTexture(iconInfo.resource());
-                drawScaledCustomSizeModalRect(left + 4, top + 3, 0.0F, 0.0F, iconInfo.width(), iconInfo.height(), 16,
-                    16, iconInfo.width(), iconInfo.height()
+                drawScaledCustomSizeModalRect(
+                    left + 4, top + 3, 0.0F, 0.0F, iconInfo.width(), iconInfo.height(), 16, 16, iconInfo.width(),
+                    iconInfo.height()
                 );
                 GlStateManager.disableBlend();
                 return;
@@ -1264,7 +1336,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 ModListScreen.this.itemRender.renderItemAndEffectIntoGUI(this.cachedData.itemIcon, left + 4, top + 2);
             } catch (Exception e) {
                 // Attempt to catch exceptions when rendering item. Sometime level instance isn't checked for null
-                ModListConstants.LOG.error("Failed to draw icon '{}' for mod '{}'. " +
+                ModListConstants.LOG.error(
+                    "Failed to draw icon '{}' for mod '{}'. " +
                         "To avoid issues, consider adding the mod to forceDefaultIconList",
                     this.cachedData.itemIcon.toString(), this.data.getModId(), e
                 );
@@ -1308,8 +1381,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                         return;
                     }
                 } catch (Exception e) {
-                    ModListConstants.LOG.warn("Failed to parse item icon '{}' for mod '{}'", itemIcon,
-                        this.data.getModId(), e
+                    ModListConstants.LOG.warn(
+                        "Failed to parse item icon '{}' for mod '{}'", itemIcon, this.data.getModId(), e
                     );
                 }
             }
@@ -1325,8 +1398,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 } catch (Throwable t) {
                     // Some mods build their creative tab icon from state that isn't available here, such as the world
                     BROKEN_TAB_ICONS.add(tab);
-                    ModListConstants.LOG.warn("Failed to get item icon from tab '{}', it will be skipped",
-                        tab.getTabLabel(), t
+                    ModListConstants.LOG.warn(
+                        "Failed to get item icon from tab '{}', it will be skipped", tab.getTabLabel(), t
                     );
                     continue;
                 }
@@ -1382,53 +1455,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             return text;
         }
 
-        public IModData getData() {
-            return this.data;
-        }
-
-        @Override
-        public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY
-        ) {
-            if (mouseButton == 1) {
-                DropdownMenu.Builder builder = DropdownMenu.builder(ModListScreen.this)
-                    .setMinItemSize(0, 16)
-                    .setAlignment(DropdownMenu.Alignment.BELOW_LEFT)
-                    .addItem(I18n.format("cleanroom.gui.show_dependencies"), () -> {
-                        String filter = "@dependencies:" + this.data.getModId();
-                        ModListScreen.this.searchTextField.setText(filter);
-                    })
-                    .addItem(I18n.format("cleanroom.gui.show_dependents"), () -> {
-                        String filter = "@dependents:" + this.data.getModId();
-                        ModListScreen.this.searchTextField.setText(filter);
-                    });
-                if (this.data.getType() == IModData.Type.CHILD) {
-                    builder.addItem(I18n.format("cleanroom.gui.show_parent_mod"), () -> {
-                        String filter = "@parentmod:" + this.data.getModId();
-                        ModListScreen.this.searchTextField.setText(filter);
-                    });
-                } else if (!this.data.getChildMods().isEmpty()) {
-                    builder.addItem(I18n.format("cleanroom.gui.show_child_mods"), () -> {
-                        String filter = "@childmods:" + this.data.getModId();
-                        ModListScreen.this.searchTextField.setText(filter);
-                    });
-                }
-                DropdownMenu menu = builder.build();
-                menu.toggle(mouseX, mouseY);
-                return true;
-            } else if (mouseButton == 0) {
-                if (this.button.mousePressed(ModListScreen.this.mc, mouseX, mouseY)) {
-                    FAVOURITES.toggle(this.data.getModId());
-                    ModListEntry.this.list.filterAndUpdateList();
-                    this.button.playPressSound(ModListScreen.this.mc.getSoundHandler());
-                    return true;
-                }
-                ModListScreen.this.setSelectedModData(this.data);
-                this.list.setSelected(this);
-                return true;
-            }
-            return false;
-        }
-
         private class PinnedButton extends GuiButton {
 
             PinnedButton() {
@@ -1446,9 +1472,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 int textureU = FAVOURITES.has(ModListEntry.this.data.getModId()) ? 10 : 0;
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                    GlStateManager.DestFactor.ZERO
+                GlStateManager.tryBlendFuncSeparate(
+                    GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
                 );
                 mc.getTextureManager().bindTexture(ModListIconButton.ICON_TEXTURE);
                 drawModalRectWithCustomSizedTexture(this.x, this.y, textureU, 10, 10, 10, 64, 64);
@@ -1482,8 +1508,8 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
                 this.visible = false;
                 return;
             }
-            List<String> lines = ModListScreen.this.fontRenderer.listFormattedStringToWidth(description.trim(),
-                this.getListWidth()
+            List<String> lines = ModListScreen.this.fontRenderer.listFormattedStringToWidth(
+                description.trim(), this.getListWidth()
             );
             for (String line : lines) {
                 this.addEntry(new StringEntry(line.replace("\n", "").replace("\r", "").trim()));
@@ -1491,10 +1517,21 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
+        public int getListWidth() {
+            return this.getListRight() - this.getListLeft();
+        }
+
+        @Override
+        public int getMaxScroll() {
+            return Math.max(0, this.getContentHeight() - (this.height - 12));
+        }
+
+        @Override
         protected void drawContainerBackground(@Nullable Tessellator tessellator) {
             drawRect(this.left, this.top + 1, this.left + 1, this.top + this.height - 1, 0x77000000);
             drawRect(this.left + 1, this.top, this.left + this.width - 1, this.top + this.height, 0x77000000);
-            drawRect(this.left + this.width - 1, this.top + 1, this.left + this.width, this.top + this.height - 1,
+            drawRect(
+                this.left + this.width - 1, this.top + 1, this.left + this.width, this.top + this.height - 1,
                 0x77000000
             );
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1520,16 +1557,6 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
             return this.getListLeft();
         }
 
-        @Override
-        public int getListWidth() {
-            return this.getListRight() - this.getListLeft();
-        }
-
-        @Override
-        public int getMaxScroll() {
-            return Math.max(0, this.getContentHeight() - (this.height - 12));
-        }
-
     }
 
     private class StringEntry implements ModListExtended.IListEntry {
@@ -1541,9 +1568,9 @@ public class ModListScreen extends GuiScreen implements DropdownMenuHandler {
         }
 
         @Override
-        public void drawEntry(int index, int left, int top, int rowWidth, int rowHeight, int mouseX, int mouseY,
-            boolean hovered, float partialTicks
-        ) {
+        public void drawEntry(
+            int index, int left, int top, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean hovered,
+            float partialTicks) {
             ModListScreen.this.drawString(ModListScreen.this.fontRenderer, this.line, left, top + 4, 0xFFFFFF);
         }
 

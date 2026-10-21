@@ -32,9 +32,8 @@ final class FoundationBytecodeProvider implements IClassBytecodeProvider {
     private final ReEntranceLock lock;
     private final FoundationClassTracker classTracker;
 
-    FoundationBytecodeProvider(FoundationTransformerProvider transformerProvider, ReEntranceLock lock,
-        FoundationClassTracker classTracker
-    ) {
+    FoundationBytecodeProvider(
+        FoundationTransformerProvider transformerProvider, ReEntranceLock lock, FoundationClassTracker classTracker) {
         this.transformerProvider = transformerProvider;
         this.lock = lock;
         this.classTracker = classTracker;
@@ -45,8 +44,8 @@ final class FoundationBytecodeProvider implements IClassBytecodeProvider {
         if (classBytes != null) {
             return classBytes;
         }
-        try (InputStream classStream = APP_CLASS_LOADER.getResourceAsStream(transformedName.replace('.', '/')
-                .concat(".class")
+        try (InputStream classStream = APP_CLASS_LOADER.getResourceAsStream(
+            transformedName.replace('.', '/').concat(".class")
         )) {
             return classStream != null ? ByteStreams.toByteArray(classStream) : null;
         } catch (Exception e) {
@@ -65,8 +64,7 @@ final class FoundationBytecodeProvider implements IClassBytecodeProvider {
     }
 
     @Override
-    public ClassNode getClassNode(String name, boolean runTransformers, int readerFlags)
-        throws ClassNotFoundException,
+    public ClassNode getClassNode(String name, boolean runTransformers, int readerFlags) throws ClassNotFoundException,
         IOException {
         String transformedName = name.replace('/', '.');
         String originalName = Launch.classLoader.untransformName(transformedName);

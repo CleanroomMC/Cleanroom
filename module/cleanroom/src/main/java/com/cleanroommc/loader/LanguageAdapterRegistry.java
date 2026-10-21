@@ -29,13 +29,14 @@ public final class LanguageAdapterRegistry {
 
     public static void registerLanguageAdapter(String language, ILanguageAdapter languageAdapter) {
         if (adapterRegistry.containsKey(language)) {
-            FMLLog.log.error("Language adapter {} of language {} already exists!",
+            FMLLog.log.error(
+                "Language adapter {} of language {} already exists!",
                 adapterRegistry.get(language).getClass().getName(), language
             );
         } else {
             adapterRegistry.put(language, languageAdapter);
-            FMLLog.log.debug("Registering language adapter {} for language {}.", languageAdapter.getClass().getName(),
-                language
+            FMLLog.log.debug(
+                "Registering language adapter {} for language {}.", languageAdapter.getClass().getName(), language
             );
         }
     }

@@ -90,12 +90,6 @@ public final class HidDevice implements AutoCloseable {
         return this;
     }
 
-    private void ensureOpen() {
-        if (closed) {
-            throw new IllegalStateException("The HID device is closed");
-        }
-    }
-
     @Override
     public void close() {
         if (closed) {
@@ -104,6 +98,12 @@ public final class HidDevice implements AutoCloseable {
         closed = true;
         Hid.forget(this);
         SDLHIDAPI.SDL_hid_close(handle);
+    }
+
+    private void ensureOpen() {
+        if (closed) {
+            throw new IllegalStateException("The HID device is closed");
+        }
     }
 
 }

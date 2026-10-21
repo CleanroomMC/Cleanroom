@@ -50,10 +50,11 @@ public final class Hid {
     }
 
     static HidInfo fromNative(SDL_hid_device_info info) {
-        return new HidInfo(empty(info.pathString()), Short.toUnsignedInt(info.vendor_id()),
-            Short.toUnsignedInt(info.product_id()), empty(info.serial_numberString()),
-            empty(info.manufacturer_stringString()), empty(info.product_stringString()),
-            Short.toUnsignedInt(info.usage_page()), Short.toUnsignedInt(info.usage()), HidBus.of(info.bus_type())
+        return new HidInfo(
+            empty(info.pathString()), Short.toUnsignedInt(info.vendor_id()), Short.toUnsignedInt(info.product_id()),
+            empty(info.serial_numberString()), empty(info.manufacturer_stringString()),
+            empty(info.product_stringString()), Short.toUnsignedInt(info.usage_page()),
+            Short.toUnsignedInt(info.usage()), HidBus.of(info.bus_type())
         );
     }
 

@@ -103,9 +103,9 @@ public abstract class TouchEvent extends Event {
         private final float dx;
         private final float dy;
 
-        public Motion(int windowId, long timestampNs, long device, long finger, float x, float y, float dx, float dy,
-            float pressure
-        ) {
+        public Motion(
+            int windowId, long timestampNs, long device, long finger, float x, float y, float dx, float dy,
+            float pressure) {
             super(windowId, timestampNs, device, finger, x, y, pressure);
             this.dx = dx;
             this.dy = dy;

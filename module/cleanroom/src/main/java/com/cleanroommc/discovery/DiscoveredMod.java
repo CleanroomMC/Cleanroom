@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 
-public record DiscoveredMod(File file,
+public record DiscoveredMod(
+    File file,
     Attributes attributes,
     List<String> modIds,
     String modType,
@@ -25,8 +26,7 @@ public record DiscoveredMod(File file,
     String coremod,
     String tweaker,
     boolean onClasspath,
-    Map<String, String> accessTransformers
-) {
+    Map<String, String> accessTransformers) {
 
     public DiscoveredMod {
         file = file.getAbsoluteFile();

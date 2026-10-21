@@ -42,7 +42,8 @@ import java.util.zip.ZipInputStream;
  */
 public final class ClassPatchManager {
 
-    public static final boolean DUMP_PATCHED = Boolean.parseBoolean(System.getProperty("fml.dumpPatchedClasses", "false"
+    public static final boolean DUMP_PATCHED = Boolean.parseBoolean(System.getProperty(
+        "fml.dumpPatchedClasses", "false"
     ));
     public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("fml.debugClassPatchManager", "false"));
     public static final ClassPatchManager INSTANCE = new ClassPatchManager();
@@ -102,7 +103,8 @@ public final class ClassPatchManager {
         boolean ignoredError = false;
         if (DEBUG) {
             CleanroomLog.get()
-                .debug("Runtime patching class {} (input size {}), found {} patch{}", mappedName,
+                .debug(
+                    "Runtime patching class {} (input size {}), found {} patch{}", mappedName,
                     (inputData == null ? 0 : inputData.length), list.size(), list.size() != 1 ? "es" : ""
                 );
         }
@@ -116,24 +118,28 @@ public final class ClassPatchManager {
                 CleanroomLog.get()
                     .error("Patcher expecting non-empty class data file for {}, but received empty.", name);
                 throw new RuntimeException(
-                    "Patcher expecting non-empty class data file for %s, but received empty, your vanilla jar may be corrupt.".formatted(name
+                    "Patcher expecting non-empty class data file for %s, but received empty, your vanilla jar may be corrupt.".formatted(
+                        name
                     ));
             } else {
                 byte[] actualHash = sha256(inputData);
                 if (!Arrays.equals(actualHash, patch.expectedHash())) {
                     CleanroomLog.get()
-                        .error("There is a binary discrepancy between the expected input class {} ({}) and the actual class. Hash on disk is {}, in patch {}. Things are probably about to go very wrong. Did you put something into the jar file?",
+                        .error(
+                            "There is a binary discrepancy between the expected input class {} ({}) and the actual class. Hash on disk is {}, in patch {}. Things are probably about to go very wrong. Did you put something into the jar file?",
                             mappedName, name, HexFormat.of().formatHex(actualHash),
                             HexFormat.of().formatHex(patch.expectedHash())
                         );
                     if (!Boolean.parseBoolean(System.getProperty("fml.ignorePatchDiscrepancies", "false"))) {
                         CleanroomLog.get()
-                            .error("The game is going to exit, because this is a critical error, and it is very improbable that the modded game will work, please obtain clean jar files."
+                            .error(
+                                "The game is going to exit, because this is a critical error, and it is very improbable that the modded game will work, please obtain clean jar files."
                             );
                         System.exit(1);
                     } else {
                         CleanroomLog.get()
-                            .error("FML is going to ignore this error, note that the patch will not be applied, and there is likely to be a malfunctioning behaviour, including not running at all"
+                            .error(
+                                "FML is going to ignore this error, note that the patch will not be applied, and there is likely to be a malfunctioning behaviour, including not running at all"
                             );
                         ignoredError = true;
                         continue;
