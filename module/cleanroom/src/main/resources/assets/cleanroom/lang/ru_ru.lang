@@ -28,3 +28,4 @@ cleanroom.gui.library_count=%s библиотек
 cleanroom.gui.advanced_search.info=Расширенные поисковые запросы будут игнорировать все активные фильтры
 cleanroom.gui.show_dependencies=Показывать зависимости
 cleanroom.gui.show_dependents=Показывать зависимых
+attribute.name.generic.flyingSpeed=Скорость полёта
