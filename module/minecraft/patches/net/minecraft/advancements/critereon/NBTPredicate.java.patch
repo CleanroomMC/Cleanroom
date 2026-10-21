@@ -1,0 +1,18 @@
+--- original/net/minecraft/advancements/critereon/NBTPredicate.java
++++ modified/net/minecraft/advancements/critereon/NBTPredicate.java
+@@ -28,7 +28,14 @@
+     }
+ 
+     public boolean test(Entity entityIn) {
+-        return this == ANY ? true : this.test(CommandBase.entityToNBT(entityIn));
++        if (this == ANY) {
++            return true;
++        }
++        // Cleanroom: a player predicate on SelectedItem alone doesn't need the whole player written to NBT
++        if (!com.cleanroommc.common.advancements.AdvancementHooks.needsFullEntityNBT(this.tag, entityIn)) {
++            return this.test(com.cleanroommc.common.advancements.AdvancementHooks.selectedItemNBT((net.minecraft.entity.player.EntityPlayer)entityIn));
++        }
++        return this.test(CommandBase.entityToNBT(entityIn));
+     }
+ 
+     public boolean test(@Nullable NBTBase nbt) {
