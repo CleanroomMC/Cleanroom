@@ -13,7 +13,7 @@ no candidate is recorded as having refused or granted permission. Consent remain
 ## Relicensing Motivation
 
 As you all know, rebranding, AI code laundering, and porting are enduring phenomena among 1.12 communities.
-And we feel the need to relicense mainly the `module/cleanroom` part under a closed-source but source-visible license to protect our code from rebrands,
+And we feel the need to relicense mainly the `module/cleanroom` part under a source-visible license to protect our code from rebrands,
 as we have been adding more and more standalone features and APIs since 0.7-alpha.
 
 It is understandable that people may find the LGPL-to-ARR-ish migration hard to swallow. Be it blood; be it tears; it is part of the roadmap.
