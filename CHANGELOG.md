@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.7.12-alpha - 2026-10-21
+
+### Bug Fix
+
+- **sdl**: Only forward whole wheel notches to the LWJGL 2 input path *[PR by [@TheRedJa](https://github.com/TheRedJa), Claude Sonnet 5.5 in [#708](https://github.com/CleanroomMC/Cleanroom/pull/708)]*
+- **loading**: Skip font refresh when mod loading failed *[commit by [@Rongmario](https://github.com/Rongmario) in [9d0e34c](https://github.com/CleanroomMC/Cleanroom/commit/9d0e34c17ae53677ee036dd58b9dcfb73d02d52f)]*
+    *[Fixes issue #706 by [@xjoergen](https://github.com/xjoergen)]*
+- **sdl**: Fallback to a GLES 2 context on GLES-only drivers *[commit by [@Rongmario](https://github.com/Rongmario) in [56b841e](https://github.com/CleanroomMC/Cleanroom/commit/56b841e451fb121d5a8f3466331c2526ac61dd22)]*
+
+### Build and Dependencies
+
+- Update Conventions to 1.4.3 *[commit by [@Rongmario](https://github.com/Rongmario) in [7b07a6d](https://github.com/CleanroomMC/Cleanroom/commit/7b07a6d27c385a39b7d0c580bf35e4836a02813f)]*
+- **deps**: Update kirino *[commit by [@Rongmario](https://github.com/Rongmario) in [c0d2395](https://github.com/CleanroomMC/Cleanroom/commit/c0d23957bb16209148b61e352b5f6b322f936f97)]*
+- Update Conventions to 1.4.2 *[commit by [@Rongmario](https://github.com/Rongmario) in [b70938e](https://github.com/CleanroomMC/Cleanroom/commit/b70938eb1094d5520812468f860abaa17817c0df)]*
+
+### First-time Contributors
+
+- **[@TheRedJa](https://github.com/TheRedJa) made their first contribution!**
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.11-alpha...0.7.12-alpha
+
 ## 0.7.11-alpha - 2026-10-19
 
 ### Bug Fix
@@ -304,10 +325,6 @@
 - Exclude LWJGL 2 natives from runtime *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
 - Remove google's `jsr305`, documented jakarta/java 8's javax differences *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
 - Add `ca.weblite:java-objc-bridge:1.2` back *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
-
-### Other
-
-- --------- *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
 
 ### First-time Contributors
 
@@ -849,7 +866,7 @@
 
 ### Feature
 
-- Better debug information (AAInfo) pt.2 *[PR by [@Gebardensprache](https://github.com/Gebardensprache), Copilotfeat: complete---------, Copilot in [#525](https://github.com/CleanroomMC/Cleanroom/pull/525)]*
+- Better debug information (AAInfo) pt.2 *[PR by [@Gebardensprache](https://github.com/Gebardensprache), Copilotfeat: complete, Copilot in [#525](https://github.com/CleanroomMC/Cleanroom/pull/525)]*
 
 ### Other
 
@@ -1332,7 +1349,7 @@
 - Make ItemStack#copy() mimic original behavior *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [dfa69e3](https://github.com/CleanroomMC/Cleanroom/commit/dfa69e34423a81af232d2b583864b9f131efaec5)]*
 - Update foundation *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [5eb71b5](https://github.com/CleanroomMC/Cleanroom/commit/5eb71b507d1068a3042334eaee5c91cbcfa5cbb5)]*
 - Fix #383 *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [ee56571](https://github.com/CleanroomMC/Cleanroom/commit/ee565714f2ae005c5881fc1b9a002b581db68193), issue by [@XZYawa](https://github.com/XZYawa)]*
-- EventBus : Enable All access of listener, include private *[PR by [@Ecdcaeb](https://github.com/Ecdcaeb), ZZZank---------, kappa-maintainer, ZZZank in [#358](https://github.com/CleanroomMC/Cleanroom/pull/358)]*
+- EventBus : Enable All access of listener, include private *[PR by [@Ecdcaeb](https://github.com/Ecdcaeb), ZZZank, kappa-maintainer, ZZZank in [#358](https://github.com/CleanroomMC/Cleanroom/pull/358)]*
 - Update foundation *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [87e6649](https://github.com/CleanroomMC/Cleanroom/commit/87e6649e3bf06d1af138a551f971d53cc75616eb)]*
 - Action trigger *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [1b0c682](https://github.com/CleanroomMC/Cleanroom/commit/1b0c682f34376833ad2375c17ea5697efcd92fe8)]*
 - Fix workflow *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [e55074a](https://github.com/CleanroomMC/Cleanroom/commit/e55074ac3c46027c1a12f2d07a130ed2d2506e0b)]*
