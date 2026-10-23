@@ -102,6 +102,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private List<File> nonModLibs = List.of();
 
+    private final List<File> misplacedResourcePacks = new ArrayList<>();
+
     private boolean hasForgeMods;
 
     private CleanroomModDiscoverer() {
@@ -201,6 +203,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     @Override
     public List<File> getNonModLibs() {
         return nonModLibs;
+    }
+
+    /**
+     * Resource packs found among the mods. They are left off the classpath.
+     */
+    public List<File> getMisplacedResourcePacks() {
+        return Collections.unmodifiableList(misplacedResourcePacks);
     }
 
     public void discoverMixinMods() {
@@ -570,7 +579,19 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             try {
                 List<ModContainer> mods = candidate.explore(asmDataTable);
                 if (mods.isEmpty() && !candidate.isClasspath()) {
-                    nonModLibs.add(candidate.getModContainer());
+                    File file = candidate.getModContainer();
+                    if (ResourcePackDetector.isResourcePack(file)) {
+                        // Injecting it would let its assets shadow vanilla's and break textures
+                        CleanroomLog.get()
+                            .warn(
+                                "{} is a resource pack, not a mod. It will not be loaded. " +
+                                    "Move it to the resourcepacks folder to use it.",
+                                file.getName()
+                            );
+                        misplacedResourcePacks.add(file);
+                    } else {
+                        nonModLibs.add(file);
+                    }
                 } else {
                     modList.addAll(mods);
                 }

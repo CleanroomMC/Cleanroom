@@ -40,6 +40,16 @@ cleanroom.gui.show_parent_mod=Show Parent Mod
 cleanroom.gui.website=Website
 cleanroom.gui.submit_bug=Submit Bug
 cleanroom.gui.mod_id=Mod ID: %s
+cleanroom.gui.misplaced_packs.title=Resource Pack in Mods Folder
+cleanroom.gui.misplaced_packs.title.plural=Resource Packs in Mods Folder
+cleanroom.gui.misplaced_packs.info=This is a resource pack, not a mod, so it was not loaded. Move it to the resource packs folder to use it.
+cleanroom.gui.misplaced_packs.info.plural=These are resource packs, not mods, so they were not loaded. Move them to the resource packs folder to use them.
+cleanroom.gui.misplaced_packs.move=Move
+cleanroom.gui.misplaced_packs.ignore=Ignore
+cleanroom.gui.misplaced_packs.failed=This resource pack could not be moved.
+cleanroom.gui.misplaced_packs.failed.plural=These resource packs could not be moved.
+cleanroom.gui.misplaced_packs.exists=Already in the resource packs folder
+cleanroom.gui.misplaced_packs.error=%s, see the log
 
 cleanroom.config.enable=Enable
 cleanroom.config.enable.tooltip=Whether to enable Cleanroom's mod list. \nDisabling it stops Cleanroom from redirecting Forge's mod list calls.

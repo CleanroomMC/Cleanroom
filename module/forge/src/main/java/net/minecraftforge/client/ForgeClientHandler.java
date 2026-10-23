@@ -19,6 +19,7 @@
 
 package net.minecraftforge.client;
 
+import com.cleanroommc.client.MisplacedResourcePacksScreen;
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.SDLHooks;
 import com.cleanroommc.client.sdl.Window;
@@ -123,7 +124,9 @@ public class ForgeClientHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onGuiOpenLast(GuiOpenEvent event)
     {
-        if (event.getGui() instanceof GuiMainMenu && !played)
+        MisplacedResourcePacksScreen.onFirstScreen(event);
+        GuiScreen gui = event.getGui();
+        if ((gui instanceof GuiMainMenu || gui instanceof MisplacedResourcePacksScreen) && !played)
         {
             played = true;
             if (ForgeEarlyConfig.MODERN_WINDOWS_STYLES.DISABLE_FLASH_AFTER_LOADED)
