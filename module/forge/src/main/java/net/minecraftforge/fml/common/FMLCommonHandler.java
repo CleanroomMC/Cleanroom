@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
+import com.cleanroommc.cleanroom.common.id.LegacyIds;
 import com.cleanroommc.common.CleanroomVersion;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -519,6 +520,7 @@ public class FMLCommonHandler
 
     public void handleServerStopped()
     {
+        LegacyIds.clear(); // the next world opened in this session may have a different table, or none
         sidedDelegate.serverStopped();
         MinecraftServer server = getMinecraftServerInstance();
         Loader.instance().serverStopped();
