@@ -1078,9 +1078,21 @@ public final class ModelLoader extends ModelBakery
     private static final Map<Pair<IRegistryDelegate<Item>, Integer>, ModelResourceLocation> customModels = com.google.common.collect.Maps.newHashMap();
 
     /**
+     * Cleanroom: registers the model for a flattened (one-id) item and registers it with {@link ModelBakery}.
+     */
+    public static void setCustomModelResourceLocation(Item item, ModelResourceLocation model)
+    {
+        setCustomModelResourceLocation(item, 0, model);
+    }
+
+    /**
      * Adds a simple mapping from Item + metadata to the model variant.
      * Registers the variant with the ModelBakery too.
+     *
+     * @deprecated Cleanroom: use {@link #setCustomModelResourceLocation(Item, ModelResourceLocation)} or
+     * {@link #setCustomMeshDefinition(Item, ItemMeshDefinition)}.
      */
+    @Deprecated
     public static void setCustomModelResourceLocation(Item item, int metadata, ModelResourceLocation model)
     {
         customModels.put(Pair.of(item.delegate, metadata), model);

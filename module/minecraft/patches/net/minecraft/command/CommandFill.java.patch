@@ -1,6 +1,19 @@
 --- original/net/minecraft/command/CommandFill.java
 +++ modified/net/minecraft/command/CommandFill.java
-@@ -81,11 +81,12 @@
+@@ -46,8 +46,11 @@
+         BlockPos blockpos = parseBlockPos(sender, args, 0, false);
+         BlockPos blockpos1 = parseBlockPos(sender, args, 3, false);
+         Block block = CommandBase.getBlockByText(sender, args[6]);
++        String inlineState = CommandBase.extractInlineBlockStateSpec(args[6]);
+         IBlockState iblockstate;
+-        if (args.length >= 8) {
++        if (inlineState != null && (args.length < 8 || "0".equals(args[7]) || "default".equals(args[7]))) {
++            iblockstate = convertArgToBlockState(block, inlineState);
++        } else if (args.length >= 8) {
+             iblockstate = convertArgToBlockState(block, args[7]);
+         } else {
+             iblockstate = block.getDefaultState();
+@@ -81,11 +84,12 @@
                  }
              }
  
@@ -17,12 +30,24 @@
                  try {
                      nbttagcompound = JsonToNBT.getTagFromJson(s);
                      flag = true;
-@@ -109,7 +110,7 @@
+@@ -109,13 +113,15 @@
                                      if (!world.isAirBlock(blockpos4)) {
                                          continue;
                                      }
 -                                } else if ("replace".equals(args[8]) && !block.hasTileEntity() && args.length > 9) {
 +                                } else if ("replace".equals(args[8]) && !block.hasTileEntity(iblockstate) && args.length > 9) {
                                      Block block1 = CommandBase.getBlockByText(sender, args[9]);
++                                    String replaceInline = CommandBase.extractInlineBlockStateSpec(args[9]);
++                                    String replaceSpec = args.length > 10 && !"-1".equals(args[10]) && !"*".equals(args[10])
++                                        ? args[10]
++                                        : replaceInline;
                                      if (world.getBlockState(blockpos4).getBlock() != block1
-                                         || args.length > 10
+-                                        || args.length > 10
+-                                            && !"-1".equals(args[10])
+-                                            && !"*".equals(args[10])
+-                                            && !CommandBase.convertArgToBlockStatePredicate(block1, args[10]).apply(world.getBlockState(blockpos4))) {
++                                        || replaceSpec != null
++                                            && !CommandBase.convertArgToBlockStatePredicate(block1, replaceSpec).apply(world.getBlockState(blockpos4))) {
+                                         continue;
+                                     }
+                                 }

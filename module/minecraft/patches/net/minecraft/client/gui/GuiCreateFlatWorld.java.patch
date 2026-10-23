@@ -1,0 +1,11 @@
+--- original/net/minecraft/client/gui/GuiCreateFlatWorld.java
++++ modified/net/minecraft/client/gui/GuiCreateFlatWorld.java
+@@ -233,7 +233,7 @@
+                 }
+             }
+ 
+-            ItemStack itemstack = new ItemStack(item, 1, item.getHasSubtypes() ? block.getMetaFromState(iblockstate) : 0);
++            ItemStack itemstack = item instanceof net.minecraft.item.ItemBlock && ((net.minecraft.item.ItemBlock) item).getBlock() == block ? ((net.minecraft.item.ItemBlock) item).stackFor(iblockstate) : new ItemStack(item, 1, item.getHasSubtypes() ? block.getMetaFromState(iblockstate) : 0);
+             String s = item.getItemStackDisplayName(itemstack);
+             this.drawItem(xPos, yPos, itemstack);
+             GuiCreateFlatWorld.this.fontRenderer.drawString(s, xPos + 18 + 5, yPos + 3, 16777215);

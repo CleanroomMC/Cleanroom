@@ -1,0 +1,11 @@
+--- original/net/minecraft/network/play/server/SPacketBlockChange.java
++++ modified/net/minecraft/network/play/server/SPacketBlockChange.java
+@@ -27,7 +27,7 @@
+     @Override
+     public void readPacketData(PacketBuffer buf) throws IOException {
+         this.blockPosition = buf.readBlockPos();
+-        this.blockState = Block.BLOCK_STATE_IDS.getByValue(buf.readVarInt());
++        this.blockState = Block.getStateById(buf.readVarInt());
+     }
+ 
+     /** Writes the raw packet data to the data stream. */

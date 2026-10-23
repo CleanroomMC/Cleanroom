@@ -172,7 +172,7 @@
          return flag1;
      }
  
-@@ -264,8 +289,11 @@
+@@ -264,11 +289,14 @@
              return EnumActionResult.PASS;
          }
  
@@ -183,8 +183,18 @@
 +        ItemStack copyBeforeUse = stack.copy();
          ActionResult<ItemStack> actionresult = stack.useItemRightClick(worldIn, player, hand);
          ItemStack itemstack = actionresult.getResult();
-         if (itemstack == stack && itemstack.getCount() == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j) {
-@@ -285,6 +313,7 @@
+-        if (itemstack == stack && itemstack.getCount() == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j) {
++        if (itemstack == stack && itemstack.getCount() == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j && itemstack.getComponents().equals(copyBeforeUse.getComponents())) {
+             return actionresult.getType();
+         }
+ 
+@@ -280,11 +308,12 @@
+         if (this.isCreative()) {
+             itemstack.setCount(i);
+             if (itemstack.isItemStackDamageable()) {
+-                itemstack.setItemDamage(j);
++                itemstack.setDamageValue(j);
+             }
          }
  
          if (itemstack.isEmpty()) {
@@ -221,18 +231,20 @@
                  }
              }
  
-@@ -352,14 +394,20 @@
+@@ -352,14 +394,22 @@
              if (this.isCreative()) {
                  int j = stack.getMetadata();
                  int i = stack.getCount();
 -                EnumActionResult enumactionresult = stack.onItemUse(
 -                    player, worldIn, pos, hand, facing, hitX, hitY, hitZ
 -                );
++                com.cleanroommc.cleanroom.common.component.PatchedDataComponentMap savedComponents = stack.getComponents().copy();
 +                if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
 +                        || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
 +                EnumActionResult enumactionresult = stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
                  stack.setItemDamage(j);
                  stack.setCount(i);
++                stack.getComponents().restorePatch(savedComponents.asPatch());
                  return enumactionresult;
 +                } else return result;
              } else {
@@ -246,7 +258,7 @@
              }
          }
      }
-@@ -368,4 +416,14 @@
+@@ -368,4 +418,14 @@
      public void setWorld(WorldServer serverWorld) {
          this.world = serverWorld;
      }
