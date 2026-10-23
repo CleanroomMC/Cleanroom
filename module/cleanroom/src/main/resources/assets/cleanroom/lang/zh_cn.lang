@@ -49,3 +49,4 @@ cleanroom.config.ignored_dependencies_list=忽略前置列表
 cleanroom.config.ignored_dependencies_list.tooltip=忽略的前置模组的Mod ID列表。\n它们不会在搜索前置/依赖模组时显示。
 cleanroom.config.force_default_icon_list=强制默认图标列表
 cleanroom.config.force_default_icon_list.tooltip=总使用默认物品图标的模组的Mod ID列表。\n它们不会有随机选取的物品图标，以避免崩溃。
+attribute.name.generic.flyingSpeed=飞行速度
