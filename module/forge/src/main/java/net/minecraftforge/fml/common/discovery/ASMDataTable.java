@@ -180,7 +180,17 @@ public class ASMDataTable
                     return (String)m.getAnnotationInfo().get("modid");
                 }
             }
+            String bestModId = null;
+            int bestPkgLen = -1;
+            for (ASMData m : mods) {
+                String modClass = m.getClassName();
+                int lastDot = modClass.lastIndexOf('.');
+                if (lastDot > bestPkgLen && targ.getClassName().regionMatches(0, modClass, 0, lastDot + 1)) {
+                    bestPkgLen = lastDot;
+                    bestModId = (String)m.getAnnotationInfo().get("modid");
+                }
+            }
+            return bestModId;
         }
-        return null;
     }
 }
