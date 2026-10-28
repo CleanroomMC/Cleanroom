@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.7.14-alpha - 2026-10-28
+
+### Feature
+
+- Hide legacy APIs from userdev and support FB's MixinSquared inclusion *[commit by [@Rongmario](https://github.com/Rongmario) in [d6bfdb9](https://github.com/CleanroomMC/Cleanroom/commit/d6bfdb9662277482841e53cf5443c5c47b0176ec)]*
+
+### Performance
+
+- **discovery**: Improve mod scanning times *[commit by [@Rongmario](https://github.com/Rongmario) in [289c9eb](https://github.com/CleanroomMC/Cleanroom/commit/289c9eb3c9717c3265a763daca7d0cc33f39391e)]*
+
+### Build and Dependencies
+
+- Fixed having duplicated minecraft sources *[commit by [@Rongmario](https://github.com/Rongmario) in [fa28029](https://github.com/CleanroomMC/Cleanroom/commit/fa280297a94279dc87a909b8ff77374ca9a56e8e)]*
+- **deps**: Update CleanroomGradle *[commit by [@Rongmario](https://github.com/Rongmario) in [ed0a619](https://github.com/CleanroomMC/Cleanroom/commit/ed0a61959c316d7bed4ce5161273706465b8a25e)]*
+- **deps**: Update cleanmix & mixinextras *[commit by [@Rongmario](https://github.com/Rongmario) in [ac0c19b](https://github.com/CleanroomMC/Cleanroom/commit/ac0c19b11be383b4868000084ff5ab0c077ec84a)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.13-alpha...0.7.14-alpha
+
 ## 0.7.13-alpha - 2026-10-28
 
 ### Feature
