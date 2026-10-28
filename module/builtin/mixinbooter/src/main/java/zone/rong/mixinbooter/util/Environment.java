@@ -2,6 +2,10 @@ package zone.rong.mixinbooter.util;
 
 import com.cleanroommc.common.CleanroomEnvironment;
 
+/**
+ * @deprecated use {@link CleanroomEnvironment}
+ */
+@Deprecated
 public class Environment {
 
     public static String minecraftVersion() {

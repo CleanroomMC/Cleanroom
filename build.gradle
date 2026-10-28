@@ -73,6 +73,7 @@ def unformatted = [
 // The builtin modules keep their own licensing and public API
 def builtin = [
         'zone/rong/mixinbooter/**',
+        'fermiumbooter/**',
         'com/cleanroommc/configanytime/**',
         'com/cleanroommc/client/windows/**'
 ]

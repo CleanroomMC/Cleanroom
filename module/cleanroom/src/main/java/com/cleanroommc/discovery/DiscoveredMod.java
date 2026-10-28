@@ -19,6 +19,9 @@ public record DiscoveredMod(
     File file,
     Attributes attributes,
     List<String> modIds,
+    Map<String, String> modNames,
+    Map<String, String> modVersions,
+    List<String> mixinConfigurationClasses,
     String modType,
     boolean hasMixinManifestAttributes,
     boolean mixinTweakerForceMod,
@@ -31,6 +34,9 @@ public record DiscoveredMod(
     public DiscoveredMod {
         file = file.getAbsoluteFile();
         modIds = List.copyOf(modIds);
+        modNames = Map.copyOf(modNames);
+        modVersions = Map.copyOf(modVersions);
+        mixinConfigurationClasses = List.copyOf(mixinConfigurationClasses);
         accessTransformers = Map.copyOf(accessTransformers);
     }
 
