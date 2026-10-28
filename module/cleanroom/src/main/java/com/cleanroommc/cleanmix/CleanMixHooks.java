@@ -16,6 +16,7 @@ import zone.rong.mixinbooter.IEarlyMixinLoader;
 import zone.rong.mixinbooter.ILateMixinLoader;
 import zone.rong.mixinbooter.IMixinConfigHijacker;
 import zone.rong.mixinbooter.MixinLoader;
+import zone.rong.mixinbooter.fb.FBMod;
 
 import org.spongepowered.asm.logging.ILogger;
 import org.spongepowered.asm.mixin.Mixins;
@@ -24,10 +25,13 @@ import org.spongepowered.asm.mixin.transformer.ClassInfo;
 import org.spongepowered.asm.mixin.transformer.Config;
 import org.spongepowered.asm.service.MixinService;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -37,7 +41,25 @@ import java.util.Set;
 
 public final class CleanMixHooks {
 
+    private static List<String> crashes = new ArrayList<>();
+
     private CleanMixHooks() { }
+
+    public static void crash(String message) {
+        MixinService.getService().getLogger("CleanMix").fatal(message);
+        if (crashes == null) {
+            throw new IllegalStateException(message);
+        }
+        crashes.add(message);
+    }
+
+    public static void flushCrashes() {
+        List<String> pending = crashes;
+        crashes = null;
+        if (!pending.isEmpty()) {
+            throw new IllegalStateException(String.join(" ", pending));
+        }
+    }
 
     public static String addMixinMetadataToCrashReport(Throwable throwable) {
         Map<String, ClassInfo> classes = new LinkedHashMap<>();
@@ -114,10 +136,15 @@ public final class CleanMixHooks {
                 logger.error("Failed to execute early loader [{}].", queuedLoader.getClass().getName(), t);
             }
         }
+        FBMod.applyEarly();
+        applyMixinConfigurations();
     }
 
     public static void loadMixinBooterLateMixins(ASMDataTable data) {
         ILogger logger = MixinService.getService().getLogger("CleanMix");
+
+        // Every mixin connector has run by now
+        flushCrashes();
 
         // Gather ILateMixinLoaders
         Set<ASMDataTable.ASMData> interfaceData = data.getAll(ILateMixinLoader.class.getName().replace('.', '/'));
@@ -162,6 +189,59 @@ public final class CleanMixHooks {
             } catch (Throwable t) {
                 logger.error("Failed to execute late loader [{}].", lateLoader.getClass().getName(), t);
             }
+        }
+        FBMod.applyLate();
+    }
+
+    private static void applyMixinConfigurations() {
+        for (String className : CleanroomModDiscoverer.instance().mixinConfigurationClasses()) {
+            Class<?> config;
+            try {
+                config = Class.forName(className, true, Launch.classLoader);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Unable to load " + className + " for its mixin configurations", e);
+            }
+            for (Field field : config.getFields()) {
+                MixinConfiguration configuration = field.getAnnotation(MixinConfiguration.class);
+                if (configuration != null) {
+                    ConditionalMixin conditional = ConditionalMixin.of(configuration.name())
+                        .option(config, field.getName());
+                    for (MixinConfiguration.Dependency dependency : configuration.depends()) {
+                        requires(
+                            conditional, dependency.modid(), dependency.version(), dependency.reason(),
+                            dependency.crash()
+                        );
+                    }
+                    conditional.register();
+                }
+                var legacy = field.getAnnotation(zone.rong.mixinbooter.util.MixinConfiguration.class);
+                if (legacy != null) {
+                    ConditionalMixin conditional = ConditionalMixin.of(legacy.name()).option(config, field.getName());
+                    for (var dependency : legacy.depends()) {
+                        requires(
+                            conditional, dependency.modid(), dependency.version(), dependency.reason(),
+                            dependency.crash()
+                        );
+                    }
+                    conditional.register();
+                }
+            }
+        }
+    }
+
+    private static void requires(
+        ConditionalMixin conditional, String modId, String version, String reason, boolean crash) {
+        conditional.requires(modId);
+        if (!version.isEmpty()) {
+            conditional.version(version);
+        }
+        if (!reason.isEmpty()) {
+            conditional.because(reason);
+        }
+        if (crash) {
+            conditional.orCrash();
+        } else {
+            conditional.orWarn();
         }
     }
 
