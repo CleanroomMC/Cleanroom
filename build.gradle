@@ -180,6 +180,7 @@ dependencies {
     api "com.cleanroommc:cleanmix:${providers.gradleProperty('cleanmix_version').get()}"
     api "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
 
+    compileOnly 'com.cleanroommc:hide-from-userdev:1.0.0'
     api 'org.jspecify:jspecify:1.0.0'
     api 'top.outlands:foundation:0.22.2'
     api 'zone.rong:imaginebreaker:3.2'
