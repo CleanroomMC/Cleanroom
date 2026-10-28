@@ -44,7 +44,7 @@ def modules = [
 
 sourceSets {
     main {
-        java.srcDirs modules.collect { "module/${it}/src/main/java" }
+        java.srcDirs modules.findAll { it != 'minecraft' }.collect { "module/${it}/src/main/java" }
         // Fixme: Temp
         java.exclude 'com/cleanroommc/kirino/utils/KsmlcUtils.java'
         resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
