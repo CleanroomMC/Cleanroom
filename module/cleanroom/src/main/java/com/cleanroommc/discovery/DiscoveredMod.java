@@ -13,6 +13,7 @@ package com.cleanroommc.discovery;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 
 public record DiscoveredMod(
@@ -29,7 +30,9 @@ public record DiscoveredMod(
     String coremod,
     String tweaker,
     boolean onClasspath,
-    Map<String, String> accessTransformers) {
+    Map<String, String> accessTransformers,
+    Set<String> dependencies,
+    List<String> fermiumConfigClasses) {
 
     public DiscoveredMod {
         file = file.getAbsoluteFile();
@@ -38,6 +41,8 @@ public record DiscoveredMod(
         modVersions = Map.copyOf(modVersions);
         mixinConfigurationClasses = List.copyOf(mixinConfigurationClasses);
         accessTransformers = Map.copyOf(accessTransformers);
+        dependencies = Set.copyOf(dependencies);
+        fermiumConfigClasses = List.copyOf(fermiumConfigClasses);
     }
 
     public boolean isDirectoryBased() {

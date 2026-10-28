@@ -24,7 +24,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.SetMultimap;
-import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import org.apache.commons.io.IOUtils;
 
@@ -55,6 +54,7 @@ import net.minecraftforge.fml.common.discovery.ModDiscoverer;
 import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 import net.minecraftforge.fml.common.launcher.FMLTweaker;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.minecraftforge.fml.common.versioning.InvalidVersionSpecificationException;
 import net.minecraftforge.fml.common.versioning.VersionRange;
@@ -73,6 +73,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,6 +83,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -91,13 +98,42 @@ import java.util.zip.ZipEntry;
 
 public final class CleanroomModDiscoverer extends ModDiscoverer {
 
-    // Set before INSTANCE, as its constructor scans mods
     private static final List<Type> MIXIN_CONFIGURATIONS = List.of(
         Type.getType(MixinConfiguration.class), Type.getType(zone.rong.mixinbooter.util.MixinConfiguration.class)
     );
-
-    private static final CleanroomModDiscoverer INSTANCE = new CleanroomModDiscoverer();
-
+    private static final Type FERMIUM_CONFIG = Type.getType("Lfermiumbooter/annotations/MixinConfig;");
+    // TODO: temporary
+    private static final String[] SHADED_LIBRARIES = {
+        "org/spongepowered/",
+        "com/llamalad7/",
+        "org/objectweb/",
+        "com/google/",
+        "it/unimi/",
+        "kotlin/",
+        "scala/",
+        "net/minecraft/",
+        "net/minecraftforge/",
+        "com/mojang/",
+        "org/apache/",
+        "io/netty/",
+        "gnu/trove/",
+        "akka/",
+        "com/ibm/",
+        "org/lwjgl/",
+        "org/jline/",
+        "com/sun/",
+        "javax/",
+        "org/jetbrains/",
+        "org/intellij/",
+        "org/checkerframework/",
+        "org/slf4j/",
+        "com/fasterxml/",
+        "org/yaml/"
+    };
+    // See: MixinBooter source
+    private static final int JARS_PER_THREAD = 32;
+    private static final int MAX_THREADS = 3;
+    private static final ThreadLocal<byte[]> CLASS_BUFFER = ThreadLocal.withInitial(() -> new byte[1 << 16]);
     private static final String TWEAK_CLASS = ManifestAttributes.TWEAKER;
     private static final String MIXIN_CONFIGS = ManifestAttributes.MIXINCONFIGS;
     private static final String MIXIN_CONNECTOR = ManifestAttributes.MIXINCONNECTOR;
@@ -122,7 +158,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     public static CleanroomModDiscoverer instance() {
-        return INSTANCE;
+        return Holder.INSTANCE;
     }
 
     private static void addContainedDepsToClasspath(
@@ -187,6 +223,72 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
+    private static List<DiscoveredMod> runScans(List<Supplier<DiscoveredMod>> scans) {
+        int threads = Math.min(
+            Math.min(MAX_THREADS, Runtime.getRuntime().availableProcessors() - 1), 1 + scans.size() / JARS_PER_THREAD
+        );
+        if (threads <= 1) {
+            return scans.stream().map(Supplier::get).toList();
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(
+            threads, runnable -> new Thread(runnable, "Cleanroom Mod Discovery")
+        );
+        try {
+            List<Future<DiscoveredMod>> futures = scans.stream().map(scan -> executor.submit(scan::get)).toList();
+            List<DiscoveredMod> mods = new ArrayList<>(futures.size());
+            for (Future<DiscoveredMod> future : futures) {
+                mods.add(future.get());
+            }
+            return mods;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Failed to discover mods", e);
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    // Mods declare this in @Mod as required-after:id, after:id or even required:id.
+    // The range is not checked, some mods put the CurseForge project id there in place of a version...
+    private static void addDependencies(Object dependencies, Set<String> modIds) {
+        if (!(dependencies instanceof String string)) {
+            return;
+        }
+        for (String dependency : string.split("[;,]")) {
+            int at = dependency.indexOf('@');
+            modIds.add(dependency.substring(dependency.indexOf(':') + 1, at == -1 ? dependency.length() : at).trim());
+        }
+    }
+
+    // Walks the constant pool alone, so ASM only parses the few classes that name an annotation being looked for
+    private static boolean namesAnnotation(byte[] bytes, byte[][] annotations) {
+        int count = (bytes[8] & 0xFF) << 8 | bytes[9] & 0xFF;
+        for (int entry = 1, offset = 10; entry < count; entry++) {
+            switch (bytes[offset]) {
+                case 1 -> {
+                    int length = (bytes[offset + 1] & 0xFF) << 8 | bytes[offset + 2] & 0xFF;
+                    offset += 3;
+                    for (byte[] annotation : annotations) {
+                        if (Arrays.equals(bytes, offset, offset + length, annotation, 0, annotation.length)) {
+                            return true;
+                        }
+                    }
+                    offset += length;
+                }
+                case 5, 6 -> {
+                    entry++;
+                    offset += 9;
+                }
+                case 7, 8, 16, 19, 20 -> offset += 3;
+                case 15 -> offset += 4;
+                case 3, 4, 9, 10, 11, 12, 17, 18 -> offset += 5;
+                default -> {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean hasForgeMods() {
         return hasForgeMods;
     }
@@ -243,6 +345,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         } catch (InvalidVersionSpecificationException e) {
             return false;
         }
+    }
+
+    public DiscoveredMod discoveredMod(File file) {
+        return discoveredFiles.get(normalize(file));
     }
 
     public String modVersion(String modId) {
@@ -423,17 +529,42 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         CleanroomLog.get().info("Discovering mods");
         long startTime = System.nanoTime();
 
+        Map<File, Boolean> files = new LinkedHashMap<>();
         for (File candidate : LibraryManager.getCandidates()) {
-            scan(candidate, false);
+            files.putIfAbsent(normalize(candidate), false);
         }
         for (URL url : Launch.classLoader.getURLs()) {
             try {
                 File file = new File(url.toURI());
                 if (isArchive(file)) {
-                    scan(file, true);
+                    files.putIfAbsent(normalize(file), true);
                 }
             } catch (URISyntaxException ignored) { }
         }
+        byte[][] descriptors = Stream.of(
+            ModContainerFactory.modTypes.keySet().stream(), MIXIN_CONFIGURATIONS.stream(), Stream.of(FERMIUM_CONFIG)
+        )
+            .flatMap(Function.identity())
+            .map(type -> type.getDescriptor().getBytes(StandardCharsets.UTF_8))
+            .toArray(byte[][]::new);
+        List<Supplier<DiscoveredMod>> scans = new ArrayList<>(files.size());
+        files.forEach((file, onClasspath) -> scans.add(() -> scan(file, onClasspath, descriptors)));
+
+        // Merged in discovery order, so jars declaring a built-in mod id are dropped as they were when scanned one by one
+        mods:
+        for (DiscoveredMod mod : runScans(scans)) {
+            for (String modId : mod.modIds()) {
+                if (recordMod(modId, mod.file())) {
+                    continue mods;
+                }
+            }
+            discoveredFiles.put(mod.file(), mod);
+            if (!hasForgeMods && ManifestAttributes.FORGEMODTYPE.equals(mod.modType())) {
+                hasForgeMods = true;
+            }
+        }
+        // Pool threads end with the pool, the main thread keeps its buffer unless removed
+        CLASS_BUFFER.remove();
 
         long elapsedMillis = (System.nanoTime() - startTime) / 1_000_000L;
         CleanroomLog.get()
@@ -444,19 +575,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         CleanroomLog.get().debug("Discovered mod ids: {}", String.join(", ", modIdToFiles.keySet()));
     }
 
-    private void scan(File file, boolean onClasspath) {
-        File absolute = normalize(file);
-        DiscoveredMod cached = discoveredFiles.get(absolute);
-        if (cached != null) {
-            return;
-        }
+    // Runs on discovery threads, so no discoverer state is written to
+    private DiscoveredMod scan(File absolute, boolean onClasspath, byte[][] descriptors) {
         if (!isArchive(absolute)) {
-            DiscoveredMod info = new DiscoveredMod(
+            return new DiscoveredMod(
                 absolute, null, List.of(), Map.of(), Map.of(), List.of(), ManifestAttributes.CLEANROOMMODTYPE, false,
-                false, false, null, null, onClasspath, Map.of()
+                false, false, null, null, onClasspath, Map.of(), Set.of(), List.of()
             );
-            discoveredFiles.put(absolute, info);
-            return;
         }
 
         Attributes attributes = null;
@@ -465,6 +590,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         Map<String, String> modNames = new HashMap<>();
         Map<String, String> modVersions = new HashMap<>();
         List<String> configurationClasses = new ArrayList<>();
+        Set<String> dependencies = new HashSet<>();
+        List<String> fermiumConfigClasses = new ArrayList<>();
         String modType = ManifestAttributes.FORGEMODTYPE;
         String coremod = null;
         String tweaker = null;
@@ -498,14 +625,14 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (modIds.isEmpty()) {
                 ZipEntry entry = jarFile.getEntry("mcmod.info");
                 if (entry != null) {
-                    parseMcmodInfo(file, jarFile.getInputStream(entry), modIds, modNames, modVersions);
+                    parseMcmodInfo(
+                        absolute, jarFile.getInputStream(entry), modIds, modNames, modVersions, dependencies
+                    );
                 }
-                scanModAnnotations(jarFile, modIds, modNames, modVersions, configurationClasses);
-            }
-            for (String modId : modIds) {
-                if (recordMod(modId, absolute)) {
-                    return;
-                }
+                scanModAnnotations(
+                    jarFile, descriptors, modIds, modNames, modVersions, dependencies, configurationClasses,
+                    fermiumConfigClasses
+                );
             }
             String atList = attributes == null ? null : attributes.getValue(ModAccessTransformer.FMLAT);
             if (atList != null && !atList.isEmpty()) {
@@ -515,16 +642,11 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             CleanroomLog.get().error("Failed to read mod metadata from {}", absolute.getName(), e);
         }
 
-        DiscoveredMod info = new DiscoveredMod(
+        return new DiscoveredMod(
             absolute, attributes, List.copyOf(modIds), modNames, modVersions, configurationClasses, modType,
             hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker, onClasspath,
-            accessTransformers
+            accessTransformers, dependencies, fermiumConfigClasses
         );
-        discoveredFiles.put(absolute, info);
-
-        if (!hasForgeMods && ManifestAttributes.FORGEMODTYPE.equals(info.modType())) {
-            hasForgeMods = true;
-        }
     }
 
     private void discoverCoreMod(
@@ -806,7 +928,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void parseMcmodInfo(
-        File file, InputStream stream, Set<String> ids, Map<String, String> names, Map<String, String> versions) {
+        File file, InputStream stream, Set<String> ids, Map<String, String> names, Map<String, String> versions,
+        Set<String> dependencies) {
         try {
             MetadataCollection collection = MetadataCollection.from(stream, file.getName());
             for (String id : collection.getIds()) {
@@ -817,6 +940,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 ids.add(id);
                 ModMetadata metadata = collection.getMetadataForId(id, Map.of());
                 recordModInfo(names, versions, id, metadata.name, metadata.version);
+                Stream.concat(metadata.requiredMods.stream(), metadata.dependencies.stream())
+                    .map(ArtifactVersion::getLabel)
+                    .forEach(dependencies::add);
             }
         } catch (Throwable t) {
             CleanroomLog.get().error("Failed to parse mcmod.info for {}", file.getName(), t);
@@ -826,37 +952,51 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void scanModAnnotations(
-        JarFile jar, Set<String> modIds, Map<String, String> names, Map<String, String> versions,
-        List<String> configurationClasses) {
-        List<byte[]> modDescriptors = Stream.concat(
-            ModContainerFactory.modTypes.keySet().stream(),
-            MIXIN_CONFIGURATIONS.stream()
-        )
-            .map(type -> type.getDescriptor().getBytes(StandardCharsets.UTF_8))
-            .toList();
+        JarFile jar, byte[][] descriptors, Set<String> modIds, Map<String, String> names, Map<String, String> versions,
+        Set<String> dependencies, List<String> configurationClasses, List<String> fermiumConfigClasses) {
+        byte[] buffer = CLASS_BUFFER.get();
         var entries = jar.entries();
+        entryLoop:
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
-            if (entry.isDirectory() || !entry.getName().endsWith(".class")) {
+            String name = entry.getName();
+            if (entry.isDirectory() || !name.endsWith(".class")) {
                 continue;
             }
+            for (String library : SHADED_LIBRARIES) {
+                if (name.startsWith(library)) {
+                    continue entryLoop;
+                }
+            }
             try (InputStream in = jar.getInputStream(entry)) {
-                byte[] bytes = in.readAllBytes();
-                if (modDescriptors.stream().noneMatch(descriptor -> Bytes.indexOf(bytes, descriptor) != -1)) {
+                if (entry.getSize() > buffer.length) {
+                    buffer = new byte[(int) entry.getSize()];
+                }
+                int length = 0;
+                for (int read; (read = in.read(buffer, length, buffer.length - length)) != -1;) {
+                    length += read;
+                    if (length == buffer.length) {
+                        buffer = Arrays.copyOf(buffer, length << 1);
+                    }
+                }
+                if (!namesAnnotation(buffer, descriptors)) {
                     continue;
                 }
-                ASMModParser parser = new ASMModParser(new ByteArrayInputStream(bytes));
+                ASMModParser parser = new ASMModParser(new ByteArrayInputStream(buffer, 0, length));
                 parser.validate();
                 boolean configuration = false;
                 for (ModAnnotation annotation : parser.getAnnotations()) {
                     if (MIXIN_CONFIGURATIONS.contains(annotation.getASMType())) {
                         configuration = true;
+                    } else if (FERMIUM_CONFIG.equals(annotation.getASMType())) {
+                        fermiumConfigClasses.add(name);
                     } else if (ModContainerFactory.modTypes.containsKey(annotation.getASMType())) {
                         Map<String, Object> values = annotation.getValues();
                         if (values.get("modid") instanceof String modId && !modId.isEmpty()) {
                             modIds.add(modId);
                             recordModInfo(names, versions, modId, values.get("name"), values.get("version"));
                         }
+                        addDependencies(values.get("dependencies"), dependencies);
                     }
                 }
                 if (configuration) {
@@ -864,6 +1004,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
             } catch (Exception ignored) { }
         }
+        CLASS_BUFFER.set(buffer);
+    }
+
+    private static final class Holder {
+
+        private static final CleanroomModDiscoverer INSTANCE = new CleanroomModDiscoverer();
+
     }
 
 }
