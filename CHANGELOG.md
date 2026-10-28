@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.7.13-alpha - 2026-10-28
+
+### Feature
+
+- **mixinbooter**: Update to v12 *[PR by [@Rongmario](https://github.com/Rongmario) in [#722](https://github.com/CleanroomMC/Cleanroom/pull/722)]*
+- Fly speed as a player attribute *[PR by [@Rongmario](https://github.com/Rongmario) in [#710](https://github.com/CleanroomMC/Cleanroom/pull/710)]*
+
+### Performance
+
+- **advancements**: Don't write the whole player for SelectedItem-only NBT predicates *[PR by [@TheRedJa](https://github.com/TheRedJa), Claude Opus 5.5 in [#712](https://github.com/CleanroomMC/Cleanroom/pull/712)]*
+
+### Documentation
+
+- **readme**: Fix closed source typo *[commit by [@Rongmario](https://github.com/Rongmario) in [31c50a3](https://github.com/CleanroomMC/Cleanroom/commit/31c50a39e58b0546f6ec745055a1f96a3fe350c9)]*
+
+### Build and Dependencies
+
+- **deps**: Update kirino *[commit by [@Rongmario](https://github.com/Rongmario) in [dd752ff](https://github.com/CleanroomMC/Cleanroom/commit/dd752ff64c46bc554d388c6f1ef275d774b4fc62)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.12-alpha...0.7.13-alpha
+
 ## 0.7.12-alpha - 2026-10-21
 
 ### Bug Fix
