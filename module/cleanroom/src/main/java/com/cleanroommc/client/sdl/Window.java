@@ -404,24 +404,17 @@ public final class Window implements AutoCloseable {
         if (images == null || images.length == 0 || images[0] == null) {
             throw new IllegalArgumentException("At least one icon image is required");
         }
-        SDL_Surface primary = Surfaces.from(images[0]);
-        try {
-            for (int i = 1; i < images.length; i++) {
-                if (images[i] == null) {
-                    continue;
-                }
-                SDL_Surface extra = Surfaces.from(images[i]);
-                try {
-                    SDL.tryCheck(
-                        SDLSurface.SDL_AddSurfaceAlternateImage(primary, extra), "SDL_AddSurfaceAlternateImage"
-                    );
-                } finally {
-                    SDLSurface.SDL_DestroySurface(extra);
-                }
+        BufferedImage largest = images[0];
+        for (BufferedImage image : images) {
+            if (image != null && image.getWidth() * image.getHeight() > largest.getWidth() * largest.getHeight()) {
+                largest = image;
             }
-            SDL.tryCheck(SDLVideo.SDL_SetWindowIcon(this.handle, primary), "SDL_SetWindowIcon");
+        }
+        SDL_Surface surface = Surfaces.from(largest);
+        try {
+            SDL.tryCheck(SDLVideo.SDL_SetWindowIcon(this.handle, surface), "SDL_SetWindowIcon");
         } finally {
-            SDLSurface.SDL_DestroySurface(primary);
+            SDLSurface.SDL_DestroySurface(surface);
         }
         return this;
     }
