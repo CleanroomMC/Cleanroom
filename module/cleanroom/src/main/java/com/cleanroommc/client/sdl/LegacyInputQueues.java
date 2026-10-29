@@ -101,7 +101,8 @@ final class LegacyInputQueues {
         };
     }
 
-    synchronized void key(int scancode, int key, boolean pressed, boolean repeat, char character, long timestampNs, short mods) {
+    synchronized void key(
+        int scancode, int key, boolean pressed, boolean repeat, char character, long timestampNs, short mods) {
         this.pendingCharacter = null;
         PendingKey event = new PendingKey(scancode, key, pressed, repeat, timestampNs, mods);
         event.character = character;

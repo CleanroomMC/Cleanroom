@@ -33,6 +33,7 @@ import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.util.Constants.ManifestAttributes;
 
+import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.classloading.FMLForgePlugin;
@@ -66,6 +67,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -87,6 +89,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.jar.Attributes;
@@ -142,6 +145,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private static final String COREMOD_CONTAINS_FML_MOD = "FMLCorePluginContainsFMLMod";
     private static final String FML_CORE_PLUGIN = "FMLCorePlugin";
     private static final String FERMIUM_PLUGIN = "fermiumbooter.FermiumPlugin";
+    private static final String FILE_DIRECTOR = "net.jan.moddirector.core.ModDirector";
+    private static final String FILE_DIRECTOR_TWEAKER = "net.jan.moddirector.launchwrapper.ModDirectorTweaker";
 
     private final List<ModContainer> builtInMods = List.of(new MixinBooterModContainer(), new ConfigAnytimeContainer());
     private final List<String> builtInModIds = builtInMods.stream().map(ModContainer::getModId).toList();
@@ -152,9 +157,22 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private List<File> nonModLibs = List.of();
     private boolean hasForgeMods;
+    private File fileDirector;
 
     private CleanroomModDiscoverer() {
-        this.discover();
+        Map<File, Boolean> files = new LinkedHashMap<>();
+        for (File candidate : LibraryManager.getCandidates()) {
+            files.putIfAbsent(normalize(candidate), false);
+        }
+        for (URL url : Launch.classLoader.getURLs()) {
+            try {
+                File file = new File(url.toURI());
+                if (isArchive(file)) {
+                    files.putIfAbsent(normalize(file), true);
+                }
+            } catch (URISyntaxException ignored) { }
+        }
+        this.discover(files);
     }
 
     public static CleanroomModDiscoverer instance() {
@@ -428,6 +446,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         ActualClassLoader.classLoaderInclusions.add("fermiumbooter.");
         File modsDir = setupCoreModDir(minecraftDirectory);
         findDerpMods(modsDir);
+        if (fileDirector != null) {
+            discoverFileDirectorMods(minecraftDirectory, classLoader);
+        }
 
         CleanroomLog.get().debug("Discovering coremods");
         File containedDepsDir = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
@@ -525,22 +546,48 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
-    private void discover() {
+    /**
+     * File Director downloads, replaces and supersedes mods from its tweaker.
+     * The tweaker runs too late hence why this explicit support is needed.
+     */
+    private void discoverFileDirectorMods(File gameDir, LaunchClassLoader classLoader) {
+        Map<File, Boolean> installed = new LinkedHashMap<>();
+        try {
+            classLoader.addURL(fileDirector.toURI().toURL());
+            ITweaker tweaker = (ITweaker) Class.forName(FILE_DIRECTOR_TWEAKER, true, classLoader)
+                .getConstructor()
+                .newInstance();
+            tweaker.acceptOptions(List.of(), gameDir, null, null);
+            Class<?> directorClass = Class.forName(FILE_DIRECTOR, false, classLoader);
+            Object director = directorClass.getMethod("getInstance").invoke(null);
+            Method activate = directorClass.getMethod("activate", long.class, TimeUnit.class);
+            if (!(boolean) activate.invoke(director, Long.MAX_VALUE, TimeUnit.DAYS)) {
+                directorClass.getMethod("errorExit").invoke(director);
+            }
+            for (Object mod : (List<?>) directorClass.getMethod("getInstalledMods").invoke(director)) {
+                if ((boolean) mod.getClass().getMethod("shouldInject").invoke(mod)) {
+                    installed.put(normalize(((Path) mod.getClass().getMethod("getFile").invoke(mod)).toFile()), false);
+                }
+            }
+        } catch (ReflectiveOperationException | MalformedURLException e) {
+            throw new RuntimeException("Failed to run File Director", e);
+        }
+        discoveredFiles.keySet().removeIf(file -> {
+            if (file.exists() && !installed.containsKey(file)) {
+                return false;
+            }
+            fileToModIds.removeAll(file).forEach(modId -> modIdToFiles.remove(modId, file));
+            return true;
+        });
+        if (!installed.isEmpty()) {
+            discover(installed);
+        }
+    }
+
+    private void discover(Map<File, Boolean> files) {
         CleanroomLog.get().info("Discovering mods");
         long startTime = System.nanoTime();
 
-        Map<File, Boolean> files = new LinkedHashMap<>();
-        for (File candidate : LibraryManager.getCandidates()) {
-            files.putIfAbsent(normalize(candidate), false);
-        }
-        for (URL url : Launch.classLoader.getURLs()) {
-            try {
-                File file = new File(url.toURI());
-                if (isArchive(file)) {
-                    files.putIfAbsent(normalize(file), true);
-                }
-            } catch (URISyntaxException ignored) { }
-        }
         byte[][] descriptors = Stream.of(
             ModContainerFactory.modTypes.keySet().stream(), MIXIN_CONFIGURATIONS.stream(), Stream.of(FERMIUM_CONFIG)
         )
@@ -561,6 +608,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             discoveredFiles.put(mod.file(), mod);
             if (!hasForgeMods && ManifestAttributes.FORGEMODTYPE.equals(mod.modType())) {
                 hasForgeMods = true;
+            }
+            if (FILE_DIRECTOR_TWEAKER.equals(mod.tweaker())) {
+                fileDirector = mod.file();
             }
         }
         // Pool threads end with the pool, the main thread keeps its buffer unless removed
@@ -616,7 +666,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 coreModContainsMod = attributes.getValue(COREMOD_CONTAINS_FML_MOD) != null;
                 if ("optifine.OptiFineForgeTweaker".equals(tweaker)) {
                     modIds.add("optifine");
-                } else if ("net.jan.moddirector.launchwrapper.ModDirectorTweaker".equals(tweaker)) {
+                } else if (FILE_DIRECTOR_TWEAKER.equals(tweaker)) {
                     modIds.add("moddirector");
                 } else if ("git.jbredwards.jsonpaintings.mod.asm.ASMHandler".equals(coremod)) {
                     modIds.add("jsonpaintings");
@@ -677,6 +727,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
             containNonMods = Boolean.parseBoolean(attributes.getValue("NonModDeps"));
             if (discoveredMod.tweaker() != null) {
+                if (FILE_DIRECTOR_TWEAKER.equals(discoveredMod.tweaker())) {
+                    CoreModManager.getIgnoredMods().add(file.getName());
+                    return;
+                }
                 if (containNonMods) {
                     addContainedDepsToClasspath(classLoader, attributes, containedDepsDir);
                 }
