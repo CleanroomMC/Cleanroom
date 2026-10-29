@@ -101,9 +101,9 @@ final class LegacyInputQueues {
         };
     }
 
-    synchronized void key(int scancode, int key, boolean pressed, boolean repeat, char character, long timestampNs) {
+    synchronized void key(int scancode, int key, boolean pressed, boolean repeat, char character, long timestampNs, short mods) {
         this.pendingCharacter = null;
-        PendingKey event = new PendingKey(scancode, key, pressed, repeat, timestampNs);
+        PendingKey event = new PendingKey(scancode, key, pressed, repeat, timestampNs, mods);
         event.character = character;
         append(this.keys, event);
         if (pressed) {
@@ -121,7 +121,7 @@ final class LegacyInputQueues {
                 this.pendingCharacter.character = character;
                 this.pendingCharacter = null;
             } else {
-                PendingKey event = new PendingKey(0, 0, true, false, timestampNs);
+                PendingKey event = new PendingKey(0, 0, true, false, timestampNs, (short) 0);
                 event.character = character;
                 append(this.keys, event);
             }
@@ -196,19 +196,21 @@ final class LegacyInputQueues {
         private final boolean pressed;
         private final boolean repeat;
         private final long timestampNs;
+        private final short mods;
 
         private char character;
 
-        private PendingKey(int scancode, int key, boolean pressed, boolean repeat, long timestampNs) {
+        private PendingKey(int scancode, int key, boolean pressed, boolean repeat, long timestampNs, short mods) {
             this.scancode = scancode;
             this.key = key;
             this.pressed = pressed;
             this.repeat = repeat;
             this.timestampNs = timestampNs;
+            this.mods = mods;
         }
 
         private WindowBridge.KeyEvent freeze() {
-            return new WindowBridge.KeyEvent(scancode, key, pressed, repeat, character, timestampNs);
+            return new WindowBridge.KeyEvent(scancode, key, pressed, repeat, character, timestampNs, mods);
         }
 
     }
