@@ -172,12 +172,25 @@
      }
  
      /** On the client, re-renders all blocks in this range, inclusive. On the server, does nothing. */
-@@ -2496,7 +2526,7 @@
+@@ -2494,9 +2524,10 @@
+                 }
+                 break;
              case 2001:
-                 Block block = Block.getBlockById(data & 4095);
+-                Block block = Block.getBlockById(data & 4095);
++                IBlockState brokenState = Block.getStateById(data); // Cleanroom: decodes state ids past the old block id + meta << 12 range too
++                Block block = brokenState.getBlock();
                  if (block.getDefaultState().getMaterial() != Material.AIR) {
 -                    SoundType soundtype = block.getSoundType();
-+                    SoundType soundtype = block.getSoundType(Block.getStateById(data), this.world, blockPosIn, null);
++                    SoundType soundtype = block.getSoundType(brokenState, this.world, blockPosIn, null);
                      this.world
                          .playSound(
                              blockPosIn,
+@@ -2508,7 +2539,7 @@
+                         );
+                 }
+ 
+-                this.mc.effectRenderer.addBlockDestroyEffects(blockPosIn, block.getStateFromMeta(data >> 12 & 0xFF));
++                this.mc.effectRenderer.addBlockDestroyEffects(blockPosIn, brokenState);
+                 break;
+             case 2002:
+             case 2007:

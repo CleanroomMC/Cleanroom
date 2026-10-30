@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.cleanroommc.cleanroom.common.id.IdDataFixers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -44,6 +45,7 @@ public class CompoundDataFixer extends DataFixer
     {
         super(0);
         this.vanilla = init("minecraft", vanilla.version);
+        IdDataFixers.register(this);
     }
 
     @Override

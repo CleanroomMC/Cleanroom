@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/chunk/BlockStatePaletteHashMap.java
++++ modified/net/minecraft/world/chunk/BlockStatePaletteHashMap.java
+@@ -46,7 +46,7 @@
+         int i = buf.readVarInt();
+ 
+         for (int j = 0; j < i; j++) {
+-            this.statePaletteMap.add(Block.BLOCK_STATE_IDS.getByValue(buf.readVarInt()));
++            this.statePaletteMap.add(Block.getStateById(buf.readVarInt()));
+         }
+     }
+ 

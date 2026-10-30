@@ -54,6 +54,7 @@ public class FMLDeobfTweaker implements ITweaker {
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockSpecialTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.PotionEffectTransformer");
+        classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.BiomeArrayTransformer");
 
         ((CleanMixService) MixinService.getService()).transitionToInit();
 

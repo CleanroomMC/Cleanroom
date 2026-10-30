@@ -46,6 +46,7 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.cleanroommc.cleanroom.common.id.PackedItems;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -519,9 +520,10 @@ public class OreDictionary
         {
             id = Item.REGISTRY.getIDForObject(stack.getItem().delegate.get());
         }
-        List<Integer> ids = stackToId.get(id);
+        Item rawItem = stack.getItem().delegate.get();
+        List<Integer> ids = stackToId.get(stackKey(rawItem, id, WILDCARD_VALUE));
         if (ids != null) set.addAll(ids);
-        ids = stackToId.get(id | ((stack.getItemDamage() + 1) << 16));
+        ids = stackToId.get(stackKey(rawItem, id, stack.getItemDamage()));
         if (ids != null) set.addAll(ids);
 
         Integer[] tmp = set.toArray(new Integer[set.size()]);
@@ -683,11 +685,7 @@ public class OreDictionary
         }
         else
         {
-            hash = Item.REGISTRY.getIDForObject(ore.getItem().delegate.get());
-        }
-        if (ore.getItemDamage() != WILDCARD_VALUE)
-        {
-            hash |= ((ore.getItemDamage() + 1) << 16); // +1 so 0 is significant
+            hash = stackKey(ore.getItem().delegate.get(), Item.REGISTRY.getIDForObject(ore.getItem().delegate.get()), ore.getItemDamage());
         }
 
         //Add things to the baked version, and prevent duplicates
@@ -749,16 +747,25 @@ public class OreDictionary
                 }
                 else
                 {
-                    hash = Item.REGISTRY.getIDForObject(ore.getItem().delegate.get());
-                }
-                if (ore.getItemDamage() != WILDCARD_VALUE)
-                {
-                    hash |= ((ore.getItemDamage() + 1) << 16); // +1 so meta 0 is significant
+                    hash = stackKey(ore.getItem().delegate.get(), Item.REGISTRY.getIDForObject(ore.getItem().delegate.get()), ore.getItemDamage());
                 }
                 List<Integer> ids = stackToId.computeIfAbsent(hash, k -> Lists.newArrayList());
                 ids.add(id);
                 //System.out.println(id + " " + getOreName(id) + " " + Integer.toHexString(hash) + " " + ore);
             }
         }
+    }
+
+    private static int stackKey(Item item, int id, int damage)
+    {
+        if (id < 0)
+        {
+            return -1;
+        }
+        if (id <= 0xFFFF && (damage == WILDCARD_VALUE || (damage >= 0 && damage < 0x7FFF)))
+        {
+            return damage == WILDCARD_VALUE ? id : (id | ((damage + 1) << 16));
+        }
+        return PackedItems.oreKey(item, damage);
     }
 }

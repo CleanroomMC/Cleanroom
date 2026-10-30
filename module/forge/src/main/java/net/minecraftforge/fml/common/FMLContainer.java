@@ -23,6 +23,8 @@ import java.io.File;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Map;
+
+import com.cleanroommc.cleanroom.common.id.LegacyIds;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -119,13 +121,10 @@ public final class FMLContainer extends DummyModContainer implements WorldAccess
         }
         fmlData.setTag("ModList", modList);
 
-        NBTTagCompound registries = new NBTTagCompound();
-        fmlData.setTag("Registries", registries);
-        FMLLog.log.debug("Gathering id map for writing to world save {}", info.getWorldName());
-
-        for (Map.Entry<ResourceLocation, ForgeRegistry.Snapshot> e : RegistryManager.ACTIVE.takeSnapshot(true).entrySet())
+        NBTTagCompound legacy = LegacyIds.registriesForWriting();
+        if (legacy != null)
         {
-            registries.setTag(e.getKey().toString(), e.getValue().write());
+            fmlData.setTag("Registries", legacy.copy()); // preserved verbatim, never regenerated from live ids
         }
         return fmlData;
     }
@@ -165,11 +164,12 @@ public final class FMLContainer extends DummyModContainer implements WorldAccess
         {
             Map<ResourceLocation, ForgeRegistry.Snapshot> snapshot = Maps.newHashMap();
             NBTTagCompound regs = tag.getCompoundTag("Registries");
+            LegacyIds.install(regs);
             for (String key : regs.getKeySet())
             {
                 snapshot.put(new ResourceLocation(key), ForgeRegistry.Snapshot.read(regs.getCompoundTag(key)));
             }
-            failedElements = GameData.injectSnapshot(snapshot, true, true);
+            failedElements = GameData.loadWorldSnapshot(snapshot);
         }
 
         if (failedElements != null && !failedElements.isEmpty())
