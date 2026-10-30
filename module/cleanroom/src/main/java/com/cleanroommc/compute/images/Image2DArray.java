@@ -95,9 +95,9 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(color instanceof ByteBuffer
                 || color instanceof IntBuffer
                 || color instanceof FloatBuffer);
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -175,9 +175,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -234,9 +234,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -380,9 +380,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public <B extends Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -447,9 +447,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -502,9 +502,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -557,9 +557,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -612,9 +612,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -668,9 +668,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public <B extends Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -736,9 +736,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -791,9 +791,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -846,9 +846,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -901,9 +901,9 @@ public final class Image2DArray extends Image<Vector3L> {
      */
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
-        Preconditions.checkArgument(from.z + size.z < this.length);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
+        Preconditions.checkArgument(from.z + size.z <= this.length);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         Preconditions.checkArgument(!commandQueue.isClosed());
 

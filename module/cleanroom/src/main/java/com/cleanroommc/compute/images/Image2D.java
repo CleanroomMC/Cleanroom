@@ -96,8 +96,8 @@ public final class Image2D extends Image<Vector2L> {
         Preconditions.checkArgument(color instanceof ByteBuffer
                 || color instanceof IntBuffer
                 || color instanceof FloatBuffer);
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
@@ -174,8 +174,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull Vector2L from, @NonNull Vector2L size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
@@ -231,8 +231,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Vector2L from, @NonNull Vector2L size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
@@ -439,8 +439,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -492,8 +492,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -545,8 +545,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -598,8 +598,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -652,8 +652,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public <B extends Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -718,8 +718,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -771,8 +771,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -824,8 +824,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
@@ -877,8 +877,8 @@ public final class Image2D extends Image<Vector2L> {
     @Override
     public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector2L from, int mipmap, @NonNull Vector2L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
-        Preconditions.checkArgument(from.x + size.x < this.size.x);
-        Preconditions.checkArgument(from.y + size.y < this.size.y);
+        Preconditions.checkArgument(from.x + size.x <= this.size.x);
+        Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(mipmap <= this.mipmaps);
 
         try (MemoryStack substack = stack.push()) {
