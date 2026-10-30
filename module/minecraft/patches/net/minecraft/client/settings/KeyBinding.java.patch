@@ -34,11 +34,11 @@
      /** Returns true if the key is pressed (used for continuous querying). Should be used in tickers. */
      public boolean isKeyDown() {
 -        return this.pressed;
-+        return this.pressed && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
++        return this.pressed && getKeyConflictContext().isActive() && net.minecraftforge.client.settings.KeyModifier.isActive(getKeyModifiersMask(), getKeyConflictContext());
      }
  
      public String getKeyCategory() {
-@@ -123,19 +121,137 @@
+@@ -123,19 +121,171 @@
      }
  
      public int compareTo(KeyBinding p_compareTo_1_) {
@@ -57,29 +57,52 @@
 +    /****************** Forge Start *****************************/
 +    private net.minecraftforge.client.settings.KeyModifier keyModifierDefault = net.minecraftforge.client.settings.KeyModifier.NONE;
 +    private net.minecraftforge.client.settings.KeyModifier keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
++    private int keyModifiersMaskDefault = 0;
++    private int keyModifiersMask = 0;
 +    private net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext = net.minecraftforge.client.settings.KeyConflictContext.UNIVERSAL;
 +
      /**
-+     * Convenience constructor for creating KeyBindings with keyConflictContext set.
++     * Deprecated!
++     * Constructor for creating KeyBindings with keyConflictContext set.
 +     */
++    @Deprecated
 +    public KeyBinding(String description, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext, int keyCode, String category) {
 +        this(description, keyConflictContext, net.minecraftforge.client.settings.KeyModifier.NONE, keyCode, category);
 +    }
 +
 +    /**
-+     * Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier set.
++     * Deprecated!
++     * Constructor for creating KeyBindings with keyConflictContext and keyModifier set.
 +     */
++    @Deprecated
 +    public KeyBinding(String description, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext, net.minecraftforge.client.settings.KeyModifier keyModifier, int keyCode, String category) {
-+        this.keyDescription = description;
-+        this.keyCode = keyCode;
-+        this.keyCodeDefault = keyCode;
-+        this.keyCategory = category;
-+        this.keyConflictContext = keyConflictContext;
-+        this.keyModifier = keyModifier;
++        this(category, description, keyCode,net.minecraftforge.client.settings.KeyModifier.toMask(keyModifier), keyConflictContext);
 +        this.keyModifierDefault = keyModifier;
-+        if (this.keyModifier.matches(keyCode)) {
-+            this.keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
++        if (!keyModifier.matches(keyCode)) {
++            this.keyModifier = keyModifier;
 +        }
++    }
++
++    /**
++     * Cleanroom
++     * Convenience constructor for creating KeyBindings with keyConflictContext.
++     */
++    public KeyBinding(String category, String description, int keyCode, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext) {
++        this(category, description, keyCode, net.minecraftforge.client.settings.KeyModifier.MASK_NONE, keyConflictContext);
++    }
++
++    /**
++     * Cleanroom
++     * Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier mask.
++     */
++    public KeyBinding(String category, String description, int keyCode, int keyModifiersMask, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext) {
++        this.keyCategory = category;
++        this.keyDescription = description;
++        this.keyCodeDefault = keyCode;
++        this.keyCode = keyCode;
++        this.keyConflictContext = keyConflictContext;
++        this.keyModifiersMaskDefault = keyModifiersMask;
++        this.keyModifiersMask = net.minecraftforge.client.settings.KeyModifier.filterMask(keyModifiersMask, keyCode);
 +        KEYBIND_ARRAY.put(description, this);
 +        HASH.addKey(keyCode, this);
 +        KEYBIND_SET.add(category);
@@ -89,7 +112,7 @@
 +     * Checks that the key conflict context and modifier are active, and that the keyCode matches this binding.
 +     */
 +    public boolean isActiveAndMatches(int keyCode) {
-+        return keyCode != 0 && keyCode == this.getKeyCode() && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
++        return keyCode != 0 && keyCode == this.getKeyCode() && getKeyConflictContext().isActive() && net.minecraftforge.client.settings.KeyModifier.isActive(getKeyModifiersMask(), getKeyConflictContext());
 +    }
 +
 +    public void setKeyConflictContext(net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext) {
@@ -100,30 +123,42 @@
 +        return keyConflictContext;
 +    }
 +
++    @Deprecated
 +    public net.minecraftforge.client.settings.KeyModifier getKeyModifierDefault() {
 +        return keyModifierDefault;
 +    }
 +
++    @Deprecated
 +    public net.minecraftforge.client.settings.KeyModifier getKeyModifier() {
 +        return keyModifier;
 +    }
 +
++    public int getKeyModifiersMaskDefault() {
++        return keyModifiersMaskDefault;
++    }
++
++    public int getKeyModifiersMask() {
++        return keyModifiersMask;
++    }
++
++    @Deprecated
 +    public void setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier keyModifier, int keyCode) {
++        setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.toMask(keyModifier), keyCode);
++    }
++
++    public void setKeyModifiersMaskAndCode(int mask, int keyCode) {
 +        this.keyCode = keyCode;
-+        if (keyModifier.matches(keyCode)) {
-+            keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
-+        }
++        this.keyModifiersMask = net.minecraftforge.client.settings.KeyModifier.filterMask(mask, keyCode);
 +        HASH.removeKey(this);
-+        this.keyModifier = keyModifier;
 +        HASH.addKey(keyCode, this);
 +    }
 +
 +    public void setToDefault() {
-+        setKeyModifierAndCode(getKeyModifierDefault(), getKeyCodeDefault());
++        setKeyModifiersMaskAndCode(getKeyModifiersMaskDefault(), getKeyCodeDefault());
 +    }
 +
 +    public boolean isSetToDefaultValue() {
-+        return getKeyCode() == getKeyCodeDefault() && getKeyModifier() == getKeyModifierDefault();
++        return getKeyCode() == getKeyCodeDefault() && getKeyModifiersMask() == getKeyModifiersMaskDefault();
 +    }
 +
 +    /**
@@ -131,17 +166,17 @@
 +     */
 +    public boolean conflicts(KeyBinding other) {
 +        if (getKeyConflictContext().conflicts(other.getKeyConflictContext()) || other.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-+            net.minecraftforge.client.settings.KeyModifier keyModifier = getKeyModifier();
-+            net.minecraftforge.client.settings.KeyModifier otherKeyModifier = other.getKeyModifier();
-+            if (keyModifier.matches(other.getKeyCode()) || otherKeyModifier.matches(getKeyCode())) {
++            int keyModifiersMask = getKeyModifiersMask();
++            int otherKeyModifiersMask = other.getKeyModifiersMask();
++            if (hasKeyCodeModifierConflict(other)) {
 +                return true;
 +            } else if (getKeyCode() == other.getKeyCode()) {
-+                return keyModifier == otherKeyModifier ||
++                return keyModifiersMask == otherKeyModifiersMask ||
 +                        // IN_GAME key contexts have a conflict when at least one modifier is NONE.
 +                        // For example: If you hold shift to crouch, you can still press E to open your inventory. This means that a Shift+E hotkey is in conflict with E.
 +                        // GUI and other key contexts do not have this limitation.
 +                        (getKeyConflictContext().conflicts(net.minecraftforge.client.settings.KeyConflictContext.IN_GAME) &&
-+                                (keyModifier == net.minecraftforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.minecraftforge.client.settings.KeyModifier.NONE));
++                                (keyModifiersMask == net.minecraftforge.client.settings.KeyModifier.MASK_NONE || otherKeyModifiersMask == net.minecraftforge.client.settings.KeyModifier.MASK_NONE));
 +            }
 +        }
 +        return false;
@@ -152,15 +187,14 @@
 +     */
 +    public boolean hasKeyCodeModifierConflict(KeyBinding other) {
 +        if (getKeyConflictContext().conflicts(other.getKeyConflictContext()) || other.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-+            if (getKeyModifier().matches(other.getKeyCode()) || other.getKeyModifier().matches(getKeyCode())) {
-+                return true;
-+            }
++            return net.minecraftforge.client.settings.KeyModifier.getKeyModifier(other.getKeyCode()).has(getKeyModifiersMask())
++                || net.minecraftforge.client.settings.KeyModifier.getKeyModifier(getKeyCode()).has(other.getKeyModifiersMask());
 +        }
 +        return false;
 +    }
 +
 +    public String getDisplayName() {
-+        return getKeyModifier().getLocalizedComboName(getKeyCode());
++        return net.minecraftforge.client.settings.KeyModifier.getLocalizedComboName(getKeyModifiersMask(), getKeyCode());
 +    }
 +    /****************** Forge End *****************************/
 +

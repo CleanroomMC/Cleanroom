@@ -678,7 +678,9 @@ public final class Window implements AutoCloseable {
             this.keys[scancode] = event.down();
         }
         char character = event.down() ? LegacyInputQueues.character(scancode, event.mod(), this.text.active()) : 0;
-        this.legacy.key(scancode, event.key(), event.down(), event.repeat(), character, event.timestamp(), event.mod());
+        this.legacy.key(
+            scancode, event.key(), event.down(), event.repeat(), character, event.timestamp(), event.mod() & 0xFFFF
+        );
     }
 
     void text(SDL_TextInputEvent event) {
@@ -884,7 +886,7 @@ public final class Window implements AutoCloseable {
         for (int scancode = 0; scancode < this.keys.length; scancode++) {
             if (this.keys[scancode]) {
                 this.keys[scancode] = false;
-                this.legacy.key(scancode, 0, false, false, (char) 0, timestampNs, (short) 0);
+                this.legacy.key(scancode, 0, false, false, (char) 0, timestampNs, 0);
             }
         }
         for (int button = 1; button < this.buttons.length; button++) {
