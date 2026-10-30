@@ -16,7 +16,6 @@ public enum GarbageCollector {
     INSTANCE;
 
     public final Cleaner cleaner = Cleaner.create();
-    private final List<WeakReference<SmartPointer>> objects = new LinkedList<>();
     final PriorityQueue<Runnable> deletionQueue = new ObjectArrayFIFOQueue<>();
 
     /**
