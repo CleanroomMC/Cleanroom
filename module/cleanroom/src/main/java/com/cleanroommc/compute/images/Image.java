@@ -862,7 +862,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
         return switch(region) {
             case Long l -> stack.mallocPointer(3).put(l).put(1).put(1).rewind();
             case Vector2L v2 -> stack.mallocPointer(3).put(v2.x).put(v2.y).put(1).rewind();
-            case Vector3L v3 -> stack.mallocPointer(3).put(v3.x).put(v3.y).put(v3.z);
+            case Vector3L v3 -> stack.mallocPointer(3).put(v3.x).put(v3.y).put(v3.z).rewind();
             default -> throw new IllegalArgumentException("Provided parameter is not allowed.");
         };
     }
