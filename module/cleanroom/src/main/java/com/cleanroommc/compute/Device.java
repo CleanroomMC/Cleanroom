@@ -21,6 +21,6 @@ public record Device(long handle,
                      boolean supportsPipes) implements Comparable<Device> {
     @Override
     public int compareTo(@NonNull Device o) {
-        return (int)(handle - o.handle);
+        return Long.compare(handle, o.handle);
     }
 }
