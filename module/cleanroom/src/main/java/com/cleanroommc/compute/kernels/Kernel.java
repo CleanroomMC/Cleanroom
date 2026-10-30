@@ -107,7 +107,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         offsets = stack.mallocPointer(dim);
         sizes = stack.mallocPointer(dim);
         local = stack.mallocPointer(dim);
-        Preconditions.checkArgument(workGroupSizes.length < 3);
+        Preconditions.checkArgument(workGroupSizes.length <= 3);
         sizes.put(workGroupSizes);
         for (int i = 0; i < workGroupSizes.length; i++) {
             local.put(gcd(workGroupSizes[i], deviceSizes[i]));
