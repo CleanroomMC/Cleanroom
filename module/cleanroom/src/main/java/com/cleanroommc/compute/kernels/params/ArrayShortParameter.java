@@ -4,6 +4,8 @@ import com.cleanroommc.compute.errors.KernelError;
 import com.google.common.base.Preconditions;
 import org.lwjgl.opencl.CL10;
 
+import java.util.Arrays;
+
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
 /**
@@ -17,6 +19,8 @@ record ArrayShortParameter(short... values) implements KernelParameter {
     public ArrayShortParameter {
         Preconditions.checkArgument((values.length > 0 && values.length < 5) || values.length == 8 || values.length == 16,
                 "The only types supported by this OpenCL function are: short, short2, short3, short4, short8, short16, and their unsigned variants.");
+        if (values.length == 3)
+            values = Arrays.copyOf(values, 4);
     }
 
 

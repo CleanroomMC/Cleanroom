@@ -4,6 +4,8 @@ import com.cleanroommc.compute.errors.KernelError;
 import com.google.common.base.Preconditions;
 import org.lwjgl.opencl.CL10;
 
+import java.util.Arrays;
+
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
 /**
@@ -17,6 +19,8 @@ record ArrayFloatParameter(float... values) implements KernelParameter {
     public ArrayFloatParameter {
         Preconditions.checkArgument((values.length > 0 && values.length < 5) || values.length == 8 || values.length == 16,
                 "The only types supported this OpenCL function are: float, float2, float3, float4, float8 and float16.");
+        if (values.length == 3)
+            values = Arrays.copyOf(values, 4);
     }
 
     @Override

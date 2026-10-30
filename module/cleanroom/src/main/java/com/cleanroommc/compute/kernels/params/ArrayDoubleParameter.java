@@ -4,6 +4,8 @@ import com.cleanroommc.compute.errors.KernelError;
 import com.google.common.base.Preconditions;
 import org.lwjgl.opencl.CL10;
 
+import java.util.Arrays;
+
 import static com.cleanroommc.compute.utils.ErrorUtils.handleKernelParamError;
 
 /**
@@ -17,6 +19,8 @@ record ArrayDoubleParameter(double... values) implements KernelParameter {
     public ArrayDoubleParameter {
         Preconditions.checkArgument((values.length > 0 && values.length < 5) || values.length == 8 || values.length == 16,
                 "The only types supported by this OpenCL function are: double, double2, double3, double4, double8 and double16.");
+        if (values.length == 3)
+            values = Arrays.copyOf(values, 4);
     }
 
     @Override
