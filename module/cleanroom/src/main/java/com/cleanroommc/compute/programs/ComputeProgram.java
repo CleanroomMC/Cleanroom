@@ -133,7 +133,7 @@ public class ComputeProgram implements Closeable {
             case CL12.CL_LINK_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to link program %s. \nBuild Logs:\n\t%s", resourceLocation, combineStrings(getBuildLog(stack, programHandle), "\t\n")));
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to link OpenCL program.");
         }
-        for (String log : getBuildLog(stack, program)) {
+        for (String log : getBuildLog(stack, programHandle)) {
             Compute.instance().LOGGER.info(log);
         }
         CL10.clReleaseProgram(program);
