@@ -96,7 +96,7 @@ public final class Image1DArray extends Image<Vector2L> {
                 || color instanceof FloatBuffer);
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
@@ -174,7 +174,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
@@ -231,7 +231,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         try (MemoryStack substack = stack.push()) {
             int bufLen = 7;
             if (dependencies != null && dependencies.length > 0)
@@ -373,7 +373,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -439,7 +439,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -492,7 +492,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -545,7 +545,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -598,7 +598,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -652,7 +652,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -718,7 +718,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -771,7 +771,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -824,7 +824,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;
@@ -877,7 +877,7 @@ public final class Image1DArray extends Image<Vector2L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.length);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
 
         try (MemoryStack substack = stack.push()) {
             PointerBuffer waitList = null;

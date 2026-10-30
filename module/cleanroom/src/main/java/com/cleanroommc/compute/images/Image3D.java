@@ -98,7 +98,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -178,7 +178,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -237,7 +237,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -383,7 +383,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
 
@@ -452,7 +452,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -507,7 +507,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -562,7 +562,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -617,7 +617,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -673,7 +673,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -741,7 +741,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -796,7 +796,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -851,7 +851,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -906,7 +906,7 @@ public final class Image3D extends Image<Vector3L> {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
-        Preconditions.checkArgument(mipmap <= this.mipmaps);
+        Preconditions.checkArgument(mipmap >= 0 && mipmap < Math.max(1, this.mipmaps));
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {

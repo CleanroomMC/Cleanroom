@@ -151,7 +151,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
         this.texture = texture;
         this.size = new Vector3L(texture.extentX(), texture.extentY(), texture.extentZ());
         this.length = texture.layers();
-        this.mipmaps = mipLevel;
+        this.mipmaps = 0; // The selected GL level is exposed as a single OpenCL image.
 
         int[] err = new int[1];
 
