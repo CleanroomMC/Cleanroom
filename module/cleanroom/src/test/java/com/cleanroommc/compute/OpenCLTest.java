@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 public class OpenCLTest implements BeforeAllCallback, AfterAllCallback, InvocationInterceptor {
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
-        GarbageCollector.INSTANCE.wash();
+        GarbageCollector.INSTANCE.deleteAllSweptObjects();
     }
 
     @Override

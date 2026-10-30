@@ -526,7 +526,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -544,10 +543,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -596,7 +592,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -614,10 +609,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -661,7 +653,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -679,10 +670,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -726,7 +714,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -744,10 +731,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -763,7 +747,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             ByteBuffer buffer = substack.malloc(data.length);
             buffer.put(data);
             buffer.flip();
@@ -785,10 +768,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -842,7 +822,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkState(canWrite, "Attempted to write to read-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -915,10 +894,7 @@ public class Buffer extends SmartPointer {
             } else if (dependencies != null) {
                 releaseGLObjects(commandQueue, dependencies, event);
             }
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -972,7 +948,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -1045,10 +1020,7 @@ public class Buffer extends SmartPointer {
             } else if (dependencies != null) {
                 releaseGLObjects(commandQueue, dependencies, event);
             }
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1091,7 +1063,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -1109,10 +1080,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1155,7 +1123,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -1173,10 +1140,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1219,7 +1183,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -1237,10 +1200,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (dependencies != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1283,7 +1243,6 @@ public class Buffer extends SmartPointer {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer dependencies;
             if (events != null && events.length > 0) {
                 dependencies = substack.mallocPointer(events.length);
@@ -1301,10 +1260,7 @@ public class Buffer extends SmartPointer {
                     dependency.close();
             else if (glBuffer != null)
                 releaseGLObjects(commandQueue, dependencies, event);
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 

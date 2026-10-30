@@ -97,7 +97,7 @@ public class ComputeSetup {
                 CLCapabilities deviceCapabilities = CL.createDeviceCapabilities(deviceHandle, platformCapabilities);
 
                 IntBuffer imageSupport = stack.mallocInt(1);
-                CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_IMAGE_SUPPORT, imageSupport, (PointerBuffer) null);
+                CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_IMAGE_SUPPORT, imageSupport, null);
 
                 PointerBuffer len = stack.mallocPointer(1);
                 CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, (PointerBuffer) null, len);

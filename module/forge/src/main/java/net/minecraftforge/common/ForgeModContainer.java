@@ -21,7 +21,6 @@ package net.minecraftforge.common;
 
 import com.cleanroommc.compute.ComputeSetup;
 import com.cleanroommc.compute.smrtptr.GarbageCollector;
-import com.cleanroommc.compute.smrtptr.SweepTask;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import static net.minecraftforge.common.config.Configuration.CATEGORY_CLIENT;
@@ -650,14 +649,11 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void serverStarting(FMLServerStartingEvent evt)
     {
         evt.registerServerCommand(new ForgeCommand());
-        GarbageCollector.INSTANCE.sweepTask.spinlock.lock();
-        ForkJoinPool.commonPool().execute(GarbageCollector.INSTANCE.sweepTask);
     }
 
     @Subscribe
     public void serverStopping(FMLServerStoppingEvent evt)
     {
-        GarbageCollector.INSTANCE.wash();
         WorldWorkerManager.clear();
     }
 

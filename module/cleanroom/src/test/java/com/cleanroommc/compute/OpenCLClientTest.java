@@ -56,7 +56,7 @@ public class OpenCLClientTest implements BeforeAllCallback, AfterAllCallback, In
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
         if (Compute.isAvailable() && GLTestExtension.isInitialized())
-            onGL(() -> GarbageCollector.INSTANCE.wash());
+            onGL(() -> GarbageCollector.INSTANCE.deleteAllSweptObjects());
     }
 
     @Override

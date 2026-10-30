@@ -5,10 +5,7 @@ import com.cleanroommc.compute.Device;
 import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.CompilationError;
 import com.cleanroommc.compute.errors.KernelError;
-import com.cleanroommc.compute.images.samplers.Sampler;
 import com.cleanroommc.compute.kernels.params.*;
-import com.cleanroommc.compute.pipes.Pipe;
-import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.cleanroommc.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -20,9 +17,6 @@ import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL10GL;
 import org.lwjgl.system.MemoryStack;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -252,10 +246,9 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
     }
 
     /**
-     * Gets a list of GL objects from a KernelParameterList. Also reference {@link Pipe Pipes} and {@link Sampler Samplers}.
+     * Gets a list of GL objects from a KernelParameterList.
      * @param stack MemoryStack
      * @param parameters Kernel parameters
-     * @param queue since samplers and pipes don't have functions that get queued, this is where the referencing happens.
      * @return List of GL objects.
      */
     private static @Nullable PointerBuffer getGLObjects(MemoryStack stack, KernelParameterList parameters, CommandQueue queue) {
@@ -266,10 +259,6 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
                 buffers.add(buffer);
             } else if  (p instanceof ImageParameter<?> image && image.image().isGLTexture()) {
                 images.add(image);
-            } else if (p instanceof PipeParameter(Pipe pipe)) {
-                HOLDER.reference(pipe, queue);
-            } else if (p instanceof SamplerParameter(Sampler sampler)) {
-                HOLDER.reference(sampler, queue);
             }
         });
         if (buffers.isEmpty() && images.isEmpty())
@@ -284,34 +273,4 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         return handles.rewind();
     }
 
-    private final static MethodHolder HOLDER;
-
-    /**
-     * Stores {@link SmartPointer} functions.
-     */
-    private static final class MethodHolder {
-        private final MethodHandle referenceHandle;
-
-        private MethodHolder() throws NoSuchMethodException, IllegalAccessException {
-            Method method = SmartPointer.class.getDeclaredMethod("reference", SmartPointer.class);
-            method.setAccessible(true);
-            this.referenceHandle = MethodHandles.lookup().unreflect(method);
-        }
-
-        public <T extends SmartPointer> void reference(T pointer, SmartPointer reference) {
-            try {
-                referenceHandle.invoke(pointer, reference);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    static {
-        try {
-            HOLDER = new MethodHolder();
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

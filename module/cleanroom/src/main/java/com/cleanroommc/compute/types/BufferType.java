@@ -25,6 +25,6 @@ public record BufferType(OpenCLType type) implements OpenCLType {
 
     @Override
     public @NonNull String toString() {
-        return String.format("%s*",  type.toString());
+        return String.format("%s*", type);
     }
 }

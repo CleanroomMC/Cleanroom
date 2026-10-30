@@ -102,7 +102,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -157,10 +156,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 event.rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, waitList, event);
             }
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -186,7 +182,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -220,10 +215,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 event.rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, waitList, event);
             }
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -249,7 +241,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             int bufLen = 8;
             if (dependencies != null && dependencies.length > 0)
                 bufLen += dependencies.length;
@@ -283,10 +274,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 event.rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handle, waitList, event);
             }
-            this.reference(commandQueue);
             return event.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -311,7 +299,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer handles = null;
             PointerBuffer fromBuf = substack.mallocPointer(4);
             fromBuf.put(from.x);
@@ -370,10 +357,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, handles, deps.slice(0,1), ev);
                 CL10.clReleaseEvent(deps.get(0));
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -403,7 +387,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -442,10 +425,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -474,7 +454,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -501,10 +480,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -533,7 +509,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -560,10 +535,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -592,7 +564,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -619,10 +590,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -651,7 +619,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -678,10 +645,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -711,7 +675,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -751,10 +714,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -783,7 +743,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -810,10 +769,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -842,7 +798,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -869,10 +824,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -901,7 +853,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -928,10 +879,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -960,7 +908,6 @@ public final class Image2DArray extends Image<Vector3L> {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
-            writeLock.lock();
             PointerBuffer waitList = null;
             if (dependencies != null && dependencies.length > 0)
                 waitList = substack.mallocPointer(dependencies.length).put(CommandQueue.eventIDs(dependencies)).rewind();
@@ -987,10 +934,7 @@ public final class Image2DArray extends Image<Vector3L> {
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle,
                         waitList.slice(0, 1), ev);
             }
-            this.reference(commandQueue);
             return ev.get(0);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1033,3 +977,4 @@ public final class Image2DArray extends Image<Vector3L> {
         return new Workaround(stack, memoryFlags, format, descriptor, hostMemory);
     }
 }
+
