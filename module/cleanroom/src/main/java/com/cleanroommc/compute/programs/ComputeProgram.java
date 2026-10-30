@@ -286,10 +286,10 @@ public class ComputeProgram implements Closeable {
                     if (source.charAt(i) == '#') {
                         state = 1;
                     } else if (source.charAt(i) == '/') {
-                        if (source.charAt(i+1) == '/') {
+                        if (i + 1 < source.length() && source.charAt(i+1) == '/') {
                             state = 2;
                             i++;
-                        } else if (source.charAt(i+1) == '*') {
+                        } else if (i + 1 < source.length() && source.charAt(i+1) == '*') {
                             state = 3;
                             i++;
                         }
@@ -316,7 +316,7 @@ public class ComputeProgram implements Closeable {
                     continue;
                 case 3:
                     if (source.charAt(i) == '*'
-                    && source.charAt(i+1) == '/') {
+                    && i + 1 < source.length() && source.charAt(i+1) == '/') {
                         state = 0;
                         i++;
                     }
@@ -325,7 +325,7 @@ public class ComputeProgram implements Closeable {
                     if (source.charAt(i) == '<') {
                         state = 5;
                     } else if (source.charAt(i) == '/'
-                            && source.charAt(i+1) == '*') {
+                            && i + 1 < source.length() && source.charAt(i+1) == '*') {
                         state = 7;
                     } else if (!Character.isWhitespace(source.charAt(i))) {
                         throw new HeaderParsingError(String.format("Malformed OpenCL code at line %d in program %s", line, program));
@@ -357,7 +357,7 @@ public class ComputeProgram implements Closeable {
                     continue;
                 case 7:
                     if (source.charAt(i) == '*'
-                            && source.charAt(i+1) == '/') {
+                            && i + 1 < source.length() && source.charAt(i+1) == '/') {
                         state = 4;
                         i++;
                     }

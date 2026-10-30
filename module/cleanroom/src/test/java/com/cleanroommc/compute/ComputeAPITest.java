@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.lwjgl.system.Configuration;
 
 import java.util.Set;
@@ -55,6 +57,12 @@ public class ComputeAPITest {
         assertFalse(headers.contains(new ResourceLocation("forge", "no.h")));
         assertFalse(headers.contains(new ResourceLocation("forge", "neither.h")));
         assertThrows(HeaderParsingError.class,() -> ComputeProgram.getHeadersFromFile(bad, new ResourceLocation("forge", "program")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/", "/* *", "#include /* *", "// trailing /"})
+    void trailingLookaheadDoesNotReadPastSource(String source) {
+        assertDoesNotThrow(() -> ComputeProgram.getHeadersFromFile(source, new ResourceLocation("test", "program")));
     }
 
     @Test
