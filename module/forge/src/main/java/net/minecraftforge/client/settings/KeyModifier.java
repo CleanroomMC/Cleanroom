@@ -21,6 +21,7 @@ package net.minecraftforge.client.settings;
 
 import javax.annotation.Nullable;
 
+import com.cleanroommc.lwjgly.rt.Scancodes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -150,8 +151,14 @@ public enum KeyModifier {
         }
     };
 
-    public static final KeyModifier[] MODIFIER_VALUES = {SHIFT, CONTROL, ALT};
+    public static final int MASK_NONE = 0;
+    public static final int MASK_CONTROL = 1;
+    public static final int MASK_ALT = 2;
+    public static final int MASK_SHIFT = 4;
 
+    public static final KeyModifier[] MODIFIER_VALUES = {CONTROL, ALT, SHIFT};
+
+    @Deprecated
     public static KeyModifier getActiveModifier()
     {
         for (KeyModifier keyModifier : MODIFIER_VALUES)
@@ -164,6 +171,19 @@ public enum KeyModifier {
         return NONE;
     }
 
+    public static int getActiveModifierMask()
+    {
+        int mask = 0;
+        for (KeyModifier keyModifier : MODIFIER_VALUES)
+        {
+            if (keyModifier.isActive(null))
+            {
+                mask |= keyModifier.mask();
+            }
+        }
+        return mask;
+    }
+
     public static boolean isKeyCodeModifier(int keyCode)
     {
         for (KeyModifier keyModifier : MODIFIER_VALUES)
@@ -174,6 +194,87 @@ public enum KeyModifier {
             }
         }
         return false;
+    }
+
+    public static KeyModifier getKeyModifier(int keyCode)
+    {
+        for (KeyModifier keyModifier : MODIFIER_VALUES)
+        {
+            if (keyModifier.matches(keyCode))
+            {
+                return keyModifier;
+            }
+        }
+        return NONE;
+    }
+
+    public static KeyModifier getKeyModifierSDL(int sdlKeyCode)
+    {
+        return getKeyModifier(Scancodes.toLwjgl(sdlKeyCode));
+    }
+
+    public static int toMask(KeyModifier modifier)
+    {
+        return switch (modifier) {
+            case CONTROL    -> MASK_CONTROL;
+            case ALT        -> MASK_ALT;
+            case SHIFT      -> MASK_SHIFT;
+            default         -> MASK_NONE;
+        };
+    }
+
+    public static int filterMask(int mask, int keyCode) {
+        return mask == MASK_NONE ? MASK_NONE : mask & ~toMask(getKeyModifier(keyCode));
+    }
+
+    public static boolean isActive(int mask, @Nullable IKeyConflictContext conflictContext) {
+        if (mask == MASK_NONE) return NONE.isActive(conflictContext);
+
+        boolean isActive = true;
+        for (KeyModifier modifier: MODIFIER_VALUES) {
+            if (modifier.has(mask)) {
+                isActive = modifier.isActive(conflictContext);
+            }
+        }
+        return isActive;
+    }
+
+    public static int maskFromString(String modifiers)
+    {
+        if (modifiers == null)
+        {
+            return MASK_NONE;
+        }
+        int mask = MASK_NONE;
+        for (String part : modifiers.split("\\+"))
+        {
+            mask |= valueFromString(part.trim()).mask();
+        }
+        return mask;
+    }
+
+    public static String maskToString(int mask)
+    {
+        if (mask == 0) return "";
+        StringBuilder sb = new StringBuilder();
+        for (KeyModifier modifier: MODIFIER_VALUES) {
+            if (modifier.has(mask)) {
+                if (!sb.isEmpty()) {
+                    sb.append('+');
+                }
+                sb.append(modifier);
+            }
+        }
+        return ":" + sb;
+    }
+
+    public static String getLocalizedComboName(int mask, int keyCode)
+    {
+        String name = GameSettings.getKeyDisplayString(keyCode);
+        if ((mask & MASK_SHIFT) != 0)   name = I18n.format("forge.controlsgui.shift", name);
+        if ((mask & MASK_ALT) != 0)     name = I18n.format("forge.controlsgui.alt", name);
+        if ((mask & MASK_CONTROL) != 0) name = I18n.format(Minecraft.IS_RUNNING_ON_MAC ? "forge.controlsgui.control.mac" : "forge.controlsgui.control", name);
+        return name;
     }
 
     public static KeyModifier valueFromString(String stringValue)
@@ -198,5 +299,16 @@ public enum KeyModifier {
 
     public abstract boolean isActive(@Nullable IKeyConflictContext conflictContext);
 
+    @Deprecated
     public abstract String getLocalizedComboName(int keyCode);
+
+    public int mask()
+    {
+        return KeyModifier.toMask(this);
+    }
+
+    public boolean has(int mask)
+    {
+        return (mask & toMask(this)) != MASK_NONE;
+    }
 }
