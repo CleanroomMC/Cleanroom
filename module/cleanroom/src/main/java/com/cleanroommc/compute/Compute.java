@@ -163,6 +163,7 @@ public class Compute {
                 program.compile(programCacheIntegrityTable, stack);
             }
         }
+        ProgressManager.pop(progress);
     }
 
     /**
