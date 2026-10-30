@@ -21,6 +21,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 
 /**
  * <p><i>Internal Class</i></p>
@@ -44,7 +45,7 @@ public class ComputeSetup {
             CL10.clGetPlatformIDs(null, numPlatforms);
             platforms = stack.mallocPointer(numPlatforms.get(0));
             CL10.clGetPlatformIDs(platforms, numPlatforms);
-            PriorityQueue<Platform> platformSort = new ObjectHeapPriorityQueue<>(numPlatforms.get(0));
+            PriorityQueue<Platform> platformSort = new ObjectHeapPriorityQueue<>(numPlatforms.get(0), Comparator.reverseOrder());
             for (int i = 0; i < numPlatforms.get(0); i++) {
                 String name = getPlatformAttribute(CL10.CL_PLATFORM_NAME, platforms.get(i), stack);
                 String version = getPlatformAttribute(CL10.CL_PLATFORM_VERSION, platforms.get(i), stack);
