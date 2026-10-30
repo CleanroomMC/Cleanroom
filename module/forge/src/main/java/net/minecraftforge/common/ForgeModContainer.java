@@ -33,6 +33,7 @@ import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
 
+import com.cleanroommc.cleanroom.common.id.PackedItems;
 import net.minecraftforge.client.GuiIngameForge;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -671,6 +672,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     @Subscribe
     public void mappingChanged(FMLModIdMappingEvent evt)
     {
+        PackedItems.clear();
         OreDictionary.rebakeMap();
         StatList.reinit();
         Ingredient.invalidateAll();

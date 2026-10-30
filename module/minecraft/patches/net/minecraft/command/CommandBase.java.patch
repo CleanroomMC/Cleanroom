@@ -10,3 +10,76 @@
              if (p_147176_3_) {
                  ITextComponent itextcomponent2 = EntitySelector.matchEntitiesToTextComponent(sender, args[i]);
                  if (itextcomponent2 == null) {
+@@ -401,9 +402,11 @@
+         return d0;
+     }
+ 
+-    /** Gets the Item specified by the given text string.  First checks the item registry, then tries by parsing the string as an integer ID (deprecated).  Warns the sender if we matched by parsing the ID.  Throws if the item wasn't found.  Returns the item if it was found. */
++    /** Gets the Item specified by the given text string (optionally suffixed with {@code [component=value,...]}). Throws if the item wasn't found. */
+     public static Item getItemByText(ICommandSender sender, String id) throws NumberInvalidException {
+-        ResourceLocation resourcelocation = new ResourceLocation(id);
++        int bracket = id.indexOf('[');
++        String name = bracket >= 0 ? id.substring(0, bracket) : id;
++        ResourceLocation resourcelocation = new ResourceLocation(name);
+         Item item = Item.REGISTRY.getObject(resourcelocation);
+         if (item == null) {
+             throw new NumberInvalidException("commands.give.item.notFound", resourcelocation);
+@@ -412,9 +415,27 @@
+         }
+     }
+ 
+-    /** Gets the Block specified by the given text string.  First checks the block registry, then tries by parsing the string as an integer ID (deprecated).  Warns the sender if we matched by parsing the ID.  Throws if the block wasn't found.  Returns the block if it was found. */
++    /** Cleanroom: parses any {@code [component=value,...]} suffix on an item command argument. */
++    public static com.cleanroommc.cleanroom.common.component.DataComponentPredicate parseItemComponents(String id) throws CommandException {
++        int bracket = id.indexOf('[');
++        if (bracket < 0) {
++            return com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY;
++        }
++        if (!id.endsWith("]")) {
++            throw new CommandException("commands.generic.parameter.invalid", id);
++        }
++        try {
++            return com.cleanroommc.cleanroom.common.component.DataComponentPredicate.parseBracketSpec(id.substring(bracket));
++        } catch (com.cleanroommc.cleanroom.common.component.ComponentFormatException e) {
++            throw new CommandException("commands.generic.parameter.invalid", e.getMessage());
++        }
++    }
++
++    /** Gets the Block specified by the given text string (optionally suffixed with {@code [prop=value,...]}). Throws if the block wasn't found. */
+     public static Block getBlockByText(ICommandSender sender, String id) throws NumberInvalidException {
+-        ResourceLocation resourcelocation = new ResourceLocation(id);
++        int bracket = id.indexOf('[');
++        String name = bracket >= 0 ? id.substring(0, bracket) : id;
++        ResourceLocation resourcelocation = new ResourceLocation(name);
+         if (!Block.REGISTRY.containsKey(resourcelocation)) {
+             throw new NumberInvalidException("commands.give.block.notFound", resourcelocation);
+         } else {
+@@ -422,6 +443,16 @@
+         }
+     }
+ 
++    /** Cleanroom: extracts an inline {@code [prop=value,...]} suffix from a block argument, or {@code null} if none is present. */
++    @Nullable
++    public static String extractInlineBlockStateSpec(String id) {
++        int bracket = id.indexOf('[');
++        if (bracket < 0 || !id.endsWith("]")) {
++            return null;
++        }
++        return id.substring(bracket + 1, id.length() - 1);
++    }
++
+     public static IBlockState convertArgToBlockState(Block p_190794_0_, String p_190794_1_) throws NumberInvalidException, InvalidBlockStateException {
+         try {
+             int i = Integer.parseInt(p_190794_1_);
+@@ -486,7 +517,10 @@
+ 
+     private static Map<IProperty<?>, Comparable<?>> getBlockStatePropertyValueMap(Block p_190795_0_, String p_190795_1_) throws InvalidBlockStateException {
+         Map<IProperty<?>, Comparable<?>> map = Maps.newHashMap();
+-        if ("default".equals(p_190795_1_)) {
++        if (p_190795_1_.startsWith("[") && p_190795_1_.endsWith("]")) {
++            p_190795_1_ = p_190795_1_.substring(1, p_190795_1_.length() - 1);
++        }
++        if (p_190795_1_.isEmpty() || "default".equals(p_190795_1_)) {
+             return p_190795_0_.getDefaultState().getProperties();
+         }
+ 

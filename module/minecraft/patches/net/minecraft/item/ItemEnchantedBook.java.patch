@@ -1,0 +1,42 @@
+--- original/net/minecraft/item/ItemEnchantedBook.java
++++ modified/net/minecraft/item/ItemEnchantedBook.java
+@@ -6,6 +6,7 @@
+ import net.minecraft.creativetab.CreativeTabs;
+ import net.minecraft.enchantment.Enchantment;
+ import net.minecraft.enchantment.EnchantmentData;
++import net.minecraft.enchantment.EnchantmentHelper;
+ import net.minecraft.init.Items;
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.nbt.NBTTagList;
+@@ -52,8 +53,7 @@
+ 
+         for (int i = 0; i < nbttaglist.tagCount(); i++) {
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+-            int j = nbttagcompound.getShort("id");
+-            Enchantment enchantment = Enchantment.getEnchantmentByID(j);
++            Enchantment enchantment = EnchantmentHelper.enchantmentFrom(nbttagcompound); // Cleanroom: name first, then id
+             if (enchantment != null) {
+                 tooltip.add(enchantment.getTranslatedName(nbttagcompound.getShort("lvl")));
+             }
+@@ -67,7 +67,7 @@
+ 
+         for (int i = 0; i < nbttaglist.tagCount(); i++) {
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+-            if (Enchantment.getEnchantmentByID(nbttagcompound.getShort("id")) == stack.enchantment) {
++            if (EnchantmentHelper.enchantmentFrom(nbttagcompound) == stack.enchantment) { // Cleanroom: name first, then id
+                 if (nbttagcompound.getShort("lvl") < stack.enchantmentLevel) {
+                     nbttagcompound.setShort("lvl", (short)stack.enchantmentLevel);
+                 }
+@@ -79,7 +79,11 @@
+ 
+         if (flag) {
+             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+-            nbttagcompound1.setShort("id", (short)Enchantment.getEnchantmentID(stack.enchantment));
++            nbttagcompound1.setInteger("id", Enchantment.getEnchantmentID(stack.enchantment)); // Cleanroom: any id (was a short)
++            net.minecraft.util.ResourceLocation enchName = Enchantment.REGISTRY.getNameForObject(stack.enchantment); // Cleanroom: names are stable when ids shift
++            if (enchName != null) {
++                nbttagcompound1.setString("name", enchName.toString());
++            }
+             nbttagcompound1.setShort("lvl", (short)stack.enchantmentLevel);
+             nbttaglist.appendTag(nbttagcompound1);
+         }

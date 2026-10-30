@@ -1,0 +1,11 @@
+--- original/net/minecraft/block/BlockJukebox.java
++++ modified/net/minecraft/block/BlockJukebox.java
+@@ -125,7 +125,7 @@
+         if (tileentity instanceof BlockJukebox.TileEntityJukebox) {
+             ItemStack itemstack = ((BlockJukebox.TileEntityJukebox)tileentity).getRecord();
+             if (!itemstack.isEmpty()) {
+-                return Item.getIdFromItem(itemstack.getItem()) + 1 - Item.getIdFromItem(Items.RECORD_13);
++                return net.minecraft.util.math.MathHelper.clamp(Item.getIdFromItem(itemstack.getItem()) + 1 - Item.getIdFromItem(Items.RECORD_13), 1, 15);
+             }
+         }
+ 

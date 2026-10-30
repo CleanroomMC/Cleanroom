@@ -117,7 +117,7 @@ class ObjectHolderRef
     public void apply()
     {
         Object thing;
-        if (isValid && registry.containsKey(injectedObject) && !registry.isDummied(injectedObject))
+        if (isValid && registry.containsKey(injectedObject))
         {
             thing = registry.getValue(injectedObject);
         }

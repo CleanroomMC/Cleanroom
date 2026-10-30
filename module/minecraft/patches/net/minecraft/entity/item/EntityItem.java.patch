@@ -69,7 +69,7 @@
  
                  if (itemstack1.getCount() + itemstack.getCount() > itemstack1.getMaxStackSize()) {
                      return false;
-+                } else if (!itemstack.areCapsCompatible(itemstack1)) {
++                } else if (!ItemStack.areItemStackTagsEqual(itemstack1, itemstack)) {
 +                    return false;
                  }
  

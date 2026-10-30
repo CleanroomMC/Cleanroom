@@ -89,7 +89,7 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
         if (!existing.isEmpty())
         {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+            if (!existing.isStackable() || !stack.isStackable() || !ItemHandlerHelper.canItemStacksStack(stack, existing))
                 return stack;
 
             limit -= existing.getCount();
