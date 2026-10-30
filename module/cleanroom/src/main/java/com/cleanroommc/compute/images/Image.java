@@ -87,7 +87,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
         );
         switch (err.get(0)) {
             case CL12.CL_INVALID_IMAGE_FORMAT_DESCRIPTOR -> throw new ImageError(String.format("Image format descriptor CLImageFormat[order=%s, type=%s] is invalid.",
-                    ChannelOrder.findFromOpenCL(format.image_channel_data_type()),
+                    ChannelOrder.findFromOpenCL(format.image_channel_order()),
                     ChannelType.findFromOpenCL(format.image_channel_data_type()))
             );
             case CL12.CL_INVALID_IMAGE_DESCRIPTOR -> throw new ImageError(String.format("Image descriptor CLImageDesc[type=%s, width=%d, height=%d, depth=%d, array_size=%d, row_pitch=%d, slice_pitch=%d, mip_levels=%d, samples=%d] is invalid.",
