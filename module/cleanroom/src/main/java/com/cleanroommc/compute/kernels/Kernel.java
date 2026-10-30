@@ -116,6 +116,10 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             for (int i = 0; i < dim; i++) {
                 offsets.put(0);
             }
+        } else {
+            for (int i = 0; i < dim; i++) {
+                offsets.put(workGroupOffsets[i]);
+            }
         }
         offsets.rewind();
         sizes.rewind();
