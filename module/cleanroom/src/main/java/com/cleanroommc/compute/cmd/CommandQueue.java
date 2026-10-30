@@ -8425,7 +8425,7 @@ public class CommandQueue extends SmartPointer {
             );
 
             try {
-                CL10.clFlush(commandQueue);
+                CL10.clFinish(commandQueue);
                 close();
             } finally {
                 chainable = false;
