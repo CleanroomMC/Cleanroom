@@ -65,6 +65,14 @@ public class ComputeAPITest {
         assertDoesNotThrow(() -> ComputeProgram.getHeadersFromFile(source, new ResourceLocation("test", "program")));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"#if X\n#include <test/header.h>", "#endif\n#include <test/header.h>",
+        "#\n#include <test/header.h>", "# include <test/header.h>"})
+    void findsIncludeAfterShortDirective(String source) {
+        assertEquals(Set.of(new ResourceLocation("test", "header.h")),
+            ComputeProgram.getHeadersFromFile(source, new ResourceLocation("test", "program")));
+    }
+
     @Test
     public void compileTest() {
         assertDoesNotThrow(() -> Compute.instance().registerProgram(new ResourceLocation("cleanroom", "program")));

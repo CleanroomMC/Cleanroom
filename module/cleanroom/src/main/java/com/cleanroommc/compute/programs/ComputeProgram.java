@@ -296,6 +296,14 @@ public class ComputeProgram implements Closeable {
                     }
                     continue;
                 case 1:
+                    if (source.charAt(i) == '\n' || source.charAt(i) == '#') {
+                        bufferIdx = 0;
+                        state = 0;
+                        i--; // Reprocess a following directive instead of swallowing it.
+                        continue;
+                    }
+                    if (bufferIdx == 0 && Character.isWhitespace(source.charAt(i)))
+                        continue;
                     if (bufferIdx < 7) {
                         buffer[bufferIdx] = source.charAt(i);
                         bufferIdx++;
