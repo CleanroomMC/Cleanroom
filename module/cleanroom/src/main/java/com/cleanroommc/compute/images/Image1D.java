@@ -395,9 +395,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(switch (buffer) {
                 case ByteBuffer bb -> CL12.clEnqueueReadImage(commandQueue.commandQueue, this.handle, blocking,
@@ -420,7 +418,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -462,9 +460,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -474,7 +470,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -513,9 +509,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -525,7 +519,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -564,9 +558,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -576,7 +568,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -615,9 +607,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueReadImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -627,7 +617,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -670,9 +660,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(switch (buffer) {
                 case ByteBuffer bb -> CL12.clEnqueueWriteImage(commandQueue.commandQueue, this.handle, blocking,
@@ -695,7 +683,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -734,9 +722,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -746,7 +732,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -785,9 +771,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -797,7 +781,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -836,9 +820,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -848,7 +830,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
@@ -887,9 +869,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
                 if (dependencies != null)
                     for (CommandQueue.Event dependency : dependencies)
                         dependency.close();
-                else
-                    waitList = substack.mallocPointer(1);
-                waitList.put(0, ev.get(0)).rewind();
+                waitList = substack.mallocPointer(1).put(0, ev.get(0));
             }
             handleEnqueueReadWriteImageError(CL12.clEnqueueWriteImage(
                     commandQueue.commandQueue, this.handle, blocking,
@@ -899,7 +879,7 @@ public sealed class Image1D extends Image<Long> permits Image1DBuffer{
             if (dependencies != null && !this.isGLTexture())
                 for (CommandQueue.Event dependency : dependencies)
                     dependency.close();
-            else {
+            else if (this.isGLTexture()) {
                 waitList.put(0, ev.get(0)).rewind();
                 CL12GL.clEnqueueReleaseGLObjects(commandQueue.commandQueue, this.handle, waitList.slice(0, 1), ev);
             }
