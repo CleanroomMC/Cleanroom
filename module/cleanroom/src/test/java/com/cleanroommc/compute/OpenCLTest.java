@@ -21,19 +21,15 @@ public class OpenCLTest implements BeforeAllCallback, AfterAllCallback, Invocati
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        try {
-            Loader.instance();
-            Bootstrap.register();
-            Logger testLogger = LogManager.getLogger("TestLogger");
-            Configuration.OPENCL_EXPLICIT_INIT.set(true);
-            ComputeSetup.initOpenCL(testLogger, false);
-            Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
-            {{
-                modId = "cleanroom";
-            }}));
-        } catch (Throwable e) {
-            org.junit.jupiter.api.Assumptions.assumeTrue(false, "OpenCL initialization failed: " + e);
-        }
+        Loader.instance();
+        Bootstrap.register();
+        Logger testLogger = LogManager.getLogger("TestLogger");
+        Configuration.OPENCL_EXPLICIT_INIT.set(true);
+        ComputeSetup.initOpenCL(testLogger, false);
+        Loader.instance().setupTestHarness(new DummyModContainer(new ModMetadata()
+        {{
+            modId = "cleanroom";
+        }}));
         org.junit.jupiter.api.Assumptions.assumeTrue(Compute.isAvailable(), "OpenCL is unavailable.");
     }
 
