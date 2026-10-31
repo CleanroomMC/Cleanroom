@@ -48,10 +48,10 @@ public class CommandQueue extends SmartPointer {
     CommandQueue(long device) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         super();
         int[] err = new int[1];
-        commandQueue = CL20.clCreateCommandQueueWithProperties(
+        commandQueue = CL10.clCreateCommandQueue(
             Compute.instance().context,
             device,
-            null,
+            0,
             err
         );
         this.device = device;

@@ -29,9 +29,9 @@ public enum AddressingMode {
      */
     MIRROR(CL20.CL_ADDRESS_MIRRORED_REPEAT);
 
-    public final long addressingMode;
+    public final int addressingMode;
 
-    AddressingMode(long addressingMode) {
+    AddressingMode(int addressingMode) {
         this.addressingMode = addressingMode;
     }
 }

@@ -86,6 +86,8 @@ public final class Sampler extends SmartPointer {
         this.mipmapFilteringMode = mipmapFilteringMode;
         this.levelOfDetailMinimum = levelOfDetailMinimum;
         this.levelOfDetailMaximum = levelOfDetailMaximum;
+        Preconditions.checkState(mipmapFilteringMode == null || Compute.instance().PLATFORM_CAPABILITIES.OpenCL20,
+                "Mipmap sampler properties require OpenCL 2.0.");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer buf = stack.callocLong((mipmapFilteringMode != null ? 12 : 6) + 1);
             buf.put(CL20.CL_SAMPLER_NORMALIZED_COORDS).put(normalized ? CL10.CL_TRUE : CL10.CL_FALSE);
@@ -98,7 +100,10 @@ public final class Sampler extends SmartPointer {
             }
             buf.put(MemoryUtil.NULL).rewind();
             IntBuffer err = stack.mallocInt(1);
-            long res = CL20.clCreateSamplerWithProperties(Compute.instance().context, buf, err);
+            long res = mipmapFilteringMode == null
+                    ? CL10.clCreateSampler(Compute.instance().context, normalized,
+                    addressingMode.addressingMode, filteringMode.filteringMode, err)
+                    : CL20.clCreateSamplerWithProperties(Compute.instance().context, buf, err);
             switch (err.get(0)) {
                 case CL10.CL_INVALID_VALUE -> throw new ImageError("Unsupported sampler property.");
                 case CL10.CL_INVALID_OPERATION -> throw new ImageError("Images not supported by any device.");

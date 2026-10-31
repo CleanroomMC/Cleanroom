@@ -16,9 +16,9 @@ public enum FilteringMode {
      */
     LINEAR(CL20.CL_FILTER_LINEAR);
 
-    public final long filteringMode;
+    public final int filteringMode;
 
-    FilteringMode(long filteringMode) {
+    FilteringMode(int filteringMode) {
         this.filteringMode = filteringMode;
     }
 }
