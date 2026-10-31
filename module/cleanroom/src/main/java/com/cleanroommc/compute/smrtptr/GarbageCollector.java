@@ -1,13 +1,8 @@
 package com.cleanroommc.compute.smrtptr;
 
-import it.unimi.dsi.fastutil.PriorityQueue;
-import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
-
 import java.lang.ref.Cleaner;
-import java.lang.ref.WeakReference;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Automated Garbage Collection for OpenCL objects.
@@ -16,14 +11,15 @@ public enum GarbageCollector {
     INSTANCE;
 
     public final Cleaner cleaner = Cleaner.create();
-    final PriorityQueue<Runnable> deletionQueue = new ObjectArrayFIFOQueue<>();
+    final Queue<Runnable> deletionQueue = new ConcurrentLinkedQueue<>();
 
     /**
      * Remove all objects marked for deletion.
      */
     public void deleteAllSweptObjects() {
-        while (!deletionQueue.isEmpty())
-            deletionQueue.dequeue().run();
+        Runnable task;
+        while ((task = deletionQueue.poll()) != null)
+            task.run();
     }
 
     /**
@@ -32,7 +28,7 @@ public enum GarbageCollector {
      * @return The enqueueing operation.
      */
     public Runnable deletionTask(Runnable runnable) {
-        return () -> deletionQueue.enqueue(runnable);
+        return () -> deletionQueue.add(runnable);
     }
 }
 
