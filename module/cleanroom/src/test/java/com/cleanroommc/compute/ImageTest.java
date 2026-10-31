@@ -69,7 +69,7 @@ public class ImageTest {
         }
 
         Object region() {
-            return coordinates(width - 1, height - 1, depth - 1);
+            return coordinates(width, height, depth);
         }
 
         int elements() {
@@ -77,13 +77,7 @@ public class ImageTest {
         }
 
         int regionElements() {
-            return switch (this) {
-                case IMAGE_1D, IMAGE_1D_BUFFER -> (width - 1) * 4;
-                case IMAGE_2D -> (width - 1) * (height - 1) * 4;
-                case IMAGE_3D -> (width - 1) * (height - 1) * (depth - 1) * 4;
-                case IMAGE_1D_ARRAY -> (width - 1) * (height - 1) * 4;
-                case IMAGE_2D_ARRAY -> (width - 1) * (height - 1) * (depth - 1) * 4;
-            };
+            return elements();
         }
     }
 
@@ -327,16 +321,16 @@ public class ImageTest {
             queue.imageFill(stack, destination.image, stack.floats(-1.f, -1.f, -1.f, -1.f), shape.origin(), shape.region())
                 .copy(source.image, destination.image, from, to, region, write)
                 .read(destination.image, shape.origin(), shape.region(), 0, 0, result).execute();
-            int readWidth = shape.width - 1;
-            int readHeight = shape.height > 1 ? shape.height - 1 : 1;
-            int readDepth = shape.depth > 1 ? shape.depth - 1 : 1;
+            int readWidth = shape.width;
+            int readHeight = shape.height;
+            int readDepth = shape.depth;
             for (int z = 0; z < readDepth; z++)
                 for (int y = 0; y < readHeight; y++)
                     for (int x = 0; x < readWidth; x++)
                         for (int c = 0; c < 4; c++) {
                             int index = ((z * readHeight + y) * readWidth + x) * 4 + c;
                             int sourceIndex = ((z * readHeight + y) * readWidth + x - 2) * 4 + c;
-                            assertEquals(x >= 3 && x < 6 ? expected.get(sourceIndex) : -1.f, result.get(index), String.format("Element (%d;%d;%d;%d)", x, y, z, c));
+                            assertEquals(x >= 3 && x < 6 && y < regionHeight && z < regionDepth ? expected.get(sourceIndex) : -1.f, result.get(index), String.format("Element (%d;%d;%d;%d)", x, y, z, c));
                         }
         }
     }
@@ -346,8 +340,8 @@ public class ImageTest {
     public void imagePitchedTransferTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             int row = shape.width * 4 + 8;
-            int rows = shape.height - 1;
-            int slices = shape == Shape.IMAGE_2D ? 1 : shape.depth - 1;
+            int rows = shape.height;
+            int slices = shape == Shape.IMAGE_2D ? 1 : shape.depth;
             int slice = row * (rows + 1);
             int count = slice * rows * slices;
             FloatBuffer expected = values(stack, count);
@@ -361,7 +355,7 @@ public class ImageTest {
             boolean[] touched = new boolean[count];
             for (int z = 0; z < slices; z++)
                 for (int y = 0; y < rows; y++)
-                    for (int x = 0; x < (shape.width - 1) * 4; x++) {
+                    for (int x = 0; x < shape.width * 4; x++) {
                         int index = z * slice + y * row + x;
                         touched[index] = true;
                     }
