@@ -80,7 +80,9 @@ public class ComputeProgram implements Closeable {
      * @author EΣrie
      * @apiNote Write the fucking cache EΣrie.
      */
-    public void compile(ProgramCacheIntegrityTable cache, MemoryStack stack) {
+    public synchronized void compile(ProgramCacheIntegrityTable cache, MemoryStack stack) {
+        if (kernels != null)
+            return;
         IntBuffer err_code = stack.mallocInt(1);
         String src = getResourceAsString(new ResourceLocation(resourceLocation.getNamespace(), metadata.fname));
         long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
