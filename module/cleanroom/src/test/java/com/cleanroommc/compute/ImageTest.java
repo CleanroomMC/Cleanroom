@@ -221,7 +221,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imageFillTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             FloatBuffer color = stack.floats(.25f, -.5f, .75f, 1.f);
@@ -247,7 +247,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imageWriteTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             FloatBuffer expected = values(stack, shape.regionElements());
@@ -272,7 +272,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imagePixelWriteTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             FloatBuffer result = stack.mallocFloat(shape.regionElements());
@@ -288,7 +288,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imageCopyTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush();
              ImageResource source = createImage(stack, shape);
@@ -303,7 +303,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imageOffsetCopyTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush();
              ImageResource source = createImage(stack, shape);
@@ -447,7 +447,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imageInteriorTransferTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             Object from = shape.coordinates(1, shape.height > 1 ? 1 : 0, shape.depth > 1 ? 1 : 0);
@@ -461,7 +461,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imageInteriorFillTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             Object from = shape.coordinates(1, shape.height > 1 ? 1 : 0, shape.depth > 1 ? 1 : 0);
@@ -476,7 +476,7 @@ public class ImageTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Shape.class, names = {"IMAGE_3D", "IMAGE_2D_ARRAY"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(Shape.class)
     public void imageInteriorCopyTest(Shape shape) {
         try (MemoryStack stack = MemoryStack.stackPush();
              ImageResource source = createImage(stack, shape);
