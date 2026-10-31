@@ -92,6 +92,18 @@ public class Compute {
      */
     private final ProgramCacheIntegrityTable programCacheIntegrityTable = new ProgramCacheIntegrityTable();
 
+    /** Releases queues, programs and cached headers before the context is destroyed. */
+    public void close() {
+        queueDispatch.close();
+        for (ComputeProgram program : programs.values())
+            program.close();
+        programs.clear();
+        for (long library : libraries.values())
+            CL10.clReleaseProgram(library);
+        libraries.clear();
+        com.cleanroommc.compute.smrtptr.GarbageCollector.INSTANCE.deleteAllSweptObjects();
+    }
+
     /**
      * Initialize Compute.
      *

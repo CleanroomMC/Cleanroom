@@ -381,8 +381,16 @@ public class ComputeProgram implements Closeable {
      * @author EΣrie
      */
     @Override
-    public void close() {
-        CL10.clReleaseProgram(programHandle);
+    public synchronized void close() {
+        if (kernels != null) {
+            for (Kernel kernel : kernels.values())
+                CL10.clReleaseKernel(kernel.kernel());
+            kernels = null;
+        }
+        if (programHandle != 0) {
+            CL10.clReleaseProgram(programHandle);
+            programHandle = 0;
+        }
     }
 
     /**

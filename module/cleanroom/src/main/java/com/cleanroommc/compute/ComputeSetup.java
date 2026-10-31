@@ -128,8 +128,12 @@ public class ComputeSetup {
             MinecraftForge.EVENT_BUS.post(new RegisterComputeProgramsEvent());
             Compute.instance().compilePrograms();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                CL10.clReleaseContext(ctx);
-                CL.destroy();
+                try {
+                    Compute.instance().close();
+                } finally {
+                    CL10.clReleaseContext(ctx);
+                    CL.destroy();
+                }
             }));
         }
         LOGGER.info("OpenCL Setup completed successfully");

@@ -77,5 +77,6 @@ public final class CommandQueueDispatch implements Closeable {
         for (CommandQueue queue : commandQueues.values()) {
             queue.close();
         }
+        commandQueues.clear();
     }
 }
