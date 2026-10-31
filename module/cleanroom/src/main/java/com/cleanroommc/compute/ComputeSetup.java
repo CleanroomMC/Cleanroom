@@ -105,12 +105,19 @@ public class ComputeSetup {
                 long[] maxWorkItemSizes = new long[(int) len.get(0)];
                 CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, maxWorkItemSizes, len);
 
+                boolean pipeSupport = deviceCapabilities.OpenCL20;
+                if (deviceCapabilities.OpenCL30) {
+                    IntBuffer supported = stack.callocInt(1);
+                    int error = CL10.clGetDeviceInfo(deviceHandle, CL30.CL_DEVICE_PIPE_SUPPORT, supported, null);
+                    pipeSupport = error == CL10.CL_SUCCESS && supported.get(0) != 0;
+                }
+
                 deviceArray[i] = new Device(deviceHandle,
                         deviceCapabilities,
                         maxWorkItemSizes,
                         imageSupport.get(0) != 0,
                         deviceCapabilities.cl_khr_mipmap_image,
-                        deviceCapabilities.OpenCL20);
+                        pipeSupport);
             }
             Compute.init(
                     LOGGER,
