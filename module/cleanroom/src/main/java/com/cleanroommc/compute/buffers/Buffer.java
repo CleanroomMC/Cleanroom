@@ -1058,7 +1058,10 @@ public class Buffer extends SmartPointer {
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
-        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkArgument(target.length > 0, "Destination array is empty.");
+        Preconditions.checkArgument(offset >= 0, "Negative buffer offset.");
+        Preconditions.checkArgument(glBuffer != null || offset <= size && (long) target.length * sizeof <= size - offset,
+            "Attempted to read beyond the buffer.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -1118,7 +1121,10 @@ public class Buffer extends SmartPointer {
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
-        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkArgument(target.length > 0, "Destination array is empty.");
+        Preconditions.checkArgument(offset >= 0, "Negative buffer offset.");
+        Preconditions.checkArgument(glBuffer != null || offset <= size && (long) target.length * sizeof <= size - offset,
+            "Attempted to read beyond the buffer.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -1178,7 +1184,10 @@ public class Buffer extends SmartPointer {
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
-        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkArgument(target.length > 0, "Destination array is empty.");
+        Preconditions.checkArgument(offset >= 0, "Negative buffer offset.");
+        Preconditions.checkArgument(glBuffer != null || offset <= size && (long) target.length * sizeof <= size - offset,
+            "Attempted to read beyond the buffer.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
 
@@ -1238,7 +1247,10 @@ public class Buffer extends SmartPointer {
 
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(target);
-        Preconditions.checkArgument(target.length >= sizeof, "Attempted to write to an array that is too small.");
+        Preconditions.checkArgument(target.length > 0, "Destination array is empty.");
+        Preconditions.checkArgument(offset >= 0, "Negative buffer offset.");
+        Preconditions.checkArgument(glBuffer != null || offset <= size && (long) target.length * sizeof <= size - offset,
+            "Attempted to read beyond the buffer.");
         Preconditions.checkState(canRead, "Attempted to read from a write-only or no-access buffer");
         Preconditions.checkArgument(!commandQueue.isClosed());
 
