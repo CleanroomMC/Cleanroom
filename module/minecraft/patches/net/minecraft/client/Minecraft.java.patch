@@ -52,7 +52,7 @@
      private final Snooper usageSnooper = new Snooper("client", this, MinecraftServer.getCurrentTimeMillis());
      public WorldClient world;
 @@ -363,6 +352,7 @@
- 
+
      public Minecraft(GameConfiguration gameConfig) {
          instance = this;
 +        net.minecraftforge.client.ForgeHooksClient.invalidateLog4jThreadCache();
@@ -68,7 +68,7 @@
          this.displayWidth = gameConfig.displayInfo.width > 0 ? gameConfig.displayInfo.width : 1;
          this.displayHeight = gameConfig.displayInfo.height > 0 ? gameConfig.displayInfo.height : 1;
 @@ -447,6 +436,7 @@
- 
+
      /** Starts the game: initializes the canvas, the title, the settings, etcetera. */
      private void init() throws IOException, LWJGLException {
 +        com.cleanroommc.client.sdl.SDL.ensureVideo();
@@ -103,16 +103,17 @@
          this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
          this.saveLoader = new AnvilSaveConverter(new File(this.gameDir, "saves"), this.dataFixer);
          this.soundHandler = new SoundHandler(this.resourceManager, this.gameSettings);
-@@ -491,6 +483,8 @@
+@@ -491,6 +483,9 @@
          this.resourceManager.registerReloadListener(new GrassColorReloadListener());
          this.resourceManager.registerReloadListener(new FoliageColorReloadListener());
          this.mouseHelper = new MouseHelper();
++        com.cleanroommc.client.input.gamepad.GamepadHandler.init();
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar bar= net.minecraftforge.fml.common.ProgressManager.push("Rendering Setup", 5, true);
 +        bar.step("GL Setup");
          this.checkGLError("Pre startup");
          GlStateManager.enableTexture2D();
          GlStateManager.shadeModel(7425);
-@@ -504,19 +498,24 @@
+@@ -504,19 +499,24 @@
          GlStateManager.loadIdentity();
          GlStateManager.matrixMode(5888);
          this.checkGLError("Startup");
@@ -137,7 +138,7 @@
          this.entityRenderer = new EntityRenderer(this, this.resourceManager);
          this.resourceManager.registerReloadListener(this.entityRenderer);
          this.blockRenderDispatcher = new BlockRendererDispatcher(this.modelManager.getBlockModelShapes(), this.blockColors);
-@@ -527,18 +526,26 @@
+@@ -527,18 +527,26 @@
          this.resourceManager.registerReloadListener(this.searchTreeManager);
          GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
          this.effectRenderer = new ParticleManager(this.world, this.renderEngine);
@@ -156,7 +157,7 @@
          } else {
              this.displayGuiScreen(new GuiMainMenu());
          }
- 
+
 -        this.renderEngine.deleteTexture(this.mojangLogo);
 +        net.minecraftforge.fml.client.SplashProgress.clearVanillaResources(renderEngine, mojangLogo);
          this.mojangLogo = null;
@@ -167,13 +168,13 @@
          if (this.gameSettings.fullScreen && !this.fullscreen) {
              this.toggleFullscreen();
          }
-@@ -599,34 +606,22 @@
- 
+@@ -599,34 +607,22 @@
+
      private void createDisplay() throws LWJGLException {
          Display.setResizable(true);
 -        Display.setTitle("Minecraft 1.12.2");
 +        Display.setTitle("Cleanroom");
- 
+
 -        try {
 -            Display.create(new PixelFormat().withDepthBits(24));
 -        } catch (LWJGLException lwjglexception) {
@@ -195,7 +196,7 @@
 +        net.minecraftforge.client.ForgeHooksClient.setWindowStyle(fullscreen);
 +        net.minecraftforge.client.ForgeHooksClient.initializeTaskbarAPI();
      }
- 
+
 -    private void setInitialDisplayMode() throws LWJGLException {
 +    private void setInitialDisplayMode() {
 +        com.cleanroommc.client.sdl.Window window = com.cleanroommc.client.sdl.SDL.window();
@@ -212,8 +213,8 @@
 +            window.size(this.displayWidth, this.displayHeight);
          }
      }
- 
-@@ -640,7 +635,7 @@
+
+@@ -640,7 +636,7 @@
                  inputstream = this.defaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_16x16.png"));
                  inputstream1 = this.defaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_32x32.png"));
                  if (inputstream != null && inputstream1 != null) {
@@ -222,23 +223,23 @@
                  }
              } catch (IOException ioexception) {
                  LOGGER.error("Couldn't set icon", ioexception);
-@@ -679,6 +674,7 @@
+@@ -679,6 +675,7 @@
      }
- 
+
      private void startTimerHackThread() {
 +        if (!org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS) return;
          Thread thread = new Thread("Timer hack thread") {
              @Override
              public void run() {
-@@ -691,6 +687,7 @@
+@@ -691,6 +688,7 @@
              }
          };
          thread.setDaemon(true);
 +        thread.setPriority(Thread.MIN_PRIORITY);
          thread.start();
      }
- 
-@@ -704,22 +701,26 @@
+
+@@ -704,22 +702,26 @@
          File file1 = new File(getMinecraft().gameDir, "crash-reports");
          File file2 = new File(file1, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
          Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());
@@ -259,16 +260,16 @@
          }
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().handleExit(retVal);
      }
- 
+
      public boolean isUnicode() {
          return this.languageManager.isCurrentLocaleUnicode() || this.gameSettings.forceUnicodeFont;
      }
- 
+
 +    @Deprecated // Forge: Use selective refreshResources method in FMLClientHandler
      public void refreshResources() {
          List<IResourcePack> list = Lists.newArrayList(this.defaultResourcePacks);
          if (this.integratedServer != null) {
-@@ -902,16 +903,22 @@
+@@ -902,16 +904,22 @@
       * @param guiScreenIn The {@link GuiScreen} to display. If it is {@code null}, any open GUI will be closed.
       */
      public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {
@@ -281,7 +282,7 @@
          } else if (guiScreenIn == null && this.player.getHealth() <= 0.0F) {
              guiScreenIn = new GuiGameOver(null);
          }
- 
+
 +        GuiScreen old = this.currentScreen;
 +        net.minecraftforge.client.event.GuiOpenEvent event = new net.minecraftforge.client.event.GuiOpenEvent(guiScreenIn);
 +
@@ -295,8 +296,16 @@
          if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer) {
              this.gameSettings.showDebugInfo = false;
              this.ingameGUI.getChatGUI().clearChatMessages(true);
-@@ -962,7 +969,8 @@
- 
+@@ -921,6 +929,7 @@
+         if (guiScreenIn != null) {
+             this.setIngameNotInFocus();
+             KeyBinding.unPressAllKeys();
++            com.cleanroommc.client.input.gamepad.GamepadHandler.reset();
+
+             while (Mouse.next()) {
+             }
+@@ -962,7 +971,8 @@
+
              this.soundHandler.unloadSounds();
          } finally {
 -            Display.destroy();
@@ -305,16 +314,16 @@
              if (!this.hasCrashed) {
                  System.exit(0);
              }
-@@ -980,6 +988,8 @@
+@@ -980,6 +990,8 @@
          }
- 
+
          this.timer.updateTimer();
 +        this.frameDeltaSeconds = (i - this.lastFrameNanos) / 1.0e9; // Cleanroom
 +        this.lastFrameNanos = i; // Cleanroom
          this.profiler.startSection("scheduledExecutables");
          synchronized (this.scheduledTasks) {
              while (!this.scheduledTasks.isEmpty()) {
-@@ -999,7 +1009,7 @@
+@@ -999,7 +1011,7 @@
          long i1 = System.nanoTime() - l;
          this.checkGLError("Pre render");
          this.profiler.endStartSection("sound");
@@ -323,7 +332,7 @@
          this.profiler.endSection();
          this.profiler.startSection("render");
          GlStateManager.pushMatrix();
-@@ -1009,11 +1019,13 @@
+@@ -1009,11 +1021,13 @@
          GlStateManager.enableTexture2D();
          this.profiler.endSection();
          if (!this.skipRenderWorld) {
@@ -335,18 +344,18 @@
              this.profiler.endSection();
 +            net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickEnd(this.timer.renderPartialTicks);
          }
- 
+
          this.profiler.endSection();
-@@ -1096,7 +1108,7 @@
+@@ -1096,7 +1110,7 @@
      }
- 
+
      protected void checkWindowResize() {
 -        if (!this.fullscreen && Display.wasResized()) {
 +        if (Display.wasResized()) {
              int i = this.displayWidth;
              int j = this.displayHeight;
              this.displayWidth = Display.getWidth();
-@@ -1308,9 +1320,9 @@
+@@ -1308,9 +1322,9 @@
          if (this.leftClickCounter <= 0 && !this.player.isHandActive()) {
              if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                  BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -359,7 +368,7 @@
                      this.player.swingArm(EnumHand.MAIN_HAND);
                  }
              } else {
-@@ -1333,7 +1345,8 @@
+@@ -1333,7 +1347,8 @@
                          break;
                      case BLOCK:
                          BlockPos blockpos = this.objectMouseOver.getBlockPos();
@@ -369,23 +378,23 @@
                              this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                              break;
                          }
-@@ -1343,6 +1356,7 @@
+@@ -1343,6 +1358,7 @@
                          }
- 
+
                          this.player.resetCooldown();
 +                        net.minecraftforge.common.ForgeHooks.onEmptyLeftClick(this.player);
                  }
- 
+
                  this.player.swingArm(EnumHand.MAIN_HAND);
-@@ -1399,6 +1413,7 @@
+@@ -1399,6 +1415,7 @@
                          }
                      }
- 
+
 +                    if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
                      if (!itemstack.isEmpty()
                          && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
                          this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
-@@ -1414,7 +1429,12 @@
+@@ -1414,7 +1431,12 @@
          try {
              this.fullscreen = !this.fullscreen;
              this.gameSettings.fullScreen = this.fullscreen;
@@ -399,10 +408,10 @@
                  this.updateDisplayMode();
                  this.displayWidth = Display.getDisplayMode().getWidth();
                  this.displayHeight = Display.getDisplayMode().getHeight();
-@@ -1444,7 +1464,17 @@
+@@ -1444,7 +1466,17 @@
                  this.updateFramebufferSize();
              }
- 
+
 -            Display.setFullscreen(this.fullscreen);
 +            if (host != null) {
 +                if (!this.fullscreen) {
@@ -418,33 +427,42 @@
              Display.setVSyncEnabled(this.gameSettings.enableVsync);
              this.updateDisplay();
          } catch (Exception exception) {
-@@ -1483,6 +1513,8 @@
+@@ -1483,6 +1515,8 @@
              this.rightClickDelayTimer--;
          }
- 
+
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreClientTick();
 +
          this.profiler.startSection("gui");
          if (!this.isGamePaused) {
              this.ingameGUI.updateTick();
-@@ -1632,6 +1664,7 @@
+@@ -1546,6 +1580,8 @@
          }
- 
+
+         if (this.currentScreen == null || this.currentScreen.allowUserInput) {
++            this.profiler.endStartSection("gamepad");
++            com.cleanroommc.client.input.gamepad.GamepadHandler.runTickGamepad();
+             this.profiler.endStartSection("mouse");
+             this.runTickMouse();
+             if (this.leftClickCounter > 0) {
+@@ -1632,6 +1668,7 @@
+         }
+
          this.profiler.endSection();
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
          this.systemTime = getSystemTime();
      }
- 
-@@ -1705,6 +1738,7 @@
+
+@@ -1705,6 +1742,7 @@
                      }
                  }
              }
 +            net.minecraftforge.fml.common.FMLCommonHandler.instance().fireKeyInput();
          }
- 
+
          this.processKeyBinds();
-@@ -1896,6 +1930,8 @@
- 
+@@ -1896,6 +1934,8 @@
+
      private void runTickMouse() throws IOException {
          while (Mouse.next()) {
 +            if (net.minecraftforge.client.ForgeHooksClient.postMouseEvent()) continue;
@@ -452,25 +470,25 @@
              int i = Mouse.getEventButton();
              KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
              if (Mouse.getEventButtonState()) {
-@@ -1931,6 +1967,7 @@
+@@ -1931,6 +1971,7 @@
                      this.currentScreen.handleMouseInput();
                  }
              }
 +            net.minecraftforge.fml.common.FMLCommonHandler.instance().fireMouseInput();
          }
      }
- 
-@@ -1949,6 +1986,7 @@
- 
+
+@@ -1949,6 +1990,7 @@
+
      /** Arguments: World foldername,  World ingame name, WorldSettings */
      public void launchIntegratedServer(String folderName, String worldName, @Nullable WorldSettings worldSettingsIn) {
 +        net.minecraftforge.fml.client.FMLClientHandler.instance().startIntegratedServer(folderName, worldName, worldSettingsIn);
          this.loadWorld(null);
          System.gc();
          ISaveHandler isavehandler = this.saveLoader.getSaveLoader(folderName, false);
-@@ -1990,6 +2028,11 @@
+@@ -1990,6 +2032,11 @@
          this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
- 
+
          while (!this.integratedServer.serverIsInRunLoop()) {
 +            if (!net.minecraftforge.fml.common.StartupQuery.check() || this.integratedServer.isServerStopped()) {
 +                loadWorld(null);
@@ -480,7 +498,7 @@
              String s = this.integratedServer.getUserMessage();
              if (s != null) {
                  this.loadingScreen.displayLoadingString(I18n.format(s));
-@@ -2007,8 +2050,13 @@
+@@ -2007,8 +2054,13 @@
          SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
          NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
          networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, null));
@@ -495,9 +513,9 @@
 +        networkmanager.sendPacket(new CPacketLoginStart(gameProfile));
          this.networkManager = networkmanager;
      }
- 
-@@ -2019,6 +2067,8 @@
- 
+
+@@ -2019,6 +2071,8 @@
+
      /** par2Str is displayed on the loading screen to the user unloads the current world first */
      public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
 +        if (world != null) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(world));
@@ -505,8 +523,8 @@
          if (worldClientIn == null) {
              NetHandlerPlayClient nethandlerplayclient = this.getConnection();
              if (nethandlerplayclient != null) {
-@@ -2027,6 +2077,14 @@
- 
+@@ -2027,6 +2081,14 @@
+
              if (this.integratedServer != null && this.integratedServer.isAnvilFileSet()) {
                  this.integratedServer.initiateShutdown();
 +                if (loadingScreen != null && this.running) {
@@ -518,26 +536,26 @@
 +                    } catch (InterruptedException ie) {}
 +                }
              }
- 
+
              this.integratedServer = null;
-@@ -2047,6 +2105,7 @@
+@@ -2047,6 +2109,7 @@
              this.ingameGUI.resetPlayersOverlayFooterHeader();
              this.setServerData(null);
              this.integratedServerIsRunning = false;
 +            net.minecraftforge.fml.client.FMLClientHandler.instance().handleClientWorldClosing(this.world);
          }
- 
+
          this.soundHandler.stopSounds();
-@@ -2060,6 +2119,8 @@
+@@ -2060,6 +2123,8 @@
          }
- 
+
          TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
 +        net.minecraftforge.client.MinecraftForgeClient.clearRenderCache();
 +
          if (worldClientIn != null) {
              if (!this.integratedServerIsRunning) {
                  AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-@@ -2112,6 +2173,7 @@
+@@ -2112,6 +2177,7 @@
                  this.player == null ? new RecipeBook() : this.player.getRecipeBook()
              );
          this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
@@ -545,7 +563,7 @@
          this.player.dimension = dimension;
          this.renderViewEntity = this.player;
          this.player.preparePlayerToSpawn();
-@@ -2153,110 +2215,8 @@
+@@ -2153,110 +2219,8 @@
      /** Called when user clicked he's mouse middle button (pick block) */
      private void middleClickMouse() {
          if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) {
@@ -657,8 +675,8 @@
 +            // We delete this code wholly instead of commenting it out, to make sure we detect changes in it between MC versions
          }
      }
- 
-@@ -2288,12 +2248,16 @@
+
+@@ -2288,12 +2252,16 @@
          });
          theCrash.getCategory().addDetail("LWJGL", new ICrashReportDetail<String>() {
              public String call() throws Exception {
@@ -677,16 +695,16 @@
              }
          });
          theCrash.getCategory().addDetail("GL Caps", new ICrashReportDetail<String>() {
-@@ -2372,6 +2336,7 @@
+@@ -2372,6 +2340,7 @@
          return instance;
      }
- 
+
 +    @Deprecated // Forge: Use selective scheduleResourceRefresh method in FMLClientHandler
      public ListenableFuture<Object> scheduleResourcesRefresh() {
          return this.addScheduledTask(new Runnable() {
              @Override
-@@ -2536,15 +2501,8 @@
- 
+@@ -2536,15 +2505,8 @@
+
      /** Used in the usage snooper. */
      public static int getGLMaximumTextureSize() {
 -        for (int i = 16384; i > 0; i >>= 1) {
@@ -701,11 +719,11 @@
 +        //Forge we redirect this to our code which caches the value before any splash screen stuff is done.
 +        return net.minecraftforge.fml.client.SplashProgress.getMaxTextureSize();
      }
- 
+
      /** Returns whether snooping is enabled or not. */
-@@ -2658,6 +2616,9 @@
+@@ -2658,6 +2620,9 @@
          }
- 
+
          if (this.player != null) {
 +            MusicTicker.MusicType type = this.world.provider.getMusicType();
 +            if (type != null) return type;
@@ -713,7 +731,7 @@
              if (this.player.world.provider instanceof WorldProviderHell) {
                  return MusicTicker.MusicType.NETHER;
              } else if (this.player.world.provider instanceof WorldProviderEnd) {
-@@ -2677,9 +2638,9 @@
+@@ -2677,9 +2642,9 @@
          if (i != 0 && !Keyboard.isRepeatEvent()) {
              if (!(this.currentScreen instanceof GuiControls) || ((GuiControls)this.currentScreen).time <= getSystemTime() - 20L) {
                  if (Keyboard.getEventKeyState()) {
@@ -725,7 +743,7 @@
                          this.ingameGUI
                              .getChatGUI()
                              .printChatMessage(ScreenShotHelper.saveScreenshot(this.gameDir, this.displayWidth, this.displayHeight, this.framebuffer));
-@@ -2691,7 +2652,7 @@
+@@ -2691,7 +2656,7 @@
                              ((ScreenChatOptions)this.currentScreen).updateNarratorButton();
                          }
                      }
@@ -734,7 +752,7 @@
              }
          }
      }
-@@ -2720,7 +2681,7 @@
+@@ -2720,7 +2685,7 @@
              try {
                  return Futures.immediateFuture(callableToSchedule.call());
              } catch (Exception exception) {
@@ -743,10 +761,10 @@
              }
          } else {
              ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(callableToSchedule);
-@@ -2798,11 +2759,24 @@
+@@ -2798,11 +2763,24 @@
          return this.timer.elapsedPartialTicks;
      }
- 
+
 +    /**
 +     * Cleanroom: real time in seconds between the start of the previous frame and the start of the current one,
 +     * measured with {@link System#nanoTime()}. Unlike {@link #getTickLength()}, it does not depend on the tick
@@ -759,7 +777,7 @@
      public BlockColors getBlockColors() {
          return this.blockColors;
      }
- 
+
 -    /** Whether to use reduced debug info */
 +    // FORGE
 +    public ItemColors getItemColors() {
@@ -769,7 +787,7 @@
      public boolean isReducedDebug() {
          return this.player != null && this.player.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
      }
-@@ -2814,4 +2788,8 @@
+@@ -2814,4 +2792,8 @@
      public Tutorial getTutorial() {
          return this.tutorial;
      }
