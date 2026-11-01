@@ -21,7 +21,6 @@ package net.minecraftforge.client.settings;
 
 import javax.annotation.Nullable;
 
-import com.cleanroommc.lwjgly.rt.Scancodes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -208,11 +207,6 @@ public enum KeyModifier {
         return NONE;
     }
 
-    public static KeyModifier getKeyModifierSDL(int sdlKeyCode)
-    {
-        return getKeyModifier(Scancodes.toLwjgl(sdlKeyCode));
-    }
-
     public static int toMask(KeyModifier modifier)
     {
         return switch (modifier) {
@@ -272,8 +266,8 @@ public enum KeyModifier {
     {
         String name = GameSettings.getKeyDisplayString(keyCode);
         if ((mask & MASK_SHIFT) != 0)   name = I18n.format("forge.controlsgui.shift", name);
-        if ((mask & MASK_ALT) != 0)     name = I18n.format("forge.controlsgui.alt", name);
         if ((mask & MASK_CONTROL) != 0) name = I18n.format(Minecraft.IS_RUNNING_ON_MAC ? "forge.controlsgui.control.mac" : "forge.controlsgui.control", name);
+        if ((mask & MASK_ALT) != 0)     name = I18n.format("forge.controlsgui.alt", name);
         return name;
     }
 

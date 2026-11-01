@@ -41,6 +41,17 @@ cleanroom.gui.website=Website
 cleanroom.gui.submit_bug=Submit Bug
 cleanroom.gui.mod_id=Mod ID: %s
 
+cleanroom.gui.controls.sort=Sort by: %s
+cleanroom.gui.controls.filter=Filter: %s
+cleanroom.gui.controls.search=Search by: %s
+cleanroom.gui.controls.layout=Toggle layout
+cleanroom.gui.controls.mode.category=Category
+cleanroom.gui.controls.mode.name=Name
+cleanroom.gui.controls.mode.key=Key
+cleanroom.gui.controls.mode.default=Default
+cleanroom.gui.controls.mode.conflict=Conflict
+cleanroom.gui.controls.mode.free=Free
+
 cleanroom.config.enable=Enable
 cleanroom.config.enable.tooltip=Whether to enable Cleanroom's mod list. \nDisabling it stops Cleanroom from redirecting Forge's mod list calls.
 cleanroom.config.library_list=Library List

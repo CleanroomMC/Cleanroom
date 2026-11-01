@@ -1,6 +1,46 @@
 --- original/net/minecraft/client/gui/GuiKeyBindingList.java
 +++ modified/net/minecraft/client/gui/GuiKeyBindingList.java
-@@ -56,13 +56,13 @@
+@@ -3,7 +3,6 @@
+ import java.util.Arrays;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.resources.I18n;
+-import net.minecraft.client.settings.GameSettings;
+ import net.minecraft.client.settings.KeyBinding;
+ import net.minecraft.util.text.TextFormatting;
+ import net.minecraftforge.fml.relauncher.Side;
+@@ -15,10 +14,11 @@
+     private final GuiControls controlsScreen;
+     private final Minecraft mc;
+     private final GuiListExtended.IGuiListEntry[] listEntries;
++    private final it.unimi.dsi.fastutil.objects.ObjectArrayList<GuiListExtended.IGuiListEntry> cleanroom$listEntries;
+     private int maxListLabelWidth;
+ 
+     public GuiKeyBindingList(GuiControls controls, Minecraft mcIn) {
+-        super(mcIn, controls.width + 45, controls.height, 63, controls.height - 32, 20);
++        super(mcIn, controls.width + 45, controls.height, 63, controls.height - 72, 20);
+         this.controlsScreen = controls;
+         this.mc = mcIn;
+         KeyBinding[] akeybinding = ArrayUtils.clone(mcIn.gameSettings.keyBindings);
+@@ -41,28 +41,30 @@
+ 
+             this.listEntries[i++] = new GuiKeyBindingList.KeyEntry(keybinding);
+         }
++
++        cleanroom$listEntries = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(listEntries);
+     }
+ 
+     @Override
+     protected int getSize() {
+-        return this.listEntries.length;
++        return this.cleanroom$listEntries.size();
+     }
+ 
+     /** Gets the IGuiListEntry object for the given index */
+     @Override
+     public GuiListExtended.IGuiListEntry getListEntry(int index) {
+-        return this.listEntries[index];
++        return this.cleanroom$listEntries.get(index);
+     }
  
      @Override
      protected int getScrollBarX() {
@@ -16,7 +56,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -125,7 +125,7 @@
+@@ -125,7 +127,7 @@
          private KeyEntry(KeyBinding name) {
              this.keybinding = name;
              this.keyDesc = I18n.format(name.getKeyDescription());
@@ -25,7 +65,7 @@
              this.btnReset = new GuiButton(0, 0, 0, 50, 20, I18n.format("controls.reset"));
          }
  
-@@ -150,19 +150,21 @@
+@@ -150,19 +152,21 @@
                      y + slotHeight / 2 - GuiKeyBindingList.this.mc.fontRenderer.FONT_HEIGHT / 2,
                      16777215
                  );
@@ -52,7 +92,7 @@
                      }
                  }
              }
-@@ -175,7 +177,7 @@
+@@ -175,7 +179,7 @@
                      + TextFormatting.WHITE
                      + " <";
              } else if (flag1) {
@@ -61,7 +101,7 @@
              }
  
              this.btnChangeKeyBinding.drawButton(GuiKeyBindingList.this.mc, mouseX, mouseY, partialTicks);
-@@ -188,6 +190,7 @@
+@@ -188,6 +192,7 @@
                  GuiKeyBindingList.this.controlsScreen.buttonId = this.keybinding;
                  return true;
              } else if (this.btnReset.mousePressed(GuiKeyBindingList.this.mc, mouseX, mouseY)) {
@@ -69,3 +109,35 @@
                  GuiKeyBindingList.this.mc.gameSettings.setOptionKeyBinding(this.keybinding, this.keybinding.getKeyCodeDefault());
                  KeyBinding.resetKeyBindingArrayAndHash();
                  return true;
+@@ -207,4 +212,31 @@
+         public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
+         }
+     }
++
++    /* ======================================== CLEANROOM START =====================================*/
++    public void cleanroom$updateList() {
++        KeyBinding[] akeybinding = ArrayUtils.clone(this.mc.gameSettings.keyBindings);
++        cleanroom$listEntries.clear();
++        Arrays.sort(akeybinding);
++        String s = null;
++
++        for (KeyBinding keybinding : akeybinding) {
++            if (!GuiControls.filterMode().allow(keybinding)) continue;
++            if (!GuiControls.searchMode().allow(keybinding, controlsScreen.currentSearch())) continue;
++
++            String s1 = keybinding.getKeyCategory();
++            if (GuiControls.sortMode().byCategory() && !s1.equals(s)) {
++                s = s1;
++                cleanroom$listEntries.add(new GuiKeyBindingList.CategoryEntry(s1));
++            }
++
++            int j = this.mc.fontRenderer.getStringWidth(I18n.format(keybinding.getKeyDescription()));
++            if (j > this.maxListLabelWidth) {
++                this.maxListLabelWidth = j;
++            }
++
++            cleanroom$listEntries.add(new GuiKeyBindingList.KeyEntry(keybinding));
++        }
++    }
++    /* ========================================= CLEANROOM END ======================================*/
+ }
