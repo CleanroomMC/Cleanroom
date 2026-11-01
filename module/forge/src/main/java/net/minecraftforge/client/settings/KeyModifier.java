@@ -209,7 +209,8 @@ public enum KeyModifier {
 
     public static int toMask(KeyModifier modifier)
     {
-        return switch (modifier) {
+        return switch (modifier)
+        {
             case CONTROL    -> MASK_CONTROL;
             case ALT        -> MASK_ALT;
             case SHIFT      -> MASK_SHIFT;
@@ -217,16 +218,20 @@ public enum KeyModifier {
         };
     }
 
-    public static int filterMask(int mask, int keyCode) {
+    public static int filterMask(int mask, int keyCode)
+    {
         return mask == MASK_NONE ? MASK_NONE : mask & ~toMask(getKeyModifier(keyCode));
     }
 
-    public static boolean isActive(int mask, @Nullable IKeyConflictContext conflictContext) {
+    public static boolean isActive(int mask, @Nullable IKeyConflictContext conflictContext)
+    {
         if (mask == MASK_NONE) return NONE.isActive(conflictContext);
 
         boolean isActive = true;
-        for (KeyModifier modifier: MODIFIER_VALUES) {
-            if (modifier.has(mask)) {
+        for (KeyModifier modifier: MODIFIER_VALUES)
+        {
+            if (modifier.has(mask))
+            {
                 isActive = modifier.isActive(conflictContext);
             }
         }
@@ -251,9 +256,12 @@ public enum KeyModifier {
     {
         if (mask == 0) return "";
         StringBuilder sb = new StringBuilder();
-        for (KeyModifier modifier: MODIFIER_VALUES) {
-            if (modifier.has(mask)) {
-                if (!sb.isEmpty()) {
+        for (KeyModifier modifier: MODIFIER_VALUES)
+        {
+            if (modifier.has(mask))
+            {
+                if (!sb.isEmpty())
+                {
                     sb.append('+');
                 }
                 sb.append(modifier);
