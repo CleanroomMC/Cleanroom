@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.controls;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -7,8 +17,11 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyModifier;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class GuiControlsHook {
+@SideOnly(Side.CLIENT)
+public final class GuiControlsHooks {
 
     public static final String TRANSLATE_LAYOUT = "cleanroom.gui.controls.layout";
 
@@ -18,6 +31,8 @@ public class GuiControlsHook {
         KeyModifier.MASK_ALT | KeyModifier.MASK_CONTROL,
         KeyModifier.MASK_ALT | KeyModifier.MASK_CONTROL | KeyModifier.MASK_SHIFT
     );
+
+    private GuiControlsHooks() { }
 
     public enum SortMode implements Translate {
 
