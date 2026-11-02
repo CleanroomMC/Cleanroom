@@ -48,11 +48,10 @@ public class Arena implements AutoCloseable {
 
     public ByteBuffer allocate(int size, int alignment) {
         Preconditions.checkState(size <= PAGE_SIZE, "Size must be less than or equal to %s", PAGE_SIZE);
-        int offset = (currAddr + alignment - 1) & -alignment;
-        if (offset + size > PAGE_SIZE)
+        currAddr = (currAddr + alignment - 1) & -alignment;
+        if (currAddr + size > PAGE_SIZE)
             addPage();
-        currAddr = offset + size;
-        return state.pages.get(currPage).slice(offset, offset + size).order(ByteOrder.nativeOrder());
+        return state.pages.get(currPage).slice(currAddr, currAddr + size).order(ByteOrder.nativeOrder());
     }
 
     public ByteBuffer allocate(int size) {
