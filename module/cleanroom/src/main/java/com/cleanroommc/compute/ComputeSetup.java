@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GLX;
 import org.lwjgl.opengl.GLX12;
 import org.lwjgl.opengl.WGL;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.sdl.SDLVideo;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -196,7 +197,21 @@ public class ComputeSetup {
             case LINUX, FREEBSD:
                 ctx = GLX.glXGetCurrentContext();
                 if (ctx == 0) {
-                    throw new IllegalStateException("Can't acquire GLX context.");
+                    ctx = SDLVideo.SDL_GL_GetCurrentContext();
+                    if (ctx == 0) {
+                        throw new IllegalStateException(
+                                "This machine failed to acquire a video context for both X11 (GLX/EGL) & Wayland (EGL)."
+                        );
+                    }
+                    display = SDLVideo.SDL_EGL_GetCurrentDisplay();
+                    if (display == 0) {
+                        throw new IllegalStateException("Can't acquire EGL display.");
+                    }
+                    properties.put(KHRGLSharing.CL_GL_CONTEXT_KHR);
+                    properties.put(ctx);
+                    properties.put(KHRGLSharing.CL_EGL_DISPLAY_KHR);
+                    properties.put(display);
+                    return;
                 }
                 display = GLX12.glXGetCurrentDisplay();
                 if (display == 0) {
