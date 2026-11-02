@@ -181,6 +181,7 @@ dependencies {
     api 'org.lwjgl:lwjgl-stb'
     api 'org.lwjgl:lwjgl-sdl'
     api 'org.lwjgl:lwjgl-opencl' // OpenCL does not have natives
+    implementation "org.lwjgl:lwjgl-rpmalloc"
 
     // TODO
     compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
@@ -191,6 +192,7 @@ dependencies {
     lwjglNative "org.lwjgl:lwjgl-openal:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-stb:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-sdl:${lwjgl_version}"
+    lwjglNative "org.lwjgl:lwjgl-rpmalloc:${lwjgl_version}"
 
     // Kirino
     api 'org.joml:joml:1.10.9'
