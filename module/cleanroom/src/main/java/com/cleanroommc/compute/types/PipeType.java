@@ -1,7 +1,5 @@
 package com.cleanroommc.compute.types;
 
-import org.jspecify.annotations.NonNull;
-
 public record PipeType(String typeName) implements OpenCLType {
     public PipeType(OpenCLType type) {
         this(type.toString());
@@ -13,7 +11,7 @@ public record PipeType(String typeName) implements OpenCLType {
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return String.format("pipe %s",  typeName);
     }
 }

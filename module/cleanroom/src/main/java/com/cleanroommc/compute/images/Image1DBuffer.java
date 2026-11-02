@@ -6,7 +6,6 @@ import com.cleanroommc.compute.cmd.CommandQueue;
 import com.cleanroommc.compute.errors.ImageError;
 import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opencl.CL12;
 import org.lwjgl.opencl.CLImageDesc;
@@ -39,12 +38,12 @@ public final class Image1DBuffer extends Image1D {
      * @see Image
      * @author EΣrie
      */
-    public Image1DBuffer(@NonNull MemoryStack stack,
-                         @NonNull BufferFlags memoryFlags,
+    public Image1DBuffer(MemoryStack stack,
+                         BufferFlags memoryFlags,
                          final long size,
                          final Buffer buffer,
-                         final @NonNull ChannelType channelType,
-                         final @NonNull ChannelOrder channelOrder,
+                         final ChannelType channelType,
+                         final ChannelOrder channelOrder,
                          @Nullable ByteBuffer hostMemory) {
         super(workaround(stack, memoryFlags, size, buffer, channelType, channelOrder, hostMemory));
         this.parent = buffer;
@@ -58,7 +57,7 @@ public final class Image1DBuffer extends Image1D {
      * @see Image#Image(GLTexture, BufferFlags, int)
      * @author EΣrie
      */
-    public Image1DBuffer(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+    public Image1DBuffer(GLTexture texture, BufferFlags memoryFlags, int mipLevel) {
         super(texture, memoryFlags, mipLevel);
         this.parent = null;
     }
@@ -71,7 +70,7 @@ public final class Image1DBuffer extends Image1D {
      * @apiNote Uses mipmap level 0.
      * @author EΣrie
      */
-    public Image1DBuffer(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags) {
+    public Image1DBuffer(GLTexture texture, BufferFlags memoryFlags) {
         this(texture, memoryFlags, 0);
     }
 
@@ -91,7 +90,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull Long from, @NonNull Long size, int mipmap, CommandQueue.Event... dependencies) {
+    public <B extends java.nio.Buffer> long fill(MemoryStack stack, CommandQueue commandQueue, B color, Long from, Long size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.fill(stack, commandQueue, color, from, size, mipmap, dependencies);
     }
@@ -111,7 +110,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, CommandQueue.Event... dependencies) {
+    public long fill(MemoryStack stack, CommandQueue commandQueue, int [] color, Long from, Long size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.fill(stack, commandQueue, color, from, size, mipmap, dependencies);
     }
@@ -131,7 +130,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Long from, @NonNull Long size, int mipmap, CommandQueue.Event... dependencies) {
+    public long fill(MemoryStack stack, CommandQueue commandQueue, float [] color, Long from, Long size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.fill(stack, commandQueue, color, from, size, mipmap, dependencies);
     }
@@ -154,7 +153,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination, @NonNull Long from, int fromMipmap, @NonNull CT2 to, int toMipmap, @NonNull CT2 size, CommandQueue.Event... dependencies) {
+    public <CT2> long copy(MemoryStack stack, CommandQueue commandQueue, Image<CT2> destination, Long from, int fromMipmap, CT2 to, int toMipmap, CT2 size, CommandQueue.Event... dependencies) {
         return super.copy(stack, commandQueue, destination, from, fromMipmap, to, toMipmap, size, dependencies);
     }
 
@@ -177,7 +176,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
+    public <B extends java.nio.Buffer> long read(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
@@ -200,7 +199,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, short [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -223,7 +222,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, int [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -246,7 +245,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, float [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -269,7 +268,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, double [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.read(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -293,7 +292,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
+    public <B extends java.nio.Buffer> long write(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
@@ -316,7 +315,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, short [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -339,7 +338,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, int [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -362,7 +361,7 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, float [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -385,17 +384,17 @@ public final class Image1DBuffer extends Image1D {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Long from, int mipmap, @NonNull Long size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Long from, int mipmap, Long size, long rowPitch, long slicePitch, double [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(mipmap == 0);
         return super.write(stack, commandQueue, from, mipmap, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
 
-    private static Workaround workaround(@NonNull MemoryStack stack,
-                                         @NonNull BufferFlags memoryFlags,
+    private static Workaround workaround(MemoryStack stack,
+                                         BufferFlags memoryFlags,
                                          final long size,
                                          final Buffer buffer,
-                                         final @NonNull ChannelType channelType,
-                                         final @NonNull ChannelOrder channelOrder,
+                                         final ChannelType channelType,
+                                         final ChannelOrder channelOrder,
                                          @Nullable ByteBuffer hostMemory) {
         ByteBuffer container = stack.calloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
         CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF));

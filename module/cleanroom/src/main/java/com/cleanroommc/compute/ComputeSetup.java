@@ -9,7 +9,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
-import org.jspecify.annotations.NonNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
 import org.lwjgl.opengl.CGL;
@@ -162,7 +161,7 @@ public class ComputeSetup {
      * @return attribute value
      * @author EΣrie
      */
-    private static @NonNull String getPlatformAttribute(int attribute, long platform, @NonNull MemoryStack stack) {
+    private static String getPlatformAttribute(int attribute, long platform, MemoryStack stack) {
         PointerBuffer attributeSize = stack.mallocPointer(1);
         CL10.clGetPlatformInfo(platform, attribute, (ByteBuffer) null, attributeSize);
         ByteBuffer info = stack.malloc((int) attributeSize.get(0));
@@ -247,7 +246,7 @@ public class ComputeSetup {
     private record Platform(long pointer, String name, int versionMajor, int versionMinor, boolean cuda) implements Comparable<Platform> {
 
         @Override
-        public int compareTo(ComputeSetup.@NonNull Platform o) {
+        public int compareTo(ComputeSetup.Platform o) {
             return ((versionMajor*10) + versionMinor + (cuda ? 1 : 0)) - ((o.versionMajor*10) + o.versionMinor + (o.cuda ? 1 : 0));
         }
     }

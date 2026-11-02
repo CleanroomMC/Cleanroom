@@ -5,7 +5,6 @@ import com.cleanroommc.compute.errors.ImageError;
 import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
@@ -33,11 +32,11 @@ public final class Sampler extends SmartPointer {
     /**
      * {@link AddressingMode} of the sampled image.
      */
-    public final @NonNull AddressingMode addressingMode;
+    public final AddressingMode addressingMode;
     /**
      * {@link FilteringMode} of the sampled image.
      */
-    public final @NonNull FilteringMode filteringMode;
+    public final FilteringMode filteringMode;
     /**
      * {@link FilteringMode} of the mipmaps of the sampled image.
      * @apiNote If sampling the mipmaps is not necessary, set to null.
@@ -71,8 +70,8 @@ public final class Sampler extends SmartPointer {
      * @author EΣrie
      */
     public Sampler(boolean normalized,
-                   @NonNull AddressingMode addressingMode,
-                   @NonNull FilteringMode filteringMode,
+                   AddressingMode addressingMode,
+                   FilteringMode filteringMode,
                    @Nullable FilteringMode mipmapFilteringMode,
                    float levelOfDetailMinimum,
                    float levelOfDetailMaximum) {

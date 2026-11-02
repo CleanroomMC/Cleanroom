@@ -10,7 +10,6 @@ import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
 import org.joml.Vector2L;
 import org.joml.Vector3L;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
@@ -56,10 +55,10 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param hostMemory host memory buffer (nullable)
      * @author EΣrie
      */
-    private Image(@NonNull MemoryStack stack,
-                    @NonNull BufferFlags memoryFlags,
-                    @NonNull CLImageFormat format,
-                    @NonNull CLImageDesc descriptor,
+    private Image(MemoryStack stack,
+                    BufferFlags memoryFlags,
+                    CLImageFormat format,
+                    CLImageDesc descriptor,
                     @Nullable ByteBuffer hostMemory) {
         super();
         Preconditions.checkState(Compute.instance().supportsImages, "Images are not supported.");
@@ -123,7 +122,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @apiNote workaround for a problem with Java
      * @author EΣrie
      */
-    protected Image(@NonNull Workaround workaround) {
+    protected Image(Workaround workaround) {
         this(
             workaround.stack(),
             workaround.memoryFlags(),
@@ -140,7 +139,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @param mipLevel number of mipmaps if any, otherwise 0.
      * @author EΣrie
      */
-    public Image(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+    public Image(GLTexture texture, BufferFlags memoryFlags, int mipLevel) {
         super();
         Preconditions.checkState(Compute.instance().supportsImages, "Images are not supported.");
         Preconditions.checkState(!(mipLevel > 0) || Compute.instance().supportsMipmaps, "Mipmaps are not supported.");
@@ -214,7 +213,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#fill(MemoryStack, Image, Buffer, Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap, CommandQueue.Event... dependencies);
+    public abstract <B extends java.nio.Buffer> long fill(MemoryStack stack, CommandQueue commandQueue, B color, CT from, CT size, int mipmap, CommandQueue.Event... dependencies);
     /**
      * <p>Fill a region of an OpenCL image with a colour.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -228,7 +227,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#fill(MemoryStack, Image, int[], Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, CommandQueue.Event... dependencies);
+    public abstract long fill(MemoryStack stack, CommandQueue commandQueue, int [] color, CT from, CT size, int mipmap, CommandQueue.Event... dependencies);
     /**
      * <p>Fill a region of an OpenCL image with a colour.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -242,7 +241,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#fill(MemoryStack, Image, float[], Object, Object, int, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap, CommandQueue.Event... dependencies);
+    public abstract long fill(MemoryStack stack, CommandQueue commandQueue, float [] color, CT from, CT size, int mipmap, CommandQueue.Event... dependencies);
     /**
      * <p>Fill a region of an OpenCL image with a colour.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -257,7 +256,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @apiNote Mipmap is always zero as this is a function for non-mipmapped images.
      * @author EΣrie
      */
-    public final <B extends java.nio.Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull CT from, @NonNull CT size, CommandQueue.Event... dependencies) {
+    public final <B extends java.nio.Buffer> long fill(MemoryStack stack, CommandQueue commandQueue, B color, CT from, CT size, CommandQueue.Event... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
     /**
@@ -273,7 +272,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @apiNote Mipmap is always zero as this is a function for non-mipmapped images.
      * @author EΣrie
      */
-    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull CT from, @NonNull CT size, CommandQueue.Event... dependencies) {
+    public final long fill(MemoryStack stack, CommandQueue commandQueue, int [] color, CT from, CT size, CommandQueue.Event... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
     /**
@@ -289,7 +288,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @apiNote Mipmap is always zero as this is a function for non-mipmapped images.
      * @author EΣrie
      */
-    public final long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull CT from, @NonNull CT size, CommandQueue.Event... dependencies) {
+    public final long fill(MemoryStack stack, CommandQueue commandQueue, float [] color, CT from, CT size, CommandQueue.Event... dependencies) {
         return this.fill(stack, commandQueue, color, from, size, 0, dependencies);
     }
 
@@ -309,9 +308,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#copy(MemoryStack, Image, Image, Object, int, Object, int, Object, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
-                                    @NonNull CT from, int fromMipmap, @NonNull CT2 to, int toMipmap,
-                                    @NonNull CT2 size, CommandQueue.Event... dependencies);
+    public abstract <CT2> long copy(MemoryStack stack, CommandQueue commandQueue, Image<CT2> destination,
+                                    CT from, int fromMipmap, CT2 to, int toMipmap,
+                                    CT2 size, CommandQueue.Event... dependencies);
     /**
      * <p>Copy a region from one OpenCL image to another.</p>
      * @param stack MemoryStack used for temporary native allocations.
@@ -328,9 +327,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as copying from mipmap 0.
      */
-    public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
-                                 @NonNull CT from, @NonNull CT2 to, int toMipmap,
-                                 @NonNull CT2 size, CommandQueue.Event... dependencies) {
+    public final <CT2> long copy(MemoryStack stack, CommandQueue commandQueue, Image<CT2> destination,
+                                 CT from, CT2 to, int toMipmap,
+                                 CT2 size, CommandQueue.Event... dependencies) {
         return this.copy(stack, commandQueue, destination, from, 0, to, toMipmap, size, dependencies);
     }
     /**
@@ -349,9 +348,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as copying to mipmap 0.
      */
-    public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
-                                 @NonNull CT from, int fromMipmap, @NonNull CT2 to,
-                                 @NonNull CT2 size, CommandQueue.Event... dependencies) {
+    public final <CT2> long copy(MemoryStack stack, CommandQueue commandQueue, Image<CT2> destination,
+                                 CT from, int fromMipmap, CT2 to,
+                                 CT2 size, CommandQueue.Event... dependencies) {
         return this.copy(stack, commandQueue, destination, from, fromMipmap, to, 0, size, dependencies);
     }
     /**
@@ -369,9 +368,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as copying from mipmap 0 to mipmap 0.
      */
-    public final <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination,
-                                 @NonNull CT from, @NonNull CT2 to,
-                                 @NonNull CT2 size, CommandQueue.Event... dependencies) {
+    public final <CT2> long copy(MemoryStack stack, CommandQueue commandQueue, Image<CT2> destination,
+                                 CT from, CT2 to,
+                                 CT2 size, CommandQueue.Event... dependencies) {
         return this.copy(stack, commandQueue, destination, from, 0, to, 0, size, dependencies);
     }
 
@@ -392,9 +391,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#read(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                                                          @NonNull CT from, int mipmap, @NonNull CT size,
-                                                          long rowPitch, long slicePitch, @NonNull B buffer,
+    public abstract <B extends java.nio.Buffer> long read(MemoryStack stack, CommandQueue commandQueue,
+                                                          CT from, int mipmap, CT size,
+                                                          long rowPitch, long slicePitch, B buffer,
                                                           boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a short array.</p>
@@ -412,9 +411,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#read(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                              @NonNull CT from, int mipmap, @NonNull CT size,
-                              long rowPitch, long slicePitch, short @NonNull [] array,
+    public abstract long read(MemoryStack stack, CommandQueue commandQueue,
+                              CT from, int mipmap, CT size,
+                              long rowPitch, long slicePitch, short [] array,
                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into an int array.</p>
@@ -432,9 +431,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#read(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                              @NonNull CT from, int mipmap, @NonNull CT size,
-                              long rowPitch, long slicePitch, int @NonNull [] array,
+    public abstract long read(MemoryStack stack, CommandQueue commandQueue,
+                              CT from, int mipmap, CT size,
+                              long rowPitch, long slicePitch, int [] array,
                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a float array.</p>
@@ -452,9 +451,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#read(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                              @NonNull CT from, int mipmap, @NonNull CT size,
-                              long rowPitch, long slicePitch, float @NonNull [] array,
+    public abstract long read(MemoryStack stack, CommandQueue commandQueue,
+                              CT from, int mipmap, CT size,
+                              long rowPitch, long slicePitch, float [] array,
                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a double array.</p>
@@ -472,9 +471,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#read(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                              @NonNull CT from, int mipmap, @NonNull CT size,
-                              long rowPitch, long slicePitch, double @NonNull [] array,
+    public abstract long read(MemoryStack stack, CommandQueue commandQueue,
+                              CT from, int mipmap, CT size,
+                              long rowPitch, long slicePitch, double [] array,
                               boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Read a region of an OpenCL image into a NIO buffer.</p>
@@ -493,7 +492,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
-    public final <B extends java.nio.Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
+    public final <B extends java.nio.Buffer> long read(MemoryStack stack, CommandQueue commandQueue,
                            CT from, CT size, long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
@@ -514,8 +513,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
-    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                           CT from, CT size, long rowPitch, long slicePitch, short @NonNull [] array,
+    public final long read(MemoryStack stack, CommandQueue commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, short [] array,
                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -535,8 +534,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
-    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                           CT from, CT size, long rowPitch, long slicePitch, int @NonNull [] array,
+    public final long read(MemoryStack stack, CommandQueue commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, int [] array,
                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -556,8 +555,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
-    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                           CT from, CT size, long rowPitch, long slicePitch, float @NonNull [] array,
+    public final long read(MemoryStack stack, CommandQueue commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, float [] array,
                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -577,8 +576,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as reading from mipmap 0.
      */
-    public final long read(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                           CT from, CT size, long rowPitch, long slicePitch, double @NonNull [] array,
+    public final long read(MemoryStack stack, CommandQueue commandQueue,
+                           CT from, CT size, long rowPitch, long slicePitch, double [] array,
                            boolean blocking, CommandQueue.Event... dependencies) {
         return this.read(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -600,9 +599,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#write(MemoryStack, Image, Object, int, Object, long, long, java.nio.Buffer, boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                                                           @NonNull CT from, int mipmap, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+    public abstract <B extends java.nio.Buffer> long write(MemoryStack stack, CommandQueue commandQueue,
+                                                           CT from, int mipmap, CT size,
+                                                           long rowPitch, long slicePitch, B buffer,
                                                            boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a short array to a region of an OpenCL image.</p>
@@ -620,9 +619,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#write(MemoryStack, Image, Object, int, Object, long, long, short[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                               @NonNull CT from, int mipmap, @NonNull CT size,
-                               long rowPitch, long slicePitch, short @NonNull [] array,
+    public abstract long write(MemoryStack stack, CommandQueue commandQueue,
+                               CT from, int mipmap, CT size,
+                               long rowPitch, long slicePitch, short [] array,
                                boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from an int array to a region of an OpenCL image.</p>
@@ -640,9 +639,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#write(MemoryStack, Image, Object, int, Object, long, long, int[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                               @NonNull CT from, int mipmap, @NonNull CT size,
-                               long rowPitch, long slicePitch, int @NonNull [] array,
+    public abstract long write(MemoryStack stack, CommandQueue commandQueue,
+                               CT from, int mipmap, CT size,
+                               long rowPitch, long slicePitch, int [] array,
                                boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a float array to a region of an OpenCL image.</p>
@@ -660,9 +659,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#write(MemoryStack, Image, Object, int, Object, long, long, float[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                               @NonNull CT from, int mipmap, @NonNull CT size,
-                               long rowPitch, long slicePitch, float @NonNull [] array,
+    public abstract long write(MemoryStack stack, CommandQueue commandQueue,
+                               CT from, int mipmap, CT size,
+                               long rowPitch, long slicePitch, float [] array,
                                boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a double array to a region of an OpenCL image.</p>
@@ -680,9 +679,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @see com.cleanroommc.compute.cmd.ImageCommands#write(MemoryStack, Image, Object, int, Object, long, long, double[], boolean, CommandQueue.Event...)
      * @author EΣrie
      */
-    public abstract long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                               @NonNull CT from, int mipmap, @NonNull CT size,
-                               long rowPitch, long slicePitch, double @NonNull [] array,
+    public abstract long write(MemoryStack stack, CommandQueue commandQueue,
+                               CT from, int mipmap, CT size,
+                               long rowPitch, long slicePitch, double [] array,
                                boolean blocking, CommandQueue.Event... dependencies);
     /**
      * <p>Write data from a NIO buffer to a region of an OpenCL image.</p>
@@ -701,8 +700,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
-    public final <B extends java.nio.Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                                                        @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, B buffer,
+    public final <B extends java.nio.Buffer> long write(MemoryStack stack, CommandQueue commandQueue,
+                                                        CT from, CT size, long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, buffer, blocking, dependencies);
     }
@@ -722,8 +721,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
-    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, short @NonNull [] array,
+    public final long write(MemoryStack stack, CommandQueue commandQueue,
+                            CT from, CT size, long rowPitch, long slicePitch, short [] array,
                             boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -743,8 +742,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
-    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, int @NonNull [] array,
+    public final long write(MemoryStack stack, CommandQueue commandQueue,
+                            CT from, CT size, long rowPitch, long slicePitch, int [] array,
                             boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -764,8 +763,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
-    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, float @NonNull [] array,
+    public final long write(MemoryStack stack, CommandQueue commandQueue,
+                            CT from, CT size, long rowPitch, long slicePitch, float [] array,
                             boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -785,8 +784,8 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @author EΣrie
      * @apiNote Treated as writing to mipmap 0.
      */
-    public final long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                            @NonNull CT from, @NonNull CT size, long rowPitch, long slicePitch, double @NonNull [] array,
+    public final long write(MemoryStack stack, CommandQueue commandQueue,
+                            CT from, CT size, long rowPitch, long slicePitch, double [] array,
                             boolean blocking, CommandQueue.Event... dependencies) {
         return this.write(stack, commandQueue, from, 0, size, rowPitch, slicePitch, array, blocking, dependencies);
     }
@@ -808,7 +807,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
         return this.texture != null;
     }
 
-    protected static @NonNull String imageTypeName(final long val) {
+    protected static String imageTypeName(final long val) {
         return switch((int) val) {
             case CL12.CL_MEM_OBJECT_IMAGE1D -> "image1d";
             case CL12.CL_MEM_OBJECT_IMAGE2D -> "image2d";
@@ -820,7 +819,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
         };
     }
 
-    protected static <CT2> @NonNull PointerBuffer getCoordinates(@NonNull MemoryStack stack, @NonNull CT2 vector, int mipmap) {
+    protected static <CT2> PointerBuffer getCoordinates(MemoryStack stack, CT2 vector, int mipmap) {
         return switch(vector) {
             case Long l -> stack.mallocPointer(3).put(l).put(mipmap).put(0).rewind();
             case Vector2L v2 -> stack.mallocPointer(3).put(v2.x).put(v2.y).put(mipmap).rewind();
@@ -834,7 +833,7 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
         };
     }
 
-    protected static <CT2> @NonNull PointerBuffer getRegion(@NonNull MemoryStack stack, @NonNull CT2 region) {
+    protected static <CT2> PointerBuffer getRegion(MemoryStack stack, CT2 region) {
         return switch(region) {
             case Long l -> stack.mallocPointer(3).put(l).put(1).put(1).rewind();
             case Vector2L v2 -> stack.mallocPointer(3).put(v2.x).put(v2.y).put(1).rewind();
@@ -853,9 +852,9 @@ public sealed abstract class Image<CT> extends SmartPointer permits Image1D, Ima
      * @apiNote workaround for a problem with Java
      * @author EΣrie
      */
-    protected record Workaround(@NonNull MemoryStack stack,
-                              @NonNull BufferFlags memoryFlags,
-                              @NonNull CLImageFormat format,
-                              @NonNull CLImageDesc descriptor,
+    protected record Workaround(MemoryStack stack,
+                              BufferFlags memoryFlags,
+                              CLImageFormat format,
+                              CLImageDesc descriptor,
                               @Nullable ByteBuffer hostMemory) {}
 }

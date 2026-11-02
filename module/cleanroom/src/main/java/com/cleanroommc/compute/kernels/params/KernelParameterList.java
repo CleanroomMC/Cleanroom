@@ -1,7 +1,7 @@
 package com.cleanroommc.compute.kernels.params;
 
 import com.cleanroommc.compute.buffers.Buffer;
-import com.cleanroommc.compute.cmd.CommandQueue;
+import com.cleanroommc.compute.cmd.DeviceQueue;
 import com.cleanroommc.compute.images.Image;
 import com.cleanroommc.compute.images.samplers.Sampler;
 import com.cleanroommc.compute.kernels.Kernel;
@@ -38,19 +38,19 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
     private final KernelParameter[] parameters;
     private int idx;
 
-    public KernelParameterList(@NonNull Kernel kernel) {
+    public KernelParameterList(Kernel kernel) {
         Preconditions.checkNotNull(kernel);
         this.parameters = new KernelParameter[kernel.arguments().size()];
     }
 
-    private void add(@NonNull KernelParameter parameter) {
+    private void add(KernelParameter parameter) {
         Preconditions.checkNotNull(parameter);
         Preconditions.checkElementIndex(idx, parameters.length,
                 String.format("Too many parameters provided. Provided %d expecting %d.", idx, parameters.length));
         parameters[idx++] = parameter;
     }
 
-    public void bindAllParameters(@NonNull Kernel kernel) {
+    public void bindAllParameters(Kernel kernel) {
         Preconditions.checkNotNull(kernel);
         Preconditions.checkState(isComplete(), "Not all kernel arguments have been set.");
         for (int  i = 0; i < parameters.length; i++) {
@@ -95,7 +95,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see ArrayShortParameter
      */
-    public void add(short @NonNull ... values) {
+    public void add(short ... values) {
         add(new ArrayShortParameter(values));
     }
 
@@ -106,7 +106,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see ArrayIntParameter
      */
-    public void add(int @NonNull ... values) {
+    public void add(int ... values) {
         add(new ArrayIntParameter(values));
     }
 
@@ -117,7 +117,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see ArrayLongParameter
      */
-    public void add(long @NonNull ... values) {
+    public void add(long ... values) {
         add(new ArrayLongParameter(values));
     }
 
@@ -128,7 +128,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see ArrayFloatParameter
      */
-    public void add(float @NonNull ... values) {
+    public void add(float ... values) {
         add(new ArrayFloatParameter(values));
     }
 
@@ -139,7 +139,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see ArrayDoubleParameter
      */
-    public void add(double @NonNull ... values) {
+    public void add(double ... values) {
         add(new ArrayDoubleParameter(values));
     }
 
@@ -154,7 +154,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see BufferByteParameter
      */
-    public void add(@NonNull ByteBuffer value) {
+    public void add(ByteBuffer value) {
         add(new BufferByteParameter(value));
     }
 
@@ -165,7 +165,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see BufferShortParameter
      */
-    public void add(@NonNull ShortBuffer value) {
+    public void add(ShortBuffer value) {
         add(new BufferShortParameter(value));
     }
 
@@ -176,7 +176,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see BufferIntParameter
      */
-    public void add(@NonNull IntBuffer value) {
+    public void add(IntBuffer value) {
         add(new BufferIntParameter(value));
     }
 
@@ -187,7 +187,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see BufferLongParameter
      */
-    public void add(@NonNull LongBuffer value) {
+    public void add(LongBuffer value) {
         add(new BufferLongParameter(value));
     }
 
@@ -198,7 +198,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see BufferFloatParameter
      */
-    public void add(@NonNull FloatBuffer value) {
+    public void add(FloatBuffer value) {
         add(new BufferFloatParameter(value));
     }
 
@@ -209,11 +209,11 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
      * @author EΣrie
      * @see BufferDoubleParameter
      */
-    public void add(@NonNull DoubleBuffer value) {
+    public void add(DoubleBuffer value) {
         add(new BufferDoubleParameter(value));
     }
 
-    public void add(@NonNull PointerBuffer value) {
+    public void add(PointerBuffer value) {
         add(new BufferPointerParameter(value));
     }
 
@@ -297,17 +297,17 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
         add(new Vector4fParameter(x, y, z, w));
     }
 
-    public void add(@NonNull Vector2f value) {
+    public void add(Vector2f value) {
         Preconditions.checkNotNull(value);
         add(new Vector2fParameter(value.x, value.y));
     }
 
-    public void add(@NonNull Vector3f value) {
+    public void add(Vector3f value) {
         Preconditions.checkNotNull(value);
         add(new Vector4fParameter(value.x, value.y, value.z, 0));
     }
 
-    public void add(@NonNull Vector4f value) {
+    public void add(Vector4f value) {
         Preconditions.checkNotNull(value);
         add(new Vector4fParameter(value.x, value.y, value.z, value.w));
     }
@@ -328,17 +328,17 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
         add(new Vector4dParameter(x, y, z, w));
     }
 
-    public void add(@NonNull Vector2d value) {
+    public void add(Vector2d value) {
         Preconditions.checkNotNull(value);
         add(new Vector2dParameter(value.x, value.y));
     }
 
-    public void add(@NonNull Vector3d value) {
+    public void add(Vector3d value) {
         Preconditions.checkNotNull(value);
         add(new Vector4dParameter(value.x, value.y, value.z, 0.));
     }
 
-    public void add(@NonNull Vector4d value) {
+    public void add(Vector4d value) {
         Preconditions.checkNotNull(value);
         add(new Vector4dParameter(value.x, value.y, value.z, value.w));
     }
@@ -347,23 +347,23 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
 
     // <editor-fold desc="OpenCL Memory Objects">
 
-    public void add(@NonNull Buffer value) {
+    public void add(Buffer value) {
         add(new BufferParameter(value));
     }
 
-    public <CT> void add(@NonNull Image<CT> value) {
+    public <CT> void add(Image<CT> value) {
         add(new ImageParameter<>(value));
     }
 
-    public void add(@NonNull Sampler value) {
+    public void add(Sampler value) {
         add(new SamplerParameter(value));
     }
 
-    public void add(@NonNull Pipe value) {
+    public void add(Pipe value) {
         add(new PipeParameter(value));
     }
 
-    public void add(@NonNull CommandQueue value) {
+    public void add(DeviceQueue value) {
         add(new CommandQueueParameter(value));
     }
 
@@ -402,7 +402,7 @@ public final class KernelParameterList implements Iterable<KernelParameter> {
     }
 
     @Override
-    public void forEach(@NonNull Consumer<? super KernelParameter> action) {
+    public void forEach(Consumer<? super KernelParameter> action) {
         Preconditions.checkNotNull(action);
         for (int i = 0; i < idx; i++) {
             action.accept(parameters[i]);

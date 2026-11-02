@@ -1,7 +1,6 @@
 package com.cleanroommc.compute.types;
 
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 
 public record BufferType(OpenCLType type) implements OpenCLType {
 
@@ -24,7 +23,7 @@ public record BufferType(OpenCLType type) implements OpenCLType {
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return String.format("%s*", type);
     }
 }

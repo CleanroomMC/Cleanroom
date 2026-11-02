@@ -8,7 +8,6 @@ import com.cleanroommc.kirino.gl.texture.GLTexture;
 import com.cleanroommc.kirino.gl.texture.TextureType;
 import com.google.common.base.Preconditions;
 import org.joml.Vector3L;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
@@ -39,14 +38,14 @@ public final class Image3D extends Image<Vector3L> {
      * @see Image
      * @author EΣrie
      */
-    public Image3D(@NonNull MemoryStack stack,
-                   @NonNull BufferFlags memoryFlags,
+    public Image3D(MemoryStack stack,
+                   BufferFlags memoryFlags,
                    final long width,
                    final long height,
                    final long depth,
                    final int mipmaps,
-                   final @NonNull ChannelType channelType,
-                   final @NonNull ChannelOrder channelOrder,
+                   final ChannelType channelType,
+                   final ChannelOrder channelOrder,
                    @Nullable ByteBuffer hostMemory) {
         super(workaround(stack, memoryFlags, width, height, depth, mipmaps, channelType, channelOrder, hostMemory));
     }
@@ -59,7 +58,7 @@ public final class Image3D extends Image<Vector3L> {
      * @see Image#Image(GLTexture, BufferFlags, int)
      * @author EΣrie
      */
-    public Image3D(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags, int mipLevel) {
+    public Image3D(GLTexture texture, BufferFlags memoryFlags, int mipLevel) {
         Preconditions.checkArgument(texture.type == TextureType.TEX_3D);
         super(texture, memoryFlags, mipLevel);
     }
@@ -72,7 +71,7 @@ public final class Image3D extends Image<Vector3L> {
      * @apiNote Uses mipmap level 0.
      * @author EΣrie
      */
-    public Image3D(@NonNull GLTexture texture, @NonNull BufferFlags memoryFlags) {
+    public Image3D(GLTexture texture, BufferFlags memoryFlags) {
         this(texture, memoryFlags, 0);
     }
 
@@ -91,7 +90,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public <B extends Buffer> long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull B color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
+    public <B extends Buffer> long fill(MemoryStack stack, CommandQueue commandQueue, B color, Vector3L from, Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(color instanceof ByteBuffer
                 || color instanceof IntBuffer
                 || color instanceof FloatBuffer);
@@ -174,7 +173,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
+    public long fill(MemoryStack stack, CommandQueue commandQueue, int [] color, Vector3L from, Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -233,7 +232,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long fill(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] color, @NonNull Vector3L from, @NonNull Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
+    public long fill(MemoryStack stack, CommandQueue commandQueue, float [] color, Vector3L from, Vector3L size, int mipmap, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -295,7 +294,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public <CT2> long copy(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Image<CT2> destination, @NonNull Vector3L from, int fromMipmap, @NonNull CT2 to, int toMipmap, @NonNull CT2 size, CommandQueue.Event... dependencies) {
+    public <CT2> long copy(MemoryStack stack, CommandQueue commandQueue, Image<CT2> destination, Vector3L from, int fromMipmap, CT2 to, int toMipmap, CT2 size, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(!commandQueue.isClosed());
 
         try (MemoryStack substack = stack.push()) {
@@ -379,7 +378,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public <B extends Buffer> long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
+    public <B extends Buffer> long read(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -446,7 +445,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, short [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -499,7 +498,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, int [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -552,7 +551,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, float [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -605,7 +604,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, double [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -659,7 +658,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public <B extends Buffer> long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, @NonNull B buffer, boolean blocking, CommandQueue.Event... dependencies) {
+    public <B extends Buffer> long write(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, B buffer, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -725,7 +724,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, short @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, short [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -778,7 +777,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, int @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, int [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -831,7 +830,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, float @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, float [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -884,7 +883,7 @@ public final class Image3D extends Image<Vector3L> {
      * @author EΣrie
      */
     @Override
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, @NonNull Vector3L from, int mipmap, @NonNull Vector3L size, long rowPitch, long slicePitch, double @NonNull [] array, boolean blocking, CommandQueue.Event... dependencies) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, Vector3L from, int mipmap, Vector3L size, long rowPitch, long slicePitch, double [] array, boolean blocking, CommandQueue.Event... dependencies) {
         Preconditions.checkArgument(from.x + size.x <= this.size.x);
         Preconditions.checkArgument(from.y + size.y <= this.size.y);
         Preconditions.checkArgument(from.z + size.z <= this.size.z);
@@ -920,7 +919,7 @@ public final class Image3D extends Image<Vector3L> {
         }
     }
 
-    private static PointerBuffer makeParameterBuffer(@NonNull MemoryStack stack, Vector3L from, Vector3L region, int mipmap, CommandQueue.Event... dependencies) {
+    private static PointerBuffer makeParameterBuffer(MemoryStack stack, Vector3L from, Vector3L region, int mipmap, CommandQueue.Event... dependencies) {
         int bufLen = 8;
         if (dependencies != null && dependencies.length > 0)
             bufLen += dependencies.length;
@@ -937,14 +936,14 @@ public final class Image3D extends Image<Vector3L> {
         return coordinates.rewind();
     }
 
-    private static Workaround workaround(@NonNull MemoryStack stack,
-                                         @NonNull BufferFlags memoryFlags,
+    private static Workaround workaround(MemoryStack stack,
+                                         BufferFlags memoryFlags,
                                          final long width,
                                          final long height,
                                          final long depth,
                                          final int mipmaps,
-                                         final @NonNull ChannelType channelType,
-                                         final @NonNull ChannelOrder channelOrder,
+                                         final ChannelType channelType,
+                                         final ChannelOrder channelOrder,
                                          @Nullable ByteBuffer hostMemory) {
         ByteBuffer container = stack.calloc(CLImageFormat.SIZEOF + CLImageDesc.SIZEOF);
         CLImageFormat format = new CLImageFormat(container.slice(0, CLImageFormat.SIZEOF));

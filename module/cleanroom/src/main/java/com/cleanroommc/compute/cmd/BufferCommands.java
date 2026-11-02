@@ -1,28 +1,12 @@
 package com.cleanroommc.compute.cmd;
 
-import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.ComputeConfig;
 import com.cleanroommc.compute.buffers.Buffer;
 import com.cleanroommc.compute.errors.BufferError;
-import com.cleanroommc.compute.errors.UnavaliableDeviceError;
-import com.cleanroommc.compute.images.Image;
-import com.cleanroommc.compute.kernels.Kernel;
-import com.cleanroommc.compute.kernels.params.KernelParameterList;
-import com.cleanroommc.compute.smrtptr.GarbageCollector;
-import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
-import java.lang.ref.Cleaner;
 import java.nio.*;
-import java.util.Set;
 
 import com.cleanroommc.compute.cmd.CommandQueue.Event;
 
@@ -52,8 +36,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final float @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final float [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -82,9 +66,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event write(MemoryStack stack, Buffer buffer,
                              final long offset,
-                             final float @NonNull [] data,
+                             final float [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(data);
@@ -111,8 +95,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final float @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final float [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -138,8 +122,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final float @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final float [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -165,8 +149,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull Buffer buffer,
-                             final float @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final float [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -202,9 +186,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
-    public Event write(@NonNull Buffer buffer,
+    public Event write(Buffer buffer,
                              final long offset,
-                             final float @NonNull [] data,
+                             final float [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -237,8 +221,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final float @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final float [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -270,8 +254,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final float @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final float [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -305,8 +289,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final double @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final double [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -336,9 +320,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event write(MemoryStack stack, Buffer buffer,
                              final long offset,
-                             final double @NonNull [] data,
+                             final double [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -365,8 +349,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final double @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final double [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -392,8 +376,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final double @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final double [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -419,8 +403,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull Buffer buffer,
-                             final double @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final double [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -456,9 +440,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
-    public Event write(@NonNull Buffer buffer,
+    public Event write(Buffer buffer,
                              final long offset,
-                             final double @NonNull [] data,
+                             final double [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -491,8 +475,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final double @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final double [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -524,8 +508,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final double @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final double [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -561,9 +545,9 @@ public final class BufferCommands {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
-        @NonNull B data,
+        MemoryStack stack,
+        Buffer buffer,
+        B data,
         long offset,
         boolean blocking,
         Event... events
@@ -603,10 +587,10 @@ public final class BufferCommands {
      * @apiNote This is always a blocking write.
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
+        MemoryStack stack,
+        Buffer buffer,
         long offset,
-        @NonNull B data,
+        B data,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return write(stack, buffer, data, offset, true, events);
@@ -633,9 +617,9 @@ public final class BufferCommands {
      * @apiNote This always writes at offset 0.
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
-        @NonNull B data,
+        MemoryStack stack,
+        Buffer buffer,
+        B data,
         boolean blocking,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -662,9 +646,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
-        @NonNull B data,
+        MemoryStack stack,
+        Buffer buffer,
+        B data,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return write(stack, buffer, data, 0, true, events);
@@ -690,8 +674,8 @@ public final class BufferCommands {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull Buffer buffer,
-        @NonNull B data,
+        Buffer buffer,
+        B data,
         long offset,
         boolean blocking,
         Event... events
@@ -739,9 +723,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking write.
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull Buffer buffer,
+        Buffer buffer,
         long offset,
-        @NonNull B data,
+        B data,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return write(buffer, data, offset, true, events);
@@ -767,8 +751,8 @@ public final class BufferCommands {
      * @apiNote This always writes at offset 0.
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull Buffer buffer,
-        @NonNull B data,
+        Buffer buffer,
+        B data,
         boolean blocking,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -794,8 +778,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event write(
-        @NonNull Buffer buffer,
-        @NonNull B data,
+        Buffer buffer,
+        B data,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return write(buffer, data, 0, true, events);
@@ -820,8 +804,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final short @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final short [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -851,9 +835,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event write(MemoryStack stack, Buffer buffer,
                              final long offset,
-                             final short @NonNull [] data,
+                             final short [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -880,8 +864,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final short @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final short [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -907,8 +891,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final short @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final short [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -934,8 +918,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull Buffer buffer,
-                             final short @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final short [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -971,9 +955,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
-    public Event write(@NonNull Buffer buffer,
+    public Event write(Buffer buffer,
                              final long offset,
-                             final short @NonNull [] data,
+                             final short [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1006,8 +990,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final short @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final short [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1039,8 +1023,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final short @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final short [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1074,8 +1058,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final int @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final int [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -1105,9 +1089,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event write(MemoryStack stack, Buffer buffer,
                              final long offset,
-                             final int @NonNull [] data,
+                             final int [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -1134,8 +1118,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final int @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final int [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -1161,8 +1145,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                             final int @NonNull [] data,
+    public Event write(MemoryStack stack, Buffer buffer,
+                             final int [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(data);
@@ -1188,8 +1172,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public Event write(@NonNull Buffer buffer,
-                             final int @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final int [] data,
                              final long offset,
                              final boolean blocking,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -1225,9 +1209,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This is always a blocking write.
      */
-    public Event write(@NonNull Buffer buffer,
+    public Event write(Buffer buffer,
                              final long offset,
-                             final int @NonNull [] data,
+                             final int [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1260,8 +1244,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This always writes at offset 0.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final int @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final int [] data,
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1293,8 +1277,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event write(@NonNull Buffer buffer,
-                             final int @NonNull [] data,
+    public Event write(Buffer buffer,
+                             final int [] data,
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
@@ -1326,8 +1310,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            float @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            float [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -1354,9 +1338,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event read(MemoryStack stack, Buffer buffer,
                             final long offset,
-                            float @NonNull [] target,
+                            float [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -1381,8 +1365,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            float @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            float [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
@@ -1408,8 +1392,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            float @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            float [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -1433,8 +1417,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull Buffer buffer,
-                            float @NonNull [] target,
+    public Event read(Buffer buffer,
+                            float [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -1465,9 +1449,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull Buffer buffer,
+    public Event read(Buffer buffer,
                             final long offset,
-                            float @NonNull [] target,
+                            float [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
@@ -1496,8 +1480,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            float @NonNull [] target,
+    public Event read(Buffer buffer,
+                            float [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
@@ -1527,8 +1511,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            float @NonNull [] target,
+    public Event read(Buffer buffer,
+                            float [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
@@ -1558,8 +1542,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            double @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            double [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -1586,9 +1570,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event read(MemoryStack stack, Buffer buffer,
                             final long offset,
-                            double @NonNull [] target,
+                            double [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -1613,8 +1597,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            double @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            double [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
@@ -1640,8 +1624,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            double @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            double [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -1665,8 +1649,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull Buffer buffer,
-                            double @NonNull [] target,
+    public Event read(Buffer buffer,
+                            double [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -1697,9 +1681,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull Buffer buffer,
+    public Event read(Buffer buffer,
                             final long offset,
-                            double @NonNull [] target,
+                            double [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
@@ -1728,8 +1712,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            double @NonNull [] target,
+    public Event read(Buffer buffer,
+                            double [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
@@ -1759,8 +1743,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            double @NonNull [] target,
+    public Event read(Buffer buffer,
+                            double [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
@@ -1792,9 +1776,9 @@ public final class BufferCommands {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
-        @NonNull B target,
+        MemoryStack stack,
+        Buffer buffer,
+        B target,
         long offset,
         boolean blocking,
         Event... events
@@ -1828,10 +1812,10 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
+        MemoryStack stack,
+        Buffer buffer,
         long offset,
-        @NonNull B target,
+        B target,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return read(stack, buffer, target, offset, true, events);
@@ -1856,9 +1840,9 @@ public final class BufferCommands {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
-        @NonNull B target,
+        MemoryStack stack,
+        Buffer buffer,
+        B target,
         boolean blocking,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -1884,9 +1868,9 @@ public final class BufferCommands {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull MemoryStack stack,
-        @NonNull Buffer buffer,
-        @NonNull B target,
+        MemoryStack stack,
+        Buffer buffer,
+        B target,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return read(stack, buffer, target, 0, true, events);
@@ -1910,8 +1894,8 @@ public final class BufferCommands {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull Buffer buffer,
-        @NonNull B target,
+        Buffer buffer,
+        B target,
         long offset,
         boolean blocking,
         Event... events
@@ -1957,9 +1941,9 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull Buffer buffer,
+        Buffer buffer,
         long offset,
-        @NonNull B target,
+        B target,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return read(buffer, target, offset, true, events);
@@ -1983,8 +1967,8 @@ public final class BufferCommands {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull Buffer buffer,
-        @NonNull B target,
+        Buffer buffer,
+        B target,
         boolean blocking,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -2009,8 +1993,8 @@ public final class BufferCommands {
      * @apiNote This operates at offset 0.
      */
     public <B extends java.nio.Buffer> Event read(
-        @NonNull Buffer buffer,
-        @NonNull B target,
+        Buffer buffer,
+        B target,
         Event... events
     ) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         return read(buffer, target, 0, true, events);
@@ -2033,8 +2017,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            short @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            short [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -2061,9 +2045,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event read(MemoryStack stack, Buffer buffer,
                             final long offset,
-                            short @NonNull [] target,
+                            short [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -2088,8 +2072,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            short @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            short [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
@@ -2115,8 +2099,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            short @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            short [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -2140,8 +2124,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull Buffer buffer,
-                            short @NonNull [] target,
+    public Event read(Buffer buffer,
+                            short [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -2172,9 +2156,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull Buffer buffer,
+    public Event read(Buffer buffer,
                             final long offset,
-                            short @NonNull [] target,
+                            short [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
@@ -2203,8 +2187,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            short @NonNull [] target,
+    public Event read(Buffer buffer,
+                            short [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
@@ -2234,8 +2218,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            short @NonNull [] target,
+    public Event read(Buffer buffer,
+                            short [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
@@ -2265,8 +2249,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            int @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            int [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -2293,9 +2277,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
+    public Event read(MemoryStack stack, Buffer buffer,
                             final long offset,
-                            int @NonNull [] target,
+                            int [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -2320,8 +2304,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            int @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            int [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
@@ -2347,8 +2331,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull MemoryStack stack, @NonNull Buffer buffer,
-                            int @NonNull [] target,
+    public Event read(MemoryStack stack, Buffer buffer,
+                            int [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
                     Preconditions.checkNotNull(stack);
             Preconditions.checkNotNull(target);
@@ -2372,8 +2356,8 @@ public final class BufferCommands {
      * @throws OutOfMemoryError If there are not enough resources available to perform the read.
      * @author EΣrie
      */
-    public Event read(@NonNull Buffer buffer,
-                            int @NonNull [] target,
+    public Event read(Buffer buffer,
+                            int [] target,
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
@@ -2404,9 +2388,9 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public Event read(@NonNull Buffer buffer,
+    public Event read(Buffer buffer,
                             final long offset,
-                            int @NonNull [] target,
+                            int [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
@@ -2435,8 +2419,8 @@ public final class BufferCommands {
      * @author EΣrie
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            int @NonNull [] target,
+    public Event read(Buffer buffer,
+                            int [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
@@ -2466,8 +2450,8 @@ public final class BufferCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates at offset 0.
      */
-    public Event read(@NonNull Buffer buffer,
-                            int @NonNull [] target,
+    public Event read(Buffer buffer,
+                            int [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {

@@ -5,7 +5,6 @@ import com.cleanroommc.compute.Device;
 import com.cleanroommc.compute.errors.UnavaliableDeviceError;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
-import org.jspecify.annotations.NonNull;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -26,7 +25,7 @@ public final class CommandQueueDispatch implements Closeable {
      * @return the CommandQueue
      * @author EΣrie
      */
-    public CommandQueue dispatch(@NonNull String name) {
+    public CommandQueue dispatch(String name) {
         return dispatch(name, false, false, false);
     }
 
@@ -40,7 +39,7 @@ public final class CommandQueueDispatch implements Closeable {
      * @throws UnavaliableDeviceError if no device is found matching the given capabilities.
      * @author EΣrie
      */
-    public synchronized CommandQueue dispatch(@NonNull String name, boolean images, boolean mipmaps, boolean pipes) throws UnavaliableDeviceError {
+    public synchronized CommandQueue dispatch(String name, boolean images, boolean mipmaps, boolean pipes) throws UnavaliableDeviceError {
         Preconditions.checkNotNull(name);
         CommandQueue existing = commandQueues.get(name);
         if (existing != null && !existing.isClosed()) {
@@ -73,7 +72,7 @@ public final class CommandQueueDispatch implements Closeable {
      * @return the CommandQueue, or empty if it doesn't exist.
      * @author EΣrie
      */
-    public synchronized @NonNull Optional<CommandQueue> get(@NonNull String name) {
+    public synchronized Optional<CommandQueue> get(String name) {
         Preconditions.checkNotNull(name);
         return Optional.ofNullable(commandQueues.get(name)).filter(queue -> !queue.isClosed());
     }

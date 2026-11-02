@@ -10,7 +10,6 @@ import com.cleanroommc.compute.types.OpenCLType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
@@ -52,7 +51,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      * @throws OutOfMemoryError Not enough resources available to create OpenCL kernel.
      * @author EΣrie
      */
-    private static long createKernel(long program, @NonNull KernelMetadata meta) throws CompilationError, KernelError, NullPointerException, OutOfMemoryError{
+    private static long createKernel(long program, KernelMetadata meta) throws CompilationError, KernelError, NullPointerException, OutOfMemoryError{
         int[] err_codes = new int[1];
         long kernel = CL10.clCreateKernel(program, meta.kernelName, err_codes);
         switch(err_codes[0]) {
@@ -83,9 +82,9 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      * @throws OutOfMemoryError Not enough resources available to invoke OpenCL kernel.
      */
     public long invoke(MemoryStack stack, CommandQueue commandQueue, long device,
-                       final @NonNull KernelParameterList arguments,
+                       final KernelParameterList arguments,
                        final long @Nullable [] workGroupOffsets,
-                       final long @NonNull [] workGroupSizes,
+                       final long [] workGroupSizes,
                        final CommandQueue.Event... dependencies) throws NullPointerException, IllegalArgumentException,
         KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
@@ -183,7 +182,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
      * @throws OutOfMemoryError Not enough resources available to invoke OpenCL kernel.
      */
     public long invoke(MemoryStack stack, CommandQueue commandQueue, long device,
-                       final @NonNull KernelParameterList arguments,
+                       final KernelParameterList arguments,
                        final CommandQueue.Event... dependencies) throws NullPointerException, IllegalStateException,
         IllegalArgumentException, KernelError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);

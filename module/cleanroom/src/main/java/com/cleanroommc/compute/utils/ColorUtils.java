@@ -1,12 +1,11 @@
 package com.cleanroommc.compute.utils;
 
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 
 import java.nio.IntBuffer;
 
 public record ColorUtils() {
-    public static void convertUColor(byte r, byte g, byte b, byte a, @NonNull IntBuffer buffer) {
+    public static void convertUColor(byte r, byte g, byte b, byte a, IntBuffer buffer) {
         Preconditions.checkNotNull(buffer);
         Preconditions.checkArgument(buffer.remaining() >= 4);
 

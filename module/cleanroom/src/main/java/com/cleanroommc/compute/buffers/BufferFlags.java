@@ -1,10 +1,8 @@
 package com.cleanroommc.compute.buffers;
 
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CL20;
 
 /**
  * Buffer Memory Flags
@@ -60,7 +58,7 @@ public enum BufferFlags {
      * @param flags The flag to test for compatibility with.
      * @return Is this flag compatible with flags?
      */
-    public boolean isConflicting(@NonNull BufferFlags flags) {
+    public boolean isConflicting(BufferFlags flags) {
         Preconditions.checkNotNull(flags);
         return ((SUBBUFFER_CONFLICTS >>> ((6 - this.ordinal()) * 6 - flags.ordinal() - 1)) & 1) == 1; // Because I trust in my evil
     }

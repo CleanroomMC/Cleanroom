@@ -22,7 +22,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import org.apache.commons.io.IOUtils;
-import org.jspecify.annotations.NonNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL12;
@@ -155,7 +154,7 @@ public class ComputeProgram implements Closeable {
      * @param name name of the kernel
      * @return kernel with a name
      */
-    public Kernel kernel(@NonNull String name) {
+    public Kernel kernel(String name) {
         Preconditions.checkNotNull(name);
         Preconditions.checkArgument(kernels.containsKey(name),
                 "Program has no kernel named \"%s\"", name);
@@ -265,7 +264,7 @@ public class ComputeProgram implements Closeable {
      * @author EΣrie
      * @implSpec This has to be a finite state machine.
      */
-    public static @NonNull Set<ResourceLocation> getHeadersFromFile(@NonNull String source, ResourceLocation program) {
+    public static Set<ResourceLocation> getHeadersFromFile(String source, ResourceLocation program) {
         final char[] INCLUDE = {'i','n','c','l','u','d','e'};
         Set<ResourceLocation> headers = new ObjectArraySet<>();
         char[] buffer = new char[7]; // Only 7 chars are needed to fit "include", the # doesn't get stored.

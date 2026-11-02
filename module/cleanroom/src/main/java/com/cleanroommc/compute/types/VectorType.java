@@ -1,7 +1,6 @@
 package com.cleanroommc.compute.types;
 
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 
 public record VectorType(OpenCLPrimitive primitive, int length) implements OpenCLType {
     public VectorType {
@@ -18,7 +17,7 @@ public record VectorType(OpenCLPrimitive primitive, int length) implements OpenC
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return String.format("%s%d", primitive, length);
     }
 

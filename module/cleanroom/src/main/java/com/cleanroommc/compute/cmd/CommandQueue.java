@@ -7,7 +7,6 @@ import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
@@ -85,8 +84,8 @@ public class CommandQueue extends SmartPointer {
     }
 
     Event createWriteEvent(long eventID,
-                           @NonNull MemoryStack stack,
-                           @NonNull SmartPointer object,
+                           MemoryStack stack,
+                           SmartPointer object,
                            boolean blocking,
                            @Nullable Set<SmartPointer> nonBlockingWrites) {
         Event event = new Event(eventID, stack, nonBlockingWrites);
@@ -118,11 +117,11 @@ public class CommandQueue extends SmartPointer {
 
         @Nullable Set<SmartPointer> nonBlockingWrites;
 
-        Event(long eventID, @NonNull MemoryStack stack) {
+        Event(long eventID, MemoryStack stack) {
             this(eventID, stack, null);
         }
 
-        Event(long eventID, @NonNull MemoryStack stack, @Nullable Set<SmartPointer> nonBlockingWrites) {
+        Event(long eventID, MemoryStack stack, @Nullable Set<SmartPointer> nonBlockingWrites) {
             Preconditions.checkNotNull(stack);
 
             this.eventID = eventID;
@@ -251,7 +250,7 @@ public class CommandQueue extends SmartPointer {
          * @param object Object written by the operation.
          * @param blocking Whether the operation is blocking.
          */
-        private void updateNonBlockingWrites(@NonNull SmartPointer object, boolean blocking) {
+        private void updateNonBlockingWrites(SmartPointer object, boolean blocking) {
             Preconditions.checkNotNull(object);
 
             if (blocking) {

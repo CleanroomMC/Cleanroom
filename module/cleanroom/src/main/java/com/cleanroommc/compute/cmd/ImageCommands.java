@@ -1,28 +1,10 @@
 package com.cleanroommc.compute.cmd;
 
-import com.cleanroommc.compute.Compute;
-import com.cleanroommc.compute.ComputeConfig;
-import com.cleanroommc.compute.buffers.Buffer;
-import com.cleanroommc.compute.errors.BufferError;
-import com.cleanroommc.compute.errors.UnavaliableDeviceError;
 import com.cleanroommc.compute.images.Image;
-import com.cleanroommc.compute.kernels.Kernel;
-import com.cleanroommc.compute.kernels.params.KernelParameterList;
-import com.cleanroommc.compute.smrtptr.GarbageCollector;
-import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
-import java.lang.ref.Cleaner;
 import java.nio.*;
-import java.util.Set;
 
 import com.cleanroommc.compute.cmd.CommandQueue.Event;
 
@@ -48,8 +30,8 @@ public final class ImageCommands {
      * @see Image#fill(MemoryStack, CommandQueue, java.nio.Buffer, Object, Object, int, Event...)
      * @author EΣrie
      */
-    public <CT, B extends java.nio.Buffer> Event fill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                                           @NonNull B color, @NonNull CT from, @NonNull CT size, int mipmap,
+    public <CT, B extends java.nio.Buffer> Event fill(MemoryStack stack, Image<CT> image,
+                                                           B color, CT from, CT size, int mipmap,
                                                            Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -74,8 +56,8 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT, B extends java.nio.Buffer> Event fill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                                           @NonNull B color, @NonNull CT from, @NonNull CT size,
+    public <CT, B extends java.nio.Buffer> Event fill(MemoryStack stack, Image<CT> image,
+                                                           B color, CT from, CT size,
                                                            Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -99,8 +81,8 @@ public final class ImageCommands {
      * @see Image#fill(MemoryStack, CommandQueue, int[], Object, Object, int, Event...)
      * @author EΣrie
      */
-    public <CT> Event fill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                int @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
+    public <CT> Event fill(MemoryStack stack, Image<CT> image,
+                                int [] color, CT from, CT size, int mipmap,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -124,8 +106,8 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event fill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                int @NonNull [] color, @NonNull CT from, @NonNull CT size,
+    public <CT> Event fill(MemoryStack stack, Image<CT> image,
+                                int [] color, CT from, CT size,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -149,8 +131,8 @@ public final class ImageCommands {
      * @see Image#fill(MemoryStack, CommandQueue, float[], Object, Object, int, Event...)
      * @author EΣrie
      */
-    public <CT> Event fill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                float @NonNull [] color, @NonNull CT from, @NonNull CT size, int mipmap,
+    public <CT> Event fill(MemoryStack stack, Image<CT> image,
+                                float [] color, CT from, CT size, int mipmap,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -174,8 +156,8 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event fill(@NonNull MemoryStack stack, @NonNull Image<CT> image,
-                                float @NonNull [] color, @NonNull CT from, @NonNull CT size,
+    public <CT> Event fill(MemoryStack stack, Image<CT> image,
+                                float [] color, CT from, CT size,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -202,10 +184,10 @@ public final class ImageCommands {
      * @see Image#copy(MemoryStack, CommandQueue, Image, Object, int, Object, int, Object, Event...)
      * @author EΣrie
      */
-    public <CT1, CT2> Event copy(@NonNull MemoryStack stack,
-                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                      @NonNull CT1 from, int mipmapFrom,
-                                      @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(MemoryStack stack,
+                                      Image<CT1> start, Image<CT2> destination,
+                                      CT1 from, int mipmapFrom,
+                                      CT2 to, int mipmapTo, CT2 size,
                                       Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(start);
@@ -233,10 +215,10 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote The source uses mipmap level 0.
      */
-    public <CT1, CT2> Event copy(@NonNull MemoryStack stack,
-                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                      @NonNull CT1 from,
-                                      @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(MemoryStack stack,
+                                      Image<CT1> start, Image<CT2> destination,
+                                      CT1 from,
+                                      CT2 to, int mipmapTo, CT2 size,
                                       Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(start);
@@ -264,10 +246,10 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote The destination uses mipmap level 0.
      */
-    public <CT1, CT2> Event copy(@NonNull MemoryStack stack,
-                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                      @NonNull CT1 from, int mipmapFrom,
-                                      @NonNull CT2 to, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(MemoryStack stack,
+                                      Image<CT1> start, Image<CT2> destination,
+                                      CT1 from, int mipmapFrom,
+                                      CT2 to, CT2 size,
                                       Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(start);
@@ -294,10 +276,10 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote Both source and destination use mipmap level 0.
      */
-    public <CT1, CT2> Event copy(@NonNull MemoryStack stack,
-                                      @NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                      @NonNull CT1 from,
-                                      @NonNull CT2 to, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(MemoryStack stack,
+                                      Image<CT1> start, Image<CT2> destination,
+                                      CT1 from,
+                                      CT2 to, CT2 size,
                                       Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(start);
@@ -326,9 +308,9 @@ public final class ImageCommands {
      * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      */
-    public <CT, B extends java.nio.Buffer> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, int mipmap, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+    public <CT, B extends java.nio.Buffer> Event read(MemoryStack stack, Image<CT> image,
+                                                           CT from, int mipmap, CT size,
+                                                           long rowPitch, long slicePitch, B buffer,
                                                            boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -356,9 +338,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT, B extends java.nio.Buffer> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, int mipmap, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+    public <CT, B extends java.nio.Buffer> Event read(MemoryStack stack, Image<CT> image,
+                                                           CT from, int mipmap, CT size,
+                                                           long rowPitch, long slicePitch, B buffer,
                                                            Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -386,9 +368,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT, B extends java.nio.Buffer> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+    public <CT, B extends java.nio.Buffer> Event read(MemoryStack stack, Image<CT> image,
+                                                           CT from, CT size,
+                                                           long rowPitch, long slicePitch, B buffer,
                                                            boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -416,9 +398,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT, B extends java.nio.Buffer> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                                           @NonNull CT from, @NonNull CT size,
-                                                           long rowPitch, long slicePitch, @NonNull B buffer,
+    public <CT, B extends java.nio.Buffer> Event read(MemoryStack stack, Image<CT> image,
+                                                           CT from, CT size,
+                                                           long rowPitch, long slicePitch, B buffer,
                                                            Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -445,9 +427,9 @@ public final class ImageCommands {
      * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, short @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, short [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -474,9 +456,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, short @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, short [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -503,9 +485,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, short @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, short [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -532,9 +514,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, short @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, short [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -561,9 +543,9 @@ public final class ImageCommands {
      * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, int @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, int [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -590,9 +572,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, int @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, int [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -619,9 +601,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, int @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, int [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -648,9 +630,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, int @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, int [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -677,9 +659,9 @@ public final class ImageCommands {
      * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, float @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, float [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -706,9 +688,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, float @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, float [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -735,9 +717,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, float @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, float [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -764,9 +746,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, float @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, float [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -793,9 +775,9 @@ public final class ImageCommands {
      * @see Image#read(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, double @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, double [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -822,9 +804,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, int mipmap, @NonNull CT size,
-                                long rowPitch, long slicePitch, double @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, int mipmap, CT size,
+                                long rowPitch, long slicePitch, double [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -851,9 +833,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, double @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, double [] array,
                                 boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -880,9 +862,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event read(@NonNull MemoryStack stack, Image<CT> image,
-                                @NonNull CT from, @NonNull CT size,
-                                long rowPitch, long slicePitch, double @NonNull [] array,
+    public <CT> Event read(MemoryStack stack, Image<CT> image,
+                                CT from, CT size,
+                                long rowPitch, long slicePitch, double [] array,
                                 Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -910,9 +892,9 @@ public final class ImageCommands {
      * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, java.nio.Buffer, boolean, Event...)
      * @author EΣrie
      */
-    public <CT, B extends java.nio.Buffer> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, int mipmap, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, @NonNull B buffer,
+    public <CT, B extends java.nio.Buffer> Event write(MemoryStack stack, Image<CT> image,
+                                                            CT from, int mipmap, CT size,
+                                                            long rowPitch, long slicePitch, B buffer,
                                                             boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -940,9 +922,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT, B extends java.nio.Buffer> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, int mipmap, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, @NonNull B buffer, Event... dependencies) {
+    public <CT, B extends java.nio.Buffer> Event write(MemoryStack stack, Image<CT> image,
+                                                            CT from, int mipmap, CT size,
+                                                            long rowPitch, long slicePitch, B buffer, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(buffer);
@@ -969,9 +951,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT, B extends java.nio.Buffer> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, @NonNull B buffer,
+    public <CT, B extends java.nio.Buffer> Event write(MemoryStack stack, Image<CT> image,
+                                                            CT from, CT size,
+                                                            long rowPitch, long slicePitch, B buffer,
                                                             boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -999,9 +981,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT, B extends java.nio.Buffer> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                                            @NonNull CT from, @NonNull CT size,
-                                                            long rowPitch, long slicePitch, @NonNull B buffer, Event... dependencies) {
+    public <CT, B extends java.nio.Buffer> Event write(MemoryStack stack, Image<CT> image,
+                                                            CT from, CT size,
+                                                            long rowPitch, long slicePitch, B buffer, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(buffer);
@@ -1027,9 +1009,9 @@ public final class ImageCommands {
      * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, short[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, short @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, short [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1056,9 +1038,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, short @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, short [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);
@@ -1084,9 +1066,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, short @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, short [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1113,9 +1095,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, short @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, short [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);
@@ -1141,9 +1123,9 @@ public final class ImageCommands {
      * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, int[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, int @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, int [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1170,9 +1152,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, int @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, int [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);
@@ -1198,9 +1180,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, int @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, int [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1227,9 +1209,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, int @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, int [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);
@@ -1255,9 +1237,9 @@ public final class ImageCommands {
      * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, float[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, float @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, float [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1284,9 +1266,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, float @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, float [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);
@@ -1312,9 +1294,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, float @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, float [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1341,9 +1323,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, float @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, float [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);
@@ -1369,9 +1351,9 @@ public final class ImageCommands {
      * @see Image#write(MemoryStack, CommandQueue, Object, int, Object, long, long, double[], boolean, Event...)
      * @author EΣrie
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, double @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, double [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1398,9 +1380,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This is always a blocking operation.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, int mipmap, @NonNull CT size,
-                                 long rowPitch, long slicePitch, double @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, int mipmap, CT size,
+                                 long rowPitch, long slicePitch, double [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);
@@ -1426,9 +1408,9 @@ public final class ImageCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, double @NonNull [] array,
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, double [] array,
                                  boolean blocking, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
@@ -1455,9 +1437,9 @@ public final class ImageCommands {
      * @apiNote This is always a blocking operation.
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> Event write(@NonNull MemoryStack stack, Image<CT> image,
-                                 @NonNull CT from, @NonNull CT size,
-                                 long rowPitch, long slicePitch, double @NonNull [] array, Event... dependencies) {
+    public <CT> Event write(MemoryStack stack, Image<CT> image,
+                                 CT from, CT size,
+                                 long rowPitch, long slicePitch, double [] array, Event... dependencies) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(image);
         Preconditions.checkNotNull(array);

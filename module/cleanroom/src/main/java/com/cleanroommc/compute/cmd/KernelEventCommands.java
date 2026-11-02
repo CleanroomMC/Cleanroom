@@ -1,28 +1,11 @@
 package com.cleanroommc.compute.cmd;
 
-import com.cleanroommc.compute.Compute;
-import com.cleanroommc.compute.ComputeConfig;
-import com.cleanroommc.compute.buffers.Buffer;
-import com.cleanroommc.compute.errors.BufferError;
-import com.cleanroommc.compute.errors.UnavaliableDeviceError;
-import com.cleanroommc.compute.images.Image;
 import com.cleanroommc.compute.kernels.Kernel;
 import com.cleanroommc.compute.kernels.params.KernelParameterList;
-import com.cleanroommc.compute.smrtptr.GarbageCollector;
-import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CL20;
-import org.lwjgl.system.MemoryStack;
 
-import java.lang.ref.Cleaner;
 import java.nio.*;
-import java.util.Set;
 
 import com.cleanroommc.compute.cmd.CommandQueue.Event;
 
@@ -47,10 +30,10 @@ public final class KernelEventCommands {
      * @throws IllegalStateException If this event can no longer be chained.
      * @author EΣrie
      */
-    public @NonNull Event dispatch(@NonNull Kernel kernel,
-                               final @NonNull KernelParameterList arguments,
+    public Event dispatch(Kernel kernel,
+                               final KernelParameterList arguments,
                                final long @Nullable [] workGroupOffsets,
-                               final long @NonNull [] workGroupSizes,
+                               final long [] workGroupSizes,
                                final Event... dependencies) throws IllegalStateException {
         Preconditions.checkNotNull(kernel);
         Preconditions.checkNotNull(arguments);
@@ -87,8 +70,8 @@ public final class KernelEventCommands {
      * @throws IllegalStateException If this event can no longer be chained.
      * @author EΣrie
      */
-    public @NonNull Event dispatch(@NonNull Kernel kernel,
-                               final @NonNull KernelParameterList arguments,
+    public Event dispatch(Kernel kernel,
+                               final KernelParameterList arguments,
                                final Event... dependencies) throws IllegalStateException {
         Preconditions.checkNotNull(kernel);
         Preconditions.checkNotNull(arguments);

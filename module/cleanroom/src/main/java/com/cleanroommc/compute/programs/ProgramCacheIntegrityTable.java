@@ -4,7 +4,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import net.minecraft.util.ResourceLocation;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -22,11 +22,11 @@ public record ProgramCacheIntegrityTable(Map<String, byte[]> cache) implements S
         this(new Object2ObjectAVLTreeMap<>());
     }
 
-    public byte[] put(@NonNull ResourceLocation key, @NonNull String value) {
+    public byte @Nullable [] put(ResourceLocation key, String value) {
         return cache.put(key.toString(), hash.hashBytes(value.getBytes()).asBytes());
     }
 
-    public boolean contains(@NonNull ResourceLocation key) {
+    public boolean contains(ResourceLocation key) {
         return cache.containsKey(key.toString());
     }
 

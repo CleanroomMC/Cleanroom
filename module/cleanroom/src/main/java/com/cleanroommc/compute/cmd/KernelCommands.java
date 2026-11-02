@@ -1,28 +1,14 @@
 package com.cleanroommc.compute.cmd;
 
-import com.cleanroommc.compute.Compute;
 import com.cleanroommc.compute.ComputeConfig;
-import com.cleanroommc.compute.buffers.Buffer;
-import com.cleanroommc.compute.errors.BufferError;
 import com.cleanroommc.compute.errors.UnavaliableDeviceError;
-import com.cleanroommc.compute.images.Image;
 import com.cleanroommc.compute.kernels.Kernel;
 import com.cleanroommc.compute.kernels.params.KernelParameterList;
-import com.cleanroommc.compute.smrtptr.GarbageCollector;
-import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CL20;
 import org.lwjgl.system.MemoryStack;
 
-import java.lang.ref.Cleaner;
 import java.nio.*;
-import java.util.Set;
 
 import com.cleanroommc.compute.cmd.CommandQueue.Event;
 
@@ -45,9 +31,9 @@ public final class KernelCommands {
      * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], Event...)
      */
     public Event dispatch(Kernel kernel,
-                                final @NonNull KernelParameterList arguments,
+                                final KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
-                                final long @NonNull [] workGroupSizes,
+                                final long [] workGroupSizes,
                                 final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
@@ -74,10 +60,10 @@ public final class KernelCommands {
      * @author EΣrie
      * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, long[], long[], Event...)
      */
-    public Event dispatch(@NonNull MemoryStack stack, Kernel kernel,
-                                final @NonNull KernelParameterList arguments,
+    public Event dispatch(MemoryStack stack, Kernel kernel,
+                                final KernelParameterList arguments,
                                 final long @Nullable [] workGroupOffsets,
-                                final long @NonNull [] workGroupSizes,
+                                final long [] workGroupSizes,
                                 final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(workGroupSizes);
@@ -94,8 +80,8 @@ public final class KernelCommands {
      * @author EΣrie
      * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, Event...)
      */
-    public Event dispatch(@NonNull Kernel kernel,
-                                final @NonNull KernelParameterList arguments,
+    public Event dispatch(Kernel kernel,
+                                final KernelParameterList arguments,
                                 final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);
         MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
@@ -119,8 +105,8 @@ public final class KernelCommands {
      * @author EΣrie
      * @see Kernel#invoke(MemoryStack, CommandQueue, long, KernelParameterList, Event...)
      */
-    public Event dispatch(@NonNull MemoryStack stack, @NonNull Kernel kernel,
-                                final @NonNull KernelParameterList arguments,
+    public Event dispatch(MemoryStack stack, Kernel kernel,
+                                final KernelParameterList arguments,
                                 final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(arguments);

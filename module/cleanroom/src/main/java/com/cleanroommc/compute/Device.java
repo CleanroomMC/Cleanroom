@@ -1,6 +1,5 @@
 package com.cleanroommc.compute;
 
-import org.jspecify.annotations.NonNull;
 import org.lwjgl.opencl.CLCapabilities;
 
 /**
@@ -22,7 +21,7 @@ public record Device(long handle,
                      long preferredDeviceQueueSize,
                      long maxDeviceQueueSize) implements Comparable<Device> {
     @Override
-    public int compareTo(@NonNull Device o) {
+    public int compareTo(Device o) {
         return Long.compare(handle, o.handle);
     }
 }

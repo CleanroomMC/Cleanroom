@@ -1,7 +1,6 @@
 package com.cleanroommc.compute.types;
 
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 
 public record ImageType(int dimensions, boolean fromBuffer, boolean array, boolean msaa, boolean depth) implements OpenCLType {
 
@@ -19,7 +18,7 @@ public record ImageType(int dimensions, boolean fromBuffer, boolean array, boole
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return String.format("image%dd%s%s%st", dimensions, array ? "_array" : (fromBuffer ? "_buffer" : ""), msaa ? "_msaa" : "", depth ? "_depth_" : "_");
     }
 }

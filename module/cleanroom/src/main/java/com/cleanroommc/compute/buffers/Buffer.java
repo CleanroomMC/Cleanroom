@@ -9,7 +9,6 @@ import com.cleanroommc.kirino.gl.buffer.GLBuffer;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL10;
@@ -17,11 +16,8 @@ import org.lwjgl.opencl.CL10GL;
 import org.lwjgl.opencl.CL11;
 import org.lwjgl.opencl.CLBufferRegion;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.ref.Cleaner;
 import java.nio.*;
 import java.util.List;
@@ -62,7 +58,7 @@ public class Buffer extends SmartPointer {
      * @param flags {@link BufferFlags Buffer memory flags}
      * @author EΣrie
      */
-    public Buffer(@NonNull MemoryStack stack, long size, @NonNull BufferFlags... flags) {
+    public Buffer(MemoryStack stack, long size, BufferFlags... flags) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
         Preconditions.checkNotNull(flags);
@@ -115,7 +111,7 @@ public class Buffer extends SmartPointer {
      * @param <B> NIO Buffer type
      * @author EΣrie
      */
-    public <B extends java.nio.Buffer> Buffer(@NonNull MemoryStack stack, @NonNull B hostMemoryBuffer, @NonNull BufferFlags... flags) {
+    public <B extends java.nio.Buffer> Buffer(MemoryStack stack, B hostMemoryBuffer, BufferFlags... flags) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(hostMemoryBuffer);
         Preconditions.checkNotNull(flags);
@@ -185,7 +181,7 @@ public class Buffer extends SmartPointer {
      * @param flags {@link BufferFlags Buffer memory flags}
      * @author EΣrie
      */
-    public Buffer(@NonNull MemoryStack stack, @NonNull Buffer parent, long offset, long size, @NonNull BufferFlags... flags) {
+    public Buffer(MemoryStack stack, Buffer parent, long offset, long size, BufferFlags... flags) {
         Preconditions.checkNotNull(stack);
         Preconditions.checkNotNull(parent);
         Preconditions.checkArgument(offset + size <= parent.size, "Subbuffer goes outside parent buffer.");
@@ -248,7 +244,7 @@ public class Buffer extends SmartPointer {
      * @param flags {@link BufferFlags Buffer memory flags}
      * @author EΣrie
      */
-    public Buffer(long size, @NonNull BufferFlags... flags) {
+    public Buffer(long size, BufferFlags... flags) {
         Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
@@ -299,7 +295,7 @@ public class Buffer extends SmartPointer {
      * @param <B> NIO Buffer type
      * @author EΣrie
      */
-    public <B extends java.nio.Buffer> Buffer(@NonNull B hostMemoryBuffer, @NonNull BufferFlags... flags) {
+    public <B extends java.nio.Buffer> Buffer(B hostMemoryBuffer, BufferFlags... flags) {
         Preconditions.checkNotNull(hostMemoryBuffer);
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
@@ -367,7 +363,7 @@ public class Buffer extends SmartPointer {
      * @param flags {@link BufferFlags Buffer memory flags}
      * @author EΣrie
      */
-    public Buffer(@NonNull Buffer parent, long offset, long size, @NonNull BufferFlags... flags) {
+    public Buffer(Buffer parent, long offset, long size, BufferFlags... flags) {
         Preconditions.checkNotNull(parent);
         if (!parent.isGLObject()) Preconditions.checkArgument(offset + size <= parent.size, "Subbuffer goes outside parent buffer.");
         Preconditions.checkArgument(size != 0, "Size can not be equal to 0.");
@@ -430,7 +426,7 @@ public class Buffer extends SmartPointer {
      * @param flags {@link BufferFlags Buffer memory flags}
      * @author EΣrie
      */
-    public Buffer(@NonNull GLBuffer glBuffer, @NonNull BufferFlags... flags) {
+    public Buffer(GLBuffer glBuffer, BufferFlags... flags) {
         Preconditions.checkNotNull(glBuffer);
         Preconditions.checkNotNull(flags);
         Preconditions.checkArgument(flags.length != 0, "At least one flag must be provided.");
@@ -510,8 +506,8 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                      float @NonNull [] data, boolean blocking,
+    public long write(MemoryStack stack, CommandQueue commandQueue,
+                      float [] data, boolean blocking,
                       long offset, CommandQueue.Event... events) throws
         NullPointerException, IllegalArgumentException,
         IllegalStateException, BufferError, OutOfMemoryError {
@@ -576,8 +572,8 @@ public class Buffer extends SmartPointer {
      * @author EΣrie
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      */
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue,
-                      double @NonNull [] data, boolean blocking,
+    public long write(MemoryStack stack, CommandQueue commandQueue,
+                      double [] data, boolean blocking,
                       long offset, CommandQueue.Event... events) throws
         NullPointerException, IllegalArgumentException,
         IllegalStateException, BufferError, OutOfMemoryError {
@@ -642,7 +638,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] data, boolean blocking, long offset, CommandQueue.Event... events) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, short [] data, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 2;
 
         Preconditions.checkNotNull(stack);
@@ -703,7 +699,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to write to the buffer.
      * @author EΣrie
      */
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] data, boolean blocking, long offset, CommandQueue.Event... events) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, int [] data, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -736,7 +732,7 @@ public class Buffer extends SmartPointer {
     }
 
     // TODO: Test this one and decide if it should stay.
-    public long write(@NonNull MemoryStack stack, CommandQueue commandQueue, byte @NonNull [] data, boolean blocking, long offset, CommandQueue.Event... events) {
+    public long write(MemoryStack stack, CommandQueue commandQueue, byte [] data, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 1;
 
         Preconditions.checkNotNull(stack);
@@ -803,9 +799,9 @@ public class Buffer extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> long write(
-        @NonNull MemoryStack stack,
+        MemoryStack stack,
         CommandQueue commandQueue,
-        @NonNull B data,
+        B data,
         boolean blocking,
         long offset,
         CommandQueue.Event... events
@@ -929,9 +925,9 @@ public class Buffer extends SmartPointer {
      * @author EΣrie
      */
     public <B extends java.nio.Buffer> long read(
-        @NonNull MemoryStack stack,
+        MemoryStack stack,
         CommandQueue commandQueue,
-        @NonNull B target,
+        B target,
         boolean blocking,
         long offset,
         CommandQueue.Event... events
@@ -1053,7 +1049,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, short @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, short [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 2;
 
         Preconditions.checkNotNull(stack);
@@ -1116,7 +1112,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, int @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, int [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -1179,7 +1175,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, float @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, float [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 4;
 
         Preconditions.checkNotNull(stack);
@@ -1242,7 +1238,7 @@ public class Buffer extends SmartPointer {
      * @throws OutOfMemoryError When there is not enough memory available to read from the buffer.
      * @author EΣrie
      */
-    public long read(@NonNull MemoryStack stack, CommandQueue commandQueue, double @NonNull [] target, boolean blocking, long offset, CommandQueue.Event... events) {
+    public long read(MemoryStack stack, CommandQueue commandQueue, double [] target, boolean blocking, long offset, CommandQueue.Event... events) {
         final int sizeof = 8;
 
         Preconditions.checkNotNull(stack);

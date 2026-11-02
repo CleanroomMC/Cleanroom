@@ -1,28 +1,9 @@
 package com.cleanroommc.compute.cmd;
 
-import com.cleanroommc.compute.Compute;
-import com.cleanroommc.compute.ComputeConfig;
-import com.cleanroommc.compute.buffers.Buffer;
-import com.cleanroommc.compute.errors.BufferError;
-import com.cleanroommc.compute.errors.UnavaliableDeviceError;
 import com.cleanroommc.compute.images.Image;
-import com.cleanroommc.compute.kernels.Kernel;
-import com.cleanroommc.compute.kernels.params.KernelParameterList;
-import com.cleanroommc.compute.smrtptr.GarbageCollector;
-import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
-import org.lwjgl.opencl.CL12;
-import org.lwjgl.opencl.CL20;
-import org.lwjgl.system.MemoryStack;
 
-import java.lang.ref.Cleaner;
 import java.nio.*;
-import java.util.Set;
 
 import com.cleanroommc.compute.cmd.CommandQueue.Event;
 
@@ -49,8 +30,8 @@ public final class ImageEventCommands {
      * @throws IllegalStateException If this event can no longer be chained.
      * @author EΣrie
      */
-    public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
-                                                               @NonNull CT from, @NonNull CT size, int mipmap,
+    public <CT, B extends java.nio.Buffer> Event fill(Image<CT> image, B color,
+                                                               CT from, CT size, int mipmap,
                                                                final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -80,8 +61,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT, B extends java.nio.Buffer> @NonNull Event fill(@NonNull Image<CT> image, @NonNull B color,
-                                                               @NonNull CT from, @NonNull CT size,
+    public <CT, B extends java.nio.Buffer> Event fill(Image<CT> image, B color,
+                                                               CT from, CT size,
                                                                final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -110,8 +91,8 @@ public final class ImageEventCommands {
      * @throws IllegalStateException If this event can no longer be chained.
      * @author EΣrie
      */
-    public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
-                                    @NonNull CT from, @NonNull CT size, int mipmap,
+    public <CT> Event fill(Image<CT> image, int [] color,
+                                    CT from, CT size, int mipmap,
                                     final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -140,8 +121,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> @NonNull Event fill(@NonNull Image<CT> image, int @NonNull [] color,
-                                    @NonNull CT from, @NonNull CT size,
+    public <CT> Event fill(Image<CT> image, int [] color,
+                                    CT from, CT size,
                                     final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -170,8 +151,8 @@ public final class ImageEventCommands {
      * @throws IllegalStateException If this event can no longer be chained.
      * @author EΣrie
      */
-    public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
-                                    @NonNull CT from, @NonNull CT size, int mipmap,
+    public <CT> Event fill(Image<CT> image, float [] color,
+                                    CT from, CT size, int mipmap,
                                     final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -200,8 +181,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      * @apiNote This operates on mipmap level 0.
      */
-    public <CT> @NonNull Event fill(@NonNull Image<CT> image, float @NonNull [] color,
-                                    @NonNull CT from, @NonNull CT size,
+    public <CT> Event fill(Image<CT> image, float [] color,
+                                    CT from, CT size,
                                     final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -233,9 +214,9 @@ public final class ImageEventCommands {
      * @throws IllegalStateException If this event can no longer be chained.
      * @author EΣrie
      */
-    public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                          @NonNull CT1 from, int mipmapFrom,
-                                          @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(Image<CT1> start, Image<CT2> destination,
+                                          CT1 from, int mipmapFrom,
+                                          CT2 to, int mipmapTo, CT2 size,
                                           final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -269,9 +250,9 @@ public final class ImageEventCommands {
      * @author EΣrie
      * @apiNote The source uses mipmap level 0.
      */
-    public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                          @NonNull CT1 from,
-                                          @NonNull CT2 to, int mipmapTo, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(Image<CT1> start, Image<CT2> destination,
+                                          CT1 from,
+                                          CT2 to, int mipmapTo, CT2 size,
                                           final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -305,9 +286,9 @@ public final class ImageEventCommands {
      * @author EΣrie
      * @apiNote The destination uses mipmap level 0.
      */
-    public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                          @NonNull CT1 from, int mipmapFrom,
-                                          @NonNull CT2 to, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(Image<CT1> start, Image<CT2> destination,
+                                          CT1 from, int mipmapFrom,
+                                          CT2 to, CT2 size,
                                           final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -340,9 +321,9 @@ public final class ImageEventCommands {
      * @author EΣrie
      * @apiNote Both source and destination use mipmap level 0.
      */
-    public <CT1, CT2> @NonNull Event copy(@NonNull Image<CT1> start, @NonNull Image<CT2> destination,
-                                          @NonNull CT1 from,
-                                          @NonNull CT2 to, @NonNull CT2 size,
+    public <CT1, CT2> Event copy(Image<CT1> start, Image<CT2> destination,
+                                          CT1 from,
+                                          CT2 to, CT2 size,
                                           final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -378,8 +359,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
-                                                      @NonNull CT from, int mipmap, @NonNull CT size,
-                                                      long rowPitch, long slicePitch, @NonNull B buffer,
+                                                      CT from, int mipmap, CT size,
+                                                      long rowPitch, long slicePitch, B buffer,
                                                       boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -416,8 +397,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
-                                                      @NonNull CT from, int mipmap, @NonNull CT size,
-                                                      long rowPitch, long slicePitch, @NonNull B buffer,
+                                                      CT from, int mipmap, CT size,
+                                                      long rowPitch, long slicePitch, B buffer,
                                                       final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -452,8 +433,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
-                                                      @NonNull CT from, @NonNull CT size,
-                                                      long rowPitch, long slicePitch, @NonNull B buffer,
+                                                      CT from, CT size,
+                                                      long rowPitch, long slicePitch, B buffer,
                                                       boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -490,8 +471,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT, B extends java.nio.Buffer> Event read(Image<CT> image,
-                                                      @NonNull CT from, @NonNull CT size,
-                                                      long rowPitch, long slicePitch, @NonNull B buffer,
+                                                      CT from, CT size,
+                                                      long rowPitch, long slicePitch, B buffer,
                                                       final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -525,8 +506,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, short @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, short [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -562,8 +543,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, short @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, short [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -597,8 +578,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, short @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, short [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -634,8 +615,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, short @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, short [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -669,8 +650,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, int @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, int [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -706,8 +687,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, int @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, int [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -741,8 +722,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, int @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, int [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -778,8 +759,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, int @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, int [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -813,8 +794,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, float @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, float [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -850,8 +831,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, float @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, float [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -885,8 +866,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, float @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, float [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -922,8 +903,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, float @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, float [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -957,8 +938,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, double @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, double [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -994,8 +975,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, int mipmap, @NonNull CT size,
-                           long rowPitch, long slicePitch, double @NonNull [] array,
+                           CT from, int mipmap, CT size,
+                           long rowPitch, long slicePitch, double [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1029,8 +1010,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, double @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, double [] array,
                            boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1066,8 +1047,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event read(Image<CT> image,
-                           @NonNull CT from, @NonNull CT size,
-                           long rowPitch, long slicePitch, double @NonNull [] array,
+                           CT from, CT size,
+                           long rowPitch, long slicePitch, double [] array,
                            final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1102,8 +1083,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                       @NonNull CT from, int mipmap, @NonNull CT size,
-                                                       long rowPitch, long slicePitch, @NonNull B buffer,
+                                                       CT from, int mipmap, CT size,
+                                                       long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1137,8 +1118,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                       @NonNull CT from, int mipmap, @NonNull CT size,
-                                                       long rowPitch, long slicePitch, @NonNull B buffer,
+                                                       CT from, int mipmap, CT size,
+                                                       long rowPitch, long slicePitch, B buffer,
                                                        final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1173,8 +1154,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                       @NonNull CT from, @NonNull CT size,
-                                                       long rowPitch, long slicePitch, @NonNull B buffer,
+                                                       CT from, CT size,
+                                                       long rowPitch, long slicePitch, B buffer,
                                                        boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1208,8 +1189,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT, B extends java.nio.Buffer> Event write(Image<CT> image,
-                                                       @NonNull CT from, @NonNull CT size,
-                                                       long rowPitch, long slicePitch, @NonNull B buffer,
+                                                       CT from, CT size,
+                                                       long rowPitch, long slicePitch, B buffer,
                                                        final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1243,8 +1224,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, short @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, short [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1277,8 +1258,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, short @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, short [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1312,8 +1293,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, short @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, short [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1346,8 +1327,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, short @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, short [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1381,8 +1362,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, int @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, int [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1415,8 +1396,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, int @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, int [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1450,8 +1431,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, int @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, int [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1484,8 +1465,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, int @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, int [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1519,8 +1500,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, float @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, float [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1553,8 +1534,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, float @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, float [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1588,8 +1569,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, float @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, float [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1622,8 +1603,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, float @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, float [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1657,8 +1638,8 @@ public final class ImageEventCommands {
      * @author EΣrie
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, double @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, double [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1691,8 +1672,8 @@ public final class ImageEventCommands {
      * @apiNote This is always a blocking operation.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, int mipmap, @NonNull CT size,
-                            long rowPitch, long slicePitch, double @NonNull [] array,
+                            CT from, int mipmap, CT size,
+                            long rowPitch, long slicePitch, double [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1726,8 +1707,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, double @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, double [] array,
                             boolean blocking, final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,
@@ -1760,8 +1741,8 @@ public final class ImageEventCommands {
      * @apiNote This operates on mipmap level 0.
      */
     public <CT> Event write(Image<CT> image,
-                            @NonNull CT from, @NonNull CT size,
-                            long rowPitch, long slicePitch, double @NonNull [] array,
+                            CT from, CT size,
+                            long rowPitch, long slicePitch, double [] array,
                             final Event... dependencies) throws IllegalStateException {
         Preconditions.checkState(
             event.chainable,

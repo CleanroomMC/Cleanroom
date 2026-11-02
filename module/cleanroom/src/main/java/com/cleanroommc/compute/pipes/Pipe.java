@@ -6,11 +6,9 @@ import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import com.cleanroommc.compute.types.OpenCLType;
 import com.cleanroommc.compute.smrtptr.SmartPointer;
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 import org.lwjgl.opencl.CL10;
 import org.lwjgl.opencl.CL20;
 
-import java.io.IOException;
 import java.lang.ref.Cleaner;
 
 /**
@@ -39,7 +37,7 @@ public class Pipe extends SmartPointer {
      * @param schema Composition of a packet (this does not get stored)
      * @author EΣrie
      */
-    public Pipe(int capacity, OpenCLType @NonNull ... schema) {
+    public Pipe(int capacity, OpenCLType ... schema) {
         Preconditions.checkNotNull(schema);
         Preconditions.checkArgument(schema.length > 0);
 
