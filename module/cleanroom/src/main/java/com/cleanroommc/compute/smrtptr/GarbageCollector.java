@@ -12,6 +12,7 @@ public enum GarbageCollector {
 
     public final Cleaner cleaner = Cleaner.create();
     final Queue<Runnable> deletionQueue = new ConcurrentLinkedQueue<>();
+    public final ThreadLocal<Arena> arena = ThreadLocal.withInitial(Arena::new);
 
     /**
      * Remove all objects marked for deletion.
