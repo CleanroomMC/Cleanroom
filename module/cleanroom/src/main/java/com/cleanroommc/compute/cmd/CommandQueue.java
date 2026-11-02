@@ -70,6 +70,10 @@ public class CommandQueue extends SmartPointer {
         );
     }
 
+    public DeviceQueue getDeviceQueue() {
+        return new DeviceQueue(Compute.instance().getDevice(device));
+    }
+
     /**
      * Releases this OpenCL command queue.
      * @author EΣrie

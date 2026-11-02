@@ -105,6 +105,18 @@ public class ComputeSetup {
                 long[] maxWorkItemSizes = new long[(int) len.get(0)];
                 CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, maxWorkItemSizes, len);
 
+                int preferredDeviceQueueSize = -1;
+                int maxDeviceQueueSize = -1;
+
+                if (platform.versionMajor >= 2) {
+                    IntBuffer preferredDeviceQueueSizeBuffer = stack.mallocInt(1);
+                    IntBuffer maxDeviceQueueSizeBuffer = stack.mallocInt(1);
+                    CL10.clGetDeviceInfo(deviceHandle, CL20.CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE, preferredDeviceQueueSizeBuffer, null);
+                    CL10.clGetDeviceInfo(deviceHandle, CL20.CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE, maxDeviceQueueSizeBuffer, null);
+                    preferredDeviceQueueSize = preferredDeviceQueueSizeBuffer.get(0);
+                    maxDeviceQueueSize = maxDeviceQueueSizeBuffer.get(0);
+                }
+
                 boolean pipeSupport = deviceCapabilities.OpenCL20;
                 if (deviceCapabilities.OpenCL30) {
                     IntBuffer supported = stack.callocInt(1);
@@ -117,7 +129,9 @@ public class ComputeSetup {
                         maxWorkItemSizes,
                         imageSupport.get(0) != 0,
                         deviceCapabilities.cl_khr_mipmap_image,
-                        pipeSupport);
+                        pipeSupport,
+                        preferredDeviceQueueSize,
+                        maxDeviceQueueSize);
             }
             Compute.init(
                     LOGGER,

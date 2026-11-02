@@ -18,7 +18,9 @@ public record Device(long handle,
                      long[] maxWorkItemSizes,
                      boolean supportsImages,
                      boolean supportsMipmaps,
-                     boolean supportsPipes) implements Comparable<Device> {
+                     boolean supportsPipes,
+                     long preferredDeviceQueueSize,
+                     long maxDeviceQueueSize) implements Comparable<Device> {
     @Override
     public int compareTo(@NonNull Device o) {
         return Long.compare(handle, o.handle);
