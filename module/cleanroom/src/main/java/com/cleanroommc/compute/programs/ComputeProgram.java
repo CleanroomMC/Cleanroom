@@ -83,6 +83,10 @@ public class ComputeProgram implements Closeable {
     public synchronized void compile(ProgramCacheIntegrityTable cache, MemoryStack stack) {
         if (kernels != null)
             return;
+        List<Device> buildDevices = Arrays.stream(Compute.instance().devices)
+                .filter(metadata.requirements::supports).toList();
+        if (buildDevices.isEmpty())
+            throw new CompilationError("No device satisfies the requirements of " + resourceLocation);
         IntBuffer err_code = stack.mallocInt(1);
         String src = getResourceAsString(new ResourceLocation(resourceLocation.getNamespace(), metadata.fname));
         long program = CL10.clCreateProgramWithSource(Compute.instance().context, src, err_code);
@@ -106,14 +110,14 @@ public class ComputeProgram implements Closeable {
             libraryHandles.flip();
             paths.flip();
         }
-        PointerBuffer devices = stack.mallocPointer(Compute.instance().devices.length);
-        for (Device device : Compute.instance().devices) {
+        PointerBuffer devices = stack.mallocPointer(buildDevices.size());
+        for (Device device : buildDevices) {
             devices.put(device.handle());
         }
         devices.flip();
         switch (CL12.clCompileProgram(program, devices, "", libraryHandles, paths, null, 0)) {
             case CL12.CL_COMPILER_NOT_AVAILABLE -> throw new CompilationError("Compiler unavailable.");
-            case CL12.CL_COMPILE_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to compile program %s. \nBuild Logs:\n%s", resourceLocation, combineStrings(getBuildLog(stack, program), "\n\t")));
+            case CL12.CL_COMPILE_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to compile program %s. \nBuild Logs:\n%s", resourceLocation, combineStrings(getBuildLog(stack, program, buildDevices), "\n\t")));
             case CL10.CL_INVALID_OPERATION -> throw new Error("Invalid Operation. Program either has no source, already has kernel objects attached or has been compiled during program creation.");
             case CL10.CL_INVALID_PROGRAM -> throw new RuntimeException("Invalid program.");
             case CL10.CL_INVALID_DEVICE -> throw new RuntimeException("Invalid device.");
@@ -121,7 +125,7 @@ public class ComputeProgram implements Closeable {
             case CL12.CL_INVALID_COMPILER_OPTIONS -> throw new CompilationError("Invalid compiler options");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to compile OpenCL program.");
         }
-        for (String log : getBuildLog(stack, program)) {
+        for (String log : getBuildLog(stack, program, buildDevices)) {
             Compute.instance().LOGGER.info(log);
         }
         err_code.rewind();
@@ -132,10 +136,10 @@ public class ComputeProgram implements Closeable {
             case CL12.CL_INVALID_LINKER_OPTIONS -> throw new CompilationError(String.format(String.format("Linker options for program %s are invalid.", resourceLocation)));
             case CL10.CL_INVALID_OPERATION -> throw new CompilationError(String.format("Program %s hasn't finished building yet.", resourceLocation));
             case CL12.CL_LINKER_NOT_AVAILABLE -> throw new RuntimeException("Linker is unavailable");
-            case CL12.CL_LINK_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to link program %s. \nBuild Logs:\n\t%s", resourceLocation, combineStrings(getBuildLog(stack, programHandle), "\t\n")));
+            case CL12.CL_LINK_PROGRAM_FAILURE -> throw new CompilationError(String.format("Failed to link program %s. \nBuild Logs:\n\t%s", resourceLocation, combineStrings(getBuildLog(stack, programHandle, buildDevices), "\t\n")));
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to link OpenCL program.");
         }
-        for (String log : getBuildLog(stack, programHandle)) {
+        for (String log : getBuildLog(stack, programHandle, buildDevices)) {
             Compute.instance().LOGGER.info(log);
         }
         CL10.clReleaseProgram(program);
@@ -169,11 +173,11 @@ public class ComputeProgram implements Closeable {
      * @apiNote Trim the fucking strings EΣrie
      * @author EΣrie
      */
-    private List<String> getBuildLog(MemoryStack stack, long program) {
+    private List<String> getBuildLog(MemoryStack stack, long program, List<Device> buildDevices) {
         List<String> logs = new ObjectArrayList<>();
         try (MemoryStack substack = stack.push()) {
             PointerBuffer len = substack.mallocPointer(1);
-            for (Device device : Compute.instance().devices) {
+            for (Device device : buildDevices) {
                 CL10.clGetProgramBuildInfo(program, device.handle(), CL10.CL_PROGRAM_BUILD_LOG, (ByteBuffer) null, len);
                 ByteBuffer data = substack.malloc((int) len.get(0));
                 len.rewind();
@@ -417,6 +421,12 @@ public class ComputeProgram implements Closeable {
          * Requirements of the program in terms of OpenCL features.
          */
         public static class Requirements {
+            public boolean supports(Device device) {
+                return (!(images || mipmaps) || device.supportsImages())
+                        && (!mipmaps || device.supportsMipmaps())
+                        && (!pipes || device.supportsPipes());
+            }
+
             /**
              * Does the program use images.
              */
