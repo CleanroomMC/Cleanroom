@@ -1,6 +1,7 @@
 package com.cleanroommc.compute.cmd;
 
 import com.cleanroommc.compute.Compute;
+import com.cleanroommc.compute.ComputeConfig;
 import com.cleanroommc.compute.buffers.Buffer;
 import com.cleanroommc.compute.errors.BufferError;
 import com.cleanroommc.compute.errors.UnavaliableDeviceError;
@@ -90,7 +91,7 @@ public class CommandQueue extends SmartPointer {
                                 final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(workGroupSizes);
         Preconditions.checkNotNull(arguments);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.dispatchKernel(stack, kernel, arguments, workGroupOffsets, workGroupSizes, dependencies);
             event.ownsStack = true;
@@ -137,7 +138,7 @@ public class CommandQueue extends SmartPointer {
                                 final @NonNull KernelParameterList arguments,
                                 final Event... dependencies) throws RuntimeException, UnavaliableDeviceError, OutOfMemoryError {
         Preconditions.checkNotNull(arguments);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = new Event(kernel.invoke(stack, this, this.device, arguments, dependencies), stack);
             event.ownsStack = true;
@@ -316,7 +317,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
             event.ownsStack = true;
@@ -353,7 +354,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, offset, data, events);
             event.ownsStack = true;
@@ -388,7 +389,7 @@ public class CommandQueue extends SmartPointer {
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, blocking, events);
             event.ownsStack = true;
@@ -422,7 +423,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, events);
             event.ownsStack = true;
@@ -581,7 +582,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
             event.ownsStack = true;
@@ -618,7 +619,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, offset, data, events);
             event.ownsStack = true;
@@ -653,7 +654,7 @@ public class CommandQueue extends SmartPointer {
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, blocking, events);
             event.ownsStack = true;
@@ -687,7 +688,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, events);
             event.ownsStack = true;
@@ -865,7 +866,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
 
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
 
         try {
             Event event = bufferWrite(
@@ -1117,7 +1118,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
             event.ownsStack = true;
@@ -1154,7 +1155,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, offset, data, events);
             event.ownsStack = true;
@@ -1189,7 +1190,7 @@ public class CommandQueue extends SmartPointer {
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, blocking, events);
             event.ownsStack = true;
@@ -1223,7 +1224,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, events);
             event.ownsStack = true;
@@ -1382,7 +1383,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, offset, blocking, events);
             event.ownsStack = true;
@@ -1419,7 +1420,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, offset, data, events);
             event.ownsStack = true;
@@ -1454,7 +1455,7 @@ public class CommandQueue extends SmartPointer {
                              final boolean blocking, final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, blocking, events);
             event.ownsStack = true;
@@ -1488,7 +1489,7 @@ public class CommandQueue extends SmartPointer {
                              final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(buffer);
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferWrite(stack, buffer, data, events);
             event.ownsStack = true;
@@ -1641,7 +1642,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
             event.ownsStack = true;
@@ -1673,7 +1674,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             float @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
             event.ownsStack = true;
@@ -1705,7 +1706,7 @@ public class CommandQueue extends SmartPointer {
                             float @NonNull [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
             event.ownsStack = true;
@@ -1736,7 +1737,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             float @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
             event.ownsStack = true;
@@ -1884,7 +1885,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
             event.ownsStack = true;
@@ -1916,7 +1917,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             double @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
             event.ownsStack = true;
@@ -1948,7 +1949,7 @@ public class CommandQueue extends SmartPointer {
                             double @NonNull [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
             event.ownsStack = true;
@@ -1979,7 +1980,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             double @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
             event.ownsStack = true;
@@ -2144,7 +2145,7 @@ public class CommandQueue extends SmartPointer {
         Preconditions.checkNotNull(target);
         Preconditions.checkNotNull(buffer);
 
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
 
         try {
             Event event = bufferRead(
@@ -2381,7 +2382,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
             event.ownsStack = true;
@@ -2413,7 +2414,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             short @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
             event.ownsStack = true;
@@ -2445,7 +2446,7 @@ public class CommandQueue extends SmartPointer {
                             short @NonNull [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
             event.ownsStack = true;
@@ -2476,7 +2477,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             short @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
             event.ownsStack = true;
@@ -2624,7 +2625,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, offset, blocking, events);
             event.ownsStack = true;
@@ -2656,7 +2657,7 @@ public class CommandQueue extends SmartPointer {
                             final long offset,
                             int @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, offset, target, events);
             event.ownsStack = true;
@@ -2688,7 +2689,7 @@ public class CommandQueue extends SmartPointer {
                             int @NonNull [] target,
                             final boolean blocking,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, blocking, events);
             event.ownsStack = true;
@@ -2719,7 +2720,7 @@ public class CommandQueue extends SmartPointer {
     public Event bufferRead(@NonNull Buffer buffer,
                             int @NonNull [] target,
                             final Event... events) throws NullPointerException, IllegalArgumentException, IllegalStateException, BufferError, OutOfMemoryError {
-        MemoryStack stack = MemoryStack.create().push();
+        MemoryStack stack = MemoryStack.create(ComputeConfig.stackSize).push();
         try {
             Event event = this.bufferRead(stack, buffer, target, events);
             event.ownsStack = true;
