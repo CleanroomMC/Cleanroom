@@ -29,7 +29,7 @@
          if (this.isEntityInvulnerable(source)) {
              return false;
          }
-@@ -202,11 +195,13 @@
+@@ -202,12 +195,14 @@
      public void onCollideWithPlayer(EntityPlayer entityIn) {
          if (!this.world.isRemote) {
              if (this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0) {
@@ -39,11 +39,13 @@
                  ItemStack itemstack = EnchantmentHelper.getEnchantedItem(Enchantments.MENDING, entityIn);
                  if (!itemstack.isEmpty() && itemstack.isItemDamaged()) {
 -                    int i = Math.min(this.xpToDurability(this.xpValue), itemstack.getItemDamage());
+-                    this.xpValue = this.xpValue - this.durabilityToXp(i);
 +                    float ratio = itemstack.getItem().getXpRepairRatio(itemstack);
 +                    int i = Math.min(roundAverage(this.xpValue * ratio), itemstack.getItemDamage());
-                     this.xpValue = this.xpValue - this.durabilityToXp(i);
++                    this.xpValue -= roundAverage(i / ratio);
                      itemstack.setItemDamage(itemstack.getItemDamage() - i);
                  }
+ 
 @@ -289,4 +284,9 @@
      public boolean canBeAttackedWithItem() {
          return false;

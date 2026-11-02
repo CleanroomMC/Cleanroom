@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLGamepad;
@@ -32,6 +42,12 @@ public enum GamepadButton {
     MISC5(SDLGamepad.SDL_GAMEPAD_BUTTON_MISC5),
     MISC6(SDLGamepad.SDL_GAMEPAD_BUTTON_MISC6);
 
+    private final int value;
+
+    GamepadButton(int value) {
+        this.value = value;
+    }
+
     public static GamepadButton of(int value) {
         return switch (value) {
             case SDLGamepad.SDL_GAMEPAD_BUTTON_SOUTH -> SOUTH;
@@ -62,12 +78,6 @@ public enum GamepadButton {
             case SDLGamepad.SDL_GAMEPAD_BUTTON_MISC6 -> MISC6;
             default -> null;
         };
-    }
-
-    private final int value;
-
-    GamepadButton(int value) {
-        this.value = value;
     }
 
     public int value() {

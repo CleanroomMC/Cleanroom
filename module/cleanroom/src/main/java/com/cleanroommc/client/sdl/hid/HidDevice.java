@@ -1,7 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.hid;
 
-import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.SDLException;
+
 import org.lwjgl.sdl.SDLHIDAPI;
 import org.lwjgl.sdl.SDL_hid_device_info;
 
@@ -80,12 +90,6 @@ public final class HidDevice implements AutoCloseable {
         return this;
     }
 
-    private void ensureOpen() {
-        if (closed) {
-            throw new IllegalStateException("The HID device is closed");
-        }
-    }
-
     @Override
     public void close() {
         if (closed) {
@@ -94,6 +98,12 @@ public final class HidDevice implements AutoCloseable {
         closed = true;
         Hid.forget(this);
         SDLHIDAPI.SDL_hid_close(handle);
+    }
+
+    private void ensureOpen() {
+        if (closed) {
+            throw new IllegalStateException("The HID device is closed");
+        }
     }
 
 }

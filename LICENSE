@@ -1,0 +1,462 @@
+# CleanroomMC License
+Version 1.0
+
+Copyright © 2026 CleanroomMC contributors
+
+This licence applies to software, source code, documentation, assets, build scripts, configuration files, and other material that expressly identifies **CleanroomMC License Version 1.0** as its governing licence.
+
+CleanroomMC License is a **visible-source / source-available licence**.
+
+It is **not an open-source licence** and does not grant the freedoms normally associated with open-source or free-software licences.
+
+The Source is made visible so that users may inspect it, learn from it, use the software, develop compatible software, and contribute improvements to CleanroomMC.
+
+A project governed by this licence may contain material under other licences. Section 2 explains how licence scope is determined.
+
+All rights not expressly granted by the applicable licence are reserved.
+
+## 1. Definitions
+
+**Work** means the software, Source, documentation, assets, build scripts, configuration files, and other material to which this licence applies.
+
+**Source** means the preferred human-editable form of the Work.
+
+**Binary** means any compiled, packaged, generated, converted, or otherwise non-Source form of the Work, including JAR files.
+
+**Licensor** means the copyright holder of the relevant material or a person or organisation authorised by that copyright holder to license it.
+
+**You** means the individual or organisation exercising rights under this licence.
+
+**Modification** means a change to the Work that creates a modified or derivative version of it.
+
+**Distribution** means giving, transmitting, uploading, publishing, or otherwise making a copy of the Work or a Modification available to another person or organisation.
+
+**Public Distribution** means Distribution where the material can be obtained by the general public or by an unrestricted or indefinite group of people.
+
+Examples include:
+
+- a public Git repository;
+- a public GitHub fork;
+- a public website;
+- a public file host;
+- a public Maven repository;
+- a public mod distribution platform;
+- a publicly accessible Discord, forum, or community download; or
+- inclusion inside another publicly distributed package.
+
+**Private Distribution** means Distribution only to a specific and limited group of people or organisations where access to the material is controlled and is not publicly available.
+
+A group does not become private merely because registration, payment, possession of an invitation link, or membership in a large community is required.
+
+**Contribution** means material intentionally submitted to the CleanroomMC project for possible inclusion in the Work, such as through a pull request or patch.
+
+Bug reports, feature requests, discussions, and suggestions are not Contributions unless they contain material expressly offered for inclusion in the Work.
+
+**Licence Notice** means a licence file, file header, package notice, directory notice, SPDX identifier, or other clear statement identifying the licence that governs particular material.
+
+**Directory** includes a source directory, package directory, module directory, resource directory, or equivalent hierarchical location used to organise material in a project.
+
+## 2. Licence Scope and Mixed Licensing
+
+A project using CleanroomMC License may contain files, packages, directories, modules, libraries, or other components governed by different licences.
+
+The presence of differently licensed material does not change the licence governing the remainder of the project.
+
+### 2.1 Directory and package scope
+
+A Licence Notice located within a Directory applies to:
+
+1. material located directly within that Directory; and
+2. material contained in Directories or packages underneath that Directory,
+
+unless a more specific Licence Notice applies to that material.
+
+A Licence Notice does **not** apply to a parent Directory, a sibling Directory, or material elsewhere in the project merely because those locations exist in the same repository.
+
+For example:
+
+```text
+project/
+├── LICENSE
+├── src/
+│   ├── cleanroom/
+│   │   ├── LICENSE
+│   │   ├── api/
+│   │   └── loader/
+│   └── thirdparty/
+│       ├── LICENSE
+│       └── library/
+└── docs/
+```
+
+If the root `LICENSE` contains CleanroomMC License:
+
+- `docs/` is governed by CleanroomMC License unless another applicable Licence Notice says otherwise;
+- `src/cleanroom/` and everything underneath it are governed by the licence in `src/cleanroom/LICENSE`;
+- `src/thirdparty/` and everything underneath it are governed by the licence in `src/thirdparty/LICENSE`.
+
+The licence in `src/cleanroom/LICENSE` does not apply to `src/thirdparty/`.
+
+The licence in `src/thirdparty/LICENSE` does not apply to `src/cleanroom/`.
+
+### 2.2 Nearest applicable Licence Notice
+
+Where more than one Licence Notice could apply because of the Directory hierarchy, the Licence Notice closest to the material governs that material.
+
+A more specific Licence Notice overrides a broader Licence Notice only for the material within its scope.
+
+For example:
+
+```text
+src/
+├── LICENSE-A
+└── library/
+    ├── LICENSE-B
+    └── special/
+        ├── LICENSE-C
+        └── Example.java
+```
+
+`Example.java` is governed by `LICENSE-C`.
+
+`LICENSE-C` does not change the licence governing its parent or sibling Directories.
+
+### 2.3 File-specific licensing
+
+A Licence Notice contained directly within a file applies to that file and takes precedence over a Directory-level Licence Notice.
+
+A file may therefore use a different licence from other files in the same Directory.
+
+### 2.4 Repository-level licence
+
+Where CleanroomMC License is placed at the root of a repository, it applies to material in that repository unless:
+
+- another Licence Notice applies at the same or a more specific level;
+- a file contains its own Licence Notice; or
+- the material is clearly identified as externally supplied material governed by another licence.
+
+A repository-level CleanroomMC License file must not be interpreted as relicensing third-party material that CleanroomMC does not have the right to relicense.
+
+### 2.5 No automatic relicensing
+
+Copying, moving, importing, vendoring, embedding, or otherwise placing material into a project governed by CleanroomMC License does not automatically place that material under CleanroomMC License.
+
+Likewise, placing Cleanroom-licensed material inside a Directory governed by another licence does not automatically relicense the Cleanroom material unless the relevant copyright holders have authorised that relicensing.
+
+Each item remains subject to the licence lawfully applicable to it.
+
+### 2.6 Combined distributions
+
+A Binary, archive, installer, JAR, distribution, or other package may contain components governed by different licences.
+
+Each component remains governed by its own applicable licence.
+
+Receiving a combined distribution does not grant rights over one component merely because a different component grants those rights.
+
+Where required by an applicable component licence, its licence notices and attribution information must be preserved.
+
+## 3. Rights Granted
+
+Subject to this licence, You may:
+
+1. download and possess copies of the Work;
+2. run and use the Work;
+3. inspect and study the Source;
+4. test, benchmark, debug, and analyse the Work;
+5. make copies reasonably necessary for those activities;
+6. make Modifications for the purpose of preparing a Contribution to CleanroomMC;
+7. privately share unmodified copies of the Work as permitted by Section 6; and
+8. create independent software that interoperates with the Work as permitted by Section 5.
+
+These permissions are worldwide, non-exclusive, royalty-free, and continue for the duration of the applicable copyright unless terminated under this licence.
+
+No other copyright permission is granted.
+
+In particular, this licence does **not** give You a general right to:
+
+- publicly redistribute the Work;
+- publicly redistribute modified versions of the Work;
+- publish a public fork or mirror of the Work;
+- sublicense the Work;
+- incorporate substantial portions of the Work into another project;
+- create and distribute a replacement or rewritten version derived from the Work; or
+- remove or bypass the restrictions in this licence.
+
+Any of those activities requires separate written permission from the Licensor unless another applicable licence independently grants the required permission for the particular material concerned.
+
+## 4. Studying the Source
+
+You may inspect and study the Source.
+
+You may use knowledge gained from studying the Work, including general ideas, programming techniques, algorithms, concepts, and functionality, where copyright law does not restrict their use.
+
+This permission does not allow You to copy, translate, reconstruct, adapt, or reproduce a substantial part of the protected implementation of the Work in another project.
+
+The same rule applies regardless of how that reproduction is performed, including:
+
+- manual rewriting;
+- copying and editing;
+- translation to another programming language;
+- automated conversion;
+- code generation; or
+- use of artificial intelligence.
+
+An independently written implementation is not prohibited merely because it performs the same function or uses the same unprotected ideas.
+
+## 5. Mods, Plugins and Compatible Software
+
+Software does not become subject to CleanroomMC License merely because it interacts with the Work.
+
+You may create and distribute independent:
+
+- mods;
+- plugins;
+- extensions;
+- integrations;
+- runtime patches;
+- Java agents;
+- Mixins;
+- ASM or other bytecode transformations; and
+- other compatible software,
+
+provided that the distributed software does not contain or redistribute a substantial portion of protected code or other protected material governed by this licence.
+
+Using an API, hook, event, protocol, file format, extension point, or other interface provided by the Work does not by itself make another program a Modification of the Work.
+
+Use of reflection, Mixins, ASM, instrumentation, bytecode transformation, or similar techniques also does not by itself make another program a Modification.
+
+Calling something a mod, plugin, patch, transformer, agent, or extension does not avoid this licence where that software actually contains or redistributes substantial protected material from the Work.
+
+A Java member being declared `public` does not by itself mean that CleanroomMC guarantees that member as a supported public API.
+
+Nothing in this section changes the licence governing a separately licensed component under Section 2.
+
+## 6. Private Distribution
+
+You may distribute an unmodified copy of the Work through Private Distribution.
+
+When doing so, You must:
+
+1. keep access limited to the intended private recipients;
+2. include this licence or a clear reference to CleanroomMC License Version 1.0;
+3. retain existing copyright, licence, patent, attribution, and trademark notices; and
+4. not knowingly allow recipients to publicly redistribute the Work in violation of this licence.
+
+Private Distribution does not give You permission to distribute a Modification unless that Modification is separately authorised by the Licensor.
+
+Where a privately distributed package contains separately licensed components, those components remain subject to their respective licences.
+
+## 7. Public Distribution
+
+You may not publicly distribute the Work without prior written permission from the Licensor.
+
+You may not publicly distribute a Modification of the Work without prior written permission from the Licensor.
+
+This prohibition applies to both Source and Binary forms.
+
+For clarity, without written permission You may not publish:
+
+- a public fork;
+- a public mirror;
+- a modified build;
+- a repackaged build;
+- the Work as part of another publicly downloadable project; or
+- a substantial portion of the Work extracted into another publicly distributed project.
+
+The fact that the Source is publicly visible does not give You permission to redistribute it.
+
+This section applies only to material governed by CleanroomMC License.
+
+It does not prohibit Distribution of separately licensed material where that material's applicable licence permits such Distribution.
+
+## 8. Unauthorised Disclosure
+
+A person does not automatically violate this licence merely because a third party obtains an unauthorised copy from a private location.
+
+You violate this licence if You intentionally publish the Work contrary to this licence or knowingly assist another person in doing so.
+
+If a copy under Your control is unintentionally exposed, You must take practical steps to remove or restrict that exposure after becoming aware of it.
+
+A third party's unauthorised conduct does not by itself terminate Your rights where You did not intentionally assist or enable that conduct.
+
+## 9. Contributions
+
+Unless You clearly state otherwise before submitting it, a Contribution intentionally submitted to a CleanroomMC project for inclusion in material governed by CleanroomMC License is offered for inclusion under CleanroomMC License Version 1.0.
+
+You retain copyright in material that You created.
+
+By submitting a Contribution, You grant the Licensor the rights necessary to:
+
+- use;
+- modify;
+- reproduce;
+- combine;
+- distribute; and
+- include
+
+that Contribution as part of the Work under CleanroomMC License.
+
+You also permit the Licensor to license Your Contribution as part of the Work under future versions of CleanroomMC License.
+
+If You do not want a submission to be treated as a Contribution, clearly mark it:
+
+**Not a Contribution**
+
+A separate contribution agreement between You and the Licensor overrides this section where that agreement expressly says so.
+
+Submitting material to a separately licensed Directory or component does not automatically place that Contribution under CleanroomMC License.
+
+The licence applicable to that contribution must instead be determined from the Licence Notices governing the destination material.
+
+## 10. Copyright in Separately Licensed Material
+
+CleanroomMC projects may contain material owned by third parties or CleanroomMC contributors and distributed under licences other than CleanroomMC License.
+
+Nothing in this licence:
+
+- claims copyright ownership over that material;
+- changes its licence;
+- expands the rights CleanroomMC has received under its licence;
+- removes conditions imposed by its licence; or
+- restricts rights independently granted by its licence.
+
+Where another licence governs particular material under Section 2, that licence controls Your rights and obligations concerning that material.
+
+## 11. Patent Licence
+
+Each contributor to material governed by this licence grants You a worldwide, perpetual, non-exclusive, royalty-free patent licence for patent claims that the contributor has the right to license and that are necessarily infringed by using that contributor's Contribution as part of the Work.
+
+This patent licence applies only to activities otherwise permitted by this licence.
+
+It does not grant additional copyright, Modification, sublicensing, or Distribution rights.
+
+If You initiate patent litigation alleging that the Work or a Contribution infringes a patent, any patent licence granted to You under this section for that Work terminates.
+
+This section does not modify patent rights or obligations attached to separately licensed material.
+
+## 12. Trademarks
+
+This licence does not grant permission to use the names, logos, trademarks, service marks, or branding of CleanroomMC or its contributors except:
+
+- to identify the Work;
+- to preserve required notices; or
+- to make a truthful and non-misleading statement about compatibility.
+
+You may not state or imply that CleanroomMC endorses, sponsors, approves, or certifies Your project without separate written permission.
+
+## 13. No Sublicensing
+
+You may not sublicense rights received under CleanroomMC License.
+
+A contributor may separately license material that they independently own, but doing so does not grant rights over material owned by others.
+
+This restriction does not prevent You from exercising sublicensing rights independently granted under the licence of a separately licensed component.
+
+## 14. Warranty Disclaimer
+
+Material governed by CleanroomMC License is provided **"AS IS"**, without warranties or conditions of any kind, to the maximum extent permitted by law.
+
+This includes warranties concerning:
+
+- merchantability;
+- fitness for a particular purpose;
+- non-infringement;
+- accuracy;
+- availability;
+- security;
+- compatibility; and
+- performance.
+
+You are responsible for deciding whether the Work is suitable for Your purposes.
+
+Separately licensed material may contain its own warranty terms, which continue to apply to that material.
+
+## 15. Limitation of Liability
+
+To the maximum extent permitted by law, the Licensor and contributors are not liable for loss or damage arising from this licence or from the use or inability to use the Work.
+
+This includes direct, indirect, incidental, special, consequential, commercial, operational, or data loss where such liability may legally be excluded.
+
+Nothing in this licence excludes liability that applicable law does not permit to be excluded.
+
+## 16. Additional Services
+
+Where this licence permits You to provide the Work to another person, You may separately provide support, maintenance, consulting, hosting, warranty, or similar services.
+
+You provide those services on Your own behalf.
+
+You may not claim that CleanroomMC or another contributor is responsible for those services unless they separately agree to that responsibility in writing.
+
+## 17. Termination
+
+Your rights under CleanroomMC License automatically terminate if You intentionally:
+
+- publicly distribute material governed by this licence without permission;
+- publicly distribute an unauthorised Modification;
+- sublicense the Work without permission; or
+- distribute a substantial rewrite or reconstruction of the Work where this licence does not permit it.
+
+For other violations that can be corrected, Your rights are automatically restored if You correct the violation within 30 days after becoming aware of it or receiving written notice of it.
+
+Rights terminated because of an intentional violation listed above are restored only if the Licensor gives written permission.
+
+Termination applies only to rights granted under CleanroomMC License.
+
+It does not terminate rights independently granted to You under a different licence governing separately licensed material.
+
+Termination of Your rights does not terminate the rights of another person who previously received the Work through Distribution that complied with this licence and who continues to comply with it.
+
+Sections intended to continue after termination, including warranty disclaimers, limitations of liability, trademark provisions, and accrued obligations, continue to apply.
+
+## 18. Written Exceptions
+
+The Licensor may grant additional permissions or exceptions in writing.
+
+An exception applies only to the material, person, organisation, activity, and conditions identified in that permission.
+
+Permission given to one person does not automatically apply to anyone else.
+
+Permission for one use does not waive restrictions on another use.
+
+Failure to enforce a restriction on one occasion does not waive the right to enforce it later.
+
+## 19. Licence Versions
+
+This document is **CleanroomMC License Version 1.0**.
+
+CleanroomMC may publish later versions of CleanroomMC License.
+
+Unless the applicable Licence Notice explicitly states that You may use **"Version 1.0 or any later version"**, Version 1.0 continues to govern the material identified by that Licence Notice.
+
+Publication of a new version does not automatically change the licence of existing material.
+
+A separately licensed component is not affected by publication or adoption of a new CleanroomMC License version unless its own applicable Licence Notice is changed by someone authorised to do so.
+
+## 20. Severability
+
+If a provision of this licence cannot legally be enforced, that provision shall be limited only to the minimum extent necessary under applicable law.
+
+The remaining provisions continue to apply.
+
+Invalidity of a provision of CleanroomMC License does not affect the interpretation of a separate licence governing other material.
+
+## 21. No Implied Permissions
+
+CleanroomMC License grants only the permissions expressly stated in it.
+
+No additional right arises merely because:
+
+- the Source can be viewed or downloaded;
+- a repository is public;
+- a technical system allows copying or forking;
+- the Work contains a `public` API, class, method, field, or member;
+- the project contains material under a more permissive licence;
+- another Directory in the same repository uses another licence;
+- the Licensor previously tolerated similar conduct; or
+- exercising a restricted right would be convenient or technically necessary.
+
+A permission granted by another licence applies only to material governed by that licence.
+
+It must not be extended to Cleanroom-licensed material merely because the two are stored, compiled, packaged, distributed, or used together.
+
+Where You need a right that CleanroomMC License does not expressly grant, You must obtain separate permission from the relevant copyright holder.

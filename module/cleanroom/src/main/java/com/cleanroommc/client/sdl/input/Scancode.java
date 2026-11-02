@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLScancode;
@@ -256,6 +266,12 @@ public enum Scancode {
     ENDCALL(SDLScancode.SDL_SCANCODE_ENDCALL),
     RESERVED(SDLScancode.SDL_SCANCODE_RESERVED);
 
+    private final int value;
+
+    Scancode(int value) {
+        this.value = value;
+    }
+
     /** @return the named scancode, or null when SDL has no name for value */
     public static Scancode of(int value) {
         return switch (value) {
@@ -509,12 +525,6 @@ public enum Scancode {
             case SDLScancode.SDL_SCANCODE_RESERVED -> RESERVED;
             default -> null;
         };
-    }
-
-    private final int value;
-
-    Scancode(int value) {
-        this.value = value;
     }
 
     /** @return the SDL_SCANCODE_* value */

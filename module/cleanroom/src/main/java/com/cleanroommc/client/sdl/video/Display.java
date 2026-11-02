@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.video;
 
 import com.cleanroommc.client.sdl.SDL;
+
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.sdl.SDLStdinc;
 import org.lwjgl.sdl.SDLVideo;
@@ -14,16 +25,16 @@ import java.util.List;
 /** One connected display. */
 public final class Display {
 
-    public record Bounds(int x, int y, int width, int height) { }
-
-    static DisplayMode snapshot(SDL_DisplayMode mode) {
-        return new DisplayMode(mode.displayID(), mode.format(), mode.w(), mode.h(), mode.pixel_density(), mode.refresh_rate());
-    }
-
     private final int id;
 
     Display(int id) {
         this.id = id;
+    }
+
+    static DisplayMode snapshot(SDL_DisplayMode mode) {
+        return new DisplayMode(
+            mode.displayID(), mode.format(), mode.w(), mode.h(), mode.pixel_density(), mode.refresh_rate()
+        );
     }
 
     public int id() {
@@ -72,8 +83,18 @@ public final class Display {
             }
             return List.copyOf(modes);
         } finally {
-            SDLStdinc.SDL_free(pointers);
+            SDLStdinc.SDL_free(pointers.rewind());
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Display display && display.id == id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     DisplayMode match(int width, int height, float refreshRate) {
@@ -104,14 +125,6 @@ public final class Display {
         }
     }
 
-    @Override
-    public boolean equals(Object other) {
-        return other instanceof Display display && display.id == id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
+    public record Bounds(int x, int y, int width, int height) { }
 
 }

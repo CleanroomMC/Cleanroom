@@ -133,6 +133,8 @@ class ObjectHolderRef
         }
         try
         {
+            // Unsafe writes skip class init, so a later <clinit> would reset the field to null
+            Index.get().ensureInitialized(field.getDeclaringClass());
             Index.get().set(null, field, thing);
         }
         catch (IllegalArgumentException e)

@@ -1,9 +1,21 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.SensorEvent;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLSensor;
@@ -26,15 +38,6 @@ public final class Sensors {
 
     Sensors() { }
 
-    synchronized void ensure() {
-        if (started) {
-            return;
-        }
-        SDL.ensureSubsystem(SDLInit.SDL_INIT_SENSOR);
-        started = true;
-        openConnected();
-    }
-
     public synchronized List<Sensor> list() {
         ensure();
         return List.copyOf(sensors.values());
@@ -50,6 +53,15 @@ public final class Sensors {
         return sensors.get(id);
     }
 
+    synchronized void ensure() {
+        if (started) {
+            return;
+        }
+        SDL.ensureSubsystem(SDLInit.SDL_INIT_SENSOR);
+        started = true;
+        openConnected();
+    }
+
     synchronized void handle(SDL_Event event) {
         if (!started) {
             return;
@@ -61,9 +73,8 @@ public final class Sensors {
             if (sensor == null) {
                 return;
             }
-            float[] data = {update.data(0), update.data(1), update.data(2)};
-            SDL.events().post(new SensorEvent.Updated(update.timestamp(), sensor, data,
-                    update.sensor_timestamp()));
+            float[] data = { update.data(0), update.data(1), update.data(2) };
+            SDL.events().post(new SensorEvent.Updated(update.timestamp(), sensor, data, update.sensor_timestamp()));
         }
         // Standalone sensors have no add/remove event
     }
@@ -76,6 +87,19 @@ public final class Sensors {
         started = false;
     }
 
+    synchronized Sensor injectAdded(int id, long handle) {
+        started = true;
+        Sensor sensor = new Sensor(id, handle);
+        sensors.put(id, sensor);
+        SDL.events().post(new SensorEvent.Added(SDLTimer.SDL_GetTicksNS(), sensor));
+        return sensor;
+    }
+
+    synchronized void injectRemoved(int id) {
+        sensors.remove(id);
+        SDL.events().post(new SensorEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
+    }
+
     private void openConnected() {
         IntBuffer ids = SDLSensor.SDL_GetSensors();
         if (ids == null) {
@@ -86,7 +110,7 @@ public final class Sensors {
                 open(ids.get());
             }
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 
@@ -102,19 +126,6 @@ public final class Sensors {
         Sensor sensor = new Sensor(id, handle);
         sensors.put(id, sensor);
         return sensor;
-    }
-
-    synchronized Sensor injectAdded(int id, long handle) {
-        started = true;
-        Sensor sensor = new Sensor(id, handle);
-        sensors.put(id, sensor);
-        SDL.events().post(new SensorEvent.Added(SDLTimer.SDL_GetTicksNS(), sensor));
-        return sensor;
-    }
-
-    synchronized void injectRemoved(int id) {
-        sensors.remove(id);
-        SDL.events().post(new SensorEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

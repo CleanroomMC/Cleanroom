@@ -1,8 +1,19 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.input.virtual.InputCandidates;
 import com.cleanroommc.client.sdl.input.virtual.Text;
 import com.cleanroommc.client.sdl.input.virtual.TextComposition;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -19,12 +30,16 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public final class SDLHooks {
 
@@ -36,6 +51,11 @@ public final class SDLHooks {
     private static final int CANDIDATE_TEXT = 0xFFE0E0E0;
     private static final int CANDIDATE_PADDING = 2;
 
+    /**
+     * Cleared when the screen changes, so fields left focused by an old screen do not count.
+     */
+    private static final Set<GuiTextField> focusedFields = Collections.newSetFromMap(new WeakHashMap<>());
+
     private static FloatBuffer modelview;
     private static FloatBuffer projection;
     private static IntBuffer viewport;
@@ -44,12 +64,21 @@ public final class SDLHooks {
     private static int lastFieldY;
     private static int lastFieldWidth;
     private static int lastFieldHeight;
-    private static boolean lastFieldSet;
+    private static boolean focusedFieldDrawn;
+    private static boolean caretPlaced;
+    private static boolean clicked;
+    private static int clickX;
+    private static int clickY;
+    private static boolean anchored;
+    private static int anchorX;
+    private static int anchorY;
+
+    private SDLHooks() { }
 
     /**
      * Places the native caret and draws composition plus candidates on a focused text field.
      */
-    public static void textFieldDraw(GuiTextField field) {
+    public static void textFieldDraw(GuiTextField field, int textX, int textY) {
         if (field == null || !field.getVisible() || !field.isFocused()) {
             return;
         }
@@ -61,11 +90,25 @@ public final class SDLHooks {
         if (font == null) {
             return;
         }
-        int caretX = caretX(field, font);
-        int textY = textY(field);
-        area(field.x, field.y, field.width, field.height, caretX);
-        overlay(text, font, caretX, textY, field.getWidth() - (caretX - (field.getEnableBackgroundDrawing() ? field.x + 4 : field.x)),
-                field.x, field.y, field.width, field.height);
+        int caretX = caretX(field, font, textX);
+        caret(field.x, field.y, field.width, field.height, caretX - field.x);
+        focusedFieldDrawn = true;
+        overlay(
+            text, font, caretX, textY, field.getWidth() - (caretX - textX), field.x, field.y, field.width,
+            field.height
+        );
+    }
+
+    /**
+     * Remembers where the screen was last clicked, in GUI coordinates.
+     */
+    public static void mouseInput(GuiScreen screen) {
+        if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            clickX = Mouse.getEventX() * screen.width / minecraft.displayWidth;
+            clickY = screen.height - Mouse.getEventY() * screen.height / minecraft.displayHeight - 1;
+            clicked = true;
+        }
     }
 
     /**
@@ -130,7 +173,7 @@ public final class SDLHooks {
     }
 
     /**
-     * Points the input method at a caret expressed in GUI coordinates.
+     * Points the input method at a caret, projected out of the matrices it is drawn with.
      *
      * @param x the field's left edge
      * @param y the field's top edge
@@ -138,126 +181,7 @@ public final class SDLHooks {
      * @param height the field's height, ideally one line so candidates land beneath the text
      * @param cursorOffset the caret's offset from {@code x}
      */
-    public static void caret(int x, int y, int width, int height, int cursorOffset) {
-        remember(x, y, width, height);
-        area(x, y, width, height, x + cursorOffset);
-    }
-
-    /**
-     * Lends the sign line being edited what is being composed, for the one frame it takes to draw.
-     *
-     * @return what the line held before, which the caller hands to {@link #takeComposition} once the sign is drawn
-     */
-    public static ITextComponent lendComposition(TileEntitySign sign, int line) {
-        ITextComponent held = sign.signText[line];
-        Text text = text();
-        String composition = text == null ? "" : text.composition().text();
-        if (!composition.isEmpty()) {
-            sign.signText[line] = new TextComponentString(held.getUnformattedText() + composition);
-        }
-        return held;
-    }
-
-    /**
-     * Puts back the sign line {@link #lendComposition} took, once the sign has been drawn.
-     */
-    public static void takeComposition(TileEntitySign sign, int line, ITextComponent held) {
-        sign.signText[line] = held;
-    }
-
-    /**
-     * Draws the sign line being edited and projects its caret out of the matrices it was drawn with.
-     * Allowing the candidate list to follow a line that has no GUI rectangle of its own.
-     *
-     * @param text the line's text, without the arrows the edited line is marked with
-     * @param y the line's top edge, in the text space the sign renders its lines in
-     */
-    public static void drawSignLineBeingEdited(FontRenderer fontRenderer, String text, int y) {
-        String leading = "> " + text;
-        String line = leading + " <";
-        int width = fontRenderer.getStringWidth(line);
-        fontRenderer.drawString(line, -width / 2, y, 0);
-        caretProjected((float) -width / 2, y, width, fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(leading));
-    }
-
-    /**
-     * Draws candidates for screens that do not use {@link GuiTextField}.
-     * Composition for those screens is drawn as part of the screen's own text.
-     */
-    public static void draw(GuiScreen screen) {
-        if (screen == null || !lastFieldSet) {
-            return;
-        }
-        if (!(screen instanceof GuiScreenBook) && !(screen instanceof GuiEditSign)) {
-            return;
-        }
-        Text text = text();
-        if (text == null || !text.active()) {
-            return;
-        }
-        FontRenderer font = font();
-        if (font == null) {
-            return;
-        }
-        InputCandidates candidates = text.candidates();
-        if (!candidates.active()) {
-            return;
-        }
-        if (screen instanceof GuiEditSign) {
-            GlStateManager.disableDepth();
-        }
-        candidates(font, candidates, lastFieldX, lastFieldY, lastFieldWidth, lastFieldHeight);
-        if (screen instanceof GuiEditSign) {
-            GlStateManager.enableDepth();
-        }
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    private static Text text() {
-        Window window = Window.main();
-        return window == null ? null : window.text();
-    }
-
-    private static FontRenderer font() {
-        Minecraft minecraft = Minecraft.getMinecraft();
-        return minecraft == null ? null : minecraft.fontRenderer;
-    }
-
-    private static boolean busy(Text text) {
-        return text.composition().active() || text.candidates().active();
-    }
-
-    private static int caretX(GuiTextField field, FontRenderer font) {
-        int x = field.getEnableBackgroundDrawing() ? field.x + 4 : field.x;
-        String contents = field.getText();
-        int scroll = field.getLineScrollOffset();
-        if (scroll < 0 || scroll > contents.length()) {
-            return x;
-        }
-        String visible = font.trimStringToWidth(contents.substring(scroll), field.getWidth());
-        int relative = field.getCursorPosition() - scroll;
-        if (relative < 0) {
-            return x;
-        }
-        if (relative > visible.length()) {
-            relative = visible.length();
-        }
-        return x + font.getStringWidth(visible.substring(0, relative));
-    }
-
-    private static int textY(GuiTextField field) {
-        return field.getEnableBackgroundDrawing() ? field.y + (field.height - 8) / 2 : field.y;
-    }
-
-    private static void remember(int x, int y, int width, int height) {
-        lastFieldX = x;
-        lastFieldY = y;
-        lastFieldWidth = width;
-        lastFieldHeight = height;
-        lastFieldSet = true;
-    }
-
-    private static void caretProjected(float x, float y, float width, float height, float cursorOffset) {
+    public static void caret(float x, float y, float width, float height, float cursorOffset) {
         Text text = text();
         Window window = Window.main();
         if (text == null || window == null) {
@@ -295,8 +219,201 @@ public final class SDLHooks {
         }
         int windowWidth = Math.max(1, window.width());
         int windowHeight = Math.max(1, window.height());
-        remember(areaX * screenWidth / windowWidth, areaY * screenHeight / windowHeight,
-                Math.max(1, areaWidth * screenWidth / windowWidth), Math.max(1, areaHeight * screenHeight / windowHeight));
+        remember(
+            areaX * screenWidth / windowWidth, areaY * screenHeight / windowHeight,
+            Math.max(1, areaWidth * screenWidth / windowWidth), Math.max(1, areaHeight * screenHeight / windowHeight)
+        );
+    }
+
+    public static void textFieldFocused(GuiTextField field, boolean focused) {
+        if (focused) {
+            focusedFields.add(field);
+        } else {
+            focusedFields.remove(field);
+        }
+    }
+
+    /**
+     * Turns text input off and forgets focused fields until a screen that wants text input has drawn.
+     */
+    public static void screenChanged() {
+        focusedFieldDrawn = false;
+        caretPlaced = false;
+        focusedFields.clear();
+        clicked = false;
+        anchored = false;
+        Text text = text();
+        if (text != null) {
+            text.active(false);
+        }
+    }
+
+    /**
+     * Keeps text input on only while the drawn screen has a focused text field, or is a book or sign.
+     * This runs after drawing so the input area is placed before the input method shows up.
+     *
+     * <p>Focus tracking covers fields that draw themselves without {@link GuiTextField#drawTextBox()}.
+     * The draw covers fields focused before their screen initialized.
+     * The screen's own focus covers text widgets that are not {@link GuiTextField}s, such as ModularUI's.
+     */
+    public static void syncTextInput(GuiScreen screen) {
+        // Widgets that only focus the screen give no position, but are usually focused by clicking them
+        if (!screen.isFocused()) {
+            anchored = false;
+        } else if (clicked) {
+            anchored = true;
+            anchorX = clickX;
+            anchorY = clickY;
+        }
+        clicked = false;
+        boolean wanted = focusedFieldDrawn ||
+            typingField() != null ||
+            screen.isFocused() ||
+            screen instanceof GuiScreenBook ||
+            screen instanceof GuiEditSign;
+        focusedFieldDrawn = false;
+        caretPlaced = false;
+        Text text = text();
+        if (text != null) {
+            text.active(wanted);
+        }
+    }
+
+    /**
+     * Lends the sign line being edited what is being composed, for the one frame it takes to draw.
+     *
+     * @return what the line held before, which the caller hands to {@link #takeComposition} once the sign is drawn
+     */
+    public static ITextComponent lendComposition(TileEntitySign sign, int line) {
+        ITextComponent held = sign.signText[line];
+        Text text = text();
+        String composition = text == null ? "" : text.composition().text();
+        if (!composition.isEmpty()) {
+            sign.signText[line] = new TextComponentString(held.getUnformattedText() + composition);
+        }
+        return held;
+    }
+
+    /**
+     * Puts back the sign line {@link #lendComposition} took, once the sign has been drawn.
+     */
+    public static void takeComposition(TileEntitySign sign, int line, ITextComponent held) {
+        sign.signText[line] = held;
+    }
+
+    /**
+     * Draws the sign line being edited and projects its caret out of the matrices it was drawn with.
+     * Allowing the candidate list to follow a line that has no GUI rectangle of its own.
+     *
+     * @param text the line's text, without the arrows the edited line is marked with
+     * @param y the line's top edge, in the text space the sign renders its lines in
+     */
+    public static void drawSignLineBeingEdited(FontRenderer fontRenderer, String text, int y) {
+        String leading = "> " + text;
+        String line = leading + " <";
+        int width = fontRenderer.getStringWidth(line);
+        fontRenderer.drawString(line, -width / 2, y, 0);
+        caret((float) -width / 2, y, width, fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(leading));
+    }
+
+    /**
+     * Draws the input method for focused text widgets that did not draw it themselves this frame.
+     * Has to run before {@link #syncTextInput}, which forgets whether a field drew it.
+     *
+     * <p>The most exact position known this frame wins:
+     * <ol>
+     *     <li>Widgets that placed the caret themselves, like books and signs, draw their own composition, so only
+     *     candidates are drawn for them.</li>
+     *     <li>Fields that skip the vanilla {@link GuiTextField#drawTextBox()} are drawn over with its layout.</li>
+     *     <li>Other widgets only set the screen's focus, so composition goes where the screen was clicked to focus
+     *     them, or on a bar at the bottom of the screen without that click.</li>
+     * </ol>
+     */
+    public static void draw(GuiScreen screen) {
+        Text text = text();
+        FontRenderer font = font();
+        if (screen == null || text == null || font == null || !text.active() || !busy(text)) {
+            return;
+        }
+        if (focusedFieldDrawn) {
+            return;
+        }
+        GlStateManager.disableDepth();
+        if (caretPlaced) {
+            if (text.candidates().active()) {
+                candidates(font, text.candidates(), lastFieldX, lastFieldY, lastFieldWidth, lastFieldHeight);
+            }
+        } else {
+            GuiTextField field = typingField();
+            if (field != null) {
+                boolean bordered = field.getEnableBackgroundDrawing();
+                textFieldDraw(
+                    field, bordered ? field.x + 4 : field.x, bordered ? field.y + (field.height - 8) / 2 : field.y
+                );
+            } else {
+                int height = font.FONT_HEIGHT + CANDIDATE_PADDING * 2;
+                int x = anchored ? anchorX : 2;
+                int y = anchored ? anchorY - height / 2 : screen.height - height - 2;
+                int width = Math.max(1, screen.width - x - 2);
+                int compositionWidth = font.getStringWidth(text.composition().text()) + CANDIDATE_PADDING * 2;
+                caret(x, y, width, height, CANDIDATE_PADDING);
+                Gui.drawRect(x, y, x + Math.min(compositionWidth, width), y + height, CANDIDATE_BACKGROUND);
+                overlay(
+                    text, font, x + CANDIDATE_PADDING, y + CANDIDATE_PADDING, width - CANDIDATE_PADDING * 2, x, y,
+                    width, height
+                );
+            }
+        }
+        GlStateManager.enableDepth();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    private static Text text() {
+        Window window = Window.main();
+        return window == null ? null : window.text();
+    }
+
+    private static FontRenderer font() {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        return minecraft == null ? null : minecraft.fontRenderer;
+    }
+
+    private static GuiTextField typingField() {
+        for (GuiTextField field : focusedFields) {
+            if (field.getVisible()) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    private static boolean busy(Text text) {
+        return text.composition().active() || text.candidates().active();
+    }
+
+    private static int caretX(GuiTextField field, FontRenderer font, int x) {
+        String contents = field.getText();
+        int scroll = field.getLineScrollOffset();
+        if (scroll < 0 || scroll > contents.length()) {
+            return x;
+        }
+        String visible = font.trimStringToWidth(contents.substring(scroll), field.getWidth());
+        int relative = field.getCursorPosition() - scroll;
+        if (relative < 0) {
+            return x;
+        }
+        if (relative > visible.length()) {
+            relative = visible.length();
+        }
+        return x + font.getStringWidth(visible.substring(0, relative));
+    }
+
+    private static void remember(int x, int y, int width, int height) {
+        lastFieldX = x;
+        lastFieldY = y;
+        lastFieldWidth = width;
+        lastFieldHeight = height;
+        caretPlaced = true;
     }
 
     private static float[] project(float x, float y) {
@@ -304,7 +421,7 @@ public final class SDLHooks {
         if (!GLU.gluProject(x, y, 0.0F, modelview, projection, viewport, windowCoords)) {
             return null;
         }
-        return new float[] { windowCoords.get(0), windowCoords.get(1) } ;
+        return new float[] { windowCoords.get(0), windowCoords.get(1) };
     }
 
     private static void ensureProjectionBuffers() {
@@ -316,26 +433,9 @@ public final class SDLHooks {
         }
     }
 
-    private static void area(int x, int y, int width, int height, int caretX) {
-        Text text = text();
-        Window window = Window.main();
-        Minecraft minecraft = Minecraft.getMinecraft();
-        if (text == null || window == null || minecraft == null) {
-            return;
-        }
-        int screenWidth = minecraft.currentScreen != null ? minecraft.currentScreen.width : 0;
-        int screenHeight = minecraft.currentScreen != null ? minecraft.currentScreen.height : 0;
-        if (screenWidth <= 0 || screenHeight <= 0) {
-            return;
-        }
-        int windowWidth = Math.max(1, window.width());
-        int windowHeight = Math.max(1, window.height());
-        text.area(x * windowWidth / screenWidth, y * windowHeight / screenHeight,
-                Math.max(1, width * windowWidth / screenWidth), Math.max(1, height * windowHeight / screenHeight),
-                Math.max(0, (caretX - x) * windowWidth / screenWidth));
-    }
-
-    private static void overlay(Text text, FontRenderer font, int caretX, int caretY, int remainingWidth, int fieldX, int fieldY, int fieldWidth, int fieldHeight) {
+    private static void overlay(
+        Text text, FontRenderer font, int caretX, int caretY, int remainingWidth, int fieldX, int fieldY,
+        int fieldWidth, int fieldHeight) {
         TextComposition composition = text.composition();
         if (composition.active()) {
             composition(font, composition, caretX, caretY, Math.max(0, remainingWidth));
@@ -348,13 +448,17 @@ public final class SDLHooks {
     }
 
     private static void composition(FontRenderer font, TextComposition composition, int x, int y, int remainingWidth) {
-        String shown = remainingWidth <= 0 ? composition.text() : font.trimStringToWidth(composition.text(), remainingWidth);
+        String shown = remainingWidth <= 0
+            ? composition.text()
+            : font.trimStringToWidth(composition.text(), remainingWidth);
         if (shown.isEmpty()) {
             return;
         }
         int width = font.getStringWidth(shown);
         int height = font.FONT_HEIGHT;
-        int cursor = Math.max(0, Math.min(shown.length(), composition.cursor() < 0 ? shown.length() : composition.cursor()));
+        int cursor = Math.max(
+            0, Math.min(shown.length(), composition.cursor() < 0 ? shown.length() : composition.cursor())
+        );
         int selection = composition.selectionLength();
         if (selection > 0) {
             int end = Math.min(shown.length(), cursor + selection);
@@ -370,14 +474,19 @@ public final class SDLHooks {
         }
     }
 
-    private static void candidates(FontRenderer font, InputCandidates candidates, int fieldX, int fieldY, int fieldWidth, int fieldHeight) {
+    private static void candidates(
+        FontRenderer font, InputCandidates candidates, int fieldX, int fieldY, int fieldWidth, int fieldHeight) {
         List<String> entries = candidates.entries();
         if (entries.isEmpty()) {
             return;
         }
         Minecraft minecraft = Minecraft.getMinecraft();
-        int screenWidth = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.width : fieldX + 256;
-        int screenHeight = minecraft != null && minecraft.currentScreen != null ? minecraft.currentScreen.height : fieldY + fieldHeight + 64;
+        int screenWidth = minecraft != null && minecraft.currentScreen != null
+            ? minecraft.currentScreen.width
+            : fieldX + 256;
+        int screenHeight = minecraft != null && minecraft.currentScreen != null
+            ? minecraft.currentScreen.height
+            : fieldY + fieldHeight + 64;
         int line = font.FONT_HEIGHT + CANDIDATE_PADDING;
         boolean horizontal = candidates.horizontal();
         int innerWidth = 0;
@@ -412,7 +521,9 @@ public final class SDLHooks {
                 String entry = entries.get(i);
                 int entryWidth = font.getStringWidth(entry);
                 if (i == selected) {
-                    Gui.drawRect(drawX - 1, drawY - 1, drawX + entryWidth + 1, drawY + font.FONT_HEIGHT + 1, CANDIDATE_SELECTED);
+                    Gui.drawRect(
+                        drawX - 1, drawY - 1, drawX + entryWidth + 1, drawY + font.FONT_HEIGHT + 1, CANDIDATE_SELECTED
+                    );
                 }
                 font.drawStringWithShadow(entry, drawX, drawY, CANDIDATE_TEXT);
                 drawX += entryWidth + CANDIDATE_PADDING;
@@ -427,7 +538,5 @@ public final class SDLHooks {
             font.drawStringWithShadow(entries.get(i), x + CANDIDATE_PADDING, drawY, CANDIDATE_TEXT);
         }
     }
-
-    private SDLHooks() { }
 
 }

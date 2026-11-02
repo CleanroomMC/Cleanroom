@@ -1,14 +1,27 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanmix.service;
 
+import top.outlands.foundation.TransformerDelegate;
+
 import com.google.common.collect.Sets;
-import net.minecraft.launchwrapper.IClassTransformer;
+
 import org.spongepowered.asm.logging.ILogger;
 import org.spongepowered.asm.service.ILegacyClassTransformer;
 import org.spongepowered.asm.service.ITransformer;
 import org.spongepowered.asm.service.ITransformerProvider;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.LegacyTransformerHandle;
-import top.outlands.foundation.TransformerDelegate;
+
+import net.minecraft.launchwrapper.IClassTransformer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,18 +38,14 @@ final class FoundationTransformerProvider implements ITransformerProvider {
      * excluded automatically at runtime via the re-entrance lock.
      */
     private static final Set<String> REENTRANT_EXCLUSIONS = Sets.newHashSet(
-            "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
-            "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer"
+        "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
+        "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer"
     );
 
     private final Set<String> excludeTransformers = new HashSet<>(REENTRANT_EXCLUSIONS);
 
     private List<ILegacyClassTransformer> delegatedTransformers;
     private int previousTransformerCount = -1;
-
-    void refreshDelegatedTransformers() {
-        this.delegatedTransformers = null;
-    }
 
     @Override
     public Collection<ITransformer> getTransformers() {
@@ -60,6 +69,10 @@ final class FoundationTransformerProvider implements ITransformerProvider {
     @Override
     public void addTransformerExclusion(String name) {
         this.excludeTransformers.add(name);
+        this.delegatedTransformers = null;
+    }
+
+    void refreshDelegatedTransformers() {
         this.delegatedTransformers = null;
     }
 

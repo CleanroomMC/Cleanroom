@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLSensor;
@@ -14,6 +24,12 @@ public enum SensorType {
     ACCEL_R(SDLSensor.SDL_SENSOR_ACCEL_R),
     GYRO_R(SDLSensor.SDL_SENSOR_GYRO_R);
 
+    private final int value;
+
+    SensorType(int value) {
+        this.value = value;
+    }
+
     public static SensorType of(int value) {
         return switch (value) {
             case SDLSensor.SDL_SENSOR_INVALID -> INVALID;
@@ -25,12 +41,6 @@ public enum SensorType {
             case SDLSensor.SDL_SENSOR_GYRO_R -> GYRO_R;
             default -> UNKNOWN;
         };
-    }
-
-    private final int value;
-
-    SensorType(int value) {
-        this.value = value;
     }
 
     public int value() {

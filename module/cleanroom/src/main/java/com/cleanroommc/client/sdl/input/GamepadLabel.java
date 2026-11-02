@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLGamepad;
@@ -15,6 +25,12 @@ public enum GamepadLabel {
     SQUARE(SDLGamepad.SDL_GAMEPAD_BUTTON_LABEL_SQUARE),
     TRIANGLE(SDLGamepad.SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE);
 
+    private final int value;
+
+    GamepadLabel(int value) {
+        this.value = value;
+    }
+
     public static GamepadLabel of(int value) {
         return switch (value) {
             case SDLGamepad.SDL_GAMEPAD_BUTTON_LABEL_A -> A;
@@ -27,12 +43,6 @@ public enum GamepadLabel {
             case SDLGamepad.SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE -> TRIANGLE;
             default -> UNKNOWN;
         };
-    }
-
-    private final int value;
-
-    GamepadLabel(int value) {
-        this.value = value;
     }
 
     public int value() {

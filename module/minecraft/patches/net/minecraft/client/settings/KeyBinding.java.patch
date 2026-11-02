@@ -166,7 +166,7 @@
 +
 +    /**
       * Returns a supplier which gets a keybind's current binding (eg, <code>key.forward</code> returns <samp>W</samp> by default), or the keybind's name if no such keybind exists (eg, <code>key.invalid</code> returns <samp>key.invalid</samp>)
-      *  
+      *
       * @param key The description of the key (eg, <code>key.forward</code>).
       */
      public static Supplier<String> getDisplayString(String key) {

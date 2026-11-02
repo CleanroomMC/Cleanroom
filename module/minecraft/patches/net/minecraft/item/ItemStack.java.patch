@@ -232,7 +232,7 @@
 -                ? false
 -                : stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound);
 +                   ? false
-+                   : stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound) && stackA.areCapsCompatible(stackB);
++                   : (stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound)) && stackA.areCapsCompatible(stackB);
          }
      }
  
@@ -243,7 +243,7 @@
 -                ? false
 -                : this.stackTagCompound == null || this.stackTagCompound.equals(other.stackTagCompound);
 +                   ? false
-+                   : this.stackTagCompound == null || this.stackTagCompound.equals(other.stackTagCompound) && this.areCapsCompatible(other);
++                   : (this.stackTagCompound == null || this.stackTagCompound.equals(other.stackTagCompound)) && this.areCapsCompatible(other);
          }
      }
  

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.data;
 
 import net.minecraft.client.Minecraft;
@@ -8,17 +18,14 @@ import net.minecraftforge.fml.common.ModContainer;
 import javax.annotation.Nullable;
 
 public class OptiFineModData extends CleanroomModData {
+
     private static final String VERSION_PREFIX = "OptiFine_1.12.2_";
+
     private final String version;
 
     public OptiFineModData(ModContainer info) {
         super(info);
         this.version = this.getDisplayVersion();
-    }
-
-    private String getDisplayVersion() {
-        String version = super.getVersion();
-        return version.startsWith(VERSION_PREFIX) ? version.substring(VERSION_PREFIX.length()) : version;
     }
 
     @Override
@@ -31,9 +38,9 @@ public class OptiFineModData extends CleanroomModData {
     public String getDescription() {
         // Copied from https://www.optifine.net/home
         return """
-                OptiFine is a Minecraft optimization mod.
-                It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.
-                """;
+               OptiFine is a Minecraft optimization mod.
+               It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.
+               """;
     }
 
     @Nullable
@@ -75,4 +82,10 @@ public class OptiFineModData extends CleanroomModData {
     public void openConfigScreen(Minecraft minecraft, GuiScreen parent) {
         minecraft.displayGuiScreen(new GuiVideoSettings(parent, minecraft.gameSettings));
     }
+
+    private String getDisplayVersion() {
+        String version = super.getVersion();
+        return version.startsWith(VERSION_PREFIX) ? version.substring(VERSION_PREFIX.length()) : version;
+    }
+
 }

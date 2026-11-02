@@ -1,8 +1,20 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.SDL;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLHaptic;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLStdinc;
@@ -22,14 +34,6 @@ public final class Haptics {
 
     Haptics() { }
 
-    synchronized void ensure() {
-        if (started) {
-            return;
-        }
-        SDL.ensureSubsystem(SDLInit.SDL_INIT_HAPTIC);
-        started = true;
-    }
-
     public synchronized int[] ids() {
         ensure();
         IntBuffer ids = SDLHaptic.SDL_GetHaptics();
@@ -41,7 +45,7 @@ public final class Haptics {
             ids.get(copy);
             return copy;
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 
@@ -89,6 +93,14 @@ public final class Haptics {
             return null;
         }
         return track(handle);
+    }
+
+    synchronized void ensure() {
+        if (started) {
+            return;
+        }
+        SDL.ensureSubsystem(SDLInit.SDL_INIT_HAPTIC);
+        started = true;
     }
 
     synchronized void forget(Haptic haptic) {

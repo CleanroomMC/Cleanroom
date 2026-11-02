@@ -1,8 +1,21 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.modlist.screen.widget;
 
 import com.cleanroommc.client.modlist.ModListConstants;
 import com.cleanroommc.client.modlist.RenderUtils;
 import com.cleanroommc.client.modlist.screen.DropdownMenuHandler;
+
+import org.apache.commons.lang3.mutable.MutableBoolean;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
@@ -14,19 +27,21 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.lang3.mutable.MutableBoolean;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
-public class DropdownMenu extends Gui {
+public final class DropdownMenu extends Gui {
+
     private static final int BORDER = 1;
     private static final int SPACING = 1;
 
     private final DropdownMenuHandler handler;
     private final List<MenuItem> items = new ArrayList<>();
+
     private Alignment alignment = Alignment.BELOW_LEFT;
     private @Nullable DropdownMenu parent;
     private @Nullable DropdownMenu subMenu;
@@ -43,8 +58,8 @@ public class DropdownMenu extends Gui {
         this.visible = false;
     }
 
-    private void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
+    public static Builder builder(DropdownMenuHandler handler) {
+        return new Builder(handler);
     }
 
     public void toggle(int mouseX, int mouseY) {
@@ -53,6 +68,44 @@ public class DropdownMenu extends Gui {
 
     public void toggle(GuiButton widget) {
         this.toggle(new Anchor(widget.x, widget.y, widget.width, widget.height));
+    }
+
+    public void hide() {
+        this.items.forEach(child -> {
+            child.visible = false;
+            if (child instanceof DropdownItem menu) {
+                menu.subMenu.hide();
+            }
+        });
+        this.subMenu = null;
+        this.visible = false;
+    }
+
+    public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
+        drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xAA000000);
+        this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
+        if (this.subMenu != null) {
+            this.subMenu.drawScreen(minecraft, mouseX, mouseY, deltaTick);
+        }
+    }
+
+    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+        if (!this.visible) {
+            return false;
+        }
+
+        for (MenuItem item : this.items) {
+            if (item.mousePressed(mouseX, mouseY)) {
+                item.playPressSound(mc.getSoundHandler());
+                item.onClick(mouseX, mouseY);
+                return true;
+            }
+        }
+        return this.subMenu != null && this.subMenu.mousePressed(mc, mouseX, mouseY);
+    }
+
+    private void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
     }
 
     private void toggle(Anchor anchor) {
@@ -72,17 +125,6 @@ public class DropdownMenu extends Gui {
         }
     }
 
-    public void hide() {
-        this.items.forEach(child -> {
-            child.visible = false;
-            if (child instanceof DropdownItem menu) {
-                menu.subMenu.hide();
-            }
-        });
-        this.subMenu = null;
-        this.visible = false;
-    }
-
     private void hideSubMenu() {
         if (this.subMenu != null) {
             this.subMenu.hide();
@@ -93,7 +135,8 @@ public class DropdownMenu extends Gui {
     private void updatePosition(Anchor anchor) {
         ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
         int contentWidth = this.items.stream().mapToInt(item -> item.width).max().orElse(0);
-        int contentHeight = this.items.stream().mapToInt(item -> item.height).sum() + Math.max(0, this.items.size() - 1) * SPACING;
+        int contentHeight = this.items.stream().mapToInt(item -> item.height).sum() +
+            Math.max(0, this.items.size() - 1) * SPACING;
         this.width = Math.min(contentWidth + BORDER * 2, resolution.getScaledWidth());
         this.height = contentHeight + BORDER * 2;
         this.alignment.aligner.accept(this, anchor);
@@ -121,42 +164,61 @@ public class DropdownMenu extends Gui {
         this.handler.setMenu(null);
     }
 
-    public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
-        drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xAA000000);
-        this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
-        if (this.subMenu != null) {
-            this.subMenu.drawScreen(minecraft, mouseX, mouseY, deltaTick);
+    public enum Alignment {
+
+        ABOVE_LEFT((menu, rectangle) -> {
+            menu.x = rectangle.left();
+            menu.y = rectangle.top() - menu.height;
+        }),
+        ABOVE_RIGHT((menu, rectangle) -> {
+            menu.x = rectangle.right() - menu.width;
+            menu.y = rectangle.top() - menu.height;
+        }),
+        BELOW_LEFT((menu, rectangle) -> {
+            menu.x = rectangle.left() - 1;
+            menu.y = rectangle.bottom();
+        }),
+        BELOW_RIGHT((menu, rectangle) -> {
+            menu.x = rectangle.right() - menu.width + 1;
+            menu.y = rectangle.bottom();
+        }),
+        END_TOP((menu, rectangle) -> {
+            menu.x = rectangle.right();
+            menu.y = rectangle.top() - 1;
+        }),
+        END_BOTTOM((menu, rectangle) -> {
+            menu.x = rectangle.right();
+            menu.y = rectangle.bottom() - menu.height + 1;
+        });
+
+        private final MenuAligner aligner;
+
+        Alignment(MenuAligner positioner) {
+            this.aligner = positioner;
         }
+
     }
 
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-        if (!this.visible) return false;
+    private interface MenuAligner {
 
-        for (MenuItem item : this.items) {
-            if (item.mousePressed(mouseX, mouseY)) {
-                item.playPressSound(mc.getSoundHandler());
-                item.onClick(mouseX, mouseY);
-                return true;
-            }
-        }
-        return this.subMenu != null && this.subMenu.mousePressed(mc, mouseX, mouseY);
+        void accept(DropdownMenu menu, Anchor anchor);
+
     }
 
     private static class MenuItem extends Gui {
-        private static final ResourceLocation TEXTURE = ModListConstants.resource("textures/gui/sprites/dropdown/item.png");
-        private static final ResourceLocation HIGHLIGHTED_TEXTURE = ModListConstants.resource("textures/gui/sprites/dropdown/item_highlighted.png");
-        private static final RenderUtils.NineSlice MENU_ITEM_SLICE = new RenderUtils.NineSlice(12, 12, 2);
+
+        private static final ResourceLocation TEXTURE = ModListConstants.resource("textures/gui/dropdown.png");
 
         protected final DropdownMenu parent;
+        protected final String label;
         private final @Nullable Runnable onClick;
 
         protected int width;
         protected int height;
         protected int x;
         protected int y;
-        protected final String label;
-        private boolean visible;
         protected boolean hovered;
+        private boolean visible;
 
         private MenuItem(DropdownMenu menu, String label, @Nullable Runnable onClick) {
             this.x = 0;
@@ -174,14 +236,16 @@ public class DropdownMenu extends Gui {
         }
 
         protected void drawWidget(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
-            if (!this.visible) return;
+            if (!this.visible) {
+                return;
+            }
             this.hovered = RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
 
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            minecraft.getTextureManager().bindTexture(this.hovered || this.selected() ? HIGHLIGHTED_TEXTURE : TEXTURE);
-            RenderUtils.blitNineSlicedSprite(MENU_ITEM_SLICE, this.x, this.y, this.width, this.height);
+            minecraft.getTextureManager().bindTexture(TEXTURE);
+            GuiUtils.drawContinuousTexturedBox(
+                this.x, this.y, this.hovered || this.selected() ? 12 : 0, 0, this.width, this.height, 12, 12, 2,
+                this.zLevel
+            );
 
             FontRenderer font = minecraft.fontRenderer;
             int offset = (this.height - font.FONT_HEIGHT) / 2 + 1;
@@ -189,12 +253,10 @@ public class DropdownMenu extends Gui {
             this.drawString(font, text, this.x + offset, this.y + offset, 0xFFFFFFFF);
         }
 
-        private boolean mousePressed(int mouseX, int mouseY) {
-            return this.visible && RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
-        }
-
         protected void onClick(int mouseX, int mouseY) {
-            if (this.onClick != null) this.onClick.run();
+            if (this.onClick != null) {
+                this.onClick.run();
+            }
             this.parent.deepClose();
         }
 
@@ -205,12 +267,18 @@ public class DropdownMenu extends Gui {
             return labelOffset + labelWidth + labelOffset;
         }
 
+        private boolean mousePressed(int mouseX, int mouseY) {
+            return this.visible && RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
+        }
+
         private void playPressSound(SoundHandler handler) {
             handler.playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }
+
     }
 
-    private static class CheckboxMenuItem extends MenuItem {
+    private static final class CheckboxMenuItem extends MenuItem {
+
         private static final ResourceLocation TEXTURE = ModListConstants.resource("textures/gui/checkbox.png");
 
         private final MutableBoolean holder;
@@ -219,7 +287,8 @@ public class DropdownMenu extends Gui {
         /**
          * @param callback {@code true} will close the menu.
          */
-        private CheckboxMenuItem(DropdownMenu menu, String label, MutableBoolean holder, Function<Boolean, Boolean> callback) {
+        private CheckboxMenuItem(
+            DropdownMenu menu, String label, MutableBoolean holder, Function<Boolean, Boolean> callback) {
             super(menu, label, null);
             this.holder = holder;
             this.callback = callback;
@@ -233,8 +302,14 @@ public class DropdownMenu extends Gui {
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            drawModalRectWithCustomSizedTexture(this.x + this.width - 14 - offset, this.y + offset, this.hovered ? 14 : 0, this.holder.get() ? 14 : 0, 14, 14, 64, 64);
+            GlStateManager.tryBlendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+            );
+            drawModalRectWithCustomSizedTexture(
+                this.x + this.width - 14 - offset, this.y + offset, this.hovered ? 14 : 0, this.holder.get() ? 14 : 0,
+                14, 14, 64, 64
+            );
         }
 
         @Override
@@ -256,9 +331,11 @@ public class DropdownMenu extends Gui {
             int checkboxOffset = (this.height - 14) / 2;
             return labelOffset + labelWidth + labelOffset + 14 + checkboxOffset;
         }
+
     }
 
-    private static class DropdownItem extends MenuItem {
+    private static final class DropdownItem extends MenuItem {
+
         private final DropdownMenu subMenu;
 
         private DropdownItem(DropdownMenu menu, DropdownMenu subMenu, String label) {
@@ -299,47 +376,11 @@ public class DropdownMenu extends Gui {
             int arrowWidth = font.getStringWidth(">");
             return labelOffset + labelWidth + labelOffset + arrowWidth + labelOffset;
         }
-    }
-
-    private interface MenuAligner {
-        void accept(DropdownMenu menu, Anchor anchor);
-    }
-
-    public enum Alignment {
-        ABOVE_LEFT((menu, rectangle) -> {
-            menu.x = rectangle.left();
-            menu.y = rectangle.top() - menu.height;
-        }),
-        ABOVE_RIGHT((menu, rectangle) -> {
-            menu.x = rectangle.right() - menu.width;
-            menu.y = rectangle.top() - menu.height;
-        }),
-        BELOW_LEFT((menu, rectangle) -> {
-            menu.x = rectangle.left() - 1;
-            menu.y = rectangle.bottom();
-        }),
-        BELOW_RIGHT((menu, rectangle) -> {
-            menu.x = rectangle.right() - menu.width + 1;
-            menu.y = rectangle.bottom();
-        }),
-        END_TOP((menu, rectangle) -> {
-            menu.x = rectangle.right();
-            menu.y = rectangle.top() - 1;
-        }),
-        END_BOTTOM((menu, rectangle) -> {
-            menu.x = rectangle.right();
-            menu.y = rectangle.bottom() - menu.height + 1;
-        });
-
-        private final MenuAligner aligner;
-
-        Alignment(MenuAligner positioner) {
-            this.aligner = positioner;
-        }
 
     }
 
     private record Anchor(int left, int top, int width, int height) {
+
         private static Anchor of(MenuItem item) {
             return new Anchor(item.x, item.y, item.width, item.height);
         }
@@ -351,15 +392,14 @@ public class DropdownMenu extends Gui {
         private int bottom() {
             return this.top + this.height;
         }
+
     }
 
-    public static Builder builder(DropdownMenuHandler handler) {
-        return new Builder(handler);
-    }
+    public static final class Builder {
 
-    public static class Builder {
         private final DropdownMenu base;
         private final List<MenuItem> items = new ArrayList<>();
+
         private int minItemWidth = 0;
         private int minItemHeight = 20;
 
@@ -404,5 +444,7 @@ public class DropdownMenu extends Gui {
             });
             return this.base;
         }
+
     }
+
 }

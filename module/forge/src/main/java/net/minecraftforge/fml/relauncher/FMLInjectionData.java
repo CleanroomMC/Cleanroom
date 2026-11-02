@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cleanroommc.client.modlist.ModListConfig;
+import com.cleanroommc.cleanroom.compatibility.CompatibilityConfig;
+import com.cleanroommc.cleanroom.compatibility.CompatibilityTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.ForgeVersion;
@@ -52,6 +54,8 @@ public class FMLInjectionData
         mcpversion = ForgeVersion.mcpVersion;
         ConfigManager.register(ForgeEarlyConfig.class);
         ConfigManager.register(ModListConfig.class);
+        ConfigManager.register(CompatibilityConfig.class);
+        CompatibilityTransformer.install();
     }
 
     static String debfuscationDataName()

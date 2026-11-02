@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLGamepad;
@@ -18,6 +28,12 @@ public enum GamepadType {
     NINTENDO_SWITCH_JOYCON_PAIR(SDLGamepad.SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR),
     GAMECUBE(SDLGamepad.SDL_GAMEPAD_TYPE_GAMECUBE);
 
+    private final int value;
+
+    GamepadType(int value) {
+        this.value = value;
+    }
+
     public static GamepadType of(int value) {
         return switch (value) {
             case SDLGamepad.SDL_GAMEPAD_TYPE_STANDARD -> STANDARD;
@@ -33,12 +49,6 @@ public enum GamepadType {
             case SDLGamepad.SDL_GAMEPAD_TYPE_GAMECUBE -> GAMECUBE;
             default -> UNKNOWN;
         };
-    }
-
-    private final int value;
-
-    GamepadType(int value) {
-        this.value = value;
     }
 
     public int value() {

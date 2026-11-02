@@ -1,9 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.cleanroommc.cleanroomgradle'
-    id 'com.cleanroommc.conventions.base' version '1.1.6'
-    id 'com.cleanroommc.tokenenvoy' version '2.0.0'
-    id 'maven-publish'
+    id 'com.cleanroommc.conventions' version '1.4.3'
 }
 
 base.archivesName = 'cleanroom'
@@ -14,12 +12,24 @@ cleanroom {
         accessTransformers.from file('module/forge/src/main/resources/forge_at.cfg')
         sideAnnotationStrippers.from file('module/cleanroom/minecraft.sas')
     }
+    runs {
+        kirinoClient {
+            inherit = 'cleanroomClient'
+            configure {
+                group 'cleanroom runs'
+                description = 'Runs the client with Kirino enabled'
+                workingDir = file('run/kirino')
+                systemProperty 'crl.dev.kirino', true
+            }
+        }
+    }
 }
 
 tokenEnvoy {
     set 'VERSION', project.version
     set 'ID', 'cleanroom'
     set 'BUILD', project.version
+    set 'CLEANMIX_VERSION', providers.gradleProperty('cleanmix_version')
 }
 
 def modules = [
@@ -28,12 +38,13 @@ def modules = [
         'cleanroom',
         'kirino',
         'builtin/mixinbooter',
-        'builtin/configanytime'
+        'builtin/configanytime',
+        'builtin/mica'
 ]
 
 sourceSets {
     main {
-        java.srcDirs modules.collect { "module/${it}/src/main/java" }
+        java.srcDirs modules.findAll { it != 'minecraft' }.collect { "module/${it}/src/main/java" }
         // Fixme: Temp
         java.exclude 'com/cleanroommc/kirino/utils/KsmlcUtils.java'
         resources.srcDirs = modules.collect { "module/${it}/src/main/resources" }
@@ -43,6 +54,45 @@ sourceSets {
         // Fixme: Temp
         java.exclude 'com/cleanroommc/test/kirino/gl/ksml/**'
         resources.srcDirs = modules.collect { "module/${it}/src/test/resources" }
+    }
+    benchmark {
+        java.srcDirs = modules.collect { "module/${it}/src/benchmark/java" }
+    }
+}
+
+// Only the builtin and cleanroom modules are formatted for now, patterns are relative to the source directories
+def unformatted = [
+        'net/minecraft/**',
+        'net/minecraftforge/**',
+        'ibxm/**',
+        'paulscode/**',
+        'com/cleanroommc/kirino/**',
+        'com/cleanroommc/test/kirino/**'
+]
+
+// The builtin modules keep their own licensing and public API
+def builtin = [
+        'zone/rong/mixinbooter/**',
+        'fermiumbooter/**',
+        'com/cleanroommc/configanytime/**',
+        'com/cleanroommc/client/windows/**'
+]
+
+clearSkies {
+    exclude(*unformatted, *builtin)
+}
+
+formatJ {
+    exclude(*unformatted, *builtin)
+}
+
+tasks.withType(Checkstyle).configureEach {
+    exclude(*unformatted, *builtin)
+}
+
+conventions {
+    header {
+        exclude(*unformatted, *builtin)
     }
 }
 
@@ -83,6 +133,12 @@ configurations.configureEach { configuration ->
     // patchy ships its own copy of io.netty.bootstrap.Bootstrap
     // Against 4.2 netty it shadows the real class and dies on a superclass method that no longer exists
     exclude group: 'com.mojang', module: 'patchy'
+    // Vanilla's oshi 1.1 sits under a different group to com.github.oshi, so conflict resolution never drops it
+    exclude group: 'oshi-project', module: 'oshi-core'
+    // Same with vanilla's JNA platform 3.4.0, renamed to jna-platform since
+    exclude group: 'net.java.dev.jna', module: 'platform'
+    // jinput 2.0.10 bundles jutils' classes
+    exclude group: 'net.java.jutils', module: 'jutils'
 
     resolutionStrategy.eachDependency { details ->
         var version = library_upgrades["${details.requested.group}:${details.requested.name}"]
@@ -100,8 +156,10 @@ configurations.named('vanillaNatives') {
     exclude group: 'org.lwjgl.lwjgl'
 }
 
-configurations.named('runtimeClasspath') {
-    exclude group: 'org.lwjgl.lwjgl'
+['compileClasspath', 'runtimeClasspath', 'testCompileClasspath', 'testRuntimeClasspath'].each { name ->
+    configurations.named(name) {
+        exclude group: 'org.lwjgl.lwjgl'
+    }
 }
 
 dependencies {
@@ -111,19 +169,20 @@ dependencies {
 
     // ASM
     def asm_version = providers.gradleProperty('asm_version').get()
-    implementation "org.ow2.asm:asm:${asm_version}"
-    implementation "org.ow2.asm:asm-commons:${asm_version}"
-    implementation "org.ow2.asm:asm-tree:${asm_version}"
-    implementation "org.ow2.asm:asm-util:${asm_version}"
-    implementation "org.ow2.asm:asm-analysis:${asm_version}"
-    implementation "org.ow2.asm:asm-deprecated:7.1"
+    api "org.ow2.asm:asm:${asm_version}"
+    api "org.ow2.asm:asm-commons:${asm_version}"
+    api "org.ow2.asm:asm-tree:${asm_version}"
+    api "org.ow2.asm:asm-util:${asm_version}"
+    api "org.ow2.asm:asm-analysis:${asm_version}"
+    api "org.ow2.asm:asm-deprecated:7.1"
 
     // Mixin
-    implementation "com.cleanroommc:cleanmix:${providers.gradleProperty('cleanmix_version').get()}"
-    implementation "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
+    api "com.cleanroommc:cleanmix:${providers.gradleProperty('cleanmix_version').get()}"
+    api "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
 
+    compileOnly 'com.cleanroommc:hide-from-userdev:1.0.0'
     api 'org.jspecify:jspecify:1.0.0'
-    api 'top.outlands:foundation:0.21.0'
+    api 'top.outlands:foundation:0.22.2'
     api 'zone.rong:imaginebreaker:3.2'
     api 'org.javassist:javassist:3.30.2-GA' // FIXME
     api 'lzma:lzma:0.0.1'
@@ -134,8 +193,8 @@ dependencies {
     api 'org.apache.commons:commons-text:1.15.0'
     api 'org.tukaani:xz:1.12'
     api 'com.ibm.icu:icu4j:78.3'
-    api 'org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0'
     api 'org.slf4j:slf4j-api:2.0.18'
+    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0'
 
     // TODO reconsider
     // Apache HTTP 5
@@ -157,21 +216,21 @@ dependencies {
 
     // TODO reconsider
     // Script engines / XML binding
-    api 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
-    api 'org.glassfish.jaxb:jaxb-core:4.0.9'
-    api 'com.sun.istack:istack-commons-runtime:4.2.0'
     api 'org.glassfish.corba:glassfish-corba-omgapi:5.0.2'
     api 'org.openjdk.nashorn:nashorn-core:15.7'
+    runtimeOnly 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
+    runtimeOnly 'org.glassfish.jaxb:jaxb-core:4.0.9'
+    runtimeOnly 'com.sun.istack:istack-commons-runtime:4.2.0'
 
     // Others
     api 'org.jline:jline:4.1.3'
-    api 'org.jline:jline-native:4.1.3'
-    api 'com.github.oshi:oshi-core-ffm:7.3.2'
-    api 'com.github.oshi:oshi-common:7.3.2'
+    api 'com.github.oshi:oshi-core-ffm:7.7.1'
+    api 'com.github.oshi:oshi-common:7.7.1'
     api 'net.java.dev.jna:jna-platform:5.19.1'
     // java-objc-bridge bumped here for updated OSX arm64 natives
     api 'ca.weblite:java-objc-bridge:1.2'
 
+    // LWJGL 3
     def lwjgl_version = '3.4.3'
     api platform("org.lwjgl:lwjgl-bom:${lwjgl_version}")
     api 'org.lwjgl:lwjgl'
@@ -180,19 +239,15 @@ dependencies {
     api 'org.lwjgl:lwjgl-openal'
     api 'org.lwjgl:lwjgl-stb'
     api 'org.lwjgl:lwjgl-sdl'
-    api 'org.lwjgl:lwjgl-opencl' // OpenCL does not have natives
-    implementation "org.lwjgl:lwjgl-rpmalloc"
-
     // TODO
-    compileOnly 'com.cleanroommc:lwjgly-spi:1.0.0'
-    runtimeOnly 'com.cleanroommc:lwjgly:1.0.0'
+    compileOnly 'com.cleanroommc:lwjgly-spi:2.4.0'
+    api 'com.cleanroommc:lwjgly:2.5.0'
     lwjglNative "org.lwjgl:lwjgl:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-jemalloc:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-opengl:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-openal:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-stb:${lwjgl_version}"
     lwjglNative "org.lwjgl:lwjgl-sdl:${lwjgl_version}"
-    lwjglNative "org.lwjgl:lwjgl-rpmalloc:${lwjgl_version}"
 
     // Kirino
     api 'org.joml:joml:1.10.9'
@@ -200,17 +255,10 @@ dependencies {
     api 'com.cleanroommc:mcttf:0.1.0'
     api 'org.lwjgl:lwjgl-freetype'
     lwjglNative "org.lwjgl:lwjgl-freetype:${lwjgl_version}"
-
-    // Test
-    testImplementation platform('org.junit:junit-bom:6.1.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.withType(Test).configureEach {
     maxParallelForks = 1
-    useJUnitPlatform()
-    testLogging.events 'passed', 'skipped', 'failed'
     jvmArgs open_arguments + export_arguments
 }
 
@@ -220,16 +268,24 @@ tasks.register('isolatedTest', Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
     forkEvery = 1
+    sourceSets.test.java.asFileTree.visit {
+        if (!it.directory && it.file.text.contains('@ForgeTestRunner.Isolated')) {
+            include it.path.replace('.java', '.class')
+        }
+    }
     useJUnitPlatform {
         includeTags 'forge-isolated'
     }
 }
 
 tasks.named('test', Test) {
-    dependsOn tasks.named('isolatedTest')
     useJUnitPlatform {
         excludeTags 'forge-isolated'
     }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('isolatedTest')
 }
 
 tasks.named('compileJava', JavaCompile).configure { compile ->
@@ -244,15 +300,9 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += export_arguments
 }
 
-publishing {
-    repositories {
-        maven {
-            name = 'Cleanroom'
-            url = 'https://maven.cleanroommc.com'
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
+// Fixme: nothing consumes these at the moment, wastes space
+afterEvaluate {
+    publishing.publications.named('maven', MavenPublication) {
+        artifacts.removeIf { it.classifier in ['sources', 'javadoc'] }
     }
 }

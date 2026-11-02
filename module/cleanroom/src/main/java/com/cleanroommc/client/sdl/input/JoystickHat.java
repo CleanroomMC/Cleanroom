@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLJoystick;
@@ -15,6 +25,12 @@ public enum JoystickHat {
     LEFT_UP(SDLJoystick.SDL_HAT_LEFTUP),
     LEFT_DOWN(SDLJoystick.SDL_HAT_LEFTDOWN);
 
+    private final int value;
+
+    JoystickHat(int value) {
+        this.value = value;
+    }
+
     public static JoystickHat of(int value) {
         return switch (value) {
             case SDLJoystick.SDL_HAT_UP -> UP;
@@ -27,12 +43,6 @@ public enum JoystickHat {
             case SDLJoystick.SDL_HAT_LEFTDOWN -> LEFT_DOWN;
             default -> CENTERED;
         };
-    }
-
-    private final int value;
-
-    JoystickHat(int value) {
-        this.value = value;
     }
 
     public int value() {

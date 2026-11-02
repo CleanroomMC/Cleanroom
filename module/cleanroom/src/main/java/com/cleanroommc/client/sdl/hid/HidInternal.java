@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.hid;
 
 import com.cleanroommc.client.sdl.SDL;
@@ -9,6 +19,8 @@ import com.cleanroommc.client.sdl.SDL;
  */
 public final class HidInternal {
 
+    private HidInternal() { }
+
     public static Hid hid() {
         return Hid.INSTANCE;
     }
@@ -16,7 +28,5 @@ public final class HidInternal {
     public static void reset() {
         Hid.closeAll();
     }
-
-    private HidInternal() { }
 
 }

@@ -1,10 +1,22 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import com.cleanroommc.client.sdl.Power;
 import com.cleanroommc.client.sdl.SDL;
 import com.cleanroommc.client.sdl.events.JoystickEvent;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLJoystick;
@@ -28,15 +40,6 @@ public final class Joysticks {
 
     Joysticks() { }
 
-    synchronized void ensure() {
-        if (started) {
-            return;
-        }
-        SDL.ensureSubsystem(SDLInit.SDL_INIT_JOYSTICK);
-        started = true;
-        openConnected();
-    }
-
     public synchronized List<Joystick> list() {
         ensure();
         return List.copyOf(sticks.values());
@@ -50,6 +53,15 @@ public final class Joysticks {
     public synchronized Joystick byId(int instanceId) {
         ensure();
         return sticks.get(instanceId);
+    }
+
+    synchronized void ensure() {
+        if (started) {
+            return;
+        }
+        SDL.ensureSubsystem(SDLInit.SDL_INIT_JOYSTICK);
+        started = true;
+        openConnected();
     }
 
     synchronized void handle(SDL_Event event) {
@@ -83,6 +95,7 @@ public final class Joysticks {
                     SDL.events().post(new JoystickEvent.Battery(battery.timestamp(), stick, state, percent));
                 }
             }
+            default -> { }
         }
     }
 
@@ -92,6 +105,19 @@ public final class Joysticks {
         }
         sticks.clear();
         started = false;
+    }
+
+    synchronized Joystick injectAdded(int instanceId, long handle) {
+        started = true;
+        Joystick stick = new Joystick(instanceId, handle);
+        sticks.put(instanceId, stick);
+        SDL.events().post(new JoystickEvent.Added(SDLTimer.SDL_GetTicksNS(), stick));
+        return stick;
+    }
+
+    synchronized void injectRemoved(int instanceId) {
+        sticks.remove(instanceId);
+        SDL.events().post(new JoystickEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
     }
 
     private void openConnected() {
@@ -104,7 +130,7 @@ public final class Joysticks {
                 open(ids.get());
             }
         } finally {
-            SDLStdinc.SDL_free(ids);
+            SDLStdinc.SDL_free(ids.rewind());
         }
     }
 
@@ -120,19 +146,6 @@ public final class Joysticks {
         Joystick stick = new Joystick(instanceId, handle);
         sticks.put(instanceId, stick);
         return stick;
-    }
-
-    synchronized Joystick injectAdded(int instanceId, long handle) {
-        started = true;
-        Joystick stick = new Joystick(instanceId, handle);
-        sticks.put(instanceId, stick);
-        SDL.events().post(new JoystickEvent.Added(SDLTimer.SDL_GetTicksNS(), stick));
-        return stick;
-    }
-
-    synchronized void injectRemoved(int instanceId) {
-        sticks.remove(instanceId);
-        SDL.events().post(new JoystickEvent.Removed(instanceId, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

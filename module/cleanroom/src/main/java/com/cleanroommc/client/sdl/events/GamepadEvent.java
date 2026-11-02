@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.events;
 
 import com.cleanroommc.client.sdl.input.Gamepad;
 import com.cleanroommc.client.sdl.input.SensorType;
+
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
@@ -75,8 +86,9 @@ public abstract class GamepadEvent extends Event {
         private final float pressure;
         private final boolean down;
 
-        public Touchpad(long timestampNs, Gamepad gamepad, int touchpad, int finger, float x, float y, float pressure,
-                        boolean down) {
+        public Touchpad(
+            long timestampNs, Gamepad gamepad, int touchpad, int finger, float x, float y, float pressure,
+            boolean down) {
             super(gamepad.id(), timestampNs);
             this.gamepad = gamepad;
             this.touchpad = touchpad;

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLKeycode;
@@ -270,11 +280,6 @@ public enum Keycode {
         this.value = value;
     }
 
-    /** @return the SDLK_* value */
-    public int value() {
-        return this.value;
-    }
-
     /** @return the named keycode, or null when SDL has no name for value */
     public static Keycode of(int value) {
         return switch (value) {
@@ -537,4 +542,10 @@ public enum Keycode {
             default -> null;
         };
     }
+
+    /** @return the SDLK_* value */
+    public int value() {
+        return this.value;
+    }
+
 }

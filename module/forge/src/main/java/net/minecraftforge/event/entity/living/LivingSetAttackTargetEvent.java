@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  * This event is fired whenever an Entity sets a target to attack in
  * {@link EntityLiving#setAttackTarget(EntityLivingBase)}.<br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLiving, EntityLivingBase)}.<br>
+ * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLiving, EntityLivingBase, EntityLivingBase)}.<br>
  * <br>
  * {@link #originalTarget} contains the targeted Entity. Can be null.<br>
  * {@link #newTarget} contains the redirected Targeted Entity.<br>

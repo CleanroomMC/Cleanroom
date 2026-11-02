@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl.input;
 
 import org.lwjgl.sdl.SDLGamepad;
@@ -12,6 +22,12 @@ public enum GamepadAxis {
     LEFT_TRIGGER(SDLGamepad.SDL_GAMEPAD_AXIS_LEFT_TRIGGER),
     RIGHT_TRIGGER(SDLGamepad.SDL_GAMEPAD_AXIS_RIGHT_TRIGGER);
 
+    private final int value;
+
+    GamepadAxis(int value) {
+        this.value = value;
+    }
+
     public static GamepadAxis of(int value) {
         return switch (value) {
             case SDLGamepad.SDL_GAMEPAD_AXIS_LEFTX -> LEFT_X;
@@ -22,12 +38,6 @@ public enum GamepadAxis {
             case SDLGamepad.SDL_GAMEPAD_AXIS_RIGHT_TRIGGER -> RIGHT_TRIGGER;
             default -> null;
         };
-    }
-
-    private final int value;
-
-    GamepadAxis(int value) {
-        this.value = value;
     }
 
     public int value() {

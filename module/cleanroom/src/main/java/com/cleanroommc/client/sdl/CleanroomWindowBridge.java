@@ -1,16 +1,44 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
+import com.cleanroommc.client.sdl.video.Display;
+import com.cleanroommc.client.sdl.video.DisplayMode;
 import com.cleanroommc.lwjgly.LWJGLY;
 import com.cleanroommc.lwjgly.spi.WindowBridge;
+
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.sdl.SDLInit;
+import org.lwjgl.sdl.SDLPixels;
 import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.Platform;
 
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Connects LWJGLY's LWJGL 2 compatibility APIs to Cleanroom's SDL window. */
 public final class CleanroomWindowBridge implements WindowBridge {
+
+    private final Window window;
+    private final GLCapabilities capabilities;
+
+    private CleanroomWindowBridge(Window window) {
+        this.window = window;
+        this.capabilities = GL.getCapabilities();
+    }
 
     /** Installs the bridge before any call to Display, Keyboard or Mouse. */
     public static void install(Window window) {
@@ -34,15 +62,14 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return "SDL cannot guarantee a packed floating point color buffer";
         }
         String rejection = firstOf(
-                atLeast("alpha bits", format.alphaBits(), SDLVideo.SDL_GL_ALPHA_SIZE),
-                atLeast("depth bits", format.depthBits(), SDLVideo.SDL_GL_DEPTH_SIZE),
-                atLeast("stencil bits", format.stencilBits(), SDLVideo.SDL_GL_STENCIL_SIZE),
-                atLeast("accumulation alpha bits", format.accumulationAlphaBits(), SDLVideo.SDL_GL_ACCUM_ALPHA_SIZE),
-                accumulationBits(format.accumulationBitsPerPixel()),
-                multisampling(format.samples()),
-                present(format.stereo(), "stereoscopic buffers", SDLVideo.SDL_GL_STEREO),
-                present(format.floatingPoint(), "a floating point color buffer", SDLVideo.SDL_GL_FLOATBUFFERS),
-                present(format.sRGB(), "an sRGB capable framebuffer", SDLVideo.SDL_GL_FRAMEBUFFER_SRGB_CAPABLE)
+            atLeast("alpha bits", format.alphaBits(), SDLVideo.SDL_GL_ALPHA_SIZE),
+            atLeast("depth bits", format.depthBits(), SDLVideo.SDL_GL_DEPTH_SIZE),
+            atLeast("stencil bits", format.stencilBits(), SDLVideo.SDL_GL_STENCIL_SIZE),
+            atLeast("accumulation alpha bits", format.accumulationAlphaBits(), SDLVideo.SDL_GL_ACCUM_ALPHA_SIZE),
+            accumulationBits(format.accumulationBitsPerPixel()), multisampling(format.samples()),
+            present(format.stereo(), "stereoscopic buffers", SDLVideo.SDL_GL_STEREO),
+            present(format.floatingPoint(), "a floating point color buffer", SDLVideo.SDL_GL_FLOATBUFFERS),
+            present(format.sRGB(), "an sRGB capable framebuffer", SDLVideo.SDL_GL_FRAMEBUFFER_SRGB_CAPABLE)
         );
         if (rejection != null) {
             return rejection;
@@ -55,11 +82,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return "SDL does not support OpenGL layer planes";
         }
         return firstOf(
-                version(attributes.majorVersion(), attributes.minorVersion()),
-                profile(attributes.profile()),
-                flags(attributes),
-                resetNotification(attributes.resetNotification()),
-                releaseBehavior(attributes.releaseBehavior())
+            version(attributes.majorVersion(), attributes.minorVersion()), profile(attributes.profile()),
+            flags(attributes), resetNotification(attributes.resetNotification()),
+            releaseBehavior(attributes.releaseBehavior())
         );
     }
 
@@ -68,15 +93,20 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return null;
         }
         int actual = glAttribute(attribute);
-        return actual >= required ? null : "the context has " + actual + " " + name + ", but " + required + " were requested";
+        return actual >= required
+            ? null
+            : "the context has " + actual + " " + name + ", but " + required + " were requested";
     }
 
     private static String accumulationBits(int required) {
         if (required <= 0) {
             return null;
         }
-        int actual = glAttribute(SDLVideo.SDL_GL_ACCUM_RED_SIZE) + glAttribute(SDLVideo.SDL_GL_ACCUM_GREEN_SIZE) + glAttribute(SDLVideo.SDL_GL_ACCUM_BLUE_SIZE);
-        return actual >= required ? null : "the context has " + actual + " RGB accumulation bits, but " + required + " were requested";
+        int actual = glAttribute(SDLVideo.SDL_GL_ACCUM_RED_SIZE) + glAttribute(SDLVideo.SDL_GL_ACCUM_GREEN_SIZE) +
+            glAttribute(SDLVideo.SDL_GL_ACCUM_BLUE_SIZE);
+        return actual >= required
+            ? null
+            : "the context has " + actual + " RGB accumulation bits, but " + required + " were requested";
     }
 
     private static String multisampling(int required) {
@@ -87,7 +117,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return "the context has no multisample buffer";
         }
         int actual = glAttribute(SDLVideo.SDL_GL_MULTISAMPLESAMPLES);
-        return actual >= required ? null : "the context has " + actual + " samples, but " + required + " were requested";
+        return actual >= required
+            ? null
+            : "the context has " + actual + " samples, but " + required + " were requested";
     }
 
     private static String present(boolean required, String name, int attribute) {
@@ -98,7 +130,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
         int actualMajor = glAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION);
         int actualMinor = glAttribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION);
         return actualMajor > major || actualMajor == major && actualMinor >= minor
-                ? null : "the context is OpenGL " + actualMajor + '.' + actualMinor + ", but at least " + major + '.' + minor + " was requested";
+            ? null
+            : "the context is OpenGL " + actualMajor + '.' + actualMinor + ", but at least " + major + '.' + minor +
+                " was requested";
     }
 
     private static String profile(ContextProfile required) {
@@ -111,14 +145,16 @@ public final class CleanroomWindowBridge implements WindowBridge {
             case ES -> SDLVideo.SDL_GL_CONTEXT_PROFILE_ES;
             case DEFAULT -> 0;
         };
-        return glAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK) == wanted ? null : "the context does not use the requested " + required + " profile";
+        return glAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK) == wanted
+            ? null
+            : "the context does not use the requested " + required + " profile";
     }
 
     private static String flags(ContextAttributesRequest attributes) {
-        int required = (attributes.debug() ? SDLVideo.SDL_GL_CONTEXT_DEBUG_FLAG : 0)
-                | (attributes.forwardCompatible() ? SDLVideo.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG : 0)
-                | (attributes.robustAccess() ? SDLVideo.SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG : 0)
-                | (attributes.resetIsolation() ? SDLVideo.SDL_GL_CONTEXT_RESET_ISOLATION_FLAG : 0);
+        int required = (attributes.debug() ? SDLVideo.SDL_GL_CONTEXT_DEBUG_FLAG : 0) |
+            (attributes.forwardCompatible() ? SDLVideo.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG : 0) |
+            (attributes.robustAccess() ? SDLVideo.SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG : 0) |
+            (attributes.resetIsolation() ? SDLVideo.SDL_GL_CONTEXT_RESET_ISOLATION_FLAG : 0);
         int missing = required & ~glAttribute(SDLVideo.SDL_GL_CONTEXT_FLAGS);
         return missing == 0 ? null : "the context is missing requested flags 0x" + Integer.toHexString(missing);
     }
@@ -128,7 +164,8 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return null;
         }
         return glAttribute(SDLVideo.SDL_GL_CONTEXT_RESET_NOTIFICATION) == SDLVideo.SDL_GL_CONTEXT_RESET_LOSE_CONTEXT
-                ? null : "the context does not use lose-on-reset behavior";
+            ? null
+            : "the context does not use lose-on-reset behavior";
     }
 
     private static String releaseBehavior(ReleaseBehavior required) {
@@ -136,7 +173,15 @@ public final class CleanroomWindowBridge implements WindowBridge {
             return null;
         }
         return glAttribute(SDLVideo.SDL_GL_CONTEXT_RELEASE_BEHAVIOR) == SDLVideo.SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE
-                ? null : "the context flushes when released";
+            ? null
+            : "the context flushes when released";
+    }
+
+    private static VideoMode videoMode(DisplayMode mode) {
+        return new VideoMode(
+            Math.round(mode.width() * mode.pixelDensity()), Math.round(mode.height() * mode.pixelDensity()),
+            SDLPixels.SDL_BITSPERPIXEL(mode.format()), Math.round(mode.refreshRate())
+        );
     }
 
     private static int glAttribute(int attribute) {
@@ -156,14 +201,6 @@ public final class CleanroomWindowBridge implements WindowBridge {
         return null;
     }
 
-    private final Window window;
-    private final GLCapabilities capabilities;
-
-    private CleanroomWindowBridge(Window window) {
-        this.window = window;
-        this.capabilities = GL.getCapabilities();
-    }
-
     @Override
     public long handle() {
         return window.handle();
@@ -171,12 +208,12 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public int width() {
-        return window.width();
+        return window.pixelWidth();
     }
 
     @Override
     public int height() {
-        return window.height();
+        return window.pixelHeight();
     }
 
     @Override
@@ -250,12 +287,122 @@ public final class CleanroomWindowBridge implements WindowBridge {
     }
 
     @Override
+    public boolean mouseInside() {
+        return window.mouseInside();
+    }
+
+    @Override
+    public int x() {
+        return window.position()[0];
+    }
+
+    @Override
+    public int y() {
+        return window.position()[1];
+    }
+
+    @Override
+    public void position(int x, int y) {
+        window.position(x, y);
+    }
+
+    @Override
+    public void size(int width, int height) {
+        float density = window.pixelDensity();
+        window.size(Math.max(1, Math.round(width / density)), Math.max(1, Math.round(height / density)));
+    }
+
+    @Override
+    public boolean resizable() {
+        return window.resizable();
+    }
+
+    @Override
+    public void resizable(boolean resizable) {
+        window.resizable(resizable);
+    }
+
+    @Override
+    public boolean visible() {
+        return !window.hidden() && !window.minimized();
+    }
+
+    @Override
+    public boolean consumeExposed() {
+        return window.consumeExposed();
+    }
+
+    @Override
+    public int icon(ByteBuffer... icons) {
+        if (icons == null || icons.length == 0) {
+            return 0;
+        }
+        BufferedImage[] images = new BufferedImage[icons.length];
+        for (int i = 0; i < icons.length; i++) {
+            ByteBuffer icon = icons[i];
+            int side = (int) Math.sqrt(icon.remaining() / 4.0);
+            BufferedImage image = new BufferedImage(side, side, BufferedImage.TYPE_INT_ARGB);
+            for (int pixel = 0; pixel < side * side; pixel++) {
+                int at = icon.position() + pixel * 4;
+                image.setRGB(
+                    pixel % side, pixel / side,
+                    (icon.get(at + 3) & 0xFF) << 24 | (icon.get(at) & 0xFF) << 16 | (icon.get(at + 1) & 0xFF) << 8 |
+                        icon.get(at + 2) & 0xFF
+                );
+            }
+            images[i] = image;
+        }
+        window.icon(images);
+        return images.length;
+    }
+
+    @Override
+    public List<VideoMode> videoModes() {
+        Display display = window.display();
+        if (display == null) {
+            return List.of();
+        }
+        List<VideoMode> modes = new ArrayList<>();
+        for (DisplayMode mode : display.modes()) {
+            modes.add(videoMode(mode));
+        }
+        return modes;
+    }
+
+    @Override
+    public void fullscreen(VideoMode mode) {
+        Display display = window.display();
+        DisplayMode found = null;
+        if (display != null) {
+            for (DisplayMode candidate : display.modes()) {
+                if (videoMode(candidate).equals(mode)) {
+                    found = candidate;
+                    break;
+                }
+            }
+        }
+        if (found != null) {
+            window.fullscreenMode(found);
+        } else {
+            window.fullscreen(true);
+        }
+    }
+
+    @Override
+    public SharedGLContext createSharedContext() {
+        return SharedGLContext.create(window);
+    }
+
+    @Override
     public void swapBuffers() {
         window.swapBuffers();
     }
 
     @Override
     public void pump() {
+        if (Platform.get() == Platform.MACOSX && !SDLInit.SDL_IsMainThread()) {
+            return;
+        }
         Pump.pump(window);
     }
 
@@ -296,12 +443,12 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public float mouseX() {
-        return window.mouseX();
+        return window.pixelX(window.mouseX());
     }
 
     @Override
     public float mouseY() {
-        return window.mouseY();
+        return window.pixelY(window.mouseY());
     }
 
     @Override
@@ -321,7 +468,10 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public void mousePosition(float x, float y) {
-        window.mousePosition(x, y);
+        window.mousePosition(
+            x * window.width() / Math.max(1, window.pixelWidth()),
+            y * window.height() / Math.max(1, window.pixelHeight())
+        );
     }
 
     @Override

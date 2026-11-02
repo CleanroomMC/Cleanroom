@@ -27,7 +27,17 @@
      public abstract void addLoot(Collection<ItemStack> var1, Random var2, LootContext var3);
  
      protected abstract void serialize(JsonObject var1, JsonSerializationContext var2);
-@@ -59,15 +63,19 @@
+@@ -49,6 +53,9 @@
+                 alootcondition = new LootCondition[0];
+             }
+ 
++            LootEntry ret = net.minecraftforge.common.ForgeHooks.deserializeJsonLootEntry(s, jsonobject, i, j, alootcondition);
++            if (ret != null) return ret;
++
+             if ("item".equals(s)) {
+                 return LootEntryItem.deserialize(jsonobject, p_deserialize_3_, i, j, alootcondition);
+             } else if ("loot_table".equals(s)) {
+@@ -59,15 +66,19 @@
                  throw new JsonSyntaxException("Unknown loot entry type '" + s + "'");
              }
          }

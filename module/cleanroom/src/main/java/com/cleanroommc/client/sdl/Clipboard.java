@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.client.sdl;
 
 import com.cleanroommc.client.sdl.internal.Surfaces;
+
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.sdl.SDLClipboard;
 import org.lwjgl.sdl.SDLIOStream;
@@ -24,8 +35,6 @@ public final class Clipboard {
 
     static final Clipboard INSTANCE = new Clipboard();
 
-    private Clipboard() { }
-
     private static final String IMAGE_PNG = "image/png";
     private static final String IMAGE_BMP = "image/bmp";
 
@@ -36,92 +45,7 @@ public final class Clipboard {
     private static SDL_ClipboardDataCallback imageData;
     private static SDL_ClipboardCleanupCallback imageCleanup;
 
-    public boolean hasText() {
-        if (textKnown) {
-            return hasText;
-        }
-        return SDLClipboard.SDL_HasClipboardText();
-    }
-
-    public String text() {
-        String text = hasText() ? SDLClipboard.SDL_GetClipboardText() : "";
-        cache(!text.isEmpty());
-        return text;
-    }
-
-    public void text(String value) {
-        if (value == null) {
-            value = "";
-        }
-        SDL.check(SDLClipboard.SDL_SetClipboardText(value), "SDL_SetClipboardText");
-        cache(!value.isEmpty());
-    }
-
-    public boolean hasPrimary() {
-        return SDLClipboard.SDL_HasPrimarySelectionText();
-    }
-
-    public String primary() {
-        if (hasPrimary()) {
-            return SDLClipboard.SDL_GetPrimarySelectionText();
-        }
-        return "";
-    }
-
-    public void primary(String value) {
-        if (value == null) {
-            value = "";
-        }
-        SDL.check(SDLClipboard.SDL_SetPrimarySelectionText(value), "SDL_SetPrimarySelectionText");
-    }
-
-    public boolean has(String mime) {
-        return mime != null && SDLClipboard.SDL_HasClipboardData(mime);
-    }
-
-    public Optional<byte[]> data(String mime) {
-        if (mime == null) {
-            return Optional.empty();
-        }
-        ByteBuffer buffer = SDLClipboard.SDL_GetClipboardData(mime);
-        if (buffer == null) {
-            return Optional.empty();
-        }
-        try {
-            byte[] copy = new byte[buffer.remaining()];
-            buffer.get(copy);
-            return Optional.of(copy);
-        } finally {
-            release(buffer);
-        }
-    }
-
-    public boolean hasImage() {
-        return has(IMAGE_PNG) || has(IMAGE_BMP);
-    }
-
-    public Optional<BufferedImage> image() {
-        ByteBuffer png = SDLClipboard.SDL_GetClipboardData(IMAGE_PNG);
-        if (png != null) {
-            return Optional.ofNullable(decode(png, true));
-        }
-        ByteBuffer bmp = SDLClipboard.SDL_GetClipboardData(IMAGE_BMP);
-        return bmp == null ? Optional.empty() : Optional.ofNullable(decode(bmp, false));
-    }
-
-    public void image(BufferedImage image) {
-        if (image == null) {
-            throw new IllegalArgumentException("Image cannot be null");
-        }
-        SDL_Surface surface = Surfaces.from(image);
-        ByteBuffer png;
-        try {
-            png = encodePng(surface);
-        } finally {
-            SDLSurface.SDL_DestroySurface(surface);
-        }
-        offer(png);
-    }
+    private Clipboard() { }
 
     /** Called from the window pump when {@code SDL_EVENT_CLIPBOARD_UPDATE} arrives. */
     static void updated() {
@@ -236,11 +160,97 @@ public final class Clipboard {
         }
     }
 
-
     private static void release(ByteBuffer data) {
         if (data != null) {
             SDLStdinc.SDL_free(data);
         }
+    }
+
+    public boolean hasText() {
+        if (textKnown) {
+            return hasText;
+        }
+        return SDLClipboard.SDL_HasClipboardText();
+    }
+
+    public String text() {
+        String text = hasText() ? SDLClipboard.SDL_GetClipboardText() : "";
+        cache(!text.isEmpty());
+        return text;
+    }
+
+    public void text(String value) {
+        if (value == null) {
+            value = "";
+        }
+        SDL.check(SDLClipboard.SDL_SetClipboardText(value), "SDL_SetClipboardText");
+        cache(!value.isEmpty());
+    }
+
+    public boolean hasPrimary() {
+        return SDLClipboard.SDL_HasPrimarySelectionText();
+    }
+
+    public String primary() {
+        if (hasPrimary()) {
+            return SDLClipboard.SDL_GetPrimarySelectionText();
+        }
+        return "";
+    }
+
+    public void primary(String value) {
+        if (value == null) {
+            value = "";
+        }
+        SDL.check(SDLClipboard.SDL_SetPrimarySelectionText(value), "SDL_SetPrimarySelectionText");
+    }
+
+    public boolean has(String mime) {
+        return mime != null && SDLClipboard.SDL_HasClipboardData(mime);
+    }
+
+    public Optional<byte[]> data(String mime) {
+        if (mime == null) {
+            return Optional.empty();
+        }
+        ByteBuffer buffer = SDLClipboard.SDL_GetClipboardData(mime);
+        if (buffer == null) {
+            return Optional.empty();
+        }
+        try {
+            byte[] copy = new byte[buffer.remaining()];
+            buffer.get(copy);
+            return Optional.of(copy);
+        } finally {
+            release(buffer);
+        }
+    }
+
+    public boolean hasImage() {
+        return has(IMAGE_PNG) || has(IMAGE_BMP);
+    }
+
+    public Optional<BufferedImage> image() {
+        ByteBuffer png = SDLClipboard.SDL_GetClipboardData(IMAGE_PNG);
+        if (png != null) {
+            return Optional.ofNullable(decode(png, true));
+        }
+        ByteBuffer bmp = SDLClipboard.SDL_GetClipboardData(IMAGE_BMP);
+        return bmp == null ? Optional.empty() : Optional.ofNullable(decode(bmp, false));
+    }
+
+    public void image(BufferedImage image) {
+        if (image == null) {
+            throw new IllegalArgumentException("Image cannot be null");
+        }
+        SDL_Surface surface = Surfaces.from(image);
+        ByteBuffer png;
+        try {
+            png = encodePng(surface);
+        } finally {
+            SDLSurface.SDL_DestroySurface(surface);
+        }
+        offer(png);
     }
 
 }

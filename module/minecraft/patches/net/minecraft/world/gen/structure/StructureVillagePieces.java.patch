@@ -67,7 +67,12 @@
                          entityvillager.finalizeMobSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), null, false);
                          worldIn.spawnEntity(entityvillager);
                      }
-@@ -1926,7 +1935,14 @@
+@@ -1922,11 +1931,19 @@
+             }
+         }
+ 
++        @Deprecated // Use Forge version below.
+         protected int chooseProfession(int villagersSpawnedIn, int currentVillagerProfession) {
              return currentVillagerProfession;
          }
  

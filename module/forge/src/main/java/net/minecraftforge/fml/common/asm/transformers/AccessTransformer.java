@@ -19,7 +19,9 @@
 
 package net.minecraftforge.fml.common.asm.transformers;
 
+import com.cleanroommc.common.CleanroomEnvironment;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.jspecify.annotations.NonNull;
 import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
@@ -174,6 +176,12 @@ public class AccessTransformer implements IClassTransformer
                     }
                 }
                 String className = parts.get(1).replace('/', '.');
+                if (CleanroomEnvironment.isDev() && !m.modifyClassVisibility)
+                {
+                    FMLDeobfuscatingRemapper remapper = FMLDeobfuscatingRemapper.INSTANCE;
+                    String owner = className.replace('.', '/');
+                    m.name = m.desc.isEmpty() ? remapper.mapFieldName(owner, m.name, null) : remapper.mapMethodName(owner, m.name, m.desc);
+                }
                 modifiers.put(className, m);
                 if (DEBUG) FMLLog.log.debug("AT RULE: {} {} {} (type {})", toBinary(m.targetAccess), m.name, m.desc, className);
                 return true;
