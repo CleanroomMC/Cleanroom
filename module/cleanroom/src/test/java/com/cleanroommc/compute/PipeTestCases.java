@@ -111,10 +111,10 @@ public abstract class PipeTestCases {
             IntBuffer results = stack.mallocInt(count);
             IntBuffer statuses = stack.mallocInt(count * 2);
             for (int repeat = 0; repeat < repetitions; repeat++) {
-                queue.dispatchKernel(stack, producer, write, null, new long[]{1})
-                        .next(consumer, read, null, new long[]{1})
-                        .read(output, results)
-                        .read(status, statuses).execute();
+                queue.kernels.dispatch(stack, producer, write, null, new long[]{1})
+                        .kernels.dispatch(consumer, read, null, new long[]{1})
+                        .buffers.read(output, results)
+                        .buffers.read(status, statuses).execute();
                 for (int i = 0; i < count * 2; i++)
                     assertEquals(0, statuses.get(i), "Pipe operation " + i);
                 for (int i = 0; i < count; i++)
@@ -133,7 +133,7 @@ public abstract class PipeTestCases {
             parameters.add(pipe);
             parameters.add(output);
             IntBuffer result = stack.mallocInt(1);
-            queue.dispatchKernel(stack, kernel, parameters, null, new long[]{1}).read(output, result).execute();
+            queue.kernels.dispatch(stack, kernel, parameters, null, new long[]{1}).buffers.read(output, result).execute();
             assertNotEquals(0, result.get(0));
         }
     }
@@ -148,7 +148,7 @@ public abstract class PipeTestCases {
             parameters.add(pipe);
             parameters.add(output);
             IntBuffer result = stack.mallocInt(5);
-            queue.dispatchKernel(stack, kernel, parameters, null, new long[]{1}).read(output, result).execute();
+            queue.kernels.dispatch(stack, kernel, parameters, null, new long[]{1}).buffers.read(output, result).execute();
             for (int i = 0; i < 4; i++)
                 assertEquals(0, result.get(i));
             assertNotEquals(0, result.get(4));

@@ -54,9 +54,9 @@ public class KernelTest {
                 Kernel kernel = program.kernel("test");
                 KernelParameterList paramList = new KernelParameterList(kernel);
                 paramList.add(buffer);
-                queue.bufferWrite(stack, buffer, values, 0, true)
-                        .next(kernel, paramList, null, new long[]{values.length})
-                        .read(buffer, results).execute();
+                queue.buffers.write(stack, buffer, values, 0, true)
+                        .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                        .buffers.read(buffer, results).execute();
                 buffer.close();
             }
         });
@@ -76,11 +76,11 @@ public class KernelTest {
                 Kernel kernel = program.kernel("test");
                 KernelParameterList paramList = new KernelParameterList(kernel);
                 paramList.add(buffer);
-                queue.bufferWrite(stack, buffer, values, 0, true)
-                        .next(kernel, paramList, null, new long[]{values.length})
-                        .next(kernel, paramList, null, new long[]{values.length})
-                        .next(kernel, paramList, null, new long[]{values.length})
-                        .read(buffer, results).execute();
+                queue.buffers.write(stack, buffer, values, 0, true)
+                        .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                        .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                        .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                        .buffers.read(buffer, results).execute();
                 buffer.close();
             }
         });
@@ -99,9 +99,9 @@ public class KernelTest {
             Kernel kernel = program.kernel("test");
             KernelParameterList paramList = new KernelParameterList(kernel);
             paramList.add(buffer);
-            queue.bufferWrite(buffer, values, 0, true)
-                    .next(kernel, paramList, null, new long[]{values.length})
-                    .read(buffer, results).execute();
+            queue.buffers.write(buffer, values, 0, true)
+                    .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                    .buffers.read(buffer, results).execute();
             buffer.close();
         });
         for (int i = 0; i < values.length; i++)
@@ -119,11 +119,11 @@ public class KernelTest {
             Kernel kernel = program.kernel("test");
             KernelParameterList paramList = new KernelParameterList(kernel);
             paramList.add(buffer);
-            queue.bufferWrite(buffer, values, 0, true)
-                    .next(kernel, paramList, null, new long[]{values.length})
-                    .next(kernel, paramList, null, new long[]{values.length})
-                    .next(kernel, paramList, null, new long[]{values.length})
-                    .read(buffer, results).execute();
+            queue.buffers.write(buffer, values, 0, true)
+                    .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                    .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                    .kernels.dispatch(kernel, paramList, null, new long[]{values.length})
+                    .buffers.read(buffer, results).execute();
             buffer.close();
         });
         for (int i = 0; i < values.length; i++)
@@ -155,10 +155,10 @@ public class KernelTest {
                 ByteBuffer bv1 = stack.bytes(vals1);
                 ByteBuffer bv2 = stack.bytes(vals2);
                 ByteBuffer out = stack.malloc(results.length);
-                CommandQueue.Event wv1 = queue.bufferWrite(v1, 0, bv1);
-                CommandQueue.Event wv2 = queue.bufferWrite(v2, 0, bv2);
-                queue.dispatchKernel(kernel, paramList, null, new long[]{vals1.length, vals2.length}, wv1, wv2)
-                        .read(output, out).execute();
+                CommandQueue.Event wv1 = queue.buffers.write(v1, 0, bv1);
+                CommandQueue.Event wv2 = queue.buffers.write(v2, 0, bv2);
+                queue.kernels.dispatch(kernel, paramList, null, new long[]{vals1.length, vals2.length}, wv1, wv2)
+                        .buffers.read(output, out).execute();
                 out.rewind();
                 for (int i = 0; i < results.length; i++)
                     results[i] = out.get(i);
@@ -189,7 +189,7 @@ public class KernelTest {
             parameters.add(arg1x, arg1y);
             parameters.add(arg2);
             parameters.add(out);
-            queue.dispatchKernel(kernel, parameters).read(out, results).execute();
+            queue.kernels.dispatch(kernel, parameters).buffers.read(out, results).execute();
             out.close();
         });
 

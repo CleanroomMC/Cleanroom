@@ -491,14 +491,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, float[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, float[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, float[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, float[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, long, float[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, long, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, float[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, float[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, long, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, float[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -557,14 +557,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, double[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, double[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, double[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, double[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, long, double[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, long, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, double[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, double[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, long, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, double[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -623,14 +623,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, short[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, short[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, short[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, short[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, long, short[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, long, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, short[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, short[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, long, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, short[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -684,14 +684,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, int[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, int[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, int[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, int[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, long, int[], CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, long, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, int[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, int[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, long, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, int[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -783,14 +783,14 @@ public class Buffer extends SmartPointer {
      * @param <B> Type of the NIO buffer this will fetch data from.
      * @return Event of the write operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, long, java.nio.Buffer, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(MemoryStack, Buffer, java.nio.Buffer, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, long, java.nio.Buffer, CommandQueue.Event...)
-     * @see CommandQueue#bufferWrite(Buffer, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(MemoryStack, Buffer, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#write(Buffer, java.nio.Buffer, CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -909,14 +909,14 @@ public class Buffer extends SmartPointer {
      * @param <B> Type of the NIO buffer this will fetch data from.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, java.nio.Buffer, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, java.nio.Buffer, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, long, java.nio.Buffer, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, java.nio.Buffer, long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, java.nio.Buffer, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, long, java.nio.Buffer, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, java.nio.Buffer, CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1034,14 +1034,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, short[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, short[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, short[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, short[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, long, short[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, long, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, short[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, short[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, short[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, long, short[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, short[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1097,14 +1097,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, int[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, int[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, int[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, int[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, long, int[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, long, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, int[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, int[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, int[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, long, int[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, int[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1160,14 +1160,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, float[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, float[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, float[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, float[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, long, float[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, long, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, float[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, float[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, float[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, long, float[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, float[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.
@@ -1223,14 +1223,14 @@ public class Buffer extends SmartPointer {
      * @param events What this operation depends on.
      * @return Event of the read operation.
      * @apiNote Do not call directly, only call from {@link CommandQueue}
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, long, double[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(MemoryStack, Buffer, double[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, double[], long, boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, double[], boolean, CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, long, double[], CommandQueue.Event...)
-     * @see CommandQueue#bufferRead(Buffer, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, long, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, double[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(MemoryStack, Buffer, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, double[], long, boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, double[], boolean, CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, long, double[], CommandQueue.Event...)
+     * @see com.cleanroommc.compute.cmd.BufferCommands#read(Buffer, double[], CommandQueue.Event...)
      * @implNote This operation is enqueued on the OpenCL {@link CommandQueue}
      * and ran when said queue is flushed with {@link CommandQueue.Event#execute()}
      * @throws NullPointerException If stack, data or commandQueue is null.

@@ -126,8 +126,8 @@ public class SamplerTest {
             parameters.add(sampler);
             parameters.add(x, y);
             parameters.add(output);
-            queue.dispatchKernel(stack, kernel, parameters, null, new long[]{1})
-                .read(output, result).execute();
+            queue.kernels.dispatch(stack, kernel, parameters, null, new long[]{1})
+                .buffers.read(output, result).execute();
             for (int c = 0; c < 4; c++)
                 assertEquals(border ? 0.f : expected + c, result.get(c), .0001f);
         }

@@ -24,7 +24,7 @@
  *          paramList.add(queue);
  *          paramList.add(out);
  *
- *          queue.imageFill(img, color, new Vector2L(0L,0L), new Vector2L(10L,10L))
+ *          queue.images.fill(img, color, new Vector2L(0L,0L), new Vector2L(10L,10L))
  *              .next(kernel, paramList).read(out, res).execute();
  *     }</pre>
  * </p>

@@ -68,10 +68,10 @@ public class ImageMipmapTest {
             FloatBuffer mipResult = stack.mallocFloat(mip.capacity());
             Object region = shape.coordinates(width, height, depth);
             assertEquals(2, resource.image.mipmaps);
-            queue.imageWrite(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, base, false)
-                    .write(resource.image, shape.origin(), 1, region, 0, 0, mip)
-                    .read(resource.image, shape.origin(), 1, region, 0, 0, mipResult)
-                    .read(resource.image, shape.origin(), 0, shape.region(), 0, 0, baseResult).execute();
+            queue.images.write(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, base, false)
+                    .images.write(resource.image, shape.origin(), 1, region, 0, 0, mip)
+                    .images.read(resource.image, shape.origin(), 1, region, 0, 0, mipResult)
+                    .images.read(resource.image, shape.origin(), 0, shape.region(), 0, 0, baseResult).execute();
             ImageTest.assertValues(base, baseResult);
             ImageTest.assertValues(mip, mipResult);
         }
@@ -111,10 +111,10 @@ public class ImageMipmapTest {
             parameters.add(sampler);
             parameters.add(lod);
             parameters.add(output);
-            queue.imageWrite(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, base, false)
-                    .write(resource.image, shape.origin(), 1, shape.coordinates(3, 2, 1), 0, 0, mip)
-                    .next(kernel, parameters, null, new long[]{1})
-                    .read(output, result).execute();
+            queue.images.write(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, base, false)
+                    .images.write(resource.image, shape.origin(), 1, shape.coordinates(3, 2, 1), 0, 0, mip)
+                    .kernels.dispatch(kernel, parameters, null, new long[]{1})
+                    .buffers.read(output, result).execute();
             for (int i = 0; i < 4; i++)
                 assertEquals(expected, result.get(i), .0001f);
         }

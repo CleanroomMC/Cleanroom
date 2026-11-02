@@ -49,8 +49,8 @@ public class BufferTransferTest {
             ByteBuffer result = stack.malloc(64);
             for (int i = 0; i < 64; i++)
                 expected.put(i, (byte) (i * 13 - 71));
-            queue.bufferWrite(stack, buffer, view(expected, type), 0, false)
-                    .read(buffer, view(result, type)).execute();
+            queue.buffers.write(stack, buffer, view(expected, type), 0, false)
+                    .buffers.read(buffer, view(result, type)).execute();
             for (int i = 0; i < 64; i++)
                 assertEquals(expected.get(i), result.get(i), "Byte " + i);
         }
@@ -61,7 +61,7 @@ public class BufferTransferTest {
         try (MemoryStack stack = MemoryStack.stackPush(); Buffer buffer = new Buffer(stack, 32, BufferFlags.READ_WRITE)) {
             float[] expected = new float[]{-1.f, 0.f, .125f, 4.f, -16.f, 32.f, 128.f, 1024.f};
             float[] result = new float[expected.length];
-            queue.bufferWrite(stack, buffer, expected, 0, true).read(buffer, result).execute();
+            queue.buffers.write(stack, buffer, expected, 0, true).buffers.read(buffer, result).execute();
             assertArrayEquals(expected, result);
         }
     }
@@ -72,9 +72,9 @@ public class BufferTransferTest {
             ByteBuffer initial = stack.calloc(32);
             ByteBuffer patch = stack.bytes((byte) 1, (byte) 2, (byte) 3, (byte) 4);
             ByteBuffer result = stack.malloc(32);
-            queue.bufferWrite(stack, buffer, initial, 0, false)
-                    .write(buffer, patch, 28, false)
-                    .read(buffer, result).execute();
+            queue.buffers.write(stack, buffer, initial, 0, false)
+                    .buffers.write(buffer, patch, 28, false)
+                    .buffers.read(buffer, result).execute();
             for (int i = 0; i < 32; i++)
                 assertEquals((byte) (i < 28 ? 0 : i - 27), result.get(i));
         }
@@ -96,9 +96,9 @@ public class BufferTransferTest {
             ByteBuffer result = stack.malloc(alignment + 16);
             for (int i = 0; i < 16; i++)
                 expected.put(i, (byte) (i + 1));
-            queue.bufferWrite(stack, parent, initial, 0, false)
-                    .write(child, expected, 0, false)
-                    .read(parent, result).execute();
+            queue.buffers.write(stack, parent, initial, 0, false)
+                    .buffers.write(child, expected, 0, false)
+                    .buffers.read(parent, result).execute();
             for (int i = 0; i < result.capacity(); i++)
                 assertEquals(i < alignment ? (byte) 0 : expected.get(i - alignment), result.get(i));
         }

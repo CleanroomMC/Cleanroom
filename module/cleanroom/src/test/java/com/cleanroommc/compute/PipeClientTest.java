@@ -49,9 +49,9 @@ public class PipeClientTest extends PipeTestCases {
                 read.add(status);
                 IntBuffer statuses = stack.mallocInt(16);
                 IntBuffer result = stack.mallocInt(8);
-                queue.dispatchKernel(stack, producer, write, null, new long[]{1})
-                        .next(consumer, read, null, new long[]{1})
-                        .read(status, statuses).execute();
+                queue.kernels.dispatch(stack, producer, write, null, new long[]{1})
+                        .kernels.dispatch(consumer, read, null, new long[]{1})
+                        .buffers.read(status, statuses).execute();
                 GL46.glGetNamedBufferSubData(storage.bufferID, 0, result);
                 assertEquals(GL46.GL_NO_ERROR, GL46.glGetError());
                 for (int i = 0; i < 16; i++)

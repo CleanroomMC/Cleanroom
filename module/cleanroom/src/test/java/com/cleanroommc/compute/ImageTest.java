@@ -158,11 +158,11 @@ public class ImageTest {
             assertSame(buffer, image.parent);
             FloatBuffer expected = values(stack, 7 * 4);
             FloatBuffer result = stack.mallocFloat(7 * 4);
-            queue.bufferWrite(stack, buffer, expected, 0, false)
-                    .read(image, 0L, 7L, 0, 0, result).execute();
+            queue.buffers.write(stack, buffer, expected, 0, false)
+                    .images.read(image, 0L, 7L, 0, 0, result).execute();
             assertValues(expected, result);
-            queue.imageFill(stack, image, stack.floats(1.f, 2.f, 3.f, 4.f), 0L, 7L)
-                    .read(buffer, result).execute();
+            queue.images.fill(stack, image, stack.floats(1.f, 2.f, 3.f, 4.f), 0L, 7L)
+                    .buffers.read(buffer, result).execute();
             for (int i = 0; i < result.capacity(); i++)
                 assertEquals((float) (i % 4 + 1), result.get(i));
         }
@@ -178,7 +178,7 @@ public class ImageTest {
             try (Image2D image = new Image2D(stack, BufferFlags.READ_WRITE,
                     7, 5, 0, ChannelType.FLOAT, ChannelOrder.RGBA, host)) {
                 FloatBuffer result = stack.mallocFloat(expected.capacity());
-                queue.imageRead(stack, image, new Vector2L(0, 0), 0,
+                queue.images.read(stack, image, new Vector2L(0, 0), 0,
                         new Vector2L(7, 5), 0, 0, result, true).execute();
                 assertValues(expected, result);
             }
@@ -192,8 +192,8 @@ public class ImageTest {
                      7, 5, 0, ChannelType.SIGNED_INT32, ChannelOrder.RGBA, null)) {
             int[] color = new int[]{-17, 0, 42, 123456};
             int[] result = new int[3 * 2 * 4];
-            queue.imageFill(stack, image, color, new Vector2L(1, 1), new Vector2L(3, 2))
-                    .read(image, new Vector2L(1, 1), new Vector2L(3, 2), 0, 0, result).execute();
+            queue.images.fill(stack, image, color, new Vector2L(1, 1), new Vector2L(3, 2))
+                    .images.read(image, new Vector2L(1, 1), new Vector2L(3, 2), 0, 0, result).execute();
             for (int i = 0; i < result.length; i++)
                 assertEquals(color[i % 4], result[i]);
         }
@@ -226,8 +226,8 @@ public class ImageTest {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             FloatBuffer color = stack.floats(.25f, -.5f, .75f, 1.f);
             FloatBuffer result = stack.mallocFloat(shape.regionElements());
-            queue.imageFill(stack, resource.image, color, shape.origin(), shape.region())
-                .read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
+            queue.images.fill(stack, resource.image, color, shape.origin(), shape.region())
+                .images.read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
             for (int i = 0; i < result.capacity(); i++)
                 assertEquals(color.get(i % 4), result.get(i), "Element " + i);
         }
@@ -239,8 +239,8 @@ public class ImageTest {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             float[] color = new float[]{.125f, .25f, -.5f, 1.f};
             float[] result = new float[shape.regionElements()];
-            queue.imageFill(stack, resource.image, color, shape.origin(), shape.region())
-                .read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
+            queue.images.fill(stack, resource.image, color, shape.origin(), shape.region())
+                .images.read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
             for (int i = 0; i < result.length; i++)
                 assertEquals(color[i % 4], result[i], "Element " + i);
         }
@@ -252,8 +252,8 @@ public class ImageTest {
         try (MemoryStack stack = MemoryStack.stackPush(); ImageResource resource = createImage(stack, shape)) {
             FloatBuffer expected = values(stack, shape.regionElements());
             FloatBuffer result = stack.mallocFloat(shape.regionElements());
-            queue.imageWrite(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, expected, false)
-                .read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
+            queue.images.write(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, expected, false)
+                .images.read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
             assertValues(expected, result);
         }
     }
@@ -265,8 +265,8 @@ public class ImageTest {
             float[] expected = new float[shape.regionElements()];
             values(stack, expected.length).get(expected);
             float[] result = new float[expected.length];
-            queue.imageWrite(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, expected, true)
-                .read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
+            queue.images.write(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, expected, true)
+                .images.read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
             assertArrayEquals(expected, result);
         }
     }
@@ -279,9 +279,9 @@ public class ImageTest {
             FloatBuffer color = stack.floats(2.f, 3.f, 4.f, 5.f);
             Object last = shape.coordinates(1, 0, 0);
             Object pixel = shape.coordinates(1, 1, 1);
-            queue.imageFill(stack, resource.image, stack.floats(0.f, 0.f, 0.f, 0.f), shape.origin(), shape.region())
-                .write(resource.image, last, pixel, 0, 0, color)
-                .read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
+            queue.images.fill(stack, resource.image, stack.floats(0.f, 0.f, 0.f, 0.f), shape.origin(), shape.region())
+                .images.write(resource.image, last, pixel, 0, 0, color)
+                .images.read(resource.image, shape.origin(), shape.region(), 0, 0, result).execute();
             for (int i = 0; i < result.capacity(); i++)
                 assertEquals(i >= 4 && i < 8 ? color.get(i % 4) : 0.f, result.get(i), "Element " + i);
         }
@@ -295,9 +295,9 @@ public class ImageTest {
              ImageResource destination = createImage(stack, shape)) {
             FloatBuffer expected = values(stack, shape.regionElements());
             FloatBuffer result = stack.mallocFloat(shape.regionElements());
-            queue.imageWrite(stack, source.image, shape.origin(), 0, shape.region(), 0, 0, expected, false)
-                .copy(source.image, destination.image, shape.origin(), shape.origin(), shape.region())
-                .read(destination.image, shape.origin(), shape.region(), 0, 0, result).execute();
+            queue.images.write(stack, source.image, shape.origin(), 0, shape.region(), 0, 0, expected, false)
+                .images.copy(source.image, destination.image, shape.origin(), shape.origin(), shape.region())
+                .images.read(destination.image, shape.origin(), shape.region(), 0, 0, result).execute();
             assertValues(expected, result);
         }
     }
@@ -310,7 +310,7 @@ public class ImageTest {
              ImageResource destination = createImage(stack, shape)) {
             FloatBuffer expected = values(stack, shape.regionElements());
             FloatBuffer result = stack.mallocFloat(shape.regionElements());
-            CommandQueue.Event write = queue.imageWrite(stack, source.image, shape.origin(), 0,
+            CommandQueue.Event write = queue.images.write(stack, source.image, shape.origin(), 0,
                 shape.region(), 0, 0, expected, false);
             int regionWidth = 3;
             int regionHeight = shape.height > 1 ? shape.height - 1 : 1;
@@ -318,9 +318,9 @@ public class ImageTest {
             Object region = shape.coordinates(regionWidth, regionHeight, regionDepth);
             Object from = shape.coordinates(1, 0, 0);
             Object to = shape.coordinates(3, 0, 0);
-            queue.imageFill(stack, destination.image, stack.floats(-1.f, -1.f, -1.f, -1.f), shape.origin(), shape.region())
-                .copy(source.image, destination.image, from, to, region, write)
-                .read(destination.image, shape.origin(), shape.region(), 0, 0, result).execute();
+            queue.images.fill(stack, destination.image, stack.floats(-1.f, -1.f, -1.f, -1.f), shape.origin(), shape.region())
+                .images.copy(source.image, destination.image, from, to, region, write)
+                .images.read(destination.image, shape.origin(), shape.region(), 0, 0, result).execute();
             int readWidth = shape.width;
             int readHeight = shape.height;
             int readDepth = shape.depth;
@@ -349,9 +349,9 @@ public class ImageTest {
             for (int i = 0; i < count; i++)
                 result.put(i, -999.f);
             long slicePitch = shape == Shape.IMAGE_2D ? 0 : (long) slice * Float.BYTES;
-            queue.imageWrite(stack, resource.image, shape.origin(), 0, shape.region(),
+            queue.images.write(stack, resource.image, shape.origin(), 0, shape.region(),
                     (long) row * Float.BYTES, slicePitch, expected, false)
-                .read(resource.image, shape.origin(), shape.region(), (long) row * Float.BYTES, slicePitch, result).execute();
+                .images.read(resource.image, shape.origin(), shape.region(), (long) row * Float.BYTES, slicePitch, result).execute();
             boolean[] touched = new boolean[count];
             for (int z = 0; z < slices; z++)
                 for (int y = 0; y < rows; y++)
@@ -376,9 +376,9 @@ public class ImageTest {
             KernelParameterList parameters = new KernelParameterList(kernel);
             parameters.add(resource.image);
             parameters.add(output);
-            queue.imageWrite(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, expected, false)
-                .next(kernel, parameters, null, new long[]{shape.width - 1})
-                .read(output, result).execute();
+            queue.images.write(stack, resource.image, shape.origin(), 0, shape.region(), 0, 0, expected, false)
+                .kernels.dispatch(kernel, parameters, null, new long[]{shape.width - 1})
+                .buffers.read(output, result).execute();
             for (int i = 0; i < result.capacity(); i++)
                 assertEquals(expected.get(i), result.get(i));
         }
@@ -408,8 +408,8 @@ public class ImageTest {
                 KernelParameterList parameters = new KernelParameterList(kernel);
                 parameters.add(resource.image);
                 parameters.add(output);
-                queue.dispatchKernel(stack, kernel, parameters, null, new long[]{shape.elements() / 4})
-                    .read(output, result).execute();
+                queue.kernels.dispatch(stack, kernel, parameters, null, new long[]{shape.elements() / 4})
+                    .buffers.read(output, result).execute();
                 assertValues(expected, result);
             }
         }
@@ -431,8 +431,8 @@ public class ImageTest {
             FloatBuffer result = stack.mallocFloat((shape.width - 1) * 4);
             KernelParameterList parameters = new KernelParameterList(kernel);
             parameters.add(resource.image);
-            queue.dispatchKernel(stack, kernel, parameters, null, new long[]{shape.width - 1})
-                .read(resource.image, shape.origin(), shape.coordinates(shape.width - 1, 1, 1), 0, 0, result).execute();
+            queue.kernels.dispatch(stack, kernel, parameters, null, new long[]{shape.width - 1})
+                .images.read(resource.image, shape.origin(), shape.coordinates(shape.width - 1, 1, 1), 0, 0, result).execute();
             for (int i = 0; i < result.capacity(); i++)
                 assertEquals((float) i, result.get(i), "Element " + i);
         }
@@ -454,8 +454,8 @@ public class ImageTest {
             Object region = shape.coordinates(3, 1, 1);
             FloatBuffer expected = values(stack, 12);
             FloatBuffer result = stack.mallocFloat(12);
-            queue.imageWrite(stack, resource.image, from, 0, region, 0, 0, expected, false)
-                .read(resource.image, from, region, 0, 0, result).execute();
+            queue.images.write(stack, resource.image, from, 0, region, 0, 0, expected, false)
+                .images.read(resource.image, from, region, 0, 0, result).execute();
             assertValues(expected, result);
         }
     }
@@ -468,8 +468,8 @@ public class ImageTest {
             Object region = shape.coordinates(3, 1, 1);
             FloatBuffer color = stack.floats(.25f, -.5f, .75f, 1.f);
             FloatBuffer result = stack.mallocFloat(12);
-            queue.imageFill(stack, resource.image, color, from, region)
-                .read(resource.image, from, region, 0, 0, result).execute();
+            queue.images.fill(stack, resource.image, color, from, region)
+                .images.read(resource.image, from, region, 0, 0, result).execute();
             for (int i = 0; i < result.capacity(); i++)
                 assertEquals(color.get(i % 4), result.get(i));
         }
@@ -486,9 +486,9 @@ public class ImageTest {
             Object to = shape.coordinates(2, 0, 0);
             FloatBuffer expected = values(stack, 12);
             FloatBuffer result = stack.mallocFloat(12);
-            queue.imageWrite(stack, source.image, from, 0, region, 0, 0, expected, false)
-                .copy(source.image, destination.image, from, to, region)
-                .read(destination.image, to, region, 0, 0, result).execute();
+            queue.images.write(stack, source.image, from, 0, region, 0, 0, expected, false)
+                .images.copy(source.image, destination.image, from, to, region)
+                .images.read(destination.image, to, region, 0, 0, result).execute();
             assertValues(expected, result);
         }
     }
