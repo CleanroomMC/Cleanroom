@@ -40,8 +40,18 @@ public final class CommandQueueDispatch implements Closeable {
      * @throws UnavaliableDeviceError if no device is found matching the given capabilities.
      * @author EΣrie
      */
-    public CommandQueue dispatch(@NonNull String name, boolean images, boolean mipmaps, boolean pipes) throws UnavaliableDeviceError {
+    public synchronized CommandQueue dispatch(@NonNull String name, boolean images, boolean mipmaps, boolean pipes) throws UnavaliableDeviceError {
         Preconditions.checkNotNull(name);
+        CommandQueue existing = commandQueues.get(name);
+        if (existing != null && !existing.isClosed()) {
+            Device device = Compute.instance().getDevice(existing.device());
+            Preconditions.checkArgument((!images || device.supportsImages())
+                    && (!mipmaps || device.supportsMipmaps()) && (!pipes || device.supportsPipes()),
+                    "Queue %s already exists on a device that does not meet these requirements.", name);
+            return existing;
+        }
+        if (Compute.instance().devices.length == 0)
+            throw new UnavaliableDeviceError("No OpenCL devices available.");
         int startDevice = currDevice;
         do {
             Device device = Compute.instance().devices[currDevice];
@@ -63,9 +73,9 @@ public final class CommandQueueDispatch implements Closeable {
      * @return the CommandQueue, or empty if it doesn't exist.
      * @author EΣrie
      */
-    public @NonNull Optional<CommandQueue> get(@NonNull String name) {
+    public synchronized @NonNull Optional<CommandQueue> get(@NonNull String name) {
         Preconditions.checkNotNull(name);
-        return Optional.ofNullable(commandQueues.get(name));
+        return Optional.ofNullable(commandQueues.get(name)).filter(queue -> !queue.isClosed());
     }
 
     /**
@@ -73,7 +83,7 @@ public final class CommandQueueDispatch implements Closeable {
      * @author EΣrie
      */
     @Override
-    public void close() {
+    public synchronized void close() {
         for (CommandQueue queue : commandQueues.values()) {
             queue.close();
         }
