@@ -1,0 +1,14 @@
+{
+  "file_name": "image_3d_write_test.cl",
+  "requirements": {
+    "images": true
+  },
+  "kernels": {
+    "write_3d": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image3d_t"
+      }
+    }
+  }
+}

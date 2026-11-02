@@ -25,8 +25,10 @@ import java.util.stream.Collectors;
 
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.CleanroomVersion;
+import com.cleanroommc.compute.ComputeSetup;
 import com.cleanroommc.util.CleanroomLog;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -34,6 +36,7 @@ import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 
 import org.apache.logging.log4j.LogManager;
+import org.lwjgl.system.Configuration;
 import org.spongepowered.asm.launch.MixinBootstrap;
 
 public class FMLLaunchHandler

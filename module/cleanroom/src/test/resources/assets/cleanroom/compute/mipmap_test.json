@@ -1,0 +1,18 @@
+{
+  "file_name": "mipmap_test.cl",
+  "requirements": {
+    "images": true,
+    "mipmaps": true
+  },
+  "kernels": {
+    "sample_mipmap": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image2d_t",
+        "sampler": "sampler_t",
+        "lod": "float",
+        "output": "float4*"
+      }
+    }
+  }
+}

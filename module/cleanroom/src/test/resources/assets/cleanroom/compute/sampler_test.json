@@ -1,0 +1,17 @@
+{
+  "file_name": "sampler_test.cl",
+  "requirements": {
+    "images": true
+  },
+  "kernels": {
+    "sample_image": {
+      "work_group_dimensions": 1,
+      "arguments": {
+        "image": "image2d_t",
+        "sampler": "sampler_t",
+        "coordinates": "float2",
+        "output": "float4*"
+      }
+    }
+  }
+}

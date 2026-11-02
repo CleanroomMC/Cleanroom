@@ -19,6 +19,8 @@
 
 package net.minecraftforge.common;
 
+import com.cleanroommc.compute.ComputeSetup;
+import com.cleanroommc.compute.smrtptr.GarbageCollector;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import static net.minecraftforge.common.config.Configuration.CATEGORY_CLIENT;
@@ -32,8 +34,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 
 import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -351,7 +355,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         alwaysSetupTerrainOffThread = prop.getBoolean(false);
         prop.setLanguageKey("forge.configgui.alwaysSetupTerrainOffThread");
         propOrder.add(prop.getName());
-        
+
         prop = config.get(Configuration.CATEGORY_CLIENT, "allowEmissiveItems", true,
                 "Allow item rendering to detect emissive quads and draw them properly. This allows glowing blocks to look the same in item form, but incurs a very slight performance hit.");
         allowEmissiveItems = prop.getBoolean(true);
@@ -381,7 +385,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         maxTooltipNBTListLength = prop.getInt(100);
         prop.setLanguageKey("forge.configgui.maxTooltipNBTListLength");
         propOrder.add(prop.getName());
-        
+
         prop = config.get(Configuration.CATEGORY_CLIENT, "displayAdvancedTooltips", false,
             "Whether to disable advanced tooltips (will also disable NBT data in tooltips).)");
         displayAdvancedTooltips = prop.getBoolean();
@@ -613,6 +617,8 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     {
         registerAllBiomesAndGenerateEvents();
         ForgeChunkManager.loadConfiguration();
+        org.lwjgl.system.Configuration.OPENCL_EXPLICIT_INIT.set(true);
+        ComputeSetup.initOpenCL(LogManager.getLogger("Compute"), FMLLaunchHandler.side().equals(Side.CLIENT));
     }
 
     private static void registerAllBiomesAndGenerateEvents()
@@ -699,7 +705,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
             return FMLForgePlugin.forgeLocation;
         }
     }
-    
+
     @Override
     public Class<?> getCustomResourcePackClass()
     {
