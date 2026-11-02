@@ -105,6 +105,9 @@ public class ComputeSetup {
                 long[] maxWorkItemSizes = new long[(int) len.get(0)];
                 CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_MAX_WORK_ITEM_SIZES, maxWorkItemSizes, len);
 
+                long[] maxWorkGroupSize = new long[1];
+                CL10.clGetDeviceInfo(deviceHandle, CL10.CL_DEVICE_MAX_WORK_GROUP_SIZE, maxWorkGroupSize, null);
+
                 int preferredDeviceQueueSize = -1;
                 int maxDeviceQueueSize = -1;
 
@@ -127,6 +130,7 @@ public class ComputeSetup {
                 deviceArray[i] = new Device(deviceHandle,
                         deviceCapabilities,
                         maxWorkItemSizes,
+                        maxWorkGroupSize[0],
                         imageSupport.get(0) != 0,
                         deviceCapabilities.cl_khr_mipmap_image,
                         pipeSupport,

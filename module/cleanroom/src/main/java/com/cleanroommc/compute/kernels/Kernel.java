@@ -91,6 +91,11 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         Preconditions.checkNotNull(arguments);
         Preconditions.checkNotNull(commandQueue);
         Preconditions.checkArgument(workGroupSizes.length == dimensionality, "Wrong NDRange dimensions.");
+        long workGroupSize = workGroupSizes[0];
+        for (int i = 1; i < workGroupSizes.length; i++) {
+            workGroupSize *= workGroupSizes[i];
+        }
+        Preconditions.checkArgument(workGroupSize <= Compute.instance().getDevice(device).maxWorkGroupSize());
         Device dev = Compute.instance().getDevice(device);
         Preconditions.checkArgument(!requiresImages || dev.supportsImages(), "Device does not support images.");
         Preconditions.checkArgument(!requiresMipmaps || dev.supportsMipmaps(), "Device does not support mipmaps.");
