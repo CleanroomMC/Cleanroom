@@ -19,14 +19,11 @@
 
 package net.minecraftforge.fml.client.config;
 
-import java.nio.IntBuffer;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -48,8 +45,6 @@ public class GuiButtonExt extends GuiButton
     private static final float SCROLL_SPEED = 30F;
     /** Horizontal padding between the button edge and the text. */
     private static final int PADDING = 3;
-
-    private static final IntBuffer SCISSOR_BOX = BufferUtils.createIntBuffer(16);
 
     /** When the current hover started, or -1 if not hovering. */
     private long hoverStart = -1;
@@ -123,9 +118,17 @@ public class GuiButtonExt extends GuiButton
             }
             else
             {
-                int[] previous = beginClip(mc, this.x + PADDING, this.y, maxWidth, this.height);
+                int f = new ScaledResolution(mc).getScaleFactor();
+
+                int x = (this.x + PADDING) * f;
+                int y = mc.displayHeight - (this.y * f + this.height * f);
+                int w = Math.max(0, maxWidth * f);
+                int h = Math.max(0, this.height * f);
+
+                GL11.glEnable(GL11.GL_SCISSOR_TEST);
+                GL11.glScissor(x, y, w, h);
                 font.drawStringWithShadow(text, this.x + PADDING - offset, textY, color);
-                endClip(previous);
+                GL11.glDisable(GL11.GL_SCISSOR_TEST);
             }
         }
     }
@@ -155,52 +158,5 @@ public class GuiButtonExt extends GuiButton
         if (t < travel)
             return distance * (1F - t / (float) travel);
         return 0F;
-    }
-
-    /**
-     * Clips drawing to the given GUI-space rectangle, intersected with any scissor box that is
-     * already active (Forge's scrolling config lists use one).
-     *
-     * @return the previous scissor box {x, y, w, h}, or null if scissor was not enabled
-     */
-    private static int[] beginClip(Minecraft mc, int gx, int gy, int gw, int gh)
-    {
-        int f = new ScaledResolution(mc).getScaleFactor();
-        int x = gx * f;
-        int y = mc.displayHeight - (gy + gh) * f;
-        int w = gw * f;
-        int h = gh * f;
-        int[] previous = null;
-
-        if (GL11.glIsEnabled(GL11.GL_SCISSOR_TEST))
-        {
-            SCISSOR_BOX.clear();
-            GL11.glGetIntegerv(GL11.GL_SCISSOR_BOX, SCISSOR_BOX);
-            previous = new int[] { SCISSOR_BOX.get(0), SCISSOR_BOX.get(1), SCISSOR_BOX.get(2), SCISSOR_BOX.get(3) };
-
-            int left = Math.max(x, previous[0]);
-            int bottom = Math.max(y, previous[1]);
-            int right = Math.min(x + w, previous[0] + previous[2]);
-            int top = Math.min(y + h, previous[1] + previous[3]);
-            x = left;
-            y = bottom;
-            w = Math.max(0, right - left);
-            h = Math.max(0, top - bottom);
-        }
-        else
-        {
-            GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        }
-
-        GL11.glScissor(x, y, w, h);
-        return previous;
-    }
-
-    private static void endClip(int[] previous)
-    {
-        if (previous != null)
-            GL11.glScissor(previous[0], previous[1], previous[2], previous[3]);
-        else
-            GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 }
