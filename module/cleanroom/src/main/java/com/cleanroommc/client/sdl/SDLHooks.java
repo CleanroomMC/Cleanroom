@@ -93,7 +93,8 @@ public final class SDLHooks {
         int caretX = caretX(field, font, textX);
         caret(field.x, field.y, field.width, field.height, caretX - field.x);
         focusedFieldDrawn = true;
-        overlay(text, font, caretX, textY, field.getWidth() - (caretX - textX), field.x, field.y, field.width,
+        overlay(
+            text, font, caretX, textY, field.getWidth() - (caretX - textX), field.x, field.y, field.width,
             field.height
         );
     }
@@ -218,7 +219,8 @@ public final class SDLHooks {
         }
         int windowWidth = Math.max(1, window.width());
         int windowHeight = Math.max(1, window.height());
-        remember(areaX * screenWidth / windowWidth, areaY * screenHeight / windowHeight,
+        remember(
+            areaX * screenWidth / windowWidth, areaY * screenHeight / windowHeight,
             Math.max(1, areaWidth * screenWidth / windowWidth), Math.max(1, areaHeight * screenHeight / windowHeight)
         );
     }
@@ -345,8 +347,8 @@ public final class SDLHooks {
             GuiTextField field = typingField();
             if (field != null) {
                 boolean bordered = field.getEnableBackgroundDrawing();
-                textFieldDraw(field, bordered ? field.x + 4 : field.x,
-                    bordered ? field.y + (field.height - 8) / 2 : field.y
+                textFieldDraw(
+                    field, bordered ? field.x + 4 : field.x, bordered ? field.y + (field.height - 8) / 2 : field.y
                 );
             } else {
                 int height = font.FONT_HEIGHT + CANDIDATE_PADDING * 2;
@@ -356,7 +358,8 @@ public final class SDLHooks {
                 int compositionWidth = font.getStringWidth(text.composition().text()) + CANDIDATE_PADDING * 2;
                 caret(x, y, width, height, CANDIDATE_PADDING);
                 Gui.drawRect(x, y, x + Math.min(compositionWidth, width), y + height, CANDIDATE_BACKGROUND);
-                overlay(text, font, x + CANDIDATE_PADDING, y + CANDIDATE_PADDING, width - CANDIDATE_PADDING * 2, x, y,
+                overlay(
+                    text, font, x + CANDIDATE_PADDING, y + CANDIDATE_PADDING, width - CANDIDATE_PADDING * 2, x, y,
                     width, height
                 );
             }
@@ -430,9 +433,9 @@ public final class SDLHooks {
         }
     }
 
-    private static void overlay(Text text, FontRenderer font, int caretX, int caretY, int remainingWidth, int fieldX,
-        int fieldY, int fieldWidth, int fieldHeight
-    ) {
+    private static void overlay(
+        Text text, FontRenderer font, int caretX, int caretY, int remainingWidth, int fieldX, int fieldY,
+        int fieldWidth, int fieldHeight) {
         TextComposition composition = text.composition();
         if (composition.active()) {
             composition(font, composition, caretX, caretY, Math.max(0, remainingWidth));
@@ -453,8 +456,8 @@ public final class SDLHooks {
         }
         int width = font.getStringWidth(shown);
         int height = font.FONT_HEIGHT;
-        int cursor = Math.max(0,
-            Math.min(shown.length(), composition.cursor() < 0 ? shown.length() : composition.cursor())
+        int cursor = Math.max(
+            0, Math.min(shown.length(), composition.cursor() < 0 ? shown.length() : composition.cursor())
         );
         int selection = composition.selectionLength();
         if (selection > 0) {
@@ -471,9 +474,8 @@ public final class SDLHooks {
         }
     }
 
-    private static void candidates(FontRenderer font, InputCandidates candidates, int fieldX, int fieldY,
-        int fieldWidth, int fieldHeight
-    ) {
+    private static void candidates(
+        FontRenderer font, InputCandidates candidates, int fieldX, int fieldY, int fieldWidth, int fieldHeight) {
         List<String> entries = candidates.entries();
         if (entries.isEmpty()) {
             return;
@@ -519,8 +521,8 @@ public final class SDLHooks {
                 String entry = entries.get(i);
                 int entryWidth = font.getStringWidth(entry);
                 if (i == selected) {
-                    Gui.drawRect(drawX - 1, drawY - 1, drawX + entryWidth + 1, drawY + font.FONT_HEIGHT + 1,
-                        CANDIDATE_SELECTED
+                    Gui.drawRect(
+                        drawX - 1, drawY - 1, drawX + entryWidth + 1, drawY + font.FONT_HEIGHT + 1, CANDIDATE_SELECTED
                     );
                 }
                 font.drawStringWithShadow(entry, drawX, drawY, CANDIDATE_TEXT);

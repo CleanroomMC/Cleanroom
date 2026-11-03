@@ -86,9 +86,9 @@ public abstract class GamepadEvent extends Event {
         private final float pressure;
         private final boolean down;
 
-        public Touchpad(long timestampNs, Gamepad gamepad, int touchpad, int finger, float x, float y, float pressure,
-            boolean down
-        ) {
+        public Touchpad(
+            long timestampNs, Gamepad gamepad, int touchpad, int finger, float x, float y, float pressure,
+            boolean down) {
             super(gamepad.id(), timestampNs);
             this.gamepad = gamepad;
             this.touchpad = touchpad;

@@ -46,12 +46,11 @@ assignment = "never"
 assignment-break = "inside-value"
 hug-sole-argument = true
 array-initializers = "chop-down-if-long"
-extends-implements = "never"
+extends-implements = "wrap-if-long"
 throws-clause = "wrap-if-long"
-type-parameters = "never"
 annotation-arguments = "wrap-if-long"
-closing-delimiter = "own-line"
-break-after-open-paren = false
+closing-delimiter = "own-line-unless-brace"
+break-after-open-paren = true
 enum-constants = "chop-down-always"
 require-enum-constant-semicolon = false
 for-statement = "chop-down-if-long"
@@ -73,7 +72,7 @@ catch-on-new-line = false
 finally-on-new-line = false
 empty-class-body = "spaced"
 empty-method-body = "spaced"
-empty-control-body = "expanded"
+empty-control-body = "spaced"
 
 [spacing]
 before-method-declaration-parenthesis = false
@@ -140,6 +139,7 @@ trailing-comments = "none"
 declaration-placement = "new-line"
 parameter-placement = "same-line"
 field-placement = "same-line"
+package-placement = "same-line"
 single-marker-inline = false
 
 [imports]
@@ -167,6 +167,7 @@ remove-unused = false
 
 [modifiers]
 order = "canonical"
+visibility-position = "first"
 remove-redundant = true
 
 [module]
@@ -232,7 +233,7 @@ body-braces = "when-multi-statement"
 keep-single-expression-inline = true
 
 [text-blocks]
-indent-policy = "preserve"
+indent-policy = "minimal"
 closing-delimiter-on-own-line = false
 escape-trailing-spaces = false
 
@@ -252,8 +253,15 @@ keep-array-initializer-layout = false
 respect-existing-chain-breaks = false
 never-join-lines = false
 
+[declarations]
+split-variables = true
+
 [arrays]
 c-style-brackets = "java"
 
 [members]
 order = "intellij"
+field-order = ["static-final", "static", "final", "instance"]
+visibility-order = ["public", "protected", "package-private", "private"]
+field-visibility-order = true
+method-visibility-order = true

@@ -110,12 +110,12 @@ public interface IModData {
      * @param latestFound Latest version found in json.
      * @param url         URL to download page.
      */
-    record CheckResult(boolean updatable,
+    record CheckResult(
+        boolean updatable,
         boolean animated,
         int texOffset,
         ResourceLocation textures,
         @Nullable String latestFound,
-        @Nullable String url
-    ) { }
+        @Nullable String url) { }
 
 }

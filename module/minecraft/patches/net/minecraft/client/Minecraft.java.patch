@@ -144,7 +144,7 @@
 +        net.minecraftforge.fml.client.SplashProgress.resume();
 +        net.minecraftforge.fml.common.ProgressManager.pop(bar);
 +        net.minecraftforge.fml.client.FMLClientHandler.instance().finishMinecraftLoading();
-+        com.cleanroommc.kirino.ImmediateClientServices.refreshMcFontIfNeeded();
++        if (!net.minecraftforge.fml.client.FMLClientHandler.instance().hasError()) com.cleanroommc.kirino.ImmediateClientServices.refreshMcFontIfNeeded();
 +        net.minecraftforge.client.ForgeHooksClient.clearTaskbarProgress();
          this.checkGLError("Post startup");
 -        this.ingameGUI = new GuiIngame(this);

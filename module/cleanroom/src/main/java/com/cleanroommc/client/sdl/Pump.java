@@ -69,8 +69,8 @@ final class Pump {
                 SDLEvents.SDL_EVENT_DROP_COMPLETE, SDLEvents.SDL_EVENT_DROP_POSITION -> DropInternal.dispatch(event);
             case SDLEvents.SDL_EVENT_DISPLAY_ADDED, SDLEvents.SDL_EVENT_DISPLAY_REMOVED,
                 SDLEvents.SDL_EVENT_DISPLAY_MOVED, SDLEvents.SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED,
-                SDLEvents.SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED, SDLEvents.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED -> {
-            }
+                SDLEvents.SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED,
+                SDLEvents.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED -> { }
             case SDLEvents.SDL_EVENT_AUDIO_DEVICE_ADDED, SDLEvents.SDL_EVENT_AUDIO_DEVICE_REMOVED,
                 SDLEvents.SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED -> AudioInternal.dispatch(event);
             default -> {

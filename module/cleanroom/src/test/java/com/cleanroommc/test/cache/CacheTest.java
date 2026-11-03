@@ -198,9 +198,11 @@ public class CacheTest {
 
     @Test
     void expectedHashIsEnforced() throws IOException {
-        assertThat(read(cache.fromString("hello", UTF_8).expectSha256(HELLO_SHA256.toUpperCase()).get("ok")
-        )).isEqualTo("hello");
-        assertFails(CacheException.Kind.HASH_MISMATCH,
+        assertThat(read(cache.fromString("hello", UTF_8).expectSha256(HELLO_SHA256.toUpperCase()).get("ok"))).isEqualTo(
+            "hello"
+        );
+        assertFails(
+            CacheException.Kind.HASH_MISMATCH,
             () -> cache.fromString("other", UTF_8).expectSha256(HELLO_SHA256).get("bad")
         );
         assertThat(cache.root().resolve("bad")).doesNotExist();
@@ -238,7 +240,8 @@ public class CacheTest {
         Path meta = cache.root().resolve("r.meta");
         Files.writeString(meta, Files.readString(meta).replaceAll("checked=\\d+", "checked=0"));
         for (int i = 0; i < 5; i++) {
-            assertThat(read(cache.fromUrl(url("/fail")).revalidateIf(Duration.ofMinutes(1)).get("r"))).isEqualTo("hello"
+            assertThat(read(cache.fromUrl(url("/fail")).revalidateIf(Duration.ofMinutes(1)).get("r"))).isEqualTo(
+                "hello"
             );
         }
         Thread.sleep(500);
@@ -289,8 +292,8 @@ public class CacheTest {
         ClassLoader loader = getClass().getClassLoader();
         Path file = cache.fromResource(loader, "com/cleanroommc/test/cache/CacheTest.class").get("self.class");
         assertThat(file).isNotEmptyFile();
-        assertThatExceptionOfType(java.nio.file.NoSuchFileException.class).isThrownBy(() -> cache.fromResource(loader,
-            "nope"
+        assertThatExceptionOfType(java.nio.file.NoSuchFileException.class).isThrownBy(() -> cache.fromResource(
+            loader, "nope"
         )
             .get("nope"));
         assertThat(read(cache.fromBuffer(UTF_8.encode("hello")).get("buffer"))).isEqualTo("hello");
@@ -298,8 +301,9 @@ public class CacheTest {
 
     @Test
     void pathsStayConfined() throws IOException {
-        for (String name : List.of("../x", "a/../../x", "/abs", "C:/x", "\\\\server\\share", "a\0b", ".", "x.meta",
-            "x.lock", "x.versions", "a.versions/x"
+        for (String name : List.of(
+            "../x", "a/../../x", "/abs", "C:/x", "\\\\server\\share", "a\0b", ".", "x.meta", "x.lock", "x.versions",
+            "a.versions/x"
         )) {
             assertThatIllegalArgumentException().as(name).isThrownBy(() -> cache.fromString("x", UTF_8).get(name));
         }
@@ -343,8 +347,8 @@ public class CacheTest {
         assertThatExceptionOfType(CompletionException.class)
             .isThrownBy(future::join)
             .havingCause()
-            .isInstanceOfSatisfying(CacheException.class,
-                e -> assertThat(e.kind()).isEqualTo(CacheException.Kind.OFFLINE)
+            .isInstanceOfSatisfying(
+                CacheException.class, e -> assertThat(e.kind()).isEqualTo(CacheException.Kind.OFFLINE)
             );
     }
 
@@ -393,15 +397,15 @@ public class CacheTest {
         assertThat(read(cache.fromUrl(dead).get("hello"))).isEqualTo("hello");
         assertFails(CacheException.Kind.OFFLINE, () -> cache.fromUrl(dead).get("cold"));
         cache.fromUrl(url("/hello")).version("1.0").get("versioned");
-        assertFails(CacheException.Kind.OFFLINE, () -> cache.fromUrl(dead).version("2.0").get("versioned")
+        assertFails(
+            CacheException.Kind.OFFLINE, () -> cache.fromUrl(dead).version("2.0").get("versioned")
         ).withMessageContaining("cached at version 1.0 but 2.0 is required");
         assertFails(CacheException.Kind.OFFLINE, () -> cache.fromUrl(url("/drop")).get("drop"));
         assertFails(CacheException.Kind.HTTP, () -> cache.fromUrl(url("/missing")).get("missing"));
     }
 
-    private static ThrowableAssertAlternative<CacheException> assertFails(CacheException.Kind kind,
-        ThrowingCallable call
-    ) {
+    private static ThrowableAssertAlternative<CacheException> assertFails(
+        CacheException.Kind kind, ThrowingCallable call) {
         return assertThatExceptionOfType(CacheException.class)
             .isThrownBy(call)
             .satisfies(e -> assertThat(e.kind()).isEqualTo(kind));

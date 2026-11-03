@@ -128,6 +128,11 @@ public final class AudioDevices {
         checkDefaultPlayback(timestampNs);
     }
 
+    synchronized void reset() {
+        started = false;
+        defaultPlayback = "";
+    }
+
     private void checkDefaultPlayback(long timestampNs) {
         String current = readDefaultPlayback();
         if (current.equals(defaultPlayback)) {
@@ -136,11 +141,6 @@ public final class AudioDevices {
         String previous = defaultPlayback;
         defaultPlayback = current;
         SDL.events().post(new AudioDeviceEvent.DefaultChanged(timestampNs, previous, current));
-    }
-
-    synchronized void reset() {
-        started = false;
-        defaultPlayback = "";
     }
 
 }

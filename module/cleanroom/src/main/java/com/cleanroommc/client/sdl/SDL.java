@@ -38,8 +38,12 @@ import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLHints;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLLog;
+import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.sdl.SDL_LogOutputFunction;
+import org.lwjgl.system.JNI;
 import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.Platform;
+import org.lwjgl.system.linux.DynamicLinkLoader;
 
 import java.awt.image.BufferedImage;
 
@@ -182,21 +186,6 @@ public final class SDL {
     }
 
     /**
-     * Hints that must be set before a subsystem comes up, plus app metadata for the video path.
-     */
-    private static void prepare(int missing) {
-        if ((missing & SDLInit.SDL_INIT_VIDEO) != 0) {
-            Text.implementIME(true, true);
-            check(SDLInit.SDL_SetAppMetadata("Cleanroom", CleanroomVersion.VERSION, "com.cleanroommc.cleanroom"),
-                "SDL_SetAppMetadata"
-            );
-            check(SDLInit.SDL_SetAppMetadataProperty(SDLInit.SDL_PROP_APP_METADATA_TYPE_STRING, "game"),
-                "SDL_SetAppMetadataProperty"
-            );
-        }
-    }
-
-    /**
      * Sets an SDL hint. Some hints are ignored once the matching subsystem is up.
      */
     public static void hint(String name, String value) {
@@ -222,27 +211,12 @@ public final class SDL {
         if (initializedBits == 0) {
             return;
         }
+        boolean wayland = "wayland".equals(SDLVideo.SDL_GetCurrentVideoDriver());
         SDLInit.SDL_Quit();
         initializedBits = 0;
-    }
-
-    private static void installLog() {
-        if (logOutput != null) {
-            return;
+        if (wayland && Platform.get() == Platform.LINUX) {
+            skipNativeExitHandlers();
         }
-        logOutput = SDL_LogOutputFunction.create((_, category, priority, message) -> {
-            String text = MemoryUtil.memUTF8(message);
-            if (priority >= SDLLog.SDL_LOG_PRIORITY_ERROR) {
-                LOGGER.error("[{}] {}", category, text);
-            } else if (priority == SDLLog.SDL_LOG_PRIORITY_WARN) {
-                LOGGER.warn("[{}] {}", category, text);
-            } else if (priority == SDLLog.SDL_LOG_PRIORITY_INFO) {
-                LOGGER.info("[{}] {}", category, text);
-            } else {
-                LOGGER.debug("[{}] {}", category, text);
-            }
-        });
-        SDLLog.SDL_SetLogOutputFunction(logOutput, 0L);
     }
 
     /**
@@ -281,6 +255,57 @@ public final class SDL {
             throw new SDLException(call + " failed: " + SDLError.SDL_GetError());
         }
         return handle;
+    }
+
+    /**
+     * Hints that must be set before a subsystem comes up, plus app metadata for the video path.
+     */
+    private static void prepare(int missing) {
+        if ((missing & SDLInit.SDL_INIT_VIDEO) != 0) {
+            Text.implementIME(true, true);
+            check(
+                SDLInit.SDL_SetAppMetadata("Cleanroom", CleanroomVersion.VERSION, "com.cleanroommc.cleanroom"),
+                "SDL_SetAppMetadata"
+            );
+            check(
+                SDLInit.SDL_SetAppMetadataProperty(SDLInit.SDL_PROP_APP_METADATA_TYPE_STRING, "game"),
+                "SDL_SetAppMetadataProperty"
+            );
+        }
+    }
+
+    /*
+     * JVM calls exit() off the main thread. With two or more EGL contexts created, NVIDIA's EGL atexit
+     * teardown races its worker threads and segfaults. Registered last, _exit runs first and ends the
+     * process with the JVM's status once shutdown hooks are done.
+     * on_exit is glibc only.
+     */
+    private static void skipNativeExitHandlers() {
+        long self = DynamicLinkLoader.dlopen((CharSequence) null, DynamicLinkLoader.RTLD_LAZY);
+        long onExit = DynamicLinkLoader.dlsym(self, "on_exit");
+        long exit = DynamicLinkLoader.dlsym(self, "_exit");
+        if (onExit != 0L && exit != 0L) {
+            JNI.invokePPI(exit, 0L, onExit);
+        }
+    }
+
+    private static void installLog() {
+        if (logOutput != null) {
+            return;
+        }
+        logOutput = SDL_LogOutputFunction.create((_, category, priority, message) -> {
+            String text = MemoryUtil.memUTF8(message);
+            if (priority >= SDLLog.SDL_LOG_PRIORITY_ERROR) {
+                LOGGER.error("[{}] {}", category, text);
+            } else if (priority == SDLLog.SDL_LOG_PRIORITY_WARN) {
+                LOGGER.warn("[{}] {}", category, text);
+            } else if (priority == SDLLog.SDL_LOG_PRIORITY_INFO) {
+                LOGGER.info("[{}] {}", category, text);
+            } else {
+                LOGGER.debug("[{}] {}", category, text);
+            }
+        });
+        SDLLog.SDL_SetLogOutputFunction(logOutput, 0L);
     }
 
 }

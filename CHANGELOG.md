@@ -1,5 +1,146 @@
 # Changelog
 
+## 0.7.14-alpha - 2026-10-28
+
+### Feature
+
+- Hide legacy APIs from userdev and support FB's MixinSquared inclusion *[commit by [@Rongmario](https://github.com/Rongmario) in [d6bfdb9](https://github.com/CleanroomMC/Cleanroom/commit/d6bfdb9662277482841e53cf5443c5c47b0176ec)]*
+
+### Performance
+
+- **discovery**: Improve mod scanning times *[commit by [@Rongmario](https://github.com/Rongmario) in [289c9eb](https://github.com/CleanroomMC/Cleanroom/commit/289c9eb3c9717c3265a763daca7d0cc33f39391e)]*
+
+### Build and Dependencies
+
+- Fixed having duplicated minecraft sources *[commit by [@Rongmario](https://github.com/Rongmario) in [fa28029](https://github.com/CleanroomMC/Cleanroom/commit/fa280297a94279dc87a909b8ff77374ca9a56e8e)]*
+- **deps**: Update CleanroomGradle *[commit by [@Rongmario](https://github.com/Rongmario) in [ed0a619](https://github.com/CleanroomMC/Cleanroom/commit/ed0a61959c316d7bed4ce5161273706465b8a25e)]*
+- **deps**: Update cleanmix & mixinextras *[commit by [@Rongmario](https://github.com/Rongmario) in [ac0c19b](https://github.com/CleanroomMC/Cleanroom/commit/ac0c19b11be383b4868000084ff5ab0c077ec84a)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.13-alpha...0.7.14-alpha
+
+## 0.7.13-alpha - 2026-10-28
+
+### Feature
+
+- **mixinbooter**: Update to v12 *[PR by [@Rongmario](https://github.com/Rongmario) in [#722](https://github.com/CleanroomMC/Cleanroom/pull/722)]*
+- Fly speed as a player attribute *[PR by [@Rongmario](https://github.com/Rongmario) in [#710](https://github.com/CleanroomMC/Cleanroom/pull/710)]*
+
+### Performance
+
+- **advancements**: Don't write the whole player for SelectedItem-only NBT predicates *[PR by [@TheRedJa](https://github.com/TheRedJa), Claude Opus 5.5 in [#712](https://github.com/CleanroomMC/Cleanroom/pull/712)]*
+
+### Documentation
+
+- **readme**: Fix closed source typo *[commit by [@Rongmario](https://github.com/Rongmario) in [31c50a3](https://github.com/CleanroomMC/Cleanroom/commit/31c50a39e58b0546f6ec745055a1f96a3fe350c9)]*
+
+### Build and Dependencies
+
+- **deps**: Update kirino *[commit by [@Rongmario](https://github.com/Rongmario) in [dd752ff](https://github.com/CleanroomMC/Cleanroom/commit/dd752ff64c46bc554d388c6f1ef275d774b4fc62)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.12-alpha...0.7.13-alpha
+
+## 0.7.12-alpha - 2026-10-21
+
+### Bug Fix
+
+- **sdl**: Only forward whole wheel notches to the LWJGL 2 input path *[PR by [@TheRedJa](https://github.com/TheRedJa), Claude Sonnet 5.5 in [#708](https://github.com/CleanroomMC/Cleanroom/pull/708)]*
+- **loading**: Skip font refresh when mod loading failed *[commit by [@Rongmario](https://github.com/Rongmario) in [9d0e34c](https://github.com/CleanroomMC/Cleanroom/commit/9d0e34c17ae53677ee036dd58b9dcfb73d02d52f)]*
+    *[Fixes issue #706 by [@xjoergen](https://github.com/xjoergen)]*
+- **sdl**: Fallback to a GLES 2 context on GLES-only drivers *[commit by [@Rongmario](https://github.com/Rongmario) in [56b841e](https://github.com/CleanroomMC/Cleanroom/commit/56b841e451fb121d5a8f3466331c2526ac61dd22)]*
+
+### Build and Dependencies
+
+- Update Conventions to 1.4.3 *[commit by [@Rongmario](https://github.com/Rongmario) in [7b07a6d](https://github.com/CleanroomMC/Cleanroom/commit/7b07a6d27c385a39b7d0c580bf35e4836a02813f)]*
+- **deps**: Update kirino *[commit by [@Rongmario](https://github.com/Rongmario) in [c0d2395](https://github.com/CleanroomMC/Cleanroom/commit/c0d23957bb16209148b61e352b5f6b322f936f97)]*
+- Update Conventions to 1.4.2 *[commit by [@Rongmario](https://github.com/Rongmario) in [b70938e](https://github.com/CleanroomMC/Cleanroom/commit/b70938eb1094d5520812468f860abaa17817c0df)]*
+
+### First-time Contributors
+
+- **[@TheRedJa](https://github.com/TheRedJa) made their first contribution!**
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.11-alpha...0.7.12-alpha
+
+## 0.7.11-alpha - 2026-10-19
+
+### Bug Fix
+
+- **patch**: Erroneous variables being read in lightmap hook *[commit by [@Rongmario](https://github.com/Rongmario) in [873a9ab](https://github.com/CleanroomMC/Cleanroom/commit/873a9ab10ee58ebd9ca28a4fbad749379fd32083)]*
+
+### Build and Dependencies
+
+- **deps**: Update lwjgly to 2.3.0 *[commit by [@Rongmario](https://github.com/Rongmario) in [dcc04f2](https://github.com/CleanroomMC/Cleanroom/commit/dcc04f26a9da81ec9590a7dff7c44ab7478885cf)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.10-alpha...0.7.11-alpha
+
+## 0.7.10-alpha - 2026-10-18
+
+### Bug Fix
+
+- **discovery**: Normalize mod paths when deduplicating candidates *[commit by [@Rongmario](https://github.com/Rongmario) in [3f52821](https://github.com/CleanroomMC/Cleanroom/commit/3f528210ef8bb46186b15b0bceacd37ae09e5de6)]*
+    *[Fixes issue #703 by [@D3nnis3n](https://github.com/D3nnis3n)]*
+
+### Build and Dependencies
+
+- **deps**: Update foundation to 0.22.2 *[commit by [@Rongmario](https://github.com/Rongmario) in [141f0e9](https://github.com/CleanroomMC/Cleanroom/commit/141f0e9545d23ef93b8851e6ec46d60d944abfce)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.9-alpha...0.7.10-alpha
+
+## 0.7.9-alpha - 2026-10-18
+
+### Bug Fix
+
+- **sdl**: Skip NVIDIA EGL exit teardown on Wayland *[commit by [@Rongmario](https://github.com/Rongmario) in [ae1b930](https://github.com/CleanroomMC/Cleanroom/commit/ae1b9302daeda1df4d9a5da897fd057aeedf7f58)]*
+    *[Fixes issue #699 by [@teamnotus](https://github.com/teamnotus)]*
+- **discovery**: Normalize game dir before gathering mod candidates *[commit by [@Rongmario](https://github.com/Rongmario) in [1de3e00](https://github.com/CleanroomMC/Cleanroom/commit/1de3e00b0dff281fca9cb4c31231199c91459b21)]*
+    *[Fixes issue #697 by [@teamnotus](https://github.com/teamnotus)]*
+
+### Documentation
+
+- Add RELICENSING.md *[commit by [@tttsaurus](https://github.com/tttsaurus) in [35349b1](https://github.com/CleanroomMC/Cleanroom/commit/35349b181be6f21f8a27309d7d7744ffa6e4ee49)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.8-alpha...0.7.9-alpha
+
+## 0.7.8-alpha - 2026-10-17
+
+### Bug Fix
+
+- **event**: Set active mod to Cleanroom if loading had not started yet *[commit by [@Rongmario](https://github.com/Rongmario) in [6591cbe](https://github.com/CleanroomMC/Cleanroom/commit/6591cbe3da14e752b75c524f4daa7ca73990073b)]*
+    *[Fixes issue #680 by [@BuenChico785446](https://github.com/BuenChico785446)]*
+    *[Fixes issue #688 by [@geyesborg](https://github.com/geyesborg)]*
+- **compatibility**: Rethrow non-widening type mismatches in CompatibilityHooks.set *[commit by [@Rongmario](https://github.com/Rongmario) in [2bcc2b5](https://github.com/CleanroomMC/Cleanroom/commit/2bcc2b54cab7e338301ae5b46b13fd902fc52872)]*
+- **client**: Widen ModelBlockDefinition$MissingVariantException.<init> to public in forge_at.cfg *[PR by [@geyesborg](https://github.com/geyesborg), Lilith in [#690](https://github.com/CleanroomMC/Cleanroom/pull/690)]*
+
+### Performance
+
+- **discovery**: Read access transformers during the scan instead of reopening the jar *[commit by [@Rongmario](https://github.com/Rongmario) in [b57228f](https://github.com/CleanroomMC/Cleanroom/commit/b57228f1672850cd2dc49399fabdd93de95a0e7f)]*
+- **discovery**: Skip ASM parsing of classes that cannot carry a mod annotation *[commit by [@Rongmario](https://github.com/Rongmario) in [dac6284](https://github.com/CleanroomMC/Cleanroom/commit/dac628416e60b7bc5c9b460cb9fdf78a8c753da3)]*
+
+### Refactor
+
+- **discovery**: Drop duplicate cache and absolute path checks *[commit by [@Rongmario](https://github.com/Rongmario) in [e922286](https://github.com/CleanroomMC/Cleanroom/commit/e9222861cab0c4c781d8bdf4b73b552c50309196)]*
+
+### Build and Dependencies
+
+- **deps**: Update cleanmix, softens bugged mixin configs to not hard crash *[commit by [@Rongmario](https://github.com/Rongmario) in [48fa2f8](https://github.com/CleanroomMC/Cleanroom/commit/48fa2f8f54094dbfb83811c29d519f853f4ec842)]*
+
+### First-time Contributors
+
+- **[@geyesborg](https://github.com/geyesborg) made their first contribution!**
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.7-alpha...0.7.8-alpha
+
+## 0.7.7-alpha - 2026-10-16
+
+### Bug Fix
+
+- **compatibility**: Mirror LaunchClassLoader transformer fields to avoid loader constraint violations *[commit by [@Rongmario](https://github.com/Rongmario) in [199d4d8](https://github.com/CleanroomMC/Cleanroom/commit/199d4d8048d6ee8a920e82c3fee6bd6742e9e361)]*
+
+### Build and Dependencies
+
+- **deps**: Bump LWJGLY to 2.1.0 so Display.isCurrent ignores the splash shared context *[commit by [@Rongmario](https://github.com/Rongmario) in [ac6dfeb](https://github.com/CleanroomMC/Cleanroom/commit/ac6dfeb7d35b670f7fbe7f55dff79539c2a1b97b)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.6-alpha...0.7.7-alpha
+
 ## 0.7.6-alpha - 2026-10-15
 
 ### Bug Fix
@@ -223,10 +364,6 @@
 - Exclude LWJGL 2 natives from runtime *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
 - Remove google's `jsr305`, documented jakarta/java 8's javax differences *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
 - Add `ca.weblite:java-objc-bridge:1.2` back *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
-
-### Other
-
-- --------- *[PR by [@Rongmario](https://github.com/Rongmario), tttsaurus in [#606](https://github.com/CleanroomMC/Cleanroom/pull/606)]*
 
 ### First-time Contributors
 
@@ -768,7 +905,7 @@
 
 ### Feature
 
-- Better debug information (AAInfo) pt.2 *[PR by [@Gebardensprache](https://github.com/Gebardensprache), Copilotfeat: complete---------, Copilot in [#525](https://github.com/CleanroomMC/Cleanroom/pull/525)]*
+- Better debug information (AAInfo) pt.2 *[PR by [@Gebardensprache](https://github.com/Gebardensprache), Copilotfeat: complete, Copilot in [#525](https://github.com/CleanroomMC/Cleanroom/pull/525)]*
 
 ### Other
 
@@ -1251,7 +1388,7 @@
 - Make ItemStack#copy() mimic original behavior *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [dfa69e3](https://github.com/CleanroomMC/Cleanroom/commit/dfa69e34423a81af232d2b583864b9f131efaec5)]*
 - Update foundation *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [5eb71b5](https://github.com/CleanroomMC/Cleanroom/commit/5eb71b507d1068a3042334eaee5c91cbcfa5cbb5)]*
 - Fix #383 *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [ee56571](https://github.com/CleanroomMC/Cleanroom/commit/ee565714f2ae005c5881fc1b9a002b581db68193), issue by [@XZYawa](https://github.com/XZYawa)]*
-- EventBus : Enable All access of listener, include private *[PR by [@Ecdcaeb](https://github.com/Ecdcaeb), ZZZank---------, kappa-maintainer, ZZZank in [#358](https://github.com/CleanroomMC/Cleanroom/pull/358)]*
+- EventBus : Enable All access of listener, include private *[PR by [@Ecdcaeb](https://github.com/Ecdcaeb), ZZZank, kappa-maintainer, ZZZank in [#358](https://github.com/CleanroomMC/Cleanroom/pull/358)]*
 - Update foundation *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [87e6649](https://github.com/CleanroomMC/Cleanroom/commit/87e6649e3bf06d1af138a551f971d53cc75616eb)]*
 - Action trigger *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [1b0c682](https://github.com/CleanroomMC/Cleanroom/commit/1b0c682f34376833ad2375c17ea5697efcd92fe8)]*
 - Fix workflow *[commit by [@kappa-maintainer](https://github.com/kappa-maintainer) in [e55074a](https://github.com/CleanroomMC/Cleanroom/commit/e55074ac3c46027c1a12f2d07a130ed2d2506e0b)]*

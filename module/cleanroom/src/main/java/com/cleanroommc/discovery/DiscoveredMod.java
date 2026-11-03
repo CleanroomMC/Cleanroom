@@ -12,23 +12,37 @@ package com.cleanroommc.discovery;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 
-public record DiscoveredMod(File file,
+public record DiscoveredMod(
+    File file,
     Attributes attributes,
     List<String> modIds,
+    Map<String, String> modNames,
+    Map<String, String> modVersions,
+    List<String> mixinConfigurationClasses,
     String modType,
     boolean hasMixinManifestAttributes,
     boolean mixinTweakerForceMod,
     boolean coreModContainsMod,
     String coremod,
     String tweaker,
-    boolean onClasspath
-) {
+    boolean onClasspath,
+    Map<String, String> accessTransformers,
+    Set<String> dependencies,
+    List<String> fermiumConfigClasses) {
 
     public DiscoveredMod {
         file = file.getAbsoluteFile();
         modIds = List.copyOf(modIds);
+        modNames = Map.copyOf(modNames);
+        modVersions = Map.copyOf(modVersions);
+        mixinConfigurationClasses = List.copyOf(mixinConfigurationClasses);
+        accessTransformers = Map.copyOf(accessTransformers);
+        dependencies = Set.copyOf(dependencies);
+        fermiumConfigClasses = List.copyOf(fermiumConfigClasses);
     }
 
     public boolean isDirectoryBased() {

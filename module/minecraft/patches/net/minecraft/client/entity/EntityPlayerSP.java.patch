@@ -104,6 +104,20 @@
          boolean flag4 = this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
          if (this.onGround
              && !flag1
+@@ -836,11 +857,11 @@
+             if (this.movementInput.sneak) {
+                 this.movementInput.moveStrafe = (float)(this.movementInput.moveStrafe / 0.3);
+                 this.movementInput.moveForward = (float)(this.movementInput.moveForward / 0.3);
+-                this.motionY = this.motionY - this.capabilities.getFlySpeed() * 3.0F;
++                this.motionY = this.motionY - this.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.FLYING_SPEED).getAttributeValue() * 3.0F;
+             }
+ 
+             if (this.movementInput.jump) {
+-                this.motionY = this.motionY + this.capabilities.getFlySpeed() * 3.0F;
++                this.motionY = this.motionY + this.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.FLYING_SPEED).getAttributeValue() * 3.0F;
+             }
+         }
+ 
 @@ -1029,4 +1050,16 @@
              }
          }

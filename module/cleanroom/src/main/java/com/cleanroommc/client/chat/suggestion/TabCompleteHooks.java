@@ -23,13 +23,12 @@ public final class TabCompleteHooks {
 
     private TabCompleteHooks() { }
 
-    public static List<String> getTabCompletions(MinecraftServer server, EntityPlayerMP player,
-        CPacketTabComplete packet
-    ) {
+    public static List<String> getTabCompletions(
+        MinecraftServer server, EntityPlayerMP player, CPacketTabComplete packet) {
         completing = player;
         try {
-            return server.getTabCompletions(player, packet.getMessage(), packet.getTargetBlock(),
-                packet.hasTargetBlock()
+            return server.getTabCompletions(
+                player, packet.getMessage(), packet.getTargetBlock(), packet.hasTargetBlock()
             );
         } finally {
             completing = null;

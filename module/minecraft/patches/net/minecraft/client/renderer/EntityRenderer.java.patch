@@ -90,14 +90,14 @@
                          f12 = 0.25F + f9 * 0.75F;
                      }
  
-+                    float[] colors = {f8, f9, f10};
++                    float[] colors = {f10, f11, f12};
 +                    world.provider.getLightmapColors(partialTicks, f, f2, f3, colors);
-+                    f8 = colors[0]; f9 = colors[1]; f10 = colors[2];
++                    f10 = colors[0]; f11 = colors[1]; f12 = colors[2];
 +
 +                    // Forge: fix MC-58177
-+                    f8 = MathHelper.clamp(f8, 0f, 1f);
-+                    f9 = MathHelper.clamp(f9, 0f, 1f);
 +                    f10 = MathHelper.clamp(f10, 0f, 1f);
++                    f11 = MathHelper.clamp(f11, 0f, 1f);
++                    f12 = MathHelper.clamp(f12, 0f, 1f);
 +
                      if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION)) {
                          float f17 = this.getNightVisionBrightness(this.mc.player, partialTicks);

@@ -150,8 +150,8 @@ public class SuggestionList {
                 mouseX < g.x + g.width &&
                 mouseY >= entryY &&
                 mouseY < entryY + ENTRY_HEIGHT;
-            mc.fontRenderer.drawStringWithShadow(text, g.x + PADDING_X, entryY + 2,
-                (selected || hovered) ? 0xFFFF55 : 0xFFFFFF
+            mc.fontRenderer.drawStringWithShadow(
+                text, g.x + PADDING_X, entryY + 2, (selected || hovered) ? 0xFFFF55 : 0xFFFFFF
             );
         }
         if (this.suggestions.size() > g.visibleCount) {

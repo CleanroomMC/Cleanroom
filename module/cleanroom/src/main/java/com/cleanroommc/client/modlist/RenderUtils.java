@@ -51,9 +51,8 @@ public final class RenderUtils {
     /**
      * Draws a cover-cropped texture with alpha levels distributed evenly from top to bottom.
      */
-    public static void drawCoverFade(Minecraft mc, ImageInfo image, int x, int y, int width, int height, float depth,
-        float... alphaLevels
-    ) {
+    public static void drawCoverFade(
+        Minecraft mc, ImageInfo image, int x, int y, int width, int height, float depth, float... alphaLevels) {
         if (width <= 0 || height <= 0 || image.width() <= 0 || image.height() <= 0) {
             return;
         }
@@ -67,9 +66,9 @@ public final class RenderUtils {
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
+        GlStateManager.tryBlendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
         );
 
         double sourceAspect = image.width() / (double) image.height();
@@ -126,9 +125,8 @@ public final class RenderUtils {
      * @param maxX right edge of the box.
      * @param maxY bottom edge of the box.
      */
-    public static void drawScrollingString(FontRenderer font, String text, int minX, int minY, int maxX, int maxY,
-        int color, boolean shadow
-    ) {
+    public static void drawScrollingString(
+        FontRenderer font, String text, int minX, int minY, int maxX, int maxY, int color, boolean shadow) {
         drawScrollingString(font, text, (minX + maxX) / 2, minX, minY, maxX, maxY, color, shadow);
     }
 
@@ -141,9 +139,9 @@ public final class RenderUtils {
      * @param maxX    right edge of the box.
      * @param maxY    bottom edge of the box.
      */
-    public static void drawScrollingString(FontRenderer font, String text, int centerX, int minX, int minY, int maxX,
-        int maxY, int color, boolean shadow
-    ) {
+    public static void drawScrollingString(
+        FontRenderer font, String text, int centerX, int minX, int minY, int maxX, int maxY, int color,
+        boolean shadow) {
         int textWidth = font.getStringWidth(text);
         int textY = (minY + maxY - 9) / 2 + 1;
         int boxWidth = maxX - minX;

@@ -39,8 +39,8 @@ public final class Camera implements AutoCloseable {
     }
 
     private static CameraSpec fromNative(SDL_CameraSpec spec) {
-        return new CameraSpec(spec.width(), spec.height(), spec.format(), spec.framerate_numerator(),
-            spec.framerate_denominator()
+        return new CameraSpec(
+            spec.width(), spec.height(), spec.format(), spec.framerate_numerator(), spec.framerate_denominator()
         );
     }
 
@@ -141,7 +141,8 @@ public final class Camera implements AutoCloseable {
                 return null;
             }
             try {
-                return new Frame(surface.w(), surface.h(), surface.format(), timestamp.get(0), Surfaces.toImage(surface)
+                return new Frame(
+                    surface.w(), surface.h(), surface.format(), timestamp.get(0), Surfaces.toImage(surface)
                 );
             } finally {
                 SDLCamera.SDL_ReleaseCameraFrame(handle, surface);

@@ -109,21 +109,23 @@ public final class Gamepad {
      * @param durationMs how long to rumble
      */
     public Gamepad rumble(float low, float high, int durationMs) {
-        SDL.check(SDLGamepad.SDL_RumbleGamepad(handle, toStrength(low), toStrength(high), durationMs),
-            "SDL_RumbleGamepad"
+        SDL.check(
+            SDLGamepad.SDL_RumbleGamepad(handle, toStrength(low), toStrength(high), durationMs), "SDL_RumbleGamepad"
         );
         return this;
     }
 
     public Gamepad rumbleTriggers(float left, float right, int durationMs) {
-        SDL.check(SDLGamepad.SDL_RumbleGamepadTriggers(handle, toStrength(left), toStrength(right), durationMs),
+        SDL.check(
+            SDLGamepad.SDL_RumbleGamepadTriggers(handle, toStrength(left), toStrength(right), durationMs),
             "SDL_RumbleGamepadTriggers"
         );
         return this;
     }
 
     public Gamepad led(int red, int green, int blue) {
-        SDL.check(SDLGamepad.SDL_SetGamepadLED(handle, channel(red), channel(green), channel(blue)), "SDL_SetGamepadLED"
+        SDL.check(
+            SDLGamepad.SDL_SetGamepadLED(handle, channel(red), channel(green), channel(blue)), "SDL_SetGamepadLED"
         );
         return this;
     }
@@ -144,7 +146,8 @@ public final class Gamepad {
         if (sensor == null) {
             throw new IllegalArgumentException("Sensor cannot be null");
         }
-        SDL.check(SDLGamepad.SDL_SetGamepadSensorEnabled(handle, sensor.value(), enabled), "SDL_SetGamepadSensorEnabled"
+        SDL.check(
+            SDLGamepad.SDL_SetGamepadSensorEnabled(handle, sensor.value(), enabled), "SDL_SetGamepadSensorEnabled"
         );
         return this;
     }

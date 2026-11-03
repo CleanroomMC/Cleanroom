@@ -29,8 +29,10 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
+import com.cleanroommc.common.CleanroomContainer;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.ModContainer;
 
 import com.google.common.base.Preconditions;
@@ -73,8 +75,15 @@ public class EventBus implements IEventExceptionHandler
         ModContainer activeModContainer = Loader.instance().activeModContainer();
         if (activeModContainer == null)
         {
-            FMLLog.log.error("Unable to determine registrant mod for {}. This is a critical error and should be impossible", target, new Throwable());
-            activeModContainer = Loader.instance().getMinecraftModContainer();
+            if (Loader.instance().getLoaderState() == LoaderState.NOINIT)
+            {
+                activeModContainer = CleanroomContainer.instance();
+            }
+            else
+            {
+                FMLLog.log.error("Unable to determine registrant mod for {}. This is a critical error and should be impossible", target, new Throwable());
+                activeModContainer = Loader.instance().getMinecraftModContainer();
+            }
         }
         listenerOwners.put(target, activeModContainer);
 

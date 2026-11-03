@@ -47,7 +47,8 @@ public final class RuntimeInfo {
     public record Version(int major, int minor, int micro) {
 
         public static Version ofPacked(int packed) {
-            return new Version(SDLVersion.SDL_VERSIONNUM_MAJOR(packed), SDLVersion.SDL_VERSIONNUM_MINOR(packed),
+            return new Version(
+                SDLVersion.SDL_VERSIONNUM_MAJOR(packed), SDLVersion.SDL_VERSIONNUM_MINOR(packed),
                 SDLVersion.SDL_VERSIONNUM_MICRO(packed)
             );
         }

@@ -62,16 +62,50 @@ public final class DropdownMenu extends Gui {
         return new Builder(handler);
     }
 
-    private void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
-    }
-
     public void toggle(int mouseX, int mouseY) {
         this.toggle(new Anchor(mouseX, mouseY, 0, 0));
     }
 
     public void toggle(GuiButton widget) {
         this.toggle(new Anchor(widget.x, widget.y, widget.width, widget.height));
+    }
+
+    public void hide() {
+        this.items.forEach(child -> {
+            child.visible = false;
+            if (child instanceof DropdownItem menu) {
+                menu.subMenu.hide();
+            }
+        });
+        this.subMenu = null;
+        this.visible = false;
+    }
+
+    public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
+        drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xAA000000);
+        this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
+        if (this.subMenu != null) {
+            this.subMenu.drawScreen(minecraft, mouseX, mouseY, deltaTick);
+        }
+    }
+
+    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+        if (!this.visible) {
+            return false;
+        }
+
+        for (MenuItem item : this.items) {
+            if (item.mousePressed(mouseX, mouseY)) {
+                item.playPressSound(mc.getSoundHandler());
+                item.onClick(mouseX, mouseY);
+                return true;
+            }
+        }
+        return this.subMenu != null && this.subMenu.mousePressed(mc, mouseX, mouseY);
+    }
+
+    private void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
     }
 
     private void toggle(Anchor anchor) {
@@ -89,17 +123,6 @@ public final class DropdownMenu extends Gui {
         if (this.parent == null) {
             this.handler.setMenu(this);
         }
-    }
-
-    public void hide() {
-        this.items.forEach(child -> {
-            child.visible = false;
-            if (child instanceof DropdownItem menu) {
-                menu.subMenu.hide();
-            }
-        });
-        this.subMenu = null;
-        this.visible = false;
     }
 
     private void hideSubMenu() {
@@ -139,29 +162,6 @@ public final class DropdownMenu extends Gui {
 
     private void deepClose() {
         this.handler.setMenu(null);
-    }
-
-    public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
-        drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xAA000000);
-        this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
-        if (this.subMenu != null) {
-            this.subMenu.drawScreen(minecraft, mouseX, mouseY, deltaTick);
-        }
-    }
-
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-        if (!this.visible) {
-            return false;
-        }
-
-        for (MenuItem item : this.items) {
-            if (item.mousePressed(mouseX, mouseY)) {
-                item.playPressSound(mc.getSoundHandler());
-                item.onClick(mouseX, mouseY);
-                return true;
-            }
-        }
-        return this.subMenu != null && this.subMenu.mousePressed(mc, mouseX, mouseY);
     }
 
     public enum Alignment {
@@ -242,18 +242,15 @@ public final class DropdownMenu extends Gui {
             this.hovered = RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
 
             minecraft.getTextureManager().bindTexture(TEXTURE);
-            GuiUtils.drawContinuousTexturedBox(this.x, this.y, this.hovered || this.selected() ? 12 : 0, 0, this.width,
-                this.height, 12, 12, 2, this.zLevel
+            GuiUtils.drawContinuousTexturedBox(
+                this.x, this.y, this.hovered || this.selected() ? 12 : 0, 0, this.width, this.height, 12, 12, 2,
+                this.zLevel
             );
 
             FontRenderer font = minecraft.fontRenderer;
             int offset = (this.height - font.FONT_HEIGHT) / 2 + 1;
             String text = font.trimStringToWidth(this.label, Math.max(0, this.width - offset * 2));
             this.drawString(font, text, this.x + offset, this.y + offset, 0xFFFFFFFF);
-        }
-
-        private boolean mousePressed(int mouseX, int mouseY) {
-            return this.visible && RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
         }
 
         protected void onClick(int mouseX, int mouseY) {
@@ -268,6 +265,10 @@ public final class DropdownMenu extends Gui {
             int labelOffset = (this.height - font.FONT_HEIGHT) / 2 + 1;
             int labelWidth = font.getStringWidth(this.label);
             return labelOffset + labelWidth + labelOffset;
+        }
+
+        private boolean mousePressed(int mouseX, int mouseY) {
+            return this.visible && RenderUtils.isMouseWithin(this.x, this.y, this.width, this.height, mouseX, mouseY);
         }
 
         private void playPressSound(SoundHandler handler) {
@@ -286,9 +287,8 @@ public final class DropdownMenu extends Gui {
         /**
          * @param callback {@code true} will close the menu.
          */
-        private CheckboxMenuItem(DropdownMenu menu, String label, MutableBoolean holder,
-            Function<Boolean, Boolean> callback
-        ) {
+        private CheckboxMenuItem(
+            DropdownMenu menu, String label, MutableBoolean holder, Function<Boolean, Boolean> callback) {
             super(menu, label, null);
             this.holder = holder;
             this.callback = callback;
@@ -302,12 +302,13 @@ public final class DropdownMenu extends Gui {
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO
+            GlStateManager.tryBlendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
             );
-            drawModalRectWithCustomSizedTexture(this.x + this.width - 14 - offset, this.y + offset,
-                this.hovered ? 14 : 0, this.holder.get() ? 14 : 0, 14, 14, 64, 64
+            drawModalRectWithCustomSizedTexture(
+                this.x + this.width - 14 - offset, this.y + offset, this.hovered ? 14 : 0, this.holder.get() ? 14 : 0,
+                14, 14, 64, 64
             );
         }
 

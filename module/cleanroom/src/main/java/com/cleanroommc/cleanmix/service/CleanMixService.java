@@ -40,8 +40,8 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
     private final FoundationClassProvider classProvider = new FoundationClassProvider();
     private final FoundationTransformerProvider transformerProvider = new FoundationTransformerProvider();
     private final FoundationClassTracker classTracker = new FoundationClassTracker();
-    private final FoundationBytecodeProvider bytecodeProvider = new FoundationBytecodeProvider(this.transformerProvider,
-        this.lock, this.classTracker
+    private final FoundationBytecodeProvider bytecodeProvider = new FoundationBytecodeProvider(
+        this.transformerProvider, this.lock, this.classTracker
     );
 
     private boolean initialized;
@@ -78,11 +78,6 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
     }
 
     @Override
-    protected boolean isDevelopment() {
-        return CleanroomEnvironment.isDev();
-    }
-
-    @Override
     public IContainerHandle getPrimaryContainer() {
         return new ContainerHandleURI(CleanMixModContainer.location().toURI());
     }
@@ -94,25 +89,6 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
     @Override
     public Collection<IContainerHandle> getMixinContainers() {
         return Collections.emptyList();
-    }
-
-    @Override
-    protected MixinAuditFile createAuditLog() {
-        return new MixinAuditFile("cleanmix.log", "cleanmix.auditTrail");
-    }
-
-    @Override
-    protected String resolveSourceId(URI source) {
-        if ("file".equals(source.getScheme())) {
-            try {
-                String modId = CleanroomModDiscoverer.instance().modFromSource(new File(source));
-                if (modId != null) {
-                    return modId;
-                }
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        return null;
     }
 
     @Override
@@ -133,6 +109,29 @@ public class CleanMixService extends AbstractMixinServiceLaunchWrapper {
     @Override
     public IClassTracker getClassTracker() {
         return this.classTracker;
+    }
+
+    @Override
+    protected boolean isDevelopment() {
+        return CleanroomEnvironment.isDev();
+    }
+
+    @Override
+    protected MixinAuditFile createAuditLog() {
+        return new MixinAuditFile("cleanmix.log", "cleanmix.auditTrail");
+    }
+
+    @Override
+    protected String resolveSourceId(URI source) {
+        if ("file".equals(source.getScheme())) {
+            try {
+                String modId = CleanroomModDiscoverer.instance().modFromSource(new File(source));
+                if (modId != null) {
+                    return modId;
+                }
+            } catch (IllegalArgumentException ignored) { }
+        }
+        return null;
     }
 
     @Override

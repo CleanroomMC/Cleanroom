@@ -78,8 +78,7 @@ public final class CacheRequest {
 
     // Serializes threads of this JVM, file locks only exclude other processes
     private static final ConcurrentHashMap<Path, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<
-        Path, CompletableFuture<@Nullable Void>> INGESTING = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Path, CompletableFuture<@Nullable Void>> INGESTING = new ConcurrentHashMap<>();
     private static final Set<Path> SWEPT = ConcurrentHashMap.newKeySet();
 
     private final Cache cache;
@@ -102,7 +101,8 @@ public final class CacheRequest {
             public int read(byte[] b, int off, int len) throws IOException {
                 // Whoever takes the reader first decides whether the interrupt happens
                 AtomicReference<@Nullable Thread> reader = new AtomicReference<>(Thread.currentThread());
-                ScheduledFuture<?> watchdog = Http.WATCHDOG.schedule(() -> {
+                ScheduledFuture<?> watchdog = Http.WATCHDOG.schedule(
+                    () -> {
                         synchronized (reader) {
                             Thread thread = reader.getAndSet(null);
                             if (thread != null) {
@@ -247,8 +247,10 @@ public final class CacheRequest {
     }
 
     private static String write(InputStream input, Path target) throws IOException {
-        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), input
-        ); FileChannel channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING
+        try (HashingInputStream in = new HashingInputStream(
+            Hashing.sha256(), input
+        ); FileChannel channel = FileChannel.open(
+            target, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING
         )) {
             in.transferTo(Channels.newOutputStream(channel));
             channel.force(true);
@@ -431,7 +433,8 @@ public final class CacheRequest {
                 }
             }
             if (fetched.hash() != null && expected != null && !expected.equals(fetched.hash())) {
-                throw new CacheException(CacheException.Kind.HASH_MISMATCH,
+                throw new CacheException(
+                    CacheException.Kind.HASH_MISMATCH,
                     "Expected SHA-256 " + expected + " for " + file + ", got " + fetched.hash()
                 );
             }
@@ -512,10 +515,12 @@ public final class CacheRequest {
             if (response.statusCode() == 200) {
                 hash = write(guard(body, uri), temp);
             } else if (response.statusCode() != 304 || !validate) {
-                throw new CacheException(CacheException.Kind.HTTP, "HTTP " + response.statusCode() + " fetching " + uri
+                throw new CacheException(
+                    CacheException.Kind.HTTP, "HTTP " + response.statusCode() + " fetching " + uri
                 );
             }
-            return new Fetched(hash, response.headers().firstValue("ETag").orElse(null),
+            return new Fetched(
+                hash, response.headers().firstValue("ETag").orElse(null),
                 response.headers().firstValue("Last-Modified").orElse(null)
             );
         }
@@ -533,8 +538,8 @@ public final class CacheRequest {
         cache.checkLinks(metaFile(file));
         Files.createDirectories(file.getParent());
         Path lockFile = file.resolveSibling(file.getFileName() + Cache.LOCK);
-        try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
-            LinkOption.NOFOLLOW_LINKS
+        try (FileChannel channel = FileChannel.open(
+            lockFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS
         )) {
             ReentrantLock lock = LOCKS.computeIfAbsent(lockFile.toRealPath(), _ -> new ReentrantLock());
             lock.lock();
@@ -652,8 +657,8 @@ public final class CacheRequest {
             .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
 
-        static final ScheduledThreadPoolExecutor WATCHDOG = new ScheduledThreadPoolExecutor(1,
-            Thread.ofVirtual().name("cleanroom-cache-watchdog").factory()
+        static final ScheduledThreadPoolExecutor WATCHDOG = new ScheduledThreadPoolExecutor(
+            1, Thread.ofVirtual().name("cleanroom-cache-watchdog").factory()
         );
 
         static {

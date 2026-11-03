@@ -28,11 +28,6 @@ public class OptiFineModData extends CleanroomModData {
         this.version = this.getDisplayVersion();
     }
 
-    private String getDisplayVersion() {
-        String version = super.getVersion();
-        return version.startsWith(VERSION_PREFIX) ? version.substring(VERSION_PREFIX.length()) : version;
-    }
-
     @Override
     public String getVersion() {
         return this.version;
@@ -43,9 +38,9 @@ public class OptiFineModData extends CleanroomModData {
     public String getDescription() {
         // Copied from https://www.optifine.net/home
         return """
-                OptiFine is a Minecraft optimization mod.
-                It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.
-                """;
+               OptiFine is a Minecraft optimization mod.
+               It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.
+               """;
     }
 
     @Nullable
@@ -86,6 +81,11 @@ public class OptiFineModData extends CleanroomModData {
     @Override
     public void openConfigScreen(Minecraft minecraft, GuiScreen parent) {
         minecraft.displayGuiScreen(new GuiVideoSettings(parent, minecraft.gameSettings));
+    }
+
+    private String getDisplayVersion() {
+        String version = super.getVersion();
+        return version.startsWith(VERSION_PREFIX) ? version.substring(VERSION_PREFIX.length()) : version;
     }
 
 }

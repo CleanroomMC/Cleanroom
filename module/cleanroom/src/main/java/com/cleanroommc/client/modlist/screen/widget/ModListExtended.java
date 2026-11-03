@@ -70,9 +70,9 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
 
         GlStateManager.disableDepth();
         GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO,
-            GlStateManager.DestFactor.ONE
+        GlStateManager.tryBlendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
         );
         GlStateManager.disableAlpha();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
@@ -91,77 +91,6 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
         GlStateManager.enableAlpha();
         GlStateManager.disableBlend();
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
-    }
-
-    protected void drawScrollBar(int maxScroll, Tessellator tess) {
-        int scrollThumbHeight = this.getScrollThumbHeight();
-        if (scrollThumbHeight <= 0) {
-            return;
-        }
-
-        int viewHeight = this.bottom - this.top;
-        int scrollThumbTop = (int) this.amountScrolled * (viewHeight - scrollThumbHeight) / maxScroll + this.top;
-        scrollThumbTop = MathHelper.clamp(scrollThumbTop, this.top, this.bottom - scrollThumbHeight);
-
-        int scrollBarLeft = this.getScrollBarLeft();
-        int scrollBarRight = this.getScrollBarRight();
-        BufferBuilder buffer = tess.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-
-        // Background
-        buffer.pos(scrollBarLeft, this.bottom, 0).tex(0, 1).color(0, 0, 0, 255).endVertex();
-        buffer.pos(scrollBarRight, this.bottom, 0).tex(1, 1).color(0, 0, 0, 255).endVertex();
-        buffer.pos(scrollBarRight, this.top, 0).tex(1, 0).color(0, 0, 0, 255).endVertex();
-        buffer.pos(scrollBarLeft, this.top, 0).tex(0, 0).color(0, 0, 0, 255).endVertex();
-
-        // Main
-        buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight, 0)
-            .tex(0, 1)
-            .color(128, 128, 128, 255)
-            .endVertex();
-        buffer.pos(scrollBarRight, scrollThumbTop + scrollThumbHeight, 0)
-            .tex(1, 1)
-            .color(128, 128, 128, 255)
-            .endVertex();
-        buffer.pos(scrollBarRight, scrollThumbTop, 0).tex(1, 0).color(128, 128, 128, 255).endVertex();
-        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(128, 128, 128, 255).endVertex();
-
-        // Border
-        buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight - 1, 0)
-            .tex(0, 1)
-            .color(192, 192, 192, 255)
-            .endVertex();
-        buffer.pos(scrollBarRight - 1, scrollThumbTop + scrollThumbHeight - 1, 0)
-            .tex(1, 1)
-            .color(192, 192, 192, 255)
-            .endVertex();
-        buffer.pos(scrollBarRight - 1, scrollThumbTop, 0).tex(1, 0).color(192, 192, 192, 255).endVertex();
-        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(192, 192, 192, 255).endVertex();
-
-        tess.draw();
-    }
-
-    protected void renderListItems(int mouseX, int mouseY, float partialTicks) {
-        for (int index = 0; index < this.getSize(); ++index) {
-            int rowLeft = this.getListEntryLeft();
-            int rowRight = this.getListRight();
-            int rowTop = this.getRowTop(index);
-            int rowBottom = this.getRowBottom(index) - 4;
-
-            if (rowTop > this.bottom || rowBottom < this.top) {
-                this.updateItemPos(index, rowLeft, rowTop, partialTicks);
-            }
-
-            if (rowTop + this.slotHeight >= this.top && rowTop <= this.bottom) {
-                this.renderItem(index, rowLeft, rowTop, rowRight, rowBottom, mouseX, mouseY, partialTicks);
-            }
-        }
-    }
-
-    protected void renderItem(int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX,
-        int mouseY, float partialTicks
-    ) {
-        this.drawSlot(slotIndex, rowLeft, rowTop, rowBottom - rowTop, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -224,8 +153,8 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
                         this.mouseX >= listLeft &&
                         this.mouseX <= listRight &&
                         relativeY < 0) {
-                        this.clickedHeader(this.mouseX - listLeft,
-                            this.mouseY - this.top + (int) this.amountScrolled - 4
+                        this.clickedHeader(
+                            this.mouseX - listLeft, this.mouseY - this.top + (int) this.amountScrolled - 4
                         );
                         clickedOnHeader = true;
                     }
@@ -254,8 +183,8 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
                     this.scrollMultiplier = scrollRange > 0
                         ? Math.max(1.0F, (float) maxScroll / (float) scrollRange)
                         : 0.0F;
-                    this.setAmountScrolled(this.amountScrolled +
-                            (float) (this.mouseY - this.initialClickY) * this.scrollMultiplier
+                    this.setAmountScrolled(
+                        this.amountScrolled + (float) (this.mouseY - this.initialClickY) * this.scrollMultiplier
                     );
                 }
 
@@ -340,18 +269,6 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
         return mouseX >= this.left && mouseX <= this.left + this.width && this.isMouseYWithinSlotBounds(mouseY);
     }
 
-    protected boolean shouldShowScrollBar() {
-        return this.getMaxScroll() > 0 && this.getContentHeight() > 0 && this.bottom > this.top;
-    }
-
-    protected boolean isMouseOverScrollBar(boolean hasScrollBar, int mouseX) {
-        return hasScrollBar && mouseX >= this.getScrollBarLeft() && mouseX < this.getScrollBarRight();
-    }
-
-    protected boolean isMouseBeforeScrollBar(boolean hasScrollBar, int mouseX) {
-        return !hasScrollBar || mouseX < this.getScrollBarLeft();
-    }
-
     public void setClampedAmountScrolled(float scroll) {
         this.amountScrolled = MathHelper.clamp(scroll, 0.0F, this.getMaxScroll());
     }
@@ -372,6 +289,143 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
     public void setHeight(int height) {
         this.height = height;
         this.bottom = this.top + height;
+    }
+
+    /**
+     * Returns the row content width in screen pixels. This is a size, not an x-coordinate.
+     */
+    @Override
+    public int getListWidth() {
+        return super.getListWidth();
+    }
+
+    /*
+    Entry
+     */
+
+    public final List<E> children() {
+        return this.entries;
+    }
+
+    @Nonnull
+    @Override
+    public E getListEntry(int slotIndex) {
+        return this.entries.get(slotIndex);
+    }
+
+    public void centerScrollOn(E entry) {
+        int index = this.entries.indexOf(entry);
+        if (index >= 0) {
+            this.setAmountScrolled(index * this.slotHeight + this.slotHeight / 2.0F - (this.bottom - this.top) / 2.0F);
+        }
+    }
+
+    public void addEntry(E entry) {
+        this.entries.add(entry);
+    }
+
+    public void clearEntries() {
+        this.entries.clear();
+    }
+
+    public void replaceEntries(Collection<? extends E> entries) {
+        this.clearEntries();
+        this.entries.addAll(entries);
+    }
+
+    public void removeEntries(Collection<? extends E> entries) {
+        entries.forEach(this::removeEntry);
+    }
+
+    public void removeEntry(E entry) {
+        this.entries.remove(entry);
+    }
+
+    public void clearEntriesExcept(E entry) {
+        this.entries.removeIf(candidate -> candidate != entry);
+    }
+
+    protected void drawScrollBar(int maxScroll, Tessellator tess) {
+        int scrollThumbHeight = this.getScrollThumbHeight();
+        if (scrollThumbHeight <= 0) {
+            return;
+        }
+
+        int viewHeight = this.bottom - this.top;
+        int scrollThumbTop = (int) this.amountScrolled * (viewHeight - scrollThumbHeight) / maxScroll + this.top;
+        scrollThumbTop = MathHelper.clamp(scrollThumbTop, this.top, this.bottom - scrollThumbHeight);
+
+        int scrollBarLeft = this.getScrollBarLeft();
+        int scrollBarRight = this.getScrollBarRight();
+        BufferBuilder buffer = tess.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+
+        // Background
+        buffer.pos(scrollBarLeft, this.bottom, 0).tex(0, 1).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarRight, this.bottom, 0).tex(1, 1).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarRight, this.top, 0).tex(1, 0).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarLeft, this.top, 0).tex(0, 0).color(0, 0, 0, 255).endVertex();
+
+        // Main
+        buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight, 0)
+            .tex(0, 1)
+            .color(128, 128, 128, 255)
+            .endVertex();
+        buffer.pos(scrollBarRight, scrollThumbTop + scrollThumbHeight, 0)
+            .tex(1, 1)
+            .color(128, 128, 128, 255)
+            .endVertex();
+        buffer.pos(scrollBarRight, scrollThumbTop, 0).tex(1, 0).color(128, 128, 128, 255).endVertex();
+        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(128, 128, 128, 255).endVertex();
+
+        // Border
+        buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight - 1, 0)
+            .tex(0, 1)
+            .color(192, 192, 192, 255)
+            .endVertex();
+        buffer.pos(scrollBarRight - 1, scrollThumbTop + scrollThumbHeight - 1, 0)
+            .tex(1, 1)
+            .color(192, 192, 192, 255)
+            .endVertex();
+        buffer.pos(scrollBarRight - 1, scrollThumbTop, 0).tex(1, 0).color(192, 192, 192, 255).endVertex();
+        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(192, 192, 192, 255).endVertex();
+
+        tess.draw();
+    }
+
+    protected void renderListItems(int mouseX, int mouseY, float partialTicks) {
+        for (int index = 0; index < this.getSize(); ++index) {
+            int rowLeft = this.getListEntryLeft();
+            int rowRight = this.getListRight();
+            int rowTop = this.getRowTop(index);
+            int rowBottom = this.getRowBottom(index) - 4;
+
+            if (rowTop > this.bottom || rowBottom < this.top) {
+                this.updateItemPos(index, rowLeft, rowTop, partialTicks);
+            }
+
+            if (rowTop + this.slotHeight >= this.top && rowTop <= this.bottom) {
+                this.renderItem(index, rowLeft, rowTop, rowRight, rowBottom, mouseX, mouseY, partialTicks);
+            }
+        }
+    }
+
+    protected void renderItem(
+        int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX, int mouseY,
+        float partialTicks) {
+        this.drawSlot(slotIndex, rowLeft, rowTop, rowBottom - rowTop, mouseX, mouseY, partialTicks);
+    }
+
+    protected boolean shouldShowScrollBar() {
+        return this.getMaxScroll() > 0 && this.getContentHeight() > 0 && this.bottom > this.top;
+    }
+
+    protected boolean isMouseOverScrollBar(boolean hasScrollBar, int mouseX) {
+        return hasScrollBar && mouseX >= this.getScrollBarLeft() && mouseX < this.getScrollBarRight();
+    }
+
+    protected boolean isMouseBeforeScrollBar(boolean hasScrollBar, int mouseX) {
+        return !hasScrollBar || mouseX < this.getScrollBarLeft();
     }
 
     /*
@@ -405,14 +459,6 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
     @Override
     protected int getScrollBarX() {
         return super.getScrollBarX();
-    }
-
-    /**
-     * Returns the row content width in screen pixels. This is a size, not an x-coordinate.
-     */
-    @Override
-    public int getListWidth() {
-        return super.getListWidth();
     }
 
     /**
@@ -457,61 +503,15 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
         return this.getRowTop(slotIndex) + this.slotHeight;
     }
 
-    /*
-    Entry
-     */
-
-    public final List<E> children() {
-        return this.entries;
-    }
-
-    @Nonnull
-    @Override
-    public E getListEntry(int slotIndex) {
-        return this.entries.get(slotIndex);
-    }
-
     @Override
     protected int getSize() {
         return this.entries.size();
     }
 
-    public void centerScrollOn(E entry) {
-        int index = this.entries.indexOf(entry);
-        if (index >= 0) {
-            this.setAmountScrolled(index * this.slotHeight + this.slotHeight / 2.0F - (this.bottom - this.top) / 2.0F);
-        }
-    }
-
-    public void addEntry(E entry) {
-        this.entries.add(entry);
-    }
-
-    public void clearEntries() {
-        this.entries.clear();
-    }
-
-    public void replaceEntries(Collection<? extends E> entries) {
-        this.clearEntries();
-        this.entries.addAll(entries);
-    }
-
-    public void removeEntries(Collection<? extends E> entries) {
-        entries.forEach(this::removeEntry);
-    }
-
-    public void removeEntry(E entry) {
-        this.entries.remove(entry);
-    }
-
-    public void clearEntriesExcept(E entry) {
-        this.entries.removeIf(candidate -> candidate != entry);
-    }
-
     @Deprecated
     @Override
-    protected final void drawSelectionBox(int contentLeft, int contentTop, int mouseX, int mouseY, float partialTicks
-    ) { }
+    protected final void drawSelectionBox(int contentLeft, int contentTop, int mouseX, int mouseY, float partialTicks)
+    { }
 
     public interface IListEntry extends IGuiListEntry {
 
@@ -531,9 +531,8 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
          * @return {@code true} means that something within this entry was clicked and the list should not be dragged.
          */
         @Override
-        default boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX,
-            int relativeY
-        ) {
+        default boolean mousePressed(
+            int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY) {
             return false;
         }
 
@@ -546,8 +545,8 @@ public class ModListExtended<E extends GuiListExtended.IGuiListEntry> extends Gu
          * @param relativeY the current y position of the mouse relative to the top-left corner of the entry
          */
         @Override
-        default void mouseReleased(int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY
-        ) { }
+        default void mouseReleased(
+            int slotIndex, int mouseX, int mouseY, int mouseButton, int relativeX, int relativeY) { }
 
     }
 

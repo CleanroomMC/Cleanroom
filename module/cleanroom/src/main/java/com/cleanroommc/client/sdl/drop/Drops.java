@@ -39,8 +39,7 @@ final class Drops {
                 SDL.events().post(new DropEvent.Position(windowId, timestampNs, x, y, source));
             case SDLEvents.SDL_EVENT_DROP_COMPLETE ->
                 SDL.events().post(new DropEvent.Complete(windowId, timestampNs, x, y, source));
-            default -> {
-            }
+            default -> { }
         }
     }
 

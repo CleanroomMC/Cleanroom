@@ -39,8 +39,8 @@ import javax.annotation.Nullable;
 
 public class CleanroomModData implements IModData {
 
-    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation("forge",
-        "textures/gui/version_check_icons.png"
+    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(
+        "forge", "textures/gui/version_check_icons.png"
     );
     private static final List<String> LIB_MODS = Arrays.asList(ModListConfig.libraryList);
     private static final List<String> IGNORED_DEPENDENCIES = Arrays.asList(ModListConfig.ignoredDependenciesList);
@@ -212,8 +212,8 @@ public class CleanroomModData implements IModData {
     public CheckResult getCheckResult() {
         ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.info);
         if (result != null && result.status.shouldDraw()) {
-            return new CheckResult(result.status == ForgeVersion.Status.OUTDATED ||
-                    result.status == ForgeVersion.Status.BETA_OUTDATED,
+            return new CheckResult(
+                result.status == ForgeVersion.Status.OUTDATED || result.status == ForgeVersion.Status.BETA_OUTDATED,
                 result.status.isAnimated(), result.status.getSheetOffset(), VERSION_CHECK_ICONS, result.latestFound,
                 result.homepage
             );
@@ -225,9 +225,9 @@ public class CleanroomModData implements IModData {
     public void drawCheckIcon(Minecraft minecraft, CheckResult result, int x, int y) {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
+        GlStateManager.tryBlendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
         );
         int offsetV = result.animated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
         minecraft.getTextureManager().bindTexture(result.textures());

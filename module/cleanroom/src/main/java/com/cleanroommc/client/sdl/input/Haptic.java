@@ -112,8 +112,8 @@ public final class Haptic implements AutoCloseable {
                 }
                 this.leftRightEffect = id;
             } else {
-                SDL.check(SDLHaptic.SDL_UpdateHapticEffect(handle, this.leftRightEffect, effect),
-                    "SDL_UpdateHapticEffect"
+                SDL.check(
+                    SDLHaptic.SDL_UpdateHapticEffect(handle, this.leftRightEffect, effect), "SDL_UpdateHapticEffect"
                 );
             }
             SDL.check(SDLHaptic.SDL_RunHapticEffect(handle, this.leftRightEffect, 1), "SDL_RunHapticEffect");
@@ -166,16 +166,6 @@ public final class Haptic implements AutoCloseable {
         return this;
     }
 
-    long handle() {
-        return handle;
-    }
-
-    private void ensureOpen() {
-        if (closed) {
-            throw new IllegalStateException("The haptic device is closed");
-        }
-    }
-
     @Override
     public void close() {
         if (closed) {
@@ -185,6 +175,16 @@ public final class Haptic implements AutoCloseable {
         this.leftRightEffect = -1;
         InputInternal.haptics().forget(this);
         SDLHaptic.SDL_CloseHaptic(handle);
+    }
+
+    long handle() {
+        return handle;
+    }
+
+    private void ensureOpen() {
+        if (closed) {
+            throw new IllegalStateException("The haptic device is closed");
+        }
     }
 
 }

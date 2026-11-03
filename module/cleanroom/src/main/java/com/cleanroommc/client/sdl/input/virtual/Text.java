@@ -66,7 +66,8 @@ public final class Text {
      */
     public static synchronized void implementIME(boolean composition, boolean candidates) {
         if (SDL.isInitialized(SDLInit.SDL_INIT_VIDEO)) {
-            throw new IllegalStateException("SDL's video subsystem had been initialized already. The IME hint would be ignored."
+            throw new IllegalStateException(
+                "SDL's video subsystem had been initialized already. The IME hint would be ignored."
             );
         }
         StringBuilder value = new StringBuilder();
@@ -79,7 +80,8 @@ public final class Text {
             }
             value.append("candidates");
         }
-        SDL.check(SDLHints.SDL_SetHint(SDLHints.SDL_HINT_IME_IMPLEMENTED_UI, value.toString()),
+        SDL.check(
+            SDLHints.SDL_SetHint(SDLHints.SDL_HINT_IME_IMPLEMENTED_UI, value.toString()),
             "SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI)"
         );
     }
@@ -203,14 +205,6 @@ public final class Text {
         return restartIfActive();
     }
 
-    private Text restartIfActive() {
-        if (this.active()) {
-            this.stop();
-            this.start();
-        }
-        return this;
-    }
-
     /**
      * Tells the input method where the field and caret sit, in window coordinates.
      *
@@ -306,6 +300,14 @@ public final class Text {
         this.reset();
     }
 
+    private Text restartIfActive() {
+        if (this.active()) {
+            this.stop();
+            this.start();
+        }
+        return this;
+    }
+
     private long handle() {
         return this.window.handle();
     }
@@ -314,28 +316,32 @@ public final class Text {
         int props = SDLProperties.SDL_CreateProperties();
         SDL.check(props != 0, "SDL_CreateProperties");
         try {
-            SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER,
-                    this.kind.value()
+            SDL.check(
+                SDLProperties.SDL_SetNumberProperty(
+                    props, SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER, this.kind.value()
                 ),
                 "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER + ")"
             );
-            SDL.check(SDLProperties.SDL_SetNumberProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER,
-                    this.capitalization.value()
+            SDL.check(
+                SDLProperties.SDL_SetNumberProperty(
+                    props, SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, this.capitalization.value()
                 ),
                 "SDL_SetNumberProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER + ")"
             );
-            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN,
-                    this.multiline
+            SDL.check(
+                SDLProperties.SDL_SetBooleanProperty(
+                    props, SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN, this.multiline
                 ),
                 "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN + ")"
             );
-            SDL.check(SDLProperties.SDL_SetBooleanProperty(props, SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN,
-                    this.autocorrect
+            SDL.check(
+                SDLProperties.SDL_SetBooleanProperty(
+                    props, SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, this.autocorrect
                 ),
                 "SDL_SetBooleanProperty(" + SDLKeyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN + ")"
             );
-            SDL.check(SDLKeyboard.SDL_StartTextInputWithProperties(this.handle(), props),
-                "SDL_StartTextInputWithProperties"
+            SDL.check(
+                SDLKeyboard.SDL_StartTextInputWithProperties(this.handle(), props), "SDL_StartTextInputWithProperties"
             );
         } finally {
             SDLProperties.SDL_DestroyProperties(props);

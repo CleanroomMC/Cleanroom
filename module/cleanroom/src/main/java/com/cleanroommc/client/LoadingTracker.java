@@ -84,8 +84,8 @@ public final class LoadingTracker {
         public static final Phase RELOAD_ITEMS = register("RELOAD_ITEMS", "ModelLoader: items", 1300);
         public static final Phase RELOAD_TEXTURES = register("RELOAD_TEXTURES", "Texture stitching", 400);
         public static final Phase TEXTURE_CREATION = register("TEXTURE_CREATION", "Texture creation", 700);
-        public static final Phase TEXTURE_MIPMAP_UPLOAD = register("TEXTURE_MIPMAP_UPLOAD", "Texture mipmap and upload",
-            900
+        public static final Phase TEXTURE_MIPMAP_UPLOAD = register(
+            "TEXTURE_MIPMAP_UPLOAD", "Texture mipmap and upload", 900
         );
         public static final Phase RELOAD_BAKING = register("RELOAD_BAKING", "ModelLoader: baking", 1600);
         public static final Phase INIT = register("INIT", "Initializing Mods", 800);
@@ -455,8 +455,7 @@ public final class LoadingTracker {
         }
         try {
             file.getParentFile().mkdirs();
-        } catch (Throwable ignored) {
-        }
+        } catch (Throwable ignored) { }
 
         List<Phase> phases = Phase.getAll();
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(file))) {

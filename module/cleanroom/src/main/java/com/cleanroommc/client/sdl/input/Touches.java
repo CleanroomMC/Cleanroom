@@ -67,29 +67,33 @@ public final class Touches {
             case SDLEvents.SDL_EVENT_FINGER_DOWN -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
                 SDL.events()
-                    .post(new TouchEvent.Down(finger.windowID(), finger.timestamp(), finger.touchID(),
-                        finger.fingerID(), finger.x(), finger.y(), finger.pressure()
+                    .post(new TouchEvent.Down(
+                        finger.windowID(), finger.timestamp(), finger.touchID(), finger.fingerID(), finger.x(),
+                        finger.y(), finger.pressure()
                     ));
             }
             case SDLEvents.SDL_EVENT_FINGER_UP -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
                 SDL.events()
-                    .post(new TouchEvent.Up(finger.windowID(), finger.timestamp(), finger.touchID(), finger.fingerID(),
-                        finger.x(), finger.y(), finger.pressure()
+                    .post(new TouchEvent.Up(
+                        finger.windowID(), finger.timestamp(), finger.touchID(), finger.fingerID(), finger.x(),
+                        finger.y(), finger.pressure()
                     ));
             }
             case SDLEvents.SDL_EVENT_FINGER_MOTION -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
                 SDL.events()
-                    .post(new TouchEvent.Motion(finger.windowID(), finger.timestamp(), finger.touchID(),
-                        finger.fingerID(), finger.x(), finger.y(), finger.dx(), finger.dy(), finger.pressure()
+                    .post(new TouchEvent.Motion(
+                        finger.windowID(), finger.timestamp(), finger.touchID(), finger.fingerID(), finger.x(),
+                        finger.y(), finger.dx(), finger.dy(), finger.pressure()
                     ));
             }
             case SDLEvents.SDL_EVENT_FINGER_CANCELED -> {
                 SDL_TouchFingerEvent finger = event.tfinger();
                 SDL.events()
-                    .post(new TouchEvent.Canceled(finger.windowID(), finger.timestamp(), finger.touchID(),
-                        finger.fingerID(), finger.x(), finger.y(), finger.pressure()
+                    .post(new TouchEvent.Canceled(
+                        finger.windowID(), finger.timestamp(), finger.touchID(), finger.fingerID(), finger.x(),
+                        finger.y(), finger.pressure()
                     ));
             }
             case SDLEvents.SDL_EVENT_PINCH_BEGIN -> {
@@ -104,8 +108,7 @@ public final class Touches {
                 SDL_PinchFingerEvent pinch = event.pinch();
                 SDL.events().post(new TouchEvent.PinchEnd(pinch.windowID(), pinch.timestamp(), pinch.scale()));
             }
-            default -> {
-            }
+            default -> { }
         }
     }
 

@@ -31,11 +31,6 @@ public class ModListSelection<E extends GuiListExtended.IGuiListEntry> extends M
         this.setSelected(null);
     }
 
-    @Override
-    protected boolean isSelected(int slotIndex) {
-        return this.getSelected() == this.getListEntry(slotIndex);
-    }
-
     @Nullable
     public E getSelected() {
         return this.selected;
@@ -61,9 +56,14 @@ public class ModListSelection<E extends GuiListExtended.IGuiListEntry> extends M
     }
 
     @Override
-    protected void renderItem(int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX,
-        int mouseY, float partialTicks
-    ) {
+    protected boolean isSelected(int slotIndex) {
+        return this.getSelected() == this.getListEntry(slotIndex);
+    }
+
+    @Override
+    protected void renderItem(
+        int slotIndex, int rowLeft, int rowTop, int rowRight, int rowBottom, int mouseX, int mouseY,
+        float partialTicks) {
         if (this.showSelectionBox && this.isSelected(slotIndex)) {
             this.renderSelection(rowLeft, rowTop, rowRight, rowBottom);
         }

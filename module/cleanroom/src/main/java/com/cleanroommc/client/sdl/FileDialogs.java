@@ -114,9 +114,9 @@ public final class FileDialogs {
         }
     }
 
-    private static void fileDialog(List<Filter> filters, boolean many, String location, boolean openFile,
-        boolean folder, Consumer<List<Path>> onResult
-    ) {
+    private static void fileDialog(
+        List<Filter> filters, boolean many, String location, boolean openFile, boolean folder,
+        Consumer<List<Path>> onResult) {
         if (onResult == null) {
             throw new IllegalArgumentException("onResult cannot be null");
         }
@@ -163,9 +163,8 @@ public final class FileDialogs {
         }
     }
 
-    private static void release(SDL_DialogFileCallback callback, SDL_DialogFileFilter.Buffer filters,
-        List<ByteBuffer> strings
-    ) {
+    private static void release(
+        SDL_DialogFileCallback callback, SDL_DialogFileFilter.Buffer filters, List<ByteBuffer> strings) {
         if (callback != null) {
             callback.free();
         }
@@ -198,8 +197,9 @@ public final class FileDialogs {
     }
 
     private static void box(int flags, String title, String message) {
-        SDL.check(SDLMessageBox.SDL_ShowSimpleMessageBox(flags, title == null ? "" : title,
-                message == null ? "" : message, parentHandle()
+        SDL.check(
+            SDLMessageBox.SDL_ShowSimpleMessageBox(
+                flags, title == null ? "" : title, message == null ? "" : message, parentHandle()
             ),
             "SDL_ShowSimpleMessageBox"
         );

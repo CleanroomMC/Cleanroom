@@ -38,15 +38,6 @@ public final class Sensors {
 
     Sensors() { }
 
-    synchronized void ensure() {
-        if (started) {
-            return;
-        }
-        SDL.ensureSubsystem(SDLInit.SDL_INIT_SENSOR);
-        started = true;
-        openConnected();
-    }
-
     public synchronized List<Sensor> list() {
         ensure();
         return List.copyOf(sensors.values());
@@ -60,6 +51,15 @@ public final class Sensors {
     public synchronized Sensor byId(int id) {
         ensure();
         return sensors.get(id);
+    }
+
+    synchronized void ensure() {
+        if (started) {
+            return;
+        }
+        SDL.ensureSubsystem(SDLInit.SDL_INIT_SENSOR);
+        started = true;
+        openConnected();
     }
 
     synchronized void handle(SDL_Event event) {
@@ -85,6 +85,19 @@ public final class Sensors {
         }
         sensors.clear();
         started = false;
+    }
+
+    synchronized Sensor injectAdded(int id, long handle) {
+        started = true;
+        Sensor sensor = new Sensor(id, handle);
+        sensors.put(id, sensor);
+        SDL.events().post(new SensorEvent.Added(SDLTimer.SDL_GetTicksNS(), sensor));
+        return sensor;
+    }
+
+    synchronized void injectRemoved(int id) {
+        sensors.remove(id);
+        SDL.events().post(new SensorEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
     }
 
     private void openConnected() {
@@ -113,19 +126,6 @@ public final class Sensors {
         Sensor sensor = new Sensor(id, handle);
         sensors.put(id, sensor);
         return sensor;
-    }
-
-    synchronized Sensor injectAdded(int id, long handle) {
-        started = true;
-        Sensor sensor = new Sensor(id, handle);
-        sensors.put(id, sensor);
-        SDL.events().post(new SensorEvent.Added(SDLTimer.SDL_GetTicksNS(), sensor));
-        return sensor;
-    }
-
-    synchronized void injectRemoved(int id) {
-        sensors.remove(id);
-        SDL.events().post(new SensorEvent.Removed(id, SDLTimer.SDL_GetTicksNS()));
     }
 
 }

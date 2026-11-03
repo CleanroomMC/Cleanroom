@@ -61,7 +61,8 @@ public final class CleanroomWindowBridge implements WindowBridge {
         if (format.floatingPointPacked()) {
             return "SDL cannot guarantee a packed floating point color buffer";
         }
-        String rejection = firstOf(atLeast("alpha bits", format.alphaBits(), SDLVideo.SDL_GL_ALPHA_SIZE),
+        String rejection = firstOf(
+            atLeast("alpha bits", format.alphaBits(), SDLVideo.SDL_GL_ALPHA_SIZE),
             atLeast("depth bits", format.depthBits(), SDLVideo.SDL_GL_DEPTH_SIZE),
             atLeast("stencil bits", format.stencilBits(), SDLVideo.SDL_GL_STENCIL_SIZE),
             atLeast("accumulation alpha bits", format.accumulationAlphaBits(), SDLVideo.SDL_GL_ACCUM_ALPHA_SIZE),
@@ -80,7 +81,8 @@ public final class CleanroomWindowBridge implements WindowBridge {
         if (attributes.layerPlane() != 0) {
             return "SDL does not support OpenGL layer planes";
         }
-        return firstOf(version(attributes.majorVersion(), attributes.minorVersion()), profile(attributes.profile()),
+        return firstOf(
+            version(attributes.majorVersion(), attributes.minorVersion()), profile(attributes.profile()),
             flags(attributes), resetNotification(attributes.resetNotification()),
             releaseBehavior(attributes.releaseBehavior())
         );
@@ -176,9 +178,9 @@ public final class CleanroomWindowBridge implements WindowBridge {
     }
 
     private static VideoMode videoMode(DisplayMode mode) {
-        return new VideoMode(Math.round(mode.width() * mode.pixelDensity()),
-            Math.round(mode.height() * mode.pixelDensity()), SDLPixels.SDL_BITSPERPIXEL(mode.format()),
-            Math.round(mode.refreshRate())
+        return new VideoMode(
+            Math.round(mode.width() * mode.pixelDensity()), Math.round(mode.height() * mode.pixelDensity()),
+            SDLPixels.SDL_BITSPERPIXEL(mode.format()), Math.round(mode.refreshRate())
         );
     }
 
@@ -342,7 +344,8 @@ public final class CleanroomWindowBridge implements WindowBridge {
             BufferedImage image = new BufferedImage(side, side, BufferedImage.TYPE_INT_ARGB);
             for (int pixel = 0; pixel < side * side; pixel++) {
                 int at = icon.position() + pixel * 4;
-                image.setRGB(pixel % side, pixel / side,
+                image.setRGB(
+                    pixel % side, pixel / side,
                     (icon.get(at + 3) & 0xFF) << 24 | (icon.get(at) & 0xFF) << 16 | (icon.get(at + 1) & 0xFF) << 8 |
                         icon.get(at + 2) & 0xFF
                 );
@@ -465,7 +468,8 @@ public final class CleanroomWindowBridge implements WindowBridge {
 
     @Override
     public void mousePosition(float x, float y) {
-        window.mousePosition(x * window.width() / Math.max(1, window.pixelWidth()),
+        window.mousePosition(
+            x * window.width() / Math.max(1, window.pixelWidth()),
             y * window.height() / Math.max(1, window.pixelHeight())
         );
     }

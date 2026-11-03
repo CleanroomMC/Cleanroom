@@ -50,6 +50,21 @@ public final class PlatformUtils {
         return dataList;
     }
 
+    public static File getModDirectory() {
+        return Loader.instance().getConfigDir().getParentFile().toPath().resolve("mods").toFile();
+    }
+
+    public static Path getConfigDirectory() {
+        return Loader.instance().getConfigDir().toPath();
+    }
+
+    public static boolean isKeyCombo(int keyCode, int comboKeyCode) {
+        return keyCode == comboKeyCode &&
+            GuiScreen.isCtrlKeyDown() &&
+            !GuiScreen.isShiftKeyDown() &&
+            !GuiScreen.isAltKeyDown();
+    }
+
     private static void linkChildMods(List<ModContainer> containerList) {
         for (ModContainer container : containerList) {
             if (container == null) {
@@ -70,21 +85,6 @@ public final class PlatformUtils {
                 }
             }
         }
-    }
-
-    public static File getModDirectory() {
-        return Loader.instance().getConfigDir().getParentFile().toPath().resolve("mods").toFile();
-    }
-
-    public static Path getConfigDirectory() {
-        return Loader.instance().getConfigDir().toPath();
-    }
-
-    public static boolean isKeyCombo(int keyCode, int comboKeyCode) {
-        return keyCode == comboKeyCode &&
-            GuiScreen.isCtrlKeyDown() &&
-            !GuiScreen.isShiftKeyDown() &&
-            !GuiScreen.isAltKeyDown();
     }
 
 }

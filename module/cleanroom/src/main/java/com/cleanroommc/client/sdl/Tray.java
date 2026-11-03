@@ -104,12 +104,6 @@ public final class Tray implements AutoCloseable {
         return new Menu(menu);
     }
 
-    private void ensureOpen() {
-        if (closed) {
-            throw new IllegalStateException("The tray is closed");
-        }
-    }
-
     @Override
     public void close() {
         if (closed) {
@@ -124,6 +118,12 @@ public final class Tray implements AutoCloseable {
             callback.free();
         }
         callbacks.clear();
+    }
+
+    private void ensureOpen() {
+        if (closed) {
+            throw new IllegalStateException("The tray is closed");
+        }
     }
 
     public final class Menu {

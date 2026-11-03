@@ -37,8 +37,8 @@ final class FoundationTransformerProvider implements ITransformerProvider {
      * mixin target, else resolving the target re-enters their pipeline. Other re-entrants are detected and
      * excluded automatically at runtime via the re-entrance lock.
      */
-    private static final Set<
-        String> REENTRANT_EXCLUSIONS = Sets.newHashSet("net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
+    private static final Set<String> REENTRANT_EXCLUSIONS = Sets.newHashSet(
+        "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
         "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer"
     );
 
@@ -46,10 +46,6 @@ final class FoundationTransformerProvider implements ITransformerProvider {
 
     private List<ILegacyClassTransformer> delegatedTransformers;
     private int previousTransformerCount = -1;
-
-    void refreshDelegatedTransformers() {
-        this.delegatedTransformers = null;
-    }
 
     @Override
     public Collection<ITransformer> getTransformers() {
@@ -73,6 +69,10 @@ final class FoundationTransformerProvider implements ITransformerProvider {
     @Override
     public void addTransformerExclusion(String name) {
         this.excludeTransformers.add(name);
+        this.delegatedTransformers = null;
+    }
+
+    void refreshDelegatedTransformers() {
         this.delegatedTransformers = null;
     }
 

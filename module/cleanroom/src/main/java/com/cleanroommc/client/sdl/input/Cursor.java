@@ -57,10 +57,10 @@ public final class Cursor implements AutoCloseable {
     }
 
     static synchronized Cursor system(SystemCursor kind) {
-        return SYSTEM.computeIfAbsent(kind,
-            owned -> new Cursor(SDL.checkHandle(SDLMouse.SDL_CreateSystemCursor(owned.value()), "SDL_CreateSystemCursor"
-                ),
-                true
+        return SYSTEM.computeIfAbsent(
+            kind,
+            owned -> new Cursor(
+                SDL.checkHandle(SDLMouse.SDL_CreateSystemCursor(owned.value()), "SDL_CreateSystemCursor"), true
             )
         );
     }
@@ -87,6 +87,16 @@ public final class Cursor implements AutoCloseable {
         }
     }
 
+    @Override
+    public void close() {
+        if (closed) {
+            return;
+        }
+        closed = true;
+        SDLMouse.SDL_DestroyCursor(handle);
+        forget(this);
+    }
+
     void apply() {
         ensureOpen();
         SDL.check(SDLMouse.SDL_SetCursor(handle), "SDL_SetCursor");
@@ -96,16 +106,6 @@ public final class Cursor implements AutoCloseable {
         if (closed) {
             throw new IllegalStateException("The cursor is closed");
         }
-    }
-
-    @Override
-    public void close() {
-        if (closed) {
-            return;
-        }
-        closed = true;
-        SDLMouse.SDL_DestroyCursor(handle);
-        forget(this);
     }
 
 }

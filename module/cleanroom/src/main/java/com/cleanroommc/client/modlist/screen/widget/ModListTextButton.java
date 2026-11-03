@@ -24,9 +24,8 @@ public class ModListTextButton extends GuiButton {
 
     private final @Nullable Consumer<ModListTextButton> onPress;
 
-    public ModListTextButton(int x, int y, int width, int height, String text,
-        @Nullable Consumer<ModListTextButton> onPress
-    ) {
+    public ModListTextButton(
+        int x, int y, int width, int height, String text, @Nullable Consumer<ModListTextButton> onPress) {
         super(-1, x, y, width, height, text);
         this.onPress = onPress;
     }
@@ -51,8 +50,9 @@ public class ModListTextButton extends GuiButton {
     @SuppressWarnings("unused")
     protected void renderBackground(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
-        GuiUtils.drawContinuousTexturedBox(this.x, this.y, 0, 46 + this.getHoverState(this.hovered) * 20, this.width,
-            this.height, 200, 20, 2, this.zLevel
+        GuiUtils.drawContinuousTexturedBox(
+            this.x, this.y, 0, 46 + this.getHoverState(this.hovered) * 20, this.width, this.height, 200, 20, 2,
+            this.zLevel
         );
     }
 
@@ -65,8 +65,8 @@ public class ModListTextButton extends GuiButton {
     protected void renderScrollingString(FontRenderer font, int borderX, int color) {
         int boxLeft = this.x + borderX;
         int boxRight = this.x + this.width - borderX;
-        RenderUtils.drawScrollingString(font, this.displayString, boxLeft, this.y, boxRight, this.y + this.height,
-            color, true
+        RenderUtils.drawScrollingString(
+            font, this.displayString, boxLeft, this.y, boxRight, this.y + this.height, color, true
         );
     }
 

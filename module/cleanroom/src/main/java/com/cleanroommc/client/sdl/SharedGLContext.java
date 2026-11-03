@@ -42,8 +42,9 @@ public final class SharedGLContext implements WindowBridge.SharedContext {
         }
         long previousWindow = SDLVideo.SDL_GL_GetCurrentWindow();
         long previousContext = SDLVideo.SDL_GL_GetCurrentContext();
-        long surface = SDL.checkHandle(SDLVideo.SDL_CreateWindow("Cleanroom Shared Context", 1, 1,
-                SDLVideo.SDL_WINDOW_OPENGL | SDLVideo.SDL_WINDOW_HIDDEN
+        long surface = SDL.checkHandle(
+            SDLVideo.SDL_CreateWindow(
+                "Cleanroom Shared Context", 1, 1, SDLVideo.SDL_WINDOW_OPENGL | SDLVideo.SDL_WINDOW_HIDDEN
             ),
             "SDL_CreateWindow"
         );
@@ -52,7 +53,8 @@ public final class SharedGLContext implements WindowBridge.SharedContext {
             if (previousContext == 0L) {
                 window.makeCurrent();
             }
-            SDL.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1),
+            SDL.check(
+                SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1),
                 "SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT)"
             );
             context = SDL.checkHandle(SDLVideo.SDL_GL_CreateContext(surface), "SDL_GL_CreateContext");
