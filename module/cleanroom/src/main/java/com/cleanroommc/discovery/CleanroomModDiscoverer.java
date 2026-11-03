@@ -12,6 +12,8 @@ package com.cleanroommc.discovery;
 
 import com.cleanroommc.cleanmix.CleanMixModContainer;
 import com.cleanroommc.cleanmix.MixinConfiguration;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashManager;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashPhase;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.ConfigAnytimeContainer;
@@ -585,6 +587,8 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void discover(Map<File, Boolean> files) {
+        PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.INITIAL_MOD_SCAN);
+
         CleanroomLog.get().info("Discovering mods");
         long startTime = System.nanoTime();
 

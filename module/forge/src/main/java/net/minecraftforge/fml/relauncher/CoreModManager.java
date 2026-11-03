@@ -20,6 +20,8 @@
 package net.minecraftforge.fml.relauncher;
 
 import com.cleanroommc.cleanmix.CleanMixHooks;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashManager;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashPhase;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
@@ -174,6 +176,8 @@ public class CoreModManager {
 
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
     {
+        PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.CORE_MOD_LAUNCH);
+
         CoreModManager.mcDir = mcDir;
         CoreModManager.tweaker = tweaker;
 
@@ -222,7 +226,7 @@ public class CoreModManager {
         {
             for (String path : System.getProperty("crl.dev.extrapath").split(File.pathSeparator))
             {
-                try 
+                try
                 {
                     Launch.classLoader.addURL(new File(path).getAbsoluteFile().toURI().toURL());
                     FMLLog.log.debug("Adding extra path {} to class path", path);
@@ -290,7 +294,7 @@ public class CoreModManager {
 
     private static FMLPluginWrapper loadCoreMod(LaunchClassLoader classLoader, String coreModClass, File location)
     {
-        if (loadedPlugins.contains(coreModClass)) 
+        if (loadedPlugins.contains(coreModClass))
         {
             return null;
         }

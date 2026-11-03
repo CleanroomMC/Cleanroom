@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 
 import java.io.File;
+import java.util.Map;
 
 public enum PreSplashPhase {
 
@@ -16,7 +17,7 @@ public enum PreSplashPhase {
     FML_SETUP,
 
     /**
-     * @see CleanroomModDiscoverer#discover()
+     * @see CleanroomModDiscoverer#discover(Map)
      */
     INITIAL_MOD_SCAN,
 
@@ -28,5 +29,7 @@ public enum PreSplashPhase {
     /**
      * @see Minecraft#init()
      */
-    MINECRAFT_INIT
+    MINECRAFT_INIT,
+
+    RIGHT_BEFORE_SPLASH
 }

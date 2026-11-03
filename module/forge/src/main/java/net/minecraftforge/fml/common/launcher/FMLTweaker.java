@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fml.common.launcher;
 
+import com.cleanroommc.cleanroom.splash.pre.PreSplashManager;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashPhase;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -144,6 +146,8 @@ public class FMLTweaker implements ITweaker {
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader)
     {
+        PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.FML_SETUP);
+
         FMLLaunchHandler.configureForClientLaunch(classLoader, this);
         FMLLaunchHandler.appendCoreMods();
     }
