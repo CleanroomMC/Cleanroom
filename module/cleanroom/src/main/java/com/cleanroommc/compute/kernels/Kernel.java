@@ -199,7 +199,7 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
         Preconditions.checkArgument(!requiresPipes || dev.supportsPipes(), "Device does not support pipes.");
         arguments.bindAllParameters(this);
         PointerBuffer eventWaitList = null;
-        if (dependencies != null && dependencies.length > 0) {
+        if (dependencies.length > 0) {
             eventWaitList = stack.mallocPointer(dependencies.length);
             eventWaitList.put(CommandQueue.eventIDs(dependencies));
             eventWaitList.rewind();
@@ -212,9 +212,8 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
                 int error = CL10GL.clEnqueueAcquireGLObjects(commandQueue.commandQueue, glObjects, eventWaitList, event);
                 if (error != CL10.CL_SUCCESS)
                     throw new KernelError("Failed to acquire GL objects: " + error);
-                if (dependencies != null)
-                    for (CommandQueue.Event dependency : dependencies)
-                        dependency.close();
+                for (CommandQueue.Event dependency : dependencies)
+                    dependency.close();
                 eventWaitList = stack.mallocPointer(1).put(0, event.get(0));
             }
         }
@@ -222,10 +221,10 @@ public record Kernel(long kernel, ImmutableMap<String, OpenCLType> arguments, in
             case CL10.CL_INVALID_KERNEL_ARGS -> throw new KernelError("Invalid kernel arguments.");
             case CL10.CL_OUT_OF_RESOURCES, CL10.CL_OUT_OF_HOST_MEMORY -> throw new OutOfMemoryError("Not enough resources available to invoke OpenCL kernel.");
         }
-        if (dependencies != null && glObjects == null)
+        if (glObjects == null)
             for (CommandQueue.Event dependency : dependencies)
                 dependency.close();
-        else if (glObjects != null){
+        else {
             CL10.clReleaseEvent(eventWaitList.get(0));
             eventWaitList.put(0, event.get(0)).rewind();
             event.rewind();
