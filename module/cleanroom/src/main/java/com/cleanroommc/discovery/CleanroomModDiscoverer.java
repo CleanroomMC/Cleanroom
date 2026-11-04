@@ -162,6 +162,10 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private File fileDirector;
 
     private CleanroomModDiscoverer() {
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.INITIAL_MOD_SCAN);
+        }
+
         Map<File, Boolean> files = new LinkedHashMap<>();
         for (File candidate : LibraryManager.getCandidates()) {
             files.putIfAbsent(normalize(candidate), false);
@@ -587,8 +591,6 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     }
 
     private void discover(Map<File, Boolean> files) {
-        PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.INITIAL_MOD_SCAN);
-
         CleanroomLog.get().info("Discovering mods");
         long startTime = System.nanoTime();
 

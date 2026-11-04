@@ -176,8 +176,6 @@ public class CoreModManager {
 
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
     {
-        PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.CORE_MOD_LAUNCH);
-
         CoreModManager.mcDir = mcDir;
         CoreModManager.tweaker = tweaker;
 
@@ -248,10 +246,16 @@ public class CoreModManager {
             FMLLog.log.info("Found a command line coremod : {}", coreModClassName);
             loadCoreMod(classLoader, coreModClassName, null);
         }
+        CleanroomModDiscoverer discoverer = CleanroomModDiscoverer.instance();
+
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.CORE_MOD_LAUNCH);
+        }
+
         // Coremods
-        CleanroomModDiscoverer.instance().discoverCoreMods(mcDir, classLoader, tweaker);
+        discoverer.discoverCoreMods(mcDir, classLoader, tweaker);
         // Mixin Mods
-        CleanroomModDiscoverer.instance().discoverMixinMods();
+        discoverer.discoverMixinMods();
     }
 
     // Some mods call this reflectively
