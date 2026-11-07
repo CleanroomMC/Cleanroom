@@ -1,4 +1,4 @@
-package com.cleanroommc.cleanroom.modpatch.transformerpatch;
+package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -7,8 +7,10 @@ import org.objectweb.asm.tree.*;
 
 final class AdvancedRocketry {
 
+    private static final String CLASS_TRANSFORMER = "zmaster587.advancedRocketry.asm.ClassTransformer";
+
     public static byte[] transform(String name, byte[] bytes) {
-        if (name.equals("zmaster587.advancedRocketry.asm.ClassTransformer")) {
+        if (name.equals(CLASS_TRANSFORMER)) {
             ClassNode classNode = new ClassNode();
             ClassReader classReader = new ClassReader(bytes);
             classReader.accept(classNode, 0);

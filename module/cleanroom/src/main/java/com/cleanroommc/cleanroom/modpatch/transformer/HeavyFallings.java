@@ -6,10 +6,12 @@ import javassist.CtMethod;
 
 import java.io.ByteArrayInputStream;
 
-final class HeavyFalling {
+final class HeavyFallings {
+
+    private static final String ASM_TRANSFORMER = "kpan.heavy_fallings.asm.core.AsmTransformer";
 
     public static byte[] transform(String name, byte[] bytes) {
-        if (name.equals()) {
+        if (name.equals(ASM_TRANSFORMER)) {
             try {
                 CtClass cc = ClassPool.getDefault().makeClass(new ByteArrayInputStream(bytes));
                 cc.getDeclaredMethod("rearrangeThisAfterDeobfuscation").setBody("return $1;");
