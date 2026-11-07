@@ -1,14 +1,6 @@
 --- original/net/minecraft/client/gui/GuiKeyBindingList.java
 +++ modified/net/minecraft/client/gui/GuiKeyBindingList.java
-@@ -3,7 +3,6 @@
- import java.util.Arrays;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.resources.I18n;
--import net.minecraft.client.settings.GameSettings;
- import net.minecraft.client.settings.KeyBinding;
- import net.minecraft.util.text.TextFormatting;
- import net.minecraftforge.fml.relauncher.Side;
-@@ -15,10 +14,11 @@
+@@ -15,10 +15,11 @@
      private final GuiControls controlsScreen;
      private final Minecraft mc;
      private final GuiListExtended.IGuiListEntry[] listEntries;
@@ -21,7 +13,7 @@
          this.controlsScreen = controls;
          this.mc = mcIn;
          KeyBinding[] akeybinding = ArrayUtils.clone(mcIn.gameSettings.keyBindings);
-@@ -41,28 +41,30 @@
+@@ -41,28 +42,30 @@
  
              this.listEntries[i++] = new GuiKeyBindingList.KeyEntry(keybinding);
          }
@@ -56,16 +48,24 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -125,7 +127,7 @@
+@@ -119,13 +122,14 @@
+         private final KeyBinding keybinding;
+         /** The localized key description for this KeyEntry */
+         private final String keyDesc;
+-        private final GuiButton btnChangeKeyBinding;
++        private final net.minecraftforge.fml.client.config.GuiButtonExt btnChangeKeyBinding;
+         private final GuiButton btnReset;
+ 
          private KeyEntry(KeyBinding name) {
              this.keybinding = name;
              this.keyDesc = I18n.format(name.getKeyDescription());
 -            this.btnChangeKeyBinding = new GuiButton(0, 0, 0, 75, 20, I18n.format(name.getKeyDescription()));
-+            this.btnChangeKeyBinding = new GuiButton(0, 0, 0, 170, 20, I18n.format(name.getKeyDescription()));
++            this.btnChangeKeyBinding = new net.minecraftforge.fml.client.config.GuiButtonExt(0, 0, 0, 80, 20, I18n.format(name.getKeyDescription()))
++                .setAffixes(TextFormatting.WHITE + "> ", TextFormatting.WHITE + " <");
              this.btnReset = new GuiButton(0, 0, 0, 50, 20, I18n.format("controls.reset"));
          }
  
-@@ -150,19 +152,21 @@
+@@ -150,32 +154,32 @@
                      y + slotHeight / 2 - GuiKeyBindingList.this.mc.fontRenderer.FONT_HEIGHT / 2,
                      16777215
                  );
@@ -92,9 +92,18 @@
                      }
                  }
              }
-@@ -175,7 +179,7 @@
-                     + TextFormatting.WHITE
-                     + " <";
+ 
++            this.btnChangeKeyBinding.setClicked(flag);
++
+             if (flag) {
+-                this.btnChangeKeyBinding.displayString = TextFormatting.WHITE
+-                    + "> "
+-                    + TextFormatting.YELLOW
+-                    + this.btnChangeKeyBinding.displayString
+-                    + TextFormatting.WHITE
+-                    + " <";
++                this.btnChangeKeyBinding.displayString = TextFormatting.YELLOW
++                    + this.btnChangeKeyBinding.displayString;
              } else if (flag1) {
 -                this.btnChangeKeyBinding.displayString = TextFormatting.RED + this.btnChangeKeyBinding.displayString;
 +                this.btnChangeKeyBinding.displayString = (keyCodeModifierConflict ? TextFormatting.GOLD : TextFormatting.RED) + this.btnChangeKeyBinding.displayString;

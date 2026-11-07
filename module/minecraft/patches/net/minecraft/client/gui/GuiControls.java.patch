@@ -6,11 +6,10 @@
      public void initGui() {
 +        cleanroom$initGui();
          this.keyBindingList = new GuiKeyBindingList(this, this.mc);
--        this.buttonList.add(new GuiButton(200, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.format("gui.done")));
-+        this.buttonList.add(new GuiButton(200, this.width / 2 - 241, this.height - 29, 236, 20, I18n.format("gui.done")));
+         this.buttonList.add(new GuiButton(200, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.format("gui.done")));
          this.buttonReset = this.addButton(
 -            new GuiButton(201, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("controls.resetAll"))
-+            new GuiButton(201, this.width / 2 - 155 + 160, this.height - 29, 236, 20, I18n.format("controls.resetAll"))
++            new GuiButton(201, this.width / 2 - 155, this.height - 29, 72, 20, I18n.format("controls.resetAll"))
          );
          this.screenTitle = I18n.format("controls.title");
          int i = 0;
@@ -93,21 +92,21 @@
 +
 +    private static com.cleanroommc.client.controls.GuiControlsHooks.SortMode sortMode = com.cleanroommc.client.controls.GuiControlsHooks.SortMode.CATEGORY;
 +    private static com.cleanroommc.client.controls.GuiControlsHooks.SearchMode searchMode = com.cleanroommc.client.controls.GuiControlsHooks.SearchMode.NAME;
-+    private static com.cleanroommc.client.controls.GuiControlsHooks.FilterMode filterMode = com.cleanroommc.client.controls.GuiControlsHooks.FilterMode.DEFAULT;
++    private static com.cleanroommc.client.controls.GuiControlsHooks.FilterMode filterMode = com.cleanroommc.client.controls.GuiControlsHooks.FilterMode.NONE;
 +
 +    private GuiTextField search;
 +
 +    private void cleanroom$initGui() {
 +        sortMode   = com.cleanroommc.client.controls.GuiControlsHooks.SortMode.CATEGORY;
 +        searchMode = com.cleanroommc.client.controls.GuiControlsHooks.SearchMode.NAME;
-+        filterMode = com.cleanroommc.client.controls.GuiControlsHooks.FilterMode.DEFAULT;
++        filterMode = com.cleanroommc.client.controls.GuiControlsHooks.FilterMode.NONE;
 +
-+        search = new GuiTextField(0, fontRenderer, this.width / 2 - 239, this.height - 50, 232, 20);
++        search = new GuiTextField(0, fontRenderer, this.width / 2 - 155 + 2, this.height - 29 - 40, 146, 16);
 +
-+        buttonList.add(new GuiButton(BTT_SORT_BY, this.width / 2 - 155 + 160, this.height - 71, 115, 20, sortMode.translateText()));
-+        buttonList.add(new GuiButton(BTT_FILTER_MODE, this.width / 2 - 155 + 281, this.height - 71, 115, 20, filterMode.translateText()));
-+        buttonList.add(new GuiButton(BTT_SEARCH_BY, this.width / 2 - 155 + 160, this.height - 50, 115, 20, searchMode.translateText()));
-+        buttonList.add(new GuiButton(BTT_LAYOUT, this.width / 2 - 155 + 281, this.height - 50, 115, 20, I18n.format(com.cleanroommc.client.controls.GuiControlsHooks.TRANSLATE_LAYOUT)));
++        buttonList.add(new GuiButton(BTT_SEARCH_BY, this.width / 2 - 155 + 160, this.height - 29 - 21 * 2, 150, 20, searchMode.translateText()));
++        buttonList.add(new GuiButton(BTT_SORT_BY, this.width / 2 - 155 + 160, this.height - 29 - 21, 150, 20, sortMode.translateText()));
++        buttonList.add(new GuiButton(BTT_FILTER_MODE, this.width / 2 - 155, this.height - 29 - 21, 150, 20, filterMode.translateText()));
++        buttonList.add(new GuiButton(BTT_LAYOUT, this.width / 2 - 155 + 78, this.height - 29, 72, 20, I18n.format(com.cleanroommc.client.controls.GuiControlsHooks.TRANSLATE_LAYOUT)));
 +    }
 +
 +    private boolean cleanroom$keyTyped(char typedChar, int keyCode) {

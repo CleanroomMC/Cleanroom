@@ -102,12 +102,12 @@ public final class GuiControlsHooks {
 
     public enum FilterMode implements Translate {
 
-        DEFAULT,
+        NONE,
         CONFLICT,
         FREE;
 
         private static final String TRANSLATE_KEY = "cleanroom.gui.controls.filter";
-        private static final FilterMode[] modes = { DEFAULT, CONFLICT, FREE };
+        private static final FilterMode[] modes = { NONE, CONFLICT, FREE };
 
         private final String modeKey = "cleanroom.gui.controls.mode." + this.name().toLowerCase();
 
