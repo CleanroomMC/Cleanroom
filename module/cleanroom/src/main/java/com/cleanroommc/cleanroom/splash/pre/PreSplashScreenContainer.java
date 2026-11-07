@@ -11,25 +11,14 @@
 package com.cleanroommc.cleanroom.splash.pre;
 
 import com.cleanroommc.anone.reveal.ReflectiveInvocation;
-import com.cleanroommc.kirino.engine.render.core.shader.ImmediateShaderAccess;
-import com.cleanroommc.kirino.gl.GLResourceManager;
-import com.cleanroommc.kirino.gl.buffer.view.VBOView;
-import com.cleanroommc.kirino.gl.vao.VAO;
-import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
-import com.cleanroommc.kirino.gl.vao.attribute.Stride;
-import com.cleanroommc.kirino.ui.font.McTtfFontManager;
-import com.cleanroommc.kirino.ui.simplegui.SimpleGuiRuntime;
-import com.cleanroommc.kirino.ui.simpletext.ST_Config;
-import com.cleanroommc.kirino.ui.simpletext.ST_FontBackendType;
-import com.cleanroommc.kirino.ui.simpletext.SimpleTextRuntime;
-import com.cleanroommc.kirino.ui.simpletext.atlas.Tex2DArrayGlyphAtlas;
-import com.cleanroommc.kirino.ui.simpletext.backend.DefaultTextProducer;
-import com.cleanroommc.kirino.ui.simpletext.backend.DefaultTextRenderer;
-import com.cleanroommc.kirino.ui.simpletext.backend.FreeTypeFontHandle;
-import com.cleanroommc.kirino.ui.simpletext.backend.freetype.FreeTypeManager;
-import com.cleanroommc.mcttf.glyph.GlyphBuilder;
+import com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLayout;
+import com.cleanroommc.cleanroom.splash.pre.renderer.SdlSplashRenderer;
+import com.cleanroommc.cleanroom.splash.pre.renderer.SwingSplashRenderer;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.data.MetadataSerializer;
@@ -42,7 +31,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLEvents;
 import org.lwjgl.sdl.SDLHints;
@@ -54,22 +42,43 @@ import org.lwjgl.sdl.SDL_Rect;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.ThreadLocalUtil;
-import org.lwjgl.util.freetype.FreeType;
 
+import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.WindowConstants;
+import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Window;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 /**
- * It owns the temporary window, isolated class loading, GL context, and all rendering resources.
+ * It owns the renderer lifecycle, SDL worker thread OR Swing process.
  */
 public final class PreSplashScreenContainer {
 
@@ -77,16 +86,14 @@ public final class PreSplashScreenContainer {
 
     public static final Logger LOGGER = LogManager.getLogger("Pre Splash Screen");
 
-    private static final int WIDTH = 720;
-    private static final int HEIGHT = 360;
-    private static final float SCREEN_PERCENTAGE = 0.35f;
-    private static final float UI_SCALE = 1.15f;
-
     private static final int INITIAL_WAIT_SECOND = 10;
+    private static final int THREAD_START_TIMEOUT_SECOND = 30;
+    private static final int THREAD_STOP_TIMEOUT_SECOND = 10;
 
     private final Thread gameThread;
     private final Thread thread;
     private final Thread shutdownHook;
+    private final PreSplashPresentation presentation;
 
     private final CountDownLatch nativeReady = new CountDownLatch(1);
     private final CountDownLatch firstFrameReady = new CountDownLatch(1);
@@ -105,6 +112,7 @@ public final class PreSplashScreenContainer {
         Preconditions.checkNotNull(assetsDirectory);
 
         gameThread = Thread.currentThread();
+        presentation = new PreSplashPresentation(PreSplashManager.INSTANCE);
         this.assetsDirectory = assetsDirectory;
         this.assetIndex = assetIndex;
         thread = new Thread(this::run, "Pre Splash Renderer");
@@ -128,12 +136,16 @@ public final class PreSplashScreenContainer {
         Runtime.getRuntime().addShutdownHook(screen.shutdownHook);
         screen.thread.start(); // this::run
 
-        // wait for native initialization
+        // wait for renderer initialization and its first frame
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(THREAD_START_TIMEOUT_SECOND);
         boolean interrupted = false;
         while (true) {
             try {
-                screen.nativeReady.await();
-                screen.firstFrameReady.await();
+                if (!screen.nativeReady.await(deadline - System.nanoTime(), TimeUnit.NANOSECONDS)
+                        || !screen.firstFrameReady.await(deadline - System.nanoTime(), TimeUnit.NANOSECONDS)) {
+                    LOGGER.warn("Pre splash renderer did not become ready within {} seconds.", THREAD_START_TIMEOUT_SECOND);
+                    screen.stopAndWait();
+                }
                 break;
             } catch (InterruptedException e) {
                 interrupted = true;
@@ -171,10 +183,16 @@ public final class PreSplashScreenContainer {
         running = false;
         LockSupport.unpark(thread);
 
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(THREAD_STOP_TIMEOUT_SECOND);
         boolean interrupted = false;
         while (thread.isAlive()) {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) {
+                LOGGER.warn("Pre splash renderer did not stop within {} seconds.", THREAD_STOP_TIMEOUT_SECOND);
+                break;
+            }
             try {
-                thread.join();
+                TimeUnit.NANOSECONDS.timedJoin(thread, remaining);
             } catch (InterruptedException e) {
                 interrupted = true;
             }
@@ -186,40 +204,19 @@ public final class PreSplashScreenContainer {
     }
 
     private void run() {
-        Thread renderThread = Thread.currentThread();
-        ClassLoader previousContextLoader = renderThread.getContextClassLoader();
-
         try {
-            ClassLoader loader = new PreSplashClassLoader(PreSplashScreenContainer.class.getClassLoader());
-            renderThread.setContextClassLoader(loader);
-
-            Class<?> renderer = Class.forName(PreSplashScreenContainer.class.getName() + "$Renderer", true, loader);
-            Runnable render = (Runnable) renderer.getConstructor(
-                    File.class,
-                    String.class,
-                    BooleanSupplier.class,
-                    Supplier.class,
-                    Runnable.class,
-                    Runnable.class,
-                    Runnable.class).newInstance(
-                            assetsDirectory,
-                            assetIndex,
-                            (BooleanSupplier) () -> running && gameThread.isAlive(),
-                            (Supplier<PreSplashPhase>) PreSplashManager.INSTANCE::readPhase,
-                            (Runnable) () -> running = false,
-                            (Runnable) nativeReady::countDown,
-                            (Runnable) firstFrameReady::countDown);
-
-            // ENTRYPOINT
-            render.run();
-
+            boolean mac = System.getProperty("os.name", "").toLowerCase(Locale.ROOT).startsWith("mac");
+            if (mac || !runSdl()) {
+                if (isRunning()) {
+                    runSwing();
+                }
+            }
         } catch (Throwable failure) {
             LOGGER.warn("Pre splash unavailable. Continue normal startup.", failure);
         } finally {
             running = false;
             nativeReady.countDown();
             firstFrameReady.countDown();
-            renderThread.setContextClassLoader(previousContextLoader);
             try {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             } catch (IllegalStateException ignored) {
@@ -228,65 +225,157 @@ public final class PreSplashScreenContainer {
         }
     }
 
+    private boolean isRunning() {
+        return running && gameThread.isAlive() && !presentation.isFinished();
+    }
+
+    //<editor-fold desc="runSdl & runSwing">
+    private boolean runSdl() {
+        Thread renderThread = Thread.currentThread();
+        ClassLoader previousContextLoader = renderThread.getContextClassLoader();
+        boolean[] unavailable = { false };
+
+        try {
+            ClassLoader loader = new PreSplashClassLoader(PreSplashScreenContainer.class.getClassLoader());
+            renderThread.setContextClassLoader(loader);
+
+            Class<?> renderer = Class.forName(PreSplashScreenContainer.class.getName() + "$SdlRenderer", true, loader);
+            Runnable render = (Runnable) renderer.getConstructor(
+                    File.class,
+                    String.class,
+                    BooleanSupplier.class,
+                    Supplier.class,
+                    Runnable.class,
+                    Runnable.class,
+                    Runnable.class,
+                    Runnable.class).newInstance(
+                            assetsDirectory,
+                            assetIndex,
+                            (BooleanSupplier) this::isRunning,
+                            (Supplier<PreSplashState>) presentation::nextFrame,
+                            (Runnable) () -> running = false,
+                            (Runnable) nativeReady::countDown,
+                            (Runnable) firstFrameReady::countDown,
+                            (Runnable) () -> unavailable[0] = true);
+
+            // SDL ENTRYPOINT
+            render.run();
+
+        } catch (Throwable failure) {
+            LOGGER.warn("SDL pre splash unavailable. Falling back to Swing.", failure);
+            return false;
+        } finally {
+            renderThread.setContextClassLoader(previousContextLoader);
+        }
+
+        return !unavailable[0];
+    }
+
+    private void runSwing() throws IOException, InterruptedException {
+        // SWING ENTRYPOINT
+        new SwingRenderer(
+                this::isRunning,
+                presentation::nextFrame,
+                nativeReady::countDown,
+                firstFrameReady::countDown).run();
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="SdlRenderer & SwingRenderer">
     /**
-     * Defined only by {@link PreSplashClassLoader}.
-     *
-     * @see PreSplashScreenContainer#run()
+     * @see PreSplashScreenContainer#runSdl()
      */
     @ApiStatus.Internal
-    public static final class Renderer implements Runnable {
+    public static final class SdlRenderer implements Runnable {
 
         private final File assetsDirectory;
         private final @Nullable String assetIndex;
         private final BooleanSupplier running;
-        private final Supplier<PreSplashPhase> phase;
+        private final Supplier<PreSplashState> state;
         private final Runnable stop;
         private final Runnable nativeReady;
         private final Runnable firstFrameReady;
+        private final Runnable unavailable;
 
         @ReflectiveInvocation
-        public Renderer(
+        public SdlRenderer(
                 File assetsDirectory,
                 @Nullable String assetIndex,
                 BooleanSupplier running,
-                Supplier<PreSplashPhase> phase,
+                Supplier<PreSplashState> state,
                 Runnable stop,
                 Runnable nativeReady,
-                Runnable firstFrameReady) {
+                Runnable firstFrameReady,
+                Runnable unavailable) {
 
             Preconditions.checkNotNull(assetsDirectory);
             Preconditions.checkNotNull(running);
-            Preconditions.checkNotNull(phase);
+            Preconditions.checkNotNull(state);
             Preconditions.checkNotNull(stop);
             Preconditions.checkNotNull(nativeReady);
             Preconditions.checkNotNull(firstFrameReady);
+            Preconditions.checkNotNull(unavailable);
 
             this.assetsDirectory = assetsDirectory;
             this.assetIndex = assetIndex;
             this.running = running;
-            this.phase = phase;
+            this.state = state;
             this.stop = stop;
             this.nativeReady = nativeReady;
             this.firstFrameReady = firstFrameReady;
+            this.unavailable = unavailable;
         }
 
-        private static void checkSDL(boolean success, String operation) {
-            Preconditions.checkState(success, "%s: %s", operation, SDLError.SDL_GetError());
-        }
-
-        /**
-         * @see PreSplashScreenContainer#run()
-         */
         @Override
         public void run() {
-            long window = 0;
-            long context = 0;
-            boolean videoInitialized = false;
-            SDL_EventFilter watch = null;
-            String originalLibraryPath = System.getProperty("org.lwjgl.librarypath");
-            boolean initialized = false;
+            try (Window window = Window.open(stop)) {
+                nativeReady.run();
+                if (running.getAsBoolean()) {
+                    try (SdlSplashRenderer renderer = new SdlSplashRenderer(assetsDirectory, assetIndex)) {
+                        window.runLoop(running, (width, height) -> {
+                            renderer.update(state.get());
+                            renderer.render(width, height);
+                        }, firstFrameReady);
+                    }
+                }
+            } catch (Throwable failure) {
+                LOGGER.warn("SDL pre splash unavailable. Falling back to Swing.", failure);
+                unavailable.run();
+            }
+        }
 
-            try {
+        static final class Window implements AutoCloseable {
+
+            private static final int TARGET_FRAME_RATE = 60;
+
+            private final @Nullable String originalLibraryPath = System.getProperty("org.lwjgl.librarypath");
+            private long window;
+            private long context;
+            private boolean videoInitialized;
+            private boolean initialized;
+            private boolean glInitialized;
+            private @Nullable SDL_EventFilter watch;
+
+            static Window open(Runnable stop) {
+                Window window = new Window();
+                try {
+                    window.initialize(stop);
+                    return window;
+                } catch (RuntimeException | Error failure) {
+                    try {
+                        window.close();
+                    } catch (Throwable cleanup) {
+                        failure.addSuppressed(cleanup);
+                    }
+                    throw failure;
+                }
+            }
+
+            private static void checkSDL(boolean success, String operation) {
+                Preconditions.checkState(success, "%s: %s", operation, SDLError.SDL_GetError());
+            }
+
+            private void initialize(Runnable stop) {
                 // configure this loader's (PreSplashClassLoader) LWJGL copy
                 Configuration.LIBRARY_PATH.set(null);
                 Configuration.SHARED_LIBRARY_EXTRACT_PATH.set(null);
@@ -303,6 +392,8 @@ public final class PreSplashScreenContainer {
                 checkSDL(SDLInit.SDL_InitSubSystem(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS), "SDL_InitSubSystem");
 
                 videoInitialized = true;
+                // on non-Apple platforms, the video initializing thread is SDL's main thread
+                Preconditions.checkState(SDLInit.SDL_IsMainThread(), "Pre splash must run on its SDL video thread.");
 
                 SDLVideo.SDL_GL_ResetAttributes();
                 checkSDL(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, 4), "GL major version");
@@ -313,19 +404,19 @@ public final class PreSplashScreenContainer {
                 int display = SDLVideo.SDL_GetPrimaryDisplay();
                 Preconditions.checkState(display != 0, "SDL_GetPrimaryDisplay: %s", SDLError.SDL_GetError());
 
-                // must not be SDL.window() which belongs to Minecraft
                 try (MemoryStack stack = MemoryStack.stackPush()) {
                     SDL_Rect bounds = SDL_Rect.malloc(stack);
                     checkSDL(SDLVideo.SDL_GetDisplayBounds(display, bounds), "SDL_GetDisplayBounds");
 
-                    float scale = Math.min((float) bounds.w() / WIDTH, (float) bounds.h() / HEIGHT) * SCREEN_PERCENTAGE;
-                    int windowWidth = Math.max(1, Math.round(WIDTH * scale));
-                    int windowHeight = Math.max(1, Math.round(HEIGHT * scale));
+                    float scale = Math.min((float) bounds.w() / PreSplashLayout.WIDTH, (float) bounds.h() / PreSplashLayout.HEIGHT) * PreSplashLayout.SCREEN_PERCENTAGE;
+                    int windowWidth = Math.max(1, Math.round(PreSplashLayout.WIDTH * scale));
+                    int windowHeight = Math.max(1, Math.round(PreSplashLayout.HEIGHT * scale));
 
                     window = SDLVideo.SDL_CreateWindow("Cleanroom Pre Splash", windowWidth, windowHeight,
                             SDLVideo.SDL_WINDOW_OPENGL
                                     | SDLVideo.SDL_WINDOW_HIGH_PIXEL_DENSITY
                                     | SDLVideo.SDL_WINDOW_HIDDEN
+                                    | SDLVideo.SDL_WINDOW_UTILITY
                                     | SDLVideo.SDL_WINDOW_NOT_FOCUSABLE
                                     | SDLVideo.SDL_WINDOW_ALWAYS_ON_TOP);
 
@@ -349,11 +440,16 @@ public final class PreSplashScreenContainer {
                 context = SDLVideo.SDL_GL_CreateContext(window);
                 Preconditions.checkState(context != 0, "SDL_GL_CreateContext: %s", SDLError.SDL_GetError());
                 checkSDL(SDLVideo.SDL_GL_MakeCurrent(window, context), "SDL_GL_MakeCurrent");
-                // todo: implement multi gl backend
-                Preconditions.checkState(GL.createCapabilities().OpenGL46, "Pre splash requires OpenGL 4.6.");
+
+                // triggers class initializing
+                GL.getFunctionProvider();
+
+                glInitialized = true;
+                boolean gl46 = GL.createCapabilities().OpenGL46;
 
                 // release LWJGL's global table so the game's LWJGL can initialize
                 ThreadLocalUtil.setFunctionMissingAddresses(0);
+                Preconditions.checkState(gl46, "Pre splash requires OpenGL 4.6.");
 
                 if (!SDLVideo.SDL_GL_SetSwapInterval(0)) {
                     LOGGER.debug("Could not disable pre splash VSync: {}", SDLError.SDL_GetError());
@@ -382,25 +478,50 @@ public final class PreSplashScreenContainer {
                 }
 
                 initialized = true;
-                nativeReady.run();
+            }
 
-                // ACTUAL RENDERING ENTRYPOINT
-                try (GLResourceManager.ResourceScope ignored = GLResourceManager.openScope()) {
-                    if (running.getAsBoolean()) {
-                        render(window);
+            void runLoop(BooleanSupplier running, BiConsumer<Integer, Integer> draw, Runnable firstFrameReady) {
+                checkSDL(SDLVideo.SDL_ShowWindow(window), "SDL_ShowWindow");
+                boolean firstFrame = true;
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    IntBuffer width = stack.mallocInt(1);
+                    IntBuffer height = stack.mallocInt(1);
+                    while (running.getAsBoolean()) {
+                        long frameStart = System.nanoTime();
+                        SDLEvents.SDL_PumpEvents();
+                        checkSDL(SDLVideo.SDL_GetWindowSizeInPixels(window, width, height), "SDL_GetWindowSizeInPixels");
+                        if (width.get(0) <= 0 || height.get(0) <= 0) {
+                            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(100));
+                            continue;
+                        }
+
+                        draw.accept(width.get(0), height.get(0));
+                        checkSDL(SDLVideo.SDL_GL_SwapWindow(window), "SDL_GL_SwapWindow");
+                        if (firstFrame) {
+                            firstFrame = false;
+                            firstFrameReady.run();
+                        }
+                        long remaining = TimeUnit.SECONDS.toNanos(1) / TARGET_FRAME_RATE - (System.nanoTime() - frameStart);
+                        if (remaining > 0) {
+                            LockSupport.parkNanos(remaining);
+                        }
                     }
                 }
+            }
 
-            } catch (Throwable failure) {
-                LOGGER.warn("Pre splash unavailable. Continue normal startup.", failure);
-            } finally {
-                stop.run();
+            @Override
+            public void close() {
                 try {
                     if (watch != null) {
                         SDLEvents.SDL_RemoveEventWatch(watch, 0);
                         watch.free();
                     }
-                    GL.setCapabilities(null);
+                    if (glInitialized) {
+                        GL.setCapabilities(null);
+                        if (!initialized) {
+                            ThreadLocalUtil.setFunctionMissingAddresses(0);
+                        }
+                    }
                     if (context != 0) {
                         if (!SDLVideo.SDL_GL_MakeCurrent(window, 0)) {
                             LOGGER.warn("Could not detach pre splash GL context: {}", SDLError.SDL_GetError());
@@ -409,140 +530,444 @@ public final class PreSplashScreenContainer {
                             LOGGER.warn("Could not destroy pre splash GL context: {}", SDLError.SDL_GetError());
                         }
                     }
-                    GL.destroy();
-                    if (window != 0) {
-                        SDLVideo.SDL_DestroyWindow(window);
-                    }
-                    if (videoInitialized) {
-                        if (!initialized) {
-                            SDLVideo.SDL_GL_ResetAttributes();
-                        }
-                        SDLInit.SDL_QuitSubSystem(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS);
-                    }
                 } finally {
-                    if (!initialized) {
-                        if (originalLibraryPath == null) {
-                            System.clearProperty("org.lwjgl.librarypath");
-                        } else {
-                            System.setProperty("org.lwjgl.librarypath", originalLibraryPath);
+                    try {
+                        if (glInitialized) {
+                            GL.destroy();
                         }
-                    }
-                    nativeReady.run();
-                    firstFrameReady.run();
-                }
-            }
-        }
-
-        private void render(long window) throws Exception {
-            var constructor = FreeTypeManager.class.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            FreeTypeManager freeType = constructor.newInstance();
-            freeType.loggerName = "pre_splash";
-            freeType.init();
-            try {
-                McTtfFontManager fonts = PreSplashFontResources.create(assetsDirectory, assetIndex, freeType);
-                try {
-                    var face = fonts.loadDefaultFace(48);
-                    Preconditions.checkState(face != null, "Could not prepare the default Minecraft font.");
-                    ImmediateShaderAccess shaders = new ImmediateShaderAccess(rl -> {
-                        String path = "/assets/" + rl.getNamespace() + "/" + rl.getPath();
-                        try (InputStream input = PreSplashScreenContainer.class.getResourceAsStream(path)) {
-                            Preconditions.checkNotNull(input, "Missing pre splash shader: %s", path);
-                            return new String(input.readAllBytes(), StandardCharsets.UTF_8);
-                        } catch (IOException e) {
-                            throw new IllegalStateException("Could not load pre splash shader " + path, e);
+                    } finally {
+                        try {
+                            if (window != 0) {
+                                SDLVideo.SDL_DestroyWindow(window);
+                            }
+                        } finally {
+                            try {
+                                if (videoInitialized) {
+                                    if (!initialized) {
+                                        SDLVideo.SDL_GL_ResetAttributes();
+                                    }
+                                    SDLInit.SDL_QuitSubSystem(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS);
+                                }
+                            } finally {
+                                if (!initialized) {
+                                    if (originalLibraryPath == null) {
+                                        System.clearProperty("org.lwjgl.librarypath");
+                                    } else {
+                                        System.setProperty("org.lwjgl.librarypath", originalLibraryPath);
+                                    }
+                                }
+                            }
                         }
-                    });
-                    AttributeLayout layout = new AttributeLayout();
-                    layout.push(new Stride(0));
-                    VAO dummyVao = new VAO(layout, null, (VBOView[]) null);
-                    ST_Config config = new ST_Config(
-                            ST_FontBackendType.FREE_TYPE, 48, 16, 12,
-                            FreeType.FT_LOAD_RENDER | FreeType.FT_LOAD_NO_HINTING);
-                    float uiWidth = WIDTH / UI_SCALE;
-                    float uiHeight = HEIGHT / UI_SCALE;
-                    try (SimpleGuiRuntime gui = new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight);
-                         SimpleTextRuntime text = new SimpleTextRuntime(
-                            (_, _) -> new FreeTypeFontHandle(face),
-                            runtime -> {
-                                DefaultTextRenderer renderer = new DefaultTextRenderer(runtime, new Tex2DArrayGlyphAtlas(1024, 1024), shaders, 256, uiWidth, uiHeight);
-                                renderer.loggerName = "pre_splash";
-                                return renderer;
-                            },
-                            runtime -> new DefaultTextProducer(runtime, config.pixelSize(), GlyphBuilder.LINE_HEIGHT_PIXELS),
-                            shaders, new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight),
-                            new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight), config, null)) {
-
-                        drawLoop(window, text, gui);
-                    }
-                } finally {
-                    fonts.destroy();
-                }
-            } finally {
-                freeType.destroy();
-            }
-        }
-
-        private void drawLoop(long window, SimpleTextRuntime text, SimpleGuiRuntime gui) {
-            checkSDL(SDLVideo.SDL_ShowWindow(window), "SDL_ShowWindow");
-            long started = System.nanoTime();
-            boolean firstFrame = true;
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glDisable(GL11.GL_CULL_FACE);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                IntBuffer width = stack.mallocInt(1);
-                IntBuffer height = stack.mallocInt(1);
-                while (running.getAsBoolean()) {
-                    long frameStart = System.nanoTime();
-                    PreSplashPhase currentPhase = phase.get();
-                    if (currentPhase == PreSplashPhase.RIGHT_BEFORE_SPLASH) {
-                        break;
-                    }
-                    SDLEvents.SDL_PumpEvents();
-                    checkSDL(SDLVideo.SDL_GetWindowSizeInPixels(window, width, height), "SDL_GetWindowSizeInPixels");
-                    if (width.get(0) <= 0 || height.get(0) <= 0) {
-                        LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(100));
-                        continue;
-                    }
-
-                    float scale = Math.min((float) width.get(0) / WIDTH, (float) height.get(0) / HEIGHT);
-                    int viewportWidth = Math.round(WIDTH * scale);
-                    int viewportHeight = Math.round(HEIGHT * scale);
-                    GL11.glViewport((width.get(0) - viewportWidth) / 2, (height.get(0) - viewportHeight) / 2, viewportWidth, viewportHeight);
-
-                    GL11.glClearColor(0.055f, 0.065f, 0.085f, 1);
-                    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-                    String label = switch (currentPhase) {
-                        case FML_SETUP -> "Preparing Forge Mod Loader";
-                        case INITIAL_MOD_SCAN -> "Discovering mods";
-                        case CORE_MOD_LAUNCH -> "Loading core mods";
-                        case MINECRAFT_INIT -> "Initializing Minecraft";
-                        case RIGHT_BEFORE_SPLASH -> "Starting mod loading";
-                    };
-                    int stage = currentPhase.ordinal() + 1;
-                    int stages = PreSplashPhase.RIGHT_BEFORE_SPLASH.ordinal();
-                    gui.begin().append(stream -> {
-                        stream.rect(48, 264, 544, 4, 0xFF30384A);
-                        stream.rect(48, 264, 544f * stage / stages, 4, 0xFF88B8F8);
-                    }).endDraw();
-                    text.begin()
-                        .append("Cleanroom", 48, 106, 32, 0xFFF1F4FA)
-                        .append(label, 48, 190, 16, 0xFFB9C7DB)
-                        .append("Stage " + stage + " / " + stages + "  |  " + TimeUnit.NANOSECONDS.toSeconds(frameStart - started) + "s", 48, 286, 16, 0xFF8998AE)
-                        .endDraw();
-                    checkSDL(SDLVideo.SDL_GL_SwapWindow(window), "SDL_GL_SwapWindow");
-                    if (firstFrame) {
-                        firstFrame = false;
-                        firstFrameReady.run();
-                    }
-                    long remaining = TimeUnit.SECONDS.toNanos(1) / 30 - (System.nanoTime() - frameStart);
-                    if (remaining > 0) {
-                        LockSupport.parkNanos(remaining);
                     }
                 }
             }
         }
     }
+
+    /**
+     * @see PreSplashScreenContainer#runSwing()
+     */
+    @ApiStatus.Internal
+    public static final class SwingRenderer {
+
+        private static final int HELPER_START_TIMEOUT_SECOND = 15;
+        private static final int HELPER_STOP_TIMEOUT_SECOND = 2;
+
+        private final BooleanSupplier running;
+        private final Supplier<PreSplashState> state;
+        private final Runnable nativeReady;
+        private final Runnable firstFrameReady;
+
+        private SwingRenderer(BooleanSupplier running, Supplier<PreSplashState> state, Runnable nativeReady, Runnable firstFrameReady) {
+            this.running = running;
+            this.state = state;
+            this.nativeReady = nativeReady;
+            this.firstFrameReady = firstFrameReady;
+        }
+
+        private void run() throws IOException {
+            new HelperProcess(running, state, nativeReady, firstFrameReady).run();
+        }
+
+        static final class Protocol {
+
+            private static final int STATE = 1;
+            private static final int CLOSE = 2;
+            private static final int READY = 3;
+
+            private Protocol() {
+            }
+
+            static void writeState(DataOutputStream output, PreSplashState state) throws IOException {
+                output.writeByte(STATE);
+                output.writeUTF(state.title());
+                output.writeUTF(state.message());
+                output.writeUTF(state.details());
+                output.flush();
+            }
+
+            @Nullable
+            static PreSplashState readState(DataInputStream input) throws IOException {
+                int command;
+                try {
+                    command = input.readUnsignedByte();
+                } catch (IOException ignored) {
+                    return null;
+                }
+                if (command == CLOSE) {
+                    return null;
+                }
+                if (command != STATE) {
+                    throw new IOException("Invalid pre splash command: " + command);
+                }
+                return new PreSplashState(input.readUTF(), input.readUTF(), input.readUTF());
+            }
+
+            static void close(DataOutputStream output) throws IOException {
+                output.writeByte(CLOSE);
+                output.flush();
+            }
+
+            static void ready(DataOutputStream output) throws IOException {
+                output.writeByte(READY);
+                output.flush();
+            }
+
+            static void readReady(DataInputStream input) throws IOException {
+                if (input.readUnsignedByte() != READY) {
+                    throw new IOException("Invalid pre splash readiness reply.");
+                }
+            }
+        }
+
+        private record HelperProcess(BooleanSupplier running, Supplier<PreSplashState> state, Runnable nativeReady, Runnable firstFrameReady) {
+
+            private static void writeHelperClass(JarOutputStream output, Class<?> type, Set<String> entries) throws IOException {
+                String resource = type.getName().replace('.', '/') + ".class";
+                if (!entries.add(resource)) {
+                    return;
+                }
+
+                try (InputStream input = PreSplashScreenContainer.class.getResourceAsStream("/" + resource)) {
+                    Preconditions.checkNotNull(input, "Missing Swing pre splash class: %s", type.getName());
+                    output.putNextEntry(new JarEntry(resource));
+                    input.transferTo(output);
+                    output.closeEntry();
+                }
+
+                for (Class<?> nested : type.getDeclaredClasses()) {
+                    writeHelperClass(output, nested, entries);
+                }
+            }
+
+            private void run() throws IOException {
+                String renderer = SwingRenderer.class.getName() + "$Helper";
+                String windowTitle = "Cleanroom Pre Splash [" + UUID.randomUUID() + "]";
+                Path helperJar = Files.createTempFile("cleanroom-pre-splash-", ".jar");
+                Process helper = null;
+
+                try {
+                    try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(helperJar))) {
+                        Set<String> entries = new HashSet<>();
+                        for (Class<?> type : List.of(Protocol.class, Helper.class, PreSplashState.class, SwingSplashRenderer.class, PreSplashLayout.class)) {
+                            writeHelperClass(output, type, entries);
+                        }
+                    }
+
+                    boolean windows = System.getProperty("os.name", "").toLowerCase(Locale.ROOT).startsWith("windows");
+                    Path java = Path.of(System.getProperty("java.home"), "bin", windows ? "java.exe" : "java");
+
+                    ProcessBuilder builder = new ProcessBuilder(
+                            java.toString(),
+                            "-Dapple.awt.UIElement=true",
+                            "-cp", helperJar.toString(),
+                            renderer,
+                            Long.toString(ProcessHandle.current().pid()),
+                            windowTitle);
+
+                    builder.environment().remove("JDK_JAVA_OPTIONS");
+                    builder.environment().remove("JAVA_TOOL_OPTIONS");
+                    builder.environment().remove("_JAVA_OPTIONS");
+                    builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+                    helper = builder.start();
+
+                    try (DataOutputStream commands = new DataOutputStream(new BufferedOutputStream(helper.getOutputStream()));
+                         DataInputStream replies = new DataInputStream(helper.getInputStream())) {
+
+                        PreSplashState previous = null;
+                        boolean ready = false;
+                        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(HELPER_START_TIMEOUT_SECOND);
+
+                        while (running.getAsBoolean()) {
+                            PreSplashState current = state.get();
+                            if (!helper.isAlive()) {
+                                LOGGER.warn("Swing pre splash helper exited with code {}.", helper.exitValue());
+                                break;
+                            }
+
+                            if (current != previous) {
+                                Protocol.writeState(commands, current);
+                                previous = current;
+                            }
+
+                            while (replies.available() > 0) {
+                                Protocol.readReady(replies);
+                                if (!ready) {
+                                    centerWindowOnNiri(windowTitle);
+                                    ready = true;
+                                    nativeReady.run();
+                                    firstFrameReady.run();
+                                }
+                            }
+
+                            if (!ready && System.nanoTime() >= deadline) {
+                                LOGGER.warn("Swing pre splash helper did not become ready in time.");
+                                break;
+                            }
+
+                            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(50));
+                        }
+
+                        if (helper.isAlive()) {
+                            Protocol.close(commands);
+                        }
+                    }
+                } finally {
+                    try {
+                        if (helper != null) {
+                            stopHelper(helper);
+                        }
+                    } finally {
+                        Files.deleteIfExists(helperJar);
+                    }
+                }
+            }
+
+            private static void stopHelper(Process helper) {
+                boolean interrupted = false;
+                try {
+                    if (!helper.waitFor(HELPER_STOP_TIMEOUT_SECOND, TimeUnit.SECONDS)) {
+                        helper.destroy();
+                        helper.waitFor(HELPER_STOP_TIMEOUT_SECOND, TimeUnit.SECONDS);
+                    }
+                } catch (InterruptedException ignored) {
+                    interrupted = true;
+                } finally {
+                    if (helper.isAlive()) {
+                        helper.destroyForcibly();
+                        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(HELPER_STOP_TIMEOUT_SECOND);
+                        while (helper.isAlive()) {
+                            long remaining = deadline - System.nanoTime();
+                            if (remaining <= 0) {
+                                break;
+                            }
+                            try {
+                                helper.waitFor(remaining, TimeUnit.NANOSECONDS);
+                            } catch (InterruptedException ignored) {
+                                interrupted = true;
+                            }
+                        }
+                    }
+                    if (interrupted) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+
+            //<editor-fold desc="niri integration">
+            private static @Nullable JsonElement niriMessage(String... arguments) {
+                List<String> command = new ArrayList<>(List.of("niri", "msg", "--json"));
+                command.addAll(List.of(arguments));
+
+                Process message = null;
+                try {
+                    message = new ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD).start();
+                    if (message.waitFor(1, TimeUnit.SECONDS) && message.exitValue() == 0) {
+                        try (InputStream input = message.getInputStream()) {
+                            return JsonParser.parseString(new String(input.readAllBytes(), StandardCharsets.UTF_8));
+                        }
+                    }
+                } catch (IOException | RuntimeException failure) {
+                    LOGGER.debug("Could not communicate with niri for pre splash positioning.", failure);
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    if (message != null && message.isAlive()) {
+                        message.destroyForcibly();
+                    }
+                }
+                return null;
+            }
+
+            private static void centerWindowOnNiri(String windowTitle) {
+                if (System.getenv("NIRI_SOCKET") == null) {
+                    return;
+                }
+
+                try {
+                    JsonElement windows = niriMessage("windows");
+                    if (windows == null) {
+                        return;
+                    }
+
+                    JsonObject splash = null;
+                    for (JsonElement element : windows.getAsJsonArray()) {
+                        JsonObject window = element.getAsJsonObject();
+                        JsonElement title = window.get("title");
+                        if (title != null
+                                && title.isJsonPrimitive()
+                                && windowTitle.equals(title.getAsString())
+                                && window.get("is_floating").getAsBoolean()) {
+                            if (splash != null) {
+                                return;
+                            }
+
+                            splash = window;
+                        }
+                    }
+
+                    if (splash == null) {
+                        return;
+                    }
+
+                    JsonElement workspaces = niriMessage("workspaces");
+                    JsonElement outputs = niriMessage("outputs");
+                    if (workspaces == null || outputs == null) {
+                        return;
+                    }
+
+                    for (JsonElement element : workspaces.getAsJsonArray()) {
+                        JsonObject workspace = element.getAsJsonObject();
+                        if (!workspace.get("id").equals(splash.get("workspace_id")) || workspace.get("output").isJsonNull()) {
+                            continue;
+                        }
+
+                        JsonObject output = outputs.getAsJsonObject().getAsJsonObject(workspace.get("output").getAsString());
+                        JsonObject logical = output.getAsJsonObject("logical");
+                        JsonObject layout = splash.getAsJsonObject("layout");
+                        var size = layout.getAsJsonArray("tile_size");
+                        var position = layout.getAsJsonArray("tile_pos_in_workspace_view");
+                        double x = (logical.get("width").getAsDouble() - size.get(0).getAsDouble()) / 2;
+                        double y = (logical.get("height").getAsDouble() - size.get(1).getAsDouble()) / 2;
+
+                        niriMessage(
+                                "action",
+                                "move-floating-window",
+                                "--id", splash.get("id").getAsString(),
+                                "--x=" + String.format(Locale.ROOT, "%+.3f", x - position.get(0).getAsDouble()),
+                                "--y=" + String.format(Locale.ROOT, "%+.3f", y - position.get(1).getAsDouble()));
+
+                        return;
+                    }
+                } catch (RuntimeException failure) {
+                    LOGGER.debug("Could not center Swing pre splash through niri.", failure);
+                }
+            }
+            //</editor-fold>
+        }
+
+        /**
+         * This is the entry point in the helper JVM.
+         */
+        public static final class Helper {
+
+            private static final int TARGET_FRAME_RATE = 60;
+
+            private final SwingSplashRenderer renderer = new SwingSplashRenderer(Helper::notifyReady);
+
+            private @Nullable JDialog window;
+            private @Nullable Timer timer;
+
+            public static void main(String[] args) {
+                try {
+                    ProcessHandle parent = ProcessHandle.of(Long.parseLong(args[0])).orElse(null);
+                    if (parent == null) {
+                        return;
+                    }
+
+                    parent.onExit().thenRun(() -> System.exit(0));
+
+                    try (DataInputStream commands = new DataInputStream(new BufferedInputStream(System.in))) {
+                        PreSplashState initial = Protocol.readState(commands);
+                        if (initial == null) {
+                            return;
+                        }
+
+                        Helper[] screen = new Helper[1];
+                        SwingUtilities.invokeAndWait(() -> {
+                            Helper helper = new Helper();
+                            screen[0] = helper;
+                            helper.renderer.update(initial);
+                            helper.open(args[1]);
+                        });
+
+                        Helper helper = screen[0];
+
+                        PreSplashState state;
+                        while ((state = Protocol.readState(commands)) != null) {
+                            PreSplashState update = state;
+                            SwingUtilities.invokeLater(() -> helper.renderer.update(update));
+                        }
+
+                        SwingUtilities.invokeLater(helper::close);
+                    }
+                } catch (Throwable failure) {
+                    failure.printStackTrace(System.err);
+                    System.exit(1);
+                }
+            }
+
+            private void open(String windowTitle) {
+                var configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+                Rectangle bounds = configuration.getBounds();
+                float scale = Math.min((float) bounds.width / PreSplashLayout.WIDTH, (float) bounds.height / PreSplashLayout.HEIGHT) * PreSplashLayout.SCREEN_PERCENTAGE;
+                int width = Math.max(1, Math.round(PreSplashLayout.WIDTH * scale));
+                int height = Math.max(1, Math.round(PreSplashLayout.HEIGHT * scale));
+
+                window = new JDialog((Frame) null, windowTitle, false, configuration);
+                window.setType(Window.Type.UTILITY);
+                window.setUndecorated(true);
+                window.setResizable(false);
+                window.setFocusableWindowState(false);
+                window.setAutoRequestFocus(false);
+                window.setAlwaysOnTop(true);
+                window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                window.setContentPane(renderer);
+                window.setSize(width, height);
+                window.setLocation(bounds.x + (bounds.width - width) / 2, bounds.y + (bounds.height - height) / 2);
+                window.setVisible(true);
+
+                timer = new Timer(1000 / TARGET_FRAME_RATE, _ -> {
+                    if (!window.isDisplayable()) {
+                        close();
+                        return;
+                    }
+                    renderer.repaint();
+                });
+
+                timer.start();
+            }
+
+            private static void notifyReady() {
+                try {
+                    Protocol.ready(new DataOutputStream(System.out));
+                } catch (IOException failure) {
+                    failure.printStackTrace(System.err);
+                    System.exit(1);
+                }
+            }
+
+            private void close() {
+                if (timer != null) {
+                    timer.stop();
+                }
+                if (window != null) {
+                    window.dispose();
+                }
+                System.exit(0);
+            }
+        }
+    }
+    //</editor-fold>
 }
