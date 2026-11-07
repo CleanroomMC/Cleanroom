@@ -23,13 +23,13 @@ import java.awt.RenderingHints;
 
 public final class SwingSplashRenderer extends JPanel {
 
-    private final Runnable firstFrameReady;
+    private final Runnable startupReady;
 
     private @Nullable PreSplashState state;
-    private boolean firstFrame = true;
+    private boolean startupSignaled;
 
-    public SwingSplashRenderer(Runnable firstFrameReady) {
-        this.firstFrameReady = firstFrameReady;
+    public SwingSplashRenderer(Runnable startupReady) {
+        this.startupReady = startupReady;
     }
 
     public void update(PreSplashState state) {
@@ -63,9 +63,9 @@ public final class SwingSplashRenderer extends JPanel {
             draw.dispose();
         }
 
-        if (firstFrame) {
-            firstFrame = false;
-            firstFrameReady.run();
+        if (!startupSignaled) {
+            startupSignaled = true;
+            startupReady.run();
         }
     }
 

@@ -78,7 +78,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 /**
- * It owns the renderer lifecycle, SDL worker thread OR Swing process.
+ * It owns the renderer lifecycle, SDL window OR Swing process.
  */
 public final class PreSplashScreenContainer {
 
@@ -86,7 +86,6 @@ public final class PreSplashScreenContainer {
 
     public static final Logger LOGGER = LogManager.getLogger("Pre Splash Screen");
 
-    private static final int INITIAL_WAIT_SECOND = 10;
     private static final int THREAD_START_TIMEOUT_SECOND = 30;
     private static final int THREAD_STOP_TIMEOUT_SECOND = 10;
 
@@ -95,8 +94,7 @@ public final class PreSplashScreenContainer {
     private final Thread shutdownHook;
     private final PreSplashPresentation presentation;
 
-    private final CountDownLatch nativeReady = new CountDownLatch(1);
-    private final CountDownLatch firstFrameReady = new CountDownLatch(1);
+    private final CountDownLatch startupReady = new CountDownLatch(1);
 
     private final File assetsDirectory;
     private final @Nullable String assetIndex;
@@ -126,35 +124,29 @@ public final class PreSplashScreenContainer {
      * @see FMLTweaker#injectIntoClassLoader(LaunchClassLoader)
      */
     @ApiStatus.Internal
-    public static synchronized void start(File assetsDirectory, @Nullable String assetIndex) {
+    public static void start(File assetsDirectory, @Nullable String assetIndex) {
         Preconditions.checkNotNull(assetsDirectory);
-        Preconditions.checkState(instance == null, "Pre splash has already started.");
 
-        PreSplashScreenContainer screen = new PreSplashScreenContainer(assetsDirectory, assetIndex);
-        instance = screen;
+        PreSplashScreenContainer screen;
+        synchronized (PreSplashScreenContainer.class) {
+            Preconditions.checkState(instance == null, "Pre splash has already started.");
+            screen = new PreSplashScreenContainer(assetsDirectory, assetIndex);
+            instance = screen;
 
-        Runtime.getRuntime().addShutdownHook(screen.shutdownHook);
-        screen.thread.start(); // this::run
+            Runtime.getRuntime().addShutdownHook(screen.shutdownHook);
+            screen.thread.start(); // this::run
+        }
 
-        // wait for renderer initialization and its first frame
+        // wait until the renderer releases game startup
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(THREAD_START_TIMEOUT_SECOND);
         boolean interrupted = false;
         while (true) {
             try {
-                if (!screen.nativeReady.await(deadline - System.nanoTime(), TimeUnit.NANOSECONDS)
-                        || !screen.firstFrameReady.await(deadline - System.nanoTime(), TimeUnit.NANOSECONDS)) {
+                if (!screen.startupReady.await(deadline - System.nanoTime(), TimeUnit.NANOSECONDS)) {
                     LOGGER.warn("Pre splash renderer did not become ready within {} seconds.", THREAD_START_TIMEOUT_SECOND);
                     screen.stopAndWait();
                 }
                 break;
-            } catch (InterruptedException e) {
-                interrupted = true;
-            }
-        }
-
-        if (screen.running) {
-            try {
-                TimeUnit.SECONDS.sleep(INITIAL_WAIT_SECOND);
             } catch (InterruptedException e) {
                 interrupted = true;
             }
@@ -171,12 +163,17 @@ public final class PreSplashScreenContainer {
      * @see FMLClientHandler#beginMinecraftLoading(Minecraft, List, IReloadableResourceManager, MetadataSerializer)
      */
     @ApiStatus.Internal
-    public static synchronized void finish() {
-        if (instance == null) {
-            return;
+    public static void finish() {
+        PreSplashScreenContainer screen;
+        synchronized (PreSplashScreenContainer.class) {
+            if (instance == null) {
+                return;
+            }
+
+            screen = instance;
         }
 
-        instance.stopAndWait();
+        screen.stopAndWait();
     }
 
     private void stopAndWait() {
@@ -198,13 +195,23 @@ public final class PreSplashScreenContainer {
             }
         }
 
+        // only if the renderer has not signaled yet
+        startupReady.countDown();
+
         if (interrupted) {
             Thread.currentThread().interrupt();
         }
     }
 
+    private boolean isRunning() {
+        return running && gameThread.isAlive() && !presentation.isFinished();
+    }
+
     private void run() {
         try {
+            if (!isRunning()) {
+                return;
+            }
             boolean mac = System.getProperty("os.name", "").toLowerCase(Locale.ROOT).startsWith("mac");
             if (mac || !runSdl()) {
                 if (isRunning()) {
@@ -215,18 +222,13 @@ public final class PreSplashScreenContainer {
             LOGGER.warn("Pre splash unavailable. Continue normal startup.", failure);
         } finally {
             running = false;
-            nativeReady.countDown();
-            firstFrameReady.countDown();
+            startupReady.countDown();
             try {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             } catch (IllegalStateException ignored) {
                 // if shutdown has already begun
             }
         }
-    }
-
-    private boolean isRunning() {
-        return running && gameThread.isAlive() && !presentation.isFinished();
     }
 
     //<editor-fold desc="runSdl & runSwing">
@@ -247,15 +249,13 @@ public final class PreSplashScreenContainer {
                     Supplier.class,
                     Runnable.class,
                     Runnable.class,
-                    Runnable.class,
                     Runnable.class).newInstance(
                             assetsDirectory,
                             assetIndex,
                             (BooleanSupplier) this::isRunning,
                             (Supplier<PreSplashState>) presentation::nextFrame,
                             (Runnable) () -> running = false,
-                            (Runnable) nativeReady::countDown,
-                            (Runnable) firstFrameReady::countDown,
+                            (Runnable) startupReady::countDown,
                             (Runnable) () -> unavailable[0] = true);
 
             // SDL ENTRYPOINT
@@ -271,13 +271,12 @@ public final class PreSplashScreenContainer {
         return !unavailable[0];
     }
 
-    private void runSwing() throws IOException, InterruptedException {
+    private void runSwing() throws IOException {
         // SWING ENTRYPOINT
         new SwingRenderer(
                 this::isRunning,
                 presentation::nextFrame,
-                nativeReady::countDown,
-                firstFrameReady::countDown).run();
+                startupReady::countDown).run();
     }
     //</editor-fold>
 
@@ -293,8 +292,7 @@ public final class PreSplashScreenContainer {
         private final BooleanSupplier running;
         private final Supplier<PreSplashState> state;
         private final Runnable stop;
-        private final Runnable nativeReady;
-        private final Runnable firstFrameReady;
+        private final Runnable startupReady;
         private final Runnable unavailable;
 
         @ReflectiveInvocation
@@ -304,16 +302,14 @@ public final class PreSplashScreenContainer {
                 BooleanSupplier running,
                 Supplier<PreSplashState> state,
                 Runnable stop,
-                Runnable nativeReady,
-                Runnable firstFrameReady,
+                Runnable startupReady,
                 Runnable unavailable) {
 
             Preconditions.checkNotNull(assetsDirectory);
             Preconditions.checkNotNull(running);
             Preconditions.checkNotNull(state);
             Preconditions.checkNotNull(stop);
-            Preconditions.checkNotNull(nativeReady);
-            Preconditions.checkNotNull(firstFrameReady);
+            Preconditions.checkNotNull(startupReady);
             Preconditions.checkNotNull(unavailable);
 
             this.assetsDirectory = assetsDirectory;
@@ -321,21 +317,19 @@ public final class PreSplashScreenContainer {
             this.running = running;
             this.state = state;
             this.stop = stop;
-            this.nativeReady = nativeReady;
-            this.firstFrameReady = firstFrameReady;
+            this.startupReady = startupReady;
             this.unavailable = unavailable;
         }
 
         @Override
         public void run() {
             try (Window window = Window.open(stop)) {
-                nativeReady.run();
                 if (running.getAsBoolean()) {
-                    try (SdlSplashRenderer renderer = new SdlSplashRenderer(assetsDirectory, assetIndex)) {
+                    try (SdlSplashRenderer renderer = new SdlSplashRenderer(assetsDirectory, assetIndex, startupReady)) {
                         window.runLoop(running, (width, height) -> {
                             renderer.update(state.get());
                             renderer.render(width, height);
-                        }, firstFrameReady);
+                        });
                     }
                 }
             } catch (Throwable failure) {
@@ -480,9 +474,8 @@ public final class PreSplashScreenContainer {
                 initialized = true;
             }
 
-            void runLoop(BooleanSupplier running, BiConsumer<Integer, Integer> draw, Runnable firstFrameReady) {
+            void runLoop(BooleanSupplier running, BiConsumer<Integer, Integer> draw) {
                 checkSDL(SDLVideo.SDL_ShowWindow(window), "SDL_ShowWindow");
-                boolean firstFrame = true;
                 try (MemoryStack stack = MemoryStack.stackPush()) {
                     IntBuffer width = stack.mallocInt(1);
                     IntBuffer height = stack.mallocInt(1);
@@ -497,10 +490,6 @@ public final class PreSplashScreenContainer {
 
                         draw.accept(width.get(0), height.get(0));
                         checkSDL(SDLVideo.SDL_GL_SwapWindow(window), "SDL_GL_SwapWindow");
-                        if (firstFrame) {
-                            firstFrame = false;
-                            firstFrameReady.run();
-                        }
                         long remaining = TimeUnit.SECONDS.toNanos(1) / TARGET_FRAME_RATE - (System.nanoTime() - frameStart);
                         if (remaining > 0) {
                             LockSupport.parkNanos(remaining);
@@ -575,18 +564,16 @@ public final class PreSplashScreenContainer {
 
         private final BooleanSupplier running;
         private final Supplier<PreSplashState> state;
-        private final Runnable nativeReady;
-        private final Runnable firstFrameReady;
+        private final Runnable startupReady;
 
-        private SwingRenderer(BooleanSupplier running, Supplier<PreSplashState> state, Runnable nativeReady, Runnable firstFrameReady) {
+        private SwingRenderer(BooleanSupplier running, Supplier<PreSplashState> state, Runnable startupReady) {
             this.running = running;
             this.state = state;
-            this.nativeReady = nativeReady;
-            this.firstFrameReady = firstFrameReady;
+            this.startupReady = startupReady;
         }
 
         private void run() throws IOException {
-            new HelperProcess(running, state, nativeReady, firstFrameReady).run();
+            new HelperProcess(running, state, startupReady).run();
         }
 
         static final class Protocol {
@@ -640,7 +627,7 @@ public final class PreSplashScreenContainer {
             }
         }
 
-        private record HelperProcess(BooleanSupplier running, Supplier<PreSplashState> state, Runnable nativeReady, Runnable firstFrameReady) {
+        private record HelperProcess(BooleanSupplier running, Supplier<PreSplashState> state, Runnable startupReady) {
 
             private static void writeHelperClass(JarOutputStream output, Class<?> type, Set<String> entries) throws IOException {
                 String resource = type.getName().replace('.', '/') + ".class";
@@ -716,8 +703,7 @@ public final class PreSplashScreenContainer {
                                 if (!ready) {
                                     centerWindowOnNiri(windowTitle);
                                     ready = true;
-                                    nativeReady.run();
-                                    firstFrameReady.run();
+                                    startupReady.run();
                                 }
                             }
 
@@ -874,7 +860,7 @@ public final class PreSplashScreenContainer {
 
             private static final int TARGET_FRAME_RATE = 60;
 
-            private final SwingSplashRenderer renderer = new SwingSplashRenderer(Helper::notifyReady);
+            private final SwingSplashRenderer renderer = new SwingSplashRenderer(Helper::signalStartupReady);
 
             private @Nullable JDialog window;
             private @Nullable Timer timer;
@@ -949,7 +935,7 @@ public final class PreSplashScreenContainer {
                 timer.start();
             }
 
-            private static void notifyReady() {
+            private static void signalStartupReady() {
                 try {
                     Protocol.ready(new DataOutputStream(System.out));
                 } catch (IOException failure) {

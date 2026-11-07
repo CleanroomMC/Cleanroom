@@ -52,11 +52,16 @@ public final class SdlSplashRenderer implements AutoCloseable {
     private final McTtfFontManager fonts;
     private final SimpleTextRuntime text;
     private final SimpleGuiRuntime gui;
+    private final Runnable startupReady;
 
     private @Nullable PreSplashState state;
+    private boolean startupSignaled;
 
-    public SdlSplashRenderer(File assetsDirectory, @Nullable String assetIndex) throws Exception {
+    public SdlSplashRenderer(File assetsDirectory, @Nullable String assetIndex, Runnable startupReady) throws Exception {
         Preconditions.checkNotNull(assetsDirectory);
+        Preconditions.checkNotNull(startupReady);
+
+        this.startupReady = startupReady;
 
         scope = GLResourceManager.openScope();
 
@@ -154,6 +159,11 @@ public final class SdlSplashRenderer implements AutoCloseable {
         text.append(state.message(), 48, 190, 16, 0xFFB9C7DB);
         text.append(state.details(), 48, 286, 16, 0xFF8998AE);
         text.endDraw();
+
+        if (!startupSignaled) {
+            startupSignaled = true;
+            startupReady.run();
+        }
     }
 
     @Override
