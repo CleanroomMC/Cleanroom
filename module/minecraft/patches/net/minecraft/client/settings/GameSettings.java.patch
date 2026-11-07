@@ -87,9 +87,9 @@
 -                            keybinding.setKeyCode(Integer.parseInt(s2));
 +                            if (s2.indexOf(':') != -1) {
 +                                String[] t = s2.split(":");
-+                                keybinding.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.valueFromString(t[1]), Integer.parseInt(t[0]));
++                                keybinding.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.maskFromString(t[1]), Integer.parseInt(t[0]));
 +                            } else
-+                            keybinding.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, Integer.parseInt(s2));
++                            keybinding.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.MASK_NONE, Integer.parseInt(s2));
                          }
                      }
  
@@ -110,17 +110,16 @@
          PrintWriter printwriter = null;
  
          try {
-@@ -1023,7 +1036,8 @@
+@@ -1023,7 +1036,7 @@
              printwriter.println("tutorialStep:" + this.tutorialStep.getName());
  
              for (KeyBinding keybinding : this.keyBindings) {
 -                printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
-+                String keyString = "key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode();
-+                printwriter.println(keybinding.getKeyModifier() != net.minecraftforge.client.settings.KeyModifier.NONE ? keyString + ":" + keybinding.getKeyModifier() : keyString);
++                printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode() + net.minecraftforge.client.settings.KeyModifier.maskToString(keybinding.getKeyModifiersMask()));
              }
  
              for (SoundCategory soundcategory : SoundCategory.values()) {
-@@ -1226,4 +1240,33 @@
+@@ -1226,4 +1239,33 @@
              return value;
          }
      }

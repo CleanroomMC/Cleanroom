@@ -1,6 +1,19 @@
 --- original/net/minecraft/client/gui/GuiControls.java
 +++ modified/net/minecraft/client/gui/GuiControls.java
-@@ -79,7 +79,7 @@
+@@ -32,10 +32,11 @@
+     /** Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the window resizes, the buttonList is cleared beforehand. */
+     @Override
+     public void initGui() {
++        cleanroom$initGui();
+         this.keyBindingList = new GuiKeyBindingList(this, this.mc);
+         this.buttonList.add(new GuiButton(200, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.format("gui.done")));
+         this.buttonReset = this.addButton(
+-            new GuiButton(201, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("controls.resetAll"))
++            new GuiButton(201, this.width / 2 - 155, this.height - 29, 72, 20, I18n.format("controls.resetAll"))
+         );
+         this.screenTitle = I18n.format("controls.title");
+         int i = 0;
+@@ -79,13 +80,15 @@
              this.mc.displayGuiScreen(this.parentScreen);
          } else if (button.id == 201) {
              for (KeyBinding keybinding : this.mc.gameSettings.keyBindings) {
@@ -9,25 +22,38 @@
              }
  
              KeyBinding.resetKeyBindingArrayAndHash();
-@@ -93,6 +93,7 @@
+         } else if (button.id < 100 && button instanceof GuiOptionButton) {
+             this.options.setOptionValue(((GuiOptionButton)button).getOption(), 1);
+             button.displayString = this.options.getKeyBinding(GameSettings.Options.byOrdinal(button.id));
++        } else if (cleanroom$actionPerformed(button)) {
++            this.keyBindingList.cleanroom$updateList();
+         }
+     }
+ 
+@@ -93,10 +96,11 @@
      @Override
      protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
          if (this.buttonId != null) {
-+            this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), -100 + mouseButton);
++            this.buttonId.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifierMask(), -100 + mouseButton);
              this.options.setOptionKeyBinding(this.buttonId, -100 + mouseButton);
              this.buttonId = null;
              KeyBinding.resetKeyBindingArrayAndHash();
-@@ -114,13 +115,17 @@
+-        } else if (mouseButton != 0 || !this.keyBindingList.mouseClicked(mouseX, mouseY, mouseButton)) {
++        } else if (!this.search.mouseClicked(mouseX, mouseY, mouseButton) && ( mouseButton != 0 || !this.keyBindingList.mouseClicked(mouseX, mouseY, mouseButton))) {
+             super.mouseClicked(mouseX, mouseY, mouseButton);
+         }
+     }
+@@ -114,17 +118,21 @@
      protected void keyTyped(char typedChar, int keyCode) throws IOException {
          if (this.buttonId != null) {
              if (keyCode == 1) {
-+                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, 0);
++                this.buttonId.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.MASK_NONE, 0);
                  this.options.setOptionKeyBinding(this.buttonId, 0);
              } else if (keyCode != 0) {
-+                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), keyCode);
++                this.buttonId.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifierMask(), keyCode);
                  this.options.setOptionKeyBinding(this.buttonId, keyCode);
              } else if (typedChar > 0) {
-+                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), typedChar + 256);
++                this.buttonId.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifierMask(), typedChar + 256);
                  this.options.setOptionKeyBinding(this.buttonId, typedChar + 256);
              }
  
@@ -35,7 +61,16 @@
              this.buttonId = null;
              this.time = Minecraft.getSystemTime();
              KeyBinding.resetKeyBindingArrayAndHash();
-@@ -138,7 +143,7 @@
+-        } else {
++        } else if (!cleanroom$keyTyped(typedChar, keyCode)) {
+             super.keyTyped(typedChar, keyCode);
+         }
+     }
+@@ -135,10 +143,11 @@
+         this.drawDefaultBackground();
+         this.keyBindingList.drawScreen(mouseX, mouseY, partialTicks);
+         this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 8, 16777215);
++        this.search.drawTextBox();
          boolean flag = false;
  
          for (KeyBinding keybinding : this.options.keyBindings) {
@@ -44,3 +79,73 @@
                  flag = true;
                  break;
              }
+@@ -147,4 +156,69 @@
+         this.buttonReset.enabled = flag;
+         super.drawScreen(mouseX, mouseY, partialTicks);
+     }
++
++    /* ======================================== CLEANROOM START =====================================*/
++    private static final int BTT_SORT_BY = 300;
++    private static final int BTT_FILTER_MODE = 301;
++    private static final int BTT_SEARCH_BY = 302;
++    private static final int BTT_LAYOUT = 303;
++
++    private static com.cleanroommc.client.controls.GuiControlsHooks.SortMode sortMode = com.cleanroommc.client.controls.GuiControlsHooks.SortMode.CATEGORY;
++    private static com.cleanroommc.client.controls.GuiControlsHooks.SearchMode searchMode = com.cleanroommc.client.controls.GuiControlsHooks.SearchMode.NAME;
++    private static com.cleanroommc.client.controls.GuiControlsHooks.FilterMode filterMode = com.cleanroommc.client.controls.GuiControlsHooks.FilterMode.NONE;
++
++    private GuiTextField search;
++
++    private void cleanroom$initGui() {
++        sortMode   = com.cleanroommc.client.controls.GuiControlsHooks.SortMode.CATEGORY;
++        searchMode = com.cleanroommc.client.controls.GuiControlsHooks.SearchMode.NAME;
++        filterMode = com.cleanroommc.client.controls.GuiControlsHooks.FilterMode.NONE;
++
++        search = new GuiTextField(0, fontRenderer, this.width / 2 - 155 + 2, this.height - 29 - 40, 146, 16);
++
++        buttonList.add(new GuiButton(BTT_SEARCH_BY, this.width / 2 - 155 + 160, this.height - 29 - 21 * 2, 150, 20, searchMode.translateText()));
++        buttonList.add(new GuiButton(BTT_SORT_BY, this.width / 2 - 155 + 160, this.height - 29 - 21, 150, 20, sortMode.translateText()));
++        buttonList.add(new GuiButton(BTT_FILTER_MODE, this.width / 2 - 155, this.height - 29 - 21, 150, 20, filterMode.translateText()));
++        buttonList.add(new GuiButton(BTT_LAYOUT, this.width / 2 - 155 + 78, this.height - 29, 72, 20, I18n.format(com.cleanroommc.client.controls.GuiControlsHooks.TRANSLATE_LAYOUT)));
++    }
++
++    private boolean cleanroom$keyTyped(char typedChar, int keyCode) {
++        String previousSearch = search.getText();
++        if (search.textboxKeyTyped(typedChar, keyCode) && !previousSearch.equals(search.getText())) {
++            this.keyBindingList.cleanroom$updateList();
++            return true;
++        }
++        return false;
++    }
++
++    public static com.cleanroommc.client.controls.GuiControlsHooks.SortMode sortMode() {
++        return sortMode;
++    }
++
++    public static com.cleanroommc.client.controls.GuiControlsHooks.SearchMode searchMode() {
++        return searchMode;
++    }
++
++    public static com.cleanroommc.client.controls.GuiControlsHooks.FilterMode filterMode() {
++        return filterMode;
++    }
++
++    public String currentSearch() {
++        return search.getText();
++    }
++
++    private boolean cleanroom$actionPerformed(GuiButton button) {
++        boolean success = true;
++        switch (button.id) {
++            case BTT_SORT_BY -> sortMode = sortMode.next(button);
++            case BTT_FILTER_MODE -> filterMode = filterMode.next(button);
++            case BTT_SEARCH_BY -> searchMode = searchMode.next(button);
++            case BTT_LAYOUT -> {
++
++            }
++            default -> success = false;
++        }
++        return success;
++    }
++    /* ========================================= CLEANROOM END ======================================*/
+ }
