@@ -12,6 +12,7 @@ package com.cleanroommc.cleanroom.splash.pre;
 
 import com.cleanroommc.anone.reveal.ReflectiveInvocation;
 import com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLayout;
+import com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLogger;
 import com.cleanroommc.cleanroom.splash.pre.renderer.SdlSplashRenderer;
 import com.cleanroommc.cleanroom.splash.pre.renderer.SwingSplashRenderer;
 
@@ -58,6 +59,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -86,7 +89,7 @@ public final class PreSplashScreenContainer {
 
     public static final Logger LOGGER = LogManager.getLogger("Pre Splash Screen");
 
-    private static final int THREAD_START_TIMEOUT_SECOND = 30;
+    private static final int THREAD_START_TIMEOUT_SECOND = 45;
     private static final int THREAD_STOP_TIMEOUT_SECOND = 10;
 
     private final Thread gameThread;
@@ -179,6 +182,9 @@ public final class PreSplashScreenContainer {
     private void stopAndWait() {
         running = false;
         LockSupport.unpark(thread);
+        if (Thread.currentThread() == thread) {
+            return;
+        }
 
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(THREAD_STOP_TIMEOUT_SECOND);
         boolean interrupted = false;
@@ -209,6 +215,7 @@ public final class PreSplashScreenContainer {
 
     private void run() {
         try {
+            LOGGER.info("Starting pre splash screen.");
             if (!isRunning()) {
                 return;
             }
@@ -228,6 +235,7 @@ public final class PreSplashScreenContainer {
             } catch (IllegalStateException ignored) {
                 // if shutdown has already begun
             }
+            LOGGER.info("Pre splash screen stopped.");
         }
     }
 
@@ -559,7 +567,6 @@ public final class PreSplashScreenContainer {
     @ApiStatus.Internal
     public static final class SwingRenderer {
 
-        private static final int HELPER_START_TIMEOUT_SECOND = 15;
         private static final int HELPER_STOP_TIMEOUT_SECOND = 2;
 
         private final BooleanSupplier running;
@@ -581,6 +588,8 @@ public final class PreSplashScreenContainer {
             private static final int STATE = 1;
             private static final int CLOSE = 2;
             private static final int READY = 3;
+            private static final int LOG = 4;
+            private static final int MAX_LOG_BYTES = 1024 * 1024;
 
             private Protocol() {
             }
@@ -616,13 +625,80 @@ public final class PreSplashScreenContainer {
             }
 
             static void ready(DataOutputStream output) throws IOException {
-                output.writeByte(READY);
-                output.flush();
+                synchronized (output) {
+                    output.writeByte(READY);
+                    output.flush();
+                }
             }
 
-            static void readReady(DataInputStream input) throws IOException {
-                if (input.readUnsignedByte() != READY) {
-                    throw new IOException("Invalid pre splash readiness reply.");
+            static void log(DataOutputStream output, PreSplashLogger.Level level, String message, @Nullable Throwable failure) throws IOException {
+                if (failure != null) {
+                    StringWriter stack = new StringWriter();
+                    failure.printStackTrace(new PrintWriter(stack));
+                    message += "\n" + stack;
+                }
+
+                byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+                if (bytes.length > MAX_LOG_BYTES) {
+                    throw new IOException("Pre splash log message is too large.");
+                }
+
+                synchronized (output) {
+                    output.writeByte(LOG);
+                    output.writeByte(level.ordinal());
+                    output.writeInt(bytes.length);
+                    output.write(bytes);
+                    output.flush();
+                }
+            }
+
+            private static final class ReplyReader {
+
+                private final DataInputStream input;
+                private byte @Nullable [] bytes;
+                private int level;
+                private int offset;
+
+                private ReplyReader(DataInputStream input) {
+                    this.input = input;
+                }
+
+                private int poll() throws IOException {
+                    if (bytes == null) {
+                        if (input.available() == 0) {
+                            return 0;
+                        }
+                        input.mark(6);
+                        int reply = input.readUnsignedByte();
+                        if (reply == READY) {
+                            return READY;
+                        }
+                        if (reply != LOG) {
+                            throw new IOException("Invalid pre splash reply: " + reply);
+                        }
+                        if (input.available() < 5) {
+                            input.reset();
+                            return 0;
+                        }
+                        level = input.readUnsignedByte();
+                        int length = input.readInt();
+                        if (level >= PreSplashLogger.Level.values().length || length < 0 || length > MAX_LOG_BYTES) {
+                            throw new IOException("Invalid pre splash log message.");
+                        }
+                        bytes = new byte[length];
+                        offset = 0;
+                    }
+
+                    int available = Math.min(input.available(), bytes.length - offset);
+                    input.readFully(bytes, offset, available);
+                    offset += available;
+                    if (offset < bytes.length) {
+                        return 0;
+                    }
+
+                    PreSplashLogger.LOGGER.log(PreSplashLogger.Level.values()[level], new String(bytes, StandardCharsets.UTF_8));
+                    bytes = null;
+                    return LOG;
                 }
             }
         }
@@ -656,7 +732,7 @@ public final class PreSplashScreenContainer {
                 try {
                     try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(helperJar))) {
                         Set<String> entries = new HashSet<>();
-                        for (Class<?> type : List.of(Protocol.class, Helper.class, PreSplashState.class, SwingSplashRenderer.class, PreSplashLayout.class)) {
+                        for (Class<?> type : List.of(Protocol.class, Helper.class, PreSplashState.class, SwingSplashRenderer.class, PreSplashLayout.class, PreSplashLogger.class)) {
                             writeHelperClass(output, type, entries);
                         }
                     }
@@ -680,11 +756,11 @@ public final class PreSplashScreenContainer {
                     helper = builder.start();
 
                     try (DataOutputStream commands = new DataOutputStream(new BufferedOutputStream(helper.getOutputStream()));
-                         DataInputStream replies = new DataInputStream(helper.getInputStream())) {
+                         DataInputStream replies = new DataInputStream(new BufferedInputStream(helper.getInputStream()))) {
 
                         PreSplashState previous = null;
                         boolean ready = false;
-                        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(HELPER_START_TIMEOUT_SECOND);
+                        Protocol.ReplyReader reader = new Protocol.ReplyReader(replies);
 
                         while (running.getAsBoolean()) {
                             PreSplashState current = state.get();
@@ -698,18 +774,13 @@ public final class PreSplashScreenContainer {
                                 previous = current;
                             }
 
-                            while (replies.available() > 0) {
-                                Protocol.readReady(replies);
-                                if (!ready) {
+                            int reply;
+                            while ((reply = reader.poll()) != 0) {
+                                if (reply == Protocol.READY && !ready) {
                                     centerWindowOnNiri(windowTitle);
                                     ready = true;
                                     startupReady.run();
                                 }
-                            }
-
-                            if (!ready && System.nanoTime() >= deadline) {
-                                LOGGER.warn("Swing pre splash helper did not become ready in time.");
-                                break;
                             }
 
                             LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(50));
@@ -860,6 +931,8 @@ public final class PreSplashScreenContainer {
 
             private static final int TARGET_FRAME_RATE = 60;
 
+            private static final DataOutputStream REPLIES = new DataOutputStream(System.out);
+
             private final SwingSplashRenderer renderer = new SwingSplashRenderer(Helper::signalStartupReady);
 
             private @Nullable JDialog window;
@@ -867,6 +940,7 @@ public final class PreSplashScreenContainer {
 
             public static void main(String[] args) {
                 try {
+                    PreSplashLogger.setSink(Helper::log);
                     ProcessHandle parent = ProcessHandle.of(Long.parseLong(args[0])).orElse(null);
                     if (parent == null) {
                         return;
@@ -937,10 +1011,22 @@ public final class PreSplashScreenContainer {
 
             private static void signalStartupReady() {
                 try {
-                    Protocol.ready(new DataOutputStream(System.out));
+                    Protocol.ready(REPLIES);
                 } catch (IOException failure) {
                     failure.printStackTrace(System.err);
                     System.exit(1);
+                }
+            }
+
+            private static void log(PreSplashLogger.Level level, String message, @Nullable Throwable failure) {
+                try {
+                    Protocol.log(REPLIES, level, message, failure);
+                } catch (IOException error) {
+                    System.err.println("[" + level + "] [Pre Splash Renderer]: " + message);
+                    if (failure != null) {
+                        failure.printStackTrace(System.err);
+                    }
+                    error.printStackTrace(System.err);
                 }
             }
 

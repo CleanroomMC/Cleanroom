@@ -21,6 +21,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import static com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLogger.LOGGER;
+
 public final class SwingSplashRenderer extends JPanel {
 
     private final Runnable startupReady;
@@ -29,6 +31,8 @@ public final class SwingSplashRenderer extends JPanel {
     private boolean startupSignaled;
 
     public SwingSplashRenderer(Runnable startupReady) {
+        LOGGER.info("Pre Splash Screen Backend: Swing");
+
         this.startupReady = startupReady;
     }
 
