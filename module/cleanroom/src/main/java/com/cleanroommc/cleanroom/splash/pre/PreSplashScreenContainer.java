@@ -764,23 +764,25 @@ public final class PreSplashScreenContainer {
 
                         while (running.getAsBoolean()) {
                             PreSplashState current = state.get();
-                            if (!helper.isAlive()) {
-                                LOGGER.warn("Swing pre splash helper exited with code {}.", helper.exitValue());
-                                break;
-                            }
+                            boolean alive = helper.isAlive();
 
-                            if (current != previous) {
+                            if (alive && current != previous) {
                                 Protocol.writeState(commands, current);
                                 previous = current;
                             }
 
                             int reply;
-                            while ((reply = reader.poll()) != 0) {
+                            while (running.getAsBoolean() && (reply = reader.poll()) != 0) {
                                 if (reply == Protocol.READY && !ready) {
                                     centerWindowOnNiri(windowTitle);
                                     ready = true;
                                     startupReady.run();
                                 }
+                            }
+
+                            if (!alive) {
+                                LOGGER.warn("Swing pre splash helper exited with code {}.", helper.exitValue());
+                                break;
                             }
 
                             LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(50));
