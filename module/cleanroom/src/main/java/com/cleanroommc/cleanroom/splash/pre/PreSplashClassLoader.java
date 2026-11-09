@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Motivation is to keep pre splash's untransformed LWJGL3 classes out of the game's loader.
+ * Motivation is to keep pre splash's untransformed classes out of the game's loader.
  *
  * <p>Note: Only applied to {@link PreSplashScreenContainer.SdlRenderer}.</p>
  */
@@ -27,6 +27,7 @@ final class PreSplashClassLoader extends ClassLoader {
     private static boolean isIsolated(String name) {
         return name.startsWith("org.lwjgl.")
                 || name.startsWith("com.cleanroommc.kirino.")
+                || name.startsWith("com.cleanroommc.mcttf.")
                 || name.startsWith("com.cleanroommc.cleanroom.splash.pre.PreSplashScreenContainer$")
                 || name.startsWith("com.cleanroommc.cleanroom.splash.pre.renderer.");
     }

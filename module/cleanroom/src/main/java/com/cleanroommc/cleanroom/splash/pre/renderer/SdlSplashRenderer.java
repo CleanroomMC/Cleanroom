@@ -27,16 +27,16 @@ import com.cleanroommc.kirino.ui.simpletext.backend.DefaultTextProducer;
 import com.cleanroommc.kirino.ui.simpletext.backend.DefaultTextRenderer;
 import com.cleanroommc.kirino.ui.simpletext.backend.FreeTypeFontHandle;
 import com.cleanroommc.kirino.ui.simpletext.backend.freetype.FreeTypeManager;
+import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
+import com.cleanroommc.kirino.utils.ResourceLocation;
+import com.cleanroommc.mcttf.extract.AssetSource;
 import com.cleanroommc.mcttf.glyph.GlyphBuilder;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jspecify.annotations.Nullable;
-
-import net.minecraft.client.resources.DefaultResourcePack;
-import net.minecraft.client.resources.ResourceIndex;
-import net.minecraft.client.resources.ResourceIndexFolder;
-import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
@@ -44,11 +44,17 @@ import org.lwjgl.util.freetype.FT_Face;
 import org.lwjgl.util.freetype.FreeType;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import static com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLogger.LOGGER;
 
@@ -58,6 +64,73 @@ public final class SdlSplashRenderer implements AutoCloseable {
      * FreeType & GL agnostic async font loader.
      */
     private static final class FontLoader implements AutoCloseable {
+
+        private static final class Assets implements AssetSource {
+
+            private static final Pattern HASH = Pattern.compile("[0-9a-f]{40}");
+
+            private final Path directory;
+            private final @Nullable Map<String, Path> index;
+
+            private Assets(Path directory, @Nullable String assetIndex) {
+                this.directory = directory;
+                if (assetIndex == null) {
+                    index = null;
+                    return;
+                }
+
+                index = new HashMap<>();
+                Path file = directory.resolve("indexes").resolve(assetIndex + ".json");
+                try (var reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+                    JsonObject objects = JsonParser.parseReader(reader).getAsJsonObject().getAsJsonObject("objects");
+                    if (objects != null) {
+                        for (var entry : objects.entrySet()) {
+                            String hash = entry.getValue().getAsJsonObject().get("hash").getAsString();
+                            if (!HASH.matcher(hash).matches()) {
+                                throw new IOException("Invalid asset hash: " + hash);
+                            }
+
+                            index.put(entry.getKey(), directory.resolve("objects").resolve(hash.substring(0, 2)).resolve(hash));
+                        }
+                    }
+                } catch (Throwable failure) {
+                    index.clear();
+                    LOGGER.warn("Could not read pre splash asset index {}.", file, failure);
+                }
+            }
+
+            @Nullable
+            private Path find(String path) {
+                Preconditions.checkArgument(path.startsWith("assets/"), "Invalid asset path: %s", path);
+
+                String name = path.substring("assets/".length());
+                Path file = index == null ? directory.resolve(name) : index.get(name);
+                return file != null && Files.isRegularFile(file) ? file : null;
+            }
+
+            @Override
+            public boolean exists(String path) {
+                return find(path) != null || SdlSplashRenderer.class.getResource("/" + path) != null;
+            }
+
+            @Override
+            public InputStream open(String path) throws IOException {
+                Path file = find(path);
+                if (file != null) {
+                    return Files.newInputStream(file);
+                }
+                InputStream input = SdlSplashRenderer.class.getResourceAsStream("/" + path);
+                if (input == null) {
+                    throw new FileNotFoundException(path);
+                }
+                return input;
+            }
+
+            @Override
+            public void close() {
+                // NO OP
+            }
+        }
 
         private static final int LOAD_TIMEOUT_SECOND = 30;
         private static final int THREAD_STOP_TIMEOUT_SECOND = 2;
@@ -101,17 +174,16 @@ public final class SdlSplashRenderer implements AutoCloseable {
                     }
                 }
 
-                ResourceIndex index = assetIndex == null
-                        ? new ResourceIndexFolder(assetsDirectory)
-                        : new ResourceIndex(assetsDirectory, assetIndex);
+                Assets source = new Assets(assetsDirectory.toPath(), assetIndex);
 
                 synchronized (this) {
                     if (closed || isFinished()) {
+                        source.close();
                         return;
                     }
                 }
 
-                data = McTtfFontData.loadDefault(new DefaultResourcePack(index), "pre_splash");
+                data = McTtfFontData.loadDefault(source, "pre_splash");
             } catch (Throwable failure) {
                 LOGGER.warn("Could not prepare the pre splash Minecraft font.", failure);
             } finally {
@@ -178,6 +250,7 @@ public final class SdlSplashRenderer implements AutoCloseable {
     private final Runnable startupReady;
     private final @Nullable SimpleGuiRuntime gui;
     private final @Nullable FreeTypeManager freeType;
+
     private @Nullable ByteBuffer mcFontData;
     private @Nullable SimpleTextRuntime text;
     private @Nullable PreSplashState state;
@@ -198,14 +271,11 @@ public final class SdlSplashRenderer implements AutoCloseable {
         try {
             fontLoader.thread.start();
 
-            shaders = new ImmediateShaderAccess(rl -> {
-                String path = "/assets/" + rl.getNamespace() + "/" + rl.getPath();
-                try (InputStream input = SdlSplashRenderer.class.getResourceAsStream(path)) {
-                    Preconditions.checkNotNull(input, "Missing pre splash shader: %s", path);
-
+            shaders = ImmediateShaderAccess.fromSourceLoader(rl -> {
+                try (InputStream input = MinecraftResourceUtils.getEarlyInputStream(rl)) {
                     return new String(input.readAllBytes(), StandardCharsets.UTF_8);
                 } catch (IOException e) {
-                    throw new IllegalStateException("Could not load pre splash shader " + path, e);
+                    throw new IllegalStateException("Could not load pre splash shader " + rl, e);
                 }
             });
 
@@ -306,7 +376,7 @@ public final class SdlSplashRenderer implements AutoCloseable {
             underline = new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight);
             strikethrough = new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight);
             return new SimpleTextRuntime(
-                    (_, _) -> new FreeTypeFontHandle(face),
+                    _ -> new FreeTypeFontHandle(face),
                     runtime -> {
                         DefaultTextRenderer renderer = new DefaultTextRenderer(runtime, new Tex2DArrayGlyphAtlas(1024, 1024), shaders, 256, uiWidth, uiHeight);
                         renderer.loggerName = "pre_splash";
@@ -318,8 +388,7 @@ public final class SdlSplashRenderer implements AutoCloseable {
                     shaders,
                     underline,
                     strikethrough,
-                    config,
-                    null);
+                    config);
         } catch (Throwable failure) {
             try {
                 if (strikethrough != null) {
