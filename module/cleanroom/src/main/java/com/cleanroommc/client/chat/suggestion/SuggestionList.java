@@ -10,6 +10,8 @@
 
 package com.cleanroommc.client.chat.suggestion;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -20,7 +22,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.jspecify.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -79,6 +80,27 @@ public class SuggestionList {
             lastConnection = new WeakReference<>(connection);
         }
         knownCommands.addAll(ClientCommandHandler.instance.getCommands().keySet());
+    }
+
+    /**
+     * An argument is invalid when completions were offered but none were matched.
+     * Arguments with no completions on record take free inputs or have yet to be asked for any.
+     */
+    static boolean isInvalidArgument(@Nullable Collection<String> candidates, String argument, boolean typing) {
+        if (candidates == null || UNJUDGED_ARGUMENT.matcher(argument).matches()) {
+            return false;
+        }
+        for (String candidate : candidates) {
+            // Mirrors CommandBase#getListOfStringsMatchingLastWord
+            String path = candidate.substring(candidate.indexOf(':') + 1);
+            if (typing
+                ? CommandBase.doesStringStartWith(argument, candidate) ||
+                    CommandBase.doesStringStartWith(argument, path)
+                : argument.equalsIgnoreCase(candidate) || argument.equalsIgnoreCase(path)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static int textOriginX(GuiTextField f) {
@@ -218,26 +240,6 @@ public class SuggestionList {
         if (!candidate.isEmpty()) {
             this.argumentCandidates.computeIfAbsent(precedingText, k -> new HashSet<>()).add(candidate);
         }
-    }
-
-    /**
-     * An argument is invalid when completions were offered but none were matched.
-     * Arguments with no completions on record take free inputs or have yet to be asked for any.
-     */
-    static boolean isInvalidArgument(@Nullable Collection<String> candidates, String argument, boolean typing) {
-        if (candidates == null || UNJUDGED_ARGUMENT.matcher(argument).matches()) {
-            return false;
-        }
-        for (String candidate : candidates) {
-            // Mirrors CommandBase#getListOfStringsMatchingLastWord
-            String path = candidate.substring(candidate.indexOf(':') + 1);
-            if (typing
-                ? CommandBase.doesStringStartWith(argument, candidate) || CommandBase.doesStringStartWith(argument, path)
-                : argument.equalsIgnoreCase(candidate) || argument.equalsIgnoreCase(path)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void applySuggestion(GuiTextField inputField, String suggestion) {

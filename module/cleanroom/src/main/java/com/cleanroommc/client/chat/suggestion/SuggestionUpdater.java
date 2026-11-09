@@ -33,9 +33,9 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
     private final TabCompleter tabCompleter;
     private final GuiTextField field;
     private final boolean commandBlockMode;
+    private final Deque<String> pendingRequests = new ArrayDeque<>();
 
     private String lastRequest = "";
-    private final Deque<String> pendingRequests = new ArrayDeque<>();
     // Set while the field holds text the user did not type, such as a recalled history entry
     private boolean paused;
     private String pausedText;
@@ -120,7 +120,9 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         String[] clientCompletions = ClientCommandHandler.instance.latestAutoComplete;
         if (prefix.endsWith(" ") && clientCompletions != null) {
             for (String completion : clientCompletions) {
-                this.suggestionList.addArgumentCandidate(prefix, TextFormatting.getTextWithoutFormattingCodes(completion));
+                this.suggestionList.addArgumentCandidate(
+                    prefix, TextFormatting.getTextWithoutFormattingCodes(completion)
+                );
             }
         }
         // Server-side completions (command-block GUIs flag a target block, mirroring vanilla's TabCompleter)
