@@ -54,8 +54,10 @@ public final class SdlSplashRenderer implements AutoCloseable {
     private static final ResourceLocation FALLBACK_FONT = new ResourceLocation("kirino:fonts/jetbrains/jetbrains_mono_nl_regular.ttf");
     private static final String ENGLISH_CHARACTERS = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-    private static final long EARLY_TITLE_INOUT_ANIM_MILLIS = 200;
-    private static final long EARLY_TITLE_HOLD_MILLIS = 650;
+    private static final long EARLY_TITLE_IN_ANIM_MILLIS = 200; // for "Warming Up"
+    private static final long EARLY_TITLE_CHAR_TYPE_MILLIS = 40; // for "Cleanroom"
+    private static final long EARLY_TITLE_CHAR_FADE_IN_MILLIS = 180; // for "Cleanroom"
+    private static final long EARLY_TITLE_HOLD_MILLIS = 650; // // for "Cleanroom"
     private static final long INTRO_FADE_OUT_ANIM_MILLIS = 200;
     private static final long POST_INTRO_MASK_FADE_OUT_MILLIS = 150;
     private static final long MAX_TRANSITION_FRAME_MILLIS = 33;
@@ -365,19 +367,34 @@ public final class SdlSplashRenderer implements AutoCloseable {
         if (introStage != IntroStage.LOGO && introStage != IntroStage.FINISHED) {
             Preconditions.checkNotNull(introText);
 
+            long titleTime = earlyTitleStopWatch.getTime(TimeUnit.MILLISECONDS);
+            String title = fontLoadingAtEntry ? "Warming Up" : "Cleanroom";
+            long titleFadeDuration = fontLoadingAtEntry
+                    ? EARLY_TITLE_IN_ANIM_MILLIS
+                    : EARLY_TITLE_CHAR_FADE_IN_MILLIS + (title.length() - 1) * EARLY_TITLE_CHAR_TYPE_MILLIS;
             float progress = switch (introStage) {
                 case TITLE_WARMUP -> 0;
-                case TITLE_FADE_IN -> easeInOut(earlyTitleStopWatch.getTime(TimeUnit.MILLISECONDS) / (float) EARLY_TITLE_INOUT_ANIM_MILLIS);
+                case TITLE_FADE_IN -> easeInOut(titleTime / (float) titleFadeDuration);
                 default -> 1;
             };
 
-            String title = fontLoadingAtEntry ? "Warming Up" : "Cleanroom";
             int titleFontSize = earlyTitleFallback ? 30 : 40;
             var lineInfo = introText.simulate(title, 0, 0, titleFontSize);
+            String styledTitle;
+            if (!fontLoadingAtEntry && introStage == IntroStage.TITLE_FADE_IN) {
+                StringBuilder characters = new StringBuilder();
+                for (int i = 0; i < title.length(); i++) {
+                    float characterProgress = easeInOut((titleTime - i * EARLY_TITLE_CHAR_TYPE_MILLIS) / (float) EARLY_TITLE_CHAR_FADE_IN_MILLIS);
+                    characters.append("§c=rgba(255;255;255;").append((int) (characterProgress * 255)).append(")[").append(title.charAt(i)).append("]§");
+                }
+                styledTitle = characters.toString();
+            } else {
+                styledTitle = String.format("§c=rgba(255;255;255;%d)[%s]§", (int) (progress * 255), title);
+            }
 
             introText.begin();
             introText.appendStyled(
-                    new StyledText(String.format("§c=rgba(255;255;255;%d)[%s]§", (int) (progress * 255), title)),
+                    new StyledText(styledTitle),
                     4 + (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f,
                     PreSplashLayout.HEIGHT * 0.74f,
                     titleFontSize);
@@ -390,7 +407,6 @@ public final class SdlSplashRenderer implements AutoCloseable {
 
             float barFadeOut = easeInOut(loadingBarFadeOutStopWatch.getTime(TimeUnit.MILLISECONDS) / (float) LOADING_BAR_FADE_OUT_MILLIS);
             float barProgress = progress * (1f - barFadeOut);
-            long titleTime = earlyTitleStopWatch.getTime(TimeUnit.MILLISECONDS);
             long fadeOutTime = introFadeOutStopWatch.getTime(TimeUnit.MILLISECONDS);
             introFadeOutElapsedMillis += Math.min(fadeOutTime - introFadeOutFrameMillis, MAX_TRANSITION_FRAME_MILLIS);
             introFadeOutFrameMillis = fadeOutTime;
