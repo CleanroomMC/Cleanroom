@@ -57,7 +57,7 @@ public final class SwingSplashRenderer extends JPanel {
             draw.fillRect(0, 0, getWidth(), getHeight());
             double scale = Math.min((double) getWidth() / PreSplashLayout.WIDTH, (double) getHeight() / PreSplashLayout.HEIGHT);
             draw.translate((getWidth() - PreSplashLayout.WIDTH * scale) / 2, (getHeight() - PreSplashLayout.HEIGHT * scale) / 2);
-            draw.scale(scale * PreSplashLayout.UI_SCALE, scale * PreSplashLayout.UI_SCALE);
+            draw.scale(scale, scale);
             draw.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             draw.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             drawText(draw, state.title(), 48, 106, 32, 0xFFF1F4FA);

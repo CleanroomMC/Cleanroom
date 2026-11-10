@@ -17,7 +17,6 @@ import com.cleanroommc.kirino.gl.buffer.view.VBOView;
 import com.cleanroommc.kirino.gl.vao.VAO;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import com.cleanroommc.kirino.gl.vao.attribute.Stride;
-import com.cleanroommc.kirino.ui.font.McTtfFontData;
 import com.cleanroommc.kirino.ui.simplegui.SimpleGuiRuntime;
 import com.cleanroommc.kirino.ui.simpletext.ST_Config;
 import com.cleanroommc.kirino.ui.simpletext.ST_FontBackendType;
@@ -27,14 +26,12 @@ import com.cleanroommc.kirino.ui.simpletext.backend.DefaultTextProducer;
 import com.cleanroommc.kirino.ui.simpletext.backend.DefaultTextRenderer;
 import com.cleanroommc.kirino.ui.simpletext.backend.FreeTypeFontHandle;
 import com.cleanroommc.kirino.ui.simpletext.backend.freetype.FreeTypeManager;
+import com.cleanroommc.kirino.ui.simpletext.text.StyledText;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
 import com.cleanroommc.kirino.utils.ResourceLocation;
-import com.cleanroommc.mcttf.extract.AssetSource;
 import com.cleanroommc.mcttf.glyph.GlyphBuilder;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jspecify.annotations.Nullable;
 
@@ -44,217 +41,74 @@ import org.lwjgl.util.freetype.FT_Face;
 import org.lwjgl.util.freetype.FreeType;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import static com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLogger.LOGGER;
 
 public final class SdlSplashRenderer implements AutoCloseable {
 
-    /**
-     * FreeType & GL agnostic async font loader.
-     */
-    private static final class FontLoader implements AutoCloseable {
-
-        private static final class Assets implements AssetSource {
-
-            private static final Pattern HASH = Pattern.compile("[0-9a-f]{40}");
-
-            private final Path directory;
-            private final @Nullable Map<String, Path> index;
-
-            private Assets(Path directory, @Nullable String assetIndex) {
-                this.directory = directory;
-                if (assetIndex == null) {
-                    index = null;
-                    return;
-                }
-
-                index = new HashMap<>();
-                Path file = directory.resolve("indexes").resolve(assetIndex + ".json");
-                try (var reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-                    JsonObject objects = JsonParser.parseReader(reader).getAsJsonObject().getAsJsonObject("objects");
-                    if (objects != null) {
-                        for (var entry : objects.entrySet()) {
-                            String hash = entry.getValue().getAsJsonObject().get("hash").getAsString();
-                            if (!HASH.matcher(hash).matches()) {
-                                throw new IOException("Invalid asset hash: " + hash);
-                            }
-
-                            index.put(entry.getKey(), directory.resolve("objects").resolve(hash.substring(0, 2)).resolve(hash));
-                        }
-                    }
-                } catch (Throwable failure) {
-                    index.clear();
-                    LOGGER.warn("Could not read pre splash asset index {}.", file, failure);
-                }
-            }
-
-            @Nullable
-            private Path find(String path) {
-                Preconditions.checkArgument(path.startsWith("assets/"), "Invalid asset path: %s", path);
-
-                String name = path.substring("assets/".length());
-                Path file = index == null ? directory.resolve(name) : index.get(name);
-                return file != null && Files.isRegularFile(file) ? file : null;
-            }
-
-            @Override
-            public boolean exists(String path) {
-                return find(path) != null || SdlSplashRenderer.class.getResource("/" + path) != null;
-            }
-
-            @Override
-            public InputStream open(String path) throws IOException {
-                Path file = find(path);
-                if (file != null) {
-                    return Files.newInputStream(file);
-                }
-                InputStream input = SdlSplashRenderer.class.getResourceAsStream("/" + path);
-                if (input == null) {
-                    throw new FileNotFoundException(path);
-                }
-                return input;
-            }
-
-            @Override
-            public void close() {
-                // NO OP
-            }
-        }
-
-        private static final int LOAD_TIMEOUT_SECOND = 30;
-        private static final int THREAD_STOP_TIMEOUT_SECOND = 2;
-
-        private final Thread thread;
-        private final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(LOAD_TIMEOUT_SECOND);
-        private byte @Nullable [] data;
-        private boolean finished;
-        private boolean closed;
-
-        private FontLoader(File assetsDirectory, @Nullable String assetIndex) {
-            thread = new Thread(() -> load(assetsDirectory, assetIndex), "Pre Splash Font Loader");
-            thread.setDaemon(true);
-        }
-
-        private synchronized boolean isFinished() {
-            if (!finished && deadline - System.nanoTime() <= 0) {
-                LOGGER.warn("Pre splash Minecraft font loading timed out after {} seconds.", LOAD_TIMEOUT_SECOND);
-                cancel();
-            }
-
-            return finished;
-        }
-
-        @SuppressWarnings("DataFlowIssue")
-        private synchronized byte @Nullable [] take() {
-            byte[] data = this.data;
-            this.data = null;
-            return data;
-        }
-
-        @SuppressWarnings("DataFlowIssue")
-        private void load(File assetsDirectory, @Nullable String assetIndex) {
-            StopWatch stopWatch = StopWatch.createStarted();
-            byte[] data = null;
-
-            try {
-                synchronized (this) {
-                    if (closed || isFinished()) {
-                        return;
-                    }
-                }
-
-                Assets source = new Assets(assetsDirectory.toPath(), assetIndex);
-
-                synchronized (this) {
-                    if (closed || isFinished()) {
-                        source.close();
-                        return;
-                    }
-                }
-
-                data = McTtfFontData.loadDefault(source, "pre_splash");
-            } catch (Throwable failure) {
-                LOGGER.warn("Could not prepare the pre splash Minecraft font.", failure);
-            } finally {
-                stopWatch.stop();
-                synchronized (this) {
-                    if (!closed && !isFinished()) {
-                        this.data = data;
-                        if (data != null) {
-                            LOGGER.info("Pre splash Minecraft font loaded in {} ms.", stopWatch.getTime(TimeUnit.MILLISECONDS));
-                        }
-                    }
-                    finished = true;
-                }
-            }
-        }
-
-        private void cancel() {
-            synchronized (this) {
-                closed = true;
-                finished = true;
-                data = null;
-            }
-
-            thread.interrupt();
-        }
-
-        @Override
-        public void close() {
-            cancel();
-            if (Thread.currentThread() == thread) {
-                return;
-            }
-
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(THREAD_STOP_TIMEOUT_SECOND);
-            boolean interrupted = false;
-            while (thread.isAlive()) {
-                long remaining = deadline - System.nanoTime();
-                if (remaining <= 0) {
-                    LOGGER.warn("Pre splash font loader did not stop within {} seconds.", THREAD_STOP_TIMEOUT_SECOND);
-                    break;
-                }
-                try {
-                    TimeUnit.NANOSECONDS.timedJoin(thread, remaining);
-                } catch (InterruptedException e) {
-                    interrupted = true;
-                }
-            }
-
-            if (interrupted) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
     private static final ResourceLocation FALLBACK_FONT = new ResourceLocation("kirino:fonts/jetbrains/jetbrains_mono_nl_regular.ttf");
-    private static final long ENTRY_ANIMATION_MILLIS = 1000;
+    private static final String ENGLISH_CHARACTERS = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-    private final StopWatch entryAnimationStopWatch = new StopWatch();
+    private static final long EARLY_TITLE_INOUT_ANIM_MILLIS = 200;
+    private static final long EARLY_TITLE_HOLD_MILLIS = 650;
+    private static final long INTRO_FADE_OUT_ANIM_MILLIS = 200;
+    private static final long POST_INTRO_MASK_FADE_OUT_MILLIS = 150;
+    private static final long MAX_TRANSITION_FRAME_MILLIS = 33;
+    private static final long LOADING_BAR_CYCLE_MILLIS = 1400;
+    private static final long LOADING_BAR_FADE_OUT_MILLIS = 200;
+    static final long LOGO_ANIM_DURATION_MILLIS = 1200;
+
+    private final Runnable startupReady;
 
     private final GLResourceManager.ResourceScope scope;
-    private final FontLoader fontLoader;
+    private final AsyncFontLoader fontLoader;
     private final ImmediateShaderAccess shaders;
     private final VAO dummyVao;
-    private final Runnable startupReady;
     private final @Nullable SimpleGuiRuntime gui;
+    private final @Nullable LogoAnimationDrawer logoAnimation;
     private final @Nullable FreeTypeManager freeType;
 
+    private final StopWatch mainStopWatch = new StopWatch();
+    private final StopWatch earlyTitleStopWatch = new StopWatch();
+    private final StopWatch titleHoldStopWatch = new StopWatch();
+    private final StopWatch loadingBarFadeOutStopWatch = new StopWatch();
+    private final StopWatch introFadeOutStopWatch = new StopWatch();
+    private final StopWatch postIntroMaskStopWatch = new StopWatch();
+    private long introFadeOutFrameMillis;
+    private long introFadeOutElapsedMillis;
+    private long postIntroMaskFrameMillis;
+    private long postIntroMaskElapsedMillis;
+
     private @Nullable ByteBuffer mcFontData;
-    private @Nullable SimpleTextRuntime text;
     private @Nullable PreSplashState state;
+    private @Nullable SimpleTextRuntime text;
+    private @Nullable SimpleTextRuntime introText;
+
+    private enum IntroStage {
+        LOGO,
+        TITLE_WARMUP,
+        TITLE_FADE_IN,
+        TITLE_HOLD,
+        FONT_LOADING,
+        BAR_FADE_OUT,
+        ENGLISH_WARMUP,
+        FADE_OUT,
+        FINISHED
+    }
+
+    // states
     private boolean fontResolved;
+    private boolean fontResolveFailed = true;
+    private boolean earlyTitleFallback;
+    private boolean fontLoadingAtEntry;
+    private boolean englishWarmedUp;
+    private IntroStage introStage = IntroStage.LOGO;
+
     private boolean startupSignaled;
 
     public SdlSplashRenderer(File assetsDirectory, @Nullable String assetIndex, Runnable startupReady) throws Exception {
@@ -265,7 +119,7 @@ public final class SdlSplashRenderer implements AutoCloseable {
 
         this.startupReady = startupReady;
 
-        fontLoader = new FontLoader(assetsDirectory, assetIndex);
+        fontLoader = new AsyncFontLoader(assetsDirectory, assetIndex);
         scope = GLResourceManager.openScope();
 
         try {
@@ -283,9 +137,9 @@ public final class SdlSplashRenderer implements AutoCloseable {
             layout.push(new Stride(0));
             dummyVao = new VAO(layout, null, (VBOView @Nullable []) null);
 
-            float uiWidth = PreSplashLayout.WIDTH / PreSplashLayout.UI_SCALE;
-            float uiHeight = PreSplashLayout.HEIGHT / PreSplashLayout.UI_SCALE;
-            gui = new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight);
+            gui = new SimpleGuiRuntime(shaders, dummyVao, PreSplashLayout.WIDTH, PreSplashLayout.HEIGHT);
+
+            logoAnimation = new LogoAnimationDrawer(shaders, dummyVao);
 
             var constructor = FreeTypeManager.class.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -309,17 +163,25 @@ public final class SdlSplashRenderer implements AutoCloseable {
         }
     }
 
+    /**
+     * Loads Minecraft font into {@link #text}.
+     *
+     * @return Whether Minecraft font is ready
+     */
     @SuppressWarnings("DataFlowIssue")
-    private void resolveFont() {
-        if (fontResolved || !fontLoader.isFinished()) {
-            return;
+    private boolean resolveFont() {
+        if (fontResolved) {
+            return !fontResolveFailed;
+        }
+        if (!fontLoader.isFinished()) {
+            return false;
         }
 
         fontResolved = true;
         byte[] bytes = fontLoader.take();
         if (bytes == null) {
             LOGGER.warn("Could not load the pre splash Minecraft font.");
-            return;
+            return false;
         }
 
         Preconditions.checkNotNull(freeType);
@@ -341,22 +203,25 @@ public final class SdlSplashRenderer implements AutoCloseable {
                 }
             }
             LOGGER.warn("Could not initialize pre splash Minecraft text.", failure);
-            return;
+            return false;
         }
 
-        SimpleTextRuntime previous = text;
+        SimpleTextRuntime previous = Preconditions.checkNotNull(text);
         text = replacement;
         mcFontData = data;
+        fontResolveFailed = false;
 
-        try {
-            if (previous != null) {
+        if (previous != introText) {
+            try {
                 previous.close();
+            } catch (Throwable failure) {
+                LOGGER.warn("Could not dispose the previous pre splash text runtime.", failure);
+            } finally {
+                freeType.unload(FALLBACK_FONT);
             }
-        } catch (Throwable failure) {
-            LOGGER.warn("Could not dispose the previous pre splash text runtime.", failure);
-        } finally {
-            freeType.unload(FALLBACK_FONT);
         }
+
+        return true;
     }
 
     private SimpleTextRuntime createText(FT_Face face, boolean minecraftFont) {
@@ -367,24 +232,27 @@ public final class SdlSplashRenderer implements AutoCloseable {
                 12,
                 FreeType.FT_LOAD_RENDER | FreeType.FT_LOAD_NO_HINTING);
 
-        float uiWidth = PreSplashLayout.WIDTH / PreSplashLayout.UI_SCALE;
-        float uiHeight = PreSplashLayout.HEIGHT / PreSplashLayout.UI_SCALE;
         SimpleGuiRuntime underline = null;
         SimpleGuiRuntime strikethrough = null;
 
         try {
-            underline = new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight);
-            strikethrough = new SimpleGuiRuntime(shaders, dummyVao, uiWidth, uiHeight);
+            underline = new SimpleGuiRuntime(shaders, dummyVao, PreSplashLayout.WIDTH, PreSplashLayout.HEIGHT);
+            strikethrough = new SimpleGuiRuntime(shaders, dummyVao, PreSplashLayout.WIDTH, PreSplashLayout.HEIGHT);
             return new SimpleTextRuntime(
                     _ -> new FreeTypeFontHandle(face),
                     runtime -> {
-                        DefaultTextRenderer renderer = new DefaultTextRenderer(runtime, new Tex2DArrayGlyphAtlas(1024, 1024), shaders, 256, uiWidth, uiHeight);
+                        DefaultTextRenderer renderer = new DefaultTextRenderer(runtime, new Tex2DArrayGlyphAtlas(1024, 1024), shaders, 256, PreSplashLayout.WIDTH, PreSplashLayout.HEIGHT);
                         renderer.loggerName = "pre_splash";
                         return renderer;
                     },
-                    runtime -> minecraftFont
-                            ? new DefaultTextProducer(runtime, config.pixelSize(), GlyphBuilder.LINE_HEIGHT_PIXELS)
-                            : new DefaultTextProducer(runtime, config.pixelSize()),
+                    runtime -> {
+                        int layoutPixelSize = config.pixelSize();
+                        if (!minecraftFont) {
+                            int capHeight = runtime.getGlyphMetrics(runtime.getFont().getGlyphIndex('A')).getGlyphHeight();
+                            layoutPixelSize = Math.round(capHeight * GlyphBuilder.LINE_HEIGHT_PIXELS / (float) GlyphBuilder.MC_LINE_TOP_PIXELS);
+                        }
+                        return new DefaultTextProducer(runtime, layoutPixelSize, GlyphBuilder.LINE_HEIGHT_PIXELS);
+                    },
                     shaders,
                     underline,
                     strikethrough,
@@ -416,6 +284,11 @@ public final class SdlSplashRenderer implements AutoCloseable {
         this.state = state;
     }
 
+    private static float easeInOut(float t) {
+        t = Math.clamp(t, 0f, 1f);
+        return t * t * (3f - 2f * t);
+    }
+
     public void render(int width, int height) {
         if (state == null) {
             return;
@@ -426,62 +299,237 @@ public final class SdlSplashRenderer implements AutoCloseable {
         int viewportHeight = Math.round(PreSplashLayout.HEIGHT * scale);
         GL11.glViewport((width - viewportWidth) / 2, (height - viewportHeight) / 2, viewportWidth, viewportHeight);
 
-        int background = PreSplashLayout.BACKGROUND;
-        GL11.glClearColor(((background >> 16) & 255) / 255f, ((background >> 8) & 255) / 255f, (background & 255) / 255f, 1);
+        GL11.glClearColor(
+                ((PreSplashLayout.BACKGROUND >> 16) & 255) / 255f,
+                ((PreSplashLayout.BACKGROUND >> 8) & 255) / 255f,
+                (PreSplashLayout.BACKGROUND & 255) / 255f,
+                1);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-        if (entryAnimationStopWatch.isStarted() && entryAnimationStopWatch.getTime(TimeUnit.MILLISECONDS) >= ENTRY_ANIMATION_MILLIS) {
-            resolveFont();
+        Preconditions.checkNotNull(logoAnimation);
+        Preconditions.checkNotNull(text);
+        Preconditions.checkNotNull(gui);
+
+        //<editor-fold desc="intro">
+        if (!mainStopWatch.isStarted()) {
+            mainStopWatch.start();
         }
 
-        SimpleTextRuntime text = Preconditions.checkNotNull(this.text);
-        text.begin();
-        text.append(state.title(), 48, 106, 32, 0xFFF1F4FA);
-        text.append(state.message(), 48, 190, 16, 0xFFB9C7DB);
-        text.append(state.details(), 48, 286, 16, 0xFF8998AE);
-        text.endDraw();
-
-        if (!entryAnimationStopWatch.isStarted()) {
-            entryAnimationStopWatch.start();
+        if (introStage == IntroStage.LOGO && mainStopWatch.getTime(TimeUnit.MILLISECONDS) >= LOGO_ANIM_DURATION_MILLIS) {
+            fontLoadingAtEntry = !fontLoader.isFinished();
+            earlyTitleFallback = fontLoadingAtEntry || !resolveFont();
+            introText = text;
+            introStage = IntroStage.TITLE_WARMUP;
         }
 
-        if (!fontResolved) {
-            double seconds = entryAnimationStopWatch.getTime(TimeUnit.MILLISECONDS) / 1000.0;
-            float x = 48 + (float) (0.5 - Math.cos(seconds * Math.PI) * 0.5) * 208;
-            SimpleGuiRuntime gui = Preconditions.checkNotNull(this.gui);
-            gui.begin().append(stream -> stream.rect(x, 232, 40, 6, 0xFF8998AE)).endDraw();
+        if (introStage == IntroStage.TITLE_HOLD) {
+            if (!titleHoldStopWatch.isStarted()) {
+                titleHoldStopWatch.start();
+            }
+            if (!englishWarmedUp) {
+                introStage = IntroStage.ENGLISH_WARMUP;
+            } else if (titleHoldStopWatch.getTime(TimeUnit.MILLISECONDS) >= EARLY_TITLE_HOLD_MILLIS) {
+                introStage = IntroStage.FADE_OUT;
+                introFadeOutStopWatch.start();
+            }
         }
 
-        if (fontResolved && !startupSignaled) {
-            startupSignaled = true;
-            startupReady.run();
+        if (introStage == IntroStage.FONT_LOADING && fontLoader.isFinished()) {
+            introStage = IntroStage.BAR_FADE_OUT;
+            loadingBarFadeOutStopWatch.start();
+        }
+
+        if (introStage == IntroStage.ENGLISH_WARMUP) {
+            if (fontLoadingAtEntry) {
+                resolveFont();
+            }
+
+            text.begin();
+            text.append(ENGLISH_CHARACTERS, 0, 0, 40, 0x00FFFFFF);
+            text.endDraw();
+            GL11.glFinish();
+            englishWarmedUp = true;
+
+            if (fontLoadingAtEntry || titleHoldStopWatch.getTime(TimeUnit.MILLISECONDS) >= EARLY_TITLE_HOLD_MILLIS) {
+                introStage = IntroStage.FADE_OUT;
+                introFadeOutStopWatch.start();
+            } else {
+                introStage = IntroStage.TITLE_HOLD;
+            }
+        }
+
+        if (introStage != IntroStage.FINISHED) {
+            logoAnimation.render(viewportWidth, viewportHeight);
+        }
+
+        if (introStage != IntroStage.LOGO && introStage != IntroStage.FINISHED) {
+            Preconditions.checkNotNull(introText);
+
+            float progress = switch (introStage) {
+                case TITLE_WARMUP -> 0;
+                case TITLE_FADE_IN -> easeInOut(earlyTitleStopWatch.getTime(TimeUnit.MILLISECONDS) / (float) EARLY_TITLE_INOUT_ANIM_MILLIS);
+                default -> 1;
+            };
+
+            String title = fontLoadingAtEntry ? "Warming Up" : "Cleanroom";
+            int titleFontSize = earlyTitleFallback ? 30 : 40;
+            var lineInfo = introText.simulate(title, 0, 0, titleFontSize);
+
+            introText.begin();
+            introText.appendStyled(
+                    new StyledText(String.format("§c=rgba(255;255;255;%d)[%s]§", (int) (progress * 255), title)),
+                    4 + (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f,
+                    PreSplashLayout.HEIGHT * 0.74f,
+                    titleFontSize);
+            introText.endDraw();
+
+            boolean showLoadingBar = fontLoadingAtEntry && (introStage == IntroStage.TITLE_WARMUP
+                    || introStage == IntroStage.TITLE_FADE_IN
+                    || introStage == IntroStage.FONT_LOADING
+                    || introStage == IntroStage.BAR_FADE_OUT);
+
+            float barFadeOut = easeInOut(loadingBarFadeOutStopWatch.getTime(TimeUnit.MILLISECONDS) / (float) LOADING_BAR_FADE_OUT_MILLIS);
+            float barProgress = progress * (1f - barFadeOut);
+            long titleTime = earlyTitleStopWatch.getTime(TimeUnit.MILLISECONDS);
+            long fadeOutTime = introFadeOutStopWatch.getTime(TimeUnit.MILLISECONDS);
+            introFadeOutElapsedMillis += Math.min(fadeOutTime - introFadeOutFrameMillis, MAX_TRANSITION_FRAME_MILLIS);
+            introFadeOutFrameMillis = fadeOutTime;
+            float fadeOut = easeInOut(introFadeOutElapsedMillis / (float) INTRO_FADE_OUT_ANIM_MILLIS);
+
+            gui.begin();
+            gui.append(stream -> {
+                if (showLoadingBar) {
+                    float barHeight = 5;
+                    float barWidth = 180;
+                    float segmentWidth = 50;
+                    float barX = (PreSplashLayout.WIDTH - barWidth) / 2f;
+                    float barY = PreSplashLayout.HEIGHT * 0.83f;
+                    float cycle = (titleTime % LOADING_BAR_CYCLE_MILLIS) / (float) LOADING_BAR_CYCLE_MILLIS;
+                    float position = easeInOut(1f - Math.abs(cycle * 2f - 1f));
+                    stream.rectEx(barX, barY, barWidth, barHeight, (int) (barProgress * 40) << 24 | 0xFFFFFF)
+                            .radius(barHeight / 2f, 1)
+                            .emit();
+                    stream.rectEx(barX + position * (barWidth - segmentWidth), barY, segmentWidth, barHeight, (int) (barProgress * 255) << 24 | 0xB9C7DB)
+                            .radius(barHeight / 2f, 1)
+                            .emit();
+                }
+
+                stream.rect(
+                        0,
+                        0,
+                        PreSplashLayout.WIDTH,
+                        PreSplashLayout.HEIGHT,
+                        (int) (fadeOut * 255) << 24 | (PreSplashLayout.BACKGROUND & 0xFFFFFF));
+            });
+            gui.endDraw();
+
+            if (introStage == IntroStage.TITLE_WARMUP) {
+                GL11.glFinish();
+                introStage = IntroStage.TITLE_FADE_IN;
+                earlyTitleStopWatch.start();
+            } else if (introStage == IntroStage.TITLE_FADE_IN && progress >= 1) {
+                introStage = fontLoadingAtEntry ? IntroStage.FONT_LOADING : IntroStage.TITLE_HOLD;
+            } else if (introStage == IntroStage.BAR_FADE_OUT && barFadeOut >= 1) {
+                introStage = IntroStage.ENGLISH_WARMUP;
+            }
+
+            if (introStage == IntroStage.FADE_OUT && !startupSignaled) {
+                startupSignaled = true;
+                startupReady.run();
+            }
+            if (introStage == IntroStage.FADE_OUT && fadeOut >= 1) {
+                introStage = IntroStage.FINISHED;
+            }
+        }
+        //</editor-fold>
+
+        if (introStage == IntroStage.FINISHED) {
+            text.begin();
+            text.append(state.title(), 48, 106, 40, 0xFFF1F4FA);
+            text.append(state.message(), 48, 190, 30, 0xFFB9C7DB);
+            text.append(state.details(), 48, 286, 30, 0xFF8998AE);
+            text.endDraw();
+
+            long maskTime = postIntroMaskStopWatch.getTime(TimeUnit.MILLISECONDS);
+            boolean maskFinished = postIntroMaskElapsedMillis >= POST_INTRO_MASK_FADE_OUT_MILLIS;
+            if (!maskFinished) {
+                postIntroMaskElapsedMillis += Math.min(maskTime - postIntroMaskFrameMillis, MAX_TRANSITION_FRAME_MILLIS);
+                postIntroMaskFrameMillis = maskTime;
+                float opacity = 1f - easeInOut(postIntroMaskElapsedMillis / (float) POST_INTRO_MASK_FADE_OUT_MILLIS);
+
+                gui.begin();
+                gui.append(stream -> stream.rect(
+                        0,
+                        0,
+                        PreSplashLayout.WIDTH,
+                        PreSplashLayout.HEIGHT,
+                        (int) (opacity * 255) << 24 | (PreSplashLayout.BACKGROUND & 0xFFFFFF)));
+                gui.endDraw();
+
+                if (!postIntroMaskStopWatch.isStarted()) {
+                    postIntroMaskStopWatch.start();
+                }
+            }
+
+            if (maskFinished && introText != null) {
+                SimpleTextRuntime previous = introText;
+                introText = null;
+                if (previous != text) {
+                    Preconditions.checkNotNull(freeType);
+
+                    try {
+                        previous.close();
+                    } catch (Throwable failure) {
+                        LOGGER.warn("Could not dispose the pre splash intro text runtime.", failure);
+                    } finally {
+                        freeType.unload(FALLBACK_FONT);
+                    }
+                }
+            }
         }
     }
 
     @Override
     public void close() throws Exception {
+        if (mainStopWatch.isStarted()) {
+            mainStopWatch.stop();
+            LOGGER.info("Pre splash renderer finished in {}ms.", mainStopWatch.getTime(TimeUnit.MILLISECONDS));
+        }
+
         fontLoader.close();
         try {
-            if (text != null) {
-                text.close();
+            try {
+                if (introText != null && introText != text) {
+                    introText.close();
+                }
+            } finally {
+                if (text != null) {
+                    text.close();
+                }
             }
         } finally {
             try {
-                if (gui != null) {
-                    gui.close();
+                if (logoAnimation != null) {
+                    logoAnimation.close();
                 }
             } finally {
                 try {
-                    if (freeType != null) {
-                        freeType.destroy();
+                    if (gui != null) {
+                        gui.close();
                     }
                 } finally {
                     try {
-                        if (mcFontData != null) {
-                            MemoryUtil.memFree(mcFontData);
+                        if (freeType != null) {
+                            freeType.destroy();
                         }
                     } finally {
-                        scope.close();
+                        try {
+                            if (mcFontData != null) {
+                                MemoryUtil.memFree(mcFontData);
+                            }
+                        } finally {
+                            scope.close();
+                        }
                     }
                 }
             }
