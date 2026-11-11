@@ -10,18 +10,45 @@
 
 package com.cleanroommc.cleanroom.splash.pre;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Motivation is to keep pre splash's untransformed classes out of the game's loader.
  *
  * <p>Note: Only applied to {@link PreSplashScreenContainer.SdlRenderer}.</p>
  */
-final class PreSplashClassLoader extends ClassLoader {
+final class PreSplashClassLoader extends URLClassLoader {
 
     PreSplashClassLoader(ClassLoader parent) {
-        super(parent);
+        super(nativeLibraryPaths(), parent);
+    }
+
+    private static URL[] nativeLibraryPaths() {
+        List<URL> paths = new ArrayList<>();
+        for (String property : List.of("org.lwjgl.librarypath", "java.library.path")) {
+            String value = System.getProperty(property);
+            if (value == null || value.isEmpty()) {
+                continue;
+            }
+            for (String directory : value.split(File.pathSeparator)) {
+                if (directory.isEmpty()) {
+                    continue;
+                }
+                try {
+                    paths.add(new File(directory).toURI().toURL());
+                } catch (MalformedURLException e) {
+                    throw new IllegalStateException("Invalid native library directory: " + directory, e);
+                }
+            }
+        }
+        return paths.toArray(URL[]::new);
     }
 
     private static boolean isIsolated(String name) {

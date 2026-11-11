@@ -249,8 +249,7 @@ public final class PreSplashScreenContainer {
         ClassLoader previousContextLoader = renderThread.getContextClassLoader();
         boolean[] unavailable = { false };
 
-        try {
-            ClassLoader loader = new PreSplashClassLoader(PreSplashScreenContainer.class.getClassLoader());
+        try (PreSplashClassLoader loader = new PreSplashClassLoader(PreSplashScreenContainer.class.getClassLoader())) {
             renderThread.setContextClassLoader(loader);
 
             Class<?> renderer = Class.forName(PreSplashScreenContainer.class.getName() + "$SdlRenderer", true, loader);
