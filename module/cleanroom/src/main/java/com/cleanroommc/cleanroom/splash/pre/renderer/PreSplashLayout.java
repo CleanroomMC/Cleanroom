@@ -16,6 +16,7 @@ public final class PreSplashLayout {
     public static final int HEIGHT = 360;
     public static final float SCREEN_PERCENTAGE = 0.35f;
     public static final int BACKGROUND = 0xFF0E1116;
+    public static final int GLOW_COLOR = 0xFF455D74;
 
     private PreSplashLayout() {
     }

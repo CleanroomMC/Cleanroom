@@ -67,7 +67,7 @@ final class IconDrawer implements AutoCloseable {
             shaders.submitToGL(vertexShader, fragmentShader);
             program = shaders.makeProgram(vertexShader, fragmentShader);
 
-            for (String uniform : List.of("resolution", "progress", "logoTexture", "logoCenter", "logoScale", "background")) {
+            for (String uniform : List.of("resolution", "progress", "logoTexture", "logoCenter", "logoScale", "background", "glow", "time")) {
                 Preconditions.checkState(program.uniformLocation(uniform) >= 0, "Missing uniform: %s", uniform);
             }
 
@@ -77,6 +77,10 @@ final class IconDrawer implements AutoCloseable {
                     ((PreSplashLayout.BACKGROUND >> 16) & 255) / 255f,
                     ((PreSplashLayout.BACKGROUND >> 8) & 255) / 255f,
                     (PreSplashLayout.BACKGROUND & 255) / 255f);
+            program.uniform3f("glow",
+                    ((PreSplashLayout.GLOW_COLOR >> 16) & 255) / 255f,
+                    ((PreSplashLayout.GLOW_COLOR >> 8) & 255) / 255f,
+                    (PreSplashLayout.GLOW_COLOR & 255) / 255f);
 
             icon = loadIcon(gameDirectory);
         } catch (Throwable failure) {
@@ -146,11 +150,13 @@ final class IconDrawer implements AutoCloseable {
         Preconditions.checkNotNull(icon);
         Preconditions.checkArgument(width > 0 && height > 0);
 
-        float progress = Math.min(1f, stopWatch.getTime(TimeUnit.MILLISECONDS) / (float) SdlSplashRenderer.ICON_ANIM_DURATION_MILLIS);
+        long elapsedMillis = stopWatch.getTime(TimeUnit.MILLISECONDS);
+        float progress = Math.min(1f, elapsedMillis / (float) SdlSplashRenderer.ICON_ANIM_DURATION_MILLIS);
 
         program.uniform2f("logoCenter", (x + width / 2f) / PreSplashLayout.WIDTH, 1f - (y + height / 2f) / PreSplashLayout.HEIGHT);
         program.uniform2f("logoScale", width / PreSplashLayout.WIDTH, height / PreSplashLayout.HEIGHT);
         program.uniform1f("progress", progress);
+        program.uniform1f("time", elapsedMillis / 1000f);
         icon.bindUnit(0);
         dummyVao.bind();
 
