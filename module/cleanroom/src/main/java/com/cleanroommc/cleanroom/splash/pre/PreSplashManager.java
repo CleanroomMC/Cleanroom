@@ -51,7 +51,7 @@ public final class PreSplashManager {
             case RIGHT_BEFORE_SPLASH -> "Starting mod loading";
         };
 
-        states.add(new PreSplashState("Cleanroom", message, ""));
+        states.add(new PreSplashState("Cleanroom", message, "1"));
         currentPhase = phase;
     }
 

@@ -31,6 +31,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,7 +44,7 @@ final class LogoAnimationDrawer implements AutoCloseable {
     private static final ResourceLocation LOGO = new ResourceLocation("cleanroom:icon.png");
 
     private final StopWatch stopWatch = new StopWatch();
-    private final VAO dummyVao;
+    private final VAO dummyVao; // borrowed
     private final @Nullable Shader vertexShader;
     private final @Nullable Shader fragmentShader;
     private final @Nullable ShaderProgram program;
@@ -61,12 +62,9 @@ final class LogoAnimationDrawer implements AutoCloseable {
             shaders.submitToGL(vertexShader, fragmentShader);
             program = shaders.makeProgram(vertexShader, fragmentShader);
 
-            int resolutionLocation = program.uniformLocation("resolution");
-            int progressLocation = program.uniformLocation("progress");
-            int textureLocation = program.uniformLocation("logoTexture");
-            int backgroundLocation = program.uniformLocation("background");
-            Preconditions.checkState(resolutionLocation >= 0 && progressLocation >= 0 && textureLocation >= 0 && backgroundLocation >= 0,
-                    "Missing logo animation uniforms.");
+            for (String uniform : List.of("resolution", "progress", "logoTexture", "background")) {
+                Preconditions.checkState(program.uniformLocation(uniform) >= 0, "Missing uniform: %s", uniform);
+            }
 
             program.uniform1i("logoTexture", 0);
             program.uniform3f("background",

@@ -99,6 +99,7 @@ public final class PreSplashScreenContainer {
 
     private final CountDownLatch startupReady = new CountDownLatch(1);
 
+    private final Path gameDirectory;
     private final File assetsDirectory;
     private final @Nullable String assetIndex;
 
@@ -107,13 +108,15 @@ public final class PreSplashScreenContainer {
     /**
      * Must be called on the game thread.
      *
-     * @see #start(File, String)
+     * @see #start(Path, File, String)
      */
-    private PreSplashScreenContainer(File assetsDirectory, @Nullable String assetIndex) {
+    private PreSplashScreenContainer(Path gameDirectory, File assetsDirectory, @Nullable String assetIndex) {
+        Preconditions.checkNotNull(gameDirectory);
         Preconditions.checkNotNull(assetsDirectory);
 
         gameThread = Thread.currentThread();
         presentation = new PreSplashPresentation(PreSplashManager.INSTANCE);
+        this.gameDirectory = gameDirectory;
         this.assetsDirectory = assetsDirectory;
         this.assetIndex = assetIndex;
         thread = new Thread(this::run, "Pre Splash Renderer");
@@ -127,13 +130,14 @@ public final class PreSplashScreenContainer {
      * @see FMLTweaker#injectIntoClassLoader(LaunchClassLoader)
      */
     @ApiStatus.Internal
-    public static void start(File assetsDirectory, @Nullable String assetIndex) {
+    public static void start(Path gameDirectory, File assetsDirectory, @Nullable String assetIndex) {
+        Preconditions.checkNotNull(gameDirectory);
         Preconditions.checkNotNull(assetsDirectory);
 
         PreSplashScreenContainer screen;
         synchronized (PreSplashScreenContainer.class) {
             Preconditions.checkState(instance == null, "Pre splash has already started.");
-            screen = new PreSplashScreenContainer(assetsDirectory, assetIndex);
+            screen = new PreSplashScreenContainer(gameDirectory, assetsDirectory, assetIndex);
             instance = screen;
 
             Runtime.getRuntime().addShutdownHook(screen.shutdownHook);
@@ -251,6 +255,7 @@ public final class PreSplashScreenContainer {
 
             Class<?> renderer = Class.forName(PreSplashScreenContainer.class.getName() + "$SdlRenderer", true, loader);
             Runnable render = (Runnable) renderer.getConstructor(
+                    Path.class,
                     File.class,
                     String.class,
                     BooleanSupplier.class,
@@ -258,6 +263,7 @@ public final class PreSplashScreenContainer {
                     Runnable.class,
                     Runnable.class,
                     Runnable.class).newInstance(
+                            gameDirectory,
                             assetsDirectory,
                             assetIndex,
                             (BooleanSupplier) this::isRunning,
@@ -295,6 +301,7 @@ public final class PreSplashScreenContainer {
     @ApiStatus.Internal
     public static final class SdlRenderer implements Runnable {
 
+        private final Path gameDirectory;
         private final File assetsDirectory;
         private final @Nullable String assetIndex;
         private final BooleanSupplier running;
@@ -305,6 +312,7 @@ public final class PreSplashScreenContainer {
 
         @ReflectiveInvocation
         public SdlRenderer(
+                Path gameDirectory,
                 File assetsDirectory,
                 @Nullable String assetIndex,
                 BooleanSupplier running,
@@ -313,6 +321,7 @@ public final class PreSplashScreenContainer {
                 Runnable startupReady,
                 Runnable unavailable) {
 
+            Preconditions.checkNotNull(gameDirectory);
             Preconditions.checkNotNull(assetsDirectory);
             Preconditions.checkNotNull(running);
             Preconditions.checkNotNull(state);
@@ -320,6 +329,7 @@ public final class PreSplashScreenContainer {
             Preconditions.checkNotNull(startupReady);
             Preconditions.checkNotNull(unavailable);
 
+            this.gameDirectory = gameDirectory;
             this.assetsDirectory = assetsDirectory;
             this.assetIndex = assetIndex;
             this.running = running;
@@ -333,7 +343,7 @@ public final class PreSplashScreenContainer {
         public void run() {
             try (Window window = Window.open(stop)) {
                 if (running.getAsBoolean()) {
-                    try (SdlSplashRenderer renderer = new SdlSplashRenderer(assetsDirectory, assetIndex, startupReady)) {
+                    try (SdlSplashRenderer renderer = new SdlSplashRenderer(gameDirectory, assetsDirectory, assetIndex, startupReady)) {
                         window.runLoop(running, (width, height) -> {
                             renderer.update(state.get());
                             renderer.render(width, height);

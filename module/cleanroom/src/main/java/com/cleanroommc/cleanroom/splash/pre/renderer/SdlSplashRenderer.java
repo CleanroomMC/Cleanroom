@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 import static com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLogger.LOGGER;
@@ -57,13 +58,15 @@ public final class SdlSplashRenderer implements AutoCloseable {
     private static final long EARLY_TITLE_IN_ANIM_MILLIS = 200; // for "Warming Up"
     private static final long EARLY_TITLE_CHAR_TYPE_MILLIS = 40; // for "Cleanroom"
     private static final long EARLY_TITLE_CHAR_FADE_IN_MILLIS = 180; // for "Cleanroom"
-    private static final long EARLY_TITLE_HOLD_MILLIS = 650; // // for "Cleanroom"
+    private static final long EARLY_TITLE_HOLD_MILLIS = 650; // for "Cleanroom"
     private static final long INTRO_FADE_OUT_ANIM_MILLIS = 200;
     private static final long POST_INTRO_MASK_FADE_OUT_MILLIS = 150;
+    private static final long POST_INTRO_LOADING_BAR_CYCLE_MILLIS = 1600;
     private static final long MAX_TRANSITION_FRAME_MILLIS = 33;
     private static final long LOADING_BAR_CYCLE_MILLIS = 1400;
     private static final long LOADING_BAR_FADE_OUT_MILLIS = 200;
     static final long LOGO_ANIM_DURATION_MILLIS = 1200;
+    static final long ICON_ANIM_DURATION_MILLIS = 480;
 
     private final Runnable startupReady;
 
@@ -73,6 +76,7 @@ public final class SdlSplashRenderer implements AutoCloseable {
     private final VAO dummyVao;
     private final @Nullable SimpleGuiRuntime gui;
     private final @Nullable LogoAnimationDrawer logoAnimation;
+    private final @Nullable IconDrawer icon;
     private final @Nullable FreeTypeManager freeType;
 
     private final StopWatch mainStopWatch = new StopWatch();
@@ -113,9 +117,10 @@ public final class SdlSplashRenderer implements AutoCloseable {
 
     private boolean startupSignaled;
 
-    public SdlSplashRenderer(File assetsDirectory, @Nullable String assetIndex, Runnable startupReady) throws Exception {
+    public SdlSplashRenderer(Path gameDirectory, File assetsDirectory, @Nullable String assetIndex, Runnable startupReady) throws Exception {
         LOGGER.info("Pre Splash Screen Backend: SDL + GL46");
 
+        Preconditions.checkNotNull(gameDirectory);
         Preconditions.checkNotNull(assetsDirectory);
         Preconditions.checkNotNull(startupReady);
 
@@ -142,6 +147,7 @@ public final class SdlSplashRenderer implements AutoCloseable {
             gui = new SimpleGuiRuntime(shaders, dummyVao, PreSplashLayout.WIDTH, PreSplashLayout.HEIGHT);
 
             logoAnimation = new LogoAnimationDrawer(shaders, dummyVao);
+            icon = new IconDrawer(shaders, dummyVao, gameDirectory);
 
             var constructor = FreeTypeManager.class.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -460,11 +466,37 @@ public final class SdlSplashRenderer implements AutoCloseable {
         //</editor-fold>
 
         if (introStage == IntroStage.FINISHED) {
+            Preconditions.checkNotNull(icon);
+
+            int iconWidth = 120;
+            int iconHeight = 120;
+            icon.render((PreSplashLayout.WIDTH - iconWidth) / 2f, PreSplashLayout.HEIGHT * 0.15f, iconWidth, iconHeight);
+
             text.begin();
-            text.append(state.title(), 48, 106, 40, 0xFFF1F4FA);
-            text.append(state.message(), 48, 190, 30, 0xFFB9C7DB);
-            text.append(state.details(), 48, 286, 30, 0xFF8998AE);
+            var lineInfo = text.simulate(state.title(), 0, 0, 40);
+            text.append(state.title(), (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f, 200, 40, 0xFFF1F4FA);
+            lineInfo = text.simulate(state.message(), 0, 0, 25);
+            text.append(state.message(), (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f, 240, 25, 0xFFB9C7DB);
+            lineInfo = text.simulate(state.details(), 0, 0, 25);
+            text.append(state.details(), (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f, 290, 25, 0xFF8998AE);
             text.endDraw();
+
+            gui.begin();
+            gui.append(stream -> {
+                float barHeight = 7;
+                float barWidth = 300;
+                float segmentWidth = 80;
+                float barX = (PreSplashLayout.WIDTH - barWidth) / 2f;
+                float cycle = (mainStopWatch.getTime(TimeUnit.MILLISECONDS) % POST_INTRO_LOADING_BAR_CYCLE_MILLIS) / (float) POST_INTRO_LOADING_BAR_CYCLE_MILLIS;
+                float position = easeInOut(1f - Math.abs(cycle * 2f - 1f));
+                stream.rectEx(barX, 273, barWidth, barHeight, 0xFF263448)
+                        .radius(barHeight / 2f, 1)
+                        .emit();
+                stream.rectEx(barX + position * (barWidth - segmentWidth), 273, segmentWidth, barHeight, 0xFF8AB9E8)
+                        .radius(barHeight / 2f, 1)
+                        .emit();
+            });
+            gui.endDraw();
 
             long maskTime = postIntroMaskStopWatch.getTime(TimeUnit.MILLISECONDS);
             boolean maskFinished = postIntroMaskElapsedMillis >= POST_INTRO_MASK_FADE_OUT_MILLIS;
@@ -512,39 +544,48 @@ public final class SdlSplashRenderer implements AutoCloseable {
             LOGGER.info("Pre splash renderer finished in {}ms.", mainStopWatch.getTime(TimeUnit.MILLISECONDS));
         }
 
-        fontLoader.close();
         try {
+            fontLoader.close();
+        } finally {
             try {
                 if (introText != null && introText != text) {
                     introText.close();
                 }
             } finally {
-                if (text != null) {
-                    text.close();
-                }
-            }
-        } finally {
-            try {
-                if (logoAnimation != null) {
-                    logoAnimation.close();
-                }
-            } finally {
                 try {
-                    if (gui != null) {
-                        gui.close();
+                    if (text != null) {
+                        text.close();
                     }
                 } finally {
                     try {
-                        if (freeType != null) {
-                            freeType.destroy();
+                        if (icon != null) {
+                            icon.close();
                         }
                     } finally {
                         try {
-                            if (mcFontData != null) {
-                                MemoryUtil.memFree(mcFontData);
+                            if (logoAnimation != null) {
+                                logoAnimation.close();
                             }
                         } finally {
-                            scope.close();
+                            try {
+                                if (gui != null) {
+                                    gui.close();
+                                }
+                            } finally {
+                                try {
+                                    if (freeType != null) {
+                                        freeType.destroy();
+                                    }
+                                } finally {
+                                    try {
+                                        if (mcFontData != null) {
+                                            MemoryUtil.memFree(mcFontData);
+                                        }
+                                    } finally {
+                                        scope.close();
+                                    }
+                                }
+                            }
                         }
                     }
                 }

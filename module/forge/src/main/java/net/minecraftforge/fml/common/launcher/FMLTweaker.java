@@ -149,7 +149,7 @@ public class FMLTweaker implements ITweaker {
     {
         PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.FML_SETUP);
         String assets = launchArgs.get("--assetsDir");
-        PreSplashScreenContainer.start(assets == null ? new File(gameDir, "assets") : new File(assets), launchArgs.get("--assetIndex"));
+        PreSplashScreenContainer.start(gameDir.toPath(), assets == null ? new File(gameDir, "assets") : new File(assets), launchArgs.get("--assetIndex"));
 
         FMLLaunchHandler.configureForClientLaunch(classLoader, this);
         FMLLaunchHandler.appendCoreMods();
