@@ -31,6 +31,20 @@ public final class PreSplashManager {
     private PreSplashManager() {
     }
 
+    private static String title() {
+        return "Cleanroom";
+    }
+
+    private static String phaseMsg(PreSplashPhase phase) {
+        return switch (phase) {
+            case FML_SETUP -> "Preparing Forge Mod Loader";
+            case INITIAL_MOD_SCAN -> "Discovering mods";
+            case CORE_MOD_LAUNCH -> "Loading core mods";
+            case MINECRAFT_INIT -> "Initializing Minecraft";
+            case RIGHT_BEFORE_SPLASH -> "Starting mod loading";
+        };
+    }
+
     /**
      * Thread-safe.
      *
@@ -43,20 +57,30 @@ public final class PreSplashManager {
                 "Expected pre splash phase: %s; Observed: %s", fsm.getState(), phase);
 
         fsm.next();
-        String message = switch (phase) {
-            case FML_SETUP -> "Preparing Forge Mod Loader";
-            case INITIAL_MOD_SCAN -> "Discovering mods";
-            case CORE_MOD_LAUNCH -> "Loading core mods";
-            case MINECRAFT_INIT -> "Initializing Minecraft";
-            case RIGHT_BEFORE_SPLASH -> "Starting mod loading";
-        };
 
-        states.add(new PreSplashState("Cleanroom", message, "1"));
+        states.add(new PreSplashState(title(), phaseMsg(phase), ""));
         currentPhase = phase;
     }
 
     /**
-     * Thread-safe. Only intended to be read by after the first phase has been published.
+     * Thread-safe. Must be called after the first {@link #notifyPhase(PreSplashPhase)}.
+     *
+     * @param phase The current phase that owns this detail update (acts like a filter)
+     */
+    @SuppressWarnings("DataFlowIssue")
+    @ApiStatus.Internal
+    public synchronized void notifyDetails(PreSplashPhase phase, String details) {
+        Preconditions.checkNotNull(phase);
+        Preconditions.checkNotNull(details);
+        Preconditions.checkNotNull(currentPhase);
+
+        if (currentPhase == phase) {
+            states.add(new PreSplashState(title(), phaseMsg(currentPhase), details));
+        }
+    }
+
+    /**
+     * Thread-safe. Only intended to be read after the first phase has been published.
      */
     @ApiStatus.Internal
     PreSplashPhase readPhase() {

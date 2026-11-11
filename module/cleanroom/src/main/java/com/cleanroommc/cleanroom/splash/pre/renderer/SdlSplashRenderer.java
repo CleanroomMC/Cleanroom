@@ -477,8 +477,10 @@ public final class SdlSplashRenderer implements AutoCloseable {
             text.append(state.title(), (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f, 200, 40, 0xFFF1F4FA);
             lineInfo = text.simulate(state.message(), 0, 0, 25);
             text.append(state.message(), (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f, 240, 25, 0xFFB9C7DB);
-            lineInfo = text.simulate(state.details(), 0, 0, 25);
-            text.append(state.details(), (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f, 290, 25, 0xFF8998AE);
+            if (!state.details().isEmpty()) {
+                lineInfo = text.simulate(state.details(), 0, 0, 25);
+                text.append(state.details(), (PreSplashLayout.WIDTH - lineInfo.getLineWidth()) / 2f, 292, 25, 0xFF8998AE);
+            }
             text.endDraw();
 
             gui.begin();

@@ -178,7 +178,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
             } catch (URISyntaxException ignored) { }
         }
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.INITIAL_MOD_SCAN, "Scanning mods");
+        }
         this.discover(files);
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.INITIAL_MOD_SCAN, "Finished discovering mods");
+        }
     }
 
     public static CleanroomModDiscoverer instance() {
@@ -428,6 +434,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             if (!mod.hasMixinManifestAttributes()) {
                 continue;
             }
+            if (CleanroomEnvironment.side().isClient()) {
+                PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Loading mixins: " + mod.file().getName());
+            }
             if (mod.coremod() == null) {
                 try {
                     Launch.classLoader.addURL(mod.file().toURI().toURL());
@@ -453,6 +462,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         File modsDir = setupCoreModDir(minecraftDirectory);
         findDerpMods(modsDir);
         if (fileDirector != null) {
+            if (CleanroomEnvironment.side().isClient()) {
+                PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Installing mods with File Director");
+            }
             discoverFileDirectorMods(minecraftDirectory, classLoader);
         }
 
@@ -586,7 +598,13 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
             return true;
         });
         if (!installed.isEmpty()) {
+            if (CleanroomEnvironment.side().isClient()) {
+                PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Scanning installed mods");
+            }
             discover(installed);
+            if (CleanroomEnvironment.side().isClient()) {
+                PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Finished discovering installed mods");
+            }
         }
     }
 
@@ -739,6 +757,9 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
                 if (containNonMods) {
                     addContainedDepsToClasspath(classLoader, attributes, containedDepsDir);
+                }
+                if (CleanroomEnvironment.side().isClient()) {
+                    PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Loading launch plugin: " + file.getName());
                 }
                 CleanroomLog.get().info("Cascading tweaker {} from {}", discoveredMod.tweaker(), file.getName());
                 Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(attributes.getValue("TweakOrder")));
