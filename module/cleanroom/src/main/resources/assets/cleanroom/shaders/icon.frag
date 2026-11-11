@@ -11,6 +11,7 @@ uniform vec2 logoScale;
 uniform vec3 background;
 uniform vec3 glow;
 uniform float time;
+uniform bool enableGlow;
 
 const float INITIAL_SCALE = 0.94;
 const float INITIAL_BLUR = 4.0;
@@ -20,6 +21,8 @@ const float GLOW_INTENSITY = 0.06;
 
 vec3 sampleBackground(vec2 uv)
 {
+    if (!enableGlow) return background;
+
     float glowTime = time * GLOW_SPEED;
     float aspectRatio = resolution.x / max(resolution.y, 1.0);
     float widthMix = 0.65 * smoothstep(1.3, 4.5, aspectRatio);

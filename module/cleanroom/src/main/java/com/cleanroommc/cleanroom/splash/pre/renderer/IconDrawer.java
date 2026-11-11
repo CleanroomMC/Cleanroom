@@ -67,7 +67,16 @@ final class IconDrawer implements AutoCloseable {
             shaders.submitToGL(vertexShader, fragmentShader);
             program = shaders.makeProgram(vertexShader, fragmentShader);
 
-            for (String uniform : List.of("resolution", "progress", "logoTexture", "logoCenter", "logoScale", "background", "glow", "time")) {
+            for (String uniform : List.of(
+                    "resolution",
+                    "progress",
+                    "logoTexture",
+                    "logoCenter",
+                    "logoScale",
+                    "background",
+                    "glow",
+                    "time",
+                    "enableGlow")) {
                 Preconditions.checkState(program.uniformLocation(uniform) >= 0, "Missing uniform: %s", uniform);
             }
 
@@ -81,6 +90,7 @@ final class IconDrawer implements AutoCloseable {
                     ((PreSplashLayout.GLOW_COLOR >> 16) & 255) / 255f,
                     ((PreSplashLayout.GLOW_COLOR >> 8) & 255) / 255f,
                     (PreSplashLayout.GLOW_COLOR & 255) / 255f);
+            program.uniform1b("enableGlow", PreSplashLayout.ENABLE_GLOW);
 
             icon = loadIcon(gameDirectory);
         } catch (Throwable failure) {
