@@ -416,7 +416,7 @@ public final class PreSplashScreenContainer {
                 SDLVideo.SDL_GL_ResetAttributes();
                 checkSDL(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, 4), "GL major version");
                 checkSDL(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, 6), "GL minor version");
-                checkSDL(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE), "GL profile");
+                checkSDL(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, SDLVideo.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY), "GL profile");
                 checkSDL(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_DOUBLEBUFFER, 1), "GL double buffering");
 
                 int display = SDLVideo.SDL_GetPrimaryDisplay();
