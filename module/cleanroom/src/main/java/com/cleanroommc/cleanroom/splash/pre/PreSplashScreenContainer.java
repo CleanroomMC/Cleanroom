@@ -15,6 +15,7 @@ import com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLayout;
 import com.cleanroommc.cleanroom.splash.pre.renderer.PreSplashLogger;
 import com.cleanroommc.cleanroom.splash.pre.renderer.SdlSplashRenderer;
 import com.cleanroommc.cleanroom.splash.pre.renderer.SwingSplashRenderer;
+import com.cleanroommc.cleanroom.splash.pre.renderer.WindowsAppRegistration;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
@@ -42,6 +43,7 @@ import org.lwjgl.sdl.SDL_EventFilter;
 import org.lwjgl.sdl.SDL_Rect;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.Platform;
 import org.lwjgl.system.ThreadLocalUtil;
 
 import javax.swing.JDialog;
@@ -365,6 +367,7 @@ public final class PreSplashScreenContainer {
             private boolean videoInitialized;
             private boolean initialized;
             private boolean glInitialized;
+            private @Nullable WindowsAppRegistration windowsAppRegistration;
             private @Nullable SDL_EventFilter watch;
 
             static Window open(Runnable stop) {
@@ -392,6 +395,10 @@ public final class PreSplashScreenContainer {
                 Configuration.SHARED_LIBRARY_EXTRACT_PATH.set(null);
                 Configuration.SHARED_LIBRARY_EXTRACT_DIRECTORY.set("cleanroom-pre-splash");
                 Configuration.SHARED_LIBRARY_EXTRACT_FORCE.set(true);
+
+                if (Platform.get() == Platform.WINDOWS) {
+                    windowsAppRegistration = WindowsAppRegistration.register();
+                }
 
                 // prefer native Wayland over XWayland
                 if (System.getenv("WAYLAND_DISPLAY") != null && System.getenv("SDL_VIDEODRIVER") == null) {
@@ -555,11 +562,18 @@ public final class PreSplashScreenContainer {
                                     SDLInit.SDL_QuitSubSystem(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS);
                                 }
                             } finally {
-                                if (!initialized) {
-                                    if (originalLibraryPath == null) {
-                                        System.clearProperty("org.lwjgl.librarypath");
-                                    } else {
-                                        System.setProperty("org.lwjgl.librarypath", originalLibraryPath);
+                                try {
+                                    if (windowsAppRegistration != null) {
+                                        windowsAppRegistration.close();
+                                        windowsAppRegistration = null;
+                                    }
+                                } finally {
+                                    if (!initialized) {
+                                        if (originalLibraryPath == null) {
+                                            System.clearProperty("org.lwjgl.librarypath");
+                                        } else {
+                                            System.setProperty("org.lwjgl.librarypath", originalLibraryPath);
+                                        }
                                     }
                                 }
                             }
