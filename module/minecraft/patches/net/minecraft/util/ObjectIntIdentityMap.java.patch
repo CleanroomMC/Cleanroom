@@ -1,0 +1,11 @@
+--- original/net/minecraft/util/ObjectIntIdentityMap.java
++++ modified/net/minecraft/util/ObjectIntIdentityMap.java
+@@ -37,7 +37,7 @@
+     }
+ 
+     @Nullable
+-    public final T getByValue(int value) {
++    public T getByValue(int value) {
+         return value >= 0 && value < this.objectList.size() ? this.objectList.get(value) : null;
+     }
+ 

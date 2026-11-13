@@ -1,6 +1,67 @@
 --- original/net/minecraft/stats/StatList.java
 +++ modified/net/minecraft/stats/StatList.java
-@@ -205,7 +205,7 @@
+@@ -130,46 +130,48 @@
+     public static final StatBase CHEST_OPENED = new StatBasic("stat.chestOpened", new TextComponentTranslation("stat.chestOpened")).registerStat();
+     public static final StatBase SLEEP_IN_BED = new StatBasic("stat.sleepInBed", new TextComponentTranslation("stat.sleepInBed")).registerStat();
+     public static final StatBase OPEN_SHULKER_BOX = new StatBasic("stat.shulkerBoxOpened", new TextComponentTranslation("stat.shulkerBoxOpened")).registerStat();
+-    private static final StatBase[] BLOCKS_STATS = new StatBase[4096];
+-    private static final StatBase[] CRAFTS_STATS = new StatBase[32000];
++    // Cleanroom: sized from the registries in init()/reinit() (block and item ids are no longer capped at 4096/32000)
++    private static StatBase[] BLOCKS_STATS = new StatBase[4096];
++    private static StatBase[] CRAFTS_STATS = new StatBase[32000];
+     /** Tracks the number of times a given block or item has been used. */
+-    private static final StatBase[] OBJECT_USE_STATS = new StatBase[32000];
++    private static StatBase[] OBJECT_USE_STATS = new StatBase[32000];
+     /** Tracks the number of times a given block or item has been broken. */
+-    private static final StatBase[] OBJECT_BREAK_STATS = new StatBase[32000];
+-    private static final StatBase[] OBJECTS_PICKED_UP_STATS = new StatBase[32000];
+-    private static final StatBase[] OBJECTS_DROPPED_STATS = new StatBase[32000];
++    private static StatBase[] OBJECT_BREAK_STATS = new StatBase[32000];
++    private static StatBase[] OBJECTS_PICKED_UP_STATS = new StatBase[32000];
++    private static StatBase[] OBJECTS_DROPPED_STATS = new StatBase[32000];
+ 
+     @Nullable
+     public static StatBase getBlockStats(Block blockIn) {
+-        return BLOCKS_STATS[Block.getIdFromBlock(blockIn)];
++        return statAt(BLOCKS_STATS, Block.getIdFromBlock(blockIn));
+     }
+ 
+     @Nullable
+     public static StatBase getCraftStats(Item itemIn) {
+-        return CRAFTS_STATS[Item.getIdFromItem(itemIn)];
++        return statAt(CRAFTS_STATS, Item.getIdFromItem(itemIn));
+     }
+ 
+     @Nullable
+     public static StatBase getObjectUseStats(Item itemIn) {
+-        return OBJECT_USE_STATS[Item.getIdFromItem(itemIn)];
++        return statAt(OBJECT_USE_STATS, Item.getIdFromItem(itemIn));
+     }
+ 
+     @Nullable
+     public static StatBase getObjectBreakStats(Item itemIn) {
+-        return OBJECT_BREAK_STATS[Item.getIdFromItem(itemIn)];
++        return statAt(OBJECT_BREAK_STATS, Item.getIdFromItem(itemIn));
+     }
+ 
+     @Nullable
+     public static StatBase getObjectsPickedUpStats(Item itemIn) {
+-        return OBJECTS_PICKED_UP_STATS[Item.getIdFromItem(itemIn)];
++        return statAt(OBJECTS_PICKED_UP_STATS, Item.getIdFromItem(itemIn));
+     }
+ 
+     @Nullable
+     public static StatBase getDroppedObjectStats(Item itemIn) {
+-        return OBJECTS_DROPPED_STATS[Item.getIdFromItem(itemIn)];
++        return statAt(OBJECTS_DROPPED_STATS, Item.getIdFromItem(itemIn));
+     }
+ 
+     public static void init() {
++        sizeArrays();
+         initMiningStats();
+         initStats();
+         initItemDepleteStats();
+@@ -205,7 +207,7 @@
              }
          }
  
@@ -9,7 +70,7 @@
      }
  
      private static void initMiningStats() {
-@@ -224,7 +224,7 @@
+@@ -224,7 +226,7 @@
              }
          }
  
@@ -18,7 +79,7 @@
      }
  
      private static void initStats() {
-@@ -244,7 +244,7 @@
+@@ -244,7 +246,7 @@
              }
          }
  
@@ -27,7 +88,7 @@
      }
  
      private static void initItemDepleteStats() {
-@@ -261,7 +261,7 @@
+@@ -261,7 +263,7 @@
              }
          }
  
@@ -36,7 +97,7 @@
      }
  
      private static void initPickedUpAndDroppedStats() {
-@@ -280,7 +280,7 @@
+@@ -280,36 +282,77 @@
              }
          }
  
@@ -44,8 +105,35 @@
 +        replaceAllSimilarBlocks(OBJECT_BREAK_STATS, true);
      }
  
++    @Nullable
++    private static StatBase statAt(StatBase[] stats, int id) {
++        return id >= 0 && id < stats.length ? stats[id] : null;
++    }
++
++    /** Cleanroom: one slot per block/item id the registries use; the arrays must be empty (init, reinit). */
++    private static void sizeArrays() {
++        int blocks = 4096;
++        for (Block block : Block.REGISTRY) {
++            blocks = Math.max(blocks, Block.getIdFromBlock(block) + 1);
++        }
++        int items = 32000;
++        for (Item item : Item.REGISTRY) {
++            items = Math.max(items, Item.getIdFromItem(item) + 1);
++        }
++        if (BLOCKS_STATS.length < blocks) {
++            BLOCKS_STATS = new StatBase[blocks];
++        }
++        if (CRAFTS_STATS.length < items) {
++            CRAFTS_STATS = new StatBase[items];
++            OBJECT_USE_STATS = new StatBase[items];
++            OBJECT_BREAK_STATS = new StatBase[items];
++            OBJECTS_PICKED_UP_STATS = new StatBase[items];
++            OBJECTS_DROPPED_STATS = new StatBase[items];
++        }
++    }
++
      private static String getItemName(Item itemIn) {
-@@ -288,28 +288,34 @@
+         ResourceLocation resourcelocation = Item.REGISTRY.getNameForObject(itemIn);
          return resourcelocation != null ? resourcelocation.toString().replace(':', '.') : null;
      }
  
@@ -90,17 +178,25 @@
 +        int i;
 +        int j;
 +        if (useItemIds) {
-+            i = Item.getIdFromItem(Item.getItemFromBlock(block1));
-+            j = Item.getIdFromItem(Item.getItemFromBlock(block2));
++            Item item1 = Item.getItemFromBlock(block1);
++            Item item2 = Item.getItemFromBlock(block2);
++            if (item1 == Items.AIR || item2 == Items.AIR) {
++                return;
++            }
++            i = Item.getIdFromItem(item1);
++            j = Item.getIdFromItem(item2);
 +        } else {
 +            i = Block.getIdFromBlock(block1);
 +            j = Block.getIdFromBlock(block2);
++        }
++        if (i < 0 || j < 0 || i >= statBaseIn.length || j >= statBaseIn.length) {
++            return;
 +        }
 +
          if (statBaseIn[i] != null && statBaseIn[j] == null) {
              statBaseIn[j] = statBaseIn[i];
          } else {
-@@ -342,4 +348,32 @@
+@@ -342,4 +385,33 @@
      public static StatBase getOneShotStat(String statName) {
          return ID_TO_STAT_MAP.get(statName);
      }
@@ -120,6 +216,7 @@
 +                }
 +            }
 +        }
++        sizeArrays();
 +        List<StatBase> unknown = Lists.newArrayList(ALL_STATS);
 +        ALL_STATS.clear();
 +

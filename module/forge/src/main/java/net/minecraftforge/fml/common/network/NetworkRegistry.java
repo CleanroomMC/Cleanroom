@@ -74,7 +74,7 @@ public enum NetworkRegistry
 
     // Version 1: ServerHello only contains this value as a byte
     // Version 2: ServerHello additionally contains a 4 byte (int) dimension for the logging in client
-    public static final byte FML_PROTOCOL = 2;
+    public static final byte FML_PROTOCOL = 3;
 
     private NetworkRegistry()
     {

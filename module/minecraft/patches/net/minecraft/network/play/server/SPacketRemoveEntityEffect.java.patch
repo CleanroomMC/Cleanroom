@@ -1,0 +1,19 @@
+--- original/net/minecraft/network/play/server/SPacketRemoveEntityEffect.java
++++ modified/net/minecraft/network/play/server/SPacketRemoveEntityEffect.java
+@@ -27,14 +27,14 @@
+     @Override
+     public void readPacketData(PacketBuffer buf) throws IOException {
+         this.entityId = buf.readVarInt();
+-        this.effectId = Potion.getPotionById(buf.readUnsignedByte());
++        this.effectId = Potion.getPotionById(buf.readVarInt()); // Cleanroom: potion ids past 255
+     }
+ 
+     /** Writes the raw packet data to the data stream. */
+     @Override
+     public void writePacketData(PacketBuffer buf) throws IOException {
+         buf.writeVarInt(this.entityId);
+-        buf.writeByte(Potion.getIdFromPotion(this.effectId));
++        buf.writeVarInt(Potion.getIdFromPotion(this.effectId));
+     }
+ 
+     /** Passes this Packet on to the NetHandler for processing. */

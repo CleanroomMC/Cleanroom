@@ -33,8 +33,6 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     private ResourceLocation registryName;
     private Class<T> registryType;
     private ResourceLocation optionalDefaultKey;
-    private int minId = 0;
-    private int maxId = Integer.MAX_VALUE - 1;
     private List<AddCallback<T>> addCallback = Lists.newArrayList();
     private List<ClearCallback<T>> clearCallback = Lists.newArrayList();
     private List<CreateCallback<T>> createCallback = Lists.newArrayList();
@@ -42,7 +40,6 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     private boolean saveToDisc = true;
     private boolean allowOverrides = true;
     private boolean allowModifications = false;
-    private DummyFactory<T> dummyFactory;
     private MissingFactory<T> missingFactory;
 
     public RegistryBuilder<T> setName(ResourceLocation name)
@@ -57,16 +54,22 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
         return this;
     }
 
+    /**
+     * Ids are derived at freeze; the range is ignored.
+     */
+    @Deprecated
     public RegistryBuilder<T> setIDRange(int min, int max)
     {
-        this.minId = min;
-        this.maxId = max;
         return this;
     }
 
+    /**
+     * Ids are derived at freeze; the range is ignored.
+     */
+    @Deprecated
     public RegistryBuilder<T> setMaxID(int max)
     {
-        return this.setIDRange(0, max);
+        return this;
     }
 
     public RegistryBuilder<T> setDefaultKey(ResourceLocation key)
@@ -117,12 +120,20 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
         return this;
     }
 
+    /**
+     * @deprecated dummy entries are gone; ids are derived. No-op kept for binary compatibility.
+     */
+    @Deprecated
     public RegistryBuilder<T> set(DummyFactory<T> factory)
     {
-        this.dummyFactory = factory;
         return this;
     }
 
+    /**
+     * @deprecated missing-mappings default action no longer creates entries; ids are derived. No-op
+     * kept for binary compatibility.
+     */
+    @Deprecated
     public RegistryBuilder<T> set(MissingFactory<T> missing)
     {
         this.missingFactory = missing;
@@ -149,8 +160,8 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
 
     public IForgeRegistry<T> create()
     {
-        return RegistryManager.ACTIVE.createRegistry(registryName, registryType, optionalDefaultKey, minId, maxId,
-                getAdd(), getClear(), getCreate(), getValidate(), saveToDisc, allowOverrides, allowModifications, dummyFactory, missingFactory);
+        return RegistryManager.ACTIVE.createRegistry(registryName, registryType, optionalDefaultKey,
+                getAdd(), getClear(), getCreate(), getValidate(), saveToDisc, allowOverrides, allowModifications, null, missingFactory);
     }
 
     @Nullable

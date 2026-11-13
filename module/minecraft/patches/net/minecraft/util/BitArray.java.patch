@@ -1,0 +1,99 @@
+--- original/net/minecraft/util/BitArray.java
++++ modified/net/minecraft/util/BitArray.java
+@@ -1,6 +1,5 @@
+ package net.minecraft.util;
+ 
+-import net.minecraft.util.math.MathHelper;
+ import org.apache.commons.lang3.Validate;
+ 
+ public class BitArray {
+@@ -15,47 +14,67 @@
+     private final long maxEntryValue;
+     /** Number of entries in this array (<b>not</b> the length of the long array that internally backs this array) */
+     private final int arraySize;
++    /** Number of entries per backing long; entries never straddle a long boundary */
++    private final int valuesPerLong;
++    /**
++     * Magic multiply-shift constants that compute {@code index / valuesPerLong} without a division,
++     * the same scheme as the 1.16+ bit storage: {@code (index * divideMul + divideAdd) >>> 32 >>> divideShift}.
++     */
++    private final long divideMul;
++    private final long divideAdd;
++    private final int divideShift;
+ 
+     public BitArray(int bitsPerEntryIn, int arraySizeIn) {
+         Validate.inclusiveBetween(1L, 32L, bitsPerEntryIn);
+         this.arraySize = arraySizeIn;
+         this.bitsPerEntry = bitsPerEntryIn;
+         this.maxEntryValue = (1L << bitsPerEntryIn) - 1L;
+-        this.longArray = new long[MathHelper.roundUp(arraySizeIn * bitsPerEntryIn, 64) / 64];
++        this.valuesPerLong = 64 / bitsPerEntryIn;
++        this.longArray = new long[(arraySizeIn + this.valuesPerLong - 1) / this.valuesPerLong];
++        if ((this.valuesPerLong & (this.valuesPerLong - 1)) == 0) {
++            // a power of two divides exactly at bit 32 of the product
++            this.divideMul = (1L << 32) / this.valuesPerLong;
++            this.divideAdd = 0;
++            this.divideShift = 0;
++        } else {
++            // round-up magic: exact while index * (mul * valuesPerLong - 2^(32+shift)) stays below 2^(32+shift)
++            this.divideShift = 31 - Integer.numberOfLeadingZeros(this.valuesPerLong);
++            this.divideMul = ((1L << (32 + this.divideShift)) / this.valuesPerLong) + 1;
++            this.divideAdd = 0;
++        }
+     }
+ 
++    private int cellIndex(int index) {
++        return (int)((index * this.divideMul + this.divideAdd >>> 32) >>> this.divideShift);
++    }
++
++    private int elementOffset(int index) {
++        return index - this.cellIndex(index) * this.valuesPerLong;
++    }
++
+     /** Sets the entry at the given location to the given value */
+     public void setAt(int index, int value) {
+         Validate.inclusiveBetween(0L, this.arraySize - 1, index);
+         Validate.inclusiveBetween(0L, this.maxEntryValue, value);
+-        int i = index * this.bitsPerEntry;
+-        int j = i / 64;
+-        int k = ((index + 1) * this.bitsPerEntry - 1) / 64;
+-        int l = i % 64;
+-        this.longArray[j] = this.longArray[j] & ~(this.maxEntryValue << l) | (value & this.maxEntryValue) << l;
+-        if (j != k) {
+-            int i1 = 64 - l;
+-            int j1 = this.bitsPerEntry - i1;
+-            this.longArray[k] = this.longArray[k] >>> j1 << j1 | (value & this.maxEntryValue) >> i1;
+-        }
++        int i = this.cellIndex(index);
++        int j = this.elementOffset(index) * this.bitsPerEntry;
++        this.longArray[i] = this.longArray[i] & ~(this.maxEntryValue << j) | ((long) value & this.maxEntryValue) << j;
+     }
+ 
+     /** Gets the entry at the given index */
+     public int getAt(int index) {
+         Validate.inclusiveBetween(0L, this.arraySize - 1, index);
+-        int i = index * this.bitsPerEntry;
+-        int j = i / 64;
+-        int k = ((index + 1) * this.bitsPerEntry - 1) / 64;
+-        int l = i % 64;
+-        if (j == k) {
+-            return (int)(this.longArray[j] >>> l & this.maxEntryValue);
+-        }
+-
+-        int i1 = 64 - l;
+-        return (int)((this.longArray[j] >>> l | this.longArray[k] << i1) & this.maxEntryValue);
++        int i = this.cellIndex(index);
++        int j = this.elementOffset(index) * this.bitsPerEntry;
++        return (int)(this.longArray[i] >>> j & this.maxEntryValue);
+     }
+ 
+-    /** Gets the long array that is used to store the data in this BitArray. This is useful for sending packet data. */
++    /**
++     * Gets the long array that is used to store the data in this BitArray. This is useful for sending packet data.
++     * <p>Cleanroom: the layout matches the 1.16+ bit storage — entries never span a long boundary; each long holds
++     * {@code 64 / bitsPerEntry} entries at offset {@code (index % valuesPerLong) * bitsPerEntry}, and the high bits of
++     * the last long may be unused. This differs from the 1.12 layout, where entries could straddle two longs.</p>
++     */
+     public long[] getBackingLongArray() {
+         return this.longArray;
+     }
