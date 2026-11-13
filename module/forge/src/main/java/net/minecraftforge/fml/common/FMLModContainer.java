@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.cleanroommc.language.scala.ScalaProvider;
 import com.cleanroommc.loader.LanguageAdapterRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -560,7 +561,7 @@ public class FMLModContainer implements ModContainer
             throw new LoaderException(message.getFormattedMessage(), e);
         }
 
-        Certificate[] certificates = clazz.getProtectionDomain().getCodeSource().getCertificates();
+        Certificate[] certificates = ScalaProvider.certificates(clazz, source);
         ImmutableList<String> certList = CertificateHelper.getFingerprints(certificates);
         sourceFingerprints = ImmutableSet.copyOf(certList);
 

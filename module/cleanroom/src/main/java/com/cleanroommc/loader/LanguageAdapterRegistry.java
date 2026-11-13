@@ -10,6 +10,8 @@
 
 package com.cleanroommc.loader;
 
+import com.cleanroommc.language.scala.ScalaAdapter;
+
 import com.google.common.collect.Maps;
 
 import net.minecraftforge.fml.common.FMLLog;
@@ -23,6 +25,7 @@ public final class LanguageAdapterRegistry {
 
     static {
         registerLanguageAdapter("java", new ILanguageAdapter.JavaAdapter());
+        registerLanguageAdapter("scala", new ScalaAdapter());
     }
 
     private LanguageAdapterRegistry() { }
