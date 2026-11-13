@@ -30,4 +30,4 @@ cleanroom.gui.show_dependencies=Показывать зависимости
 cleanroom.gui.show_dependents=Показывать зависимых
 attribute.name.generic.flyingSpeed=Скорость полёта
 
-cleanroom.layout_awareness=Оформление: %s
+cleanroom.layout_awareness=Pаскладка: %s
