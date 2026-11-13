@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common.asm.transformers;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -34,8 +35,12 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureWriter;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -65,6 +70,9 @@ public class ModAPITransformer implements IClassTransformer {
         classReader.accept(classNode, 0);
 
         if (logDebugInfo) FMLLog.log.trace("Optional removal - found optionals for class {} - processing", name);
+
+        LambdaGatherer lambdaGatherer = new LambdaGatherer();
+
         for (ASMData optional : optionals.get(lookupName))
         {
             String modId = (String) optional.getAnnotationInfo().get("modid");
@@ -80,14 +88,37 @@ public class ModAPITransformer implements IClassTransformer {
             {
                 Boolean stripRefs = (Boolean)optional.getAnnotationInfo().get("striprefs");
                 if (stripRefs == null) stripRefs = Boolean.FALSE;
-                stripInterface(classNode,(String)optional.getAnnotationInfo().get("iface"), stripRefs);
+                stripInterface(classNode, (String)optional.getAnnotationInfo().get("iface"), stripRefs, lambdaGatherer);
             }
             else
             {
-                stripMethod(classNode, optional.getObjectName());
+                stripMethod(classNode, optional.getObjectName(), lambdaGatherer);
             }
-
         }
+
+        List<Handle> dynamicLambdaHandles = lambdaGatherer.getDynamicLambdaHandles();
+        while (!dynamicLambdaHandles.isEmpty())
+        {
+            lambdaGatherer = new LambdaGatherer();
+            for (Iterator<MethodNode> iterator = classNode.methods.iterator(); iterator.hasNext(); )
+            {
+                MethodNode method = iterator.next();
+                if ((method.access & Opcodes.ACC_SYNTHETIC) == 0) continue;
+                for (Handle dynamicLambdaHandle : dynamicLambdaHandles)
+                {
+                    if (method.name.equals(dynamicLambdaHandle.getName())
+                            && method.desc.equals(dynamicLambdaHandle.getDesc()))
+                    {
+                        if (logDebugInfo) FMLLog.log.debug("Optional removal - lambda method {} removed", method.name + method.desc);
+                        lambdaGatherer.accept(method);
+                        iterator.remove();
+                        break;
+                    }
+                }
+            }
+            dynamicLambdaHandles = lambdaGatherer.getDynamicLambdaHandles();
+        }
+
         if (logDebugInfo) FMLLog.log.trace("Optional removal - class {} processed", name);
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -95,7 +126,7 @@ public class ModAPITransformer implements IClassTransformer {
         return writer.toByteArray();
     }
 
-    private void stripMethod(ClassNode classNode, String methodDescriptor)
+    private void stripMethod(ClassNode classNode, String methodDescriptor, LambdaGatherer lambdaGatherer)
     {
         if(classNode.name.endsWith("$class"))
         {
@@ -108,6 +139,7 @@ public class ModAPITransformer implements IClassTransformer {
             MethodNode method = iterator.next();
             if (methodDescriptor.equals(method.name+method.desc))
             {
+                lambdaGatherer.accept(method);
                 iterator.remove();
                 if (logDebugInfo) FMLLog.log.debug("Optional removal - method {} removed", methodDescriptor);
                 return;
@@ -116,7 +148,7 @@ public class ModAPITransformer implements IClassTransformer {
         if (logDebugInfo) FMLLog.log.debug("Optional removal - method {} NOT removed - not found", methodDescriptor);
     }
 
-    private void stripInterface(ClassNode classNode, String interfaceName, boolean stripRefs)
+    private void stripInterface(ClassNode classNode, String interfaceName, boolean stripRefs, LambdaGatherer lambdaGatherer)
     {
         final String ifaceName = interfaceName.replace('.', '/');
         boolean found = classNode.interfaces.remove(ifaceName);
@@ -140,6 +172,7 @@ public class ModAPITransformer implements IClassTransformer {
                 if (node.desc.contains(ifaceName))
                 {
                     if (logDebugInfo) FMLLog.log.debug("Optional removal - interface {} - stripping method containing reference {}", interfaceName, node.name);
+                    lambdaGatherer.accept(node);
                     iterator.remove();
                 }
             }
@@ -178,11 +211,12 @@ public class ModAPITransformer implements IClassTransformer {
 
         return result;
     }
+
     private void addData(Set<ASMData> interfaces)
     {
         for (ASMData data : interfaces)
         {
-            optionals.put(data.getClassName(),data);
+            optionals.put(data.getClassName(), data);
         }
     }
 
@@ -205,6 +239,54 @@ public class ModAPITransformer implements IClassTransformer {
             {
                 super.visitClassType(name);
             }
+        }
+    }
+
+    private static class LambdaGatherer extends MethodVisitor {
+        private static final Handle META_FACTORY = new Handle(
+                Opcodes.H_INVOKESTATIC,
+                "java/lang/invoke/LambdaMetafactory",
+                "metafactory",
+                "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+                false);
+        private static final Handle ALT_META_FACTORY = new Handle(
+                Opcodes.H_INVOKESTATIC,
+                "java/lang/invoke/LambdaMetafactory",
+                "altMetafactory",
+                "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;",
+                false);
+
+        private final List<Handle> dynamicLambdaHandles = new ArrayList<Handle>();
+
+        public LambdaGatherer() {
+            super(Opcodes.ASM9);
+        }
+
+        public void accept(MethodNode method) {
+            if (method == null || method.instructions == null) return;
+            for (AbstractInsnNode insnNode : method.instructions) {
+                if (insnNode.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN) {
+                    insnNode.accept(this);
+                }
+            }
+        }
+
+        @Override
+        public void visitInvokeDynamicInsn(String name, String desc, Handle bsm, Object... bsmArgs)
+        {
+            if (META_FACTORY.equals(bsm) || ALT_META_FACTORY.equals(bsm))
+            {
+                Object implMethod = bsmArgs.length > 1 ? bsmArgs[1] : null;
+                if (implMethod instanceof Handle)
+                {
+                    dynamicLambdaHandles.add((Handle) implMethod);
+                }
+            }
+        }
+
+        public List<Handle> getDynamicLambdaHandles()
+        {
+            return dynamicLambdaHandles;
         }
     }
 }
