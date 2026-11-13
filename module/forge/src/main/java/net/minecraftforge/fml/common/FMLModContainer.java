@@ -274,7 +274,10 @@ public class FMLModContainer implements ModContainer
         }
         if (Strings.isNullOrEmpty(internalVersion) && !Strings.isNullOrEmpty(modMetadata.version))
         {
-            FMLLog.log.warn("Mod {} is missing the required element 'version' and a version.properties file could not be found. Falling back to metadata version {}", getModId(), modMetadata.version);
+            if (overridesMetadata)
+            {
+                FMLLog.log.warn("Mod {} is missing the required element 'version' and a version.properties file could not be found. Falling back to metadata version {}", getModId(), modMetadata.version);
+            }
             internalVersion = modMetadata.version;
         }
         if (Strings.isNullOrEmpty(internalVersion))
