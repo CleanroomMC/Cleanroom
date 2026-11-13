@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.cleanroommc.cleanroom.splash.pre.PreSplashScreenContainer;
 import com.cleanroommc.client.modlist.ModListConfig;
 import com.cleanroommc.client.modlist.screen.ModListScreen;
 import com.cleanroommc.common.PatchModPresentChecker;
@@ -218,6 +219,8 @@ public class FMLClientHandler implements IFMLSidedHandler
      */
     public void beginMinecraftLoading(Minecraft minecraft, List<IResourcePack> resourcePackList, IReloadableResourceManager resourceManager, MetadataSerializer metaSerializer)
     {
+        PreSplashScreenContainer.finish();
+
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
