@@ -1,2 +1,4 @@
 cleanroom.gui.no_selection=Brak wybranego moda...
 attribute.name.generic.flyingSpeed=Prędkość latania
+
+cleanroom.layout_awareness=Układ: %s

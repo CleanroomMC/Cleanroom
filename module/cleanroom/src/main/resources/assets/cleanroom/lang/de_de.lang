@@ -1,2 +1,4 @@
 cleanroom.gui.no_selection=No mod selected...
 attribute.name.generic.flyingSpeed=Fluggeschwindigkeit
+
+cleanroom.layout_awareness=Layout: %s

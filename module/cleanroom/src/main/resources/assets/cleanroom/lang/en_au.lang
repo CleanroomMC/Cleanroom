@@ -50,3 +50,5 @@ cleanroom.config.ignored_dependencies_list.tooltip=The list of ignored dependenc
 cleanroom.config.force_default_icon_list=Force Default Icon List
 cleanroom.config.force_default_icon_list.tooltip=The list of mod ids that should always use the default item icon.\nThey will not have random-picked item icons to avoid crashes.
 attribute.name.generic.flyingSpeed=Flying Speed
+
+cleanroom.layout_awareness=Layout: %s
