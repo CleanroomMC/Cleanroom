@@ -19,6 +19,7 @@
 
 package net.minecraftforge.registries;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,12 +39,21 @@ import net.minecraftforge.registries.IForgeRegistry.*;
 public class RegistryManager
 {
     public static final RegistryManager ACTIVE = new RegistryManager("ACTIVE");
+    /**
+     * The vanilla-content snapshot taken by {@link GameData#vanillaSnapshot()}. Kept for mods that read
+     * the field to ask "is this entry vanilla"; it holds only baseline names and ids.
+     */
     public static final RegistryManager VANILLA = new RegistryManager("VANILLA");
-    public static final RegistryManager FROZEN = new RegistryManager("FROZEN");
+    /**
+     * @deprecated ids never change after freeze, so the frozen state IS the active state. Kept for mods
+     * that read the field; it is {@link #ACTIVE}.
+     */
+    @Deprecated
+    public static final RegistryManager FROZEN = ACTIVE;
 
     BiMap<ResourceLocation, ForgeRegistry<? extends IForgeRegistryEntry<?>>> registries = HashBiMap.create();
     private BiMap<Class<? extends IForgeRegistryEntry<?>>, ResourceLocation> superTypes = HashBiMap.create();
-    private Set<ResourceLocation> persisted = Sets.newHashSet();
+    Set<ResourceLocation> persisted = Sets.newHashSet();
     private final String name;
 
     public RegistryManager(String name)
@@ -66,6 +76,11 @@ public class RegistryManager
     public <V extends IForgeRegistryEntry<V>> ForgeRegistry<V> getRegistry(ResourceLocation key)
     {
         return (ForgeRegistry<V>)this.registries.get(key);
+    }
+
+    public Set<ResourceLocation> getRegistryNames()
+    {
+        return Collections.unmodifiableSet(this.registries.keySet());
     }
 
     public <V extends IForgeRegistryEntry<V>> IForgeRegistry<V> getRegistry(Class<V> cls)
@@ -93,7 +108,11 @@ public class RegistryManager
         return getRegistry(key);
     }
 
-    <V extends IForgeRegistryEntry<V>> ForgeRegistry<V> createRegistry(ResourceLocation name, Class<V> type, ResourceLocation defaultKey, int min, int max,
+    /**
+     * @deprecated dummy factories are gone; the {@code dummyFactory} parameter is ignored.
+     */
+    @Deprecated
+    <V extends IForgeRegistryEntry<V>> ForgeRegistry<V> createRegistry(ResourceLocation name, Class<V> type, ResourceLocation defaultKey,
             @Nullable AddCallback<V> add, @Nullable ClearCallback<V> clear, @Nullable CreateCallback<V> create, @Nullable ValidateCallback<V> validate,
             boolean persisted, boolean allowOverrides, boolean isModifiable, @Nullable DummyFactory<V> dummyFactory, @Nullable MissingFactory<V> missing)
     {
@@ -106,7 +125,7 @@ public class RegistryManager
             FMLLog.log.error("Found existing registry of type {} named {}, you cannot create a new registry ({}) with type {}, as {} has a parent of that type", foundType, superTypes.get(foundType), name, type, type);
             throw new IllegalArgumentException("Duplicate registry parent type found - you can only have one registry for a particular super type");
         }
-        ForgeRegistry<V> reg = new ForgeRegistry<V>(type, defaultKey, min, max, create, add, clear, validate, this, allowOverrides, isModifiable, dummyFactory, missing);
+        ForgeRegistry<V> reg = new ForgeRegistry<V>(type, defaultKey, create, add, clear, validate, this, allowOverrides, isModifiable, missing);
         registries.put(name, reg);
         superTypes.put(type, name);
         if (persisted)

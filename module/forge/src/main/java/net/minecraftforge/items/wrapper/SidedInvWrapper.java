@@ -103,7 +103,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable
             if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                 return stack;
 
-            if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
+            if (!stackInSlot.isStackable() || !stack.isStackable() || !ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
                 return stack;
 
             if (!inv.canInsertItem(slot1, stack, side) || !inv.isItemValidForSlot(slot1, stack))

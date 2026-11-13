@@ -28,7 +28,32 @@
              map2.put(map1, blockstatecontainer$stateimplementation);
              list1.add(blockstatecontainer$stateimplementation);
          }
-@@ -148,6 +156,13 @@
+@@ -79,6 +87,10 @@
+             blockstatecontainer$stateimplementation1.buildPropertyValueTable(map2);
+         }
+ 
++        for (int i = 0; i < list1.size(); i++) {
++            list1.get(i).ordinal = i;
++        }
++
+         this.validStates = ImmutableList.copyOf(list1);
+     }
+ 
+@@ -143,11 +155,27 @@
+         private final ImmutableMap<IProperty<?>, Comparable<?>> properties;
+         /** Lookup-table for IBlockState instances. This is a Table<Property, Value, State>. */
+         protected ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> propertyValueTable;
++        /** Cleanroom: this state's number in Block.BLOCK_STATE_IDS, written by Forge's BlockStateIdMap; -1 until numbered */
++        public int runtimeStateId = -1;
++        /** Cleanroom: this state's index in the container's valid-state list, assigned at build time; -1 if unlisted */
++        public int ordinal = -1;
+ 
++        @Override
++        public int getStateId() {
++            return Block.getStateId(this);
++        }
++
+         protected StateImplementation(Block blockIn, ImmutableMap<IProperty<?>, Comparable<?>> propertiesIn) {
              this.block = blockIn;
              this.properties = propertiesIn;
          }
@@ -42,7 +67,19 @@
  
          /** Get the names of all properties defined for this BlockState */
          @Override
-@@ -458,5 +473,92 @@
+@@ -204,6 +232,11 @@
+         }
+ 
+         @Override
++        public int getOrdinal() {
++            return this.ordinal;
++        }
++
++        @Override
+         public boolean equals(Object p_equals_1_) {
+             return this == p_equals_1_;
+         }
+@@ -458,5 +491,92 @@
          public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
              return this.block.getBlockFaceShape(worldIn, this, pos, facing);
          }

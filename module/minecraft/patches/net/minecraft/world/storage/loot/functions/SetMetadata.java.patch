@@ -1,0 +1,23 @@
+--- original/net/minecraft/world/storage/loot/functions/SetMetadata.java
++++ modified/net/minecraft/world/storage/loot/functions/SetMetadata.java
+@@ -13,6 +13,11 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++/**
++ * @deprecated Cleanroom: legacy subtype metadata loot function; use {@link SetDamage} for durability or
++ * {@code set_components} ({@link LootFunctionManager.SetComponents}) for data components.
++ */
++@Deprecated
+ public class SetMetadata extends LootFunction {
+     private static final Logger LOGGER = LogManager.getLogger();
+     private final RandomValueRange metaRange;
+@@ -27,7 +32,7 @@
+         if (stack.isItemStackDamageable()) {
+             LOGGER.warn("Couldn't set data of loot item {}", stack);
+         } else {
+-            stack.setItemDamage(this.metaRange.generateInt(rand));
++            stack.set(com.cleanroommc.cleanroom.common.component.DataComponents.LEGACY_VARIANT, this.metaRange.generateInt(rand));
+         }
+ 
+         return stack;

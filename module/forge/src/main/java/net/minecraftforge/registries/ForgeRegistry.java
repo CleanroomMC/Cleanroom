@@ -19,11 +19,17 @@
 
 package net.minecraftforge.registries;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Array;
+import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,8 +42,6 @@ import org.apache.commons.lang3.Validate;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -56,12 +60,22 @@ import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+
 public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRegistryInternal<V>, IForgeRegistryModifiable<V>
 {
     public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("forge.debugRegistryEntries", "false"));
     private final RegistryManager stage;
-    private final BiMap<Integer, V> ids = HashBiMap.create();
-    private final BiMap<ResourceLocation, V> names = HashBiMap.create();
+    // Open state: names keep registration order; the session ids entries carry before freeze are the same
+    // seed assignments the old ids BiMap gave them.
+    private final Int2ObjectOpenHashMap<V> registrationValues = new Int2ObjectOpenHashMap<>();
+    private final Object2IntOpenHashMap<V> registrationIds = new Object2IntOpenHashMap<>();
+    private final Object2ObjectLinkedOpenHashMap<ResourceLocation, V> names = new Object2ObjectLinkedOpenHashMap<>();
+    private final Object2ObjectOpenHashMap<V, ResourceLocation> nameOf = new Object2ObjectOpenHashMap<>();
     private final Class<V> superType;
     private final Map<ResourceLocation, ResourceLocation> aliases = Maps.newHashMap();
     final Map<ResourceLocation, ?> slaves = Maps.newHashMap();
@@ -71,29 +85,58 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     private final ClearCallback<V> clear;
     private final ValidateCallback<V> validate;
     private final MissingFactory<V> missing;
-    private final BitSet availabilityMap;
-    private final Set<ResourceLocation> dummies = Sets.newHashSet();
     private final Set<Integer> blocked = Sets.newHashSet();
     private final Multimap<ResourceLocation, V> overrides = ArrayListMultimap.create();
-    private final BiMap<OverrideOwner, V> owners = HashBiMap.create();
-    private final DummyFactory<V> dummyFactory;
+    private final Object2ObjectOpenHashMap<OverrideOwner, V> owners = new Object2ObjectOpenHashMap<>();
+    private final IdentityHashMap<V, OverrideOwner> ownerOf = new IdentityHashMap<>();
     private final boolean isDelegated;
-    private final int min;
-    private final int max;
     private final boolean allowOverrides;
     private final boolean isModifiable;
+    private int nextSeed = 0;
+    /** Ids the last renumber() moved; the Integer[] event map is built from this only when the event fires. */
+    private List<Renumber> lastRenumber = Collections.emptyList();
+    /** name -> vanilla id, captured by captureVanillaBaseline() at vanilla freeze; null for mod-made registries. */
+    private Map<ResourceLocation, Integer> vanillaBaseline;
 
     private V defaultValue = null;
     boolean isFrozen = false;
 
-    ForgeRegistry(Class<V> superType, ResourceLocation defaultKey, int min, int max, @Nullable CreateCallback<V> create, @Nullable AddCallback<V> add, @Nullable ClearCallback<V> clear, @Nullable ValidateCallback<V> validate, RegistryManager stage, boolean allowOverrides, boolean isModifiable, @Nullable DummyFactory<V> dummyFactory, @Nullable MissingFactory<V> missing)
+    /**
+     * The frozen numbering: dense ids 0..N-1, vanilla entries on their own numbers, the rest sorted by name.
+     * Installed atomically by renumber()/adoptOrder(); null while the registry is open. Its identity is the
+     * generation caches check: a cache built from this exact object stays valid until a new one is installed.
+     */
+    private volatile Numbering<V> numbering;
+    /** Replaced on every open-state mutation so caches that ran before freeze still invalidate. */
+    private volatile Object openToken = new Object();
+
+    /**
+     * One registry's frozen numbering: byId[id] is the entry at that id, idOf[value] and idOfName[name]
+     * return it (default -1). Immutable; shared read-only by caches after installation.
+     */
+    static final class Numbering<V>
+    {
+        final V[] byId;
+        final Reference2IntOpenHashMap<V> idOf;
+        final Object2IntOpenHashMap<ResourceLocation> idOfName;
+
+        Numbering(V[] byId, Reference2IntOpenHashMap<V> idOf, Object2IntOpenHashMap<ResourceLocation> idOfName)
+        {
+            this.byId = byId;
+            this.idOf = idOf;
+            this.idOfName = idOfName;
+        }
+    }
+
+    /** One entry whose id the last renumber() moved. */
+    private record Renumber(ResourceLocation name, int oldId, int newId) {}
+
+    ForgeRegistry(Class<V> superType, ResourceLocation defaultKey, @Nullable CreateCallback<V> create, @Nullable AddCallback<V> add, @Nullable ClearCallback<V> clear, @Nullable ValidateCallback<V> validate, RegistryManager stage, boolean allowOverrides, boolean isModifiable, @Nullable MissingFactory<V> missing)
     {
         this.stage = stage;
         this.superType = superType;
+        this.registrationIds.defaultReturnValue(-1);
         this.defaultKey = defaultKey;
-        this.min = min;
-        this.max = max;
-        this.availabilityMap = new BitSet(Math.min(max + 1, 0x0FFF));
         this.create = create;
         this.add = add;
         this.clear = clear;
@@ -102,7 +145,6 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         this.isDelegated = IForgeRegistryEntry.Impl.class.isAssignableFrom(superType); //TODO: Make this IDelegatedRegistryEntry?
         this.allowOverrides = allowOverrides;
         this.isModifiable = isModifiable;
-        this.dummyFactory = dummyFactory;
         if (this.create != null)
             this.create.onCreate(this, stage);
     }
@@ -115,27 +157,43 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
 
     @Override
     public Iterator<V> iterator() {
+        final Numbering<V> numbering = this.numbering;
+        if (numbering != null)
+        {
+            final V[] byId = numbering.byId;
+            return new Iterator<V>()
+            {
+                int cur = 0;
+
+                @Override
+                public boolean hasNext()
+                {
+                    return cur < byId.length;
+                }
+
+                @Override
+                public V next()
+                {
+                    return byId[cur++];
+                }
+            };
+        }
+        final List<Integer> order = new ArrayList<Integer>(this.registrationValues.keySet());
+        Collections.sort(order);
         return new Iterator<V>()
         {
-            int cur = -1;
-            V next = null;
-            { next(); }
+            int cur = 0;
 
             @Override
             public boolean hasNext()
             {
-                return next != null;
+                return cur < order.size();
             }
 
             @Override
             public V next()
             {
-                V ret = next;
-                do {
-                    cur = availabilityMap.nextSetBit(cur + 1);
-                    next = ids.get(cur);
-                } while (next == null && cur != -1); // nextSetBit returns -1 when none is found
-                return ret;
+                return registrationValues.get(order.get(cur++).intValue());
             }
             //TODO add remove support?
         };
@@ -188,7 +246,7 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     @Override
     public ResourceLocation getKey(V value)
     {
-        ResourceLocation ret = this.names.inverse().get(value);
+        ResourceLocation ret = this.nameOf.get(value);
         return ret == null ? this.defaultKey : ret;
     }
 
@@ -212,7 +270,52 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     @Override
     public Collection<V> getValuesCollection()
     {
-        return Collections.unmodifiableSet(this.names.values());
+        final Numbering<V> numbering = this.numbering;
+        // BiMap.values() was a Set upstream and mods cast it back; frozen yields entries in id order like iterator()
+        return new AbstractSet<V>()
+        {
+            @Override
+            public Iterator<V> iterator()
+            {
+                if (numbering != null)
+                {
+                    final V[] byId = numbering.byId;
+                    return new Iterator<V>()
+                    {
+                        int cur;
+
+                        @Override
+                        public boolean hasNext()
+                        {
+                            return cur < byId.length;
+                        }
+
+                        @Override
+                        public V next()
+                        {
+                            return byId[cur++];
+                        }
+                    };
+                }
+                return names.values().iterator();
+            }
+
+            @Override
+            public int size()
+            {
+                return numbering != null ? numbering.byId.length : names.size();
+            }
+
+            @Override
+            public boolean contains(Object o)
+            {
+                if (numbering != null)
+                {
+                    return numbering.idOf.getInt(o) >= 0;
+                }
+                return o instanceof IForgeRegistryEntry && ForgeRegistry.this.names.get(((IForgeRegistryEntry<?>)o).getRegistryName()) == o;
+            }
+        };
     }
 
     @Override
@@ -237,10 +340,10 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
 
     public int getID(V value)
     {
-        Integer ret = this.ids.inverse().get(value);
-        if (ret == null && this.defaultValue != null)
-            ret = this.ids.inverse().get(this.defaultValue);
-        return ret == null ? -1 : ret.intValue();
+        int ret = getIDRaw(value);
+        if (ret < 0 && this.defaultValue != null)
+            ret = getIDRaw(this.defaultValue);
+        return ret;
     }
 
     public int getID(ResourceLocation name)
@@ -249,17 +352,23 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     }
     private int getIDRaw(V value)
     {
-        Integer ret = this.ids.inverse().get(value);
-        return ret == null ? -1 : ret.intValue();
+        final Numbering<V> numbering = this.numbering;
+        if (numbering != null)
+            return numbering.idOf.getInt(value);
+        return this.registrationIds.getInt(value);
     }
-    private int getIDRaw(ResourceLocation name)
+    int getIDRaw(ResourceLocation name)
     {
+        final Numbering<V> numbering = this.numbering;
+        if (numbering != null)
+            return numbering.idOfName.getInt(name);
         return getIDRaw(this.names.get(name));
     }
 
     public V getValue(int id)
     {
-        V ret = this.ids.get(id);
+        final Numbering<V> numbering = this.numbering;
+        V ret = numbering != null ? (id >= 0 && id < numbering.byId.length ? numbering.byId[id] : null) : this.registrationValues.get(id);
         return ret == null ? this.defaultValue : ret;
     }
 
@@ -271,7 +380,7 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
 
     ForgeRegistry<V> copy(RegistryManager stage)
     {
-        return new ForgeRegistry<V>(superType, defaultKey, min, max, create, add, clear, validate, stage, allowOverrides, isModifiable, dummyFactory, missing);
+        return new ForgeRegistry<V>(superType, defaultKey, create, add, clear, validate, stage, allowOverrides, isModifiable, missing);
     }
 
     int add(int id, V value)
@@ -288,11 +397,14 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         Preconditions.checkNotNull(value, "Can't add null-object to the registry, name %s.", key);
 
         int idToUse = id;
-        if (idToUse < 0 || availabilityMap.get(idToUse))
-            idToUse = availabilityMap.nextClearBit(min);
-
-        if (idToUse > max)
-            throw new RuntimeException(String.format("Invalid id %d - maximum id range exceeded.", idToUse));
+        if (idToUse < 0 || this.registrationValues.containsKey(idToUse) || this.blocked.contains(idToUse))
+        {
+            while (this.registrationValues.containsKey(this.nextSeed) || this.blocked.contains(this.nextSeed))
+            {
+                nextSeed++;
+            }
+            idToUse = nextSeed;
+        }
 
         V oldEntry = getRaw(key);
         if (oldEntry == value) // already registered, return prev registration's id
@@ -311,10 +423,10 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
             idToUse = this.getID(oldEntry);
         }
 
-        Integer foundId = this.ids.inverse().get(value); //Is this ever possible to trigger with otherThing being different?
-        if (foundId != null)
+        int foundId = this.registrationIds.getInt(value); //Is this ever possible to trigger with otherThing being different?
+        if (foundId >= 0)
         {
-            V otherThing = this.ids.get(foundId);
+            V otherThing = this.registrationValues.get(foundId);
             throw new IllegalArgumentException(String.format("The object %s{%x} has been registered twice, using the names %s and %s. (Other object at this id is %s{%x})", value, System.identityHashCode(value), getKey(value), key, otherThing, System.identityHashCode(otherThing)));
         }
 
@@ -328,10 +440,19 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
             this.defaultValue = value;
         }
 
+        if (oldEntry != null) // an override replaces the previous value under its name and session id
+        {
+            this.nameOf.remove(oldEntry);
+            this.registrationIds.removeInt(oldEntry);
+        }
         this.names.put(key, value);
-        this.ids.put(idToUse, value);
-        this.availabilityMap.set(idToUse);
-        this.owners.put(new OverrideOwner(owner == null ? key.getNamespace() : owner, key), value);
+        this.nameOf.put(value, key);
+        this.registrationValues.put(idToUse, value);
+        this.registrationIds.put(value, idToUse);
+        this.openToken = new Object();
+        OverrideOwner ownerKey = new OverrideOwner(owner == null ? key.getNamespace() : owner, key);
+        this.owners.put(ownerKey, value);
+        this.ownerOf.put(value, ownerKey);
 
         if (isDelegated)
         {
@@ -348,9 +469,6 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
 
         if (this.add != null)
             this.add.onAdd(this, this.stage, idToUse, value, oldEntry);
-
-        if (this.dummies.remove(key) && DEBUG)
-            FMLLog.log.debug("Registry {} Dummy Remove: {}", this.superType.getSimpleName(), key);
 
         if (DEBUG)
             FMLLog.log.trace("Registry {} add: {} {} {} (req. id {})", this.superType.getSimpleName(), key, idToUse, value, id);
@@ -373,13 +491,16 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     @Deprecated //Public for ByteByfUtils only!
     public V getRaw(int id)
     {
-        return this.ids.get(id);
+        final Numbering<V> numbering = this.numbering;
+        if (numbering != null)
+            return id >= 0 && id < numbering.byId.length ? numbering.byId[id] : null;
+        return this.registrationValues.get(id);
     }
 
     void addAlias(ResourceLocation from, ResourceLocation to)
     {
-        if (this.isLocked())
-            throw new IllegalStateException(String.format("Attempted to register the alias %s -> %s to late", from, to));
+        // Aliases are pure name indirection (MissingMappings REMAP); they never change ids, so the
+        // freeze lock does not apply here the way it does to register().
         if (from.equals(to))
         {
             FMLLog.log.warn("Registry {} Ignoring invalid alias: {} -> {}", this.superType.getSimpleName(), from, to);
@@ -388,15 +509,6 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         this.aliases.put(from, to);
         if (DEBUG)
             FMLLog.log.trace("Registry {} alias: {} -> {}", this.superType.getSimpleName(), from, to);
-    }
-
-    void addDummy(ResourceLocation key)
-    {
-        if (this.isLocked())
-            throw new IllegalStateException(String.format("Attempted to register the dummy %s to late", key));
-        this.dummies.add(key);
-        if (DEBUG)
-            FMLLog.log.trace("Registry {} dummy: {}", this.superType.getSimpleName(), key);
     }
 
     private RegistryDelegate<V> getDelegate(V thing)
@@ -424,25 +536,8 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         return this.defaultValue;
     }
 
-    boolean isDummied(ResourceLocation key)
-    {
-        return this.dummies.contains(key);
-    }
-
-
     void validateContent(ResourceLocation registryName)
     {
-        try
-        {
-            Method method = BitSet.class.getDeclaredMethod("trimToSize");
-            method.setAccessible(true);
-            method.invoke(this.availabilityMap);
-        }
-        catch (Exception e)
-        {
-            //We don't care... Just a micro-optimization
-        }
-
         for (V obj : this)
         {
             int id = getID(obj);
@@ -451,10 +546,6 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
             // name lookup failed -> obj is not in the obj<->name map
             if (name == null)
                 throw new IllegalStateException(String.format("Registry entry for %s %s, id %d, doesn't yield a name.", registryName, obj, id));
-
-            // id is too high
-            if (id > max)
-                throw new IllegalStateException(String.format("Registry entry for %s %s, name %s uses the too large id %d.", registryName, obj, name, id));
 
             // id -> obj lookup is inconsistent
             if (getValue(id) != obj)
@@ -480,82 +571,6 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         }
     }
 
-    void sync(ResourceLocation name, ForgeRegistry<V> from)
-    {
-        if (DEBUG)
-            FMLLog.log.debug("Registry {} Sync: {} -> {}", this.superType.getSimpleName(), this.stage.getName(), from.stage.getName());
-        if (this == from)
-            throw new IllegalArgumentException("Attempted to sync the same registry instance!");
-        if (from.superType != this.superType)
-            throw new IllegalArgumentException("Attempted to copy to incompatible registry: " + name + " " + from.superType + " -> " + this.superType);
-
-        this.isFrozen = false;
-
-        if (this.clear != null)
-            this.clear.onClear(this, stage);
-
-        /* -- Should never need to be copied
-        this.defaultKey = from.defaultKey;
-        this.max = from.max;
-        this.min = from.min;
-        */
-        this.aliases.clear();
-        from.aliases.forEach(this::addAlias);
-
-        this.ids.clear();
-        this.names.clear();
-        this.availabilityMap.clear(0, this.availabilityMap.length());
-        this.defaultValue = null;
-        this.overrides.clear();
-        this.owners.clear();
-
-        boolean errored = false;
-
-        for (Entry<ResourceLocation, V> entry : from.names.entrySet())
-        {
-            List<V> overrides = Lists.newArrayList(from.overrides.get(entry.getKey()));
-            int id = from.getID(entry.getKey());
-            if (overrides.isEmpty())
-            {
-                int realId = add(id, entry.getValue());
-                if (id != realId && id != -1)
-                {
-                    FMLLog.log.warn("Registry {}: Object did not get ID it asked for. Name: {} Expected: {} Got: {}", this.superType.getSimpleName(), entry.getKey(), id, realId);
-                    errored = true;
-                }
-            }
-            else
-            {
-                overrides.add(entry.getValue());
-                for (V value : overrides)
-                {
-                    OverrideOwner owner = from.owners.inverse().get(value);
-                    if (owner == null)
-                    {
-                        FMLLog.log.warn("Registry {}: Override did not have an associated owner object. Name: {} Value: {}", this.superType.getSimpleName(), entry.getKey(), value);
-                        errored = true;
-                        continue;
-                    }
-                    int realId = add(id, value, owner.owner);
-                    if (id != realId && id != -1)
-                    {
-                        FMLLog.log.warn("Registry {}: Object did not get ID it asked for. Name: {} Expected: {} Got: {}", this.superType.getSimpleName(), entry.getKey(), id, realId);
-                        errored = true;
-                    }
-                }
-            }
-        }
-
-        //Needs to be below add so that dummies are persisted
-        this.dummies.clear();
-        from.dummies.forEach(this::addDummy);
-
-        if (errored)
-            throw new RuntimeException("One of more entry values did not copy to the correct id. Check log for details!");
-    }
-
-
-
     @Override
     public void clear()
     {
@@ -570,11 +585,14 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
 
 
         this.aliases.clear();
-        this.dummies.clear();
 
-        this.ids.clear();
+        this.registrationValues.clear();
+        this.registrationIds.clear();
         this.names.clear();
-        this.availabilityMap.clear(0, this.availabilityMap.length());
+        this.nameOf.clear();
+        this.nextSeed = 0;
+        this.numbering = null;
+        this.openToken = new Object();
     }
 
     @Override
@@ -589,12 +607,15 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         V value = this.names.remove(key);
         if (value != null)
         {
-            Integer id = this.ids.inverse().remove(value);
-            if (id == null)
+            this.nameOf.remove(value);
+            int id = this.registrationIds.removeInt(value);
+            if (id < 0)
                 throw new IllegalStateException("Removed a entry that did not have an associated id: " + key + " " + value.toString() + " This should never happen unless hackery!");
+            this.registrationValues.remove(id);
 
             if (DEBUG)
                 FMLLog.log.trace("Registry {} remove: {} {}", this.superType.getSimpleName(), key, id);
+            this.openToken = new Object();
         }
 
         return value;
@@ -603,7 +624,6 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     void block(int id)
     {
         this.blocked.add(id);
-        this.availabilityMap.set(id);
     }
 
     @Override
@@ -619,11 +639,242 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     public void freeze()
     {
         this.isFrozen = true;
+        renumber();
     }
 
-    public void unfreeze()
+    void unfreeze()
     {
         this.isFrozen = false;
+        this.numbering = null;
+        this.openToken = new Object();
+    }
+
+    /**
+     * The token caches compare by identity: the installed {@link Numbering} once frozen, or the open-state
+     * token that changes on every mutation before then.
+     */
+    Object numberingToken()
+    {
+        Numbering<V> numbering = this.numbering;
+        return numbering != null ? numbering : this.openToken;
+    }
+
+    Map<ResourceLocation, Integer[]> lastRenumber()
+    {
+        Map<ResourceLocation, Integer[]> ret = new HashMap<ResourceLocation, Integer[]>(this.lastRenumber.size());
+        for (Renumber r : this.lastRenumber)
+            ret.put(r.name(), new Integer[] { r.oldId(), r.newId() });
+        return ret;
+    }
+
+    /**
+     * Records the name -> vanilla id table this registry held at vanilla freeze time. Called by
+     * {@link GameData#vanillaSnapshot()}; afterwards {@link #renumber()} pins these names to these
+     * numbers wherever they fit.
+     */
+    void captureVanillaBaseline(Map<ResourceLocation, Integer> baseline)
+    {
+        this.vanillaBaseline = Collections.unmodifiableMap(new LinkedHashMap<ResourceLocation, Integer>(baseline));
+    }
+
+    /**
+     * The name -> vanilla id table captured by {@link #captureVanillaBaseline(Map)}, or an empty map
+     * if it was never taken.
+     */
+    public Map<ResourceLocation, Integer> getVanillaBaseline()
+    {
+        return vanillaBaseline == null ? Collections.<ResourceLocation, Integer>emptyMap() : vanillaBaseline;
+    }
+
+    /**
+     * Assigns this registry's session numbers, replacing the ids chosen at registration time. Vanilla entries
+     * (the names captured by {@link #captureVanillaBaseline(Map)}) keep the number vanilla gave them; every
+     * other name fills the remaining ids in {@link ResourceLocation#toString()} order. The result is dense
+     * 0..N-1 and is verified before it is installed.
+     */
+    void renumber()
+    {
+        IdentityHashMap<V, Integer> idOf = derivedIds();
+        List<Renumber> renumbered = new ArrayList<Renumber>();
+        for (Entry<ResourceLocation, V> entry : this.names.entrySet())
+        {
+            int newId = idOf.get(entry.getValue());
+            int oldId = getID(entry.getValue()); // still the seed or previous derived numbering
+            if (oldId != newId)
+            {
+                renumbered.add(new Renumber(entry.getKey(), oldId, newId));
+            }
+        }
+        this.lastRenumber = renumbered;
+        this.numbering = buildNumbering(idOf); // installed whole, so a cache rebuilt now sees the new order
+        verifyNumbering();
+    }
+
+    /**
+     * Packs a value -> id assignment into the frozen {@link Numbering}: the by-id array and both lookup
+     * maps, all defaulted to -1 for absent lookups.
+     */
+    private Numbering<V> buildNumbering(IdentityHashMap<V, Integer> ids)
+    {
+        int size = this.names.size();
+        @SuppressWarnings("unchecked")
+        V[] byId = (V[])Array.newInstance(this.superType, size);
+        Reference2IntOpenHashMap<V> idOf = new Reference2IntOpenHashMap<V>(size * 2);
+        idOf.defaultReturnValue(-1);
+        Object2IntOpenHashMap<ResourceLocation> idOfName = new Object2IntOpenHashMap<ResourceLocation>(size * 2);
+        idOfName.defaultReturnValue(-1);
+        for (Map.Entry<V, Integer> entry : ids.entrySet())
+        {
+            byId[entry.getValue()] = entry.getKey();
+            idOf.put(entry.getKey(), entry.getValue().intValue());
+        }
+        for (Entry<ResourceLocation, V> entry : this.names.entrySet())
+        {
+            Integer id = ids.get(entry.getValue());
+            if (id != null)
+                idOfName.put(entry.getKey(), id.intValue());
+        }
+        return new Numbering<V>(byId, idOf, idOfName);
+    }
+
+    /**
+     * Installs a name order a remote side sent during login: the given names take ids
+     * 0..order.size()-1 in the order given and every local name the remote did not send (client-only
+     * extras) is appended in {@link ResourceLocation} order. Verified exactly like
+     * {@link #renumber()} before it is installed, and freezes the registry: while the
+     * remote order is in force this registry belongs to the connection.
+     */
+    void adoptOrder(List<ResourceLocation> order)
+    {
+        Set<ResourceLocation> ordered = Sets.newHashSet(order);
+        if (ordered.size() != order.size())
+            throw new IllegalArgumentException("adoptOrder given an order with a duplicated name");
+
+        int size = this.names.size();
+        IdentityHashMap<V, Integer> adopted = new IdentityHashMap<V, Integer>(size * 2);
+        for (ResourceLocation name : order)
+        {
+            V value = this.names.get(name);
+            if (value == null)
+                throw new IllegalArgumentException(String.format("adoptOrder given %s which this registry does not contain", name));
+            adopted.put(value, adopted.size());
+        }
+        List<ResourceLocation> extras = new ArrayList<ResourceLocation>();
+        for (ResourceLocation name : this.names.keySet())
+        {
+            if (!ordered.contains(name))
+                extras.add(name);
+        }
+        extras.sort(Comparator.comparing(ResourceLocation::toString));
+        for (ResourceLocation name : extras)
+        {
+            adopted.put(this.names.get(name), adopted.size());
+        }
+
+        List<Renumber> renumbered = new ArrayList<Renumber>();
+        for (Entry<ResourceLocation, V> entry : this.names.entrySet())
+        {
+            int newId = adopted.get(entry.getValue());
+            int oldId = getID(entry.getValue()); // still the previous numbering
+            if (oldId != newId)
+            {
+                renumbered.add(new Renumber(entry.getKey(), oldId, newId));
+            }
+        }
+        this.lastRenumber = renumbered;
+
+        this.numbering = buildNumbering(adopted); // installed whole, so a cache rebuilt now sees the new order
+        verifyNumbering();
+        this.isFrozen = true;
+    }
+
+    /**
+     * The invariant every installed numbering must satisfy: dense 0..N-1, and the name lookup and the
+     * value lookup agree on every id.
+     */
+    private void verifyNumbering()
+    {
+        int size = this.names.size();
+        ResourceLocation regName = this.stage.getName(this);
+        V[] byId = this.numbering.byId;
+        for (int i = 0; i < size; i++)
+        {
+            if (byId[i] == null)
+                throw new IllegalStateException(String.format("Registry %s: derived numbering left id %d empty.", regName, i));
+        }
+        for (Entry<ResourceLocation, V> entry : this.names.entrySet())
+        {
+            V value = entry.getValue();
+            int id = getID(value);
+            if (id < 0 || id >= size || getValue(id) != value)
+                throw new IllegalStateException(String.format("Registry %s: derived numbering of %s is inconsistent (id %d).", regName, entry.getKey(), id));
+            if (getID(entry.getKey()) != id)
+                throw new IllegalStateException(String.format("Registry %s: derived numbering of name %s does not match its value's id %d.", regName, entry.getKey(), id));
+        }
+    }
+
+    /**
+     * The value -> id assignment {@link #renumber()} installs, computed from the current
+     * contents without changing the registry. The vanilla baseline (names and their vanilla
+     * numbers captured by {@link #captureVanillaBaseline(Map)}) pins those entries; every other
+     * name fills the remaining ids in {@link ResourceLocation} order.
+     */
+    private IdentityHashMap<V, Integer> derivedIds()
+    {
+        int size = this.names.size();
+        IdentityHashMap<V, Integer> ret = new IdentityHashMap<V, Integer>(size * 2);
+        BitSet used = new BitSet(size);
+        ResourceLocation regName = this.stage.getName(this);
+        Map<ResourceLocation, Integer> baseline = this.vanillaBaseline;
+
+        List<ResourceLocation> vanillaNames = new ArrayList<ResourceLocation>();
+        List<ResourceLocation> moddedNames = new ArrayList<ResourceLocation>();
+        for (ResourceLocation name : this.names.keySet())
+        {
+            if (baseline != null && baseline.containsKey(name))
+                vanillaNames.add(name);
+            else
+                moddedNames.add(name);
+        }
+        vanillaNames.sort(Comparator.comparingInt(name -> baseline.get(name)));
+        moddedNames.sort(Comparator.comparing(ResourceLocation::toString));
+
+        List<V> unclaimed = new ArrayList<V>();
+        for (ResourceLocation name : vanillaNames)
+        {
+            V value = this.names.get(name);
+            int id = baseline.get(name);
+            if (id >= 0 && id < size && !used.get(id) && !ret.containsKey(value))
+            {
+                used.set(id);
+                ret.put(value, id);
+            }
+            else if (!ret.containsKey(value))
+            {
+                unclaimed.add(value);
+            }
+        }
+        for (ResourceLocation name : moddedNames)
+        {
+            V value = this.names.get(name);
+            if (!ret.containsKey(value))
+            {
+                unclaimed.add(value);
+            }
+        }
+        int next = 0;
+        for (V value : unclaimed)
+        {
+            while (next < size && used.get(next))
+            {
+                next++;
+            }
+            if (next >= size)
+                throw new IllegalStateException(String.format("Registry %s: derived numbering ran out of ids for %s.", regName, getKey(value)));
+            used.set(next);
+            ret.put(value, next);
+        }
+        return ret;
     }
 
     RegistryEvent.Register<V> getRegisterEvent(ResourceLocation name)
@@ -642,137 +893,23 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         ids.forEach(id -> FMLLog.log.trace("  Registry: {} {} {}", id, getKey(getValue(id)), getValue(id)));
     }
 
+
+    /**
+     * @deprecated ids are derived at freeze; there is nothing to load. Kept so old mods still link.
+     */
+    @Deprecated
     public void loadIds(Map<ResourceLocation, Integer> ids, Map<ResourceLocation, String> overrides, Map<ResourceLocation, Integer> missing, Map<ResourceLocation, Integer[]> remapped, ForgeRegistry<V> old, ResourceLocation name)
     {
-        Map<ResourceLocation, String> ovs = Maps.newHashMap(overrides);
-        for (Map.Entry<ResourceLocation, Integer> entry : ids.entrySet())
-        {
-            ResourceLocation itemName = entry.getKey();
-            int newId = entry.getValue();
-            int currId = old.getIDRaw(itemName);
-
-            if (currId == -1)
-            {
-                FMLLog.log.info("Registry {}: Found a missing id from the world {}", this.superType.getSimpleName(), itemName);
-                missing.put(itemName, newId);
-                continue; // no block/item -> nothing to add
-            }
-            else if (currId != newId)
-            {
-                FMLLog.log.debug("Registry {}: Fixed {} id mismatch {}: {} (init) -> {} (map).", this.superType.getSimpleName(), name, itemName, currId, newId);
-                remapped.put(itemName, new Integer[] {currId, newId});
-            }
-
-            V obj = old.getRaw(itemName);
-            Preconditions.checkState(obj != null, "objectKey has an ID but no object. Reflection/ASM hackery? Registry bug?");
-
-            List<V> lst = Lists.newArrayList(old.overrides.get(itemName));
-            String primaryName = null;
-            if (old.overrides.containsKey(itemName))
-            {
-                if (!overrides.containsKey(itemName))
-                {
-                    lst.add(obj);
-                    obj = old.overrides.get(itemName).iterator().next(); //Get the first one in the list, Which should be the first one registered
-                    primaryName = old.owners.inverse().get(obj).owner;
-                }
-                else
-                    primaryName = overrides.get(itemName);
-            }
-
-            for (V value : lst)
-            {
-                OverrideOwner owner = old.owners.inverse().get(value);
-                if (owner == null)
-                {
-                    FMLLog.log.warn("Registry {}: Override did not have an associated owner object. Name: {} Value: {}", this.superType.getSimpleName(), entry.getKey(), value);
-                    continue;
-                }
-
-                if (primaryName.equals(owner.owner))
-                    continue;
-
-                int realId = add(newId, value, owner.owner);
-                if (newId != realId)
-                    FMLLog.log.warn("Registry {}: Object did not get ID it asked for. Name: {} Expected: {} Got: {}", this.superType.getSimpleName(), entry.getKey(), newId, realId);
-            }
-
-            int realId = add(newId, obj, primaryName == null ? itemName.getNamespace() : primaryName);
-            if (realId != newId)
-                FMLLog.log.warn("Registry {}: Object did not get ID it asked for. Name: {} Expected: {} Got: {}", this.superType.getSimpleName(), entry.getKey(), newId, realId);
-            ovs.remove(itemName);
-        }
-
-        for (Map.Entry<ResourceLocation, String> entry :  ovs.entrySet())
-        {
-            ResourceLocation itemName = entry.getKey();
-            String owner = entry.getValue();
-            String current = this.owners.inverse().get(this.getRaw(itemName)).owner;
-            if (!owner.equals(current))
-            {
-                V _new = this.owners.get(new OverrideOwner(owner, itemName));
-                if (_new == null)
-                {
-                    FMLLog.log.warn("Registry {}: Skipping override for {}, Unknown owner {}", this.superType.getSimpleName(), itemName, owner);
-                    continue;
-                }
-
-                FMLLog.log.info("Registry {}: Activating override {} for {}", this.superType.getSimpleName(), owner, itemName);
-
-                int newId = this.getID(itemName);
-                int realId = this.add(newId, _new, owner);
-                if (newId != realId)
-                    FMLLog.log.warn("Registry {}: Object did not get ID it asked for. Name: {} Expected: {} Got: {}", this.superType.getSimpleName(), entry.getKey(), newId, realId);
-            }
-        }
     }
 
-    boolean markDummy(ResourceLocation key, int id)
-    {
-        if (this.dummyFactory == null)
-            return false;
-
-        V dummy = this.dummyFactory.createDummy(key);
-        if (DEBUG)
-            FMLLog.log.debug("Registry Dummy Add: {} {} -> {}", key, id, dummy);
-
-        //It was blocked before so we need to unset the blocking map
-        this.availabilityMap.clear(id);
-        if (this.containsKey(key))
-        {
-            //If the entry already exists, we need to delete it so we can add a dummy...
-            V value = this.names.remove(key);
-            if (value == null)
-                throw new IllegalStateException("ContainsKey for " + key + " was true, but removing by name returned no value.. This should never happen unless hackery!");
-
-
-            Integer oldid = this.ids.inverse().remove(value);
-            if (oldid == null)
-                throw new IllegalStateException("Removed a entry that did not have an associated id: " + key + " " + value.toString() + " This should never happen unless hackery!");
-
-            if (oldid != id)
-                FMLLog.log.debug("Registry {}: Dummy ID mismatch {} {} -> {}", this.superType.getSimpleName(), key, oldid, id);
-
-            if (DEBUG)
-                FMLLog.log.debug("Registry {} remove: {} {}", this.superType.getSimpleName(), key, oldid);
-        }
-
-        int realId = this.add(id, dummy);
-        if (realId != id)
-            FMLLog.log.warn("Registry {}: Object did not get ID it asked for. Name: {} Expected: {} Got: {}", this.superType.getSimpleName(), key, id, realId);
-        this.dummies.add(key);
-
-        return true;
-    }
-
+    //Public for tests
     //Public for tests
     public Snapshot makeSnapshot()
     {
         Snapshot ret = new Snapshot();
-        this.ids.forEach((id, value) -> ret.ids.put(getKey(value), id));
+        this.names.forEach((key, value) -> ret.ids.put(key, getID(value)));
         ret.aliases.putAll(this.aliases);
         ret.blocked.addAll(this.blocked);
-        ret.dummied.addAll(this.dummies);
         ret.overrides.putAll(getOverrideOwners());
         return ret;
     }
@@ -783,7 +920,7 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         for (ResourceLocation key : this.overrides.keySet())
         {
             V obj = this.names.get(key);
-            OverrideOwner owner = this.owners.inverse().get(obj);
+            OverrideOwner owner = this.ownerOf.get(obj);
             if (owner == null && DEBUG)
                 FMLLog.log.debug("Registry {} {}: Invalid override {} {}", this.superType.getSimpleName(), this.stage.getName(), key, obj);
             ret.put(key, owner.owner);
@@ -911,69 +1048,6 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         ForgeRegistry<V> pool = RegistryManager.ACTIVE.getRegistry(name);
         map.forEach((rl, id) -> lst.add(new MissingMappings.Mapping<V>(this, pool, rl, id)));
         return new MissingMappings<V>(name, this, lst);
-    }
-
-    void processMissingEvent(ResourceLocation name, ForgeRegistry<V> pool, List<MissingMappings.Mapping<V>> mappings, Map<ResourceLocation, Integer> missing, Map<ResourceLocation, Integer[]> remaps, Collection<ResourceLocation> defaulted, Collection<ResourceLocation> failed, boolean injectNetworkDummies)
-    {
-        FMLLog.log.debug("Processing missing event for {}:", name);
-        int ignored = 0;
-
-        for (MissingMappings.Mapping<V> remap : mappings)
-        {
-            MissingMappings.Action action = remap.getAction();
-
-            if (action == MissingMappings.Action.REMAP)
-            {
-                // entry re-mapped, finish the registration with the new name/object, but the old id
-                int currId = getID(remap.getTarget());
-                ResourceLocation newName = pool.getKey(remap.getTarget());
-                FMLLog.log.debug("  Remapping {} -> {}.", remap.key, newName);
-
-                missing.remove(remap.key);
-                //I don't think this will work, but I dont think it ever worked.. the item is already in the map with a different id... we want to fix that..
-                int realId = this.add(remap.id, remap.getTarget());
-                if (realId != remap.id)
-                    FMLLog.log.warn("Registered object did not get ID it asked for. Name: {} Type: {} Expected: {} Got: {}", newName, this.getRegistrySuperType(), remap.id, realId);
-                this.addAlias(remap.key, newName);
-
-
-                if (currId != realId)
-                {
-                    FMLLog.log.info("  Fixed id mismatch {}: {} (init) -> {} (map).", newName, currId, realId);
-                    remaps.put(newName, new Integer[] {currId, realId});
-                }
-            }
-            else
-            {
-                // block item missing, warn as requested and block the id
-                if (action == MissingMappings.Action.DEFAULT)
-                {
-                    V m = this.missing == null ? null : this.missing.createMissing(remap.key, injectNetworkDummies);
-                    if (m == null)
-                        defaulted.add(remap.key);
-                    else
-                        this.add(remap.id, m, remap.key.getNamespace());
-                }
-                else if (action == MissingMappings.Action.IGNORE)
-                {
-                    FMLLog.log.debug("  Ignoring {}", remap.key);
-                    ignored++;
-                }
-                else if (action == MissingMappings.Action.FAIL)
-                {
-                    FMLLog.log.debug("  Failing {}!", remap.key);
-                    failed.add(remap.key);
-                }
-                else if (action == MissingMappings.Action.WARN)
-                {
-                    FMLLog.log.warn("  {} may cause world breakage!", remap.key);
-                }
-                this.block(remap.id);
-            }
-        }
-
-        if (failed.isEmpty() && ignored > 0)
-            FMLLog.log.debug("There were {} missing mappings that have been ignored", ignored);
     }
 
     private static class OverrideOwner

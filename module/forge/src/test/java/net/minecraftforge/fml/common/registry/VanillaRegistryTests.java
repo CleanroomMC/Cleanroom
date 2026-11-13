@@ -117,21 +117,14 @@ public class VanillaRegistryTests
     @Test
     public void testRegistryStates()
     {
-        final ForgeRegistry<Block> blockVanilla = (ForgeRegistry<Block>)RegistryManager.VANILLA.getRegistry(Block.class);
         final ForgeRegistry<Block> blockActive = (ForgeRegistry<Block>)RegistryManager.ACTIVE.getRegistry(Block.class);
 
-        assertNotEquals(blockActive, blockVanilla, "Registry states are distinct");
-
         final Block stoneActive = blockActive.getValue(new ResourceLocation("minecraft:stone"));
-        final Block stoneVanilla = blockVanilla.getValue(new ResourceLocation("minecraft:stone"));
+        Integer baselineId = blockActive.getVanillaBaseline().get(new ResourceLocation("minecraft:stone"));
 
-        assertEquals(stoneActive, stoneVanilla, "Stone from active and vanilla are the same");
-
-        int activeId = blockActive.getID(stoneActive);
-        int vanillaId = blockVanilla.getID(stoneVanilla);
-
-        assertEquals(1, activeId, "Stone has correct id");
-        assertEquals(1, vanillaId, "Stone has correct id");
+        assertNotNull(baselineId, "Stone is in the vanilla baseline");
+        assertEquals(1, blockActive.getID(stoneActive), "Stone has correct id");
+        assertEquals(1, baselineId.intValue(), "Stone's baseline id");
     }
 
 

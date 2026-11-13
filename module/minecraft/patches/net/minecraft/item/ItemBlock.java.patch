@@ -1,14 +1,22 @@
 --- original/net/minecraft/item/ItemBlock.java
 +++ modified/net/minecraft/item/ItemBlock.java
-@@ -51,22 +51,15 @@
+@@ -5,6 +5,7 @@
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.SoundType;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.state.IBlockState;
+ import net.minecraft.client.util.ITooltipFlag;
+ import net.minecraft.creativetab.CreativeTabs;
+@@ -51,22 +52,14 @@
  
          ItemStack itemstack = player.getHeldItem(hand);
          if (!itemstack.isEmpty()
 -            && player.canPlayerEdit(pos, facing, itemstack)
 -            && worldIn.mayPlace(this.block, pos, false, facing, null)) {
+-            int i = this.getMetadata(itemstack.getMetadata());
 +                && player.canPlayerEdit(pos, facing, itemstack)
 +                && worldIn.mayPlace(this.block, pos, false, facing, player)) {
-             int i = this.getMetadata(itemstack.getMetadata());
              IBlockState iblockstate1 = this.block
 -                .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player);
 -            if (worldIn.setBlockState(pos, iblockstate1, 11)) {
@@ -20,7 +28,7 @@
 -                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, itemstack);
 -                    }
 -                }
-+                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player, hand);
++                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, itemstack, player, hand);
  
 -                SoundType soundtype = this.block.getSoundType();
 +            if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1)) {
@@ -29,7 +37,29 @@
                  worldIn.playSound(
                      player,
                      pos,
-@@ -118,13 +111,14 @@
+@@ -84,6 +77,21 @@
+         }
+     }
+ 
++    /**
++     * The item form of {@code state}: the legacy number from {@link Block#damageDropped} as today.
++     * One block is one id; the state itself is not remembered on the stack.
++     */
++    @SuppressWarnings("deprecation")
++    public ItemStack stackFor(IBlockState state) {
++        int legacyMeta = this.block.damageDropped(state);
++        ItemStack stack = new ItemStack(this, 1, legacyMeta);
++        IBlockState dropState = this.block.getStateForDrop(state);
++        IBlockState metaState; try { metaState = this.block.getStateFromMeta(this.getMetadata(legacyMeta)); } catch (RuntimeException e) { metaState = dropState; } if (dropState != null && dropState.getBlock() == this.block && dropState != metaState) {
++            stack.set(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE, dropState);
++        }
++        return stack;
++    }
++
+     public static boolean setTileEntityNBT(World worldIn, @Nullable EntityPlayer player, BlockPos pos, ItemStack stackIn) {
+         MinecraftServer minecraftserver = worldIn.getMinecraftServer();
+         if (minecraftserver == null) {
+@@ -118,13 +126,14 @@
      @SideOnly(Side.CLIENT)
      public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack) {
          Block block = worldIn.getBlockState(pos).getBlock();
@@ -46,9 +76,20 @@
      }
  
      /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
-@@ -162,6 +156,33 @@
+@@ -161,7 +170,44 @@
+         this.block.addInformation(stack, worldIn, tooltip, flagIn);
      }
  
++    /**
++     * Maps an item damage value to the block's placement metadata.
++     * @deprecated item damage is a legacy view; the placed state comes from the item, not a metadata number.
++     */
++    @Deprecated
++    @Override
++    public int getMetadata(int damage) {
++        return super.getMetadata(damage);
++    }
++
      public Block getBlock() {
 +        return this.getBlockRaw() == null ? null : this.getBlockRaw().delegate.get();
 +    }

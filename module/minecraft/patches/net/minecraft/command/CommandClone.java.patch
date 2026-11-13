@@ -1,0 +1,14 @@
+--- original/net/minecraft/command/CommandClone.java
++++ modified/net/minecraft/command/CommandClone.java
+@@ -83,8 +83,9 @@
+                         }
+ 
+                         block = getBlockByText(sender, args[11]);
+-                        if (args.length >= 13) {
+-                            predicate = convertArgToBlockStatePredicate(block, args[12]);
++                        String inlineFilter = extractInlineBlockStateSpec(args[11]); String filterSpec = args.length >= 13 && (inlineFilter == null || (!"-1".equals(args[12]) && !"*".equals(args[12]) && !"default".equals(args[12]))) ? args[12] : inlineFilter;
++                        if (filterSpec != null) {
++                            predicate = convertArgToBlockStatePredicate(block, filterSpec);
+                         }
+                     }
+                 }

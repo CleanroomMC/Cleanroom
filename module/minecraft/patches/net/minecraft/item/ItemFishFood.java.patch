@@ -1,0 +1,73 @@
+--- original/net/minecraft/item/ItemFishFood.java
++++ modified/net/minecraft/item/ItemFishFood.java
+@@ -10,15 +10,32 @@
+ import net.minecraft.world.World;
+ 
+ public class ItemFishFood extends ItemFood {
++    public static final net.minecraft.block.properties.PropertyEnum<ItemFishFood.FishType> TYPE = net.minecraft.block.properties.PropertyEnum.create("type", ItemFishFood.FishType.class);
+     /** Indicates whether this fish is "cooked" or not. */
+     private final boolean cooked;
+ 
+     public ItemFishFood(boolean cooked) {
+         super(0, 0.0F, false);
+         this.cooked = cooked;
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(TYPE, ItemFishFood.FishType.COD));
+     }
+ 
+     @Override
++    protected com.cleanroommc.cleanroom.common.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.cleanroom.common.component.ItemStateContainer(this, TYPE);
++    }
++
++    @Override
++    public com.cleanroommc.cleanroom.common.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(TYPE, ItemFishFood.FishType.byMetadata(meta));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.cleanroom.common.component.IItemState state) {
++        return state.getValue(TYPE).getMetadata();
++    }
++
++    @Override
+     public int getHealAmount(ItemStack stack) {
+         ItemFishFood.FishType itemfishfood$fishtype = ItemFishFood.FishType.byItemStack(stack);
+         return this.cooked && itemfishfood$fishtype.canCook() ? itemfishfood$fishtype.getCookedHealAmount() : itemfishfood$fishtype.getUncookedHealAmount();
+@@ -65,7 +82,7 @@
+             + (this.cooked && itemfishfood$fishtype.canCook() ? "cooked" : "raw");
+     }
+ 
+-    public enum FishType {
++    public enum FishType implements net.minecraft.util.IStringSerializable {
+         COD(0, "cod", 2, 0.1F, 5, 0.6F),
+         SALMON(1, "salmon", 2, 0.1F, 6, 0.8F),
+         CLOWNFISH(2, "clownfish", 1, 0.1F),
+@@ -118,6 +135,11 @@
+             return this.translationKey;
+         }
+ 
++        @Override
++        public String getName() {
++            return this.translationKey;
++        }
++
+         /** Gets the amount that eating the uncooked version of this fish should heal the player. */
+         public int getUncookedHealAmount() {
+             return this.uncookedHealAmount;
+@@ -146,12 +168,14 @@
+         /** Gets the corresponding FishType value for the given item damage value of an ItemStack, defaulting to COD for unrecognized damage values. */
+         public static ItemFishFood.FishType byMetadata(int meta) {
+             ItemFishFood.FishType itemfishfood$fishtype = META_LOOKUP.get(meta);
+-            return itemfishfood$fishtype == null ? COD : itemfishfood$fishtype;
++            if (itemfishfood$fishtype != null) { return itemfishfood$fishtype; }
++            for (ItemFishFood.FishType f : values()) { if (f.getMetadata() == meta) { return f; } }
++            return COD;
+         }
+ 
+         /** Gets the FishType that corresponds to the given ItemStack, defaulting to COD if the given ItemStack does not actually contain a fish. */
+         public static ItemFishFood.FishType byItemStack(ItemStack stack) {
+-            return stack.getItem() instanceof ItemFishFood ? byMetadata(stack.getMetadata()) : COD;
++            return stack.getItem() instanceof ItemFishFood ? stack.getItemState().getValue(TYPE) : COD;
+         }
+ 
+         static {

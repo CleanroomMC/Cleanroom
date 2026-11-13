@@ -1,0 +1,13 @@
+--- original/net/minecraft/item/ItemCloth.java
++++ modified/net/minecraft/item/ItemCloth.java
+@@ -18,6 +18,9 @@
+     /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
+     @Override
+     public String getTranslationKey(ItemStack stack) {
+-        return super.getTranslationKey() + "." + EnumDyeColor.byMetadata(stack.getMetadata()).getTranslationKey();
++        net.minecraft.block.state.IBlockState state = stack.get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE);
++        net.minecraft.block.properties.IProperty<?> prop = state != null ? state.getBlock().getBlockState().getProperty("color") : null;
++        EnumDyeColor color = prop != null && state.getValue(prop) instanceof EnumDyeColor c ? c : EnumDyeColor.byMetadata(stack.getMetadata());
++        return super.getTranslationKey() + "." + color.getTranslationKey();
+     }
+ }

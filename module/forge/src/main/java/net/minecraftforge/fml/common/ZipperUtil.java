@@ -19,20 +19,16 @@
 
 package net.minecraftforge.fml.common;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.apache.logging.log4j.Level;
-
-import com.google.common.io.Files;
 
 /**
  * Copied from http://stackoverflow.com/questions/1399126/java-util-zip-recreating-directory-structure
@@ -44,20 +40,26 @@ import com.google.common.io.Files;
 public class ZipperUtil {
     public static void zip(File directory, File zipfile) throws IOException
     {
-        URI base = directory.toURI();
+        File source = directory.getCanonicalFile();
+        if (!source.isDirectory())
+            throw new IOException("Backup source is not a directory: " + source);
+        if (zipfile.getCanonicalFile().toPath().startsWith(source.toPath()))
+            throw new IOException("Backup archive must be outside its source directory: " + zipfile);
+        URI base = source.toURI();
         Deque<File> queue = new LinkedList<File>();
-        queue.push(directory);
-        OutputStream out = new FileOutputStream(zipfile);
-        Closeable res = null;
-        try
+        queue.push(source);
+        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipfile)))
         {
-            ZipOutputStream zout = new ZipOutputStream(out);
-            res = zout;
             while (!queue.isEmpty())
             {
                 directory = queue.pop();
-                for (File kid : directory.listFiles())
+                File[] children = directory.listFiles();
+                if (children == null)
+                    throw new IOException("Could not list backup directory: " + directory);
+                for (File kid : children)
                 {
+                    if (Files.isSymbolicLink(kid.toPath()) || !kid.getCanonicalFile().toPath().startsWith(source.toPath()))
+                        throw new IOException("Backup source contains a linked path: " + kid);
                     String name = base.relativize(kid.toURI()).getPath();
                     if (kid.isDirectory())
                     {
@@ -67,14 +69,11 @@ public class ZipperUtil {
                     } else
                     {
                         zout.putNextEntry(new ZipEntry(name));
-                        Files.copy(kid, zout);
-                        zout.closeEntry();
+                        Files.copy(kid.toPath(), zout);
                     }
+                    zout.closeEntry();
                 }
             }
-        } finally
-        {
-            res.close();
         }
     }
 
@@ -93,19 +92,37 @@ public class ZipperUtil {
 
     public static void backupWorld(String dirName) throws IOException
     {
-        File dstFolder = FMLCommonHandler.instance().getSavesDirectory();
-        File zip = new File(dstFolder, String.format("%s-%2$tY%2$tm%2$td-%2$tH%2$tM%2$tS.zip", dirName, System.currentTimeMillis()));
+        backupWorld(new File(FMLCommonHandler.instance().getSavesDirectory(), dirName));
+    }
 
+    public static File backupWorld(File worldDirectory) throws IOException
+    {
+        File source = worldDirectory.getCanonicalFile();
+        if (!source.isDirectory() || source.getParentFile() == null)
+            throw new IOException("World backup source is not a supported directory: " + source);
+        String prefix = String.format("%s-%2$tY%2$tm%2$td-%2$tH%2$tM%2$tS-", source.getName(), System.currentTimeMillis());
+        Path partial = Files.createTempFile(source.getParentFile().toPath(), prefix, ".zip.part");
+        String name = partial.getFileName().toString();
+        Path complete = partial.resolveSibling(name.substring(0, name.length() - 5));
         try
         {
-            ZipperUtil.zip(new File(dstFolder, dirName), zip);
+            zip(source, partial.toFile());
+            Files.move(partial, complete);
         }
         catch (IOException e)
         {
+            try
+            {
+                Files.deleteIfExists(partial);
+            }
+            catch (IOException cleanup)
+            {
+                e.addSuppressed(cleanup);
+            }
             FMLLog.log.warn("World backup failed.", e);
             throw e;
         }
-
-        FMLLog.log.info("World backup created at {}.", zip.getCanonicalPath());
+        FMLLog.log.info("World backup created at {}.", complete);
+        return complete.toFile();
     }
 }

@@ -1,0 +1,75 @@
+--- original/net/minecraft/item/ItemBanner.java
++++ modified/net/minecraft/item/ItemBanner.java
+@@ -29,14 +29,32 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ public class ItemBanner extends ItemBlock {
++    public static final net.minecraft.block.properties.PropertyEnum<EnumDyeColor> COLOR = net.minecraft.block.properties.PropertyEnum.create("color", EnumDyeColor.class);
++
+     public ItemBanner() {
+         super(Blocks.STANDING_BANNER);
+         this.maxStackSize = 16;
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
+         this.setHasSubtypes(true);
+         this.setMaxDamage(0);
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(COLOR, EnumDyeColor.BLACK));
+     }
+ 
++    @Override
++    protected com.cleanroommc.cleanroom.common.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.cleanroom.common.component.ItemStateContainer(this, COLOR);
++    }
++
++    @Override
++    public com.cleanroommc.cleanroom.common.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(COLOR, EnumDyeColor.byDyeDamage(meta));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.cleanroom.common.component.IItemState state) {
++        return state.getValue(COLOR).getDyeDamage();
++    }
++
+     /** Called when a Block is right-clicked with this Item */
+     @Override
+     public EnumActionResult onItemUse(
+@@ -102,7 +120,19 @@
+ 
+             for (int i = 0; i < nbttaglist.tagCount() && i < 6; i++) {
+                 NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
+-                EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(nbttagcompound1.getInteger("Color"));
++                EnumDyeColor enumdyecolor = null;
++                if (nbttagcompound1.hasKey("ColorName", 8)) {
++                    String cName = nbttagcompound1.getString("ColorName");
++                    for (EnumDyeColor c : EnumDyeColor.values()) {
++                        if (c.getName().equals(cName)) {
++                            enumdyecolor = c;
++                            break;
++                        }
++                    }
++                }
++                if (enumdyecolor == null) {
++                    enumdyecolor = EnumDyeColor.byDyeDamage(nbttagcompound1.getInteger("Color"));
++                }
+                 BannerPattern bannerpattern = BannerPattern.byHash(nbttagcompound1.getString("Pattern"));
+                 if (bannerpattern != null) {
+                     p_185054_1_.add(I18n.translateToLocal("item.banner." + bannerpattern.getFileName() + "." + enumdyecolor.getTranslationKey()));
+@@ -130,6 +160,7 @@
+ 
+     public static ItemStack makeBanner(EnumDyeColor color, @Nullable NBTTagList patterns) {
+         ItemStack itemstack = new ItemStack(Items.BANNER, 1, color.getDyeDamage());
++        itemstack.setItemState(Items.BANNER.getDefaultItemState().withProperty(COLOR, color));
+         if (patterns != null && !patterns.isEmpty()) {
+             itemstack.getOrCreateSubCompound("BlockEntityTag").setTag("Patterns", patterns.copy());
+         }
+@@ -144,6 +175,9 @@
+     }
+ 
+     public static EnumDyeColor getBaseColor(ItemStack stack) {
+-        return EnumDyeColor.byDyeDamage(stack.getMetadata() & 15);
++        if (stack.getItem() == Items.BANNER) {
++            return stack.getItemState().getValue(COLOR);
++        }
++        return EnumDyeColor.byDyeDamage(stack.getMetadata());
+     }
+ }

@@ -1,15 +1,57 @@
 --- original/net/minecraft/item/ItemDye.java
 +++ modified/net/minecraft/item/ItemDye.java
-@@ -58,7 +58,7 @@
+@@ -22,6 +22,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
  
-         EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(itemstack.getMetadata());
+ public class ItemDye extends Item {
++    public static final net.minecraft.block.properties.PropertyEnum<EnumDyeColor> COLOR = net.minecraft.block.properties.PropertyEnum.create("color", EnumDyeColor.class);
+     public static final int[] DYE_COLORS = new int[]{
+         1973019, 11743532, 3887386, 5320730, 2437522, 8073150, 2651799, 11250603, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320
+     };
+@@ -30,13 +31,28 @@
+         this.setHasSubtypes(true);
+         this.setMaxDamage(0);
+         this.setCreativeTab(CreativeTabs.MATERIALS);
++        this.setDefaultItemState(this.getItemState().getBaseState().withProperty(COLOR, EnumDyeColor.BLACK));
+     }
+ 
++    @Override
++    protected com.cleanroommc.cleanroom.common.component.ItemStateContainer createItemState() {
++        return new com.cleanroommc.cleanroom.common.component.ItemStateContainer(this, COLOR);
++    }
++
++    @Override
++    public com.cleanroommc.cleanroom.common.component.IItemState getItemStateFromMeta(int meta) {
++        return this.getDefaultItemState().withProperty(COLOR, EnumDyeColor.byDyeDamage(meta));
++    }
++
++    @Override
++    public int getMetaFromItemState(com.cleanroommc.cleanroom.common.component.IItemState state) {
++        return state.getValue(COLOR).getDyeDamage();
++    }
++
+     /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
+     @Override
+     public String getTranslationKey(ItemStack stack) {
+-        int i = stack.getMetadata();
+-        return super.getTranslationKey() + "." + EnumDyeColor.byDyeDamage(i).getTranslationKey();
++        return super.getTranslationKey() + "." + stack.getItemState().getValue(COLOR).getTranslationKey();
+     }
+ 
+     /** Called when a Block is right-clicked with this Item */
+@@ -56,9 +72,9 @@
+             return EnumActionResult.FAIL;
+         }
+ 
+-        EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(itemstack.getMetadata());
++        EnumDyeColor enumdyecolor = itemstack.getItemState().getValue(COLOR);
          if (enumdyecolor == EnumDyeColor.WHITE) {
 -            if (applyBonemeal(itemstack, worldIn, pos)) {
 +            if (applyBonemeal(itemstack, worldIn, pos, player, hand)) {
                  if (!worldIn.isRemote) {
                      worldIn.playEvent(2005, pos, 0);
                  }
-@@ -76,7 +76,7 @@
+@@ -76,7 +92,7 @@
                  pos = pos.offset(facing);
                  if (worldIn.isAirBlock(pos)) {
                      IBlockState iblockstate1 = Blocks.COCOA
@@ -18,7 +60,7 @@
                      worldIn.setBlockState(pos, iblockstate1, 10);
                      if (!player.capabilities.isCreativeMode) {
                          itemstack.shrink(1);
-@@ -93,7 +93,17 @@
+@@ -93,7 +109,17 @@
      }
  
      public static boolean applyBonemeal(ItemStack stack, World worldIn, BlockPos target) {
@@ -36,7 +78,7 @@
          if (iblockstate.getBlock() instanceof IGrowable) {
              IGrowable igrowable = (IGrowable)iblockstate.getBlock();
              if (igrowable.canGrow(worldIn, target, iblockstate, worldIn.isRemote)) {
-@@ -134,6 +144,21 @@
+@@ -134,6 +160,21 @@
                      d2
                  );
              }
@@ -58,3 +100,25 @@
          }
      }
  
+@@ -142,7 +183,7 @@
+     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
+         if (target instanceof EntitySheep) {
+             EntitySheep entitysheep = (EntitySheep)target;
+-            EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(stack.getMetadata());
++            EnumDyeColor enumdyecolor = stack.getItemState().getValue(COLOR);
+             if (!entitysheep.getSheared() && entitysheep.getFleeceColor() != enumdyecolor) {
+                 entitysheep.setFleeceColor(enumdyecolor);
+                 stack.shrink(1);
+@@ -158,8 +199,10 @@
+     @Override
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+         if (this.isInCreativeTab(tab)) {
+-            for (int i = 0; i < 16; i++) {
+-                items.add(new ItemStack(this, 1, i));
++            for (com.cleanroommc.cleanroom.common.component.IItemState state : this.getItemState().getValidStates()) {
++                ItemStack stack = new ItemStack(this, 1, this.getMetaFromItemState(state));
++                stack.setItemState(state);
++                items.add(stack);
+             }
+         }
+     }

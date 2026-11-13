@@ -1,6 +1,70 @@
 --- original/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ modified/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -93,6 +93,12 @@
+@@ -24,6 +24,7 @@
+     private final EnchantmentPredicate[] enchantments;
+     private final PotionType potion;
+     private final NBTPredicate nbt;
++    private final com.cleanroommc.cleanroom.common.component.DataComponentPredicate components;
+ 
+     public ItemPredicate() {
+         this.item = null;
+@@ -33,6 +34,7 @@
+         this.durability = MinMaxBounds.UNBOUNDED;
+         this.enchantments = new EnchantmentPredicate[0];
+         this.nbt = NBTPredicate.ANY;
++        this.components = com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY;
+     }
+ 
+     public ItemPredicate(
+@@ -44,6 +46,19 @@
+         @Nullable PotionType potion,
+         NBTPredicate nbt
+     ) {
++        this(item, data, count, durability, enchantments, potion, nbt, com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY);
++    }
++
++    public ItemPredicate(
++        @Nullable Item item,
++        @Nullable Integer data,
++        MinMaxBounds count,
++        MinMaxBounds durability,
++        EnchantmentPredicate[] enchantments,
++        @Nullable PotionType potion,
++        NBTPredicate nbt,
++        com.cleanroommc.cleanroom.common.component.DataComponentPredicate components
++    ) {
+         this.item = item;
+         this.data = data;
+         this.count = count;
+@@ -51,6 +66,7 @@
+         this.enchantments = enchantments;
+         this.potion = potion;
+         this.nbt = nbt;
++        this.components = components == null ? com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY : components;
+     }
+ 
+     public boolean test(ItemStack item) {
+@@ -62,6 +78,10 @@
+             return false;
+         }
+ 
++        if (!this.components.test(item)) {
++            return false;
++        }
++
+         if (!this.count.test(item.getCount())) {
+             return false;
+         }
+@@ -70,7 +90,7 @@
+             return false;
+         }
+ 
+-        if (!this.durability.test(item.getMaxDamage() - item.getItemDamage())) {
++        if (!this.durability.test(item.getMaxDamage() - item.getDamageValue())) {
+             return false;
+         }
+ 
+@@ -93,6 +113,12 @@
      public static ItemPredicate deserialize(@Nullable JsonElement element) {
          if (element != null && !element.isJsonNull()) {
              JsonObject jsonobject = JsonUtils.getJsonObject(element, "item");
@@ -13,3 +77,16 @@
              MinMaxBounds minmaxbounds = MinMaxBounds.deserialize(jsonobject.get("count"));
              MinMaxBounds minmaxbounds1 = MinMaxBounds.deserialize(jsonobject.get("durability"));
              Integer integer = jsonobject.has("data") ? JsonUtils.getInt(jsonobject, "data") : null;
+@@ -117,7 +143,11 @@
+                 potiontype = PotionType.REGISTRY.getObject(resourcelocation1);
+             }
+ 
+-            return new ItemPredicate(item, integer, minmaxbounds, minmaxbounds1, aenchantmentpredicate, potiontype, nbtpredicate);
++            com.cleanroommc.cleanroom.common.component.DataComponentPredicate components = jsonobject.has("components")
++                ? com.cleanroommc.cleanroom.common.component.DataComponentPredicate.fromJson(JsonUtils.getJsonObject(jsonobject, "components"))
++                : com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY;
++
++            return new ItemPredicate(item, integer, minmaxbounds, minmaxbounds1, aenchantmentpredicate, potiontype, nbtpredicate, components);
+         } else {
+             return ANY;
+         }

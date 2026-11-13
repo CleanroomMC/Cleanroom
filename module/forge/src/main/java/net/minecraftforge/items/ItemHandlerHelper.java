@@ -32,6 +32,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation") // Cleanroom: legacy-number uses in this file are the legacy view
 public class ItemHandlerHelper
 {
     @Nonnull
@@ -57,7 +58,7 @@ public class ItemHandlerHelper
         if (a.isEmpty() || !a.isItemEqual(b) || a.hasTagCompound() != b.hasTagCompound())
             return false;
 
-        return (!a.hasTagCompound() || a.getTagCompound().equals(b.getTagCompound())) && a.areCapsCompatible(b);
+        return ItemStack.areItemStackTagsEqual(a, b);
     }
 
     /**
@@ -69,7 +70,7 @@ public class ItemHandlerHelper
         if (a.isEmpty() || b.isEmpty() || a.getItem() != b.getItem())
             return false;
 
-        if (!a.isStackable())
+        if (!a.isStackable() || !b.isStackable())
             return false;
 
         // Metadata value only matters when the item has subtypes
@@ -81,7 +82,7 @@ public class ItemHandlerHelper
         if (a.hasTagCompound() != b.hasTagCompound())
             return false;
 
-        return (!a.hasTagCompound() || a.getTagCompound().equals(b.getTagCompound())) && a.areCapsCompatible(b);
+        return ItemStack.areItemStackTagsEqual(a, b);
     }
 
     @Nonnull

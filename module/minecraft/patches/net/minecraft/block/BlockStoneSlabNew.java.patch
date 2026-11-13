@@ -1,0 +1,11 @@
+--- original/net/minecraft/block/BlockStoneSlabNew.java
++++ modified/net/minecraft/block/BlockStoneSlabNew.java
+@@ -66,7 +66,7 @@
+ 
+     @Override
+     public Comparable<?> getTypeForItem(ItemStack stack) {
+-        return BlockStoneSlabNew.EnumType.byMetadata(stack.getMetadata() & 7);
++        IBlockState carried = stack.getComponents().get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE); if (carried != null && carried.getProperties().containsKey(VARIANT)) { return carried.getValue(VARIANT); } return BlockStoneSlabNew.EnumType.byMetadata(stack.getMetadata());
+     }
+ 
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */

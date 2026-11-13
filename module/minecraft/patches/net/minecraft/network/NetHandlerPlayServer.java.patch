@@ -113,6 +113,15 @@
                      this.player
                          .connection
                          .sendPacket(new SPacketConfirmTransaction(packetIn.getWindowId(), packetIn.getActionNumber(), true));
+@@ -1126,7 +1140,7 @@
+             }
+ 
+             boolean flag1 = packetIn.getSlotId() >= 1 && packetIn.getSlotId() <= 45;
+-            boolean flag2 = itemstack.isEmpty() || itemstack.getMetadata() >= 0 && itemstack.getCount() <= 64 && !itemstack.isEmpty();
++            boolean flag2 = itemstack.isEmpty() || itemstack.getMetadata() >= 0 && itemstack.getCount() <= Math.max(64, itemstack.getMaxStackSize()) && !itemstack.isEmpty();
+             if (flag1 && flag2) {
+                 if (itemstack.isEmpty()) {
+                     this.player.inventoryContainer.putStackInSlot(packetIn.getSlotId(), ItemStack.EMPTY);
 @@ -1218,8 +1232,7 @@
          PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
          List<String> list = Lists.newArrayList();

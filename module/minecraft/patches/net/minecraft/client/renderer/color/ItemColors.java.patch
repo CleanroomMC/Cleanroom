@@ -10,6 +10,15 @@
  
      public static ItemColors init(final BlockColors colors) {
          ItemColors itemcolors = new ItemColors();
+@@ -99,7 +100,7 @@
+         itemcolors.registerItemColorHandler(new IItemColor() {
+             @Override
+             public int colorMultiplier(ItemStack stack, int tintIndex) {
+-                IBlockState iblockstate = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
++                IBlockState iblockstate = stack.get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE); if (iblockstate == null) { iblockstate = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata()); }
+                 return colors.colorMultiplier(iblockstate, null, null, tintIndex);
+             }
+         }, Blocks.GRASS, Blocks.TALLGRASS, Blocks.VINE, Blocks.LEAVES, Blocks.LEAVES2, Blocks.WATERLILY);
 @@ -115,23 +116,28 @@
                  return tintIndex == 0 ? -1 : ItemMap.getColor(stack);
              }
