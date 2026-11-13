@@ -65,7 +65,7 @@ final class IconDrawer implements AutoCloseable {
             vertexShader = shaders.makeShader(VERTEX_SHADER);
             fragmentShader = shaders.makeShader(FRAGMENT_SHADER);
             shaders.submitToGL(vertexShader, fragmentShader);
-            program = shaders.makeProgram(vertexShader, fragmentShader);
+            program = shaders.makeProgram(true, vertexShader, fragmentShader);
 
             for (String uniform : List.of(
                     "resolution",
