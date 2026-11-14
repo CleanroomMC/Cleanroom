@@ -93,7 +93,15 @@
                          }
                      }
  
-@@ -928,7 +940,7 @@
+@@ -920,6 +932,7 @@
+                             this.setModelPartEnabled(enumplayermodelparts, "true".equals(s2));
+                         }
+                     }
++                    if ("cleanroom_layoutAwareness".equals(s1)) { org.lwjgl.input.Keyboard.enableLayoutAwareness("true".equals(s2)); }
+                 } catch (Exception exception1) {
+                     LOGGER.warn("Skipping bad option: {}:{}", s1, s2);
+                 }
+@@ -928,7 +941,7 @@
              KeyBinding.resetKeyBindingArrayAndHash();
          } catch (Exception exception2) {
              LOGGER.error("Failed to load options", exception2);
@@ -102,7 +110,7 @@
      }
  
      private NBTTagCompound dataFix(NBTTagCompound p_189988_1_) {
-@@ -953,6 +965,7 @@
+@@ -953,6 +966,7 @@
  
      /** Saves the options to the options file. */
      public void saveOptions() {
@@ -110,7 +118,7 @@
          PrintWriter printwriter = null;
  
          try {
-@@ -1023,7 +1036,8 @@
+@@ -1023,7 +1037,8 @@
              printwriter.println("tutorialStep:" + this.tutorialStep.getName());
  
              for (KeyBinding keybinding : this.keyBindings) {
@@ -120,7 +128,15 @@
              }
  
              for (SoundCategory soundcategory : SoundCategory.values()) {
-@@ -1226,4 +1240,33 @@
+@@ -1033,6 +1048,7 @@
+             for (EnumPlayerModelParts enumplayermodelparts : EnumPlayerModelParts.values()) {
+                 printwriter.println("modelPart_" + enumplayermodelparts.getPartName() + ":" + this.setModelParts.contains(enumplayermodelparts));
+             }
++            printwriter.println("cleanroom_layoutAwareness:" + org.lwjgl.input.Keyboard.isLayoutAwarenessEnabled());
+         } catch (Exception exception) {
+             LOGGER.error("Failed to save options", exception);
+         } finally {
+@@ -1226,4 +1242,33 @@
              return value;
          }
      }
