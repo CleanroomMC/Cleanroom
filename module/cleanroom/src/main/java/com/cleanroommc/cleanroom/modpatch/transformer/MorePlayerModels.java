@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
@@ -21,8 +31,11 @@ final class MorePlayerModels {
                         InsnList instructions = methodNode.instructions;
                         if (instructions != null) {
                             for (AbstractInsnNode insnNode : instructions) {
-                                if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL && insnNode instanceof MethodInsnNode methodInsnNode) {
-                                    if (methodInsnNode.name.equals("run") && methodInsnNode.desc.equals("()V") && methodInsnNode.owner.equals("noppes/mpm/sync/WebApi")) {
+                                if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL &&
+                                    insnNode instanceof MethodInsnNode methodInsnNode) {
+                                    if (methodInsnNode.name.equals("run") &&
+                                        methodInsnNode.desc.equals("()V") &&
+                                        methodInsnNode.owner.equals("noppes/mpm/sync/WebApi")) {
                                         instructions.remove(methodInsnNode.getPrevious());
                                         instructions.remove(methodInsnNode);
                                         break out;
@@ -39,4 +52,5 @@ final class MorePlayerModels {
         }
         return bytes;
     }
+
 }

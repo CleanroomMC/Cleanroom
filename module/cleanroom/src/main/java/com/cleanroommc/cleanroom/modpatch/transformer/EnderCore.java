@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
@@ -21,15 +31,21 @@ final class EnderCore {
                         InsnList instructions = methodNode.instructions;
                         if (instructions != null) {
                             for (AbstractInsnNode insnNode : instructions) {
-                                if (insnNode.getOpcode() == Opcodes.INVOKESPECIAL && insnNode instanceof MethodInsnNode methodInsnNode) {
-                                    if ("org/objectweb/asm/ClassWriter".equals(methodInsnNode.owner) && "<init>".equals(methodInsnNode.name)) {
+                                if (insnNode.getOpcode() == Opcodes.INVOKESPECIAL &&
+                                    insnNode instanceof MethodInsnNode methodInsnNode) {
+                                    if ("org/objectweb/asm/ClassWriter".equals(methodInsnNode.owner) &&
+                                        "<init>".equals(methodInsnNode.name)) {
                                         prevLine = instructions.get(instructions.indexOf(methodInsnNode) + 1);
                                         continue;
                                     }
                                 }
-                                if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL && insnNode instanceof MethodInsnNode methodInsnNode) {
-                                    if ("org/objectweb/asm/ClassWriter".equals(methodInsnNode.owner) && "visitMethod".equals(methodInsnNode.name)) {
-                                        if (prevLine == null) return bytes;
+                                if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL &&
+                                    insnNode instanceof MethodInsnNode methodInsnNode) {
+                                    if ("org/objectweb/asm/ClassWriter".equals(methodInsnNode.owner) &&
+                                        "visitMethod".equals(methodInsnNode.name)) {
+                                        if (prevLine == null) {
+                                            return bytes;
+                                        }
                                         InsnList toInsert = new InsnList();
                                         toInsert.add(new VarInsnNode(Opcodes.ALOAD, 6));
                                         toInsert.add(new IntInsnNode(Opcodes.BIPUSH, 52));
@@ -39,12 +55,13 @@ final class EnderCore {
                                         toInsert.add(new LdcInsnNode("net/minecraft/entity/EntityLivingBase"));
                                         toInsert.add(new InsnNode(Opcodes.ACONST_NULL));
                                         toInsert.add(new MethodInsnNode(
-                                            Opcodes.INVOKEVIRTUAL,
-                                            "org/objectweb/asm/ClassWriter",
-                                            "visit",
-                                            "(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V"));
+                                            Opcodes.INVOKEVIRTUAL, "org/objectweb/asm/ClassWriter", "visit",
+                                            "(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V"
+                                        ));
                                         instructions.insert(prevLine, toInsert);
-                                        AbstractInsnNode loadNull = instructions.get(instructions.indexOf(methodInsnNode) - 2);
+                                        AbstractInsnNode loadNull = instructions.get(
+                                            instructions.indexOf(methodInsnNode) - 2
+                                        );
                                         if (!(loadNull instanceof InsnNode)) {
                                             return bytes;
                                         }
@@ -61,4 +78,5 @@ final class EnderCore {
         }
         return bytes;
     }
+
 }

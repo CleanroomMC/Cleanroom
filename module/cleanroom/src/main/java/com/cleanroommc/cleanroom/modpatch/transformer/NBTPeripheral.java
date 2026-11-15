@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
@@ -21,9 +31,9 @@ final class NBTPeripheral {
                     InsnList instructions = methodNode.instructions;
                     if (instructions != null) {
                         for (AbstractInsnNode insnNode : instructions) {
-                            if (insnNode instanceof MethodInsnNode methodInsnNode
-                                && methodInsnNode.owner.equals("com/google/gson/internal/LinkedTreeMap")
-                                && methodInsnNode.name.equals("<init>")) {
+                            if (insnNode instanceof MethodInsnNode methodInsnNode &&
+                                methodInsnNode.owner.equals("com/google/gson/internal/LinkedTreeMap") &&
+                                methodInsnNode.name.equals("<init>")) {
                                 methodInsnNode.desc = "(Ljava/util/Comparator;Z)V";
                                 instructions.insertBefore(methodInsnNode, new InsnNode(Opcodes.ICONST_0));
                             }
@@ -38,4 +48,5 @@ final class NBTPeripheral {
         }
         return bytes;
     }
+
 }

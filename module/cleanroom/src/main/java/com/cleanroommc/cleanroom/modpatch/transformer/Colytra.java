@@ -1,11 +1,22 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
 final class Colytra {
 
@@ -31,9 +42,12 @@ final class Colytra {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        public MethodVisitor visitMethod(
+            int access, String name, String descriptor, String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
-            if (name.equals("lambda$transformElytraUpdate$0")) mv = new TransformElytraUpdate(mv);
+            if (name.equals("lambda$transformElytraUpdate$0")) {
+                mv = new TransformElytraUpdate(mv);
+            }
             return mv;
         }
 
@@ -47,23 +61,38 @@ final class Colytra {
             @Override
             public void visitEnd() {
                 AbstractInsnNode node = super.instructions.getFirst();
-                while (node.getOpcode() != SIPUSH) node = node.getNext();
+                while (node.getOpcode() != SIPUSH) {
+                    node = node.getNext();
+                }
                 ((JumpInsnNode) node.getNext()).setOpcode(IFEQ);
-                super.instructions.insert(node,new MethodInsnNode(INVOKESTATIC, HOOKS, "isNodeMethod$updateElytra", "(Lorg/objectweb/asm/tree/AbstractInsnNode;)Z", false));
+                super.instructions.insert(
+                    node,
+                    new MethodInsnNode(
+                        INVOKESTATIC, HOOKS, "isNodeMethod$updateElytra",
+                        "(Lorg/objectweb/asm/tree/AbstractInsnNode;)Z", false
+                    )
+                );
                 super.instructions.remove(node.getPrevious());
                 super.instructions.remove(node);
                 super.accept(mv);
             }
+
         }
+
     }
 
     @SuppressWarnings("unused")
     public static final class Hooks {
 
-        private Hooks() {}
+        private Hooks() { }
 
         public static boolean isNodeMethod$updateElytra(AbstractInsnNode node) {
-            return node.getOpcode() == Opcodes.INVOKEVIRTUAL && ((MethodInsnNode) node).name.equals(FMLLaunchHandler.isDeobfuscatedEnvironment() ? "updateElytra" : "func_184616_r");
+            return node.getOpcode() == Opcodes.INVOKEVIRTUAL &&
+                ((MethodInsnNode) node).name.equals(
+                    FMLLaunchHandler.isDeobfuscatedEnvironment() ? "updateElytra" : "func_184616_r"
+                );
         }
+
     }
+
 }

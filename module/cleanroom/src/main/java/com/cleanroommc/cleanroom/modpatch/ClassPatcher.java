@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch;
 
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.objectweb.asm.*;
+
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +54,8 @@ final class ClassPatcher extends ClassVisitor implements Opcodes {
     }
 
     @Override
-    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+    public MethodVisitor visitMethod(
+        int access, String name, String descriptor, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
         var patcher = methods.get(name + descriptor);
         if (patcher != null) {
@@ -62,5 +74,7 @@ final class ClassPatcher extends ClassVisitor implements Opcodes {
         public void setMethod(MethodVisitor mv) {
             this.mv = mv;
         }
+
     }
+
 }

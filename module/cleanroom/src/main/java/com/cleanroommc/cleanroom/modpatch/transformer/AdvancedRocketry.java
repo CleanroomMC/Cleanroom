@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
@@ -24,7 +34,8 @@ final class AdvancedRocketry {
                             for (int i = 0; i < instructions.size(); i++) {
                                 AbstractInsnNode insnNode = instructions.get(i);
                                 // Find beginning of the EntityPlayer patch block
-                                if (insnNode.getOpcode() == Opcodes.LDC && ((LdcInsnNode) insnNode).cst.equals("net.minecraft.entity.player.EntityPlayer")) {
+                                if (insnNode.getOpcode() == Opcodes.LDC &&
+                                    ((LdcInsnNode) insnNode).cst.equals("net.minecraft.entity.player.EntityPlayer")) {
                                     fromIndex = i;
                                 }
                                 // Find the start of the loop
@@ -38,7 +49,8 @@ final class AdvancedRocketry {
                             // Count number of 0 and 1 constant in between fromIndex and toIndex
                             for (; fromIndex < toIndex; fromIndex++) {
                                 AbstractInsnNode insnNode = instructions.get(fromIndex);
-                                if (insnNode.getOpcode() == Opcodes.ICONST_0 || insnNode.getOpcode() == Opcodes.ICONST_1) {
+                                if (insnNode.getOpcode() == Opcodes.ICONST_0 ||
+                                    insnNode.getOpcode() == Opcodes.ICONST_1) {
                                     if (targetNode == null) {
                                         targetNode = insnNode;
                                     }
@@ -61,4 +73,5 @@ final class AdvancedRocketry {
         }
         return bytes;
     }
+
 }

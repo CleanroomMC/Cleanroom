@@ -1,10 +1,21 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
+
+import org.objectweb.asm.*;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.objectweb.asm.*;
 
 final class Corpse {
 
@@ -30,9 +41,12 @@ final class Corpse {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        public MethodVisitor visitMethod(
+            int access, String name, String descriptor, String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
-            if (name.equals("onMessage")) mv = new OnMessage(mv);
+            if (name.equals("onMessage")) {
+                mv = new OnMessage(mv);
+            }
             return mv;
         }
 
@@ -45,12 +59,17 @@ final class Corpse {
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
                 if (name.equals("func_147108_a")) {
-                    super.visitMethodInsn(INVOKESTATIC, HOOKS, "displayGuiScreenScheduled", "(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/GuiScreen;)V", false);
+                    super.visitMethodInsn(
+                        INVOKESTATIC, HOOKS, "displayGuiScreenScheduled",
+                        "(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/GuiScreen;)V", false
+                    );
                     return;
                 }
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
+
         }
+
     }
 
     @SuppressWarnings("unused")
@@ -60,5 +79,7 @@ final class Corpse {
         public static void displayGuiScreenScheduled(Minecraft minecraft, GuiScreen screen) {
             minecraft.addScheduledTask(() -> minecraft.displayGuiScreen(screen));
         }
+
     }
+
 }

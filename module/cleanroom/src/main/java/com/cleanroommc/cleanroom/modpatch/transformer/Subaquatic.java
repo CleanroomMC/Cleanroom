@@ -1,14 +1,17 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.expr.ExprEditor;
-import javassist.expr.NewExpr;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
-
-import java.io.ByteArrayInputStream;
 
 final class Subaquatic {
 
@@ -26,46 +29,70 @@ final class Subaquatic {
     private static byte[] patchPluginBiome(byte[] bytes) {
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
-        PluginBiome cv = new PluginBiome(writer);
-        reader.accept(cv, 0);
+        reader.accept(new PluginBiome(writer), 0);
         return writer.toByteArray();
     }
 
     private static byte[] patchPluginEntity(byte[] bytes) {
-        try {
-            CtClass cc = ClassPool.getDefault().makeClass(new ByteArrayInputStream(bytes));
-            cc.getDeclaredMethod("transform").instrument(new ExprEditor() {
-                @Override
-                public void edit(NewExpr e) throws CannotCompileException {
-                    if (e.getLineNumber() == 58 && e.getClassName().equals("org.objectweb.asm.tree.VarInsnNode")) {
-                        e.replace(
-                            """
-                            $_ = $proceed(25, 26);
-                            """);
-                    }
-                }
-            });
-            bytes = cc.toBytecode();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return bytes;
+        ClassReader reader = new ClassReader(bytes);
+        ClassWriter writer = new ClassWriter(0);
+        reader.accept(new PluginEntity(writer), 0);
+        return writer.toByteArray();
     }
 
-    private static class PluginBiome extends ClassVisitor {
+    private static final class PluginEntity extends ClassVisitor implements Opcodes {
 
-        public PluginBiome(ClassVisitor cv) {
+        private PluginEntity(ClassVisitor classVisitor) {
+            super(ASM9, classVisitor);
+        }
+
+        @Override
+        public MethodVisitor visitMethod(
+            int access, String name, String descriptor, String signature, String[] exceptions) {
+            MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+            if (name.equals("transform")) {
+                mv = new Transform(mv);
+            }
+            return mv;
+        }
+
+        private static final class Transform extends MethodVisitor {
+
+            private Transform(MethodVisitor methodVisitor) {
+                super(ASM9, methodVisitor);
+            }
+
+            @Override
+            public void visitIntInsn(int opcode, int operand) {
+                if (operand == 71) {
+                    operand = 26;
+                }
+                super.visitIntInsn(opcode, operand);
+            }
+
+        }
+
+    }
+
+    private static final class PluginBiome extends ClassVisitor {
+
+        private PluginBiome(ClassVisitor cv) {
             super(Opcodes.ASM9, cv);
         }
 
         @Override
-        public MethodVisitor visitMethod(final int access, final String name, final String descriptor, final String signature, final String[] exceptions) {
+        public MethodVisitor visitMethod(
+            final int access, final String name, final String descriptor, final String signature,
+            final String[] exceptions) {
             MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
-            if (name.equals("transform")) mv = new Transform(mv);
+            if (name.equals("transform")) {
+                mv = new Transform(mv);
+            }
             return mv;
         }
 
-        private static class Transform extends MethodVisitor {
+        private static final class Transform extends MethodVisitor {
+
             public Transform(MethodVisitor mv) {
                 super(Opcodes.ASM9, mv);
             }
@@ -80,6 +107,9 @@ final class Subaquatic {
                     }
                 }
             }
+
         }
+
     }
+
 }

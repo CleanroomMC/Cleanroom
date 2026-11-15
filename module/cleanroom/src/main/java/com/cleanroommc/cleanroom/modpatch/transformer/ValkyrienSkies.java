@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
@@ -21,8 +31,10 @@ final class ValkyrienSkies {
                         InsnList instructions = methodNode.instructions;
                         if (instructions != null) {
                             for (AbstractInsnNode insnNode : instructions) {
-                                if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL && insnNode instanceof MethodInsnNode methodInsnNode) {
-                                    if ("gnu/trove/list/array/TIntArrayList".equals(methodInsnNode.owner) && "resetQuick".equals(methodInsnNode.name)) {
+                                if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL &&
+                                    insnNode instanceof MethodInsnNode methodInsnNode) {
+                                    if (methodInsnNode.owner.equals("gnu/trove/list/array/TIntArrayList") &&
+                                        "resetQuick".equals(methodInsnNode.name)) {
                                         methodInsnNode.name = "clearQuick";
                                         break out;
                                     }
@@ -38,4 +50,5 @@ final class ValkyrienSkies {
         }
         return bytes;
     }
+
 }

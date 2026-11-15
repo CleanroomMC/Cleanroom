@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.*;
@@ -24,9 +34,12 @@ final class BetterSprinting {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        public MethodVisitor visitMethod(
+            int access, String name, String descriptor, String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
-            if (name.equals("transformSprinting")) mv = new TransformSprinting(mv);
+            if (name.equals("transformSprinting")) {
+                mv = new TransformSprinting(mv);
+            }
             return mv;
         }
 
@@ -38,14 +51,15 @@ final class BetterSprinting {
 
             @Override
             public void visitIntInsn(final int opcode, final int operand) {
-                if (mv != null) {
-                    if (opcode == Opcodes.SIPUSH && (operand == 130 || operand == 131)) {
-                        mv.visitIntInsn(opcode, operand + 12);
-                    } else {
-                        mv.visitIntInsn(opcode, operand);
-                    }
+                if (opcode == Opcodes.SIPUSH && (operand == 130 || operand == 131)) {
+                    mv.visitIntInsn(opcode, operand + 12);
+                } else {
+                    mv.visitIntInsn(opcode, operand);
                 }
             }
+
         }
+
     }
+
 }

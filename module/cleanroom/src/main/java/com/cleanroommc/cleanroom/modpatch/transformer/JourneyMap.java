@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
@@ -14,15 +24,12 @@ final class JourneyMap {
             ClassNode classNode = new ClassNode();
             ClassReader classReader = new ClassReader(bytes);
             classReader.accept(classNode, 0);
-            if (classNode.methods != null)
-            {
+            if (classNode.methods != null) {
                 out:
-                for (MethodNode methodNode : classNode.methods)
-                {
+                for (MethodNode methodNode : classNode.methods) {
                     if (methodNode.name.equals("preloadCurrentTheme")) {
                         InsnList instructions = methodNode.instructions;
-                        if (instructions != null)
-                        {
+                        if (instructions != null) {
                             for (AbstractInsnNode insnNode : instructions) {
                                 if (insnNode instanceof MethodInsnNode methodInsnNode) {
                                     if (methodInsnNode.name.equals("fileTreeTraverser")) {
@@ -31,7 +38,13 @@ final class JourneyMap {
                                         methodInsnNode.desc = "()Lcom/google/common/graph/Traverser;";
                                     }
                                     if (methodInsnNode.name.equals("breadthFirstTraversal")) {
-                                        instructions.insertBefore(methodInsnNode, new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/io/File", "toPath", "()Ljava/nio/file/Path;", false));
+                                        instructions.insertBefore(
+                                            methodInsnNode,
+                                            new MethodInsnNode(
+                                                Opcodes.INVOKEVIRTUAL, "java/io/File", "toPath",
+                                                "()Ljava/nio/file/Path;", false
+                                            )
+                                        );
                                         methodInsnNode.owner = "com/google/common/graph/Traverser";
                                         methodInsnNode.name = "breadthFirst";
                                         methodInsnNode.desc = "(Ljava/lang/Object;)Ljava/lang/Iterable;";
@@ -45,7 +58,13 @@ final class JourneyMap {
                                 if (insnNode instanceof TypeInsnNode typeInsnNode) {
                                     if (typeInsnNode.getOpcode() == Opcodes.CHECKCAST) {
                                         typeInsnNode.desc = "java/nio/file/Path";
-                                        instructions.insert(typeInsnNode, new MethodInsnNode(Opcodes.INVOKEINTERFACE, "java/nio/file/Path", "toFile", "()Ljava/io/File;", true));
+                                        instructions.insert(
+                                            typeInsnNode,
+                                            new MethodInsnNode(
+                                                Opcodes.INVOKEINTERFACE, "java/nio/file/Path", "toFile",
+                                                "()Ljava/io/File;", true
+                                            )
+                                        );
                                         break out;
                                     }
                                 }
@@ -60,4 +79,5 @@ final class JourneyMap {
         }
         return bytes;
     }
+
 }

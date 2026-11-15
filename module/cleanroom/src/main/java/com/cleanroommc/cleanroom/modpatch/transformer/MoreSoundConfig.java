@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 CleanroomMC contributors
+ *
+ * This file is licensed under the CleanroomMC License Version 1.0.
+ * See the applicable LICENSE file in this directory or a parent directory
+ * for the full licence terms.
+ *
+ * This is visible-source software and is not open-source software.
+ */
+
 package com.cleanroommc.cleanroom.modpatch.transformer;
 
 import org.objectweb.asm.ClassReader;
@@ -21,7 +31,8 @@ final class MoreSoundConfig {
                         InsnList instructions = methodNode.instructions;
                         if (instructions != null) {
                             for (AbstractInsnNode insnNode : instructions) {
-                                if (insnNode.getOpcode() == Opcodes.LDC && insnNode instanceof LdcInsnNode ldcInsnNode) {
+                                if (insnNode.getOpcode() == Opcodes.LDC &&
+                                    insnNode instanceof LdcInsnNode ldcInsnNode) {
                                     if (ldcInsnNode.cst.equals("ALC_enumerate_all_EXT")) {
                                         ldcInsnNode.cst = "ALC_ENUMERATE_ALL_EXT";
                                         break out;
@@ -38,4 +49,5 @@ final class MoreSoundConfig {
         }
         return bytes;
     }
+
 }
