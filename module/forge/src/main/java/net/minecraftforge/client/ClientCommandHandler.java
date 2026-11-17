@@ -19,16 +19,25 @@
 
 package net.minecraftforge.client;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -134,9 +143,19 @@ public class ClientCommandHandler extends CommandHandler
             leftOfCursor = leftOfCursor.substring(1);
 
             Minecraft mc = FMLClientHandler.instance().getClient();
-            if (mc.currentScreen instanceof GuiChat)
+            if (mc.currentScreen instanceof GuiChat && mc.player != null)
             {
-                List<String> commands = getTabCompletions(mc.player, leftOfCursor, mc.player.getPosition());
+                List<String> commands;
+                try
+                {
+                    commands = getTabCompletions(mc.player, leftOfCursor, mc.player.getPosition());
+                }
+                catch (Throwable t)
+                {
+                    FMLLog.log.error("Exception during client command autocomplete:", t);
+                    return;
+                }
+
                 if (!commands.isEmpty())
                 {
                     if (leftOfCursor.indexOf(' ') == -1)
@@ -158,6 +177,91 @@ public class ClientCommandHandler extends CommandHandler
                 }
             }
         }
+    }
+
+    @Override
+    public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos)
+    {
+        String[] astring = input.split(" ", -1);
+        String s = astring[0];
+        MinecraftServer server = this.getServer();
+
+        if (astring.length == 1)
+        {
+            List<String> list = Lists.newArrayList();
+
+            for (Map.Entry<String, ICommand> entry : this.getCommands().entrySet())
+            {
+                if (CommandBase.doesStringStartWith(s, entry.getKey()))
+                {
+                    try
+                    {
+                        if (entry.getValue().checkPermission(server, sender))
+                        {
+                            list.add(entry.getKey());
+                        }
+                    }
+                    catch (Throwable t)
+                    {
+                        // Some commands assume server is non-null or fail in client context; ignore them safely
+                    }
+                }
+            }
+
+            return list;
+        }
+        else if (astring.length > 1)
+        {
+            ICommand icommand = this.getCommands().get(s);
+            if (icommand != null)
+            {
+                try
+                {
+                    if (icommand.checkPermission(server, sender))
+                    {
+                        return icommand.getTabCompletions(server, sender, dropFirstString(astring), pos);
+                    }
+                }
+                catch (Throwable t)
+                {
+                    // Ignore errors from commands that fail on client or with null server
+                }
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<ICommand> getPossibleCommands(ICommandSender sender)
+    {
+        List<ICommand> list = Lists.newArrayList();
+        MinecraftServer server = this.getServer();
+        Set<ICommand> uniqueCommands = Sets.newHashSet(this.getCommands().values());
+
+        for (ICommand icommand : uniqueCommands)
+        {
+            try
+            {
+                if (icommand.checkPermission(server, sender))
+                {
+                    list.add(icommand);
+                }
+            }
+            catch (Throwable t)
+            {
+                // Ignore commands that fail permission checks on client or with null server
+            }
+        }
+
+        return list;
+    }
+
+    private static String[] dropFirstString(String[] input)
+    {
+        String[] astring = new String[input.length - 1];
+        System.arraycopy(input, 1, astring, 0, input.length - 1);
+        return astring;
     }
 
     @Override

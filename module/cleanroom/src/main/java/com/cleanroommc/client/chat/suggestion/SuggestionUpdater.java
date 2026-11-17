@@ -113,7 +113,11 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
             return;
         }
         // Client-side commands
-        ClientCommandHandler.instance.autoComplete(prefix);
+        try {
+            ClientCommandHandler.instance.autoComplete(prefix);
+        } catch (Throwable t) {
+            // Defensive: ensure client command completion failure never crashes chat input
+        }
         // Server-side completions (command-block GUIs flag a target block, mirroring vanilla's TabCompleter)
         mc.player.connection.sendPacket(new CPacketTabComplete(
             prefix, this.tabCompleter.getTargetBlockPos(), this.commandBlockMode
