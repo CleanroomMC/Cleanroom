@@ -38,7 +38,12 @@
          return this.index < 6;
      }
  
-@@ -247,4 +264,43 @@
+@@ -243,8 +260,47 @@
+     /** only shows items which have tabToDisplayOn == this */
+     @SideOnly(Side.CLIENT)
+     public void displayAllRelevantItems(NonNullList<ItemStack> p_78018_1_) {
+-        for (Item item : Item.REGISTRY) {
++        for (Item item : net.minecraftforge.common.ForgeHooks.getCreativeTabItemOrder()) {
              item.getSubItems(this, p_78018_1_);
          }
      }
