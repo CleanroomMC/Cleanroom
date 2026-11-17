@@ -20,6 +20,8 @@
 package net.minecraftforge.fml.relauncher;
 
 import com.cleanroommc.cleanmix.CleanMixHooks;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashManager;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashPhase;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
@@ -103,6 +105,10 @@ public class CoreModManager {
         @Override
         public void injectIntoClassLoader(LaunchClassLoader classLoader)
         {
+            if (CleanroomEnvironment.side().isClient()) {
+                PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Registering transformers: " + name);
+            }
+
             FMLLog.log.debug("Injecting coremod {} \\{{}\\} class transformers", name, coreModInstance.getClass().getName());
             List<String> ts = Lists.newArrayList();
             String[] asmTransformerClass = coreModInstance.getASMTransformerClass();
@@ -121,6 +127,10 @@ public class CoreModManager {
             }
             FMLLog.log.debug("Injection complete");
 
+            if (CleanroomEnvironment.side().isClient()) {
+                PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Initializing core mod: " + name);
+            }
+
             FMLLog.log.debug("Running coremod plugin for {} {{}}", name, coreModInstance.getClass().getName());
             Map<String, Object> data = new HashMap<>();
             data.put("mcLocation", mcDir);
@@ -132,6 +142,10 @@ public class CoreModManager {
             String setupClass = coreModInstance.getSetupClass();
             if (setupClass != null)
             {
+                if (CleanroomEnvironment.side().isClient()) {
+                    PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Running setup: " + name);
+                }
+
                 try
                 {
                     IFMLCallHook call = (IFMLCallHook) Class.forName(setupClass, true, classLoader).getConstructor().newInstance();
@@ -222,7 +236,7 @@ public class CoreModManager {
         {
             for (String path : System.getProperty("crl.dev.extrapath").split(File.pathSeparator))
             {
-                try 
+                try
                 {
                     Launch.classLoader.addURL(new File(path).getAbsoluteFile().toURI().toURL());
                     FMLLog.log.debug("Adding extra path {} to class path", path);
@@ -244,8 +258,19 @@ public class CoreModManager {
             FMLLog.log.info("Found a command line coremod : {}", coreModClassName);
             loadCoreMod(classLoader, coreModClassName, null);
         }
+
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyPhase(PreSplashPhase.CORE_MOD_LAUNCH);
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Discovering core mods");
+        }
+
         // Coremods
         CleanroomModDiscoverer.instance().discoverCoreMods(mcDir, classLoader, tweaker);
+
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Discovering mixin mods");
+        }
+
         // Mixin Mods
         CleanroomModDiscoverer.instance().discoverMixinMods();
     }
@@ -290,7 +315,7 @@ public class CoreModManager {
 
     private static FMLPluginWrapper loadCoreMod(LaunchClassLoader classLoader, String coreModClass, File location)
     {
-        if (loadedPlugins.contains(coreModClass)) 
+        if (loadedPlugins.contains(coreModClass))
         {
             return null;
         }
@@ -403,6 +428,10 @@ public class CoreModManager {
 
     public static boolean loadCoreModFromDiscoveredJar(LaunchClassLoader classLoader, String coreModClass, File location)
     {
+        if (CleanroomEnvironment.side().isClient() && !loadedPlugins.contains(coreModClass)) {
+            String coreModName = coreModClass.substring(coreModClass.lastIndexOf('.') + 1);
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Loading core mod: " + coreModName);
+        }
         return loadCoreMod(classLoader, coreModClass, location) != null;
     }
 
@@ -420,8 +449,18 @@ public class CoreModManager {
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Add the sorting tweaker first- it'll appear twice in the list
         tweakers.addFirst(fmlInjectionAndSortingTweaker);
+
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Loading additional core mods");
+        }
+
         // Load rescued (ForceLoadAsMod) coremods
         CleanroomModDiscoverer.instance().rescueDroppedCoremods();
+
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Loading early mixins");
+        }
+
         // Early Mixin Loaders Instantiation
         CleanMixHooks.loadMixinBooterEarlyMixins(loadPlugins);
         // Add loadPlugins (including rescued coremods)
@@ -432,6 +471,10 @@ public class CoreModManager {
 
     public static void sortTweakList()
     {
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Sorting launch plugins");
+        }
+
         @SuppressWarnings("unchecked")
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Basically a copy of Collections.sort pre 8u20, optimized as we know we're an array list.
