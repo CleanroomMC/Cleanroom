@@ -33,9 +33,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.sdl.SDLError;
 import org.lwjgl.sdl.SDLEvents;
-import org.lwjgl.sdl.SDLHints;
 import org.lwjgl.sdl.SDLInit;
 import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.sdl.SDL_Event;
@@ -296,6 +296,108 @@ public final class PreSplashScreenContainer {
     //</editor-fold>
 
     //<editor-fold desc="SdlRenderer & SwingRenderer">
+    @ApiStatus.Internal
+    public static String createWindowTitle() {
+        String title = "Cleanroom Pre Splash";
+        return System.getenv("NIRI_SOCKET") == null ? title : title + " [" + UUID.randomUUID() + "]";
+    }
+
+    private static final class NiriWindowPlacement {
+
+        private NiriWindowPlacement() {
+        }
+
+        private static @Nullable JsonElement niriMessage(String... arguments) {
+            List<String> command = new ArrayList<>(List.of("niri", "msg", "--json"));
+            command.addAll(List.of(arguments));
+
+            Process message = null;
+            try {
+                message = new ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD).start();
+                if (message.waitFor(1, TimeUnit.SECONDS) && message.exitValue() == 0) {
+                    try (InputStream input = message.getInputStream()) {
+                        return JsonParser.parseString(new String(input.readAllBytes(), StandardCharsets.UTF_8));
+                    }
+                }
+            } catch (IOException | RuntimeException failure) {
+                LOGGER.debug("Could not communicate with niri for pre splash positioning.", failure);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            } finally {
+                if (message != null && message.isAlive()) {
+                    message.destroyForcibly();
+                }
+            }
+            return null;
+        }
+
+        public static boolean centerWindowOnNiri(String windowTitle) {
+            if (System.getenv("NIRI_SOCKET") == null) {
+                return true;
+            }
+
+            try {
+                JsonElement windows = niriMessage("windows");
+                if (windows == null) {
+                    return false;
+                }
+
+                JsonObject splash = null;
+                for (JsonElement element : windows.getAsJsonArray()) {
+                    JsonObject window = element.getAsJsonObject();
+                    JsonElement title = window.get("title");
+                    if (title != null
+                            && title.isJsonPrimitive()
+                            && windowTitle.equals(title.getAsString())
+                            && window.get("is_floating").getAsBoolean()) {
+                        if (splash != null) {
+                            return false;
+                        }
+
+                        splash = window;
+                    }
+                }
+
+                if (splash == null) {
+                    return false;
+                }
+
+                JsonElement workspaces = niriMessage("workspaces");
+                JsonElement outputs = niriMessage("outputs");
+                if (workspaces == null || outputs == null) {
+                    return false;
+                }
+
+                for (JsonElement element : workspaces.getAsJsonArray()) {
+                    JsonObject workspace = element.getAsJsonObject();
+                    if (!workspace.get("id").equals(splash.get("workspace_id")) || workspace.get("output").isJsonNull()) {
+                        continue;
+                    }
+
+                    JsonObject output = outputs.getAsJsonObject().getAsJsonObject(workspace.get("output").getAsString());
+                    JsonObject logical = output.getAsJsonObject("logical");
+                    JsonObject layout = splash.getAsJsonObject("layout");
+                    var size = layout.getAsJsonArray("tile_size");
+                    var position = layout.getAsJsonArray("tile_pos_in_workspace_view");
+                    double x = (logical.get("width").getAsDouble() - size.get(0).getAsDouble()) / 2;
+                    double y = (logical.get("height").getAsDouble() - size.get(1).getAsDouble()) / 2;
+
+                    niriMessage(
+                            "action",
+                            "move-floating-window",
+                            "--id", splash.get("id").getAsString(),
+                            "--x=" + String.format(Locale.ROOT, "%+.3f", x - position.get(0).getAsDouble()),
+                            "--y=" + String.format(Locale.ROOT, "%+.3f", y - position.get(1).getAsDouble()));
+
+                    return true;
+                }
+            } catch (RuntimeException failure) {
+                LOGGER.debug("Could not center pre splash through niri.", failure);
+            }
+            return false;
+        }
+    }
+
     /**
      * @see PreSplashScreenContainer#runSdl()
      */
@@ -362,6 +464,7 @@ public final class PreSplashScreenContainer {
             private static final int TARGET_FRAME_RATE = 60;
 
             private final @Nullable String originalLibraryPath = System.getProperty("org.lwjgl.librarypath");
+            private final String windowTitle = createWindowTitle();
             private long window;
             private long context;
             private boolean videoInitialized;
@@ -395,16 +498,10 @@ public final class PreSplashScreenContainer {
                 Configuration.SHARED_LIBRARY_EXTRACT_PATH.set(null);
                 Configuration.SHARED_LIBRARY_EXTRACT_DIRECTORY.set("cleanroom-pre-splash");
                 Configuration.SHARED_LIBRARY_EXTRACT_FORCE.set(true);
+                Configuration.OPENGL_EXPLICIT_INIT.set(true);
 
                 if (Platform.get() == Platform.WINDOWS) {
                     windowsAppRegistration = WindowsAppRegistration.register();
-                }
-
-                // prefer native Wayland over XWayland
-                if (System.getenv("WAYLAND_DISPLAY") != null && System.getenv("SDL_VIDEODRIVER") == null) {
-                    if (!SDLHints.SDL_SetHintWithPriority(SDLHints.SDL_HINT_VIDEO_DRIVER, "wayland,x11", SDLHints.SDL_HINT_DEFAULT)) {
-                        LOGGER.debug("Could not apply pre splash video driver preference; keeping the configured driver.");
-                    }
                 }
 
                 checkSDL(SDLInit.SDL_InitSubSystem(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS), "SDL_InitSubSystem");
@@ -412,6 +509,9 @@ public final class PreSplashScreenContainer {
                 videoInitialized = true;
                 // on non-Apple platforms, the video initializing thread is SDL's main thread
                 Preconditions.checkState(SDLInit.SDL_IsMainThread(), "Pre splash must run on its SDL video thread.");
+
+                String videoDriver = SDLVideo.SDL_GetCurrentVideoDriver();
+                Preconditions.checkState(videoDriver != null, "SDL video driver is not initialized.");
 
                 SDLVideo.SDL_GL_ResetAttributes();
                 checkSDL(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, 4), "GL major version");
@@ -430,7 +530,7 @@ public final class PreSplashScreenContainer {
                     int windowWidth = Math.max(1, Math.round(PreSplashLayout.WIDTH * scale));
                     int windowHeight = Math.max(1, Math.round(PreSplashLayout.HEIGHT * scale));
 
-                    window = SDLVideo.SDL_CreateWindow("Cleanroom Pre Splash", windowWidth, windowHeight,
+                    window = SDLVideo.SDL_CreateWindow(windowTitle, windowWidth, windowHeight,
                             SDLVideo.SDL_WINDOW_OPENGL
                                     | SDLVideo.SDL_WINDOW_HIGH_PIXEL_DENSITY
                                     | SDLVideo.SDL_WINDOW_HIDDEN
@@ -446,8 +546,6 @@ public final class PreSplashScreenContainer {
                 }
 
                 // Wayland does not support explicit positioning
-                String videoDriver = SDLVideo.SDL_GetCurrentVideoDriver();
-                Preconditions.checkState(videoDriver != null, "SDL video driver is not initialized.");
                 if (!"wayland".equals(videoDriver)) {
                     int centered = SDLVideo.SDL_WINDOWPOS_CENTERED_DISPLAY(display);
                     if (!SDLVideo.SDL_SetWindowPosition(window, centered, centered)) {
@@ -459,15 +557,20 @@ public final class PreSplashScreenContainer {
                 Preconditions.checkState(context != 0, "SDL_GL_CreateContext: %s", SDLError.SDL_GetError());
                 checkSDL(SDLVideo.SDL_GL_MakeCurrent(window, context), "SDL_GL_MakeCurrent");
 
-                // triggers class initializing
-                GL.getFunctionProvider();
+                GL.create(SDLVideo::SDL_GL_GetProcAddress);
 
                 glInitialized = true;
                 boolean gl46 = GL.createCapabilities().OpenGL46;
 
                 // release LWJGL's global table so the game's LWJGL can initialize
                 ThreadLocalUtil.setFunctionMissingAddresses(0);
+
                 Preconditions.checkState(gl46, "Pre splash requires OpenGL 4.6.");
+                LOGGER.info("Pre splash GL context created.\nVideo Driver: {}\nGL Vendor: {}\nRenderer: {}\nVersion: {}",
+                        videoDriver,
+                        GL11.glGetString(GL11.GL_VENDOR),
+                        GL11.glGetString(GL11.GL_RENDERER),
+                        GL11.glGetString(GL11.GL_VERSION));
 
                 if (!SDLVideo.SDL_GL_SetSwapInterval(0)) {
                     LOGGER.debug("Could not disable pre splash VSync: {}", SDLError.SDL_GetError());
@@ -500,6 +603,10 @@ public final class PreSplashScreenContainer {
 
             void runLoop(BooleanSupplier running, BiConsumer<Integer, Integer> draw) {
                 checkSDL(SDLVideo.SDL_ShowWindow(window), "SDL_ShowWindow");
+
+                boolean centerPending = System.getenv("NIRI_SOCKET") != null;
+                long centerDeadline = 0;
+
                 try (MemoryStack stack = MemoryStack.stackPush()) {
                     IntBuffer width = stack.mallocInt(1);
                     IntBuffer height = stack.mallocInt(1);
@@ -514,6 +621,14 @@ public final class PreSplashScreenContainer {
 
                         draw.accept(width.get(0), height.get(0));
                         checkSDL(SDLVideo.SDL_GL_SwapWindow(window), "SDL_GL_SwapWindow");
+
+                        if (centerPending) {
+                            if (centerDeadline == 0) {
+                                centerDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
+                            }
+                            centerPending = System.nanoTime() < centerDeadline && !NiriWindowPlacement.centerWindowOnNiri(windowTitle);
+                        }
+
                         long remaining = TimeUnit.SECONDS.toNanos(1) / TARGET_FRAME_RATE - (System.nanoTime() - frameStart);
                         if (remaining > 0) {
                             LockSupport.parkNanos(remaining);
@@ -748,7 +863,7 @@ public final class PreSplashScreenContainer {
 
             private void run() throws IOException {
                 String renderer = SwingRenderer.class.getName() + "$Helper";
-                String windowTitle = "Cleanroom Pre Splash [" + UUID.randomUUID() + "]";
+                String windowTitle = createWindowTitle();
                 Path helperJar = Files.createTempFile("cleanroom-pre-splash-", ".jar");
                 Process helper = null;
 
@@ -797,7 +912,7 @@ public final class PreSplashScreenContainer {
                             int reply;
                             while (running.getAsBoolean() && (reply = reader.poll()) != 0) {
                                 if (reply == Protocol.READY && !ready) {
-                                    centerWindowOnNiri(windowTitle);
+                                    NiriWindowPlacement.centerWindowOnNiri(windowTitle);
                                     ready = true;
                                     startupReady.run();
                                 }
@@ -856,97 +971,6 @@ public final class PreSplashScreenContainer {
                     }
                 }
             }
-
-            //<editor-fold desc="niri integration">
-            private static @Nullable JsonElement niriMessage(String... arguments) {
-                List<String> command = new ArrayList<>(List.of("niri", "msg", "--json"));
-                command.addAll(List.of(arguments));
-
-                Process message = null;
-                try {
-                    message = new ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD).start();
-                    if (message.waitFor(1, TimeUnit.SECONDS) && message.exitValue() == 0) {
-                        try (InputStream input = message.getInputStream()) {
-                            return JsonParser.parseString(new String(input.readAllBytes(), StandardCharsets.UTF_8));
-                        }
-                    }
-                } catch (IOException | RuntimeException failure) {
-                    LOGGER.debug("Could not communicate with niri for pre splash positioning.", failure);
-                } catch (InterruptedException ignored) {
-                    Thread.currentThread().interrupt();
-                } finally {
-                    if (message != null && message.isAlive()) {
-                        message.destroyForcibly();
-                    }
-                }
-                return null;
-            }
-
-            private static void centerWindowOnNiri(String windowTitle) {
-                if (System.getenv("NIRI_SOCKET") == null) {
-                    return;
-                }
-
-                try {
-                    JsonElement windows = niriMessage("windows");
-                    if (windows == null) {
-                        return;
-                    }
-
-                    JsonObject splash = null;
-                    for (JsonElement element : windows.getAsJsonArray()) {
-                        JsonObject window = element.getAsJsonObject();
-                        JsonElement title = window.get("title");
-                        if (title != null
-                                && title.isJsonPrimitive()
-                                && windowTitle.equals(title.getAsString())
-                                && window.get("is_floating").getAsBoolean()) {
-                            if (splash != null) {
-                                return;
-                            }
-
-                            splash = window;
-                        }
-                    }
-
-                    if (splash == null) {
-                        return;
-                    }
-
-                    JsonElement workspaces = niriMessage("workspaces");
-                    JsonElement outputs = niriMessage("outputs");
-                    if (workspaces == null || outputs == null) {
-                        return;
-                    }
-
-                    for (JsonElement element : workspaces.getAsJsonArray()) {
-                        JsonObject workspace = element.getAsJsonObject();
-                        if (!workspace.get("id").equals(splash.get("workspace_id")) || workspace.get("output").isJsonNull()) {
-                            continue;
-                        }
-
-                        JsonObject output = outputs.getAsJsonObject().getAsJsonObject(workspace.get("output").getAsString());
-                        JsonObject logical = output.getAsJsonObject("logical");
-                        JsonObject layout = splash.getAsJsonObject("layout");
-                        var size = layout.getAsJsonArray("tile_size");
-                        var position = layout.getAsJsonArray("tile_pos_in_workspace_view");
-                        double x = (logical.get("width").getAsDouble() - size.get(0).getAsDouble()) / 2;
-                        double y = (logical.get("height").getAsDouble() - size.get(1).getAsDouble()) / 2;
-
-                        niriMessage(
-                                "action",
-                                "move-floating-window",
-                                "--id", splash.get("id").getAsString(),
-                                "--x=" + String.format(Locale.ROOT, "%+.3f", x - position.get(0).getAsDouble()),
-                                "--y=" + String.format(Locale.ROOT, "%+.3f", y - position.get(1).getAsDouble()));
-
-                        return;
-                    }
-                } catch (RuntimeException failure) {
-                    LOGGER.debug("Could not center Swing pre splash through niri.", failure);
-                }
-            }
-            //</editor-fold>
         }
 
         /**
