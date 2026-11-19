@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.7.15-alpha - 2026-11-19
+
+### Feature
+
+- **debug**: Show owning mod name alongside biome in F3 overlay *[PR by [@geyesborg](https://github.com/geyesborg), Devin, Rongmario in [#685](https://github.com/CleanroomMC/Cleanroom/pull/685)]*
+- **GuiControls**: Layout switching between QWERTY and OS *[PR by [@KorewaLidesu](https://github.com/KorewaLidesu) in [#743](https://github.com/CleanroomMC/Cleanroom/pull/743)]*
+- **discovery**: Explicit support for File Director *[commit by [@Rongmario](https://github.com/Rongmario) in [3bef034](https://github.com/CleanroomMC/Cleanroom/commit/3bef0342cccae458d505b8b5f03fce2c30a51a2f)]*
+    *[Fixes issue #724 by [@Xplodin](https://github.com/Xplodin)]*
+
+### Bug Fix
+
+- **event**: Register subscribers whose private methods name absent classes *[PR by [@souta-lab](https://github.com/souta-lab), Claude Opus 5.5 in [#720](https://github.com/CleanroomMC/Cleanroom/pull/720)]*
+- **sdl**: Disable NVIDIA Threaded Optimizations on Wayland with PRIME offload *[PR by [@teamnotus](https://github.com/teamnotus) in [#732](https://github.com/CleanroomMC/Cleanroom/pull/732)]*
+- **commands**: Prevent mod cause throw on tab completion and colour matching for invalid arguments *[PR by [@Rongmario](https://github.com/Rongmario) in [#738](https://github.com/CleanroomMC/Cleanroom/pull/738)]*
+    *[Fixes issue #737 by [@FunkyPotao](https://github.com/FunkyPotao)]*
+- **sdl**: Use the largest image for the window icon *[commit by [@Rongmario](https://github.com/Rongmario) in [96fcc7e](https://github.com/CleanroomMC/Cleanroom/commit/96fcc7efb1d8bd24bde985d8ecc6bcbb21a7800e)]*
+
+### Build and Dependencies
+
+- Update secret names *[commit by [@Rongmario](https://github.com/Rongmario) in [92a3cb9](https://github.com/CleanroomMC/Cleanroom/commit/92a3cb990f0273c58ee6fb074cff31383e919120)]*
+- **deps**: Update lwjgly to 2.7.0 *[commit by [@KorewaLidesu](https://github.com/KorewaLidesu) in [71b7e49](https://github.com/CleanroomMC/Cleanroom/commit/71b7e4905c1b568814ba2a09f941c91e4ac277ee)]*
+- **deps**: Update lwjgly to 2.6.0 *[commit by [@KorewaLidesu](https://github.com/KorewaLidesu) in [885f95f](https://github.com/CleanroomMC/Cleanroom/commit/885f95f3b86c590c517fc1d56a746bd50593c5a6)]*
+- **deps**: Update LWJGLY 2.5.0 *[commit by [@KorewaLidesu](https://github.com/KorewaLidesu) in [9719433](https://github.com/CleanroomMC/Cleanroom/commit/97194331e02abdcc25d65df569cc3cc5822f26ed)]*
+- **deps**: Update LWJGLY *[commit by [@KorewaLidesu](https://github.com/KorewaLidesu) in [7796034](https://github.com/CleanroomMC/Cleanroom/commit/77960343a654566657c2b293c1395ecb5c4a38a7)]*
+
+### First-time Contributors
+
+- **[@souta-lab](https://github.com/souta-lab) made their first contribution!**
+- **[@teamnotus](https://github.com/teamnotus) made their first contribution!**
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.14-alpha...0.7.15-alpha
+
 ## 0.7.14-alpha - 2026-10-28
 
 ### Feature
