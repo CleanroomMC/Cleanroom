@@ -147,11 +147,7 @@ public class EventBus implements IEventExceptionHandler
     }
 
     /**
-     * {@link Class#getDeclaredMethods()} resolves the parameter and return types of every declared method, private ones
-     * included. A subscriber whose private helper, often a lambda body, names a class from an absent optional mod
-     * therefore fails here although none of its subscribed methods need that class. Forge listed methods with
-     * {@link Class#getMethods()}, which resolves only public ones, so such classes fall back to their public declared
-     * methods and register as they did on Forge.
+     * Guards against types that may not exist while resolving {@link Class#getDeclaredMethods()}.
      */
     private static Method[] declaredMethods(Class<?> clazz)
     {

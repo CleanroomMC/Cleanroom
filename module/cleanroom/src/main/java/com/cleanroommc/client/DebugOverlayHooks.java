@@ -25,7 +25,9 @@ public final class DebugOverlayHooks {
 
     private DebugOverlayHooks() { }
 
-    /* "... (Biomes O' Plenty)" for a biomesoplenty biome, "... (Minecraft)" for vanilla, the namespace itself for an unknown mod. */
+    /**
+     * Mod name wins over mod id here (e.g. Biomes O' Plenty > biomesoplenty)
+     */
     public static String formatBiome(Biome biome) {
         return BIOME_DISPLAY_NAMES.computeIfAbsent(biome, DebugOverlayHooks::computeBiomeDisplayName);
     }
