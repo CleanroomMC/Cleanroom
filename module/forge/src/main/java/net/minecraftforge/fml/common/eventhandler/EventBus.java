@@ -91,7 +91,7 @@ public class EventBus implements IEventExceptionHandler
         Collection<Method> methods;
         if (target instanceof Class<?> clazz) {
             // static listener: subscribed methods must be declared by the class
-            methods = Arrays.stream(clazz.getDeclaredMethods())
+            methods = Arrays.stream(declaredMethods(clazz))
                 .filter(m -> !m.isSynthetic()
                              && Modifier.isStatic(m.getModifiers())
                              // private not allowed to keep legacy behaviour
@@ -108,7 +108,7 @@ public class EventBus implements IEventExceptionHandler
                 .rawTypes()
                 // get self & superclass & interface
                 .stream()
-                .map(Class::getDeclaredMethods)
+                .map(EventBus::declaredMethods)
                 .flatMap(Arrays::stream)
                 .filter(m -> !m.isSynthetic()
                              && !Modifier.isStatic(m.getModifiers())
@@ -143,6 +143,26 @@ public class EventBus implements IEventExceptionHandler
             }
 
             register(eventType, target, method, activeModContainer);
+        }
+    }
+
+    /**
+     * {@link Class#getDeclaredMethods()} resolves the parameter and return types of every declared method, private ones
+     * included. A subscriber whose private helper, often a lambda body, names a class from an absent optional mod
+     * therefore fails here although none of its subscribed methods need that class. Forge listed methods with
+     * {@link Class#getMethods()}, which resolves only public ones, so such classes fall back to their public declared
+     * methods and register as they did on Forge.
+     */
+    private static Method[] declaredMethods(Class<?> clazz)
+    {
+        try
+        {
+            return clazz.getDeclaredMethods();
+        }
+        catch (NoClassDefFoundError e)
+        {
+            FMLLog.log.debug("{} declares a method whose types cannot be resolved ({}), registering its public methods only", clazz.getName(), e.getMessage());
+            return Arrays.stream(clazz.getMethods()).filter(m -> m.getDeclaringClass() == clazz).toArray(Method[]::new);
         }
     }
 
