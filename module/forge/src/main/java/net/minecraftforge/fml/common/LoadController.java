@@ -34,9 +34,9 @@ import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
+import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import org.spongepowered.asm.mixin.Mixins;
@@ -58,11 +58,10 @@ public class LoadController
 {
     private Loader loader;
     private EventBus masterChannel;
-    private ImmutableMap<String, EventBus> eventChannels;
+    private ImmutableMap<String, FMLThrowingEventBus> eventChannels;
     private LoaderState state;
     private Multimap<String, ModState> modStates = MultimapBuilder.hashKeys().enumSetValues(ModState.class).build();
     private List<ModContainer> activeModList = Lists.newArrayList();
-    private ModContainer activeContainer;
     private BiMap<ModContainer, Object> modObjectList;
     private ListMultimap<String, ModContainer> packageOwners;
     private boolean closeRequested = false;
@@ -70,14 +69,14 @@ public class LoadController
     public LoadController(Loader loader)
     {
         this.loader = loader;
-        this.masterChannel = new FMLThrowingEventBus((exception, context) -> {
+        this.masterChannel = FMLThrowingEventBus.forLifecycle((exception, context) -> {
             Throwables.throwIfUnchecked(exception);
             // should not happen, but add some extra context for checked exceptions
             Method method = context.getSubscriberMethod();
             String parameterNames = Stream.of(method.getParameterTypes()).map(Class::getName).collect(Collectors.joining(", "));
             String message = "Exception thrown during LoadController." + method.getName() + '(' + parameterNames + ')';
             throw new LoaderExceptionModCrash(message, exception);
-        });
+        }, null);
         this.masterChannel.register(this);
 
         state = LoaderState.NOINIT;
@@ -87,10 +86,11 @@ public class LoadController
 
     void disableMod(ModContainer mod)
     {
-        HashMap<String, EventBus> temporary = Maps.newHashMap(eventChannels);
+        HashMap<String, FMLThrowingEventBus> temporary = Maps.newHashMap(eventChannels);
         String modId = mod.getModId();
-        EventBus bus = temporary.remove(modId);
+        FMLThrowingEventBus bus = temporary.remove(modId);
         bus.post(new FMLModDisabledEvent());
+        bus.close();
         eventChannels = ImmutableMap.copyOf(temporary);
         modStates.put(modId, ModState.DISABLED);
         modObjectList.remove(mod);
@@ -100,13 +100,35 @@ public class LoadController
     @Subscribe
     public void buildModList(FMLLoadEvent event)
     {
-        Builder<String, EventBus> eventBus = ImmutableMap.builder();
+        Builder<String, FMLThrowingEventBus> eventBus = ImmutableMap.builder();
 
         for (final ModContainer mod : loader.getModList())
         {
-            EventBus bus = new FMLThrowingEventBus((exception, context) -> this.errorOccurred(mod, exception));
+            FMLThrowingEventBus bus = FMLThrowingEventBus.forLifecycle((exception, context) -> this.errorOccurred(mod, exception), mod);
 
-            boolean isActive = mod.registerBus(bus, this);
+            boolean isActive;
+            ModContainer previous = ModEventContext.swapOwner(mod);
+            try
+            {
+                isActive = mod.registerBus(bus, this);
+            }
+            catch (RuntimeException | Error failure)
+            {
+                try
+                {
+                    bus.close();
+                }
+                catch (RuntimeException cleanup)
+                {
+                    if (cleanup != failure)
+                        failure.addSuppressed(cleanup);
+                }
+                throw failure;
+            }
+            finally
+            {
+                ModEventContext.setOwner(previous);
+            }
             if (isActive)
             {
                 activeModList.add(mod);
@@ -116,6 +138,7 @@ public class LoadController
             }
             else
             {
+                bus.close();
                 FMLLog.log.warn("Mod {} has been disabled through configuration", mod.getModId());
                 modStates.put(mod.getModId(), ModState.UNLOADED);
                 modStates.put(mod.getModId(), ModState.DISABLED);
@@ -174,12 +197,8 @@ public class LoadController
     @Nullable
     public ModContainer activeContainer()
     {
-        return activeContainer != null ? activeContainer : findActiveContainerFromStack();
-    }
-
-    void forceActiveContainer(@Nullable ModContainer container)
-    {
-        activeContainer = container;
+        ModContainer owner = ModEventContext.owner();
+        return owner != null ? owner : findActiveContainerFromStack();
     }
 
     @Subscribe
@@ -211,14 +230,26 @@ public class LoadController
                 return;
             }
         }
-        activeContainer = mc;
-        stateEvent.applyModContainer(mc);
-        ThreadContext.put("mod", modId);
-        FMLLog.log.trace("Sending event {} to mod {}", stateEvent.getEventType(), modId);
-        eventChannels.get(modId).post(stateEvent);
-        FMLLog.log.trace("Sent event {} to mod {}", stateEvent.getEventType(), modId);
-        ThreadContext.remove("mod");
-        activeContainer = null;
+        ModContainer previous = ModEventContext.swapOwner(mc);
+        try
+        {
+            stateEvent.applyModContainer(mc);
+            String previousLog = ModEventContext.swapLogMod(modId);
+            try
+            {
+                FMLLog.log.trace("Sending event {} to mod {}", stateEvent.getEventType(), modId);
+                eventChannels.get(modId).post(stateEvent);
+                FMLLog.log.trace("Sent event {} to mod {}", stateEvent.getEventType(), modId);
+            }
+            finally
+            {
+                ModEventContext.restoreLogMod(previousLog);
+            }
+        }
+        finally
+        {
+            ModEventContext.setOwner(previous);
+        }
         if (stateEvent instanceof FMLStateEvent)
         {
             modStates.put(modId, ((FMLStateEvent) stateEvent).getModState());
@@ -335,7 +366,7 @@ public class LoadController
     {
         if (modObjectList == null)
         {
-            FMLLog.log.fatal("Detected an attempt by a mod {} to perform game activity during mod construction. This is a serious programming error.", activeContainer);
+            FMLLog.log.fatal("Detected an attempt by a mod {} to perform game activity during mod construction. This is a serious programming error.", ModEventContext.owner());
             return buildModObjectList();
         }
         return ImmutableBiMap.copyOf(modObjectList);

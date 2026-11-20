@@ -19,22 +19,25 @@
 
 package net.minecraftforge.fml.common.eventhandler;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import net.minecraftforge.fml.common.ModContainer;
-
-import org.apache.logging.log4j.ThreadContext;
-import org.objectweb.asm.Type;
+import javax.annotation.Nullable;
 
 public class ASMEventHandler implements IEventListener
 {
-    private static final boolean GETCONTEXT = Boolean.parseBoolean(System.getProperty("fml.LogContext", "false"));
+    private static final EventPriority[] PRIORITIES = EventPriority.values();
 
+    private final byte priority;
+    private final boolean receiveCanceled;
     private final Consumer<Event> handler;
-    private final SubscribeEvent subInfo;
+    @Nullable
+    private final Type genericFilter;
     private final ModContainer owner;
     private final String readable;
 
@@ -46,46 +49,67 @@ public class ASMEventHandler implements IEventListener
 
     public ASMEventHandler(Object target, Method method, ModContainer owner, boolean isGeneric) throws Exception
     {
-        this.owner = owner;
-        subInfo = method.getAnnotation(SubscribeEvent.class);
-        readable = "ASM: " + target + " " + method.getName() + Type.getMethodDescriptor(method);
+        this(target, method, method, owner, isGeneric, null);
+    }
 
-        var rawHandler = EventListenerFactory.createRawListener(
-            method,
-            Modifier.isStatic(method.getModifiers()),
-            target
-        );
-        if (isGeneric && method.getGenericParameterTypes()[0] instanceof ParameterizedType parameterized) {
-            var filter = parameterized.getActualTypeArguments()[0];
-            this.handler = event -> {
-                if (filter == ((IGenericEvent<?>) event).getGenericType()) {
-                    rawHandler.accept(event);
-                }
-            };
-        } else {
-            this.handler = rawHandler;
-        }
+    ASMEventHandler(Object target, Method annotationSource, Method callback, ModContainer owner, boolean isGeneric,
+                    @Nullable MethodHandles.Lookup lookup)
+    {
+        this(EventListenerFactory.createRawListener(callback, target, lookup),
+            Objects.requireNonNull(annotationSource.getAnnotation(SubscribeEvent.class)),
+            owner, isGeneric && annotationSource.getGenericParameterTypes()[0] instanceof ParameterizedType parameterized
+                ? parameterized.getActualTypeArguments()[0] : null,
+            "ASM: " + callback.toGenericString());
+    }
+
+    private ASMEventHandler(Consumer<Event> handler, SubscribeEvent annotation, ModContainer owner,
+                            @Nullable Type genericFilter, String readable)
+    {
+        this(handler, annotation.priority(), annotation.receiveCanceled(), owner, genericFilter, readable);
+    }
+
+    ASMEventHandler(Consumer<Event> handler, EventPriority priority, boolean receiveCanceled, ModContainer owner,
+                    @Nullable Type genericFilter, String readable)
+    {
+        this.handler = handler;
+        this.genericFilter = genericFilter;
+        this.priority = (byte) priority.ordinal();
+        this.receiveCanceled = receiveCanceled;
+        this.owner = owner;
+        this.readable = readable;
     }
 
     @Override
     public void invoke(Event event)
     {
-        if (GETCONTEXT)
-            ThreadContext.put("mod", owner == null ? "" : owner.getName());
-        if (handler != null)
+        if (!ModEventContext.LOG_LISTENER_CONTEXT)
         {
-            if (!event.isCancelable() || !event.isCanceled() || subInfo.receiveCanceled())
-            {
-                handler.accept(event);
-            }
+            invokeIfMatching(event);
+            return;
         }
-        if (GETCONTEXT)
-            ThreadContext.remove("mod");
+        String previous = ModEventContext.swapLogMod(owner == null ? "" : owner.getName());
+        try
+        {
+            invokeIfMatching(event);
+        }
+        finally
+        {
+            ModEventContext.restoreLogMod(previous);
+        }
+    }
+
+    private void invokeIfMatching(Event event)
+    {
+        if ((!event.isCancelable() || !event.isCanceled() || receiveCanceled)
+            && (genericFilter == null || genericFilter == ((IGenericEvent<?>) event).getGenericType()))
+        {
+            handler.accept(event);
+        }
     }
 
     public EventPriority getPriority()
     {
-        return subInfo.priority();
+        return PRIORITIES[priority];
     }
 
     public String toString()

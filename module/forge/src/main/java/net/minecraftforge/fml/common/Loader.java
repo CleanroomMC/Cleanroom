@@ -53,6 +53,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadEvent;
 import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
+import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 import net.minecraftforge.fml.common.registry.*;
 import net.minecraftforge.fml.common.toposort.ModSorter;
 import net.minecraftforge.fml.common.toposort.ModSortingException;
@@ -472,7 +473,7 @@ public class Loader
         modController.transition(LoaderState.LOADING, false);
         modController.transition(LoaderState.CONSTRUCTING, false);
         ObjectHolderRegistry.INSTANCE.findObjectHolders(new ASMDataTable());
-        modController.forceActiveContainer(containers[0]);
+        setActiveModContainer(containers[0]);
     }
 
     /**
@@ -783,7 +784,7 @@ public class Loader
     @Nullable
     public ModContainer activeModContainer()
     {
-        return modController != null ? modController.activeContainer() : null;
+        return modController != null ? modController.activeContainer() : ModEventContext.owner();
     }
 
     public boolean isInState(LoaderState state)
@@ -986,6 +987,6 @@ public class Loader
 
     public void setActiveModContainer(@Nullable ModContainer container)
     {
-        this.modController.forceActiveContainer(container);
+        ModEventContext.setOwner(container);
     }
 }
