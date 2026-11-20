@@ -1,10 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- Replace the legacy event transformer with synchronous compatibility dispatch and add managed Forge EventBus 7 subscriptions. [Event compatibility](docs/eventbus/COMPATIBILITY.md)
-- Run FML lifecycle callbacks on Forge EventBus 7 with the Guava `ModContainer.registerBus` interface and subscriber semantics.
-
 ## 0.7.14-alpha - 2026-10-28
 
 ### Feature
