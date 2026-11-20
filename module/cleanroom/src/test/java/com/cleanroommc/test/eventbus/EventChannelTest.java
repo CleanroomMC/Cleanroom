@@ -348,10 +348,12 @@ class EventChannelTest {
             var change = new Change();
             changes.post(change);
             assertThat(change.value).isEqualTo(21);
-            assertThat(MultiEventAnnotatedListeners.staticCalls).isOne();
+            assertThat(MultiEventAnnotatedListeners.staticCalls).isZero();
             assertThat(pulses.post(new Pulse(5))).isTrue();
-            assertThat(pulses.post(new Pulse(-1))).isTrue();
-            assertThat(handler.monitorResults).containsExactly(true, true);
+            assertThat(MultiEventAnnotatedListeners.staticCalls).isOne();
+            assertThat(pulses.post(new Pulse(-1))).isFalse();
+            assertThat(MultiEventAnnotatedListeners.staticCalls).isEqualTo(2);
+            assertThat(handler.monitorResults).containsExactly(true, false);
 
             subscriptions.forEach(Subscription::close);
             assertThat(changes.hasListeners()).isFalse();
@@ -768,7 +770,7 @@ class EventChannelTest {
 
         private final List<Boolean> monitorResults = new ArrayList<>();
 
-        @SubscribeEvent
+        @SubscribeEvent(priority = Priority.HIGH)
         private static void staticPulse(Pulse event) {
             staticCalls++;
         }

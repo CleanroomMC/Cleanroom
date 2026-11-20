@@ -203,9 +203,11 @@ class LegacyEventChannelTest {
         try (var group = subscriptions()) {
             var singleTokens = cancelable.subscribe(group, lookup, handler);
             assertThat(singleTokens).hasSize(2);
-            var event = new CancelableLegacyEvent(true, false);
-            assertThat(cancelable.post(event)).isTrue();
-            assertThat(handler.trace).containsExactly("high-always", "predicate");
+            assertThat(cancelable.post(new CancelableLegacyEvent(true, false))).isTrue();
+            assertThat(handler.trace).containsExactly("high-predicate");
+            handler.trace.clear();
+            assertThat(cancelable.post(new CancelableLegacyEvent(false, false))).isTrue();
+            assertThat(handler.trace).containsExactly("high-predicate", "low-always");
             singleTokens.forEach(Subscription::close);
             handler.trace.clear();
 
@@ -213,8 +215,14 @@ class LegacyEventChannelTest {
             assertThat(wholeTokens).hasSize(3);
             var c = new CounterEvent(1);
             assertThat(counter.fire(c).value).isEqualTo(11);
-            assertThat(cancelable.post(new CancelableLegacyEvent(false, false))).isFalse();
-            assertThat(handler.trace).containsExactly("counter", "high-always", "predicate");
+            assertThat(cancelable.post(new CancelableLegacyEvent(false, false))).isTrue();
+            assertThat(handler.trace).containsExactly("counter", "high-predicate", "low-always");
+
+            var predicateBus = new EventBus();
+            var predicateChannel = LegacyEventChannel.of(predicateBus, CancelableLegacyEvent.class);
+            predicateChannel.subscribe(group, lookup, new Forge7PredicateOnlyLegacy());
+            assertThat(predicateChannel.post(new CancelableLegacyEvent(false, false))).isFalse();
+            assertThat(predicateChannel.post(new CancelableLegacyEvent(true, false))).isTrue();
 
             assertThatThrownBy(() -> counter.subscribe(group, lookup, new MonitorForge7Legacy()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -343,15 +351,15 @@ class LegacyEventChannelTest {
 
         private final List<String> trace = new ArrayList<>();
 
-        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.HIGH, alwaysCancelling = true)
-        private void highAlways(CancelableLegacyEvent event) {
-            trace.add("high-always");
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.HIGH)
+        private boolean highPredicate(CancelableLegacyEvent event) {
+            trace.add("high-predicate");
+            return event.shouldCancel;
         }
 
-        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.LOW)
-        private boolean lowPredicate(CancelableLegacyEvent event) {
-            trace.add("predicate");
-            return true;
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.LOW, alwaysCancelling = true)
+        private void lowAlways(CancelableLegacyEvent event) {
+            trace.add("low-always");
         }
 
         @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.NORMAL)
@@ -400,6 +408,15 @@ class LegacyEventChannelTest {
         @net.minecraftforge.eventbus.api.listener.SubscribeEvent
         private void stringOnly(Payload<String> event) {
             calls++;
+        }
+
+    }
+
+    private static final class Forge7PredicateOnlyLegacy {
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private boolean check(CancelableLegacyEvent event) {
+            return event.shouldCancel;
         }
 
     }
