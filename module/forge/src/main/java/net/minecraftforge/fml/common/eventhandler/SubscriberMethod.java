@@ -20,6 +20,7 @@
 package net.minecraftforge.fml.common.eventhandler;
 
 import com.google.common.reflect.TypeToken;
+import net.minecraftforge.fml.common.FMLLog;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -55,7 +56,7 @@ record SubscriberMethod(Method source, Method callback) {
         var subscribers = new LinkedHashMap<Signature, SubscriberMethod>();
         var declaredPrivateSubscribers = new ArrayList<SubscriberMethod>();
         for (Class<?> declaration : declarations) {
-            for (Method method : declaration.getDeclaredMethods()) {
+            for (Method method : declaredMethods(declaration)) {
                 int modifiers = method.getModifiers();
                 if (method.isSynthetic() || Modifier.isStatic(modifiers) != isStatic || !method.isAnnotationPresent(SubscribeEvent.class)) {
                     continue;
@@ -75,6 +76,20 @@ record SubscriberMethod(Method source, Method callback) {
         return List.copyOf(declaredPrivateSubscribers);
     }
 
+    // Resolving every declared signature can fail when a private helper mentions an absent optional dependency.
+    // Listing only public methods in that case preserves the subscribers Forge could still discover.
+    private static Method[] declaredMethods(Class<?> type) {
+        try {
+            return type.getDeclaredMethods();
+        } catch (NoClassDefFoundError missingType) {
+            FMLLog.log.debug("{} declares a method whose types cannot be resolved ({}), registering its public methods only",
+                type.getName(), missingType.getMessage());
+            return Arrays.stream(type.getMethods())
+                .filter(method -> method.getDeclaringClass() == type)
+                .toArray(Method[]::new);
+        }
+    }
+
     private static Method invocationTarget(Class<?> type, Method source, boolean isStatic) {
         int modifiers = source.getModifiers();
         if (isStatic || Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers) || Modifier.isFinal(modifiers)) {
@@ -85,7 +100,7 @@ record SubscriberMethod(Method source, Method callback) {
         // runtime package could then override it even if javac did not see an override.
         Class<?>[] parameters = source.getParameterTypes();
         for (Class<?> child = type; child != source.getDeclaringClass(); child = child.getSuperclass()) {
-            for (Method candidate : child.getDeclaredMethods()) {
+            for (Method candidate : declaredMethods(child)) {
                 int access = candidate.getModifiers();
                 if (!Modifier.isStatic(access) && !Modifier.isPrivate(access)
                     && candidate.getName().equals(source.getName()) && candidate.getReturnType() == source.getReturnType()

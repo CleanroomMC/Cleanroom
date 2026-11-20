@@ -21,8 +21,8 @@ jobs:
       timeout-minutes: 60
       publish-maven: true
     secrets:
-      MAVEN_NAME: ${{ secrets.CLEANROOM_MAVEN_USERNAME }}
-      MAVEN_PASSWORD: ${{ secrets.CLEANROOM_MAVEN_PASSWORD }}
+      MAVEN_NAME: ${{ secrets.MAVEN_NAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
 
   download-site:
     needs: release

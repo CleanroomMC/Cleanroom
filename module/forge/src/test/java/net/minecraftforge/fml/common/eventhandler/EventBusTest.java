@@ -49,6 +49,40 @@ public class EventBusTest {
     }
 
     @Test
+    public void registerWithMissingPrivateSignatureType() throws Exception {
+        Class<?> fixture = OptionalDependencySubscriber.class;
+        String missingType = OptionalDependency.class.getName();
+        byte[] bytes;
+        try (var resource = fixture.getResourceAsStream('/' + fixture.getName().replace('.', '/') + ".class")) {
+            Assertions.assertNotNull(resource);
+            bytes = resource.readAllBytes();
+        }
+        var loader = new ClassLoader(fixture.getClassLoader()) {
+            @Override
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                if (name.equals(missingType)) {
+                    throw new ClassNotFoundException(name);
+                }
+                return super.loadClass(name, resolve);
+            }
+
+            Class<?> defineSubscriber() {
+                return defineClass(fixture.getName(), bytes, 0, bytes.length);
+            }
+        };
+        Class<?> subscriber = loader.defineSubscriber();
+        Assertions.assertThrows(NoClassDefFoundError.class, subscriber::getDeclaredMethods);
+
+        var bus = new EventBus();
+        bus.register(subscriber);
+        bus.register(subscriber.getConstructor().newInstance());
+        var event = new OptionalDependencyEvent();
+        bus.post(event);
+        Assertions.assertEquals(1, event.staticCalls);
+        Assertions.assertEquals(1, event.instanceCalls);
+    }
+
+    @Test
     public void registerAbnormal() {
         var bus = new EventBus();
 
@@ -124,4 +158,25 @@ public class EventBusTest {
             bus.unregister(listener);
         }
     }
+
+    public static final class OptionalDependencyEvent extends Event {
+        public int staticCalls;
+        public int instanceCalls;
+    }
+
+    public static final class OptionalDependencySubscriber {
+        @SubscribeEvent
+        public static void staticListener(OptionalDependencyEvent event) {
+            event.staticCalls++;
+        }
+
+        @SubscribeEvent
+        public void instanceListener(OptionalDependencyEvent event) {
+            event.instanceCalls++;
+        }
+
+        private void optionalHelper(OptionalDependency dependency) {}
+    }
+
+    private static final class OptionalDependency {}
 }
