@@ -132,6 +132,10 @@ public class EventBus implements IEventExceptionHandler
     public Runnable registerManagedLenient(MethodHandles.Lookup lookup, Object target, ModContainer owner)
     {
         Objects.requireNonNull(lookup, "lookup");
+        if (listeners.containsKey(target))
+            return () -> {};
+
+        listenerOwners.put(target, owner);
         ArrayList<IEventListener> entries = null;
         var installed = new ArrayList<Binding>();
         for (SubscriberMethod subscriber : SubscriberMethod.forTarget(target))
@@ -142,9 +146,15 @@ public class EventBus implements IEventExceptionHandler
             Class<?> eventType = eventParameter(source);
             try
             {
+                if (source.isAnnotationPresent(net.minecraftforge.eventbus.api.listener.SubscribeEvent.class))
+                    throw new IllegalArgumentException(
+                        "Subscriber method " + source + " cannot declare both legacy and Forge 7 @SubscribeEvent annotations"
+                    );
                 Binding binding = prepare(eventType, target, source, subscriber.callback(), owner, lookup);
                 synchronized (ListenerList.REGISTRY_LOCK)
                 {
+                    if (listeners.get(target) != entries)
+                        break;
                     entries = installLegacy(target, entries, binding);
                 }
                 installed.add(binding);
@@ -169,37 +179,70 @@ public class EventBus implements IEventExceptionHandler
     }
 
     @HideFromUserdev
+    public static void requireCancelable(Class<? extends Event> eventType)
+    {
+        if (!EventShape.of(eventType).isPotentiallyCancelable())
+            throw new IllegalArgumentException(eventType.getName() + " is not cancelable");
+    }
+
+    @HideFromUserdev
     public record ManagedListener(String source, Supplier<Runnable> install) {}
 
     @HideFromUserdev
     public List<ManagedListener> prepareManagedListeners(Class<? extends Event> eventType, @Nullable ListenerList list,
             @Nullable Type genericType, MethodHandles.Lookup lookup, Object target, ModContainer owner)
     {
-        Objects.requireNonNull(lookup, "lookup");
-        boolean isGeneric = IGenericEvent.class.isAssignableFrom(eventType);
-        if (genericType != null && !isGeneric)
-            throw new IllegalArgumentException(eventType.getName() + " does not implement IGenericEvent");
-
-        var prepared = new ArrayList<ManagedListener>();
-        ListenerList registrationList = null;
-        for (SubscriberMethod subscriber : SubscriberMethod.forTarget(target))
-        {
-            Method source = subscriber.source();
-            Class<?>[] parameters = source.getParameterTypes();
-            if (parameters.length != 0 && parameters[0] != eventType)
-                continue;
-            eventParameter(source, parameters);
-            if (registrationList == null)
-                registrationList = EventShape.of(eventType).registrationList(list);
-
-            Method callback = subscriber.callback();
-            var handler = new ASMEventHandler(target, source, callback, owner, isGeneric, lookup, genericType);
-            Binding binding = bind(registrationList, eventType, handler, owner, true);
-            prepared.add(new ManagedListener(callback.toGenericString(), () -> installManaged(List.of(binding))));
-        }
+        var prepared = prepareLegacySubscribers(eventType, list, genericType, lookup, target, owner);
         if (prepared.isEmpty())
             throw new IllegalArgumentException("No legacy subscribers for " + eventType.getName()
                 + " on " + SubscriberMethod.typeOf(target).getName());
+        return prepared;
+    }
+
+    @HideFromUserdev
+    public List<ManagedListener> prepareLegacySubscribers(@Nullable Class<? extends Event> exactEventType,
+            @Nullable ListenerList list, @Nullable Type genericType, MethodHandles.Lookup lookup, Object target,
+            ModContainer owner)
+    {
+        Objects.requireNonNull(lookup, "lookup");
+        if (genericType != null && (exactEventType == null || !IGenericEvent.class.isAssignableFrom(exactEventType)))
+            throw new IllegalArgumentException(exactEventType == null
+                ? "Generic selector requires a specific event type"
+                : exactEventType.getName() + " does not implement IGenericEvent");
+
+        var prepared = new ArrayList<ManagedListener>();
+        ListenerList resolvedList = null;
+        for (SubscriberMethod subscriber : SubscriberMethod.forTarget(target))
+        {
+            Method source = subscriber.source();
+            if (source.isAnnotationPresent(net.minecraftforge.eventbus.api.listener.SubscribeEvent.class))
+                throw new IllegalArgumentException(
+                    "Subscriber method " + source + " cannot declare both legacy and Forge 7 @SubscribeEvent annotations"
+                );
+            Class<?>[] parameters = source.getParameterTypes();
+            if (exactEventType != null && parameters.length != 0 && parameters[0] != exactEventType)
+                continue;
+            Class<?> matchedType = eventParameter(source, parameters);
+            ListenerList registrationList;
+            if (exactEventType != null)
+            {
+                if (resolvedList == null)
+                    resolvedList = EventShape.of(exactEventType).registrationList(list);
+                registrationList = resolvedList;
+            }
+            else
+            {
+                registrationList = EventShape.of(matchedType).registrationList(null);
+            }
+
+            Method callback = subscriber.callback();
+            boolean isGeneric = IGenericEvent.class.isAssignableFrom(matchedType);
+            var handler = new ASMEventHandler(target, source, callback, owner, isGeneric, lookup, genericType);
+            Binding binding = bind(registrationList, matchedType, handler, owner, true);
+            String label = exactEventType != null ? callback.toGenericString()
+                : matchedType.getName() + " <- " + callback.toGenericString();
+            prepared.add(new ManagedListener(label, () -> installManaged(List.of(binding))));
+        }
         return List.copyOf(prepared);
     }
 

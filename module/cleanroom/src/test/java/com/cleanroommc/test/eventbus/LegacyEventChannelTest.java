@@ -19,10 +19,13 @@ import org.junit.jupiter.api.Test;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.listener.Priority;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.GenericEvent;
+import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.lang.invoke.MethodHandles;
@@ -81,7 +84,7 @@ class LegacyEventChannelTest {
             channel.subscribe(subscriptions, Priority.HIGH, event -> trace.add("high"));
             channel.subscribe(subscriptions, Priority.HIGHEST, event -> trace.add("highest"));
 
-            assertThatThrownBy(() -> channel.subscribe(subscriptions, Priority.MONITOR, event -> {}))
+            assertThatThrownBy(() -> channel.subscribe(subscriptions, Priority.MONITOR, event -> { }))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("monitor");
 
@@ -139,6 +142,101 @@ class LegacyEventChannelTest {
                 .hasMessageContaining("channel selector");
             channel.post(new Payload<>(Integer.class));
             assertThat(listener.rawCalls).isOne();
+        }
+    }
+
+    @Test
+    void subscribeCancellingAndDefaultReceiveCanceledMapPrioritiesAndRejectInvalidEvents() {
+        var bus = new EventBus();
+        var cancelable = LegacyEventChannel.of(bus, CancelableLegacyEvent.class);
+        var plain = LegacyEventChannel.of(bus, CounterEvent.class);
+        var defaultOwner = CleanroomContainer.instance();
+        ModContainer previous = ModEventContext.swapOwner(defaultOwner);
+        var trace = new ArrayList<String>();
+        try {
+            var cancelSub = cancelable.subscribeCancelling(Priority.HIGH, event -> {
+                trace.add("cancel");
+                return event.shouldCancel;
+            });
+            var skippedSub = cancelable.subscribe(event -> trace.add("normal"));
+            var uncancelSub = cancelable.subscribe(Priority.LOW, true, event -> {
+                trace.add("receive=" + event.isCanceled());
+                if (event.clearCancel) {
+                    event.setCanceled(false);
+                }
+            });
+            var lowestSub = cancelable.subscribe(Priority.LOWEST, "after-uncancel", event -> trace.add("lowest"));
+            try {
+                assertThat(cancelable.post(new CancelableLegacyEvent(true, false))).isTrue();
+                assertThat(trace).containsExactly("cancel", "receive=true");
+                trace.clear();
+
+                assertThat(cancelable.post(new CancelableLegacyEvent(true, true))).isFalse();
+                assertThat(trace).containsExactly("cancel", "receive=true", "lowest");
+                trace.clear();
+
+                assertThatThrownBy(() -> cancelable.subscribeCancelling(Priority.MONITOR, event -> true))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("monitor");
+                assertThatThrownBy(() -> plain.subscribeCancelling(event -> true))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("not cancelable");
+            } finally {
+                cancelSub.close();
+                skippedSub.close();
+                uncancelSub.close();
+                lowestSub.close();
+            }
+        } finally {
+            SubscriptionGroup.closeDefaultGroup(defaultOwner);
+            ModEventContext.setOwner(previous);
+        }
+    }
+
+    @Test
+    void forge7AnnotationsWorkOnLegacyChannelsAndWholeClassLegacyRegister() {
+        var bus = new EventBus();
+        var lookup = MethodHandles.lookup();
+        var handler = new Forge7LegacySubscribers();
+        var cancelable = LegacyEventChannel.of(bus, CancelableLegacyEvent.class);
+        var counter = LegacyEventChannel.of(bus, CounterEvent.class);
+        try (var group = subscriptions()) {
+            var singleTokens = cancelable.subscribe(group, lookup, handler);
+            assertThat(singleTokens).hasSize(2);
+            var event = new CancelableLegacyEvent(true, false);
+            assertThat(cancelable.post(event)).isTrue();
+            assertThat(handler.trace).containsExactly("high-always", "predicate");
+            singleTokens.forEach(Subscription::close);
+            handler.trace.clear();
+
+            var wholeTokens = LegacyEventChannel.register(group, bus, lookup, handler);
+            assertThat(wholeTokens).hasSize(3);
+            var c = new CounterEvent(1);
+            assertThat(counter.fire(c).value).isEqualTo(11);
+            assertThat(cancelable.post(new CancelableLegacyEvent(false, false))).isFalse();
+            assertThat(handler.trace).containsExactly("counter", "high-always", "predicate");
+
+            assertThatThrownBy(() -> counter.subscribe(group, lookup, new MonitorForge7Legacy()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("monitor");
+            assertThatThrownBy(() -> counter.subscribe(group, lookup, new NonCancelableBooleanLegacy()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not cancelable");
+            assertThatThrownBy(() -> counter.subscribe(group, lookup, new DualAnnotatedLegacy()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("both legacy and Forge 7");
+            assertThatThrownBy(() -> LegacyEventChannel.register(group, bus, lookup, new BadArgLegacy()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Forge 7 event");
+
+            var genericBus = new EventBus();
+            var genericHandler = new Forge7GenericPayloadListener();
+            LegacyEventChannel.of(genericBus, Payload.class)
+                .withGenericType(String.class)
+                .subscribe(group, lookup, genericHandler);
+            genericBus.post(new Payload<>(String.class));
+            genericBus.post(new Payload<>(Integer.class));
+            assertThat(genericHandler.calls).isOne();
         }
     }
 
@@ -224,6 +322,84 @@ class LegacyEventChannelTest {
         @SuppressWarnings("rawtypes")
         private void raw(Payload event) {
             rawCalls++;
+        }
+
+    }
+
+    @Cancelable
+    private static final class CancelableLegacyEvent extends Event {
+
+        private final boolean shouldCancel;
+        private final boolean clearCancel;
+
+        private CancelableLegacyEvent(boolean shouldCancel, boolean clearCancel) {
+            this.shouldCancel = shouldCancel;
+            this.clearCancel = clearCancel;
+        }
+
+    }
+
+    private static final class Forge7LegacySubscribers {
+
+        private final List<String> trace = new ArrayList<>();
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.HIGH, alwaysCancelling = true)
+        private void highAlways(CancelableLegacyEvent event) {
+            trace.add("high-always");
+        }
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.LOW)
+        private boolean lowPredicate(CancelableLegacyEvent event) {
+            trace.add("predicate");
+            return true;
+        }
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.NORMAL)
+        private void counter(CounterEvent event) {
+            trace.add("counter");
+            event.value += 10;
+        }
+
+    }
+
+    private static final class MonitorForge7Legacy {
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(priority = Priority.MONITOR)
+        private void bad(CounterEvent event, boolean canceled) { }
+
+    }
+
+    private static final class NonCancelableBooleanLegacy {
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private boolean bad(CounterEvent event) {
+            return true;
+        }
+
+    }
+
+    private static final class DualAnnotatedLegacy {
+
+        @SubscribeEvent
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private void bad(CounterEvent event) { }
+
+    }
+
+    private static final class BadArgLegacy {
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private void bad(String notAnEvent) { }
+
+    }
+
+    private static final class Forge7GenericPayloadListener {
+
+        private int calls;
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private void stringOnly(Payload<String> event) {
+            calls++;
         }
 
     }

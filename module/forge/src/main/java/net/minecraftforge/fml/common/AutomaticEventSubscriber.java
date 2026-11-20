@@ -84,6 +84,7 @@ public class AutomaticEventSubscriber
                     var lookup = MethodHandles.privateLookupIn(subscriptionTarget, MethodHandles.lookup());
                     Runnable removal = MinecraftForge.EVENT_BUS.registerManagedLenient(lookup, subscriptionTarget, mod);
                     SubscriptionGroup.defaultGroup(mod).track(targ.getClassName(), removal);
+                    SubscriptionGroup.registerDiscovered(mod, lookup, subscriptionTarget);
                     FMLLog.log.debug("Injected @EventBusSubscriber class {}", targ.getClassName());
                 }
             }

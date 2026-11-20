@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * A synchronous legacy event type and its Forge {@link EventBus} scope.
@@ -87,6 +88,95 @@ public final class LegacyEventChannel<E extends Event> {
      */
     public static <E extends Event> LegacyEventChannel<E> of(EventBus bus, Class<E> eventType) {
         return new LegacyEventChannel<>(eventType, Objects.requireNonNull(bus, "bus"), null, null);
+    }
+
+    /**
+     * Registers legacy subscribers across all legacy {@link Event} types declared on {@code target} into
+     * {@link MinecraftForge#EVENT_BUS}, owned by the active mod's {@linkplain SubscriptionGroup#current() default group}.
+     * <p>
+     * Supports both legacy {@link net.minecraftforge.fml.common.eventhandler.SubscribeEvent} and Forge 7
+     * {@link net.minecraftforge.eventbus.api.listener.SubscribeEvent} annotations. Forge 7 event methods are ignored.
+     *
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no matching legacy subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a declared subscriber method
+     */
+    public static List<Subscription> register(MethodHandles.Lookup lookup, Object target) {
+        return register(SubscriptionGroup.current(), lookup, target);
+    }
+
+    /**
+     * Registers legacy subscribers across all legacy {@link Event} types declared on {@code target} into {@code bus},
+     * owned by the active mod's {@linkplain SubscriptionGroup#current() default group}.
+     *
+     * @param bus the legacy Forge bus receiving the subscribers
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no matching legacy subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a declared subscriber method
+     */
+    public static List<Subscription> register(EventBus bus, MethodHandles.Lookup lookup, Object target) {
+        return register(SubscriptionGroup.current(), bus, lookup, target);
+    }
+
+    /**
+     * Registers legacy subscribers across all legacy {@link Event} types declared on {@code target} into
+     * {@link MinecraftForge#EVENT_BUS}, owned by {@code subscriptions}.
+     *
+     * @param subscriptions the subscription group that owns the registered listeners
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no matching legacy subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a declared subscriber method
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public static List<Subscription> register(
+        SubscriptionGroup subscriptions, MethodHandles.Lookup lookup, Object target) {
+        return register(subscriptions, MinecraftForge.EVENT_BUS, lookup, target);
+    }
+
+    /**
+     * Registers legacy subscribers across all legacy {@link Event} types declared on {@code target} into {@code bus},
+     * owned by {@code subscriptions}.
+     *
+     * @param subscriptions the subscription group that owns the registered listeners
+     * @param bus the legacy Forge bus receiving the subscribers
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no matching legacy subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a declared subscriber method
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public static List<Subscription> register(
+        SubscriptionGroup subscriptions, EventBus bus, MethodHandles.Lookup lookup, Object target) {
+        return ChannelSubscribers.registerAllLegacy(bus, subscriptions, lookup, target);
+    }
+
+    /** Places a Forge 7 priority in the nearest legacy bucket; the standard constants keep their relative order. */
+    static EventPriority legacyPriority(byte priority) {
+        if (priority == Priority.MONITOR) {
+            throw new IllegalArgumentException(
+                "Legacy dispatch has no monitor priority; use Priority.LOWEST and receiveCanceled instead"
+            );
+        }
+        if (priority >= 96) {
+            return EventPriority.HIGHEST;
+        }
+        if (priority >= 32) {
+            return EventPriority.HIGH;
+        }
+        if (priority >= -32) {
+            return EventPriority.NORMAL;
+        }
+        if (priority >= -96) {
+            return EventPriority.LOW;
+        }
+        return EventPriority.LOWEST;
     }
 
     /**
@@ -179,8 +269,7 @@ public final class LegacyEventChannel<E extends Event> {
      * @throws IllegalStateException if {@code subscriptions} is already closed
      * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
      */
-    public Subscription subscribe(
-        SubscriptionGroup subscriptions, byte priority, Consumer<? super E> listener) {
+    public Subscription subscribe(SubscriptionGroup subscriptions, byte priority, Consumer<? super E> listener) {
         return subscribe(subscriptions, priority, false, listener);
     }
 
@@ -226,8 +315,7 @@ public final class LegacyEventChannel<E extends Event> {
      * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
      */
     public Subscription subscribe(
-        SubscriptionGroup subscriptions, byte priority, boolean receiveCanceled,
-        Consumer<? super E> listener) {
+        SubscriptionGroup subscriptions, byte priority, boolean receiveCanceled, Consumer<? super E> listener) {
         return subscribe(
             subscriptions, priority, receiveCanceled, SubscriptionGroup.callbackSource(listener), listener
         );
@@ -310,13 +398,167 @@ public final class LegacyEventChannel<E extends Event> {
     }
 
     /**
+     * Subscribes a listener with explicit {@link Priority} and {@code receiveCanceled} handling in the owning mod's
+     * default group.
+     *
+     * @param priority the dispatch priority, on the same scale as {@link EventChannel}
+     * @param receiveCanceled whether the listener still receives cancelled events
+     * @param listener the callback to invoke when a matching event is posted
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
+     */
+    public Subscription subscribe(byte priority, boolean receiveCanceled, Consumer<? super E> listener) {
+        return subscribe(SubscriptionGroup.current(), priority, receiveCanceled, listener);
+    }
+
+    /**
+     * Subscribes a listener with explicit {@link Priority}, {@code receiveCanceled} handling, and diagnostic source
+     * label in the owning mod's default group.
+     *
+     * @param priority the dispatch priority, on the same scale as {@link EventChannel}
+     * @param receiveCanceled whether the listener still receives cancelled events
+     * @param source a human-readable label identifying the registration site
+     * @param listener the callback to invoke when a matching event is posted
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
+     */
+    public Subscription subscribe(byte priority, boolean receiveCanceled, String source, Consumer<? super E> listener) {
+        return subscribe(SubscriptionGroup.current(), priority, receiveCanceled, source, listener);
+    }
+
+    /**
+     * Subscribes a predicate listener at {@link Priority#NORMAL} that marks the event canceled via
+     * {@link Event#setCanceled(boolean)} when it returns {@code true}.
+     *
+     * @param subscriptions the subscription group that owns the registration
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public Subscription subscribeCancelling(SubscriptionGroup subscriptions, Predicate<? super E> listener) {
+        return subscribeCancelling(subscriptions, Priority.NORMAL, listener);
+    }
+
+    /**
+     * Subscribes a predicate listener at an explicit {@link Priority} that marks the event canceled when it returns
+     * {@code true}.
+     *
+     * @param subscriptions the subscription group that owns the registration
+     * @param priority the dispatch priority, on the same scale as {@link EventChannel}
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable or {@code priority} is
+     * {@link Priority#MONITOR}
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public Subscription subscribeCancelling(
+        SubscriptionGroup subscriptions, byte priority, Predicate<? super E> listener) {
+        return subscribeCancelling(subscriptions, priority, SubscriptionGroup.callbackSource(listener), listener);
+    }
+
+    /**
+     * Subscribes a predicate listener at {@link Priority#NORMAL} with a custom diagnostic source label that marks the
+     * event canceled when it returns {@code true}.
+     *
+     * @param subscriptions the subscription group that owns the registration
+     * @param source a human-readable label identifying the registration site
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public Subscription subscribeCancelling(
+        SubscriptionGroup subscriptions, String source, Predicate<? super E> listener) {
+        return subscribeCancelling(subscriptions, Priority.NORMAL, source, listener);
+    }
+
+    /**
+     * Subscribes a predicate listener with an explicit {@link Priority} and diagnostic source label that marks the
+     * event canceled when it returns {@code true}.
+     *
+     * @param subscriptions the subscription group that owns the registration
+     * @param priority the dispatch priority, on the same scale as {@link EventChannel}
+     * @param source a human-readable label identifying the registration site
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable or {@code priority} is
+     * {@link Priority#MONITOR}
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public Subscription subscribeCancelling(
+        SubscriptionGroup subscriptions, byte priority, String source, Predicate<? super E> listener) {
+        Objects.requireNonNull(listener, "listener");
+        EventBus.requireCancelable(eventType);
+        return subscribe(subscriptions, priority, false, source, event -> {
+            if (listener.test(event)) {
+                event.setCanceled(true);
+            }
+        });
+    }
+
+    /**
+     * Subscribes a cancelling predicate listener at {@link Priority#NORMAL} in the owning mod's
+     * {@linkplain SubscriptionGroup#current() default group}.
+     *
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable
+     */
+    public Subscription subscribeCancelling(Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), listener);
+    }
+
+    /**
+     * Subscribes a cancelling predicate listener at an explicit {@link Priority} in the owning mod's default group.
+     *
+     * @param priority the dispatch priority, on the same scale as {@link EventChannel}
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable or {@code priority} is
+     * {@link Priority#MONITOR}
+     */
+    public Subscription subscribeCancelling(byte priority, Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), priority, listener);
+    }
+
+    /**
+     * Subscribes a cancelling predicate listener at {@link Priority#NORMAL} with a custom diagnostic source label in
+     * the owning mod's default group.
+     *
+     * @param source a human-readable label identifying the registration site
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable
+     */
+    public Subscription subscribeCancelling(String source, Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), source, listener);
+    }
+
+    /**
+     * Subscribes a cancelling predicate listener with an explicit {@link Priority} and diagnostic source label in the
+     * owning mod's default group.
+     *
+     * @param priority the dispatch priority, on the same scale as {@link EventChannel}
+     * @param source a human-readable label identifying the registration site
+     * @param listener the predicate invoked on dispatch; returning {@code true} sets the event canceled
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@link #eventType()} is not cancelable or {@code priority} is
+     * {@link Priority#MONITOR}
+     */
+    public Subscription subscribeCancelling(byte priority, String source, Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), priority, source, listener);
+    }
+
+    /**
      * Registers legacy subscribers on {@code target} for this channel's exact {@link #eventType()}.
      * <p>
-     * Passing a {@link Class} discovers only static {@link net.minecraftforge.fml.common.eventhandler.SubscribeEvent}
-     * methods declared on that class; passing an instance discovers declared and inherited instance subscribers (plus
-     * declared static methods), using {@code lookup} for declared private methods and skipping private ancestor methods.
-     * Inherited annotations preserve virtual dispatch to overriding methods. Configured {@link #withGenericType(Type)}
-     * and {@link #withListenerList(ListenerList)} settings apply to all subscribers in the batch.
+     * Supports both legacy {@link net.minecraftforge.fml.common.eventhandler.SubscribeEvent} methods (declared and
+     * inherited instance methods, skipping private ancestors) and declared Forge 7
+     * {@link net.minecraftforge.eventbus.api.listener.SubscribeEvent} methods (including {@code boolean} and
+     * {@code alwaysCancelling} cancellation sugar on cancelable legacy events). Passing a {@link Class} discovers only
+     * static subscribers. Configured {@link #withGenericType(Type)} and {@link #withListenerList(ListenerList)} settings
+     * apply to all subscribers in the batch.
      *
      * @param subscriptions the subscription group that owns the registered listeners
      * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
@@ -327,12 +569,7 @@ public final class LegacyEventChannel<E extends Event> {
      * @throws IllegalStateException if {@code subscriptions} is already closed
      */
     public List<Subscription> subscribe(SubscriptionGroup subscriptions, MethodHandles.Lookup lookup, Object target) {
-        var registrations = scope().prepareManagedListeners(
-            eventType, registrationList, genericType, lookup, target, subscriptions.owner()
-        );
-        return subscriptions.installAll(
-            registrations, listener -> subscriptions.install(describe(listener.source()), listener.install())
-        );
+        return ChannelSubscribers.registerLegacyChannel(this, subscriptions, lookup, target);
     }
 
     /**
@@ -371,29 +608,17 @@ public final class LegacyEventChannel<E extends Event> {
         return event;
     }
 
-    /** Places a Forge 7 priority in the nearest legacy bucket; the standard constants keep their relative order. */
-    private static EventPriority legacyPriority(byte priority) {
-        if (priority == Priority.MONITOR) {
-            throw new IllegalArgumentException(
-                "Legacy dispatch has no monitor priority; use Priority.LOWEST and receiveCanceled instead"
-            );
-        }
-        if (priority >= 96) {
-            return EventPriority.HIGHEST;
-        }
-        if (priority >= 32) {
-            return EventPriority.HIGH;
-        }
-        if (priority >= -32) {
-            return EventPriority.NORMAL;
-        }
-        if (priority >= -96) {
-            return EventPriority.LOW;
-        }
-        return EventPriority.LOWEST;
+    @Nullable
+    Type genericType() {
+        return genericType;
     }
 
-    private String describe(String source) {
+    @Nullable
+    ListenerList registrationList() {
+        return registrationList;
+    }
+
+    String describe(String source) {
         return eventType.getName() + " <- " + Objects.requireNonNull(source, "source");
     }
 

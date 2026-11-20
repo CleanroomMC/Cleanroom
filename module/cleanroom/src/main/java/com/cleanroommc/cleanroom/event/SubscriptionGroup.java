@@ -10,6 +10,8 @@
 
 package com.cleanroommc.cleanroom.event;
 
+import com.cleanroommc.hidefromuserdev.HideFromUserdev;
+
 import org.jspecify.annotations.NullMarked;
 
 import net.minecraftforge.fml.common.FMLLog;
@@ -37,24 +39,46 @@ import java.util.function.Supplier;
 @NullMarked
 public final class SubscriptionGroup implements AutoCloseable {
 
-    private final ModContainer owner;
-    private final String ownerId;
-    private final LinkedHashSet<Subscription> active = new LinkedHashSet<>();
-
     // Framework-managed groups, one per mod container. Identity, because containers do not define equality.
     private static final Map<ModContainer, SubscriptionGroup> DEFAULTS = new IdentityHashMap<>();
 
+    private final ModContainer owner;
+    private final String ownerId;
+    private final boolean managed;
+    private final LinkedHashSet<Subscription> active = new LinkedHashSet<>();
+
     private long nextId;
     private boolean closed;
+
+    /** Captures the active FML registration owner as the group's owner. */
+    public SubscriptionGroup() {
+        this(ModEventContext.registrationOwner(), false);
+    }
+
+    /**
+     * Creates a subscription group owned by the given {@link ModContainer}.
+     *
+     * @param owner the mod container credited with registrations in this group
+     */
+    public SubscriptionGroup(ModContainer owner) {
+        this(owner, false);
+    }
+
+    private SubscriptionGroup(ModContainer owner, boolean managed) {
+        this.owner = Objects.requireNonNull(owner, "owner");
+        this.ownerId = owner.getModId();
+        this.managed = managed;
+    }
 
     /**
      * Returns the framework-managed group of the current registration owner, creating it on first use.
      * <p>
      * This is the group used by the channel methods that omit a {@link SubscriptionGroup}. FML closes it when the
      * owning mod is disabled, so listeners registered this way live as long as the mod. Mods may close individual
-     * {@link Subscription} handles earlier.
+     * {@link Subscription} handles earlier; calling {@link #close()} directly on a framework-managed default group is
+     * rejected.
      *
-     * @return the default group of {@link ModEventContext#registrationOwner()}
+     * @return the default group of the active FML registration owner
      */
     public static SubscriptionGroup current() {
         return defaultGroup(ModEventContext.registrationOwner());
@@ -69,7 +93,7 @@ public final class SubscriptionGroup implements AutoCloseable {
     public static SubscriptionGroup defaultGroup(ModContainer owner) {
         Objects.requireNonNull(owner, "owner");
         synchronized (DEFAULTS) {
-            return DEFAULTS.computeIfAbsent(owner, SubscriptionGroup::new);
+            return DEFAULTS.computeIfAbsent(owner, container -> new SubscriptionGroup(container, true));
         }
     }
 
@@ -79,6 +103,7 @@ public final class SubscriptionGroup implements AutoCloseable {
      *
      * @param owner the mod container whose default group is retired
      */
+    @HideFromUserdev
     public static void closeDefaultGroup(ModContainer owner) {
         Objects.requireNonNull(owner, "owner");
         SubscriptionGroup group;
@@ -86,23 +111,21 @@ public final class SubscriptionGroup implements AutoCloseable {
             group = DEFAULTS.remove(owner);
         }
         if (group != null) {
-            group.close();
+            group.closeInternal();
         }
     }
 
-    /** Captures the active FML registration owner as the group's owner. */
-    public SubscriptionGroup() {
-        this(ModEventContext.registrationOwner());
-    }
-
     /**
-     * Creates a subscription group owned by the given {@link ModContainer}.
+     * Registers static Forge 7 {@code @SubscribeEvent} handlers (targeting either Forge 7 or legacy events) on a
+     * mod-discovered class into {@code owner}'s default group.
      *
-     * @param owner the mod container credited with registrations in this group
+     * @param owner the owning mod container
+     * @param lookup the access capability for {@code target}
+     * @param target the discovered class
      */
-    public SubscriptionGroup(ModContainer owner) {
-        this.owner = Objects.requireNonNull(owner, "owner");
-        this.ownerId = owner.getModId();
+    @HideFromUserdev
+    public static void registerDiscovered(ModContainer owner, MethodHandles.Lookup lookup, Class<?> target) {
+        ChannelSubscribers.registerDiscovered(defaultGroup(owner), lookup, target);
     }
 
     static String callbackSource(Object listener) {
@@ -116,6 +139,27 @@ public final class SubscriptionGroup implements AutoCloseable {
      */
     public ModContainer owner() {
         return owner;
+    }
+
+    /**
+     * Registers all discovered subscribers on {@code target} across both Forge 7 ({@link
+     * net.minecraftforge.eventbus.api.bus.BusGroup#DEFAULT}) and legacy
+     * ({@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}) into this group as one atomic batch.
+     * <p>
+     * Declared Forge 7 {@link net.minecraftforge.eventbus.api.listener.SubscribeEvent} methods match both Forge 7
+     * events and legacy {@link net.minecraftforge.fml.common.eventhandler.Event} subclasses, and legacy
+     * {@link net.minecraftforge.fml.common.eventhandler.SubscribeEvent} methods match legacy events as in
+     * {@link LegacyEventChannel}.
+     *
+     * @param lookup the access granted for invoking subscriber methods on {@code target}
+     * @param target an instance or a {@link Class} declaring static subscribers
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no valid subscribers exist, a method signature is invalid, or {@code lookup}
+     * cannot access a subscriber method
+     * @throws IllegalStateException if this group is already closed
+     */
+    public List<Subscription> register(MethodHandles.Lookup lookup, Object target) {
+        return ChannelSubscribers.registerUnified(this, lookup, target);
     }
 
     /**
@@ -141,32 +185,18 @@ public final class SubscriptionGroup implements AutoCloseable {
      * Marks this group closed and removes each remaining owned registration in reverse installation order.
      * Calling this method repeatedly retries any registrations whose earlier removal failed; multiple failures are
      * preserved as suppressed exceptions on the first thrown error.
+     *
+     * @throws UnsupportedOperationException if called directly on a framework-managed default group from
+     * {@link #current()} or {@link #defaultGroup(ModContainer)}
      */
     @Override
     public void close() {
-        List<Subscription> subscriptions;
-        synchronized (active) {
-            closed = true;
-            subscriptions = List.copyOf(active);
+        if (managed) {
+            throw new UnsupportedOperationException(
+                "Cannot directly close a framework-managed default SubscriptionGroup; close individual Subscription handles instead"
+            );
         }
-        Throwable failure = null;
-        for (Subscription subscription : subscriptions.reversed()) {
-            try {
-                subscription.close();
-            } catch (RuntimeException | Error error) {
-                if (failure == null) {
-                    failure = error;
-                } else if (failure != error) {
-                    failure.addSuppressed(error);
-                }
-            }
-        }
-        if (failure instanceof RuntimeException runtimeFailure) {
-            throw runtimeFailure;
-        }
-        if (failure instanceof Error error) {
-            throw error;
-        }
+        closeInternal();
     }
 
     /**
@@ -231,6 +261,32 @@ public final class SubscriptionGroup implements AutoCloseable {
     void forget(Subscription subscription) {
         synchronized (active) {
             active.remove(subscription);
+        }
+    }
+
+    private void closeInternal() {
+        List<Subscription> subscriptions;
+        synchronized (active) {
+            closed = true;
+            subscriptions = List.copyOf(active);
+        }
+        Throwable failure = null;
+        for (Subscription subscription : subscriptions.reversed()) {
+            try {
+                subscription.close();
+            } catch (RuntimeException | Error error) {
+                if (failure == null) {
+                    failure = error;
+                } else if (failure != error) {
+                    failure.addSuppressed(error);
+                }
+            }
+        }
+        if (failure instanceof RuntimeException runtimeFailure) {
+            throw runtimeFailure;
+        }
+        if (failure instanceof Error error) {
+            throw error;
         }
     }
 

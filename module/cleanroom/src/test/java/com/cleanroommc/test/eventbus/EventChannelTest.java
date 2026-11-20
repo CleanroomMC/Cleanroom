@@ -332,6 +332,51 @@ class EventChannelTest {
     }
 
     @Test
+    void wholeClassRegistrationRoutesMultipleForge7EventsAndSkipsLegacy() {
+        var scope = BusGroup.create("cleanroom-channel-whole-class");
+        var defaultOwner = owner("channel-whole-default");
+        var previousOwner = ModEventContext.swapOwner(defaultOwner);
+        MultiEventAnnotatedListeners.staticCalls = 0;
+        var handler = new MultiEventAnnotatedListeners();
+        try {
+            var changes = EventChannel.mutable(scope, Change.class);
+            var pulses = EventChannel.cancellableRecord(scope, Pulse.class);
+
+            var subscriptions = EventChannel.register(scope, MethodHandles.lookup(), handler);
+            assertThat(subscriptions).hasSize(4);
+
+            var change = new Change();
+            changes.post(change);
+            assertThat(change.value).isEqualTo(21);
+            assertThat(MultiEventAnnotatedListeners.staticCalls).isOne();
+            assertThat(pulses.post(new Pulse(5))).isTrue();
+            assertThat(pulses.post(new Pulse(-1))).isTrue();
+            assertThat(handler.monitorResults).containsExactly(true, true);
+
+            subscriptions.forEach(Subscription::close);
+            assertThat(changes.hasListeners()).isFalse();
+            assertThat(pulses.hasListeners()).isFalse();
+
+            var mixedScope = BusGroup.create("cleanroom-channel-whole-invalid");
+            try (var group = new SubscriptionGroup(owner("channel-whole-invalid"))) {
+                assertThatThrownBy(() -> EventChannel.register(
+                    group, mixedScope, MethodHandles.lookup(), new InvalidWholeClassBatch()
+                ))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("CancellableEventChannel");
+                assertThat(EventChannel.mutable(mixedScope, Change.class).hasListeners()).isFalse();
+                assertThat(EventChannel.cancellableRecord(mixedScope, Pulse.class).hasListeners()).isFalse();
+            } finally {
+                mixedScope.dispose();
+            }
+        } finally {
+            scope.dispose();
+            SubscriptionGroup.closeDefaultGroup(defaultOwner);
+            ModEventContext.setOwner(previousOwner);
+        }
+    }
+
+    @Test
     void factoryRejectsAnEventOutsideTheScopeBaseType() {
         BusGroup scope = BusGroup.create("cleanroom-channel-restricted", Change.class);
         try {
@@ -711,6 +756,53 @@ class EventChannelTest {
             assertThat(ModEventContext.owner()).isSameAs(owner);
             ModEventContext.setOwner(changedOwner);
             throw failure;
+        }
+
+    }
+
+    private static final class LegacyStubEvent extends net.minecraftforge.fml.common.eventhandler.Event { }
+
+    private static final class MultiEventAnnotatedListeners {
+
+        private static int staticCalls;
+
+        private final List<Boolean> monitorResults = new ArrayList<>();
+
+        @SubscribeEvent
+        private static void staticPulse(Pulse event) {
+            staticCalls++;
+        }
+
+        @SubscribeEvent
+        private void change(Change event) {
+            event.value = 21;
+        }
+
+        @SubscribeEvent
+        private boolean cancelPulse(Pulse event) {
+            return event.value() > 0;
+        }
+
+        @SubscribeEvent(priority = Priority.MONITOR)
+        private void monitor(Pulse event, boolean cancelled) {
+            monitorResults.add(cancelled);
+        }
+
+        @SubscribeEvent
+        private void ignoredLegacy(LegacyStubEvent event) { }
+
+    }
+
+    private static final class InvalidWholeClassBatch {
+
+        @SubscribeEvent
+        private void valid(Change event) {
+            event.value = 1;
+        }
+
+        @SubscribeEvent
+        private boolean invalid(Change event) {
+            return true;
         }
 
     }

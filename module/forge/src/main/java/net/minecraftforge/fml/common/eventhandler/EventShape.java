@@ -156,6 +156,10 @@ final class EventShape {
         return shape;
     }
 
+    boolean isPotentiallyCancelable() {
+        return (baseProperties & (CANCELABLE | VIRTUAL_CANCELLATION)) != 0;
+    }
+
     @Nullable
     ListenerList probeList(@Nullable ListenerList explicitList) {
         return handwrittenList && explicitList == null ? null : registrationList(explicitList);

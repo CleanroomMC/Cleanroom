@@ -277,6 +277,74 @@ public sealed class EventChannel<E> permits CancellableEventChannel {
         return createCancellable(scope, eventType, EventKind.INHERITABLE);
     }
 
+    /**
+     * Registers all declared Forge 7 subscribers on {@code target} into their channels under {@link BusGroup#DEFAULT},
+     * owned by the active mod's {@linkplain SubscriptionGroup#current() default group}.
+     * <p>
+     * Passing a {@link Class} registers only static {@link net.minecraftforge.eventbus.api.listener.SubscribeEvent}
+     * methods; passing an instance registers both static and instance methods declared on that instance's class. Methods
+     * taking legacy {@link net.minecraftforge.fml.common.eventhandler.Event} parameters are ignored.
+     *
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no declared Forge 7 subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a subscriber method
+     */
+    public static List<Subscription> register(MethodHandles.Lookup lookup, Object target) {
+        return register(SubscriptionGroup.current(), BusGroup.DEFAULT, lookup, target);
+    }
+
+    /**
+     * Registers all declared Forge 7 subscribers on {@code target} into their channels under {@code scope}, owned by
+     * the active mod's {@linkplain SubscriptionGroup#current() default group}.
+     *
+     * @param scope the bus group scope receiving the subscribers
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no declared Forge 7 subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a subscriber method
+     */
+    public static List<Subscription> register(BusGroup scope, MethodHandles.Lookup lookup, Object target) {
+        return register(SubscriptionGroup.current(), scope, lookup, target);
+    }
+
+    /**
+     * Registers all declared Forge 7 subscribers on {@code target} into their channels under {@link BusGroup#DEFAULT},
+     * owned by {@code subscriptions}.
+     *
+     * @param subscriptions the subscription group that owns the registered listeners
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no declared Forge 7 subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a subscriber method
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public static List<Subscription> register(
+        SubscriptionGroup subscriptions, MethodHandles.Lookup lookup, Object target) {
+        return register(subscriptions, BusGroup.DEFAULT, lookup, target);
+    }
+
+    /**
+     * Registers all declared Forge 7 subscribers on {@code target} into their channels under {@code scope}, owned by
+     * {@code subscriptions}.
+     *
+     * @param subscriptions the subscription group that owns the registered listeners
+     * @param scope the bus group scope receiving the subscribers
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no declared Forge 7 subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a subscriber method
+     * @throws IllegalStateException if {@code subscriptions} is already closed
+     */
+    public static List<Subscription> register(
+        SubscriptionGroup subscriptions, BusGroup scope, MethodHandles.Lookup lookup, Object target) {
+        return ChannelSubscribers.registerAllForge7(scope, subscriptions, lookup, target);
+    }
+
     static <E> Consumer<E> ownConsumer(ModContainer owner, Consumer<? super E> listener) {
         return event -> {
             var frame = ModEventContext.currentFrame();

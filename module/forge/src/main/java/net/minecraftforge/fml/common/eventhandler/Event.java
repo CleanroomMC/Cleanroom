@@ -66,9 +66,10 @@ public class Event
 
     /**
      * Determine if this function is cancelable at all.
-     * @return If access to setCanceled should be allowed
-     *
+     * <p>
      * The default implementation recognizes {@link Cancelable} on the event hierarchy.
+     *
+     * @return If access to setCanceled should be allowed
      */
     public boolean isCancelable()
     {
@@ -97,7 +98,7 @@ public class Event
 
     /**
      * Sets the cancel state of this event. Note, not all events are cancelable, and any attempt to
-     * invoke this method on an event that is not cancelable (as determined by {@link #isCancelable}
+     * invoke this method on an event that is not cancelable (as determined by {@link #isCancelable()})
      * will result in an {@link UnsupportedOperationException}.
      *
      * The functionality of setting the canceled state is defined on a per-event bases.
@@ -118,8 +119,10 @@ public class Event
 
     /**
      * Determines if this event expects a significant result value.
-     *
+     * <p>
      * The default implementation recognizes {@link HasResult} on the event hierarchy.
+     *
+     * @return If this event expects a significant result value
      */
     public boolean hasResult()
     {

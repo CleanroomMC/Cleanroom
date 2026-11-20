@@ -131,7 +131,14 @@ public class FMLThrowingEventBus extends EventBus implements AutoCloseable
         }
     }
 
-    /** Installs the owning FMLModContainer's already discovered @Mod.EventHandler callbacks. */
+    /**
+     * Installs the owning {@code FMLModContainer}'s already discovered {@code @Mod.EventHandler} callbacks.
+     *
+     * @param <E> the lifecycle dispatch record event type
+     * @param eventType the lifecycle dispatch event class
+     * @param handlers the discovered lifecycle handlers to register
+     * @return the newly installed Forge 7 bus for lifecycle dispatch
+     */
     @HideFromUserdev
     public <E extends RecordEvent> net.minecraftforge.eventbus.api.bus.EventBus<E> installLifecycleHandlers(
         Class<E> eventType, List<Consumer<E>> handlers)

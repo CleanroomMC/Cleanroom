@@ -2,10 +2,12 @@ package net.minecraftforge.fml.common;
 
 import com.cleanroommc.cleanroom.event.EventChannel;
 import com.cleanroommc.cleanroom.event.LegacyEventChannel;
+import com.cleanroommc.cleanroom.event.Subscription;
 import com.cleanroommc.cleanroom.event.SubscriptionGroup;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.eventbus.api.event.RecordEvent;
 import net.minecraftforge.eventbus.api.listener.Priority;
@@ -24,6 +26,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -180,9 +183,13 @@ public class ManagedEventBusLifecycleTest {
             legacyBus.post(new LegacyMessage(false));
             assertEquals(List.of("lifetime"), trace);
 
+            assertThrows(UnsupportedOperationException.class, () -> SubscriptionGroup.current().close());
+            legacyBus.post(new LegacyMessage(false));
+            assertEquals(List.of("lifetime", "lifetime"), trace);
+
             controller.disableMod(mod);
             legacyBus.post(new LegacyMessage(false));
-            assertEquals(List.of("lifetime"), trace);
+            assertEquals(List.of("lifetime", "lifetime"), trace);
 
             loader.setActiveModContainer(mod);
             channel.subscribe(message -> trace.add("survives as a new group"));
@@ -190,11 +197,12 @@ public class ManagedEventBusLifecycleTest {
             loader.setActiveModContainer(previous);
         }
         legacyBus.post(new LegacyMessage(false));
-        assertEquals(List.of("lifetime", "survives as a new group"), trace);
+        assertEquals(List.of("lifetime", "lifetime", "survives as a new group"), trace);
         SubscriptionGroup.closeDefaultGroup(mod);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void discoveredSubscribersJoinTheGroupAndKeepRegisterSemantics() throws Exception {
         var bus = new EventBus();
         ModContainer mod = owner("discovered");
@@ -202,6 +210,12 @@ public class ManagedEventBusLifecycleTest {
         var lookup = MethodHandles.privateLookupIn(DiscoveredSubscribers.class, MethodHandles.lookup());
         try (var group = new SubscriptionGroup(mod)) {
             group.track("discovered", bus.registerManagedLenient(lookup, DiscoveredSubscribers.class, mod));
+            // Duplicate call after already registered is a no-op and does not double-fire or clobber entries.
+            group.track("duplicate", bus.registerManagedLenient(lookup, DiscoveredSubscribers.class, mod));
+            Field ownersField = EventBus.class.getDeclaredField("listenerOwners");
+            ownersField.setAccessible(true);
+            assertSame(mod, ((Map<Object, ModContainer>) ownersField.get(bus)).get(DiscoveredSubscribers.class));
+
             bus.post(new LegacyMessage(false));
             // Private subscribers stay skipped, exactly as with register(Object).
             assertEquals(1, DiscoveredSubscribers.calls);
@@ -213,6 +227,67 @@ public class ManagedEventBusLifecycleTest {
         bus.post(new LegacyMessage(false));
         assertEquals(2, DiscoveredSubscribers.calls);
         assertFalse(bus.hasManagedListeners(new LegacyMessage(false)));
+    }
+
+    @Test
+    void unifiedGroupRegisterCoversBothGenerationsWithForge7AnnotationAndRollsBackAtomically() {
+        var mod = owner("unified");
+        var forge7Channel = EventChannel.record(UnifiedForge7Event.class);
+        var legacyChannel = LegacyEventChannel.of(UnifiedLegacyCancelable.class);
+        var handler = new UnifiedHandler();
+        var lookup = MethodHandles.lookup();
+        try (var group = new SubscriptionGroup(mod)) {
+            List<Subscription> installed = group.register(lookup, handler);
+            assertEquals(2, installed.size());
+            forge7Channel.post(new UnifiedForge7Event("ok"));
+            assertTrue(legacyChannel.post(new UnifiedLegacyCancelable()));
+            assertEquals(List.of("forge7:ok", "legacy-f7-annotation"), handler.trace);
+
+            assertThrows(IllegalArgumentException.class, () -> group.register(lookup, new InvalidUnifiedHandler()));
+        }
+        assertFalse(forge7Channel.hasListeners());
+        assertFalse(legacyChannel.hasListeners());
+    }
+
+    @Test
+    void discoveredForge7SubscribersRetireWhenOwningModIsDisabled() throws Exception {
+        Loader loader = Loader.instance();
+        LoadController controller = new LoadController(loader);
+        ModContainer mod = owner("discovered-f7");
+        var modBus = new FMLThrowingEventBus((failure, context) -> {
+            throw new AssertionError(failure);
+        }, mod);
+        Field eventChannels = LoadController.class.getDeclaredField("eventChannels");
+        Field modObjectList = LoadController.class.getDeclaredField("modObjectList");
+        eventChannels.setAccessible(true);
+        modObjectList.setAccessible(true);
+        eventChannels.set(controller, ImmutableMap.of(mod.getModId(), modBus));
+        modObjectList.set(controller, HashBiMap.create());
+
+        DiscoveredForge7Subscribers.trace.clear();
+        var forge7Channel = EventChannel.record(UnifiedForge7Event.class);
+        var legacyChannel = LegacyEventChannel.of(UnifiedLegacyCancelable.class);
+        var lookup = MethodHandles.privateLookupIn(DiscoveredForge7Subscribers.class, MethodHandles.lookup());
+        try {
+            Runnable legacyRemoval = MinecraftForge.EVENT_BUS.registerManagedLenient(
+                lookup, DiscoveredForge7Subscribers.class, mod
+            );
+            SubscriptionGroup.defaultGroup(mod).track(DiscoveredForge7Subscribers.class.getName(), legacyRemoval);
+            SubscriptionGroup.registerDiscovered(mod, lookup, DiscoveredForge7Subscribers.class);
+
+            assertTrue(forge7Channel.hasListeners());
+            assertTrue(legacyChannel.hasListeners());
+            forge7Channel.post(new UnifiedForge7Event("boot"));
+            assertTrue(legacyChannel.post(new UnifiedLegacyCancelable()));
+            assertEquals(List.of("forge7:boot", "legacy-static"), DiscoveredForge7Subscribers.trace);
+
+            controller.disableMod(mod);
+            assertFalse(forge7Channel.hasListeners());
+            assertFalse(legacyChannel.hasListeners());
+        } finally {
+            SubscriptionGroup.closeDefaultGroup(mod);
+            MinecraftForge.EVENT_BUS.unregister(DiscoveredForge7Subscribers.class);
+        }
     }
 
     @Test
@@ -402,4 +477,46 @@ public class ManagedEventBusLifecycleTest {
 
     @Cancelable
     public static final class CancellableMessage extends Event {}
+
+    public record UnifiedForge7Event(String value) implements RecordEvent {}
+
+    @Cancelable
+    public static final class UnifiedLegacyCancelable extends Event {}
+
+    private static final class UnifiedHandler {
+        private final List<String> trace = new ArrayList<>();
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private void onForge7(UnifiedForge7Event event) {
+            trace.add("forge7:" + event.value());
+        }
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private boolean onLegacy(UnifiedLegacyCancelable event) {
+            trace.add("legacy-f7-annotation");
+            return true;
+        }
+    }
+
+    private static final class InvalidUnifiedHandler {
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private void ok(UnifiedForge7Event event) {}
+
+        @SubscribeEvent
+        private void bad(UnifiedLegacyCancelable event, boolean extra) {}
+    }
+
+    public static final class DiscoveredForge7Subscribers {
+        private static final List<String> trace = new ArrayList<>();
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent
+        private static void onForge7(UnifiedForge7Event event) {
+            trace.add("forge7:" + event.value());
+        }
+
+        @net.minecraftforge.eventbus.api.listener.SubscribeEvent(alwaysCancelling = true)
+        private static void onLegacy(UnifiedLegacyCancelable event) {
+            trace.add("legacy-static");
+        }
+    }
 }
