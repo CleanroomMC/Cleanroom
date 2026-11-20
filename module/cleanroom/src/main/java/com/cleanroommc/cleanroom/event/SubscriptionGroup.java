@@ -169,6 +169,19 @@ public final class SubscriptionGroup implements AutoCloseable {
         }
     }
 
+    /**
+     * Tracks a removal prepared elsewhere in this group, so closing the group also revokes it.
+     *
+     * @param source a human-readable label identifying the registration site
+     * @param removal the removal action for the already installed listeners
+     * @return the subscription handle used to unregister the listeners
+     * @throws IllegalStateException if this group is already closed
+     */
+    public Subscription track(String source, Runnable removal) {
+        Objects.requireNonNull(removal, "removal");
+        return install(source, () -> removal);
+    }
+
     String ownerId() {
         return ownerId;
     }

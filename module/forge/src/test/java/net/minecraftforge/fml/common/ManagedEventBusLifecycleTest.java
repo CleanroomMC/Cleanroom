@@ -195,6 +195,27 @@ public class ManagedEventBusLifecycleTest {
     }
 
     @Test
+    void discoveredSubscribersJoinTheGroupAndKeepRegisterSemantics() throws Exception {
+        var bus = new EventBus();
+        ModContainer mod = owner("discovered");
+        DiscoveredSubscribers.calls = 0;
+        var lookup = MethodHandles.privateLookupIn(DiscoveredSubscribers.class, MethodHandles.lookup());
+        try (var group = new SubscriptionGroup(mod)) {
+            group.track("discovered", bus.registerManagedLenient(lookup, DiscoveredSubscribers.class, mod));
+            bus.post(new LegacyMessage(false));
+            // Private subscribers stay skipped, exactly as with register(Object).
+            assertEquals(1, DiscoveredSubscribers.calls);
+
+            bus.register(DiscoveredSubscribers.class);
+            bus.post(new LegacyMessage(false));
+            assertEquals(2, DiscoveredSubscribers.calls);
+        }
+        bus.post(new LegacyMessage(false));
+        assertEquals(2, DiscoveredSubscribers.calls);
+        assertFalse(bus.hasManagedListeners(new LegacyMessage(false)));
+    }
+
+    @Test
     void rootLegacyChannelDispatchesTheOriginalEventAndAllowsUncancelling() {
         var bus = new EventBus();
         var root = LegacyEventChannel.of(bus, Event.class);
@@ -263,6 +284,20 @@ public class ManagedEventBusLifecycleTest {
         assertFalse(unresolved.hasListeners(event));
         bus.post(new DescriptorEvent());
         assertEquals(List.of(event), trace);
+    }
+
+    public static final class DiscoveredSubscribers {
+        static int calls;
+
+        @SubscribeEvent
+        public static void visible(LegacyMessage event) {
+            calls++;
+        }
+
+        @SubscribeEvent
+        private static void hidden(LegacyMessage event) {
+            calls += 100;
+        }
     }
 
     public static final class LegacySubscriber {

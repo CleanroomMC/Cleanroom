@@ -122,6 +122,52 @@ public class EventBus implements IEventExceptionHandler
         return installManaged(bindings);
     }
 
+    /**
+     * Registers {@code target} like {@link #register(Object)}, but under {@code owner} and with a removal handle.
+     * <p>
+     * Discovery, arity validation, private-method skipping, and per-subscriber failure logging are identical to
+     * {@code register(Object)}.
+     */
+    @HideFromUserdev
+    public Runnable registerManagedLenient(MethodHandles.Lookup lookup, Object target, ModContainer owner)
+    {
+        Objects.requireNonNull(lookup, "lookup");
+        ArrayList<IEventListener> entries = null;
+        var installed = new ArrayList<Binding>();
+        for (SubscriberMethod subscriber : SubscriberMethod.forTarget(target))
+        {
+            Method source = subscriber.source();
+            if (Modifier.isPrivate(source.getModifiers()))
+                continue;
+            Class<?> eventType = eventParameter(source);
+            try
+            {
+                Binding binding = prepare(eventType, target, source, subscriber.callback(), owner, lookup);
+                synchronized (ListenerList.REGISTRY_LOCK)
+                {
+                    entries = installLegacy(target, entries, binding);
+                }
+                installed.add(binding);
+            }
+            catch (Exception failure)
+            {
+                logRegistrationFailure(owner, eventType, source, failure);
+            }
+        }
+        ArrayList<IEventListener> registered = entries;
+        List<Binding> bindings = List.copyOf(installed);
+        return () -> {
+            if (registered == null)
+                return;
+            synchronized (ListenerList.REGISTRY_LOCK)
+            {
+                for (Binding binding : bindings)
+                    remove(binding);
+                listeners.remove(target, registered);
+            }
+        };
+    }
+
     @HideFromUserdev
     public record ManagedListener(String source, Supplier<Runnable> install) {}
 
