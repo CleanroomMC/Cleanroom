@@ -20,6 +20,7 @@
 package net.minecraftforge.fml.common;
 
 import com.cleanroommc.cleanmix.CleanMixHooks;
+import com.cleanroommc.cleanroom.event.SubscriptionGroup;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.*;
@@ -101,6 +102,8 @@ public class LoadController
             modStates.put(modId, ModState.DISABLED);
             modObjectList.remove(mod);
             activeModList.remove(mod);
+            // Retire listeners the mod registered without keeping its own group.
+            SubscriptionGroup.closeDefaultGroup(mod);
         }
     }
 
@@ -126,6 +129,7 @@ public class LoadController
             {
                 try
                 {
+                    SubscriptionGroup.closeDefaultGroup(mod);
                     bus.close();
                 }
                 catch (RuntimeException | Error cleanup)
@@ -149,6 +153,7 @@ public class LoadController
             }
             else
             {
+                SubscriptionGroup.closeDefaultGroup(mod);
                 bus.close();
                 FMLLog.log.warn("Mod {} has been disabled through configuration", mod.getModId());
                 modStates.put(mod.getModId(), ModState.UNLOADED);

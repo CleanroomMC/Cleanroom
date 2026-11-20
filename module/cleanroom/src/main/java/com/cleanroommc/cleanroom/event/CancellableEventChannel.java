@@ -178,6 +178,54 @@ public final class CancellableEventChannel<E extends Cancellable> extends EventC
     }
 
     /**
+     * Subscribes a cancelling predicate listener at {@link Priority#NORMAL} in the owning mod's default group.
+     *
+     * @param listener the predicate invoked on dispatch; returning {@code true} cancels further non-monitor listeners
+     * @return the subscription handle used to unregister the listener
+     */
+    public Subscription subscribeCancelling(Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), listener);
+    }
+
+    /**
+     * Subscribes a cancelling predicate listener at an explicit {@link Priority} in the owning mod's default group.
+     *
+     * @param priority the dispatch priority constant from {@link Priority}; must not be {@link Priority#MONITOR}
+     * @param listener the predicate invoked on dispatch; returning {@code true} cancels further non-monitor listeners
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
+     */
+    public Subscription subscribeCancelling(byte priority, Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), priority, listener);
+    }
+
+    /**
+     * Subscribes a cancelling predicate listener at {@link Priority#NORMAL} with a custom diagnostic source label in
+     * the owning mod's default group.
+     *
+     * @param source a human-readable label identifying the registration site
+     * @param listener the predicate invoked on dispatch; returning {@code true} cancels further non-monitor listeners
+     * @return the subscription handle used to unregister the listener
+     */
+    public Subscription subscribeCancelling(String source, Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), source, listener);
+    }
+
+    /**
+     * Subscribes a cancelling predicate listener with an explicit {@link Priority} and diagnostic source label in the
+     * owning mod's default group.
+     *
+     * @param priority the dispatch priority constant from {@link Priority}; must not be {@link Priority#MONITOR}
+     * @param source a human-readable label identifying the registration site
+     * @param listener the predicate invoked on dispatch; returning {@code true} cancels further non-monitor listeners
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
+     */
+    public Subscription subscribeCancelling(byte priority, String source, Predicate<? super E> listener) {
+        return subscribeCancelling(SubscriptionGroup.current(), priority, source, listener);
+    }
+
+    /**
      * Subscribes a listener at {@link Priority#NORMAL} priority that unconditionally cancels the event after running.
      *
      * @param subscriptions the subscription group that owns the registration
@@ -242,6 +290,56 @@ public final class CancellableEventChannel<E extends Cancellable> extends EventC
     }
 
     /**
+     * Subscribes a listener at {@link Priority#NORMAL} that unconditionally cancels the event after running, in the
+     * owning mod's default group.
+     *
+     * @param listener the callback to invoke before cancelling further non-monitor dispatch
+     * @return the subscription handle used to unregister the listener
+     */
+    public Subscription subscribeAlwaysCancelling(Consumer<? super E> listener) {
+        return subscribeAlwaysCancelling(SubscriptionGroup.current(), listener);
+    }
+
+    /**
+     * Subscribes a listener at an explicit {@link Priority} that unconditionally cancels the event after running, in
+     * the owning mod's default group.
+     *
+     * @param priority the dispatch priority constant from {@link Priority}; must not be {@link Priority#MONITOR}
+     * @param listener the callback to invoke before cancelling further non-monitor dispatch
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
+     */
+    public Subscription subscribeAlwaysCancelling(byte priority, Consumer<? super E> listener) {
+        return subscribeAlwaysCancelling(SubscriptionGroup.current(), priority, listener);
+    }
+
+    /**
+     * Subscribes a listener at {@link Priority#NORMAL} with a custom diagnostic source label that unconditionally
+     * cancels the event, in the owning mod's default group.
+     *
+     * @param source a human-readable label identifying the registration site
+     * @param listener the callback to invoke before cancelling further non-monitor dispatch
+     * @return the subscription handle used to unregister the listener
+     */
+    public Subscription subscribeAlwaysCancelling(String source, Consumer<? super E> listener) {
+        return subscribeAlwaysCancelling(SubscriptionGroup.current(), source, listener);
+    }
+
+    /**
+     * Subscribes a listener with an explicit {@link Priority} and diagnostic source label that unconditionally cancels
+     * the event, in the owning mod's default group.
+     *
+     * @param priority the dispatch priority constant from {@link Priority}; must not be {@link Priority#MONITOR}
+     * @param source a human-readable label identifying the registration site
+     * @param listener the callback to invoke before cancelling further non-monitor dispatch
+     * @return the subscription handle used to unregister the listener
+     * @throws IllegalArgumentException if {@code priority} is {@link Priority#MONITOR}
+     */
+    public Subscription subscribeAlwaysCancelling(byte priority, String source, Consumer<? super E> listener) {
+        return subscribeAlwaysCancelling(SubscriptionGroup.current(), priority, source, listener);
+    }
+
+    /**
      * Subscribes a {@link Priority#MONITOR} listener that observes every posted event along with its cancellation state.
      *
      * @param subscriptions the subscription group that owns the registration
@@ -268,6 +366,28 @@ public final class CancellableEventChannel<E extends Cancellable> extends EventC
         return subscriptions.install(
             describe(source), () -> removal(addMonitor(raw(), ownMonitor(subscriptions.owner(), listener)))
         );
+    }
+
+    /**
+     * Subscribes a {@link Priority#MONITOR} listener in the owning mod's default group.
+     *
+     * @param listener the callback invoked at {@link Priority#MONITOR} with {@code (event, cancelled)}
+     * @return the subscription handle used to unregister the listener
+     */
+    public Subscription monitor(ObjBooleanBiConsumer<? super E> listener) {
+        return monitor(SubscriptionGroup.current(), listener);
+    }
+
+    /**
+     * Subscribes a {@link Priority#MONITOR} listener with a custom diagnostic source label in the owning mod's default
+     * group.
+     *
+     * @param source a human-readable label identifying the registration site
+     * @param listener the callback invoked at {@link Priority#MONITOR} with {@code (event, cancelled)}
+     * @return the subscription handle used to unregister the listener
+     */
+    public Subscription monitor(String source, ObjBooleanBiConsumer<? super E> listener) {
+        return monitor(SubscriptionGroup.current(), source, listener);
     }
 
     private void requireCancellingPriority(byte priority) {

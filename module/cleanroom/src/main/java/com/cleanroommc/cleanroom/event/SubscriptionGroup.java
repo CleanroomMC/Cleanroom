@@ -19,13 +19,21 @@ import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/** Owns managed subscriptions for one mod. Closing the group revokes its registrations across scopes. */
+/**
+ * Owns managed event subscriptions for a single {@link ModContainer} across Forge 7 and legacy scopes.
+ * <p>
+ * The owning mod container is captured when the group is created. Closing the group revokes every active
+ * {@link Subscription} it owns in reverse registration order without disposing external
+ * {@link net.minecraftforge.eventbus.api.bus.BusGroup} scopes.
+ */
 @NullMarked
 public final class SubscriptionGroup implements AutoCloseable {
 
@@ -33,14 +41,65 @@ public final class SubscriptionGroup implements AutoCloseable {
     private final String ownerId;
     private final LinkedHashSet<Subscription> active = new LinkedHashSet<>();
 
+    // Framework-managed groups, one per mod container. Identity, because containers do not define equality.
+    private static final Map<ModContainer, SubscriptionGroup> DEFAULTS = new IdentityHashMap<>();
+
     private long nextId;
     private boolean closed;
+
+    /**
+     * Returns the framework-managed group of the current registration owner, creating it on first use.
+     * <p>
+     * This is the group used by the channel methods that omit a {@link SubscriptionGroup}. FML closes it when the
+     * owning mod is disabled, so listeners registered this way live as long as the mod. Mods may close individual
+     * {@link Subscription} handles earlier.
+     *
+     * @return the default group of {@link ModEventContext#registrationOwner()}
+     */
+    public static SubscriptionGroup current() {
+        return defaultGroup(ModEventContext.registrationOwner());
+    }
+
+    /**
+     * Returns the framework-managed group of {@code owner}, creating it on first use.
+     *
+     * @param owner the mod container that owns the group
+     * @return the default group of {@code owner}
+     */
+    public static SubscriptionGroup defaultGroup(ModContainer owner) {
+        Objects.requireNonNull(owner, "owner");
+        synchronized (DEFAULTS) {
+            return DEFAULTS.computeIfAbsent(owner, SubscriptionGroup::new);
+        }
+    }
+
+    /**
+     * Closes and forgets the framework-managed group of {@code owner}. Called by FML when a mod is disabled, and
+     * harmless when that mod never used the default group.
+     *
+     * @param owner the mod container whose default group is retired
+     */
+    public static void closeDefaultGroup(ModContainer owner) {
+        Objects.requireNonNull(owner, "owner");
+        SubscriptionGroup group;
+        synchronized (DEFAULTS) {
+            group = DEFAULTS.remove(owner);
+        }
+        if (group != null) {
+            group.close();
+        }
+    }
 
     /** Captures the active FML registration owner as the group's owner. */
     public SubscriptionGroup() {
         this(ModEventContext.registrationOwner());
     }
 
+    /**
+     * Creates a subscription group owned by the given {@link ModContainer}.
+     *
+     * @param owner the mod container credited with registrations in this group
+     */
     public SubscriptionGroup(ModContainer owner) {
         this.owner = Objects.requireNonNull(owner, "owner");
         this.ownerId = owner.getModId();
@@ -50,17 +109,39 @@ public final class SubscriptionGroup implements AutoCloseable {
         return Objects.requireNonNull(listener, "listener").getClass().getName();
     }
 
+    /**
+     * Returns the mod container that owns all subscriptions in this group.
+     *
+     * @return the owning {@link ModContainer}
+     */
     public ModContainer owner() {
         return owner;
     }
 
-    /** Registers legacy @SubscribeEvent callbacks as one batch in the specified Forge bus. */
+    /**
+     * Registers legacy {@link net.minecraftforge.fml.common.eventhandler.SubscribeEvent} callbacks as one batch in the
+     * specified Forge bus.
+     * <p>
+     * Declared private subscriber methods are unreflected using {@code lookup}, whereas private methods declared by
+     * superclasses are skipped.
+     *
+     * @param bus the Forge scope receiving this registration
+     * @param lookup the access granted for invoking subscriber methods
+     * @param target an instance or a class declaring static subscribers
+     * @return a single {@link Subscription} handle that removes the entire registered batch on close
+     * @throws IllegalArgumentException if no valid legacy subscribers exist or a subscriber cannot be prepared
+     * @throws IllegalStateException if this group is already closed
+     */
     public Subscription registerLegacy(EventBus bus, MethodHandles.Lookup lookup, Object target) {
         Class<?> type = target instanceof Class<?> utility ? utility : target.getClass();
         return install(type.getName(), () -> bus.registerManaged(lookup, target, owner));
     }
 
-    /** Removes each owned registration and can be repeated to retry a failed removal. */
+    /**
+     * Marks this group closed and removes each remaining owned registration in reverse installation order.
+     * Calling this method repeatedly retries any registrations whose earlier removal failed; multiple failures are
+     * preserved as suppressed exceptions on the first thrown error.
+     */
     @Override
     public void close() {
         List<Subscription> subscriptions;

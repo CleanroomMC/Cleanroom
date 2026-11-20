@@ -18,6 +18,7 @@ import com.cleanroommc.common.CleanroomContainer;
 import org.junit.jupiter.api.Test;
 
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.listener.Priority;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -57,7 +58,7 @@ class LegacyEventChannelTest {
             assertThat(channel.hasListeners()).isTrue();
             try (var subscriptions = subscriptions()) {
                 channel.subscribe(subscriptions, event -> event.value *= 2);
-                channel.subscribe(subscriptions, EventPriority.HIGH, event -> event.value += 2);
+                channel.subscribe(subscriptions, Priority.HIGH, event -> event.value += 2);
                 var event = new CounterEvent(1);
                 assertThat(channel.fire(event)).isSameAs(event);
                 assertThat(event.value).isEqualTo(16);
@@ -67,6 +68,26 @@ class LegacyEventChannelTest {
             channel.raw().unregister(rawListener);
         }
         assertThat(channel.hasListeners()).isFalse();
+    }
+
+    @Test
+    void forgePrioritiesMapOntoLegacyBucketsAndMonitorsAreRejected() {
+        var channel = LegacyEventChannel.of(new EventBus(), CounterEvent.class);
+        var trace = new ArrayList<String>();
+        try (var subscriptions = subscriptions()) {
+            channel.subscribe(subscriptions, Priority.LOWEST, event -> trace.add("lowest"));
+            channel.subscribe(subscriptions, Priority.LOW, event -> trace.add("low"));
+            channel.subscribe(subscriptions, Priority.NORMAL, event -> trace.add("normal"));
+            channel.subscribe(subscriptions, Priority.HIGH, event -> trace.add("high"));
+            channel.subscribe(subscriptions, Priority.HIGHEST, event -> trace.add("highest"));
+
+            assertThatThrownBy(() -> channel.subscribe(subscriptions, Priority.MONITOR, event -> {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("monitor");
+
+            channel.fire(new CounterEvent(0));
+            assertThat(trace).containsExactly("highest", "high", "normal", "low", "lowest");
+        }
     }
 
     @Test

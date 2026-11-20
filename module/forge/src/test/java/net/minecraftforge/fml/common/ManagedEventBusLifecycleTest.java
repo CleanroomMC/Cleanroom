@@ -3,6 +3,8 @@ package net.minecraftforge.fml.common;
 import com.cleanroommc.cleanroom.event.EventChannel;
 import com.cleanroommc.cleanroom.event.LegacyEventChannel;
 import com.cleanroommc.cleanroom.event.SubscriptionGroup;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.eventbus.api.event.RecordEvent;
@@ -10,7 +12,6 @@ import net.minecraftforge.eventbus.api.listener.Priority;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.eventhandler.IContextSetter;
 import net.minecraftforge.fml.common.eventhandler.ListenerList;
@@ -20,6 +21,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Test;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -154,6 +156,45 @@ public class ManagedEventBusLifecycleTest {
     }
 
     @Test
+    void defaultGroupFollowsTheOwnerAndIsRetiredWhenTheModIsDisabled() throws Exception {
+        Loader loader = Loader.instance();
+        LoadController controller = new LoadController(loader);
+        ModContainer mod = owner("defaults");
+        var modBus = new FMLThrowingEventBus((failure, context) -> {
+            throw new AssertionError(failure);
+        }, mod);
+        Field eventChannels = LoadController.class.getDeclaredField("eventChannels");
+        Field modObjectList = LoadController.class.getDeclaredField("modObjectList");
+        eventChannels.setAccessible(true);
+        modObjectList.setAccessible(true);
+        eventChannels.set(controller, ImmutableMap.of(mod.getModId(), modBus));
+        modObjectList.set(controller, HashBiMap.create());
+        ModContainer previous = ModEventContext.owner();
+        var legacyBus = new EventBus();
+        var channel = LegacyEventChannel.of(legacyBus, LegacyMessage.class);
+        var trace = new ArrayList<String>();
+        try {
+            loader.setActiveModContainer(mod);
+            assertSame(SubscriptionGroup.defaultGroup(mod), SubscriptionGroup.current());
+            channel.subscribe(message -> trace.add("lifetime"));
+            legacyBus.post(new LegacyMessage(false));
+            assertEquals(List.of("lifetime"), trace);
+
+            controller.disableMod(mod);
+            legacyBus.post(new LegacyMessage(false));
+            assertEquals(List.of("lifetime"), trace);
+
+            loader.setActiveModContainer(mod);
+            channel.subscribe(message -> trace.add("survives as a new group"));
+        } finally {
+            loader.setActiveModContainer(previous);
+        }
+        legacyBus.post(new LegacyMessage(false));
+        assertEquals(List.of("lifetime", "survives as a new group"), trace);
+        SubscriptionGroup.closeDefaultGroup(mod);
+    }
+
+    @Test
     void rootLegacyChannelDispatchesTheOriginalEventAndAllowsUncancelling() {
         var bus = new EventBus();
         var root = LegacyEventChannel.of(bus, Event.class);
@@ -161,19 +202,19 @@ public class ManagedEventBusLifecycleTest {
         var message = new CancellableMessage();
         var trace = new ArrayList<String>();
         try (var subscriptions = new SubscriptionGroup(owner("canceller"))) {
-            root.subscribe(subscriptions, EventPriority.HIGH, event -> {
+            root.subscribe(subscriptions, Priority.HIGH, event -> {
                 assertSame(message, event);
                 event.setCanceled(true);
                 trace.add("cancel");
             });
             child.subscribe(subscriptions, "skip while cancelled", event -> trace.add("skipped"));
-            child.subscribe(subscriptions, EventPriority.LOW, true, event -> {
+            child.subscribe(subscriptions, Priority.LOW, true, event -> {
                 assertSame(message, event);
                 assertTrue(event.isCanceled());
                 event.setCanceled(false);
                 trace.add("uncancel");
             });
-            root.subscribe(subscriptions, EventPriority.LOWEST, "after uncancel", event -> trace.add("continue"));
+            root.subscribe(subscriptions, Priority.LOWEST, "after uncancel", event -> trace.add("continue"));
 
             assertFalse(root.post(message));
             assertFalse(message.isCanceled());

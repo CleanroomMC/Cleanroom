@@ -462,6 +462,53 @@ public sealed class EventChannel<E> permits CancellableEventChannel {
     }
 
     /**
+     * Subscribes a listener at {@link Priority#NORMAL} in the owning mod's
+     * {@linkplain SubscriptionGroup#current() default group}.
+     *
+     * @param listener the callback to invoke when an event is posted
+     * @return the subscription handle used to unregister the listener
+     */
+    public final Subscription subscribe(Consumer<? super E> listener) {
+        return subscribe(SubscriptionGroup.current(), listener);
+    }
+
+    /**
+     * Subscribes a listener at an explicit {@link Priority} in the owning mod's default group.
+     *
+     * @param priority the dispatch priority constant from {@link Priority}
+     * @param listener the callback to invoke when an event is posted
+     * @return the subscription handle used to unregister the listener
+     */
+    public final Subscription subscribe(byte priority, Consumer<? super E> listener) {
+        return subscribe(SubscriptionGroup.current(), priority, listener);
+    }
+
+    /**
+     * Subscribes a listener at {@link Priority#NORMAL} with a custom diagnostic source label in the owning mod's
+     * default group.
+     *
+     * @param source a human-readable label identifying the registration site
+     * @param listener the callback to invoke when an event is posted
+     * @return the subscription handle used to unregister the listener
+     */
+    public final Subscription subscribe(String source, Consumer<? super E> listener) {
+        return subscribe(SubscriptionGroup.current(), source, listener);
+    }
+
+    /**
+     * Subscribes a listener with an explicit {@link Priority} and diagnostic source label in the owning mod's default
+     * group.
+     *
+     * @param priority the dispatch priority constant from {@link Priority}
+     * @param source a human-readable label identifying the registration site
+     * @param listener the callback to invoke when an event is posted
+     * @return the subscription handle used to unregister the listener
+     */
+    public final Subscription subscribe(byte priority, String source, Consumer<? super E> listener) {
+        return subscribe(SubscriptionGroup.current(), priority, source, listener);
+    }
+
+    /**
      * Registers the target's declared Forge 7 subscribers for this channel's exact {@link #eventType()}.
      * <p>
      * Passing a {@link Class} registers only static methods annotated with
@@ -481,6 +528,20 @@ public sealed class EventChannel<E> permits CancellableEventChannel {
     public final List<Subscription> subscribe(
         SubscriptionGroup subscriptions, MethodHandles.Lookup lookup, Object target) {
         return ChannelSubscribers.register(this, subscriptions, lookup, target);
+    }
+
+    /**
+     * Registers the target's declared subscribers in the owning mod's
+     * {@linkplain SubscriptionGroup#current() default group}.
+     *
+     * @param lookup the lookup capability granted for accessing subscriber methods on {@code target}
+     * @param target a subscriber instance or a {@link Class} declaring static subscriber methods
+     * @return an immutable list containing one {@link Subscription} handle per registered method
+     * @throws IllegalArgumentException if no matching subscribers exist, a method signature is invalid, or
+     * {@code lookup} cannot access a subscriber method
+     */
+    public final List<Subscription> subscribe(MethodHandles.Lookup lookup, Object target) {
+        return subscribe(SubscriptionGroup.current(), lookup, target);
     }
 
     final String describe(String source) {
