@@ -1,0 +1,21 @@
+import org.gradle.api.tasks.JavaExec
+
+gradle.projectsEvaluated {
+    def root = gradle.rootProject
+    def baselineFixtures = root.providers.gradleProperty('eventbusLegacyFixtures').orNull
+    if (baselineFixtures != null) {
+        root.sourceSets.benchmark.java.setSrcDirs([root.file(baselineFixtures)])
+        root.sourceSets.benchmark.java.include('**/LegacyEventBusBenchmark.java', '**/LegacyEventBusWorkload.java')
+    }
+
+    root.tasks.named('benchmark', JavaExec).configure {
+        systemProperty 'jmh.separateClasspathJAR', 'true'
+        systemProperty 'cleanroom.eventbusBenchmark.baseline', Boolean.toString(baselineFixtures != null)
+        jvmArgs '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
+                '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
+                '--add-opens=java.base/java.lang=ALL-UNNAMED',
+                '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+                '--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED',
+                '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
+    }
+}

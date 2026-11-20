@@ -12,11 +12,11 @@ package com.cleanroommc.test.eventbus;
 
 import org.junit.jupiter.api.Test;
 
-class NativeEventBusArtifactSmokeTest {
+class ForgeEventBusArtifactSmokeTest {
 
     @Test
-    void registersPostsAndRemovesNativeListenersUnderFoundation() throws Throwable {
-        NativeEventBusArtifactSmoke.verify();
+    void registersPostsAndRemovesForgeListenersUnderFoundation() throws Throwable {
+        ForgeEventBusArtifactSmoke.verify();
     }
 
 }

@@ -28,7 +28,7 @@ public class ManagedGuavaEventBusTest {
         var reference = new EventBusFixture();
         List<String> expected = dispatch(new EventBus(reference), reference);
         var fixture = new EventBusFixture();
-        try (var managed = FMLThrowingEventBus.forLifecycle(fixture, ManagedEventBusLifecycleTest.owner("guava"))) {
+        try (var managed = new FMLThrowingEventBus(fixture, ManagedEventBusLifecycleTest.owner("guava"))) {
             assertEquals(expected, dispatch(managed, fixture));
         }
         assertEquals(List.of("child outer", "child resumed", "parent outer", "child inner", "parent inner",
@@ -37,7 +37,7 @@ public class ManagedGuavaEventBusTest {
 
     @Test
     void concurrentPostsMatchGuavaSubscriberSerialization() throws Exception {
-        try (var managed = FMLThrowingEventBus.forLifecycle((failure, context) -> fail(failure), ManagedEventBusLifecycleTest.owner("guava"))) {
+        try (var managed = new FMLThrowingEventBus((failure, context) -> fail(failure), ManagedEventBusLifecycleTest.owner("guava"))) {
             assertEquals(Concurrency.SERIAL, observeConcurrency(new EventBus(), false));
             assertEquals(Concurrency.SERIAL, observeConcurrency(managed, false));
             assertEquals(Concurrency.CONCURRENT, observeConcurrency(new EventBus(), true));
@@ -49,7 +49,7 @@ public class ManagedGuavaEventBusTest {
     void closingManagedBusRevokesRegisteredSubscribers() {
         var fixture = new EventBusFixture();
         var subscriber = new TraceSubscriber(fixture);
-        try (var managed = FMLThrowingEventBus.forLifecycle(fixture, ManagedEventBusLifecycleTest.owner("guava"))) {
+        try (var managed = new FMLThrowingEventBus(fixture, ManagedEventBusLifecycleTest.owner("guava"))) {
             fixture.bus = managed;
             managed.register(subscriber);
             managed.post(new ChildMessage("before close"));
@@ -62,7 +62,7 @@ public class ManagedGuavaEventBusTest {
     @Test
     void reentrantPostsHoldTheirSubscriberSnapshotAcrossMutations() {
         List<String> expected = snapshotTrace(new EventBus());
-        try (var managed = FMLThrowingEventBus.forLifecycle((failure, context) -> fail(failure), null)) {
+        try (var managed = new FMLThrowingEventBus((failure, context) -> fail(failure))) {
             assertEquals(expected, snapshotTrace(managed));
         }
         assertEquals(List.of("poster resumed", "original queued", "replacement nested", "replacement later"), expected);
@@ -71,7 +71,7 @@ public class ManagedGuavaEventBusTest {
     @Test
     void anErrorAbandonsQueuedPostsAndTheNextPostCanRun() {
         List<String> expected = abortedTrace(new EventBus());
-        try (var managed = FMLThrowingEventBus.forLifecycle((failure, context) -> fail(failure), null)) {
+        try (var managed = new FMLThrowingEventBus((failure, context) -> fail(failure))) {
             assertEquals(expected, abortedTrace(managed));
         }
         assertEquals(List.of("after failure"), expected);

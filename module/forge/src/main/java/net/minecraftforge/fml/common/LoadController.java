@@ -62,6 +62,8 @@ public class LoadController
     private LoaderState state;
     private Multimap<String, ModState> modStates = MultimapBuilder.hashKeys().enumSetValues(ModState.class).build();
     private List<ModContainer> activeModList = Lists.newArrayList();
+    // FML lifecycle is serial. Worker threads may still query the loading mod during a callback.
+    private volatile ModContainer activeContainer;
     private BiMap<ModContainer, Object> modObjectList;
     private ListMultimap<String, ModContainer> packageOwners;
     private boolean closeRequested = false;
@@ -69,14 +71,14 @@ public class LoadController
     public LoadController(Loader loader)
     {
         this.loader = loader;
-        this.masterChannel = FMLThrowingEventBus.forLifecycle((exception, context) -> {
+        this.masterChannel = new FMLThrowingEventBus((exception, context) -> {
             Throwables.throwIfUnchecked(exception);
             // should not happen, but add some extra context for checked exceptions
             Method method = context.getSubscriberMethod();
             String parameterNames = Stream.of(method.getParameterTypes()).map(Class::getName).collect(Collectors.joining(", "));
             String message = "Exception thrown during LoadController." + method.getName() + '(' + parameterNames + ')';
             throw new LoaderExceptionModCrash(message, exception);
-        }, null);
+        });
         this.masterChannel.register(this);
 
         state = LoaderState.NOINIT;
@@ -89,12 +91,17 @@ public class LoadController
         HashMap<String, FMLThrowingEventBus> temporary = Maps.newHashMap(eventChannels);
         String modId = mod.getModId();
         FMLThrowingEventBus bus = temporary.remove(modId);
-        bus.post(new FMLModDisabledEvent());
-        bus.close();
-        eventChannels = ImmutableMap.copyOf(temporary);
-        modStates.put(modId, ModState.DISABLED);
-        modObjectList.remove(mod);
-        activeModList.remove(mod);
+        try (bus)
+        {
+            bus.post(new FMLModDisabledEvent());
+        }
+        finally
+        {
+            eventChannels = ImmutableMap.copyOf(temporary);
+            modStates.put(modId, ModState.DISABLED);
+            modObjectList.remove(mod);
+            activeModList.remove(mod);
+        }
     }
 
     @Subscribe
@@ -104,10 +111,13 @@ public class LoadController
 
         for (final ModContainer mod : loader.getModList())
         {
-            FMLThrowingEventBus bus = FMLThrowingEventBus.forLifecycle((exception, context) -> this.errorOccurred(mod, exception), mod);
+            FMLThrowingEventBus bus = new FMLThrowingEventBus((exception, context) -> this.errorOccurred(mod, exception), mod);
 
             boolean isActive;
-            ModContainer previous = ModEventContext.swapOwner(mod);
+            ModContainer previous = activeContainer;
+            var frame = ModEventContext.currentFrame();
+            var previousOwner = ModEventContext.pushDispatchOwner(frame, mod);
+            forceActiveContainer(mod);
             try
             {
                 isActive = mod.registerBus(bus, this);
@@ -118,7 +128,7 @@ public class LoadController
                 {
                     bus.close();
                 }
-                catch (RuntimeException cleanup)
+                catch (RuntimeException | Error cleanup)
                 {
                     if (cleanup != failure)
                         failure.addSuppressed(cleanup);
@@ -127,7 +137,8 @@ public class LoadController
             }
             finally
             {
-                ModEventContext.setOwner(previous);
+                forceActiveContainer(previous);
+                ModEventContext.restoreDispatchOwner(frame, previousOwner);
             }
             if (isActive)
             {
@@ -197,8 +208,13 @@ public class LoadController
     @Nullable
     public ModContainer activeContainer()
     {
-        ModContainer owner = ModEventContext.owner();
-        return owner != null ? owner : findActiveContainerFromStack();
+        ModContainer loading = activeContainer;
+        return loading != null ? loading : findActiveContainerFromStack();
+    }
+
+    void forceActiveContainer(@Nullable ModContainer container)
+    {
+        activeContainer = container;
     }
 
     @Subscribe
@@ -230,7 +246,10 @@ public class LoadController
                 return;
             }
         }
-        ModContainer previous = ModEventContext.swapOwner(mc);
+        ModContainer previous = activeContainer;
+        var frame = ModEventContext.currentFrame();
+        var previousOwner = ModEventContext.pushDispatchOwner(frame, mc);
+        forceActiveContainer(mc);
         try
         {
             stateEvent.applyModContainer(mc);
@@ -248,7 +267,8 @@ public class LoadController
         }
         finally
         {
-            ModEventContext.setOwner(previous);
+            forceActiveContainer(previous);
+            ModEventContext.restoreDispatchOwner(frame, previousOwner);
         }
         if (stateEvent instanceof FMLStateEvent)
         {
@@ -366,7 +386,7 @@ public class LoadController
     {
         if (modObjectList == null)
         {
-            FMLLog.log.fatal("Detected an attempt by a mod {} to perform game activity during mod construction. This is a serious programming error.", ModEventContext.owner());
+            FMLLog.log.fatal("Detected an attempt by a mod {} to perform game activity during mod construction. This is a serious programming error.", activeContainer());
             return buildModObjectList();
         }
         return ImmutableBiMap.copyOf(modObjectList);

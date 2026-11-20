@@ -7,6 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -27,32 +28,42 @@ final class EventListenerFactory {
 
     private EventListenerFactory() {}
 
+    public static Consumer<Event> createRawListener(Method method, boolean isStatic, Object instance) {
+        if (isStatic != Modifier.isStatic(method.getModifiers())) {
+            throw new IllegalArgumentException("Static flag does not match event subscriber " + method);
+        }
+        return createRawListener(method, instance, null);
+    }
+
     static Consumer<Event> createRawListener(Method method, Object instance, MethodHandles.Lookup caller) {
         // A supplied Lookup is a capability. Never make its handles available to a different caller.
         Factory factory = caller == null
-            ? FACTORIES.get(method.getDeclaringClass()).computeIfAbsent(method, callback -> createFactory(callback, LOOKUP))
-            : createFactory(method, caller);
+            ? FACTORIES.get(method.getDeclaringClass()).computeIfAbsent(method, EventListenerFactory::createLegacyFactory)
+            : createFactory(method, caller, unreflect(method, caller));
         return factory.bind(instance);
     }
 
-    private static Factory createFactory(Method method, MethodHandles.Lookup caller) {
+    private static Factory createLegacyFactory(Method method) {
+        try {
+            var lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), LOOKUP);
+            return createFactory(method, lookup, lookup.unreflect(method));
+        } catch (IllegalAccessException privateAccess) {
+            return createFactory(method, LOOKUP, unreflect(method, LOOKUP));
+        }
+    }
+
+    private static MethodHandle unreflect(Method method, MethodHandles.Lookup lookup) {
+        try {
+            return lookup.unreflect(method);
+        } catch (IllegalAccessException inaccessible) {
+            throw new IllegalArgumentException("Cannot access event subscriber " + method
+                + "; supply a Lookup with access to its declaring class", inaccessible);
+        }
+    }
+
+    private static Factory createFactory(Method method, MethodHandles.Lookup lookup, MethodHandle handle) {
         Class<?> declaring = method.getDeclaringClass();
         boolean isStatic = Modifier.isStatic(method.getModifiers());
-        MethodHandles.Lookup lookup;
-        MethodHandle handle;
-        try {
-            lookup = MethodHandles.privateLookupIn(declaring, caller);
-            handle = lookup.unreflect(method);
-        } catch (IllegalAccessException privateAccess) {
-            lookup = caller;
-            try {
-                handle = lookup.unreflect(method);
-            } catch (IllegalAccessException inaccessible) {
-                inaccessible.addSuppressed(privateAccess);
-                throw new IllegalArgumentException("Cannot access event subscriber " + method
-                    + "; supply a Lookup with access to its declaring class", inaccessible);
-            }
-        }
 
         if (lookup.hasFullPrivilegeAccess() && lookup.lookupClass().getClassLoader() == declaring.getClassLoader()) {
             Class<?> receiver = isStatic ? null : handle.type().parameterType(0);
@@ -73,6 +84,9 @@ final class EventListenerFactory {
     private record Factory(MethodHandle handle, boolean isStatic, boolean lambda) {
         @SuppressWarnings("unchecked")
         Consumer<Event> bind(Object instance) {
+            if (!isStatic) {
+                Objects.requireNonNull(instance, "target");
+            }
             if (!lambda) {
                 MethodHandle callback = (isStatic ? handle : handle.bindTo(instance)).asType(EVENT_CALLBACK);
                 return event -> {

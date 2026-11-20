@@ -46,6 +46,15 @@ public final class LegacyDispatchScenarios {
         return trace;
     }
 
+    public static List<String> overriddenCanceledGetter() {
+        var bus = new EventBus();
+        bus.register(new CanceledGetterSubscriber());
+        var event = new CanceledGetterEvent();
+        boolean canceled = bus.post(event);
+        event.trace.add("post=" + canceled);
+        return event.trace;
+    }
+
     public static List<String> genericIdentityAndShortCircuit() throws ReflectiveOperationException {
         var trace = new ArrayList<String>();
         var bus = new EventBus();
@@ -296,6 +305,29 @@ public final class LegacyDispatchScenarios {
         @SubscribeEvent(priority = EventPriority.LOW)
         public void continueWithBaseType(Event event) {
             ((DynamicEvent) event).trace.add("base callback=" + event.getPhase());
+        }
+    }
+
+    @Cancelable
+    public static final class CanceledGetterEvent extends Event {
+        private final List<String> trace = new ArrayList<>();
+
+        @Override
+        public boolean isCanceled() {
+            trace.add("get canceled");
+            return true;
+        }
+    }
+
+    public static final class CanceledGetterSubscriber {
+        @SubscribeEvent(priority = EventPriority.HIGH)
+        public void skip(CanceledGetterEvent event) {
+            event.trace.add("unexpected skipped callback");
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
+        public void receive(CanceledGetterEvent event) {
+            event.trace.add("receive");
         }
     }
 

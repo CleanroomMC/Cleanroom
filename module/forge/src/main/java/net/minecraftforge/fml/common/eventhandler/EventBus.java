@@ -24,11 +24,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,13 +37,18 @@ import javax.annotation.Nullable;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ModContainer;
 
+import com.cleanroommc.hidefromuserdev.HideFromUserdev;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
+import com.google.common.collect.MapMaker;
 
 public class EventBus implements IEventExceptionHandler
 {
-    private final Map<Object, List<Binding>> listeners = new HashMap<>();
-    private final int busID = ListenerList.allocateBusID();
+    private static int maxID;
+
+    private final ConcurrentHashMap<Object, ArrayList<IEventListener>> listeners = new ConcurrentHashMap<>();
+    private final Map<Object, ModContainer> listenerOwners = new MapMaker().weakKeys().weakValues().makeMap();
+    private final int busID = allocateBusID();
     private final IEventExceptionHandler exceptionHandler;
     private volatile boolean shutdown;
 
@@ -57,86 +63,144 @@ public class EventBus implements IEventExceptionHandler
         exceptionHandler = handler;
     }
 
+    private static int allocateBusID()
+    {
+        synchronized (ListenerList.REGISTRY_LOCK)
+        {
+            int id = maxID++;
+            ListenerList.resize(id + 1);
+            return id;
+        }
+    }
+
     public void register(Object target)
     {
-        Objects.requireNonNull(target, "target");
-        synchronized (ListenerList.REGISTRY_LOCK)
-        {
-            if (listeners.containsKey(target))
-                return;
-        }
+        if (listeners.containsKey(target))
+            return;
 
         ModContainer owner = ModEventContext.registrationOwner();
-        List<Binding> bindings = prepare(target, owner, null);
-        if (bindings.isEmpty())
-            return;
-        synchronized (ListenerList.REGISTRY_LOCK)
+        listenerOwners.put(target, owner);
+        ArrayList<IEventListener> entries = null;
+        for (SubscriberMethod subscriber : SubscriberMethod.forTarget(target))
         {
-            if (!listeners.containsKey(target))
+            Method source = subscriber.source();
+            if (Modifier.isPrivate(source.getModifiers()))
+                continue;
+            Class<?> eventType = eventParameter(source);
+            try
             {
-                listeners.put(target, bindings);
-                try
+                Binding binding = prepare(eventType, target, source, subscriber.callback(), owner, null);
+                synchronized (ListenerList.REGISTRY_LOCK)
                 {
-                    install(bindings);
+                    // A concurrent operation may have registered or removed this target during preparation.
+                    if (listeners.get(target) != entries)
+                        return;
+                    entries = installLegacy(target, entries, binding);
                 }
-                catch (RuntimeException | Error failure)
-                {
-                    listeners.remove(target);
-                    throw failure;
-                }
+            }
+            catch (Exception failure)
+            {
+                logRegistrationFailure(owner, eventType, source, failure);
             }
         }
     }
 
     /** Internal entry point for Cleanroom's managed legacy annotation registration. */
+    @HideFromUserdev
     public Runnable registerManaged(MethodHandles.Lookup lookup, Object target, ModContainer owner)
     {
-        List<Binding> bindings = prepare(target, owner, Objects.requireNonNull(lookup, "lookup"));
+        Objects.requireNonNull(lookup, "lookup");
+        List<SubscriberMethod> subscribers = SubscriberMethod.forTarget(target);
+        var bindings = new ArrayList<Binding>(subscribers.size());
+        for (SubscriberMethod subscriber : subscribers)
+        {
+            Method source = subscriber.source();
+            bindings.add(prepare(eventParameter(source), target, source, subscriber.callback(), owner, lookup));
+        }
         if (bindings.isEmpty())
             throw new IllegalArgumentException("No legacy event subscribers found on " + SubscriberMethod.typeOf(target).getName());
         return installManaged(bindings);
     }
 
+    @HideFromUserdev
+    public record ManagedListener(String source, Supplier<Runnable> install) {}
+
+    @HideFromUserdev
+    public List<ManagedListener> prepareManagedListeners(Class<? extends Event> eventType, @Nullable ListenerList list,
+            @Nullable Type genericType, MethodHandles.Lookup lookup, Object target, ModContainer owner)
+    {
+        Objects.requireNonNull(lookup, "lookup");
+        boolean isGeneric = IGenericEvent.class.isAssignableFrom(eventType);
+        if (genericType != null && !isGeneric)
+            throw new IllegalArgumentException(eventType.getName() + " does not implement IGenericEvent");
+
+        var prepared = new ArrayList<ManagedListener>();
+        ListenerList registrationList = null;
+        for (SubscriberMethod subscriber : SubscriberMethod.forTarget(target))
+        {
+            Method source = subscriber.source();
+            Class<?>[] parameters = source.getParameterTypes();
+            if (parameters.length != 0 && parameters[0] != eventType)
+                continue;
+            eventParameter(source, parameters);
+            if (registrationList == null)
+                registrationList = EventShape.of(eventType).registrationList(list);
+
+            Method callback = subscriber.callback();
+            var handler = new ASMEventHandler(target, source, callback, owner, isGeneric, lookup, genericType);
+            Binding binding = bind(registrationList, eventType, handler, owner, true);
+            prepared.add(new ManagedListener(callback.toGenericString(), () -> installManaged(List.of(binding))));
+        }
+        if (prepared.isEmpty())
+            throw new IllegalArgumentException("No legacy subscribers for " + eventType.getName()
+                + " on " + SubscriberMethod.typeOf(target).getName());
+        return List.copyOf(prepared);
+    }
+
     /** Internal entry point for Cleanroom's managed legacy programmatic registration. */
+    @HideFromUserdev
     public <E extends Event> Runnable addManagedListener(Class<E> eventType, @Nullable ListenerList registrationList,
             EventPriority priority, boolean receiveCanceled, @Nullable Type genericType, Consumer<? super E> listener,
             ModContainer owner, String source)
     {
         Objects.requireNonNull(listener, "listener");
         Objects.requireNonNull(priority, "priority");
+        EventShape shape = EventShape.of(eventType);
         if (genericType != null && !IGenericEvent.class.isAssignableFrom(eventType))
             throw new IllegalArgumentException(eventType.getName() + " does not implement IGenericEvent");
-        ListenerList list = EventShape.of(eventType).registrationList(registrationList);
+        ListenerList list = shape.registrationList(registrationList);
         var handler = new ASMEventHandler(event -> listener.accept(eventType.cast(event)), priority, receiveCanceled,
             owner, genericType, source);
         return installManaged(List.of(bind(list, eventType, handler, owner, true)));
     }
 
-    private static List<Binding> prepare(Object target, ModContainer owner, @Nullable MethodHandles.Lookup lookup)
+    private static Class<?> eventParameter(Method method)
     {
-        List<SubscriberMethod> subscribers = SubscriberMethod.forTarget(target);
-        var bindings = new ArrayList<Binding>(subscribers.size());
-        for (SubscriberMethod subscriber : subscribers)
+        return eventParameter(method, method.getParameterTypes());
+    }
+
+    private static Class<?> eventParameter(Method method, Class<?>[] parameters)
+    {
+        if (parameters.length != 1)
         {
-            Method source = subscriber.source();
-            if (Modifier.isPrivate(source.getModifiers()))
-            {
-                String message = "Cannot register private @SubscribeEvent method " + source;
-                if (lookup != null)
-                    throw new IllegalArgumentException(message);
-                FMLLog.log.warn(message);
-                continue;
-            }
-            Class<?>[] parameters = source.getParameterTypes();
-            if (parameters.length != 1 || !Event.class.isAssignableFrom(parameters[0]))
-                throw new IllegalArgumentException("Expected one Event argument on @SubscribeEvent method " + source);
-            Class<? extends Event> eventType = parameters[0].asSubclass(Event.class);
-            ListenerList list = EventShape.of(eventType).registrationList(null);
-            var handler = new ASMEventHandler(target, source, subscriber.callback(), owner,
-                IGenericEvent.class.isAssignableFrom(eventType), lookup);
-            bindings.add(bind(list, eventType, handler, owner, lookup != null));
+            throw new IllegalArgumentException(
+                "Method " + method + " has @SubscribeEvent annotation, but requires " + parameters.length
+                    + " arguments.  Event handler methods must require a single argument."
+            );
         }
-        return bindings;
+        Class<?> eventType = parameters[0];
+        if (!Event.class.isAssignableFrom(eventType))
+            throw new IllegalArgumentException("Method " + method + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
+        return eventType;
+    }
+
+    private static Binding prepare(Class<?> eventType, Object target, Method source, Method callback,
+                                   ModContainer owner, @Nullable MethodHandles.Lookup lookup)
+    {
+        ListenerList list = EventShape.of(eventType).registrationList(null);
+        var handler = new ASMEventHandler(target, source, callback, owner,
+            IGenericEvent.class.isAssignableFrom(eventType), lookup);
+        return bind(list, eventType, handler, owner, lookup != null);
     }
 
     private static Binding bind(ListenerList list, Class<?> eventType, ASMEventHandler handler, ModContainer owner,
@@ -147,32 +211,48 @@ public class EventBus implements IEventExceptionHandler
         return new Binding(list, handler.getPriority(), listener);
     }
 
-    // Called with the registry lock held. Preparation may run user constructors or getters.
+    // Called with the registry lock held. Prepare outside this lock because it can run user code.
+    private ArrayList<IEventListener> installLegacy(Object target, @Nullable ArrayList<IEventListener> entries, Binding binding)
+    {
+        try
+        {
+            install(binding);
+            if (entries == null)
+            {
+                entries = new ArrayList<>();
+                entries.add(binding.listener());
+                listeners.put(target, entries);
+            }
+            else
+            {
+                entries.add(binding.listener());
+            }
+            return entries;
+        }
+        catch (Exception | Error failure)
+        {
+            rollback(binding, failure);
+            throw failure;
+        }
+    }
+
+    private void install(Binding binding)
+    {
+        binding.list().register(busID, binding.priority(), binding.listener());
+    }
+
     private void install(List<Binding> bindings)
     {
         int index = 0;
         try
         {
             for (; index < bindings.size(); index++)
-            {
-                Binding binding = bindings.get(index);
-                binding.list().register(busID, binding.priority(), binding.listener());
-            }
+                install(bindings.get(index));
         }
-        catch (RuntimeException | Error failure)
+        catch (Exception | Error failure)
         {
             for (int rollback = index; rollback >= 0; rollback--)
-            {
-                try
-                {
-                    remove(bindings.get(rollback));
-                }
-                catch (RuntimeException | Error cleanup)
-                {
-                    if (cleanup != failure)
-                        failure.addSuppressed(cleanup);
-                }
-            }
+                rollback(bindings.get(rollback), failure);
             throw failure;
         }
     }
@@ -194,7 +274,25 @@ public class EventBus implements IEventExceptionHandler
 
     private void remove(Binding binding)
     {
-        binding.list().unregister(busID, binding.listener());
+        ListenerList.unregisterRegistered(busID, binding.listener(), false);
+    }
+
+    private void rollback(Binding binding, Throwable failure)
+    {
+        try
+        {
+            ListenerList.unregisterRegistered(busID, binding.listener(), true);
+        }
+        catch (Exception | Error cleanup)
+        {
+            if (cleanup != failure)
+                failure.addSuppressed(cleanup);
+        }
+    }
+
+    private static void logRegistrationFailure(ModContainer owner, Class<?> eventType, Method method, Exception failure)
+    {
+        FMLLog.log.error("Error registering event handler: {} {} {}", owner, eventType, method, failure);
     }
 
     private record Binding(ListenerList list, EventPriority priority, IEventListener listener) {}
@@ -202,15 +300,18 @@ public class EventBus implements IEventExceptionHandler
     // Some mods call this signature reflectively with a callback that accepts Object.
     private void register(Class<?> eventType, Object target, Method method, final ModContainer owner)
     {
-        var type = eventType.asSubclass(Event.class);
-        ListenerList list = EventShape.of(type).registrationList(null);
-        var handler = new ASMEventHandler(target, method, method, owner, IGenericEvent.class.isAssignableFrom(type), null);
-        Binding binding = bind(list, type, handler, owner, false);
-        synchronized (ListenerList.REGISTRY_LOCK)
+        try
         {
-            List<Binding> bindings = listeners.computeIfAbsent(target, ignored -> new ArrayList<>());
-            install(List.of(binding));
-            bindings.add(binding);
+            Objects.requireNonNull(target, "target");
+            Binding binding = prepare(eventType, target, method, method, owner, null);
+            synchronized (ListenerList.REGISTRY_LOCK)
+            {
+                installLegacy(target, listeners.get(target), binding);
+            }
+        }
+        catch (Exception failure)
+        {
+            logRegistrationFailure(owner, eventType, method, failure);
         }
     }
 
@@ -219,12 +320,33 @@ public class EventBus implements IEventExceptionHandler
         Objects.requireNonNull(object, "object");
         synchronized (ListenerList.REGISTRY_LOCK)
         {
-            List<Binding> bindings = listeners.remove(object);
-            if (bindings == null)
+            ArrayList<IEventListener> entries = listeners.get(object);
+            if (entries == null)
                 return;
-            for (Binding binding : bindings)
-                ListenerList.unregisterAll(busID, binding.listener());
+            for (IEventListener listener : entries)
+            {
+                if (!ListenerList.isIndexedListener(listener))
+                    throw new UnsupportedOperationException("Custom IEventListener entries in EventBus.listeners are unsupported");
+            }
+            listeners.remove(object);
+            for (IEventListener listener : entries)
+                ListenerList.unregisterRegistered(busID, listener, false);
         }
+    }
+
+    @HideFromUserdev
+    public boolean hasManagedListeners(Class<? extends Event> eventType, @Nullable ListenerList list)
+    {
+        if (shutdown)
+            return false;
+        ListenerList selected = EventShape.of(eventType).probeList(list);
+        return selected == null || selected.getListeners(busID).length != 0;
+    }
+
+    @HideFromUserdev
+    public boolean hasManagedListeners(Event event)
+    {
+        return !shutdown && event.getListenerList().getListeners(busID).length != 0;
     }
 
     public boolean post(Event event)
@@ -247,7 +369,7 @@ public class EventBus implements IEventExceptionHandler
             Throwables.throwIfUnchecked(throwable);
             throw new RuntimeException(throwable);
         }
-        return event.isCancelable() && event.isCanceled();
+        return Event.isCancelableAndCanceled(event);
     }
 
     public void shutdown()
@@ -267,13 +389,14 @@ public class EventBus implements IEventExceptionHandler
         }
     }
 
-    private record ContextSetterEventListener(ModContainer owner, ASMEventHandler handler, boolean setEventOwner)
+    record ContextSetterEventListener(ModContainer owner, ASMEventHandler handler, boolean setEventOwner)
         implements IEventListener
     {
         @Override
         public void invoke(Event event)
         {
-            ModContainer previous = ModEventContext.swapOwner(owner);
+            var frame = ModEventContext.currentFrame();
+            var previous = ModEventContext.pushDispatchOwner(frame, owner);
             try
             {
                 if (setEventOwner)
@@ -282,7 +405,7 @@ public class EventBus implements IEventExceptionHandler
             }
             finally
             {
-                ModEventContext.setOwner(previous);
+                ModEventContext.restoreDispatchOwner(frame, previous);
             }
         }
 

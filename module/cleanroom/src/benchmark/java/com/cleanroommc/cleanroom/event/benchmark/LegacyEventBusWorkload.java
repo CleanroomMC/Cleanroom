@@ -99,6 +99,23 @@ public final class LegacyEventBusWorkload {
     }
 
     public static Supplier<?> construction(String scenario, int count) {
+        if (scenario.equals("mixed")) {
+            return new Supplier<Event>() {
+
+                private int next;
+
+                @Override
+                public Event get() {
+                    return switch (next++ & 3) {
+                        case 0 -> new PlainEvent();
+                        case 1 -> new InheritedEvent();
+                        case 2 -> new CancelEvent();
+                        default -> new TypedEvent<String>();
+                    };
+                }
+
+            };
+        }
         return PlainEvent::new;
     }
 

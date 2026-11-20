@@ -21,7 +21,9 @@ package net.minecraftforge.fml.common.eventhandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -30,8 +32,11 @@ public class ListenerList
 {
     static final Object REGISTRY_LOCK = new Object();
     private static final List<ListenerList> allLists = new ArrayList<>();
+    // Reverse index for listeners installed through EventBus, also updated by public
+    // ListenerList registrations. The extra counts cover copies and repeated entries.
+    private static final Map<IEventListener, ListenerListInst> registrations = new IdentityHashMap<>();
+    private static final Map<IEventListener, Map<ListenerListInst, Integer>> extraRegistrations = new IdentityHashMap<>();
     private static int maxSize;
-    private static int nextBusID;
 
     @Nullable
     private final ListenerList parent;
@@ -49,17 +54,6 @@ public class ListenerList
         {
             ensureCapacity(maxSize);
             allLists.add(this);
-        }
-    }
-
-    static int allocateBusID()
-    {
-        synchronized (REGISTRY_LOCK)
-        {
-            int id = nextBusID;
-            resize(id + 1);
-            nextBusID++;
-            return id;
         }
     }
 
@@ -93,7 +87,7 @@ public class ListenerList
 
         ListenerListInst[] expanded = Arrays.copyOf(old, max);
         for (int index = old.length; index < max; index++)
-            expanded[index] = new ListenerListInst(parent == null ? null : parent.lists[index]);
+            expanded[index] = new ListenerListInst(this, index, parent == null ? null : parent.lists[index]);
         lists = expanded;
     }
 
@@ -118,18 +112,12 @@ public class ListenerList
 
     public void register(int id, EventPriority priority, IEventListener listener)
     {
-        synchronized (REGISTRY_LOCK)
-        {
-            lists[id].register(priority, listener);
-        }
+        lists[id].register(priority, listener);
     }
 
     public void unregister(int id, IEventListener listener)
     {
-        synchronized (REGISTRY_LOCK)
-        {
-            lists[id].unregister(listener);
-        }
+        lists[id].unregister(listener);
     }
 
     public static void unregisterAll(int id, IEventListener listener)
@@ -142,19 +130,48 @@ public class ListenerList
         }
     }
 
+    static boolean isIndexedListener(IEventListener listener)
+    {
+        return listener instanceof ASMEventHandler || listener instanceof EventBus.ContextSetterEventListener;
+    }
+
+    static void unregisterRegistered(int id, IEventListener listener, boolean rollback)
+    {
+        synchronized (REGISTRY_LOCK)
+        {
+            ListenerListInst first = registrations.get(listener);
+            var extra = extraRegistrations.get(listener);
+            if (extra != null)
+            {
+                // Removing an entry also updates the index, so visit a snapshot of the copies.
+                for (ListenerListInst node : extra.keySet().toArray(ListenerListInst[]::new))
+                {
+                    if (node != first && node.busID == id)
+                        node.unregister(listener, rollback);
+                }
+            }
+            if (first != null && first.busID == id)
+                first.unregister(listener, rollback);
+        }
+    }
+
     private static class ListenerListInst
     {
         private static final EventPriority[] PRIORITIES = EventPriority.values();
         private static final IEventListener[] EMPTY = new IEventListener[0];
 
+        private final ListenerList owner;
+        private final int busID;
         private final ArrayList<IEventListener>[] priorities;
         private ListenerListInst parent;
         private List<ListenerListInst> children;
         private volatile IEventListener[] listeners;
 
         @SuppressWarnings("unchecked")
-        private ListenerListInst(ListenerListInst parent)
+        private ListenerListInst(ListenerList owner, int busID, ListenerListInst parent)
         {
+            this.owner = owner;
+            this.busID = busID;
             priorities = (ArrayList<IEventListener>[]) new ArrayList<?>[PRIORITIES.length];
             this.parent = parent;
             if (parent != null)
@@ -165,15 +182,50 @@ public class ListenerList
             }
         }
 
-        private void dispose()
+        public void dispose()
         {
-            Arrays.fill(priorities, null);
-            parent = null;
-            children = null;
-            listeners = EMPTY;
+            synchronized (REGISTRY_LOCK)
+            {
+                for (var local : priorities)
+                {
+                    if (local != null)
+                    {
+                        for (int index = 0; index < local.size(); index++)
+                            forget(local.get(index));
+                    }
+                }
+                Arrays.fill(priorities, null);
+                invalidate();
+                if (parent != null && parent.children != null)
+                    parent.children.remove(this);
+                parent = null;
+                children = null;
+                listeners = EMPTY;
+            }
         }
 
-        private IEventListener[] getListeners()
+        public List<IEventListener> getListeners(EventPriority priority)
+        {
+            synchronized (REGISTRY_LOCK)
+            {
+                int ordinal = priority.ordinal();
+                ArrayList<IEventListener> result = null;
+                for (ListenerListInst node = this; node != null; node = node.parent)
+                {
+                    var local = node.priorities[ordinal];
+                    if (local != null && !local.isEmpty())
+                    {
+                        if (result == null)
+                            result = new ArrayList<>(local);
+                        else
+                            result.addAll(local);
+                    }
+                }
+                return result == null ? List.of() : result;
+            }
+        }
+
+        public IEventListener[] getListeners()
         {
             IEventListener[] snapshot = listeners;
             if (snapshot != null)
@@ -184,6 +236,19 @@ public class ListenerList
                 if (listeners == null)
                     listeners = buildCache();
                 return listeners;
+            }
+        }
+
+        protected boolean shouldRebuild()
+        {
+            return listeners == null;
+        }
+
+        protected void forceRebuild()
+        {
+            synchronized (REGISTRY_LOCK)
+            {
+                invalidate();
             }
         }
 
@@ -237,26 +302,86 @@ public class ListenerList
             return snapshot;
         }
 
-        private void register(EventPriority priority, IEventListener listener)
+        public void register(EventPriority priority, IEventListener listener)
         {
-            int ordinal = priority.ordinal();
-            var local = priorities[ordinal];
-            if (local == null)
-                priorities[ordinal] = local = new ArrayList<>();
-            local.add(listener);
-            invalidate();
+            synchronized (REGISTRY_LOCK)
+            {
+                int ordinal = priority.ordinal();
+                var local = priorities[ordinal];
+                if (local == null)
+                    priorities[ordinal] = local = new ArrayList<>();
+                local.add(listener);
+                if (isIndexedListener(listener))
+                {
+                    if (registrations.putIfAbsent(listener, this) != null)
+                        extraRegistrations.computeIfAbsent(listener, ignored -> new IdentityHashMap<>()).merge(this, 1, Integer::sum);
+                }
+                invalidate();
+            }
         }
 
-        private void unregister(IEventListener listener)
+        public void unregister(IEventListener listener)
+        {
+            synchronized (REGISTRY_LOCK)
+            {
+                remove(listener);
+            }
+        }
+
+        private void unregister(IEventListener listener, boolean rollback)
+        {
+            if (rollback)
+                remove(listener);
+            else
+                owner.unregister(busID, listener);
+        }
+
+        private void remove(IEventListener listener)
         {
             boolean removed = false;
             for (var local : priorities)
             {
-                if (local != null && local.remove(listener))
+                int index = local == null ? -1 : local.indexOf(listener);
+                if (index >= 0)
+                {
+                    forget(local.remove(index));
                     removed = true;
+                }
             }
             if (removed)
                 invalidate();
+        }
+
+        private void forget(IEventListener listener)
+        {
+            ListenerListInst first = registrations.get(listener);
+            if (first == null)
+                return;
+
+            var extra = extraRegistrations.get(listener);
+            if (extra == null)
+            {
+                if (first == this)
+                    registrations.remove(listener);
+                return;
+            }
+
+            Integer count = extra.get(this);
+            if (count == null && first == this)
+            {
+                ListenerListInst replacement = extra.keySet().iterator().next();
+                registrations.put(listener, replacement);
+                replacement.forget(listener);
+            }
+            else if (count != null)
+            {
+                if (count == 1)
+                    extra.remove(this);
+                else
+                    extra.put(this, count - 1);
+                if (extra.isEmpty())
+                    extraRegistrations.remove(listener);
+            }
         }
     }
 }

@@ -84,6 +84,8 @@ class LegacyEventBusDifferentialTest {
             "cancel", "cancelable=true", "phase=HIGH", "cancelable=true", "canceled=true", "phase=NORMAL",
             "cancelable=true", "canceled=true", "resume", "cancelable=true", "phase=LOW", "cancelable=false",
             "base callback=LOW", "cancelable=false", "post=false");
+        exact(LegacyDispatchScenarios.class, "overriddenCanceledGetter", "get canceled", "get canceled", "receive",
+            "get canceled", "post=true");
         exact(LegacyDispatchScenarios.class, "genericIdentityAndShortCircuit", "change=HIGH", "selector=java.lang.String",
             "typed=LOW", "matched=false", "change=HIGH", "selector=java.lang.Double", "mismatched=false",
             "change=HIGH", "canceled=true/LOW", "equal distinct selector=true", "selector=java.util.List<java.lang.String>",

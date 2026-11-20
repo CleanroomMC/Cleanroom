@@ -1,11 +1,20 @@
 /*
- * Minecraft Forge
- * Copyright (c) 2016-2020.
+ * Cleanroom
+ * Copyright (c) 2026 Cleanroom contributors.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation version 2.1
  * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 package net.minecraftforge.fml.common.eventhandler;
@@ -44,7 +53,7 @@ record SubscriberMethod(Method source, Method callback) {
     private static List<SubscriberMethod> scan(Class<?> type, boolean isStatic) {
         Iterable<? extends Class<?>> declarations = isStatic ? List.of(type) : TypeToken.of(type).getTypes().rawTypes();
         var subscribers = new LinkedHashMap<Signature, SubscriberMethod>();
-        var privateSubscribers = new ArrayList<SubscriberMethod>();
+        var declaredPrivateSubscribers = new ArrayList<SubscriberMethod>();
         for (Class<?> declaration : declarations) {
             for (Method method : declaration.getDeclaredMethods()) {
                 int modifiers = method.getModifiers();
@@ -52,7 +61,9 @@ record SubscriberMethod(Method source, Method callback) {
                     continue;
                 }
                 if (Modifier.isPrivate(modifiers)) {
-                    privateSubscribers.add(new SubscriberMethod(method, method));
+                    if (declaration == type) {
+                        declaredPrivateSubscribers.add(new SubscriberMethod(method, method));
+                    }
                     continue;
                 }
                 var signature = new Signature(method.getName(), Arrays.asList(method.getParameterTypes()));
@@ -60,8 +71,8 @@ record SubscriberMethod(Method source, Method callback) {
                     ignored -> new SubscriberMethod(method, invocationTarget(type, method, isStatic)));
             }
         }
-        privateSubscribers.addAll(subscribers.values());
-        return List.copyOf(privateSubscribers);
+        declaredPrivateSubscribers.addAll(subscribers.values());
+        return List.copyOf(declaredPrivateSubscribers);
     }
 
     private static Method invocationTarget(Class<?> type, Method source, boolean isStatic) {

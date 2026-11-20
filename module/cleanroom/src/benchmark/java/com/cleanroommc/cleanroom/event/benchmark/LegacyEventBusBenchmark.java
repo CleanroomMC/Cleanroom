@@ -67,7 +67,7 @@ public class LegacyEventBusBenchmark {
     }
 
     @Benchmark
-    public Object constructEvent(Empty state) {
+    public Object constructEvent(Construction state) {
         return state.construct.get();
     }
 
@@ -189,12 +189,23 @@ public class LegacyEventBusBenchmark {
     public static class Empty {
 
         private IntSupplier post;
-        private Supplier<?> construct;
 
         @Setup
         public void setup() throws Exception {
             post = workload(IntSupplier.class, "posts", "reuseEmpty", 0);
-            construct = workload(Supplier.class, "construction", "", 0);
+        }
+
+    }
+
+    @State(Scope.Thread)
+    public static class Construction {
+
+        @Param({ "plain", "mixed" }) public String eventTypes;
+        private Supplier<?> construct;
+
+        @Setup
+        public void setup() throws Exception {
+            construct = workload(Supplier.class, "construction", eventTypes, 0);
         }
 
     }

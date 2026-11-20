@@ -19,7 +19,9 @@ import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.ListenerList;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -28,24 +30,26 @@ import java.util.function.Consumer;
 public final class LegacyEventChannel<E extends Event> {
 
     private final Class<E> eventType;
-    private final EventBus bus;
+    private final @Nullable EventBus bus;
     private final @Nullable Type genericType;
     private final @Nullable ListenerList registrationList;
 
     private LegacyEventChannel(
-        Class<E> eventType, EventBus bus, @Nullable Type genericType, @Nullable ListenerList registrationList) {
+        Class<E> eventType, @Nullable EventBus bus, @Nullable Type genericType,
+        @Nullable ListenerList registrationList) {
         this.eventType = Objects.requireNonNull(eventType, "eventType");
-        this.bus = Objects.requireNonNull(bus, "bus");
+        this.bus = bus;
         this.genericType = genericType;
         this.registrationList = registrationList;
     }
 
+    /** Creates a channel that resolves {@link MinecraftForge#EVENT_BUS} when first used. */
     public static <E extends Event> LegacyEventChannel<E> of(Class<E> eventType) {
-        return of(MinecraftForge.EVENT_BUS, eventType);
+        return new LegacyEventChannel<>(eventType, null, null, null);
     }
 
     public static <E extends Event> LegacyEventChannel<E> of(EventBus bus, Class<E> eventType) {
-        return new LegacyEventChannel<>(eventType, bus, null, null);
+        return new LegacyEventChannel<>(eventType, Objects.requireNonNull(bus, "bus"), null, null);
     }
 
     public Class<E> eventType() {
@@ -53,25 +57,41 @@ public final class LegacyEventChannel<E extends Event> {
     }
 
     public EventBus scope() {
-        return bus;
+        return bus != null ? bus : MinecraftForge.EVENT_BUS;
     }
 
-    /**
-     * Limits registration to legacy generic events returning this exact Type object.
-     *
-     * @param type the selector returned by the event's generic getter
-     */
+    /** Returns the Forge bus that owns the legacy scope. */
+    public EventBus raw() {
+        return scope();
+    }
+
+    /** Checks the declared event type. An unresolved hand-written list may have listeners. */
+    public boolean hasListeners() {
+        return scope().hasManagedListeners(eventType, registrationList);
+    }
+
+    /** Checks the listener list selected by the event instance. */
+    public boolean hasListeners(E event) {
+        return scope().hasManagedListeners(eventType.cast(event));
+    }
+
+    /** Limits registration to legacy generic events returning this exact Type object. */
     public LegacyEventChannel<E> withGenericType(Type type) {
         return new LegacyEventChannel<>(eventType, bus, Objects.requireNonNull(type, "type"), registrationList);
     }
 
-    /**
-     * Points registration at a known hand-written table, including for an abstract event class.
-     *
-     * @param list the table an instance uses when posted
-     */
+    /** Points registration at a known hand-written table, including for an abstract event class. */
     public LegacyEventChannel<E> withListenerList(ListenerList list) {
         return new LegacyEventChannel<>(eventType, bus, genericType, Objects.requireNonNull(list, "list"));
+    }
+
+    public Subscription subscribe(SubscriptionGroup subscriptions, Consumer<? super E> listener) {
+        return subscribe(subscriptions, EventPriority.NORMAL, listener);
+    }
+
+    public Subscription subscribe(
+        SubscriptionGroup subscriptions, EventPriority priority, Consumer<? super E> listener) {
+        return subscribe(subscriptions, priority, false, listener);
     }
 
     public Subscription subscribe(SubscriptionGroup subscriptions, String source, Consumer<? super E> listener) {
@@ -79,20 +99,51 @@ public final class LegacyEventChannel<E extends Event> {
     }
 
     public Subscription subscribe(
+        SubscriptionGroup subscriptions, EventPriority priority, String source, Consumer<? super E> listener) {
+        return subscribe(subscriptions, priority, false, source, listener);
+    }
+
+    public Subscription subscribe(
+        SubscriptionGroup subscriptions, EventPriority priority, boolean receiveCanceled,
+        Consumer<? super E> listener) {
+        return subscribe(
+            subscriptions, priority, receiveCanceled, SubscriptionGroup.callbackSource(listener), listener
+        );
+    }
+
+    public Subscription subscribe(
         SubscriptionGroup subscriptions, EventPriority priority, boolean receiveCanceled, String source,
         Consumer<? super E> listener) {
-        String description = eventType.getName() + " <- " + Objects.requireNonNull(source, "source");
+        String description = describe(source);
         return subscriptions.install(
             description,
-            () -> bus.addManagedListener(
+            () -> scope().addManagedListener(
                 eventType, registrationList, priority, receiveCanceled, genericType, listener, subscriptions.owner(),
                 description
             )
         );
     }
 
+    public List<Subscription> subscribe(SubscriptionGroup subscriptions, MethodHandles.Lookup lookup, Object target) {
+        var registrations = scope().prepareManagedListeners(
+            eventType, registrationList, genericType, lookup, target, subscriptions.owner()
+        );
+        return subscriptions.installAll(
+            registrations, listener -> subscriptions.install(describe(listener.source()), listener.install())
+        );
+    }
+
     public boolean post(E event) {
-        return bus.post(eventType.cast(event));
+        return scope().post(eventType.cast(event));
+    }
+
+    public E fire(E event) {
+        post(event);
+        return event;
+    }
+
+    private String describe(String source) {
+        return eventType.getName() + " <- " + Objects.requireNonNull(source, "source");
     }
 
 }

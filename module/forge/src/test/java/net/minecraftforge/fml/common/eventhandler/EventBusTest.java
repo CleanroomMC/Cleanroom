@@ -86,6 +86,18 @@ public class EventBusTest {
     }
 
     @Test
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void rawManagedEventTypeMustExtendEvent() {
+        var shapeFailure = Assertions.assertThrows(IllegalArgumentException.class, () -> EventShape.of(String.class));
+        Assertions.assertTrue(shapeFailure.getMessage().contains("java.lang.String is not an Event"));
+        var bus = new EventBus();
+        var failure = Assertions.assertThrows(IllegalArgumentException.class,
+            () -> bus.addManagedListener((Class) String.class, null, EventPriority.NORMAL, false, null, event -> {},
+                ModEventContext.registrationOwner(), "example"));
+        Assertions.assertTrue(failure.getMessage().contains("java.lang.String is not an Event"));
+    }
+
+    @Test
     public void registerNonPublic() {
         var bus = new EventBus();
 

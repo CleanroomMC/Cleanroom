@@ -49,7 +49,7 @@ public class Event
 
     private static final EventPriority[] PHASES = EventPriority.values();
 
-    private boolean isCanceled = false;
+    private boolean isCanceled;
     private Result result = Result.DEFAULT;
     private final ListenerList listenerList;
     private final byte properties;
@@ -59,7 +59,7 @@ public class Event
     public Event()
     {
         EventShape shape = EventShape.of(getClass());
-        listenerList = shape.baseList();
+        listenerList = shape.baseList;
         properties = shape.baseProperties;
         setup();
     }
@@ -82,6 +82,17 @@ public class Event
     public boolean isCanceled()
     {
         return isCanceled;
+    }
+
+    // Use the base fields only when neither cancellation getter has an override.
+    static boolean isCancelableAndCanceled(Event event)
+    {
+        return switch (event.properties & (EventShape.CANCELABLE | EventShape.VIRTUAL_CANCELLATION))
+        {
+            case 0 -> false;
+            case EventShape.CANCELABLE -> event.isCanceled;
+            default -> event.isCancelable() && event.isCanceled();
+        };
     }
 
     /**

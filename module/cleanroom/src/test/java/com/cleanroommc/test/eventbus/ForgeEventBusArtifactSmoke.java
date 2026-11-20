@@ -10,6 +10,9 @@
 
 package com.cleanroommc.test.eventbus;
 
+import com.cleanroommc.cleanroom.event.CancellableEventChannel;
+import com.cleanroommc.cleanroom.event.EventChannel;
+
 import org.jspecify.annotations.NullMarked;
 
 import net.minecraft.launchwrapper.Launch;
@@ -31,9 +34,9 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public final class NativeEventBusArtifactSmoke {
+public final class ForgeEventBusArtifactSmoke {
 
-    private NativeEventBusArtifactSmoke() { }
+    private ForgeEventBusArtifactSmoke() { }
 
     public static void main(String[] args) throws Throwable {
         verify();
@@ -46,7 +49,8 @@ public final class NativeEventBusArtifactSmoke {
         var previousContextLoader = thread.getContextClassLoader();
         try (var loader = new LaunchClassLoader(ClassLoader.getSystemClassLoader())) {
             // Gradle's test worker loads the test classpath separately from java.class.path.
-            loader.addURL(location(NativeEventBusArtifactSmoke.class));
+            loader.addURL(location(ForgeEventBusArtifactSmoke.class));
+            loader.addURL(location(EventChannel.class));
             loader.addURL(location(EventBus.class));
             loader.addURL(location(NullMarked.class));
             thread.setContextClassLoader(loader);
@@ -74,10 +78,18 @@ public final class NativeEventBusArtifactSmoke {
     public static final class Scenario {
 
         private static final BusGroup GROUP = BusGroup.create("cleanroom-artifact-smoke");
-        private static final CancellableEventBus<SampleRecord> RECORD_BUS = CancellableEventBus.create(
+        private static final CancellableEventChannel<SampleRecord> RECORD_CHANNEL = EventChannel.cancellableRecord(
             GROUP, SampleRecord.class
         );
-        private static final EventBus<SampleMutable> MUTABLE_BUS = EventBus.create(GROUP, SampleMutable.class);
+        private static final EventChannel<SampleMutable> MUTABLE_CHANNEL = EventChannel.mutable(
+            GROUP, SampleMutable.class
+        );
+        private static final CancellableEventBus<SampleRecord> RECORD_BUS = CancellableEventBus.create(
+            RECORD_CHANNEL.scope(), RECORD_CHANNEL.eventType()
+        );
+        private static final EventBus<SampleMutable> MUTABLE_BUS = EventBus.create(
+            MUTABLE_CHANNEL.scope(), MUTABLE_CHANNEL.eventType()
+        );
 
         private Scenario() { }
 
@@ -85,13 +97,18 @@ public final class NativeEventBusArtifactSmoke {
             var loader = Scenario.class.getClassLoader();
             require(loader == Launch.classLoader, "The fixture must run under the Launch classloader");
             require(EventBus.class.getClassLoader() == loader, "Foundation must define the upstream EventBus API");
+            require(EventChannel.class.getClassLoader() == loader, "Foundation must define the typed event channel");
             require(
                 SampleRecord.class.getClassLoader() == loader && SampleMutable.class.getClassLoader() == loader,
-                "Foundation must define both native event types"
+                "Foundation must define both Forge 7 event types"
             );
             require(
                 "7.0.6".equals(EventBus.class.getPackage().getImplementationVersion()),
                 "The upstream EventBus JAR must report implementation version 7.0.6"
+            );
+            require(
+                RECORD_CHANNEL.raw() == RECORD_BUS && MUTABLE_CHANNEL.raw() == MUTABLE_BUS,
+                "The channels must expose the original upstream buses"
             );
             try {
                 verifyRecord();
@@ -108,7 +125,7 @@ public final class NativeEventBusArtifactSmoke {
             var observer = RECORD_BUS.addListener(Priority.NORMAL, recordValue);
             var event = new SampleRecord(7);
             require(
-                RECORD_BUS.post(event) && seen.get() == 0,
+                RECORD_CHANNEL.hasListeners() && RECORD_CHANNEL.post(event) && seen.get() == 0,
                 "Record cancellation must skip the subsequent ordinary listener"
             );
             RECORD_BUS.removeListener(canceller);
@@ -118,7 +135,7 @@ public final class NativeEventBusArtifactSmoke {
                 "Removing the cancellation token must leave the other record listener active"
             );
             RECORD_BUS.removeListener(observer);
-            require(!RECORD_BUS.hasListeners(), "Removing the second token must empty the record bus");
+            require(!RECORD_CHANNEL.hasListeners(), "Removing the second token must empty the record bus");
         }
 
         private static void verifyMutableAndBulk() {
@@ -129,7 +146,7 @@ public final class NativeEventBusArtifactSmoke {
 
             var mutable = new SampleMutable();
             require(
-                MUTABLE_BUS.fire(mutable) == mutable && mutable.value == 5,
+                MUTABLE_CHANNEL.fire(mutable) == mutable && mutable.value == 5,
                 "Mutable fire must return the original event with both listeners' mutations"
             );
             require(

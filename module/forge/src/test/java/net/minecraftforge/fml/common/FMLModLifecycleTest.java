@@ -1,8 +1,11 @@
 package net.minecraftforge.fml.common;
 
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.eventbus.Subscribe;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
 import net.minecraftforge.fml.common.event.FMLEvent;
+import net.minecraftforge.fml.common.event.FMLModDisabledEvent;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 import org.apache.logging.log4j.ThreadContext;
@@ -14,8 +17,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,7 +55,8 @@ public class FMLModLifecycleTest {
             field(LoadController.class, "eventChannels").set(controller, ImmutableMap.of(
                 first.getModId(), firstBus, second.getModId(), secondBus));
             loaderController.set(loader, controller);
-            loader.setActiveModContainer(publisher);
+            controller.forceActiveContainer(publisher);
+            ModEventContext.setOwner(publisher);
             ThreadContext.put("mod", "publisher log");
 
             controller.propogateStateMessage(event);
@@ -67,9 +76,69 @@ public class FMLModLifecycleTest {
             assertContext(publisher, "publisher log");
         } finally {
             loaderController.set(loader, previousController);
-            loader.setActiveModContainer(previousOwner);
+            ModEventContext.setOwner(previousOwner);
             ModEventContext.restoreLogMod(previousLog);
         }
+    }
+
+    @Test
+    void startupOwnersYieldToTheSharedControllerOnTheMainAndWorkerThreads() throws Exception {
+        Loader loader = Loader.instance();
+        Field loaderController = field(Loader.class, "modController");
+        Object previousController = loaderController.get(loader);
+        ModContainer previousOwner = ModEventContext.owner();
+        ModContainer startupOwner = ManagedEventBusLifecycleTest.owner("startup");
+        ModContainer sharedOwner = ManagedEventBusLifecycleTest.owner("shared");
+        ModContainer nextOwner = ManagedEventBusLifecycleTest.owner("next");
+        try (var worker = Executors.newSingleThreadExecutor()) {
+            loaderController.set(loader, null);
+            loader.setActiveModContainer(startupOwner);
+            assertSame(startupOwner, loader.activeModContainer());
+            assertSame(startupOwner, worker.submit(() -> {
+                loader.setActiveModContainer(startupOwner);
+                return loader.activeModContainer();
+            }).get(5, TimeUnit.SECONDS));
+
+            var controller = new LoadController(loader);
+            controller.forceActiveContainer(sharedOwner);
+            loaderController.set(loader, controller);
+            assertSame(sharedOwner, loader.activeModContainer());
+            assertSame(sharedOwner, worker.submit(loader::activeModContainer).get(5, TimeUnit.SECONDS));
+
+            loader.setActiveModContainer(null);
+            assertNull(controller.activeContainer());
+            loader.setActiveModContainer(nextOwner);
+            assertSame(nextOwner, loader.activeModContainer());
+            assertSame(nextOwner, worker.submit(loader::activeModContainer).get(5, TimeUnit.SECONDS));
+        } finally {
+            loaderController.set(loader, previousController);
+            ModEventContext.setOwner(previousOwner);
+        }
+    }
+
+    @Test
+    void disablingStillClosesTheBusIfTheModThrows() throws ReflectiveOperationException {
+        LoadController controller = new LoadController(Loader.instance());
+        ModContainer mod = ManagedEventBusLifecycleTest.owner("disabled");
+        var failure = new LoaderException("disable failed");
+        var calls = new AtomicInteger();
+        var bus = new FMLThrowingEventBus((exception, context) -> controller.errorOccurred(mod, exception), mod);
+        bus.register(new Object() {
+            @Subscribe
+            public void disabled(FMLModDisabledEvent event) {
+                calls.incrementAndGet();
+                throw failure;
+            }
+        });
+        controller.getActiveModList().add(mod);
+        field(LoadController.class, "modObjectList").set(controller, HashBiMap.create());
+        field(LoadController.class, "eventChannels").set(controller, ImmutableMap.of(mod.getModId(), bus));
+
+        assertSame(failure, assertThrows(LoaderException.class, () -> controller.disableMod(mod)));
+        bus.post(new FMLModDisabledEvent());
+        assertEquals(1, calls.get());
+        assertThrows(IllegalStateException.class, () -> bus.register(new Object()));
+        assertFalse(controller.getActiveModList().contains(mod));
     }
 
     private FMLModContainer mod(String id, FixtureMod instance) throws ReflectiveOperationException {
@@ -79,16 +148,16 @@ public class FMLModLifecycleTest {
         metadata.modId = id;
         metadata.name = "Mod " + id;
         field(FMLModContainer.class, "modMetadata").set(container, metadata);
-        var gatherAnnotations = FMLModContainer.class.getDeclaredMethod("gatherAnnotations", Class.class);
-        gatherAnnotations.setAccessible(true);
-        gatherAnnotations.invoke(container, FixtureMod.class);
         field(FMLModContainer.class, "modInstance").set(container, instance);
         return container;
     }
 
-    private static FMLThrowingEventBus modBus(LoadController controller, ModContainer container) {
-        var bus = FMLThrowingEventBus.forLifecycle((failure, context) -> controller.errorOccurred(container, failure), container);
+    private static FMLThrowingEventBus modBus(LoadController controller, FMLModContainer container) throws ReflectiveOperationException {
+        var bus = new FMLThrowingEventBus((failure, context) -> controller.errorOccurred(container, failure), container);
         assertTrue(container.registerBus(bus, controller));
+        var gatherAnnotations = FMLModContainer.class.getDeclaredMethod("gatherAnnotations", Class.class);
+        gatherAnnotations.setAccessible(true);
+        gatherAnnotations.invoke(container, FixtureMod.class);
         return bus;
     }
 
@@ -117,6 +186,11 @@ public class FMLModLifecycleTest {
         public void applyModContainer(ModContainer mod) {
             assertSame(mod, ModEventContext.owner());
             assertSame(mod, Loader.instance().activeModContainer());
+            try (var worker = Executors.newVirtualThreadPerTaskExecutor()) {
+                assertSame(mod, worker.submit(Loader.instance()::activeModContainer).get(5, TimeUnit.SECONDS));
+            } catch (Exception failure) {
+                throw new AssertionError("Could not query the loading owner from a worker", failure);
+            }
             appliedOwner = mod;
             trace.add("apply " + mod.getModId());
         }

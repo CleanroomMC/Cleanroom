@@ -1,7 +1,7 @@
 package net.minecraftforge.fml.common;
 
+import com.cleanroommc.cleanroom.event.EventChannel;
 import com.cleanroommc.cleanroom.event.LegacyEventChannel;
-import com.cleanroommc.cleanroom.event.NativeEventChannel;
 import com.cleanroommc.cleanroom.event.SubscriptionGroup;
 import com.google.common.eventbus.Subscribe;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
@@ -41,7 +41,7 @@ public class ManagedEventBusLifecycleTest {
         ModContainer first = owner("first");
         ModContainer second = owner("second");
         BusGroup busGroup = BusGroup.create("managed-lifecycle-test");
-        var nativeChannel = NativeEventChannel.record(busGroup, NativeMessage.class);
+        var channel = EventChannel.of(busGroup, ChannelMessage.class);
         var callbackFailure = new IllegalStateException("subscriber");
         var handlerFailure = new IllegalArgumentException("exception handler");
         var legacy = LegacyEventChannel.of(new EventBus((bus, event, listeners, index, failure) -> {
@@ -53,7 +53,7 @@ public class ManagedEventBusLifecycleTest {
         loader.setActiveModContainer(first);
         try (var firstGroup = new SubscriptionGroup();
              var secondGroup = new SubscriptionGroup(second);
-             var guava = FMLThrowingEventBus.forLifecycle((failure, context) -> {
+             var guava = new FMLThrowingEventBus((failure, context) -> {
                  assertSame(callbackFailure, failure);
                  assertContext(first, first.getModId());
                  trace.add("guava exception handler");
@@ -67,13 +67,13 @@ public class ManagedEventBusLifecycleTest {
                 if (message.fail()) throw callbackFailure;
             });
             guava.register(subscriber);
-            nativeChannel.subscribe(secondGroup, Priority.NORMAL, "native listener", message -> {
+            channel.subscribe(secondGroup, Priority.NORMAL, "channel listener", message -> {
                 assertContext(second, listenerLog(second, "publisher log"));
                 assertSame(postingThread, Thread.currentThread());
-                trace.add("native before Guava");
+                trace.add("channel before Guava");
                 try {
                     guava.post(new GuavaMessage(message.fail()));
-                    trace.add("native after Guava");
+                    trace.add("channel after Guava");
                 } finally {
                     assertContext(second, listenerLog(second, "publisher log"));
                 }
@@ -81,17 +81,17 @@ public class ManagedEventBusLifecycleTest {
             legacy.subscribe(firstGroup, "legacy listener", message -> {
                 assertContext(first, listenerLog(first, "publisher log"));
                 assertSame(postingThread, Thread.currentThread());
-                trace.add("legacy before native");
+                trace.add("legacy before channel");
                 if (message.fail) {
                     assertSame(handlerFailure, assertThrows(IllegalArgumentException.class,
-                        () -> nativeChannel.post(new NativeMessage(true))));
+                        () -> channel.post(new ChannelMessage(true))));
                     assertContext(first, listenerLog(first, "publisher log"));
-                    trace.add("legacy after native exception");
+                    trace.add("legacy after channel exception");
                     throw handlerFailure;
                 }
-                nativeChannel.post(new NativeMessage(false));
+                channel.post(new ChannelMessage(false));
                 assertContext(first, listenerLog(first, "publisher log"));
-                trace.add("legacy after native");
+                trace.add("legacy after channel");
             });
 
             loader.setActiveModContainer(publisher);
@@ -101,9 +101,9 @@ public class ManagedEventBusLifecycleTest {
             assertSame(handlerFailure, assertThrows(IllegalArgumentException.class,
                 () -> legacy.post(new LegacyMessage(true))));
             assertContext(publisher, "publisher log");
-            assertEquals(List.of("legacy before native", "native before Guava", "guava subscriber",
-                "native after Guava", "legacy after native", "legacy before native", "native before Guava",
-                "guava subscriber", "guava exception handler", "legacy after native exception"), trace);
+            assertEquals(List.of("legacy before channel", "channel before Guava", "guava subscriber",
+                "channel after Guava", "legacy after channel", "legacy before channel", "channel before Guava",
+                "guava subscriber", "guava exception handler", "legacy after channel exception"), trace);
         } finally {
             busGroup.dispose();
             ModEventContext.restoreLogMod(previousLog);
@@ -161,19 +161,19 @@ public class ManagedEventBusLifecycleTest {
         var message = new CancellableMessage();
         var trace = new ArrayList<String>();
         try (var subscriptions = new SubscriptionGroup(owner("canceller"))) {
-            root.subscribe(subscriptions, EventPriority.HIGH, false, "cancel", event -> {
+            root.subscribe(subscriptions, EventPriority.HIGH, event -> {
                 assertSame(message, event);
                 event.setCanceled(true);
                 trace.add("cancel");
             });
             child.subscribe(subscriptions, "skip while cancelled", event -> trace.add("skipped"));
-            child.subscribe(subscriptions, EventPriority.LOW, true, "uncancel", event -> {
+            child.subscribe(subscriptions, EventPriority.LOW, true, event -> {
                 assertSame(message, event);
                 assertTrue(event.isCanceled());
                 event.setCanceled(false);
                 trace.add("uncancel");
             });
-            root.subscribe(subscriptions, EventPriority.LOWEST, false, "after uncancel", event -> trace.add("continue"));
+            root.subscribe(subscriptions, EventPriority.LOWEST, "after uncancel", event -> trace.add("continue"));
 
             assertFalse(root.post(message));
             assertFalse(message.isCanceled());
@@ -206,12 +206,20 @@ public class ManagedEventBusLifecycleTest {
         var bus = new EventBus();
         var event = new DescriptorEvent();
         var trace = new ArrayList<DescriptorParent>();
-        var channel = LegacyEventChannel.of(bus, DescriptorParent.class).withListenerList(DescriptorParent.LIST);
+        var unresolved = LegacyEventChannel.of(bus, DescriptorParent.class);
+        var channel = unresolved.withListenerList(DescriptorParent.LIST);
+        assertTrue(unresolved.hasListeners());
+        assertFalse(unresolved.hasListeners(event));
+        assertFalse(channel.hasListeners());
         try (var subscriptions = new SubscriptionGroup(owner("descriptor"))) {
             channel.subscribe(subscriptions, "hand-written parent", trace::add);
+            assertTrue(channel.hasListeners());
+            assertTrue(unresolved.hasListeners(event));
             channel.post(event);
             assertEquals(List.of(event), trace);
         }
+        assertFalse(channel.hasListeners());
+        assertFalse(unresolved.hasListeners(event));
         bus.post(new DescriptorEvent());
         assertEquals(List.of(event), trace);
     }
@@ -280,7 +288,7 @@ public class ManagedEventBusLifecycleTest {
         assertEquals(log, ThreadContext.get("mod"));
     }
 
-    public record NativeMessage(boolean fail) implements RecordEvent {}
+    public record ChannelMessage(boolean fail) implements RecordEvent {}
 
     public record GuavaMessage(boolean fail) {}
 
