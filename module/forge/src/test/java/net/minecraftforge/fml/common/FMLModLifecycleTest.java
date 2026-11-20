@@ -117,6 +117,39 @@ public class FMLModLifecycleTest {
     }
 
     @Test
+    void clearingDispatchOwnerDoesNotFallBackToSharedController() throws Exception {
+        Loader loader = Loader.instance();
+        Field loaderController = field(Loader.class, "modController");
+        Object previousController = loaderController.get(loader);
+        ModContainer previousOwner = ModEventContext.owner();
+        ModContainer sharedOwner = ManagedEventBusLifecycleTest.owner("shared");
+        ModContainer callbackOwner = ManagedEventBusLifecycleTest.owner("callback");
+        var controller = new LoadController(loader);
+        controller.forceActiveContainer(sharedOwner);
+        try (var worker = Executors.newSingleThreadExecutor()) {
+            loaderController.set(loader, controller);
+            var frame = ModEventContext.currentFrame();
+            var previousDispatch = ModEventContext.pushDispatchOwner(frame, callbackOwner);
+            try {
+                assertSame(callbackOwner, loader.activeModContainer());
+                assertSame(sharedOwner, worker.submit(loader::activeModContainer).get(5, TimeUnit.SECONDS));
+
+                loader.setActiveModContainer(null);
+                assertNull(ModEventContext.owner());
+                assertNull(loader.activeModContainer());
+                assertSame(sharedOwner, controller.activeContainer());
+                assertSame(sharedOwner, worker.submit(loader::activeModContainer).get(5, TimeUnit.SECONDS));
+            } finally {
+                ModEventContext.restoreDispatchOwner(frame, previousDispatch);
+            }
+            assertSame(sharedOwner, loader.activeModContainer());
+        } finally {
+            loaderController.set(loader, previousController);
+            ModEventContext.setOwner(previousOwner);
+        }
+    }
+
+    @Test
     void disablingStillClosesTheBusIfTheModThrows() throws ReflectiveOperationException {
         LoadController controller = new LoadController(Loader.instance());
         ModContainer mod = ManagedEventBusLifecycleTest.owner("disabled");

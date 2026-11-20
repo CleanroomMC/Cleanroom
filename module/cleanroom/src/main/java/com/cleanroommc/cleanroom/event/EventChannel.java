@@ -21,17 +21,31 @@ import net.minecraftforge.eventbus.api.event.RecordEvent;
 import net.minecraftforge.eventbus.api.event.characteristic.Cancellable;
 import net.minecraftforge.eventbus.api.listener.EventListener;
 import net.minecraftforge.eventbus.api.listener.Priority;
-import net.minecraftforge.eventbus.internal.Event;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
-/** Synchronous Forge 7 dispatch for one event type and scope. Store it on the event as a static final field. */
+/**
+ * Synchronous Forge EventBus 7 dispatch for one event type and {@link BusGroup} scope.
+ * <p>
+ * Channels are typically declared as {@code public static final} fields on the event class itself:
+ * <pre>{@code
+ * public record MyEvent(int value) implements RecordEvent {
+ *     public static final EventChannel<MyEvent> BUS = EventChannel.record(MyEvent.class);
+ * }
+ * }</pre>
+ * <p>
+ * Channel factories default to {@link BusGroup#DEFAULT} unless an explicit {@link BusGroup} scope is supplied.
+ * Cancellable Forge 7 events should use {@link CancellableEventChannel}, which adds cancellation and monitor support.
+ * Managed callbacks registered through {@link SubscriptionGroup} run with that group's owning {@link ModContainer}
+ * active on the dispatching thread; {@link #raw()} exposes the underlying {@link EventBus} for direct upstream use.
+ *
+ * @param <E> the Forge 7 event type
+ */
 @NullMarked
 public sealed class EventChannel<E> permits CancellableEventChannel {
 
@@ -47,73 +61,217 @@ public sealed class EventChannel<E> permits CancellableEventChannel {
         this.kind = kind;
     }
 
+    /**
+     * Creates a channel on {@link BusGroup#DEFAULT} for an event class.
+     *
+     * @param <E> the Forge 7 event type
+     * @param eventType the event class
+     * @return a new event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or invalid Forge 7 event type
+     */
     public static <E> EventChannel<E> of(Class<E> eventType) {
         return of(BusGroup.DEFAULT, eventType);
     }
 
+    /**
+     * Creates a channel in the given {@link BusGroup} scope for an event class.
+     *
+     * @param <E> the Forge 7 event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class
+     * @return a new event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or invalid Forge 7 event type
+     */
     public static <E> EventChannel<E> of(BusGroup scope, Class<E> eventType) {
         return create(scope, eventType, EventKind.of(eventType));
     }
 
+    /**
+     * Creates a channel on {@link BusGroup#DEFAULT} for a {@link RecordEvent} class.
+     *
+     * @param <E> the record event type
+     * @param eventType the event class implementing {@link RecordEvent}
+     * @return a new event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or does not implement {@link RecordEvent}
+     */
     public static <E extends RecordEvent> EventChannel<E> record(Class<E> eventType) {
         return record(BusGroup.DEFAULT, eventType);
     }
 
+    /**
+     * Creates a channel in the given {@link BusGroup} scope for a {@link RecordEvent} class.
+     *
+     * @param <E> the record event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class implementing {@link RecordEvent}
+     * @return a new event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or does not implement {@link RecordEvent}
+     */
     public static <E extends RecordEvent> EventChannel<E> record(BusGroup scope, Class<E> eventType) {
         return create(scope, eventType, EventKind.RECORD);
     }
 
+    /**
+     * Creates a channel on {@link BusGroup#DEFAULT} for a {@link MutableEvent} class.
+     *
+     * @param <E> the mutable event type
+     * @param eventType the event class implementing {@link MutableEvent}
+     * @return a new event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or does not implement {@link MutableEvent}
+     */
     public static <E extends MutableEvent> EventChannel<E> mutable(Class<E> eventType) {
         return mutable(BusGroup.DEFAULT, eventType);
     }
 
+    /**
+     * Creates a channel in the given {@link BusGroup} scope for a {@link MutableEvent} class.
+     *
+     * @param <E> the mutable event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class implementing {@link MutableEvent}
+     * @return a new event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or does not implement {@link MutableEvent}
+     */
     public static <E extends MutableEvent> EventChannel<E> mutable(BusGroup scope, Class<E> eventType) {
         return create(scope, eventType, EventKind.MUTABLE);
     }
 
+    /**
+     * Creates a channel on {@link BusGroup#DEFAULT} for an {@link InheritableEvent} class.
+     *
+     * @param <E> the inheritable event type
+     * @param eventType the event class implementing {@link InheritableEvent}
+     * @return a new event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or does not implement
+     * {@link InheritableEvent}
+     */
     public static <E extends InheritableEvent> EventChannel<E> inheritable(Class<E> eventType) {
         return inheritable(BusGroup.DEFAULT, eventType);
     }
 
+    /**
+     * Creates a channel in the given {@link BusGroup} scope for an {@link InheritableEvent} class.
+     *
+     * @param <E> the inheritable event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class implementing {@link InheritableEvent}
+     * @return a new event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or does not implement
+     * {@link InheritableEvent}
+     */
     public static <E extends InheritableEvent> EventChannel<E> inheritable(BusGroup scope, Class<E> eventType) {
         return create(scope, eventType, EventKind.INHERITABLE);
     }
 
-    /** Creates a cancellable channel on {@link BusGroup#DEFAULT}. */
+    /**
+     * Creates a cancellable channel on {@link BusGroup#DEFAULT} for an event class.
+     *
+     * @param <E> the cancellable Forge 7 event type
+     * @param eventType the event class implementing a Forge 7 base type and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event, lacks a valid Forge 7 base type, or
+     * does not implement {@link Cancellable}
+     */
     public static <E extends Cancellable> CancellableEventChannel<E> cancellable(Class<E> eventType) {
         return cancellable(BusGroup.DEFAULT, eventType);
     }
 
-    /** Creates a cancellable channel for a Forge 7 event in the given scope. */
+    /**
+     * Creates a cancellable channel in the given {@link BusGroup} scope for an event class.
+     *
+     * @param <E> the cancellable Forge 7 event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class implementing a Forge 7 base type and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event, lacks a valid Forge 7 base type, or
+     * does not implement {@link Cancellable}
+     */
     public static <E extends Cancellable> CancellableEventChannel<E> cancellable(BusGroup scope, Class<E> eventType) {
         return createCancellable(scope, eventType, EventKind.of(eventType));
     }
 
+    /**
+     * Creates a cancellable channel on {@link BusGroup#DEFAULT} for a cancellable {@link RecordEvent} class.
+     *
+     * @param <E> the cancellable record event type
+     * @param eventType the event class implementing {@link RecordEvent} and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or lacks {@link RecordEvent} or
+     * {@link Cancellable}
+     */
     public static <E extends RecordEvent & Cancellable> CancellableEventChannel<E> cancellableRecord(
         Class<E> eventType) {
         return cancellableRecord(BusGroup.DEFAULT, eventType);
     }
 
+    /**
+     * Creates a cancellable channel in the given {@link BusGroup} scope for a cancellable {@link RecordEvent} class.
+     *
+     * @param <E> the cancellable record event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class implementing {@link RecordEvent} and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or lacks {@link RecordEvent} or
+     * {@link Cancellable}
+     */
     public static <E extends RecordEvent & Cancellable> CancellableEventChannel<E> cancellableRecord(
         BusGroup scope, Class<E> eventType) {
         return createCancellable(scope, eventType, EventKind.RECORD);
     }
 
+    /**
+     * Creates a cancellable channel on {@link BusGroup#DEFAULT} for a cancellable {@link MutableEvent} class.
+     *
+     * @param <E> the cancellable mutable event type
+     * @param eventType the event class implementing {@link MutableEvent} and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or lacks {@link MutableEvent} or
+     * {@link Cancellable}
+     */
     public static <E extends MutableEvent & Cancellable> CancellableEventChannel<E> cancellableMutable(
         Class<E> eventType) {
         return cancellableMutable(BusGroup.DEFAULT, eventType);
     }
 
+    /**
+     * Creates a cancellable channel in the given {@link BusGroup} scope for a cancellable {@link MutableEvent} class.
+     *
+     * @param <E> the cancellable mutable event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class implementing {@link MutableEvent} and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or lacks {@link MutableEvent} or
+     * {@link Cancellable}
+     */
     public static <E extends MutableEvent & Cancellable> CancellableEventChannel<E> cancellableMutable(
         BusGroup scope, Class<E> eventType) {
         return createCancellable(scope, eventType, EventKind.MUTABLE);
     }
 
+    /**
+     * Creates a cancellable channel on {@link BusGroup#DEFAULT} for a cancellable {@link InheritableEvent} class.
+     *
+     * @param <E> the cancellable inheritable event type
+     * @param eventType the event class implementing {@link InheritableEvent} and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@link BusGroup#DEFAULT}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or lacks {@link InheritableEvent} or
+     * {@link Cancellable}
+     */
     public static <E extends InheritableEvent & Cancellable> CancellableEventChannel<E> cancellableInheritable(
         Class<E> eventType) {
         return cancellableInheritable(BusGroup.DEFAULT, eventType);
     }
 
+    /**
+     * Creates a cancellable channel in the given {@link BusGroup} scope for a cancellable {@link InheritableEvent} class.
+     *
+     * @param <E> the cancellable inheritable event type
+     * @param scope the bus group scope owning the underlying bus
+     * @param eventType the event class implementing {@link InheritableEvent} and {@link Cancellable}
+     * @return a new cancellable event channel bound to {@code scope}
+     * @throws IllegalArgumentException if {@code eventType} is a legacy event or lacks {@link InheritableEvent} or
+     * {@link Cancellable}
+     */
     public static <E extends InheritableEvent & Cancellable> CancellableEventChannel<E> cancellableInheritable(
         BusGroup scope, Class<E> eventType) {
         return createCancellable(scope, eventType, EventKind.INHERITABLE);
@@ -168,10 +326,10 @@ public sealed class EventChannel<E> permits CancellableEventChannel {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T extends Event> EventListener addListener(EventBus<T> bus, byte priority, Consumer<?> listener) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static EventListener addListener(EventBus<?> bus, byte priority, Consumer<?> listener) {
         // The channel and callback share the exact event class of this bus.
-        return bus.addListener(priority, (Consumer<T>) listener);
+        return ((EventBus) bus).addListener(priority, listener);
     }
 
     /**
@@ -229,7 +387,7 @@ public sealed class EventChannel<E> permits CancellableEventChannel {
         var frame = ModEventContext.currentFrame();
         boolean opened = ModEventContext.enterDispatch(frame);
         try {
-            return kind.dispatch.test(bus, event);
+            return dispatch(event);
         } finally {
             ModEventContext.exitDispatch(frame, opened);
         }
@@ -335,32 +493,24 @@ public sealed class EventChannel<E> permits CancellableEventChannel {
 
     // Dispatch through exported parameter types so an explicit Forge module can keep its Event marker private.
     @SuppressWarnings("unchecked")
-    private static boolean postRecord(EventBus<?> bus, Object event) {
-        return ((EventBus<RecordEvent>) bus).post((RecordEvent) event);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static boolean postMutable(EventBus<?> bus, Object event) {
-        return ((EventBus<MutableEvent>) bus).post((MutableEvent) event);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static boolean postInheritable(EventBus<?> bus, Object event) {
-        return ((EventBus<InheritableEvent>) bus).post((InheritableEvent) event);
+    private boolean dispatch(E event) {
+        return switch (kind) {
+            case RECORD -> ((EventBus<RecordEvent>) bus).post((RecordEvent) event);
+            case MUTABLE -> ((EventBus<MutableEvent>) bus).post((MutableEvent) event);
+            case INHERITABLE -> ((EventBus<InheritableEvent>) bus).post((InheritableEvent) event);
+        };
     }
 
     enum EventKind {
 
-        RECORD(RecordEvent.class, EventChannel::postRecord),
-        MUTABLE(MutableEvent.class, EventChannel::postMutable),
-        INHERITABLE(InheritableEvent.class, EventChannel::postInheritable);
+        RECORD(RecordEvent.class),
+        MUTABLE(MutableEvent.class),
+        INHERITABLE(InheritableEvent.class);
 
         private final Class<?> baseType;
-        private final BiPredicate<EventBus<?>, Object> dispatch;
 
-        EventKind(Class<?> baseType, BiPredicate<EventBus<?>, Object> dispatch) {
+        EventKind(Class<?> baseType) {
             this.baseType = baseType;
-            this.dispatch = dispatch;
         }
 
         static EventKind of(Class<?> eventType) {

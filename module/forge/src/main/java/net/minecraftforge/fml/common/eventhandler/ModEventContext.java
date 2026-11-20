@@ -20,6 +20,7 @@ package net.minecraftforge.fml.common.eventhandler;
 
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.hidefromuserdev.HideFromUserdev;
+import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.ModContainer;
@@ -55,20 +56,33 @@ public final class ModEventContext {
 
     @Nullable
     public static ModContainer owner() {
-        return loaderOwner(true);
-    }
-
-    @Nullable
-    public static ModContainer loaderOwner(boolean allowAmbient) {
         Object[] frame = OWNER_FRAME.get();
-        return frame == null ? null : owner(frame, allowAmbient);
+        return frame == null ? null : owner(frame);
     }
 
     @Nullable
-    private static ModContainer owner(Object[] frame, boolean allowAmbient) {
+    public static ModContainer activeOwner(@Nullable LoadController controller) {
+        Object[] frame = OWNER_FRAME.get();
+        if (frame != null) {
+            Object scoped = frame[DISPATCH_OWNER];
+            if (scoped == NO_OWNER) {
+                return null;
+            }
+            if (scoped != null && scoped != PUBLISHER) {
+                return (ModContainer) scoped;
+            }
+            if (controller == null) {
+                return (ModContainer) frame[AMBIENT_OWNER];
+            }
+        }
+        return controller != null ? controller.activeContainer() : null;
+    }
+
+    @Nullable
+    private static ModContainer owner(Object[] frame) {
         Object scoped = frame[DISPATCH_OWNER];
         if (scoped == null || scoped == PUBLISHER) {
-            return allowAmbient ? (ModContainer) frame[AMBIENT_OWNER] : null;
+            return (ModContainer) frame[AMBIENT_OWNER];
         }
         return scoped == NO_OWNER ? null : (ModContainer) scoped;
     }
@@ -82,7 +96,7 @@ public final class ModEventContext {
             }
             frame = createFrame();
         }
-        ModContainer previous = owner(frame, true);
+        ModContainer previous = owner(frame);
         if (frame[DISPATCH_OWNER] == null) {
             frame[AMBIENT_OWNER] = owner;
         } else {

@@ -784,9 +784,7 @@ public class Loader
     @Nullable
     public ModContainer activeModContainer()
     {
-        LoadController controller = modController;
-        ModContainer owner = ModEventContext.loaderOwner(controller == null);
-        return owner != null || controller == null ? owner : controller.activeContainer();
+        return ModEventContext.activeOwner(modController);
     }
 
     public boolean isInState(LoaderState state)

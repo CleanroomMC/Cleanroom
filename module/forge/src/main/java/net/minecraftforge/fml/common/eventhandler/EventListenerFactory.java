@@ -25,6 +25,12 @@ final class EventListenerFactory {
             return new ConcurrentHashMap<>();
         }
     };
+    private static final ClassValue<ConcurrentHashMap<Method, Factory>> MANAGED_FACTORIES = new ClassValue<>() {
+        @Override
+        protected ConcurrentHashMap<Method, Factory> computeValue(Class<?> owner) {
+            return new ConcurrentHashMap<>();
+        }
+    };
 
     private EventListenerFactory() {}
 
@@ -37,10 +43,37 @@ final class EventListenerFactory {
 
     static Consumer<Event> createRawListener(Method method, Object instance, MethodHandles.Lookup caller) {
         // A supplied Lookup is a capability. Never make its handles available to a different caller.
-        Factory factory = caller == null
-            ? FACTORIES.get(method.getDeclaringClass()).computeIfAbsent(method, EventListenerFactory::createLegacyFactory)
-            : createFactory(method, caller, unreflect(method, caller));
+        Factory factory;
+        if (caller == null) {
+            factory = FACTORIES.get(method.getDeclaringClass()).computeIfAbsent(method, EventListenerFactory::createLegacyFactory);
+        } else {
+            MethodHandle handle = unreflect(method, caller);
+            factory = managedFactory(method, caller, handle);
+        }
         return factory.bind(instance);
+    }
+
+    private static Factory managedFactory(Method method, MethodHandles.Lookup caller, MethodHandle handle) {
+        Class<?> declaring = method.getDeclaringClass();
+        boolean isStatic = Modifier.isStatic(method.getModifiers());
+        if (!caller.hasFullPrivilegeAccess()
+            || declaring.getModule() != caller.lookupClass().getModule()
+            || declaring.getClassLoader() != caller.lookupClass().getClassLoader()
+            || (!isStatic && handle.type().parameterType(0) != declaring)) {
+            return createFactory(method, caller, handle);
+        }
+
+        // Caller access was already verified above. Anchor the reusable LMF class on declaring so the cache holds
+        // neither the caller's class nor any subscriber instance.
+        Factory cached = MANAGED_FACTORIES.get(declaring).computeIfAbsent(method, subscriber -> {
+            try {
+                MethodHandles.Lookup definingLookup = MethodHandles.privateLookupIn(declaring, caller);
+                return createFactory(subscriber, definingLookup, definingLookup.unreflect(subscriber));
+            } catch (IllegalAccessException unavailable) {
+                return null;
+            }
+        });
+        return cached != null ? cached : createFactory(method, caller, handle);
     }
 
     private static Factory createLegacyFactory(Method method) {
