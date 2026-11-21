@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fml.common.eventhandler;
 
+import java.io.IOException;
+import java.lang.classfile.ClassFile;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -223,8 +225,14 @@ final class EventShape {
     }
 
     private static int declaredMethods(Class<?> type) {
+        Method[] methods;
+        try {
+            methods = type.getDeclaredMethods();
+        } catch (NoClassDefFoundError unresolved) {
+            return declaredMethodsFromClassFile(type, unresolved);
+        }
         int found = 0;
-        for (Method method : type.getDeclaredMethods()) {
+        for (Method method : methods) {
             if (method.getParameterCount() != 0 || Modifier.isStatic(method.getModifiers())) {
                 continue;
             }
@@ -239,5 +247,50 @@ final class EventShape {
             };
         }
         return found;
+    }
+
+    private static int declaredMethodsFromClassFile(Class<?> type, NoClassDefFoundError unresolved) {
+        // A class resource can predate bytecode transformations, so use it only if reflection fails.
+        String internalName = type.getName().replace('.', '/');
+        try (var resource = type.getResourceAsStream('/' + internalName + ".class")) {
+            if (resource == null) {
+                throw new IOException("Class resource is unavailable");
+            }
+            var model = ClassFile.of().parse(resource.readAllBytes());
+            if (!model.thisClass().asInternalName().equals(internalName)) {
+                throw new IOException("Class resource declares " + model.thisClass().asInternalName());
+            }
+
+            int found = 0;
+            for (var method : model.methods()) {
+                if (Modifier.isStatic(method.flags().flagsMask())) {
+                    continue;
+                }
+                var descriptor = method.methodType();
+                found |= switch (method.methodName().stringValue()) {
+                    case "isCancelable" -> descriptor.equalsString("()Z") ? CANCELABLE | VIRTUAL_CANCELLATION : 0;
+                    case "isCanceled" -> descriptor.equalsString("()Z") ? VIRTUAL_CANCELLATION : 0;
+                    case "hasResult" -> descriptor.equalsString("()Z") ? HAS_RESULT : 0;
+                    case "setup" -> descriptor.equalsString("()V") ? SETUP : 0;
+                    case "getListenerList" -> isListenerListReturn(type, descriptor.stringValue()) ? GET_LIST : 0;
+                    default -> 0;
+                };
+            }
+            return found;
+        } catch (IOException | IllegalArgumentException | ClassNotFoundException failure) {
+            var error = new NoClassDefFoundError("Cannot resolve event shape for " + type.getName()
+                + " (" + failure.getMessage() + ')');
+            error.initCause(unresolved);
+            error.addSuppressed(failure);
+            throw error;
+        }
+    }
+
+    private static boolean isListenerListReturn(Class<?> type, String descriptor) throws ClassNotFoundException {
+        if (!descriptor.startsWith("()L")) {
+            return false;
+        }
+        String returnName = descriptor.substring(3, descriptor.length() - 1).replace('/', '.');
+        return ListenerList.class.isAssignableFrom(Class.forName(returnName, false, type.getClassLoader()));
     }
 }

@@ -27,10 +27,16 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -199,6 +205,80 @@ public class ManagedEventBusLifecycleTest {
         legacyBus.post(new LegacyMessage(false));
         assertEquals(List.of("lifetime", "lifetime", "survives as a new group"), trace);
         SubscriptionGroup.closeDefaultGroup(mod);
+    }
+
+    @Test
+    void defaultGroupRetriesFailedRemovalBeforeCreatingSuccessor() {
+        ModContainer mod = owner("retry default group");
+        SubscriptionGroup group = SubscriptionGroup.defaultGroup(mod);
+        var attempts = new AtomicInteger();
+        var failure = new IllegalStateException("removal failed");
+        Subscription subscription = group.track("retrying removal", () -> {
+            if (attempts.incrementAndGet() == 1) throw failure;
+        });
+        try {
+            assertSame(failure, assertThrows(IllegalStateException.class, () -> SubscriptionGroup.closeDefaultGroup(mod)));
+            assertFalse(subscription.isClosed());
+            assertSame(group, SubscriptionGroup.defaultGroup(mod));
+            assertThrows(IllegalStateException.class, () -> group.track("closed group", () -> {}));
+
+            SubscriptionGroup.closeDefaultGroup(mod);
+            assertTrue(subscription.isClosed());
+            assertEquals(2, attempts.get());
+
+            SubscriptionGroup successor = SubscriptionGroup.defaultGroup(mod);
+            assertNotSame(group, successor);
+            Subscription replacement = successor.track("successor removal", attempts::incrementAndGet);
+            SubscriptionGroup.closeDefaultGroup(mod);
+            assertTrue(replacement.isClosed());
+            assertEquals(3, attempts.get());
+        } finally {
+            SubscriptionGroup.closeDefaultGroup(mod);
+        }
+    }
+
+    @Test
+    void defaultGroupRetriesFailedRollbackFromInFlightRegistration() throws Exception {
+        ModContainer mod = owner("in-flight default group");
+        SubscriptionGroup group = SubscriptionGroup.defaultGroup(mod);
+        var started = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+        var attempts = new AtomicInteger();
+        var failure = new IllegalStateException("rollback failed");
+        var bus = new EventBus() {
+            @Override
+            public Runnable registerManaged(MethodHandles.Lookup lookup, Object target, ModContainer owner) {
+                started.countDown();
+                try {
+                    assertTrue(release.await(5, TimeUnit.SECONDS));
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError(interrupted);
+                }
+                return () -> {
+                    if (attempts.incrementAndGet() == 1) throw failure;
+                };
+            }
+        };
+        try (var executor = Executors.newSingleThreadExecutor()) {
+            var pending = executor.submit(() -> group.registerLegacy(bus, MethodHandles.lookup(), new Object()));
+            try {
+                assertTrue(started.await(5, TimeUnit.SECONDS));
+                SubscriptionGroup.closeDefaultGroup(mod);
+                assertSame(group, SubscriptionGroup.defaultGroup(mod));
+            } finally {
+                release.countDown();
+            }
+
+            var thrown = assertThrows(ExecutionException.class, () -> pending.get(5, TimeUnit.SECONDS));
+            assertSame(failure, thrown.getCause());
+            assertSame(group, SubscriptionGroup.defaultGroup(mod));
+            SubscriptionGroup.closeDefaultGroup(mod);
+            assertEquals(2, attempts.get());
+            assertNotSame(group, SubscriptionGroup.defaultGroup(mod));
+        } finally {
+            SubscriptionGroup.closeDefaultGroup(mod);
+        }
     }
 
     @Test

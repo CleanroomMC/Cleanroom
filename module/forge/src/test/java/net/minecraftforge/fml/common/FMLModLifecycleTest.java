@@ -1,10 +1,13 @@
 package net.minecraftforge.fml.common;
 
+import com.cleanroommc.cleanroom.event.SubscriptionGroup;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
 import net.minecraftforge.fml.common.event.FMLEvent;
+import net.minecraftforge.fml.common.event.FMLLoadEvent;
 import net.minecraftforge.fml.common.event.FMLModDisabledEvent;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.eventhandler.ModEventContext;
@@ -172,6 +175,89 @@ public class FMLModLifecycleTest {
         assertEquals(1, calls.get());
         assertThrows(IllegalStateException.class, () -> bus.register(new Object()));
         assertFalse(controller.getActiveModList().contains(mod));
+    }
+
+    @Test
+    void throwingModRegistrationClosesBusAndSuppressesCleanupFailure() throws ReflectiveOperationException {
+        var failure = new IllegalStateException("registration failed");
+        var cleanup = new IllegalArgumentException("removal failed");
+
+        var thrown = observeRejectedRegistration(failure, cleanup);
+
+        assertSame(failure, thrown);
+        assertEquals(List.of(cleanup), List.of(thrown.getSuppressed()));
+    }
+
+    @Test
+    void declinedModRegistrationClosesBusWhenGroupCleanupFails() throws ReflectiveOperationException {
+        var cleanup = new IllegalArgumentException("removal failed");
+
+        var thrown = observeRejectedRegistration(null, cleanup);
+
+        assertSame(cleanup, thrown);
+        assertEquals(0, thrown.getSuppressed().length);
+    }
+
+    @Test
+    void throwingModRegistrationAvoidsSuppressingItsOwnFailure() throws ReflectiveOperationException {
+        var failure = new IllegalStateException("registration and removal failed");
+
+        var thrown = observeRejectedRegistration(failure, failure);
+
+        assertSame(failure, thrown);
+        assertEquals(0, thrown.getSuppressed().length);
+    }
+
+    private static RuntimeException observeRejectedRegistration(RuntimeException registrationFailure, RuntimeException cleanupFailure)
+        throws ReflectiveOperationException {
+        Loader loader = Loader.instance();
+        var controller = new LoadController(loader);
+        Field mods = field(Loader.class, "mods");
+        Object previousMods = mods.get(loader);
+        var calls = new AtomicInteger();
+        var removals = new AtomicInteger();
+        var message = new ManagedEventBusLifecycleTest.GuavaMessage(false);
+        var metadata = ManagedEventBusLifecycleTest.owner("rejected").getMetadata();
+        var mod = new DummyModContainer(metadata) {
+            FMLThrowingEventBus lifecycleBus;
+
+            @Override
+            public boolean registerBus(EventBus bus, LoadController current) {
+                assertSame(controller, current);
+                assertSame(this, ModEventContext.registrationOwner());
+                lifecycleBus = (FMLThrowingEventBus) bus;
+                bus.register(new ManagedEventBusLifecycleTest.LifecycleSubscriber(event -> calls.incrementAndGet()));
+                bus.post(message);
+                SubscriptionGroup.current().track("failing removal", () -> {
+                    if (removals.incrementAndGet() == 1) throw cleanupFailure;
+                });
+                if (registrationFailure != null) throw registrationFailure;
+                return false;
+            }
+        };
+        ModContainer publisher = ManagedEventBusLifecycleTest.owner("publisher");
+        ModContainer loadingOwner = ManagedEventBusLifecycleTest.owner("loading");
+        controller.forceActiveContainer(loadingOwner);
+        var frame = ModEventContext.currentFrame();
+        var previousOwner = ModEventContext.pushDispatchOwner(frame, publisher);
+        try {
+            mods.set(loader, List.of(mod));
+            var thrown = assertThrows(RuntimeException.class, () -> controller.buildModList(new FMLLoadEvent()));
+
+            assertSame(publisher, ModEventContext.owner());
+            assertSame(loadingOwner, controller.activeContainer());
+            assertEquals(1, removals.get());
+            assertEquals(1, calls.get());
+            mod.lifecycleBus.post(message);
+            assertEquals(1, calls.get());
+            assertThrows(IllegalStateException.class, () -> mod.lifecycleBus.register(new Object()));
+            return thrown;
+        } finally {
+            ModEventContext.restoreDispatchOwner(frame, previousOwner);
+            mods.set(loader, previousMods);
+            SubscriptionGroup.closeDefaultGroup(mod);
+            if (mod.lifecycleBus != null) mod.lifecycleBus.close();
+        }
     }
 
     private FMLModContainer mod(String id, FixtureMod instance) throws ReflectiveOperationException {

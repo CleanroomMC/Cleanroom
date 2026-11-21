@@ -127,16 +127,7 @@ public class LoadController
             }
             catch (RuntimeException | Error failure)
             {
-                try
-                {
-                    SubscriptionGroup.closeDefaultGroup(mod);
-                    bus.close();
-                }
-                catch (RuntimeException | Error cleanup)
-                {
-                    if (cleanup != failure)
-                        failure.addSuppressed(cleanup);
-                }
+                cleanupModRegistration(mod, bus, failure);
                 throw failure;
             }
             finally
@@ -153,8 +144,7 @@ public class LoadController
             }
             else
             {
-                SubscriptionGroup.closeDefaultGroup(mod);
-                bus.close();
+                cleanupModRegistration(mod, bus, null);
                 FMLLog.log.warn("Mod {} has been disabled through configuration", mod.getModId());
                 modStates.put(mod.getModId(), ModState.UNLOADED);
                 modStates.put(mod.getModId(), ModState.DISABLED);
@@ -162,6 +152,38 @@ public class LoadController
         }
 
         eventChannels = eventBus.build();
+    }
+
+    private static void cleanupModRegistration(ModContainer mod, FMLThrowingEventBus bus, @Nullable Throwable registrationFailure)
+    {
+        Throwable failure = registrationFailure;
+        try
+        {
+            SubscriptionGroup.closeDefaultGroup(mod);
+        }
+        catch (RuntimeException | Error cleanup)
+        {
+            failure = mergeCleanupFailure(failure, cleanup);
+        }
+        try
+        {
+            bus.close();
+        }
+        catch (RuntimeException | Error cleanup)
+        {
+            failure = mergeCleanupFailure(failure, cleanup);
+        }
+        if (registrationFailure == null && failure != null)
+            Throwables.throwIfUnchecked(failure);
+    }
+
+    private static Throwable mergeCleanupFailure(@Nullable Throwable failure, Throwable cleanup)
+    {
+        if (failure == null)
+            return cleanup;
+        if (failure != cleanup)
+            failure.addSuppressed(cleanup);
+        return failure;
     }
 
     public void distributeStateMessage(LoaderState state, Object... eventData)

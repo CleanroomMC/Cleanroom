@@ -48,6 +48,7 @@ public final class SubscriptionGroup implements AutoCloseable {
     private final LinkedHashSet<Subscription> active = new LinkedHashSet<>();
 
     private long nextId;
+    private int installationsInProgress;
     private boolean closed;
 
     /** Captures the active FML registration owner as the group's owner. */
@@ -86,6 +87,7 @@ public final class SubscriptionGroup implements AutoCloseable {
 
     /**
      * Returns the framework-managed group of {@code owner}, creating it on first use.
+     * A closing group rejects new subscriptions and remains available for cleanup retries.
      *
      * @param owner the mod container that owns the group
      * @return the default group of {@code owner}
@@ -98,8 +100,8 @@ public final class SubscriptionGroup implements AutoCloseable {
     }
 
     /**
-     * Closes and forgets the framework-managed group of {@code owner}. Called by FML when a mod is disabled, and
-     * harmless when that mod never used the default group.
+     * Closes the framework-managed group of {@code owner}, retrying any removals that failed on an earlier call.
+     * Removes the group once all subscription removals and in-flight registrations finish.
      *
      * @param owner the mod container whose default group is retired
      */
@@ -108,7 +110,7 @@ public final class SubscriptionGroup implements AutoCloseable {
         Objects.requireNonNull(owner, "owner");
         SubscriptionGroup group;
         synchronized (DEFAULTS) {
-            group = DEFAULTS.remove(owner);
+            group = DEFAULTS.get(owner);
         }
         if (group != null) {
             group.closeInternal();
@@ -217,7 +219,9 @@ public final class SubscriptionGroup implements AutoCloseable {
     }
 
     <T> List<Subscription> installAll(List<T> registrations, Function<T, Subscription> install) {
-        requireOpen();
+        synchronized (active) {
+            requireOpen();
+        }
         var installed = new ArrayList<Subscription>(registrations.size());
         try {
             for (T registration : registrations) {
@@ -240,35 +244,51 @@ public final class SubscriptionGroup implements AutoCloseable {
 
     Subscription install(String source, Supplier<Runnable> registration) {
         Objects.requireNonNull(source, "source");
-        requireOpen();
-        Runnable remove = registration.get();
-        Subscription subscription;
         synchronized (active) {
-            subscription = new Subscription(++nextId, this, source, remove);
-            active.add(subscription);
-            if (!closed) {
-                FMLLog.log.debug(
-                    "Event subscription {} for {} from {}", subscription.id(), subscription.ownerId(), source
-                );
-                return subscription;
-            }
+            requireOpen();
+            installationsInProgress++;
         }
-        // Track the token until removal succeeds, including when installation races with close.
-        subscription.close();
-        throw new IllegalStateException("Event subscriptions for " + ownerId + " are closed");
+        try {
+            Runnable remove = registration.get();
+            Subscription subscription;
+            synchronized (active) {
+                subscription = new Subscription(++nextId, this, source, remove);
+                active.add(subscription);
+                if (!closed) {
+                    FMLLog.log.debug(
+                        "Event subscription {} for {} from {}", subscription.id(), subscription.ownerId(), source
+                    );
+                    return subscription;
+                }
+            }
+            // Track the token until removal succeeds, including when installation races with close.
+            subscription.close();
+            throw new IllegalStateException("Event subscriptions for " + ownerId + " are closed");
+        } finally {
+            finishInstallation();
+        }
     }
 
     void forget(Subscription subscription) {
         synchronized (active) {
             active.remove(subscription);
+            if (!canRetireDefault()) {
+                return;
+            }
         }
+        retireDefault();
     }
 
     private void closeInternal() {
         List<Subscription> subscriptions;
+        boolean retire;
         synchronized (active) {
             closed = true;
             subscriptions = List.copyOf(active);
+            retire = canRetireDefault();
+        }
+        if (retire) {
+            retireDefault();
         }
         Throwable failure = null;
         for (Subscription subscription : subscriptions.reversed()) {
@@ -290,11 +310,30 @@ public final class SubscriptionGroup implements AutoCloseable {
         }
     }
 
-    private void requireOpen() {
+    private void finishInstallation() {
         synchronized (active) {
-            if (closed) {
-                throw new IllegalStateException("Event subscriptions for " + ownerId + " are closed");
+            installationsInProgress--;
+            if (!canRetireDefault()) {
+                return;
             }
+        }
+        retireDefault();
+    }
+
+    // Called with active locked. A closed group with no in-flight installs cannot gain subscriptions.
+    private boolean canRetireDefault() {
+        return managed && closed && installationsInProgress == 0 && active.isEmpty();
+    }
+
+    private void retireDefault() {
+        synchronized (DEFAULTS) {
+            DEFAULTS.remove(owner, this);
+        }
+    }
+
+    private void requireOpen() {
+        if (closed) {
+            throw new IllegalStateException("Event subscriptions for " + ownerId + " are closed");
         }
     }
 

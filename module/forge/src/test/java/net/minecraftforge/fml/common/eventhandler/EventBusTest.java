@@ -6,9 +6,11 @@ import net.minecraftforge.fml.common.eventhandler.impl.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author ZZZank
@@ -50,7 +52,40 @@ public class EventBusTest {
 
     @Test
     public void registerWithMissingPrivateSignatureType() throws Exception {
-        Class<?> fixture = OptionalDependencySubscriber.class;
+        Class<?> subscriber = loadWithoutOptionalDependency(OptionalDependencySubscriber.class);
+        Assertions.assertThrows(NoClassDefFoundError.class, subscriber::getDeclaredMethods);
+
+        var bus = new EventBus();
+        bus.register(subscriber);
+        bus.register(subscriber.getConstructor().newInstance());
+        var event = new OptionalDependencyEvent();
+        bus.post(event);
+        Assertions.assertEquals(1, event.staticCalls);
+        Assertions.assertEquals(1, event.instanceCalls);
+    }
+
+    @Test
+    public void constructHandwrittenEventWithMissingPrivateSignatureType() throws Exception {
+        var type = loadWithoutOptionalDependency(OptionalDependencyHandwrittenEvent.class).asSubclass(Event.class);
+        Assertions.assertThrows(NoClassDefFoundError.class, type::getDeclaredMethods);
+
+        var event = type.getConstructor().newInstance();
+        Assertions.assertInstanceOf(OptionalDependencyListenerList.class, event.getListenerList());
+        event.setCanceled(true);
+
+        var bus = new EventBus();
+        var delivered = new AtomicReference<Event>();
+        var remove = bus.addManagedListener(type, null, EventPriority.NORMAL, true, null, delivered::set,
+            ModEventContext.registrationOwner(), "optional dependency fixture");
+        try {
+            Assertions.assertTrue(bus.post(event));
+            Assertions.assertSame(event, delivered.get());
+        } finally {
+            remove.run();
+        }
+    }
+
+    private static Class<?> loadWithoutOptionalDependency(Class<?> fixture) throws IOException {
         String missingType = OptionalDependency.class.getName();
         byte[] bytes;
         try (var resource = fixture.getResourceAsStream('/' + fixture.getName().replace('.', '/') + ".class")) {
@@ -66,20 +101,11 @@ public class EventBusTest {
                 return super.loadClass(name, resolve);
             }
 
-            Class<?> defineSubscriber() {
+            Class<?> defineFixture() {
                 return defineClass(fixture.getName(), bytes, 0, bytes.length);
             }
         };
-        Class<?> subscriber = loader.defineSubscriber();
-        Assertions.assertThrows(NoClassDefFoundError.class, subscriber::getDeclaredMethods);
-
-        var bus = new EventBus();
-        bus.register(subscriber);
-        bus.register(subscriber.getConstructor().newInstance());
-        var event = new OptionalDependencyEvent();
-        bus.post(event);
-        Assertions.assertEquals(1, event.staticCalls);
-        Assertions.assertEquals(1, event.instanceCalls);
+        return loader.defineFixture();
     }
 
     @Test
@@ -176,6 +202,35 @@ public class EventBusTest {
         }
 
         private void optionalHelper(OptionalDependency dependency) {}
+    }
+
+    public static final class OptionalDependencyHandwrittenEvent extends Event {
+        private static OptionalDependencyListenerList listeners;
+
+        @Override
+        protected void setup() {
+            if (listeners == null) {
+                listeners = new OptionalDependencyListenerList(super.getListenerList());
+            }
+        }
+
+        @Override
+        public OptionalDependencyListenerList getListenerList() {
+            return listeners;
+        }
+
+        @Override
+        public boolean isCancelable() {
+            return true;
+        }
+
+        private void getListenerList(OptionalDependency dependency) {}
+    }
+
+    public static final class OptionalDependencyListenerList extends ListenerList {
+        public OptionalDependencyListenerList(ListenerList parent) {
+            super(parent);
+        }
     }
 
     private static final class OptionalDependency {}

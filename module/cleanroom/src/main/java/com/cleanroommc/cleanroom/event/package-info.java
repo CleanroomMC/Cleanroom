@@ -23,6 +23,9 @@
  * {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}, and support both legacy and Forge 7
  * {@link net.minecraftforge.eventbus.api.listener.SubscribeEvent} annotations and {@code Priority} constants.
  * <p>
+ * On cancelable events, Forge 7 {@code @SubscribeEvent} handlers can return {@code true} to cancel.
+ * The {@code alwaysCancelling = true} option requires a {@code void} handler.
+ * <p>
  * {@link com.cleanroommc.cleanroom.event.SubscriptionGroup} and
  * {@link com.cleanroommc.cleanroom.event.Subscription} track mod ownership across both generations; channel
  * overloads without a {@code SubscriptionGroup} use the owning mod's framework-managed default group and retire when
