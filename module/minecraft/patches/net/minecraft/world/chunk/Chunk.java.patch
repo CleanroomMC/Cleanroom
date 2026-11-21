@@ -307,24 +307,86 @@
          i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
          j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
  
-@@ -807,6 +826,9 @@
+@@ -781,39 +800,53 @@
+         return false;
+     }
+ 
+     public void populate(IChunkProvider chunkProvider, IChunkGenerator chunkGenrator) {
+-        Chunk chunk = chunkProvider.getLoadedChunk(this.x, this.z - 1);
+-        Chunk chunk1 = chunkProvider.getLoadedChunk(this.x + 1, this.z);
+-        Chunk chunk2 = chunkProvider.getLoadedChunk(this.x, this.z + 1);
+-        Chunk chunk3 = chunkProvider.getLoadedChunk(this.x - 1, this.z);
+-        if (chunk1 != null && chunk2 != null && chunkProvider.getLoadedChunk(this.x + 1, this.z + 1) != null) {
+-            this.populate(chunkGenrator);
+-        }
+-
+-        if (chunk3 != null && chunk2 != null && chunkProvider.getLoadedChunk(this.x - 1, this.z + 1) != null) {
+-            chunk3.populate(chunkGenrator);
+-        }
+-
+-        if (chunk != null && chunk1 != null && chunkProvider.getLoadedChunk(this.x + 1, this.z - 1) != null) {
+-            chunk.populate(chunkGenrator);
+-        }
+-
+-        if (chunk != null && chunk3 != null) {
+-            Chunk chunk4 = chunkProvider.getLoadedChunk(this.x - 1, this.z - 1);
+-            if (chunk4 != null) {
+-                chunk4.populate(chunkGenrator);
++        if (!com.cleanroommc.common.CascadingWorldGen.beginPopulate(this, populating != null)) {
++            return;
++        }
++        try {
++            Chunk chunk = chunkProvider.getLoadedChunk(this.x, this.z - 1);
++            Chunk chunk1 = chunkProvider.getLoadedChunk(this.x + 1, this.z);
++            Chunk chunk2 = chunkProvider.getLoadedChunk(this.x, this.z + 1);
++            Chunk chunk3 = chunkProvider.getLoadedChunk(this.x - 1, this.z);
++            if (chunk1 != null && chunk2 != null && chunkProvider.getLoadedChunk(this.x + 1, this.z + 1) != null) {
++                this.populate(chunkGenrator);
++            }
++
++            if (chunk3 != null && chunk2 != null && chunkProvider.getLoadedChunk(this.x - 1, this.z + 1) != null) {
++                chunk3.populate(chunkGenrator);
++            }
++
++            if (chunk != null && chunk1 != null && chunkProvider.getLoadedChunk(this.x + 1, this.z - 1) != null) {
++                chunk.populate(chunkGenrator);
+             }
++
++            if (chunk != null && chunk3 != null) {
++                Chunk chunk4 = chunkProvider.getLoadedChunk(this.x - 1, this.z - 1);
++                if (chunk4 != null) {
++                    chunk4.populate(chunkGenrator);
++                }
++            }
++        } finally {
++            com.cleanroommc.common.CascadingWorldGen.endPopulate(chunkGenrator);
+         }
      }
  
      protected void populate(IChunkGenerator generator) {
+-        if (this.isTerrainPopulated()) {
+-            if (generator.generateStructures(this, this.x, this.z)) {
 +        if (populating != null && net.minecraftforge.common.ForgeModContainer.logCascadingWorldGeneration) logCascadingWorldGeneration();
 +        ChunkPos prev = populating;
 +        populating = this.getPos();
-         if (this.isTerrainPopulated()) {
-             if (generator.generateStructures(this, this.x, this.z)) {
++        try {
++            if (this.isTerrainPopulated()) {
++                if (generator.generateStructures(this, this.x, this.z)) {
++                    this.markDirty();
++                }
++            } else {
++                this.checkLight();
++                generator.populate(this.x, this.z);
++                net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.x, this.z, this.world, generator, this.world.getChunkProvider());
                  this.markDirty();
-@@ -814,8 +836,10 @@
-         } else {
-             this.checkLight();
-             generator.populate(this.x, this.z);
-+            net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.x, this.z, this.world, generator, this.world.getChunkProvider());
-             this.markDirty();
+             }
+-        } else {
+-            this.checkLight();
+-            generator.populate(this.x, this.z);
+-            this.markDirty();
++        } finally {
++            populating = prev;
          }
-+        populating = prev;
      }
  
      public BlockPos getPrecipitationHeight(BlockPos pos) {
