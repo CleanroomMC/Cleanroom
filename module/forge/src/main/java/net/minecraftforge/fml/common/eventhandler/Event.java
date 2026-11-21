@@ -47,26 +47,33 @@ public class Event
         ALLOW
     }
 
-    private boolean isCanceled = false;
+    private static final EventPriority[] PHASES = EventPriority.values();
+
+    private boolean isCanceled;
     private Result result = Result.DEFAULT;
-    private static ListenerList listeners = new ListenerList();
-    private EventPriority phase = null;
+    private final ListenerList listenerList;
+    private final byte properties;
+    // Zero represents null. Other values are the enum ordinal plus one.
+    private byte phase;
 
     public Event()
     {
+        EventShape shape = EventShape.of(getClass());
+        listenerList = shape.baseList;
+        properties = shape.baseProperties;
         setup();
     }
 
     /**
      * Determine if this function is cancelable at all.
-     * @return If access to setCanceled should be allowed
+     * <p>
+     * The default implementation recognizes {@link Cancelable} on the event hierarchy.
      *
-     * Note:
-     * Events with the Cancelable annotation will have this method automatically added to return true.
+     * @return If access to setCanceled should be allowed
      */
     public boolean isCancelable()
     {
-        return false;
+        return (properties & EventShape.CANCELABLE) != 0;
     }
 
     /**
@@ -78,9 +85,20 @@ public class Event
         return isCanceled;
     }
 
+    // Use the base fields only when neither cancellation getter has an override.
+    static boolean isCancelableAndCanceled(Event event)
+    {
+        return switch (event.properties & (EventShape.CANCELABLE | EventShape.VIRTUAL_CANCELLATION))
+        {
+            case 0 -> false;
+            case EventShape.CANCELABLE -> event.isCanceled;
+            default -> event.isCancelable() && event.isCanceled();
+        };
+    }
+
     /**
      * Sets the cancel state of this event. Note, not all events are cancelable, and any attempt to
-     * invoke this method on an event that is not cancelable (as determined by {@link #isCancelable}
+     * invoke this method on an event that is not cancelable (as determined by {@link #isCancelable()})
      * will result in an {@link UnsupportedOperationException}.
      *
      * The functionality of setting the canceled state is defined on a per-event bases.
@@ -101,13 +119,14 @@ public class Event
 
     /**
      * Determines if this event expects a significant result value.
+     * <p>
+     * The default implementation recognizes {@link HasResult} on the event hierarchy.
      *
-     * Note:
-     * Events with the HasResult annotation will have this method automatically added to return true.
+     * @return If this event expects a significant result value
      */
     public boolean hasResult()
     {
-        return false;
+        return (properties & EventShape.HAS_RESULT) != 0;
     }
 
     /**
@@ -132,8 +151,7 @@ public class Event
     }
 
     /**
-     * Called by the base constructor, this is used by ASM generated
-     * event classes to setup various functionality such as the listener list.
+     * Called by the base constructor. Events with hand-written lists can initialize them here.
      */
     protected void setup()
     {
@@ -147,20 +165,21 @@ public class Event
      */
     public ListenerList getListenerList()
     {
-        return listeners;
+        return listenerList;
     }
 
     @Nullable
     public EventPriority getPhase()
     {
-        return this.phase;
+        return phase == 0 ? null : PHASES[phase - 1];
     }
 
     public void setPhase(@Nonnull EventPriority value)
     {
         Preconditions.checkNotNull(value, "setPhase argument must not be null");
-        int prev = phase == null ? -1 : phase.ordinal();
-        Preconditions.checkArgument(prev < value.ordinal(), "Attempted to set event phase to %s when already %s", value, phase);
-        phase = value;
+        int next = value.ordinal() + 1;
+        if (phase >= next)
+            throw new IllegalArgumentException("Attempted to set event phase to " + value + " when already " + PHASES[phase - 1]);
+        phase = (byte) next;
     }
 }

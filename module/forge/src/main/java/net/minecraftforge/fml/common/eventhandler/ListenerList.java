@@ -19,21 +19,28 @@
 
 package net.minecraftforge.fml.common.eventhandler;
 
-import java.util.*;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
 
 public class ListenerList
 {
-    private static ImmutableList<ListenerList> allLists = ImmutableList.of();
-    private static int maxSize = 0;
+    static final Object REGISTRY_LOCK = new Object();
+    private static final List<ListenerList> allLists = new ArrayList<>();
+    // Reverse index for listeners installed through EventBus, also updated by public
+    // ListenerList registrations. The extra counts cover copies and repeated entries.
+    private static final Map<IEventListener, ListenerListInst> registrations = new IdentityHashMap<>();
+    private static final Map<IEventListener, Map<ListenerListInst, Integer>> extraRegistrations = new IdentityHashMap<>();
+    private static int maxSize;
 
     @Nullable
     private final ListenerList parent;
-    private ListenerListInst[] lists = new ListenerListInst[0];
+    private volatile ListenerListInst[] lists = new ListenerListInst[0];
 
     public ListenerList()
     {
@@ -42,70 +49,54 @@ public class ListenerList
 
     public ListenerList(@Nullable ListenerList parent)
     {
-        // parent needs to be set before resize !
         this.parent = parent;
-        extendMasterList(this);
-        resizeLists(maxSize);
-    }
-
-    private synchronized static void extendMasterList(ListenerList inst)
-    {
-        ImmutableList.Builder<ListenerList> builder = ImmutableList.builder();
-        builder.addAll(allLists);
-        builder.add(inst);
-        allLists = builder.build();
+        synchronized (REGISTRY_LOCK)
+        {
+            ensureCapacity(maxSize);
+            allLists.add(this);
+        }
     }
 
     public static void resize(int max)
     {
-        if (max <= maxSize)
+        synchronized (REGISTRY_LOCK)
         {
-            return;
+            if (max <= maxSize)
+                return;
+            for (ListenerList list : allLists)
+                list.ensureCapacity(max);
+            maxSize = max;
         }
-        for (ListenerList list : allLists)
-        {
-            list.resizeLists(max);
-        }
-        maxSize = max;
     }
 
     public void resizeLists(int max)
     {
-        if (parent != null)
+        synchronized (REGISTRY_LOCK)
         {
-            parent.resizeLists(max);
+            ensureCapacity(max);
         }
+    }
 
-        if (lists.length >= max)
-        {
+    private void ensureCapacity(int max)
+    {
+        ListenerListInst[] old = lists;
+        if (old.length >= max)
             return;
-        }
+        if (parent != null)
+            parent.ensureCapacity(max);
 
-        ListenerListInst[] newList = new ListenerListInst[max];
-        int x = 0;
-        for (; x < lists.length; x++)
-        {
-            newList[x] = lists[x];
-        }
-        for(; x < max; x++)
-        {
-            if (parent != null)
-            {
-                newList[x] = new ListenerListInst(parent.getInstance(x));
-            }
-            else
-            {
-                newList[x] = new ListenerListInst();
-            }
-        }
-        lists = newList;
+        ListenerListInst[] expanded = Arrays.copyOf(old, max);
+        for (int index = old.length; index < max; index++)
+            expanded[index] = new ListenerListInst(this, index, parent == null ? null : parent.lists[index]);
+        lists = expanded;
     }
 
     public static void clearBusID(int id)
     {
-        for (ListenerList list : allLists)
+        synchronized (REGISTRY_LOCK)
         {
-            list.lists[id].dispose();
+            for (ListenerList list : allLists)
+                list.lists[id].dispose();
         }
     }
 
@@ -131,162 +122,265 @@ public class ListenerList
 
     public static void unregisterAll(int id, IEventListener listener)
     {
-        for (ListenerList list : allLists)
+        synchronized (REGISTRY_LOCK)
         {
-            list.unregister(id, listener);
+            int size = allLists.size();
+            for (int index = 0; index < size; index++)
+                allLists.get(index).unregister(id, listener);
+        }
+    }
+
+    static boolean isIndexedListener(IEventListener listener)
+    {
+        return listener instanceof ASMEventHandler || listener instanceof EventBus.ContextSetterEventListener;
+    }
+
+    static void unregisterRegistered(int id, IEventListener listener, boolean rollback)
+    {
+        synchronized (REGISTRY_LOCK)
+        {
+            ListenerListInst first = registrations.get(listener);
+            var extra = extraRegistrations.get(listener);
+            if (extra != null)
+            {
+                // Removing an entry also updates the index, so visit a snapshot of the copies.
+                for (ListenerListInst node : extra.keySet().toArray(ListenerListInst[]::new))
+                {
+                    if (node != first && node.busID == id)
+                        node.unregister(listener, rollback);
+                }
+            }
+            if (first != null && first.busID == id)
+                first.unregister(listener, rollback);
         }
     }
 
     private static class ListenerListInst
     {
         private static final EventPriority[] PRIORITIES = EventPriority.values();
-        private static final IEventListener[] EMPTY_LISTENER_ARRAY = new IEventListener[0];
+        private static final IEventListener[] EMPTY = new IEventListener[0];
 
-        private boolean rebuild = true;
-        private IEventListener[] listeners;
+        private final ListenerList owner;
+        private final int busID;
         private final ArrayList<IEventListener>[] priorities;
         private ListenerListInst parent;
         private List<ListenerListInst> children;
+        private volatile IEventListener[] listeners;
 
-
-        private ListenerListInst()
+        @SuppressWarnings("unchecked")
+        private ListenerListInst(ListenerList owner, int busID, ListenerListInst parent)
         {
-            priorities = new ArrayList[PRIORITIES.length];
+            this.owner = owner;
+            this.busID = busID;
+            priorities = (ArrayList<IEventListener>[]) new ArrayList<?>[PRIORITIES.length];
+            this.parent = parent;
+            if (parent != null)
+            {
+                if (parent.children == null)
+                    parent.children = new ArrayList<>();
+                parent.children.add(this);
+            }
         }
 
         public void dispose()
         {
-            Arrays.fill(priorities, null);
-            parent = null;
-            listeners = null;
-            if (children != null)
-                children.clear();
+            synchronized (REGISTRY_LOCK)
+            {
+                for (var local : priorities)
+                {
+                    if (local != null)
+                    {
+                        for (int index = 0; index < local.size(); index++)
+                            forget(local.get(index));
+                    }
+                }
+                Arrays.fill(priorities, null);
+                invalidate();
+                if (parent != null && parent.children != null)
+                    parent.children.remove(this);
+                parent = null;
+                children = null;
+                listeners = EMPTY;
+            }
         }
 
-        private ListenerListInst(ListenerListInst parent)
-        {
-            this();
-            this.parent = parent;
-            this.parent.addChild(this);
-        }
-
-        /**
-         * Returns a ArrayList containing all listeners for this event,
-         * and all parent events for the specified priority.
-         *
-         * The list is returned with the listeners for the children events first.
-         *
-         * @param priority The Priority to get
-         * @return a list containing listeners for this event, with no guarantee on the mutability of ths list
-         */
         public List<IEventListener> getListeners(EventPriority priority)
         {
-            if (parent == null) {
-                var byPriority = priorities[priority.ordinal()];
-                return byPriority != null ? byPriority : List.of();
+            synchronized (REGISTRY_LOCK)
+            {
+                int ordinal = priority.ordinal();
+                ArrayList<IEventListener> result = null;
+                for (ListenerListInst node = this; node != null; node = node.parent)
+                {
+                    var local = node.priorities[ordinal];
+                    if (local != null && !local.isEmpty())
+                    {
+                        if (result == null)
+                            result = new ArrayList<>(local);
+                        else
+                            result.addAll(local);
+                    }
+                }
+                return result == null ? List.of() : result;
             }
-
-            var fromParent = parent.getListeners(priority);
-            var fromThis = priorities[priority.ordinal()];
-
-            if (fromThis == null) {
-                return fromParent;
-            }
-
-            var merged = new ArrayList<IEventListener>(fromParent.size() + fromThis.size());
-            merged.addAll(fromThis);
-            merged.addAll(fromParent);
-            return merged;
         }
 
-        /**
-         * Returns a full list of all listeners for all priority levels.
-         * Including all parent listeners.
-         *
-         * List is returned in proper priority order.
-         *
-         * Automatically rebuilds the internal Array cache if its information is out of date.
-         *
-         * @return Array containing listeners
-         */
         public IEventListener[] getListeners()
         {
-            if (shouldRebuild()) buildCache();
-            return listeners;
+            IEventListener[] snapshot = listeners;
+            if (snapshot != null)
+                return snapshot;
+
+            synchronized (REGISTRY_LOCK)
+            {
+                if (listeners == null)
+                    listeners = buildCache();
+                return listeners;
+            }
         }
 
         protected boolean shouldRebuild()
         {
-            return rebuild;// || (parent != null && parent.shouldRebuild());
+            return listeners == null;
         }
 
         protected void forceRebuild()
         {
-            this.rebuild = true;
-            if (this.children != null)
+            synchronized (REGISTRY_LOCK)
             {
-                for (ListenerListInst child : this.children)
-                    child.forceRebuild();
+                invalidate();
             }
         }
 
-        private void addChild(ListenerListInst child)
+        private void invalidate()
         {
-            if (this.children == null)
-                this.children = new ArrayList<>();
-            this.children.add(child);
+            listeners = null;
+            if (children != null)
+            {
+                for (int index = 0; index < children.size(); index++)
+                    children.get(index).invalidate();
+            }
         }
 
-        /**
-         * Rebuild the local Array of listeners, returns early if there is no work to do.
-         */
-        private void buildCache()
+        private IEventListener[] buildCache()
         {
-            if(parent != null && parent.shouldRebuild())
+            int size = 0;
+            for (int priority = 0; priority < PRIORITIES.length; priority++)
             {
-                parent.buildCache();
-            }
-
-            ArrayList<IEventListener> ret = new ArrayList<IEventListener>();
-            for (EventPriority value : PRIORITIES)
-            {
-                List<IEventListener> listeners = getListeners(value);
-                if (!listeners.isEmpty())
+                int count = 0;
+                for (ListenerListInst node = this; node != null; node = node.parent)
                 {
-                    ret.add(value); //Add the priority to notify the event of it's current phase.
-                    ret.addAll(listeners);
+                    var local = node.priorities[priority];
+                    if (local != null)
+                        count += local.size();
+                }
+                if (count != 0)
+                    size += count + 1;
+            }
+            if (size == 0)
+                return EMPTY;
+
+            var snapshot = new IEventListener[size];
+            int output = 0;
+            for (int priority = 0; priority < PRIORITIES.length; priority++)
+            {
+                boolean first = true;
+                for (ListenerListInst node = this; node != null; node = node.parent)
+                {
+                    var local = node.priorities[priority];
+                    if (local == null || local.isEmpty())
+                        continue;
+                    if (first)
+                    {
+                        snapshot[output++] = PRIORITIES[priority];
+                        first = false;
+                    }
+                    for (int index = 0; index < local.size(); index++)
+                        snapshot[output++] = local.get(index);
                 }
             }
-            listeners = ret.toArray(EMPTY_LISTENER_ARRAY);
-            rebuild = false;
+            return snapshot;
         }
 
         public void register(EventPriority priority, IEventListener listener)
         {
-            var byPriority = priorities[priority.ordinal()];
-
-            if (byPriority == null) {
-                synchronized (priorities) {
-                    byPriority = priorities[priority.ordinal()]; // in case another thread already triggered initialization
-                    if (byPriority == null) {
-                        byPriority = new ArrayList<>();
-                        priorities[priority.ordinal()] = byPriority;
-                    }
+            synchronized (REGISTRY_LOCK)
+            {
+                int ordinal = priority.ordinal();
+                var local = priorities[ordinal];
+                if (local == null)
+                    priorities[ordinal] = local = new ArrayList<>();
+                local.add(listener);
+                if (isIndexedListener(listener))
+                {
+                    if (registrations.putIfAbsent(listener, this) != null)
+                        extraRegistrations.computeIfAbsent(listener, ignored -> new IdentityHashMap<>()).merge(this, 1, Integer::sum);
                 }
+                invalidate();
             }
-
-            byPriority.add(listener);
-            this.forceRebuild();
         }
 
         public void unregister(IEventListener listener)
         {
-            for(ArrayList<IEventListener> list : priorities)
+            synchronized (REGISTRY_LOCK)
             {
-                if (list != null && list.remove(listener))
+                remove(listener);
+            }
+        }
+
+        private void unregister(IEventListener listener, boolean rollback)
+        {
+            if (rollback)
+                remove(listener);
+            else
+                owner.unregister(busID, listener);
+        }
+
+        private void remove(IEventListener listener)
+        {
+            boolean removed = false;
+            for (var local : priorities)
+            {
+                int index = local == null ? -1 : local.indexOf(listener);
+                if (index >= 0)
                 {
-                    this.forceRebuild();
+                    forget(local.remove(index));
+                    removed = true;
                 }
+            }
+            if (removed)
+                invalidate();
+        }
+
+        private void forget(IEventListener listener)
+        {
+            ListenerListInst first = registrations.get(listener);
+            if (first == null)
+                return;
+
+            var extra = extraRegistrations.get(listener);
+            if (extra == null)
+            {
+                if (first == this)
+                    registrations.remove(listener);
+                return;
+            }
+
+            Integer count = extra.get(this);
+            if (count == null && first == this)
+            {
+                ListenerListInst replacement = extra.keySet().iterator().next();
+                registrations.put(listener, replacement);
+                replacement.forget(listener);
+            }
+            else if (count != null)
+            {
+                if (count == 1)
+                    extra.remove(this);
+                else
+                    extra.put(this, count - 1);
+                if (extra.isEmpty())
+                    extraRegistrations.remove(listener);
             }
         }
     }

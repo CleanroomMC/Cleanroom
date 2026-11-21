@@ -181,7 +181,8 @@ dependencies {
     api "com.cleanroommc:mixinextras-common:${providers.gradleProperty('mixinextras_version').get()}"
 
     compileOnly 'com.cleanroommc:hide-from-userdev:1.0.0'
-    api 'org.jspecify:jspecify:1.0.0'
+    api 'net.minecraftforge:eventbus:7.0.6'
+    api 'org.jspecify:jspecify:1.0.1'
     api 'top.outlands:foundation:0.22.2'
     api 'zone.rong:imaginebreaker:3.2'
     api 'org.javassist:javassist:3.30.2-GA' // FIXME

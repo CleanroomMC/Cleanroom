@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common;
 
+import com.cleanroommc.cleanroom.event.SubscriptionGroup;
 import com.google.common.base.Strings;
 import com.google.common.collect.SetMultimap;
 
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Level;
 
+import java.lang.invoke.MethodHandles;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -79,7 +81,10 @@ public class AutomaticEventSubscriber
                     }
                     FMLLog.log.debug("Registering @EventBusSubscriber for {} for mod {}", targ.getClassName(), mod.getModId());
                     Class<?> subscriptionTarget = Class.forName(targ.getClassName(), false, mcl);
-                    MinecraftForge.EVENT_BUS.register(subscriptionTarget);
+                    var lookup = MethodHandles.privateLookupIn(subscriptionTarget, MethodHandles.lookup());
+                    Runnable removal = MinecraftForge.EVENT_BUS.registerManagedLenient(lookup, subscriptionTarget, mod);
+                    SubscriptionGroup.defaultGroup(mod).track(targ.getClassName(), removal);
+                    SubscriptionGroup.registerDiscovered(mod, lookup, subscriptionTarget);
                     FMLLog.log.debug("Injected @EventBusSubscriber class {}", targ.getClassName());
                 }
             }

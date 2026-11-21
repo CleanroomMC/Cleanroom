@@ -20,6 +20,7 @@
 package net.minecraftforge.fml.common;
 
 import com.cleanroommc.cleanmix.CleanMixHooks;
+import com.cleanroommc.cleanroom.event.SubscriptionGroup;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.*;
@@ -34,9 +35,9 @@ import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
+import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import org.spongepowered.asm.mixin.Mixins;
@@ -58,11 +59,12 @@ public class LoadController
 {
     private Loader loader;
     private EventBus masterChannel;
-    private ImmutableMap<String, EventBus> eventChannels;
+    private ImmutableMap<String, FMLThrowingEventBus> eventChannels;
     private LoaderState state;
     private Multimap<String, ModState> modStates = MultimapBuilder.hashKeys().enumSetValues(ModState.class).build();
     private List<ModContainer> activeModList = Lists.newArrayList();
-    private ModContainer activeContainer;
+    // FML lifecycle is serial. Worker threads may still query the loading mod during a callback.
+    private volatile ModContainer activeContainer;
     private BiMap<ModContainer, Object> modObjectList;
     private ListMultimap<String, ModContainer> packageOwners;
     private boolean closeRequested = false;
@@ -87,26 +89,52 @@ public class LoadController
 
     void disableMod(ModContainer mod)
     {
-        HashMap<String, EventBus> temporary = Maps.newHashMap(eventChannels);
+        HashMap<String, FMLThrowingEventBus> temporary = Maps.newHashMap(eventChannels);
         String modId = mod.getModId();
-        EventBus bus = temporary.remove(modId);
-        bus.post(new FMLModDisabledEvent());
-        eventChannels = ImmutableMap.copyOf(temporary);
-        modStates.put(modId, ModState.DISABLED);
-        modObjectList.remove(mod);
-        activeModList.remove(mod);
+        FMLThrowingEventBus bus = temporary.remove(modId);
+        try (bus)
+        {
+            bus.post(new FMLModDisabledEvent());
+        }
+        finally
+        {
+            eventChannels = ImmutableMap.copyOf(temporary);
+            modStates.put(modId, ModState.DISABLED);
+            modObjectList.remove(mod);
+            activeModList.remove(mod);
+            // Retire listeners the mod registered without keeping its own group.
+            SubscriptionGroup.closeDefaultGroup(mod);
+        }
     }
 
     @Subscribe
     public void buildModList(FMLLoadEvent event)
     {
-        Builder<String, EventBus> eventBus = ImmutableMap.builder();
+        Builder<String, FMLThrowingEventBus> eventBus = ImmutableMap.builder();
 
         for (final ModContainer mod : loader.getModList())
         {
-            EventBus bus = new FMLThrowingEventBus((exception, context) -> this.errorOccurred(mod, exception));
+            FMLThrowingEventBus bus = new FMLThrowingEventBus((exception, context) -> this.errorOccurred(mod, exception), mod);
 
-            boolean isActive = mod.registerBus(bus, this);
+            boolean isActive;
+            ModContainer previous = activeContainer;
+            var frame = ModEventContext.currentFrame();
+            var previousOwner = ModEventContext.pushDispatchOwner(frame, mod);
+            forceActiveContainer(mod);
+            try
+            {
+                isActive = mod.registerBus(bus, this);
+            }
+            catch (RuntimeException | Error failure)
+            {
+                cleanupModRegistration(mod, bus, failure);
+                throw failure;
+            }
+            finally
+            {
+                forceActiveContainer(previous);
+                ModEventContext.restoreDispatchOwner(frame, previousOwner);
+            }
             if (isActive)
             {
                 activeModList.add(mod);
@@ -116,6 +144,7 @@ public class LoadController
             }
             else
             {
+                cleanupModRegistration(mod, bus, null);
                 FMLLog.log.warn("Mod {} has been disabled through configuration", mod.getModId());
                 modStates.put(mod.getModId(), ModState.UNLOADED);
                 modStates.put(mod.getModId(), ModState.DISABLED);
@@ -123,6 +152,38 @@ public class LoadController
         }
 
         eventChannels = eventBus.build();
+    }
+
+    private static void cleanupModRegistration(ModContainer mod, FMLThrowingEventBus bus, @Nullable Throwable registrationFailure)
+    {
+        Throwable failure = registrationFailure;
+        try
+        {
+            SubscriptionGroup.closeDefaultGroup(mod);
+        }
+        catch (RuntimeException | Error cleanup)
+        {
+            failure = mergeCleanupFailure(failure, cleanup);
+        }
+        try
+        {
+            bus.close();
+        }
+        catch (RuntimeException | Error cleanup)
+        {
+            failure = mergeCleanupFailure(failure, cleanup);
+        }
+        if (registrationFailure == null && failure != null)
+            Throwables.throwIfUnchecked(failure);
+    }
+
+    private static Throwable mergeCleanupFailure(@Nullable Throwable failure, Throwable cleanup)
+    {
+        if (failure == null)
+            return cleanup;
+        if (failure != cleanup)
+            failure.addSuppressed(cleanup);
+        return failure;
     }
 
     public void distributeStateMessage(LoaderState state, Object... eventData)
@@ -174,7 +235,8 @@ public class LoadController
     @Nullable
     public ModContainer activeContainer()
     {
-        return activeContainer != null ? activeContainer : findActiveContainerFromStack();
+        ModContainer loading = activeContainer;
+        return loading != null ? loading : findActiveContainerFromStack();
     }
 
     void forceActiveContainer(@Nullable ModContainer container)
@@ -211,14 +273,30 @@ public class LoadController
                 return;
             }
         }
-        activeContainer = mc;
-        stateEvent.applyModContainer(mc);
-        ThreadContext.put("mod", modId);
-        FMLLog.log.trace("Sending event {} to mod {}", stateEvent.getEventType(), modId);
-        eventChannels.get(modId).post(stateEvent);
-        FMLLog.log.trace("Sent event {} to mod {}", stateEvent.getEventType(), modId);
-        ThreadContext.remove("mod");
-        activeContainer = null;
+        ModContainer previous = activeContainer;
+        var frame = ModEventContext.currentFrame();
+        var previousOwner = ModEventContext.pushDispatchOwner(frame, mc);
+        forceActiveContainer(mc);
+        try
+        {
+            stateEvent.applyModContainer(mc);
+            String previousLog = ModEventContext.swapLogMod(modId);
+            try
+            {
+                FMLLog.log.trace("Sending event {} to mod {}", stateEvent.getEventType(), modId);
+                eventChannels.get(modId).post(stateEvent);
+                FMLLog.log.trace("Sent event {} to mod {}", stateEvent.getEventType(), modId);
+            }
+            finally
+            {
+                ModEventContext.restoreLogMod(previousLog);
+            }
+        }
+        finally
+        {
+            forceActiveContainer(previous);
+            ModEventContext.restoreDispatchOwner(frame, previousOwner);
+        }
         if (stateEvent instanceof FMLStateEvent)
         {
             modStates.put(modId, ((FMLStateEvent) stateEvent).getModState());
@@ -335,7 +413,7 @@ public class LoadController
     {
         if (modObjectList == null)
         {
-            FMLLog.log.fatal("Detected an attempt by a mod {} to perform game activity during mod construction. This is a serious programming error.", activeContainer);
+            FMLLog.log.fatal("Detected an attempt by a mod {} to perform game activity during mod construction. This is a serious programming error.", activeContainer());
             return buildModObjectList();
         }
         return ImmutableBiMap.copyOf(modObjectList);

@@ -30,6 +30,7 @@ import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +42,7 @@ import com.cleanroommc.loader.LanguageAdapterRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.eventbus.api.event.RecordEvent;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.Mod.Metadata;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
@@ -49,6 +51,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLEvent;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
@@ -63,6 +66,7 @@ import org.apache.logging.log4j.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
@@ -103,6 +107,8 @@ public class FMLModContainer implements ModContainer
     private ILanguageAdapter languageAdapter;
     private Disableable disableability;
     private final ListMultimap<Class<? extends FMLEvent>, Method> eventMethods;
+    @Nullable
+    private net.minecraftforge.eventbus.api.bus.EventBus<ModStateDispatch> lifecycleHandlers;
     private Map<String, String> customModProperties;
     private final ModCandidate candidate;
     private URL updateJSONUrl;
@@ -458,6 +464,29 @@ public class FMLModContainer implements ModContainer
                 }
             }
         }
+        if (eventBus instanceof FMLThrowingEventBus managed && !eventMethods.isEmpty())
+        {
+            List<Consumer<ModStateDispatch>> callbacks = new ArrayList<>(eventMethods.size());
+            for (var entry : eventMethods.entries())
+            {
+                Class<? extends FMLEvent> eventType = entry.getKey();
+                Method handler = entry.getValue();
+                callbacks.add(dispatch -> {
+                    if (dispatch.event().getClass() == eventType)
+                    {
+                        try
+                        {
+                            handler.invoke(modInstance, dispatch.event());
+                        }
+                        catch (ReflectiveOperationException failure)
+                        {
+                            throw new ModHandlerFailure(failure);
+                        }
+                    }
+                });
+            }
+            lifecycleHandlers = managed.installLifecycleHandlers(ModStateDispatch.class, callbacks);
+        }
         return factoryMethod;
     }
 
@@ -649,14 +678,34 @@ public class FMLModContainer implements ModContainer
         }
         try
         {
+            // Guava still owns the surrounding lifecycle queue, including nested fingerprint events.
+            if (lifecycleHandlers != null)
+            {
+                lifecycleHandlers.post(new ModStateDispatch(event));
+                return;
+            }
             for (Method m : eventMethods.get(event.getClass()))
             {
                 m.invoke(modInstance, event);
             }
         }
+        catch (ModHandlerFailure failure)
+        {
+            controller.errorOccurred(this, failure.getCause());
+        }
         catch (Throwable t)
         {
             controller.errorOccurred(this, t);
+        }
+    }
+
+    private record ModStateDispatch(FMLEvent event) implements RecordEvent {}
+
+    private static final class ModHandlerFailure extends RuntimeException
+    {
+        private ModHandlerFailure(ReflectiveOperationException cause)
+        {
+            super(cause);
         }
     }
 

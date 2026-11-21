@@ -53,6 +53,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadEvent;
 import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
+import net.minecraftforge.fml.common.eventhandler.ModEventContext;
 import net.minecraftforge.fml.common.registry.*;
 import net.minecraftforge.fml.common.toposort.ModSorter;
 import net.minecraftforge.fml.common.toposort.ModSortingException;
@@ -167,7 +168,7 @@ public class Loader
      */
     private File canonicalConfigDir;
     private File canonicalModsDir;
-    private LoadController modController;
+    private volatile LoadController modController;
     private MinecraftDummyContainer minecraft;
     private MCPDummyContainer mcp;
 
@@ -466,7 +467,7 @@ public class Loader
      */
     public void setupTestHarness(ModContainer... containers)
     {
-        modController = new LoadController(this);
+        initializeLoadController();
         mods = Lists.newArrayList(containers);
         namedMods = Maps.uniqueIndex(mods, ModContainer::getModId);
         modController.transition(LoaderState.LOADING, false);
@@ -489,7 +490,7 @@ public class Loader
         initializeLoader();
         mods = Lists.newArrayList();
         namedMods = Maps.newHashMap();
-        modController = new LoadController(this);
+        initializeLoadController();
         modController.transition(LoaderState.LOADING, false);
         injectedContainers.addAll(injectedModContainers);
         discoverer = CleanroomModDiscoverer.instance();
@@ -783,7 +784,7 @@ public class Loader
     @Nullable
     public ModContainer activeModContainer()
     {
-        return modController != null ? modController.activeContainer() : null;
+        return ModEventContext.activeOwner(modController);
     }
 
     public boolean isInState(LoaderState state)
@@ -984,8 +985,25 @@ public class Loader
         return modController != null ? modController.getState() : LoaderState.NOINIT;
     }
 
+    private void initializeLoadController()
+    {
+        ModEventContext.clearAmbientOwner();
+        modController = new LoadController(this);
+    }
+
     public void setActiveModContainer(@Nullable ModContainer container)
     {
-        this.modController.forceActiveContainer(container);
+        if (ModEventContext.setDispatchOwner(container))
+            return;
+        LoadController controller = modController;
+        if (controller == null)
+        {
+            ModEventContext.setOwner(container);
+        }
+        else
+        {
+            ModEventContext.clearAmbientOwner();
+            controller.forceActiveContainer(container);
+        }
     }
 }

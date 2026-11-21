@@ -1,77 +1,150 @@
 package net.minecraftforge.fml.common.eventhandler;
 
+import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Map;
+import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
  * @author ZZZank
  */
-class EventListenerFactory {
+final class EventListenerFactory {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+    private static final MethodType CONSUMER = MethodType.methodType(void.class, Object.class);
+    private static final MethodType FACTORY = MethodType.methodType(Consumer.class);
+    private static final MethodType EVENT_CALLBACK = MethodType.methodType(void.class, Event.class);
+    private static final ClassValue<ConcurrentHashMap<Method, Factory>> FACTORIES = new ClassValue<>() {
+        @Override
+        protected ConcurrentHashMap<Method, Factory> computeValue(Class<?> owner) {
+            return new ConcurrentHashMap<>();
+        }
+    };
+    private static final ClassValue<ConcurrentHashMap<Method, Factory>> MANAGED_FACTORIES = new ClassValue<>() {
+        @Override
+        protected ConcurrentHashMap<Method, Factory> computeValue(Class<?> owner) {
+            return new ConcurrentHashMap<>();
+        }
+    };
+
+    private EventListenerFactory() {}
 
     public static Consumer<Event> createRawListener(Method method, boolean isStatic, Object instance) {
-        // no caching is applied here because in EventBus scenario, caching will only be useful
-        // when two instance-based listeners of the same class are registered, which is an
-        // incredibly rare usage in 1.12 Forge environment
-        var listenerFactory = createListenerFactory(method, isStatic, instance);
+        if (isStatic != Modifier.isStatic(method.getModifiers())) {
+            throw new IllegalArgumentException("Static flag does not match event subscriber " + method);
+        }
+        return createRawListener(method, instance, null);
+    }
 
+    static Consumer<Event> createRawListener(Method method, Object instance, MethodHandles.Lookup caller) {
+        // A supplied Lookup is a capability. Never make its handles available to a different caller.
+        Factory factory;
+        if (caller == null) {
+            factory = FACTORIES.get(method.getDeclaringClass()).computeIfAbsent(method, EventListenerFactory::createLegacyFactory);
+        } else {
+            MethodHandle handle = unreflect(method, caller);
+            factory = managedFactory(method, caller, handle);
+        }
+        return factory.bind(instance);
+    }
+
+    private static Factory managedFactory(Method method, MethodHandles.Lookup caller, MethodHandle handle) {
+        Class<?> declaring = method.getDeclaringClass();
+        boolean isStatic = Modifier.isStatic(method.getModifiers());
+        if (!caller.hasFullPrivilegeAccess()
+            || declaring.getModule() != caller.lookupClass().getModule()
+            || declaring.getClassLoader() != caller.lookupClass().getClassLoader()
+            || (!isStatic && handle.type().parameterType(0) != declaring)) {
+            return createFactory(method, caller, handle);
+        }
+
+        // Caller access was already verified above. Anchor the reusable LMF class on declaring so the cache holds
+        // neither the caller's class nor any subscriber instance.
+        Factory cached = MANAGED_FACTORIES.get(declaring).computeIfAbsent(method, subscriber -> {
+            try {
+                MethodHandles.Lookup definingLookup = MethodHandles.privateLookupIn(declaring, caller);
+                return createFactory(subscriber, definingLookup, definingLookup.unreflect(subscriber));
+            } catch (IllegalAccessException unavailable) {
+                return null;
+            }
+        });
+        return cached != null ? cached : createFactory(method, caller, handle);
+    }
+
+    private static Factory createLegacyFactory(Method method) {
         try {
-            @SuppressWarnings("unchecked")
-            var rawListener = isStatic
-                ? (Consumer<Event>) listenerFactory.invokeExact()
-                : (Consumer<Event>) listenerFactory.invokeExact(instance);
-            return rawListener;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+            var lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), LOOKUP);
+            return createFactory(method, lookup, lookup.unreflect(method));
+        } catch (IllegalAccessException privateAccess) {
+            return createFactory(method, LOOKUP, unreflect(method, LOOKUP));
         }
     }
 
-    private static MethodHandle createListenerFactory(
-        Method callback,
-        boolean isStatic,
-        Object instance
-    ) {
+    private static MethodHandle unreflect(Method method, MethodHandles.Lookup lookup) {
         try {
-            var lookup = MethodHandles.privateLookupIn(callback.getDeclaringClass(), LOOKUP);
-            var handle = lookup.unreflect(callback);
-
-            var factoryType = isStatic
-                ? Constants.RETURNS_IT
-                // implicit null check on "instance" via ".getClass()"
-                : Constants.RETURNS_IT.insertParameterTypes(0, instance.getClass());
-
-            var factoryHandle = LambdaMetafactory.metafactory(
-                lookup,
-                Constants.METHOD_NAME,
-                factoryType,
-                Constants.METHOD_TYPE,
-                handle,
-                MethodType.methodType(void.class, handle.type().parameterType(isStatic ? 0 : 1))
-            ).getTarget();
-
-            return isStatic
-                ? factoryHandle
-                : factoryHandle.asType(factoryType.changeParameterType(0, Object.class));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return lookup.unreflect(method);
+        } catch (IllegalAccessException inaccessible) {
+            throw new IllegalArgumentException("Cannot access event subscriber " + method
+                + "; supply a Lookup with access to its declaring class", inaccessible);
         }
     }
 
-    interface Constants {
-        Class<?> CLAZZ = Consumer.class;
-        Method METHOD = Arrays.stream(CLAZZ.getMethods())
-            .filter(m -> "accept".equals(m.getName()))
-            .findFirst()
-            .orElseThrow();
-        String METHOD_NAME = METHOD.getName();
-        MethodType METHOD_TYPE = MethodType.methodType(METHOD.getReturnType(), METHOD.getParameterTypes());
-        MethodType RETURNS_IT = MethodType.methodType(CLAZZ);
+    private static Factory createFactory(Method method, MethodHandles.Lookup lookup, MethodHandle handle) {
+        Class<?> declaring = method.getDeclaringClass();
+        boolean isStatic = Modifier.isStatic(method.getModifiers());
+
+        if (lookup.hasFullPrivilegeAccess() && lookup.lookupClass().getClassLoader() == declaring.getClassLoader()) {
+            Class<?> receiver = isStatic ? null : handle.type().parameterType(0);
+            MethodType factoryType = isStatic ? FACTORY : FACTORY.insertParameterTypes(0, receiver);
+            MethodType signature = MethodType.methodType(void.class, method.getParameterTypes());
+            try {
+                var target = LambdaMetafactory.metafactory(lookup, "accept", factoryType, CONSUMER, handle, signature)
+                    .getTarget();
+                return new Factory(isStatic ? target : target.asType(FACTORY.insertParameterTypes(0, Object.class)),
+                    isStatic, true);
+            } catch (LambdaConversionException unsupportedCaller) {
+                // A legal direct handle still works when the caller cannot define an LMF class.
+            }
+        }
+        return new Factory(handle, isStatic, false);
+    }
+
+    private record Factory(MethodHandle handle, boolean isStatic, boolean lambda) {
+        @SuppressWarnings("unchecked")
+        Consumer<Event> bind(Object instance) {
+            if (!isStatic) {
+                Objects.requireNonNull(instance, "target");
+            }
+            if (!lambda) {
+                MethodHandle callback = (isStatic ? handle : handle.bindTo(instance)).asType(EVENT_CALLBACK);
+                return event -> {
+                    try {
+                        callback.invokeExact(event);
+                    } catch (Throwable failure) {
+                        EventListenerFactory.<RuntimeException>rethrow(failure);
+                    }
+                };
+            }
+            try {
+                return isStatic ? (Consumer<Event>) handle.invokeExact() : (Consumer<Event>) handle.invokeExact(instance);
+            } catch (Throwable failure) {
+                return EventListenerFactory.<RuntimeException, Consumer<Event>>fail(failure);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <X extends Throwable> void rethrow(Throwable failure) throws X {
+        throw (X) failure;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <X extends Throwable, T> T fail(Throwable failure) throws X {
+        throw (X) failure;
     }
 }
