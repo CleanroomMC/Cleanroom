@@ -66,6 +66,8 @@ public final class Window implements AutoCloseable {
     private final Text text = new Text(this);
     private final boolean[] keys = new boolean[MAX_SCANCODES];
     private final boolean[] buttons = new boolean[MAX_MOUSE_BUTTONS + 1];
+    private final WheelAxis wheelX = new WheelAxis();
+    private final WheelAxis wheelY = new WheelAxis();
 
     private String title;
     private int width;
@@ -74,8 +76,6 @@ public final class Window implements AutoCloseable {
     private int pixelHeight;
     private float mouseX;
     private float mouseY;
-    private final WheelAxis wheelX = new WheelAxis();
-    private final WheelAxis wheelY = new WheelAxis();
     private float opacity = 1.0F;
     private boolean focused = true;
     private boolean closeRequested;
@@ -984,11 +984,11 @@ public final class Window implements AutoCloseable {
 
     /**
      * Turns fractional wheel input into whole notches.
-     *
-     * <p>High-resolution wheels report one notch as several fractional events, but LWJGL 2 consumers treat every
-     * wheel event as a single step. SDL's own integer values truncate and carry their remainder across direction
-     * changes and pauses, which swallows notches. This remainder starts fresh on reversal or a new gesture, and
-     * halves round away from zero.
+     * <p>
+     * High-resolution wheels report one notch as several fractional events.
+     * LWJGL 2 consumers treat every wheel event as a single step.
+     * SDL truncates and carry remainders across direction changes and pauses which swallows the notches.
+     * This remainder starts fresh on reversal or a new gesture, and halves round away from zero.
      */
     private static final class WheelAxis {
 
