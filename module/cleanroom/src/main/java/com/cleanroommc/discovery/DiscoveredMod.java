@@ -10,6 +10,8 @@
 
 package com.cleanroommc.discovery;
 
+import com.cleanroommc.language.scala.ScalaUsage;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,8 @@ public record DiscoveredMod(
     boolean onClasspath,
     Map<String, String> accessTransformers,
     Set<String> dependencies,
-    List<String> fermiumConfigClasses) {
+    List<String> fermiumConfigClasses,
+    ScalaUsage scala) {
 
     public DiscoveredMod {
         file = file.getAbsoluteFile();
@@ -43,6 +46,14 @@ public record DiscoveredMod(
         accessTransformers = Map.copyOf(accessTransformers);
         dependencies = Set.copyOf(dependencies);
         fermiumConfigClasses = List.copyOf(fermiumConfigClasses);
+    }
+
+    public DiscoveredMod withRewrittenFile(File rewritten) {
+        return new DiscoveredMod(
+            rewritten, attributes, modIds, modNames, modVersions, mixinConfigurationClasses, modType,
+            hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker, onClasspath,
+            accessTransformers, dependencies, fermiumConfigClasses, new ScalaUsage(scala.kind(), scala.config(), file)
+        );
     }
 
     public boolean isDirectoryBased() {

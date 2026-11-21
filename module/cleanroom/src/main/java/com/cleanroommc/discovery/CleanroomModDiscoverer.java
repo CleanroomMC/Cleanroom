@@ -16,6 +16,10 @@ import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.ConfigAnytimeContainer;
 import com.cleanroommc.kirino.KirinoCommonCore;
+import com.cleanroommc.language.scala.ScalaProvider;
+import com.cleanroommc.language.scala.ScalaScanner;
+import com.cleanroommc.language.scala.ScalaUsage;
+import com.cleanroommc.language.scala.ScalarContainer;
 import com.cleanroommc.util.CleanroomLog;
 import top.outlands.foundation.boot.ActualClassLoader;
 import zone.rong.mixinbooter.MixinBooterModContainer;
@@ -147,8 +151,11 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
     private static final String FERMIUM_PLUGIN = "fermiumbooter.FermiumPlugin";
     private static final String FILE_DIRECTOR = "net.jan.moddirector.core.ModDirector";
     private static final String FILE_DIRECTOR_TWEAKER = "net.jan.moddirector.launchwrapper.ModDirectorTweaker";
+    private static final String SCALAR_PLUGIN = "com.cleanroommc.scalar.ScalarLoadingPlugin";
 
-    private final List<ModContainer> builtInMods = List.of(new MixinBooterModContainer(), new ConfigAnytimeContainer());
+    private final List<ModContainer> builtInMods = List.of(
+        new MixinBooterModContainer(), new ConfigAnytimeContainer(), new ScalarContainer()
+    );
     private final List<String> builtInModIds = builtInMods.stream().map(ModContainer::getModId).toList();
     private final SetMultimap<String, File> modIdToFiles = HashMultimap.create();
     private final SetMultimap<File, String> fileToModIds = LinkedHashMultimap.create();
@@ -449,6 +456,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         if (fileDirector != null) {
             discoverFileDirectorMods(minecraftDirectory, classLoader);
         }
+        provideScala();
 
         CleanroomLog.get().debug("Discovering coremods");
         File containedDepsDir = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
@@ -584,6 +592,20 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         }
     }
 
+    private void provideScala() {
+        ScalaProvider.provide(discoveredFiles.values(), mod -> {
+            File original = mod.scala().original();
+            File rewritten = normalize(mod.file());
+            discoveredFiles.remove(original);
+            discoveredFiles.put(rewritten, mod);
+            for (String modId : fileToModIds.removeAll(original)) {
+                fileToModIds.put(rewritten, modId);
+                modIdToFiles.remove(modId, original);
+                modIdToFiles.put(modId, rewritten);
+            }
+        });
+    }
+
     private void discover(Map<File, Boolean> files) {
         CleanroomLog.get().info("Discovering mods");
         long startTime = System.nanoTime();
@@ -600,6 +622,14 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         // Merged in discovery order, so jars declaring a built-in mod id are dropped as they were when scanned one by one
         mods:
         for (DiscoveredMod mod : runScans(scans)) {
+            if (SCALAR_PLUGIN.equals(mod.coremod())) {
+                CleanroomLog.get()
+                    .warn(
+                        "{} is no longer needed as Cleanroom provides Scala, it will not be loaded",
+                        mod.file().getName()
+                    );
+                continue;
+            }
             for (String modId : mod.modIds()) {
                 if (recordMod(modId, mod.file())) {
                     continue mods;
@@ -630,7 +660,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         if (!isArchive(absolute)) {
             return new DiscoveredMod(
                 absolute, null, List.of(), Map.of(), Map.of(), List.of(), ManifestAttributes.CLEANROOMMODTYPE, false,
-                false, false, null, null, onClasspath, Map.of(), Set.of(), List.of()
+                false, false, null, null, onClasspath, Map.of(), Set.of(), List.of(), ScalaUsage.NONE
             );
         }
 
@@ -649,6 +679,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         boolean mixinTweakerForceMod = false;
         boolean coreModContainsMod = false;
         Map<String, String> accessTransformers = Map.of();
+        ScalaScanner scala = new ScalaScanner();
 
         try (JarFile jarFile = new JarFile(absolute)) {
             attributes = readManifestAttributes(absolute, jarFile);
@@ -681,7 +712,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                 }
                 scanModAnnotations(
                     jarFile, descriptors, modIds, modNames, modVersions, dependencies, configurationClasses,
-                    fermiumConfigClasses
+                    fermiumConfigClasses, scala
                 );
             }
             String atList = attributes == null ? null : attributes.getValue(ModAccessTransformer.FMLAT);
@@ -695,7 +726,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
         return new DiscoveredMod(
             absolute, attributes, List.copyOf(modIds), modNames, modVersions, configurationClasses, modType,
             hasMixinManifestAttributes, mixinTweakerForceMod, coreModContainsMod, coremod, tweaker, onClasspath,
-            accessTransformers, dependencies, fermiumConfigClasses
+            accessTransformers, dependencies, fermiumConfigClasses, scala.result()
         );
     }
 
@@ -1007,13 +1038,15 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
 
     private void scanModAnnotations(
         JarFile jar, byte[][] descriptors, Set<String> modIds, Map<String, String> names, Map<String, String> versions,
-        Set<String> dependencies, List<String> configurationClasses, List<String> fermiumConfigClasses) {
+        Set<String> dependencies, List<String> configurationClasses, List<String> fermiumConfigClasses,
+        ScalaScanner scala) {
         byte[] buffer = CLASS_BUFFER.get();
         var entries = jar.entries();
         entryLoop:
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String name = entry.getName();
+            scala.entry(name);
             if (entry.isDirectory() || !name.endsWith(".class")) {
                 continue;
             }
@@ -1033,6 +1066,7 @@ public final class CleanroomModDiscoverer extends ModDiscoverer {
                         buffer = Arrays.copyOf(buffer, length << 1);
                     }
                 }
+                scala.scan(buffer, length);
                 if (!namesAnnotation(buffer, descriptors)) {
                     continue;
                 }
