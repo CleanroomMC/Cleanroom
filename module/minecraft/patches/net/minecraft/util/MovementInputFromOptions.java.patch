@@ -1,0 +1,10 @@
+--- original/net/minecraft/util/MovementInputFromOptions.java
++++ modified/net/minecraft/util/MovementInputFromOptions.java
+@@ -44,6 +44,7 @@
+             this.rightKeyDown = false;
+         }
+
++        com.cleanroommc.client.input.gamepad.GamepadHandler.updatePlayerMoveState(this);
+         this.jump = this.gameSettings.keyBindJump.isKeyDown();
+         this.sneak = this.gameSettings.keyBindSneak.isKeyDown();
+         if (this.sneak) {
