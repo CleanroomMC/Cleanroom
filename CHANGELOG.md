@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.7.16-alpha - 2026-11-21
+
+### Bug Fix
+
+- **sdl**: Keep the OS scroll direction for LWJGL 2 consumers *[commit by [@Rongmario](https://github.com/Rongmario) in [6d87c85](https://github.com/CleanroomMC/Cleanroom/commit/6d87c85425197c29509bce11ed9503f3cd870a6b)]*
+- **sdl**: Count horizontal wheel notches the same way as vertical *[commit by [@Rongmario](https://github.com/Rongmario) in [fc64993](https://github.com/CleanroomMC/Cleanroom/commit/fc6499366d6db5b9abf25626660d6402ad857108)]*
+- **sdl**: Stop high-resolution wheels swallowing scroll notches *[commit by [@Rongmario](https://github.com/Rongmario) in [540dcc8](https://github.com/CleanroomMC/Cleanroom/commit/540dcc86d2d0a676f37afe0cd496081c23c51329)]*
+    *[Fixes issue #552 by [@rk78jss5nv-lab](https://github.com/rk78jss5nv-lab)]*
+
+### Documentation
+
+- **sdl**: Note differences to vanilla pertaining shift+wheel on mac OS *[commit by [@Rongmario](https://github.com/Rongmario) in [4784325](https://github.com/CleanroomMC/Cleanroom/commit/478432576db95cf2c42d5b7db15c57c540eee6a9)]*
+
+### Build and Dependencies
+
+- **deps**: Update LWJGLY *[commit by [@Rongmario](https://github.com/Rongmario) in [e9e9d2d](https://github.com/CleanroomMC/Cleanroom/commit/e9e9d2dd5923cad412cd9ef65ad4f2a72300d093)]*
+    *[Fixes issue #731 by [@NepJr](https://github.com/NepJr)]*
+
+**Full Changelog**: https://github.com/CleanroomMC/Cleanroom/compare/0.7.15-alpha...0.7.16-alpha
+
 ## 0.7.15-alpha - 2026-11-19
 
 ### Feature
