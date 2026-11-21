@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -54,7 +55,6 @@ public class BlockSnapshot
     @Nullable
     private WeakReference<World> world;
     private final ResourceLocation registryName;
-    private final int meta;
 
     public BlockSnapshot(World world, BlockPos pos, IBlockState state)
     {
@@ -68,12 +68,11 @@ public class BlockSnapshot
         this.pos = pos.toImmutable();
         this.setReplacedBlock(state);
         this.registryName = state.getBlock().getRegistryName();
-        this.meta = state.getBlock().getMetaFromState(state);
         this.setFlag(3);
         this.nbt = nbt;
         if (DEBUG)
         {
-            System.out.printf("Created BlockSnapshot - [World: %s ][Location: %d,%d,%d ][Block: %s ][Meta: %d ]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), getRegistryName(), getMeta());
+            System.out.printf("Created BlockSnapshot - [World: %s ][Location: %d,%d,%d ][Block: %s ][State: %s ]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), getRegistryName(), state);
         }
     }
 
@@ -92,14 +91,19 @@ public class BlockSnapshot
 
     /**
      * Raw constructor designed for serialization usages.
+     * @deprecated the {@code meta} argument is a legacy view; use {@link #BlockSnapshot(World, BlockPos, IBlockState)}
+     * or the {@code "state"} NBT tag written by {@link #writeToNBT} instead.
      */
+    @Deprecated
     public BlockSnapshot(int dimension, BlockPos pos, ResourceLocation registryName, int meta, int flag, @Nullable NBTTagCompound nbt)
     {
         this.dimId = dimension;
         this.pos = pos.toImmutable();
         this.setFlag(flag);
         this.registryName = registryName;
-        this.meta = meta;
+        this.replacedBlock = ForgeRegistries.BLOCKS.containsKey(registryName)
+            ? ForgeRegistries.BLOCKS.getValue(registryName).getStateFromMeta(meta)
+            : null;
         this.nbt = nbt;
     }
 
@@ -115,13 +119,18 @@ public class BlockSnapshot
 
     public static BlockSnapshot readFromNBT(NBTTagCompound tag)
     {
-        return new BlockSnapshot(
+        BlockSnapshot snapshot = new BlockSnapshot(
                 tag.getInteger("dimension"),
                 new BlockPos(tag.getInteger("posX"), tag.getInteger("posY"), tag.getInteger("posZ")),
                 new ResourceLocation(tag.getString("blockMod"), tag.getString("blockName")),
                 tag.getInteger("metadata"),
                 tag.getInteger("flag"),
                 tag.getBoolean("hasTE") ? tag.getCompoundTag("tileEntity") : null);
+        if (tag.hasKey("state", 10) && ForgeRegistries.BLOCKS.containsKey(snapshot.getRegistryName()))
+        {
+            snapshot.setReplacedBlock(NBTUtil.readBlockState(tag.getCompoundTag("state")));
+        }
+        return snapshot;
     }
 
     @Nullable
@@ -153,7 +162,17 @@ public class BlockSnapshot
     {
         if (this.replacedBlock == null)
         {
-            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(getMeta());
+            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(0);
+        }
+        return this.replacedBlock;
+    }
+
+    @Nullable
+    private IBlockState replacedBlockOrNull()
+    {
+        if (this.replacedBlock == null && ForgeRegistries.BLOCKS.containsKey(getRegistryName()))
+        {
+            this.replacedBlock = ForgeRegistries.BLOCKS.getValue(getRegistryName()).getStateFromMeta(0);
         }
         return this.replacedBlock;
     }
@@ -186,7 +205,7 @@ public class BlockSnapshot
 
         int flags = notifyNeighbors ? Constants.BlockFlags.DEFAULT : Constants.BlockFlags.SEND_TO_CLIENTS;
 
-        if (current.getBlock() != replaced.getBlock() || current.getBlock().getMetaFromState(current) != replaced.getBlock().getMetaFromState(replaced))
+        if (current != replaced)
         {
             if (force)
             {
@@ -214,7 +233,7 @@ public class BlockSnapshot
 
         if (DEBUG)
         {
-            System.out.printf("Restored BlockSnapshot with data [World: %s ][Location: %d,%d,%d ][Meta: %d ][Block: %s ][TileEntity: %s ][force: %s ][notifyNeighbors: %s]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), replaced.getBlock().getMetaFromState(replaced), replaced.getBlock().delegate.name(), te, force, notifyNeighbors);
+            System.out.printf("Restored BlockSnapshot with data [World: %s ][Location: %d,%d,%d ][State: %s ][TileEntity: %s ][force: %s ][notifyNeighbors: %s]", world.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ(), replaced, te, force, notifyNeighbors);
         }
         return true;
     }
@@ -229,6 +248,10 @@ public class BlockSnapshot
         compound.setInteger("flag", getFlag());
         compound.setInteger("dimension", getDimId());
         compound.setInteger("metadata", getMeta());
+        if (this.replacedBlock != null)
+        {
+            compound.setTag("state", NBTUtil.writeBlockState(new NBTTagCompound(), this.replacedBlock));
+        }
 
         compound.setBoolean("hasTE", getNbt() != null);
 
@@ -254,7 +277,7 @@ public class BlockSnapshot
             return false;
         }
         final BlockSnapshot other = (BlockSnapshot) obj;
-        if (this.getMeta() != other.getMeta())
+        if (!Objects.equals(this.replacedBlockOrNull(), other.replacedBlockOrNull()))
         {
             return false;
         }
@@ -281,7 +304,7 @@ public class BlockSnapshot
     public int hashCode()
     {
         int hash = 7;
-        hash = 73 * hash + this.getMeta();
+        hash = 73 * hash + Objects.hashCode(this.replacedBlockOrNull());
         hash = 73 * hash + this.getDimId();
         hash = 73 * hash + this.getPos().hashCode();
         hash = 73 * hash + this.getRegistryName().hashCode();
@@ -306,5 +329,14 @@ public class BlockSnapshot
 
     public ResourceLocation getRegistryName() { return registryName; }
 
-    public int getMeta() { return meta; }
+    /**
+     * The legacy metadata of the replaced state.
+     * @deprecated use {@link #getReplacedBlock()}; metadata cannot describe states past fifteen.
+     */
+    @Deprecated
+    public int getMeta()
+    {
+        IBlockState state = replacedBlockOrNull();
+        return state != null ? state.getBlock().getMetaFromState(state) : 0;
+    }
 }

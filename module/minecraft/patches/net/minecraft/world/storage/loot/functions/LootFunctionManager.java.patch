@@ -1,0 +1,55 @@
+--- original/net/minecraft/world/storage/loot/functions/LootFunctionManager.java
++++ modified/net/minecraft/world/storage/loot/functions/LootFunctionManager.java
+@@ -62,8 +62,52 @@
+         registerFunction(new LootingEnchantBonus.Serializer());
+         registerFunction(new SetDamage.Serializer());
+         registerFunction(new SetAttributes.Serializer());
++        registerFunction(new SetComponents.Serializer());
+     }
+ 
++    /** Cleanroom: 1.20.5-style {@code set_components} loot function that applies a {@link com.cleanroommc.cleanroom.common.component.DataComponentPredicate} to the stack. */
++    public static class SetComponents extends LootFunction {
++        private final com.cleanroommc.cleanroom.common.component.DataComponentPredicate components;
++        private final JsonObject rawComponents;
++
++        public SetComponents(LootCondition[] conditionsIn, com.cleanroommc.cleanroom.common.component.DataComponentPredicate components) {
++            this(conditionsIn, components, new JsonObject());
++        }
++
++        public SetComponents(LootCondition[] conditionsIn, com.cleanroommc.cleanroom.common.component.DataComponentPredicate components, JsonObject rawComponents) {
++            super(conditionsIn);
++            this.components = components;
++            this.rawComponents = rawComponents;
++        }
++
++        public com.cleanroommc.cleanroom.common.component.DataComponentPredicate getComponents() {
++            return this.components;
++        }
++
++        @Override
++        public net.minecraft.item.ItemStack apply(net.minecraft.item.ItemStack stack, java.util.Random rand, net.minecraft.world.storage.loot.LootContext context) {
++            this.components.applyTo(stack);
++            return stack;
++        }
++
++        public static class Serializer extends LootFunction.Serializer<SetComponents> {
++            public Serializer() {
++                super(new ResourceLocation("set_components"), SetComponents.class);
++            }
++
++            @Override
++            public void serialize(JsonObject object, SetComponents functionClazz, JsonSerializationContext serializationContext) {
++                object.add("components", functionClazz.rawComponents);
++            }
++
++            @Override
++            public SetComponents deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootCondition[] conditionsIn) {
++                JsonObject compObj = JsonUtils.getJsonObject(object, "components");
++                return new SetComponents(conditionsIn, com.cleanroommc.cleanroom.common.component.DataComponentPredicate.fromJson(compObj), compObj);
++            }
++        }
++    }
++
+     public static class Serializer implements JsonDeserializer<LootFunction>, JsonSerializer<LootFunction> {
+         public LootFunction deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException {
+             JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "function");

@@ -1,0 +1,57 @@
+--- original/net/minecraft/command/CommandExecuteAt.java
++++ modified/net/minecraft/command/CommandExecuteAt.java
+@@ -43,27 +43,36 @@
+         double d2 = parseDouble(entity.posZ, args[3], false);
+         new BlockPos(d0, d1, d2);
+         int i = 4;
+-        if ("detect".equals(args[4]) && args.length > 10) {
+-            World world = entity.getEntityWorld();
+-            double d3 = parseDouble(d0, args[5], false);
+-            double d4 = parseDouble(d1, args[6], false);
+-            double d5 = parseDouble(d2, args[7], false);
+-            Block block = getBlockByText(sender, args[8]);
+-            BlockPos blockpos = new BlockPos(d3, d4, d5);
+-            if (!world.isBlockLoaded(blockpos)) {
+-                throw new CommandException("commands.execute.failed", "detect", entity.getName());
+-            }
++        if ("detect".equals(args[4]) && args.length > 9) {
++            String inlineState = CommandBase.extractInlineBlockStateSpec(args[8]);
++            if (args.length > 10 || inlineState != null) {
++                World world = entity.getEntityWorld();
++                double d3 = parseDouble(d0, args[5], false);
++                double d4 = parseDouble(d1, args[6], false);
++                double d5 = parseDouble(d2, args[7], false);
++                Block block = getBlockByText(sender, args[8]);
++                BlockPos blockpos = new BlockPos(d3, d4, d5);
++                if (!world.isBlockLoaded(blockpos)) {
++                    throw new CommandException("commands.execute.failed", "detect", entity.getName());
++                }
+ 
+-            IBlockState iblockstate = world.getBlockState(blockpos);
+-            if (iblockstate.getBlock() != block) {
+-                throw new CommandException("commands.execute.failed", "detect", entity.getName());
+-            }
++                IBlockState iblockstate = world.getBlockState(blockpos);
++                if (iblockstate.getBlock() != block) {
++                    throw new CommandException("commands.execute.failed", "detect", entity.getName());
++                }
+ 
+-            if (!CommandBase.convertArgToBlockStatePredicate(block, args[9]).apply(iblockstate)) {
+-                throw new CommandException("commands.execute.failed", "detect", entity.getName());
++                if (inlineState != null && !CommandBase.convertArgToBlockStatePredicate(block, inlineState).apply(iblockstate)) {
++                    throw new CommandException("commands.execute.failed", "detect", entity.getName());
++                }
++                if (inlineState != null && (args.length == 10 || (!"-1".equals(args[9]) && !"*".equals(args[9]) && !"default".equals(args[9]) && args[9].indexOf('=') < 0))) {
++                    i = 9;
++                } else {
++                    if (!CommandBase.convertArgToBlockStatePredicate(block, args[9]).apply(iblockstate)) {
++                        throw new CommandException("commands.execute.failed", "detect", entity.getName());
++                    }
++                    i = 10;
++                }
+             }
+-
+-            i = 10;
+         }
+ 
+         String s = buildString(args, i);

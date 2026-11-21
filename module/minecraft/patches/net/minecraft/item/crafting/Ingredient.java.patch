@@ -9,26 +9,32 @@
      public static final Ingredient EMPTY = new Ingredient() {
          @Override
          public boolean apply(@Nullable ItemStack p_apply_1_) {
-@@ -18,14 +20,35 @@
+@@ -18,23 +20,67 @@
          }
      };
      private final ItemStack[] matchingStacks;
 +    private final ItemStack[] matchingStacksExploded;
      private IntList matchingStacksPacked;
 +    private final boolean isSimple;
++    private final com.cleanroommc.cleanroom.common.component.DataComponentPredicate componentPredicate;
  
 +    protected Ingredient(int size) {
 +        this(new ItemStack[size]);
 +    }
 +
      protected Ingredient(ItemStack... p_i47503_1_) {
-+        boolean simple = true;
++        this(com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY, p_i47503_1_);
++    }
++
++    protected Ingredient(com.cleanroommc.cleanroom.common.component.DataComponentPredicate componentPredicate, ItemStack... p_i47503_1_) {
++        boolean simple = componentPredicate.isEmpty();
++        this.componentPredicate = componentPredicate;
          this.matchingStacks = p_i47503_1_;
 +        net.minecraft.util.NonNullList<ItemStack> lst = net.minecraft.util.NonNullList.create();
 +        for (ItemStack s : p_i47503_1_) {
 +            if (s.isEmpty())
 +                continue;
-+            if (s.getItem().isDamageable())
++            if (s.getItem().isDamageable() || !s.getComponents().asPatch().isEmpty())
 +                simple = false;
 +            if (s.getMetadata() == net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE)
 +                s.getItem().getSubItems(net.minecraft.creativetab.CreativeTabs.SEARCH, lst);
@@ -40,13 +46,39 @@
 +        Ingredient.INSTANCES.add(this);
      }
  
++    public com.cleanroommc.cleanroom.common.component.DataComponentPredicate getComponentPredicate() {
++        return this.componentPredicate;
++    }
++
      public ItemStack[] getMatchingStacks() {
 -        return this.matchingStacks;
 +        return this.matchingStacksExploded;
      }
  
      public boolean apply(@Nullable ItemStack p_apply_1_) {
-@@ -47,9 +70,9 @@
+         if (p_apply_1_ == null) {
+             return false;
+         }
++        if (!this.componentPredicate.test(p_apply_1_)) {
++            return false;
++        }
++        boolean hasStateProps = !this.componentPredicate.stateProperties().isEmpty();
++        boolean checkLegacyNumber = !hasStateProps
++            && !this.componentPredicate.expected().containsKey(com.cleanroommc.cleanroom.common.component.DataComponents.DAMAGE)
++            && !this.componentPredicate.expected().containsKey(com.cleanroommc.cleanroom.common.component.DataComponents.LEGACY_VARIANT);
+ 
+         for (ItemStack itemstack : this.matchingStacks) {
+             if (itemstack.getItem() == p_apply_1_.getItem()) {
++                if (!com.cleanroommc.cleanroom.common.component.DataComponents.matchesPatchedComponents(itemstack, p_apply_1_, hasStateProps)) {
++                    continue;
++                }
++                if (!checkLegacyNumber) {
++                    return true;
++                }
+                 int i = itemstack.getMetadata();
+                 if (i == 32767 || i == p_apply_1_.getMetadata()) {
+                     return true;
+@@ -47,9 +93,9 @@
  
      public IntList getValidItemStacksPacked() {
          if (this.matchingStacksPacked == null) {
@@ -58,7 +90,7 @@
                  this.matchingStacksPacked.add(RecipeItemHelper.pack(itemstack));
              }
  
-@@ -59,6 +82,16 @@
+@@ -59,6 +105,16 @@
          return this.matchingStacksPacked;
      }
  
@@ -75,10 +107,33 @@
      public static Ingredient fromItem(Item p_193367_0_) {
          return fromStacks(new ItemStack(p_193367_0_, 1, 32767));
      }
-@@ -84,4 +117,19 @@
+@@ -74,14 +130,41 @@
+     }
+ 
+     public static Ingredient fromStacks(ItemStack... stacks) {
++        return of(com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY, stacks);
++    }
++
++    /** Cleanroom: builds an ingredient that matches any of {@code stacks} and also satisfies {@code predicate}. */
++    public static Ingredient of(com.cleanroommc.cleanroom.common.component.DataComponentPredicate predicate, ItemStack... stacks) {
+         if (stacks.length > 0) {
+             for (ItemStack itemstack : stacks) {
+                 if (!itemstack.isEmpty()) {
+-                    return new Ingredient(stacks);
++                    return new Ingredient(predicate, stacks);
+                 }
+             }
+         }
  
          return EMPTY;
      }
++
++    /** Cleanroom: builds an ingredient that matches {@code item} (any legacy variant unless constrained by {@code predicate}) and satisfies {@code predicate}. */
++    public static Ingredient of(Item item, com.cleanroommc.cleanroom.common.component.DataComponentPredicate predicate) {
++        ItemStack stack = new ItemStack(item, 1, 32767);
++        predicate.applyTo(stack);
++        return of(predicate, stack);
++    }
 +
 +    // Merges several vanilla Ingredients together. As a qwerk of how the json is structured, we can't tell if its a single Ingredient type or multiple so we split per item and remerge here.
 +    //Only public for internal use, so we can access a private field in here.

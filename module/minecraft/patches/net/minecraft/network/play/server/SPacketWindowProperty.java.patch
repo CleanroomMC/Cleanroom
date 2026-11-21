@@ -1,0 +1,20 @@
+--- original/net/minecraft/network/play/server/SPacketWindowProperty.java
++++ modified/net/minecraft/network/play/server/SPacketWindowProperty.java
+@@ -31,7 +31,7 @@
+     public void readPacketData(PacketBuffer buf) throws IOException {
+         this.windowId = buf.readUnsignedByte();
+         this.property = buf.readShort();
+-        this.value = buf.readShort();
++        this.value = buf.readInt(); // Cleanroom: any int (was a short, so ids and counters past 32767 wrapped)
+     }
+ 
+     /** Writes the raw packet data to the data stream. */
+@@ -39,7 +39,7 @@
+     public void writePacketData(PacketBuffer buf) throws IOException {
+         buf.writeByte(this.windowId);
+         buf.writeShort(this.property);
+-        buf.writeShort(this.value);
++        buf.writeInt(this.value);
+     }
+ 
+     @SideOnly(Side.CLIENT)

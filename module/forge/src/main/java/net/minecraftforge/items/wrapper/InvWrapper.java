@@ -83,7 +83,7 @@ public class InvWrapper implements IItemHandlerModifiable
             if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                 return stack;
 
-            if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
+            if (!stackInSlot.isStackable() || !stack.isStackable() || !ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
                 return stack;
 
             if (!getInv().isItemValidForSlot(slot, stack))

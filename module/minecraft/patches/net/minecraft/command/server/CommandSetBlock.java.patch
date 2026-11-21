@@ -1,6 +1,19 @@
 --- original/net/minecraft/command/server/CommandSetBlock.java
 +++ modified/net/minecraft/command/server/CommandSetBlock.java
-@@ -63,7 +63,7 @@
+@@ -49,8 +49,11 @@
+         sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 0);
+         BlockPos blockpos = parseBlockPos(sender, args, 0, false);
+         Block block = CommandBase.getBlockByText(sender, args[3]);
++        String inlineState = CommandBase.extractInlineBlockStateSpec(args[3]);
+         IBlockState iblockstate;
+-        if (args.length >= 5) {
++        if (inlineState != null && (args.length < 5 || "0".equals(args[4]) || "default".equals(args[4]))) {
++            iblockstate = convertArgToBlockState(block, inlineState);
++        } else if (args.length >= 5) {
+             iblockstate = convertArgToBlockState(block, args[4]);
+         } else {
+             iblockstate = block.getDefaultState();
+@@ -63,7 +66,7 @@
  
          NBTTagCompound nbttagcompound = new NBTTagCompound();
          boolean flag = false;

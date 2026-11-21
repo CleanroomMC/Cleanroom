@@ -10,7 +10,35 @@
          BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY
              .putObject(
                  Items.BUCKET,
-@@ -492,6 +495,7 @@
+@@ -366,7 +369,7 @@
+             @Override
+             protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
+                 this.successful = true;
+-                if (EnumDyeColor.WHITE == EnumDyeColor.byDyeDamage(stack.getMetadata())) {
++                if (EnumDyeColor.WHITE == stack.getItemState().getValue(ItemDye.COLOR)) {
+                     World world = source.getWorld();
+                     BlockPos blockpos = source.getBlockPos().offset(source.getBlockState().getValue(BlockDispenser.FACING));
+                     if (ItemDye.applyBonemeal(stack, world, blockpos)) {
+@@ -425,7 +428,8 @@
+                         world.setBlockState(blockpos, blockskull.getDefaultState().withProperty(BlockSkull.FACING, EnumFacing.UP), 3);
+                         TileEntity tileentity = world.getTileEntity(blockpos);
+                         if (tileentity instanceof TileEntitySkull) {
+-                            if (stack.getMetadata() == 3) {
++                            net.minecraft.item.ItemSkull.SkullType skullType = stack.getItemState().getValue(net.minecraft.item.ItemSkull.TYPE);
++                            if (skullType == net.minecraft.item.ItemSkull.SkullType.CHAR) {
+                                 GameProfile gameprofile = null;
+                                 if (stack.hasTagCompound()) {
+                                     NBTTagCompound nbttagcompound = stack.getTagCompound();
+@@ -441,7 +445,7 @@
+ 
+                                 ((TileEntitySkull)tileentity).setPlayerProfile(gameprofile);
+                             } else {
+-                                ((TileEntitySkull)tileentity).setType(stack.getMetadata());
++                                ((TileEntitySkull)tileentity).setType(skullType.getMetadata());
+                             }
+ 
+                             ((TileEntitySkull)tileentity).setSkullRotation(enumfacing.getOpposite().getHorizontalIndex() * 4);
+@@ -492,6 +496,7 @@
      public static void register() {
          if (!alreadyRegistered) {
              alreadyRegistered = true;
@@ -18,7 +46,7 @@
              redirectOutputToLog();
              SoundEvent.registerSounds();
              Block.registerBlocks();
-@@ -521,6 +525,7 @@
+@@ -521,6 +526,7 @@
                      LOGGER.error("Errors with built-in loot tables");
                  }
              }
