@@ -51,7 +51,6 @@ import net.minecraft.network.play.server.SPacketJoinGame;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.network.play.server.SPacketDisconnect;
 import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
@@ -66,7 +65,6 @@ import net.minecraftforge.fml.common.network.internal.FMLMessage;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.registries.ForgeRegistry;
 
 // TODO build test suites to validate the behaviour of this stuff and make it less annoyingly magical
 public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> implements ChannelOutboundHandler {
@@ -100,7 +98,6 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
 
     public static final AttributeKey<NetworkDispatcher> FML_DISPATCHER = AttributeKey.valueOf("fml:dispatcher");
     public static final AttributeKey<Boolean> IS_LOCAL = AttributeKey.valueOf("fml:isLocal");
-    public static final AttributeKey<Map<ResourceLocation, ForgeRegistry.Snapshot>> FML_GAMEDATA_SNAPSHOT = AttributeKey.valueOf("fml:gameDataSnapshot");
     public final NetworkManager manager;
     private final PlayerList scm;
     private EntityPlayerMP player;

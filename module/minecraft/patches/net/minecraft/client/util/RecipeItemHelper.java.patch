@@ -1,6 +1,6 @@
 --- original/net/minecraft/client/util/RecipeItemHelper.java
 +++ modified/net/minecraft/client/util/RecipeItemHelper.java
-@@ -21,9 +21,13 @@
+@@ -21,17 +21,19 @@
      public final Int2IntMap itemToCount = new Int2IntOpenHashMap();
  
      public void accountStack(ItemStack stack) {
@@ -15,3 +15,21 @@
              this.increment(i, j);
          }
      }
+ 
+     public static int pack(ItemStack stack) {
+-        Item item = stack.getItem();
+-        int i = item.getHasSubtypes() ? stack.getMetadata() : 0;
+-        return Item.REGISTRY.getIDForObject(item) << 16 | i & 65535;
++        return com.cleanroommc.cleanroom.common.id.PackedItems.pack(stack); // Cleanroom: item ids past 65535, wide damage values, and non-legacy state components
+     }
+ 
+     public boolean containsItem(int packedItem) {
+@@ -69,7 +71,7 @@
+     }
+ 
+     public static ItemStack unpack(int packedItem) {
+-        return packedItem == 0 ? ItemStack.EMPTY : new ItemStack(Item.getItemById(packedItem >> 16 & 65535), 1, packedItem & 65535);
++        return com.cleanroommc.cleanroom.common.id.PackedItems.unpack(packedItem);
+     }
+ 
+     public void clear() {

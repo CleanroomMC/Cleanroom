@@ -1,0 +1,22 @@
+--- original/net/minecraft/command/CommandEnchant.java
++++ modified/net/minecraft/command/CommandEnchant.java
+@@ -4,6 +4,7 @@
+ import java.util.List;
+ import javax.annotation.Nullable;
+ import net.minecraft.enchantment.Enchantment;
++import net.minecraft.enchantment.EnchantmentHelper;
+ import net.minecraft.entity.EntityLivingBase;
+ import net.minecraft.item.ItemStack;
+ import net.minecraft.nbt.NBTTagList;
+@@ -68,9 +69,8 @@
+             NBTTagList nbttaglist = itemstack.getEnchantmentTagList();
+ 
+             for (int j = 0; j < nbttaglist.tagCount(); j++) {
+-                int k = nbttaglist.getCompoundTagAt(j).getShort("id");
+-                if (Enchantment.getEnchantmentByID(k) != null) {
+-                    Enchantment enchantment1 = Enchantment.getEnchantmentByID(k);
++                Enchantment enchantment1 = EnchantmentHelper.enchantmentFrom(nbttaglist.getCompoundTagAt(j)); // Cleanroom: name first, then id
++                if (enchantment1 != null) {
+                     if (!enchantment.isCompatibleWith(enchantment1)) {
+                         throw new CommandException(
+                             "commands.enchant.cantCombine",

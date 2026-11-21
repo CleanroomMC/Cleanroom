@@ -1,0 +1,20 @@
+--- original/net/minecraft/network/play/server/SPacketBlockAction.java
++++ modified/net/minecraft/network/play/server/SPacketBlockAction.java
+@@ -31,7 +31,7 @@
+         this.blockPosition = buf.readBlockPos();
+         this.instrument = buf.readUnsignedByte();
+         this.pitch = buf.readUnsignedByte();
+-        this.block = Block.getBlockById(buf.readVarInt() & 4095);
++        this.block = Block.getBlockById(buf.readVarInt()); // Cleanroom: block ids past 4095
+     }
+ 
+     /** Writes the raw packet data to the data stream. */
+@@ -40,7 +40,7 @@
+         buf.writeBlockPos(this.blockPosition);
+         buf.writeByte(this.instrument);
+         buf.writeByte(this.pitch);
+-        buf.writeVarInt(Block.getIdFromBlock(this.block) & 4095);
++        buf.writeVarInt(Block.getIdFromBlock(this.block));
+     }
+ 
+     /** Passes this Packet on to the NetHandler for processing. */

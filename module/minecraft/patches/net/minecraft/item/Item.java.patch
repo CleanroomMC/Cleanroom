@@ -13,6 +13,27 @@
      private static final IItemPropertyGetter DAMAGED_GETTER = new IItemPropertyGetter() {
          @SideOnly(Side.CLIENT)
          @Override
+@@ -120,15 +120,15 @@
+         return item == null ? Items.AIR : item;
+     }
+ 
+-    /** Tries to get an Item by it's name (e.g. minecraft:apple) or a String representation of a numerical ID. If both fail, null is returned. */
++    /**
++     * Tries to get an Item by its registry name (e.g. {@code minecraft:apple}).
++     * Cleanroom: numeric ID strings are no longer resolved against session numbering; they log a once-per-name warning and return {@code null}.
++     */
+     @Nullable
+     public static Item getByNameOrId(String id) {
+         Item item = REGISTRY.getObject(new ResourceLocation(id));
+         if (item == null) {
+-            try {
+-                return getItemById(Integer.parseInt(id));
+-            } catch (NumberFormatException numberformatexception) {
+-            }
++            com.cleanroommc.cleanroom.common.id.LegacyIds.warnIfNumericItemId(id);
+         }
+ 
+         return item;
 @@ -193,7 +193,7 @@
          return stack;
      }
