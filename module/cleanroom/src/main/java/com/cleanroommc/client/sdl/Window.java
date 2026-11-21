@@ -759,10 +759,12 @@ public final class Window implements AutoCloseable {
         int notchesX = this.wheelX.step(horizontal, timestamp);
         int notchesY = this.wheelY.step(vertical, timestamp);
 
+        // LWJGL 2 kept the OS scroll direction, so multiplying by sign restores it and natural scrolling applies.
         // LWJGL 2 mapped horizontal-only wheel events to vertical. Only MouseEvent.Wheel sees them here, as horizontal.
         // macOS turns shift+wheel into horizontal scrolling, so it no longer scrolls the hotbar or GUIs there.
-        if (notchesY != 0) {
-            this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), notchesY, timestamp);
+        int legacyNotches = sign * notchesY;
+        if (legacyNotches != 0) {
+            this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), legacyNotches, timestamp);
         }
         SDL.events()
             .post(new MouseEvent.Wheel(
