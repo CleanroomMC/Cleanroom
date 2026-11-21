@@ -74,6 +74,7 @@ public final class Window implements AutoCloseable {
     private int pixelHeight;
     private float mouseX;
     private float mouseY;
+    private final WheelAxis wheelX = new WheelAxis();
     private final WheelAxis wheelY = new WheelAxis();
     private float opacity = 1.0F;
     private boolean focused = true;
@@ -752,16 +753,18 @@ public final class Window implements AutoCloseable {
         }
         boolean flipped = event.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED;
         int sign = flipped ? -1 : 1;
+        float horizontal = event.x() * sign;
         float vertical = event.y() * sign;
         long timestamp = event.timestamp();
-        int notches = this.wheelY.step(vertical, timestamp);
-        if (notches != 0) {
-            this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), notches, timestamp);
+        int notchesX = this.wheelX.step(horizontal, timestamp);
+        int notchesY = this.wheelY.step(vertical, timestamp);
+        if (notchesY != 0) {
+            this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), notchesY, timestamp);
         }
         SDL.events()
             .post(new MouseEvent.Wheel(
-                event.which(), this.id, timestamp, event.mouse_x(), event.mouse_y(), event.x() * sign, vertical,
-                event.integer_x() * sign, notches, flipped
+                event.which(), this.id, timestamp, event.mouse_x(), event.mouse_y(), horizontal, vertical, notchesX,
+                notchesY, flipped
             ));
     }
 
