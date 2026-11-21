@@ -189,17 +189,6 @@ public class EventBus implements IEventExceptionHandler
     public record ManagedListener(String source, Supplier<Runnable> install) {}
 
     @HideFromUserdev
-    public List<ManagedListener> prepareManagedListeners(Class<? extends Event> eventType, @Nullable ListenerList list,
-            @Nullable Type genericType, MethodHandles.Lookup lookup, Object target, ModContainer owner)
-    {
-        var prepared = prepareLegacySubscribers(eventType, list, genericType, lookup, target, owner);
-        if (prepared.isEmpty())
-            throw new IllegalArgumentException("No legacy subscribers for " + eventType.getName()
-                + " on " + SubscriberMethod.typeOf(target).getName());
-        return prepared;
-    }
-
-    @HideFromUserdev
     public List<ManagedListener> prepareLegacySubscribers(@Nullable Class<? extends Event> exactEventType,
             @Nullable ListenerList list, @Nullable Type genericType, MethodHandles.Lookup lookup, Object target,
             ModContainer owner)

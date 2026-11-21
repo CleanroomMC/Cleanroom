@@ -146,6 +146,15 @@ public class EventBusTest {
     }
 
     @Test
+    public void directLegacyHandlerRejectsUnannotatedMethod() throws Exception {
+        var target = new InstanceListeners();
+        var method = InstanceListeners.class.getMethod("shouldNotRegister", ExampleEvent.class);
+        var owner = ModEventContext.registrationOwner();
+
+        Assertions.assertThrows(NullPointerException.class, () -> new ASMEventHandler(target, method, owner, false));
+    }
+
+    @Test
     public void registerAbnormal() {
         var bus = new EventBus();
 

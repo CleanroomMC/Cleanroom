@@ -25,6 +25,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import net.minecraftforge.fml.common.ModContainer;
@@ -62,8 +63,9 @@ public class ASMEventHandler implements IEventListener
     ASMEventHandler(Object target, Method annotationSource, Method callback, ModContainer owner, boolean isGeneric,
                     @Nullable MethodHandles.Lookup lookup, @Nullable Type channelFilter)
     {
-        this(EventListenerFactory.createRawListener(callback, target, lookup),
-            annotationSource.getDeclaredAnnotation(SubscribeEvent.class),
+        this(Objects.requireNonNull(annotationSource.getDeclaredAnnotation(SubscribeEvent.class),
+                "Subscriber method must declare legacy @SubscribeEvent"),
+            EventListenerFactory.createRawListener(callback, target, lookup),
             owner, annotationFilter(annotationSource, isGeneric, channelFilter),
             "ASM: " + target + " " + callback.getName() + getMethodDescriptor(callback));
     }
@@ -79,11 +81,10 @@ public class ASMEventHandler implements IEventListener
         return channelFilter == null ? filter : channelFilter;
     }
 
-    private ASMEventHandler(Consumer<Event> handler, @Nullable SubscribeEvent annotation, ModContainer owner,
+    private ASMEventHandler(SubscribeEvent annotation, Consumer<Event> handler, ModContainer owner,
                             @Nullable Type genericFilter, String readable)
     {
-        this(handler, annotation == null ? null : annotation.priority(),
-            annotation != null && annotation.receiveCanceled(), owner, genericFilter, readable, annotation);
+        this(handler, annotation.priority(), annotation.receiveCanceled(), owner, genericFilter, readable, annotation);
     }
 
     ASMEventHandler(Consumer<Event> handler, EventPriority priority, boolean receiveCanceled, ModContainer owner,
@@ -92,13 +93,13 @@ public class ASMEventHandler implements IEventListener
         this(handler, priority, receiveCanceled, owner, genericFilter, readable, null);
     }
 
-    private ASMEventHandler(Consumer<Event> handler, @Nullable EventPriority priority, boolean receiveCanceled,
+    private ASMEventHandler(Consumer<Event> handler, EventPriority priority, boolean receiveCanceled,
                             ModContainer owner, @Nullable Type genericFilter, String readable,
                             @Nullable SubscribeEvent annotation)
     {
         this.handler = filter(handler, genericFilter);
         this.subInfo = annotation;
-        this.priority = (byte) (priority == null ? -1 : priority.ordinal());
+        this.priority = (byte) priority.ordinal();
         this.receiveCanceled = receiveCanceled;
         this.owner = owner;
         this.readable = readable;
@@ -135,28 +136,15 @@ public class ASMEventHandler implements IEventListener
 
     private void invokeIfMatching(Event event)
     {
-        if (!Event.isCancelableAndCanceled(event) || receivesCanceled())
+        if (!Event.isCancelableAndCanceled(event) || receiveCanceled)
         {
             handler.accept(event);
         }
     }
 
-    private boolean receivesCanceled()
-    {
-        requirePriority();
-        return receiveCanceled;
-    }
-
     public EventPriority getPriority()
     {
-        requirePriority();
         return PRIORITIES[priority];
-    }
-
-    private void requirePriority()
-    {
-        if (priority < 0)
-            throw new NullPointerException("Subscriber method has no @SubscribeEvent");
     }
 
     public String toString()
