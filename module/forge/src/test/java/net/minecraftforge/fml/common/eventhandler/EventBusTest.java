@@ -1,5 +1,7 @@
 package net.minecraftforge.fml.common.eventhandler;
 
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.impl.*;
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -82,6 +85,40 @@ public class EventBusTest {
             Assertions.assertSame(event, delivered.get());
         } finally {
             remove.run();
+        }
+    }
+
+    @Test
+    public void constructHandwrittenEventFromLaunchLoaderClassBytes() throws Exception {
+        var fixture = OptionalDependencyHandwrittenEvent.class;
+        String className = fixture.getName();
+        String resourcePath = className.replace('.', '/') + ".class";
+        String missingType = OptionalDependency.class.getName();
+        var previous = Launch.classLoader;
+        try (var loader = new LaunchClassLoader(fixture.getClassLoader()) {
+            @Override
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                if (name.equals(missingType)) {
+                    throw new ClassNotFoundException(name);
+                }
+                return name.equals(className) ? super.loadClass(name, resolve) : getParent().loadClass(name);
+            }
+
+            @Override
+            public URL getResource(String name) {
+                return name.equals(resourcePath) ? null : super.getResource(name);
+            }
+        }) {
+            loader.addURL(fixture.getProtectionDomain().getCodeSource().getLocation());
+            var type = loader.findClass(className).asSubclass(Event.class);
+            Assertions.assertSame(loader, type.getClassLoader());
+            Assertions.assertThrows(NoClassDefFoundError.class, type::getDeclaredMethods);
+
+            var event = type.getConstructor().newInstance();
+            EventBus.requireCancelable(type);
+            Assertions.assertInstanceOf(OptionalDependencyListenerList.class, event.getListenerList());
+        } finally {
+            Launch.classLoader = previous;
         }
     }
 

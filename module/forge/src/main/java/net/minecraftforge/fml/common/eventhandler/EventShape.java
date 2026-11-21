@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fml.common.eventhandler;
 
+import net.minecraft.launchwrapper.LaunchClassLoader;
+
 import java.io.IOException;
 import java.lang.classfile.ClassFile;
 import java.lang.ref.WeakReference;
@@ -252,11 +254,8 @@ final class EventShape {
     private static int declaredMethodsFromClassFile(Class<?> type, NoClassDefFoundError unresolved) {
         // A class resource can predate bytecode transformations, so use it only if reflection fails.
         String internalName = type.getName().replace('.', '/');
-        try (var resource = type.getResourceAsStream('/' + internalName + ".class")) {
-            if (resource == null) {
-                throw new IOException("Class resource is unavailable");
-            }
-            var model = ClassFile.of().parse(resource.readAllBytes());
+        try {
+            var model = ClassFile.of().parse(readClassBytes(type, internalName));
             if (!model.thisClass().asInternalName().equals(internalName)) {
                 throw new IOException("Class resource declares " + model.thisClass().asInternalName());
             }
@@ -284,6 +283,21 @@ final class EventShape {
             error.addSuppressed(failure);
             throw error;
         }
+    }
+
+    private static byte[] readClassBytes(Class<?> type, String internalName) throws IOException {
+        byte[] bytes;
+        if (type.getClassLoader() instanceof LaunchClassLoader loader) {
+            bytes = loader.getClassBytes(type.getName());
+        } else {
+            try (var resource = type.getResourceAsStream('/' + internalName + ".class")) {
+                bytes = resource == null ? null : resource.readAllBytes();
+            }
+        }
+        if (bytes == null) {
+            throw new IOException("Class resource is unavailable");
+        }
+        return bytes;
     }
 
     private static boolean isListenerListReturn(Class<?> type, String descriptor) throws ClassNotFoundException {
