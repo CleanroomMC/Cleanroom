@@ -662,7 +662,7 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
                 return 1;
             }
 
-            if (getMetaFromState(here) == getMaxRenderHeightMeta())
+            if (here.getValue(LEVEL) == getMaxRenderHeightMeta())
             {
                 return quantaFraction;
             }

@@ -1,0 +1,11 @@
+--- original/net/minecraft/world/gen/layer/GenLayerRiverMix.java
++++ modified/net/minecraft/world/gen/layer/GenLayerRiverMix.java
+@@ -35,7 +35,7 @@
+                 if (aint[i] == Biome.getIdForBiome(Biomes.ICE_PLAINS)) {
+                     aint2[i] = Biome.getIdForBiome(Biomes.FROZEN_RIVER);
+                 } else if (aint[i] != Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND) && aint[i] != Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND_SHORE)) {
+-                    aint2[i] = aint1[i] & 0xFF;
++                    aint2[i] = aint1[i];
+                 } else {
+                     aint2[i] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND_SHORE);
+                 }

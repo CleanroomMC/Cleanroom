@@ -1,7 +1,22 @@
 --- original/net/minecraft/network/PacketBuffer.java
 +++ modified/net/minecraft/network/PacketBuffer.java
-@@ -267,7 +267,7 @@
-             this.writeShort(stack.getMetadata());
+@@ -257,17 +257,17 @@
+         }
+     }
+ 
+-    /** Writes the ItemStack's ID (short), then size (byte), then damage. (short) */
++    /** Writes the ItemStack's ID + 1 (varint, 0 for empty), then size (varint), then damage (varint). Cleanroom: was short, byte, short */
+     public PacketBuffer writeItemStack(ItemStack stack) {
+         if (stack.isEmpty()) {
+-            this.writeShort(-1);
++            this.writeVarInt(0);
+         } else {
+-            this.writeShort(Item.getIdFromItem(stack.getItem()));
+-            this.writeByte(stack.getCount());
+-            this.writeShort(stack.getMetadata());
++            this.writeVarInt(Item.getIdFromItem(stack.getItem()) + 1);
++            this.writeVarInt(stack.getCount());
++            this.writeVarInt(stack.getMetadata());
              NBTTagCompound nbttagcompound = null;
              if (stack.getItem().isDamageable() || stack.getItem().getShareTag()) {
 -                nbttagcompound = stack.getTagCompound();
@@ -9,9 +24,20 @@
              }
  
              this.writeCompoundTag(nbttagcompound);
-@@ -286,7 +286,7 @@
-         int j = this.readByte();
-         int k = this.readShort();
+@@ -278,15 +278,15 @@
+ 
+     /** Reads an ItemStack from this buffer */
+     public ItemStack readItemStack() throws IOException {
+-        int i = this.readShort();
++        int i = this.readVarInt() - 1; // Cleanroom: see writeItemStack
+         if (i < 0) {
+             return ItemStack.EMPTY;
+         }
+ 
+-        int j = this.readByte();
+-        int k = this.readShort();
++        int j = this.readVarInt();
++        int k = this.readVarInt();
          ItemStack itemstack = new ItemStack(Item.getItemById(i), j, k);
 -        itemstack.setTagCompound(this.readCompoundTag());
 +        itemstack.getItem().readNBTShareTag(itemstack, this.readCompoundTag());

@@ -1,7 +1,21 @@
 --- original/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
 +++ modified/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
-@@ -50,10 +50,28 @@
+@@ -43,17 +43,42 @@
+     /** Save directory for chunks using the Anvil format */
+     public final File chunkSaveLocation;
+     private final DataFixer fixer;
++    @Nullable
++    private final com.cleanroommc.cleanroom.common.id.LegacyIds legacyIds;
+     private boolean flushing;
+ 
+     public AnvilChunkLoader(File chunkSaveLocationIn, DataFixer dataFixerIn) {
++        this(chunkSaveLocationIn, dataFixerIn, com.cleanroommc.cleanroom.common.id.LegacyIds.current());
++    }
++
++    public AnvilChunkLoader(File chunkSaveLocationIn, DataFixer dataFixerIn, @Nullable com.cleanroommc.cleanroom.common.id.LegacyIds legacyIdsIn) {
+         this.chunkSaveLocation = chunkSaveLocationIn;
          this.fixer = dataFixerIn;
++        this.legacyIds = legacyIdsIn;
      }
  
 -    /** Loads the specified(XZ) chunk into the specified world. */
@@ -30,7 +44,7 @@
          ChunkPos chunkpos = new ChunkPos(x, z);
          NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
          if (nbttagcompound == null) {
-@@ -63,9 +81,10 @@
+@@ -63,9 +88,10 @@
              }
  
              nbttagcompound = this.fixer.process(FixTypes.CHUNK, CompressedStreamTools.read(datainputstream));
@@ -42,7 +56,7 @@
      }
  
      @Override
-@@ -78,34 +97,59 @@
+@@ -78,34 +104,59 @@
      /** Wraps readChunkFromNBT. Checks the coordinates and several NBT tags. */
      @Nullable
      protected Chunk checkedReadChunkFromNBT(World worldIn, int x, int z, NBTTagCompound compound) {
@@ -124,7 +138,7 @@
      }
  
      @Override
-@@ -117,7 +161,10 @@
+@@ -117,7 +168,10 @@
              NBTTagCompound nbttagcompound1 = new NBTTagCompound();
              nbttagcompound.setTag("Level", nbttagcompound1);
              nbttagcompound.setInteger("DataVersion", 1343);
@@ -135,7 +149,39 @@
              this.addChunkToPending(chunkIn.getPos(), nbttagcompound);
          } catch (Exception exception) {
              LOGGER.error("Failed to save chunk", exception);
-@@ -275,10 +322,16 @@
+@@ -242,19 +296,13 @@
+         ExtendedBlockStorage[] aextendedblockstorage = chunkIn.getBlockStorageArray();
+         NBTTagList nbttaglist = new NBTTagList();
+         boolean flag = worldIn.provider.hasSkyLight();
++        com.cleanroommc.cleanroom.common.id.SectionBlockFormat.ChunkPalette blockPalette = new com.cleanroommc.cleanroom.common.id.SectionBlockFormat.ChunkPalette(); // Cleanroom
+ 
+         for (ExtendedBlockStorage extendedblockstorage : aextendedblockstorage) {
+             if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE) {
+                 NBTTagCompound nbttagcompound = new NBTTagCompound();
+-                nbttagcompound.setByte("Y", (byte)(extendedblockstorage.getYLocation() >> 4 & 0xFF));
+-                byte[] abyte = new byte[4096];
+-                NibbleArray nibblearray = new NibbleArray();
+-                NibbleArray nibblearray1 = extendedblockstorage.getData().getDataForNBT(abyte, nibblearray);
+-                nbttagcompound.setByteArray("Blocks", abyte);
+-                nbttagcompound.setByteArray("Data", nibblearray.getData());
+-                if (nibblearray1 != null) {
+-                    nbttagcompound.setByteArray("Add", nibblearray1.getData());
+-                }
++                nbttagcompound.setInteger("Y", extendedblockstorage.getYLocation() >> 4); // Cleanroom: an int, so the format never caps section count or sign; readers take the old byte too
++                com.cleanroommc.cleanroom.common.id.SectionBlockFormat.write(extendedblockstorage.getData(), nbttagcompound, blockPalette); // Cleanroom: palette by name instead of Blocks/Data/Add
+ 
+                 nbttagcompound.setByteArray("BlockLight", extendedblockstorage.getBlockLight().getData());
+                 if (flag) {
+@@ -268,17 +316,24 @@
+         }
+ 
+         compound.setTag("Sections", nbttaglist);
+-        compound.setByteArray("Biomes", chunkIn.getBiomeArray());
++        compound.setTag(com.cleanroommc.cleanroom.common.id.SectionBlockFormat.CHUNK_PALETTE, blockPalette.toNBT()); // Cleanroom
++        chunkIn.getBiomeIds().writeNBT(compound); // Cleanroom: biome names (BiomePalette/BiomeIndices) instead of id bytes
+         chunkIn.setHasEntities(false);
+         NBTTagList nbttaglist1 = new NBTTagList();
+ 
          for (int i = 0; i < chunkIn.getEntityLists().length; i++) {
              for (Entity entity : chunkIn.getEntityLists()[i]) {
                  NBTTagCompound nbttagcompound2 = new NBTTagCompound();
@@ -152,7 +198,7 @@
              }
          }
  
-@@ -286,8 +339,13 @@
+@@ -286,8 +341,13 @@
          NBTTagList nbttaglist2 = new NBTTagList();
  
          for (TileEntity tileentity : chunkIn.getTileEntityMap().values()) {
@@ -166,7 +212,7 @@
          }
  
          compound.setTag("TileEntities", nbttaglist2);
-@@ -310,6 +368,14 @@
+@@ -310,10 +370,20 @@
  
              compound.setTag("TileTicks", nbttaglist3);
          }
@@ -181,8 +227,54 @@
      }
  
      /** Reads the data stored in the passed NBTTagCompound and creates a Chunk with that data in the passed World. Returns the created Chunk. */
-@@ -348,6 +414,15 @@
-             chunk.setBiomeArray(compound.getByteArray("Biomes"));
+     private Chunk readChunkFromNBT(World worldIn, NBTTagCompound compound) {
++        com.cleanroommc.cleanroom.common.id.LegacyIds prevLegacyIds = com.cleanroommc.cleanroom.common.id.LegacyIds.push(this.legacyIds);
++        try {
+         int i = compound.getInteger("xPos");
+         int j = compound.getInteger("zPos");
+         Chunk chunk = new Chunk(worldIn, i, j);
+@@ -325,15 +395,26 @@
+         int k = 16;
+         ExtendedBlockStorage[] aextendedblockstorage = new ExtendedBlockStorage[16];
+         boolean flag = worldIn.provider.hasSkyLight();
++        net.minecraft.block.state.IBlockState[] blockPalette = com.cleanroommc.cleanroom.common.id.SectionBlockFormat.isPaletted(compound) ? com.cleanroommc.cleanroom.common.id.SectionBlockFormat.readChunkPalette(compound) : null; // Cleanroom
+ 
+         for (int l = 0; l < nbttaglist.tagCount(); l++) {
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(l);
+-            int i1 = nbttagcompound.getByte("Y");
++            int i1 = nbttagcompound.getInteger("Y"); // Cleanroom: byte in old saves, int in ours; both read
+             ExtendedBlockStorage extendedblockstorage = new ExtendedBlockStorage(i1 << 4, flag);
+-            byte[] abyte = nbttagcompound.getByteArray("Blocks");
+-            NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
+-            NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(nbttagcompound.getByteArray("Add")) : null;
+-            extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
++            switch (com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.detect(compound, nbttagcompound)) { // Cleanroom: one exhaustive dispatch over every section layout
++                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Native ignored ->
++                    com.cleanroommc.cleanroom.common.id.SectionBlockFormat.read(nbttagcompound, extendedblockstorage.getData(), blockPalette);
++                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Jeid ignored -> // JEID/REID numeric palette, converted on the next save
++                    com.cleanroommc.cleanroom.common.id.SectionBlockFormat.readJeid(nbttagcompound, extendedblockstorage.getData());
++                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.Neid ignored -> // NEID 1.12.2, converted on the next save
++                    com.cleanroommc.cleanroom.common.id.SectionBlockFormat.readNeid(nbttagcompound, extendedblockstorage.getData());
++                case com.cleanroommc.cleanroom.common.id.SectionBlockFormat.SectionFormat.ForgeLegacy ignored -> { // Anvil sections from before the palette format, converted when the chunk is next saved
++                    byte[] abyte = nbttagcompound.getByteArray("Blocks");
++                    NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
++                    NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(nbttagcompound.getByteArray("Add")) : null;
++                    extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
++                }
++            }
+             extendedblockstorage.setBlockLight(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
+             if (flag) {
+                 extendedblockstorage.setSkyLight(new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
+@@ -344,10 +425,26 @@
+         }
+ 
+         chunk.setStorageArrays(aextendedblockstorage);
+-        if (compound.hasKey("Biomes", 7)) {
+-            chunk.setBiomeArray(compound.getByteArray("Biomes"));
++        if (compound.getIntArray("Biomes").length == 256) { // Cleanroom: JEID/REID int biome ids
++            chunk.getBiomeIds().setIds(compound.getIntArray("Biomes"));
++        } else {
++            chunk.getBiomeIds().readNBT(compound); // Cleanroom: either format
          }
  
 +        if (chunk.getCapabilities() != null && compound.hasKey("ForgeCaps")) {
@@ -191,22 +283,39 @@
 +
 +        // End this method here and split off entity loading to another method
 +        return chunk;
++        } finally {
++            com.cleanroommc.cleanroom.common.id.LegacyIds.pop(prevLegacyIds);
++        }
 +    }
 +
 +    public void loadEntities(World worldIn, NBTTagCompound compound, Chunk chunk) {
++        com.cleanroommc.cleanroom.common.id.LegacyIds prevLegacyIds = com.cleanroommc.cleanroom.common.id.LegacyIds.push(this.legacyIds);
++        try {
          NBTTagList nbttaglist1 = compound.getTagList("Entities", 10);
  
          for (int j1 = 0; j1 < nbttaglist1.tagCount(); j1++) {
-@@ -386,8 +461,6 @@
+@@ -375,7 +472,7 @@
+                 if (nbttagcompound3.hasKey("i", 8)) {
+                     block = Block.getBlockFromName(nbttagcompound3.getString("i"));
+                 } else {
+-                    block = Block.getBlockById(nbttagcompound3.getInteger("i"));
++                    block = com.cleanroommc.cleanroom.common.id.LegacyIds.block(nbttagcompound3.getInteger("i"));
+                 }
+ 
+                 worldIn.scheduleBlockUpdate(
+@@ -386,8 +483,9 @@
                  );
              }
          }
 -
 -        return chunk;
++        } finally {
++            com.cleanroommc.cleanroom.common.id.LegacyIds.pop(prevLegacyIds);
++        }
      }
  
      @Nullable
-@@ -481,4 +554,8 @@
+@@ -481,4 +579,8 @@
  
          return entity;
      }
