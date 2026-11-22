@@ -1534,4 +1534,38 @@ public class ForgeHooks
         return id;
     }
 
+    /**
+     * Obtains the stable, registration-ordered items for populating creative tabs.
+     * Prevents creative tabs from becoming scrambled when mods are added to an existing world save,
+     * which otherwise causes Item.REGISTRY's numeric IDs to be remapped out of order.
+     *
+     * @return an iterable of items in their original registration order
+     */
+    public static Iterable<Item> getCreativeTabItemOrder()
+    {
+        net.minecraftforge.registries.ForgeRegistry<Item> frozen =
+            net.minecraftforge.registries.RegistryManager.FROZEN.getRegistry(net.minecraftforge.registries.GameData.ITEMS);
+        if (frozen == null)
+        {
+            return Item.REGISTRY;
+        }
+        if (Item.REGISTRY.getKeys().size() <= frozen.getKeys().size())
+        {
+            return frozen;
+        }
+        List<Item> items = new ArrayList<>();
+        for (Item item : frozen)
+        {
+            items.add(item);
+        }
+        for (Item item : Item.REGISTRY)
+        {
+            if (!frozen.containsKey(item.getRegistryName()))
+            {
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
 }
