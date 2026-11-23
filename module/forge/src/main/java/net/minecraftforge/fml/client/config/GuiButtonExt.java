@@ -49,6 +49,10 @@ public class GuiButtonExt extends GuiButton
     /** When the current hover started, or -1 if not hovering. */
     private long hoverStart = -1;
 
+    private String prefix = "";
+    private String suffix = "";
+    private boolean clicked = false;
+
     public GuiButtonExt(int id, int xPos, int yPos, String displayString)
     {
         super(id, xPos, yPos, displayString);
@@ -57,6 +61,24 @@ public class GuiButtonExt extends GuiButton
     public GuiButtonExt(int id, int xPos, int yPos, int width, int height, String displayString)
     {
         super(id, xPos, yPos, width, height, displayString);
+    }
+
+    /** Sets the text pinned to the left/right of the label while clicked, e.g. setAffixes("[ ", " ]"). */
+    public GuiButtonExt setAffixes(String prefix, String suffix)
+    {
+        this.prefix = prefix == null ? "" : prefix;
+        this.suffix = suffix == null ? "" : suffix;
+        this.hoverStart = -1;
+        return this;
+    }
+
+
+    public GuiButtonExt setClicked(boolean clicked)
+    {
+        if (this.clicked != clicked)
+            this.hoverStart = -1;
+        this.clicked = clicked;
+        return this;
     }
 
     /**
@@ -87,8 +109,12 @@ public class GuiButtonExt extends GuiButton
             }
 
             FontRenderer font = mc.fontRenderer;
+            String pre = clicked ? prefix : "";
+            String suf = clicked ? suffix : "";
             String text = this.displayString;
-            int maxWidth = this.width - PADDING * 2;
+            int preWidth = font.getStringWidth(pre);
+            int sufWidth = font.getStringWidth(suf);
+            int maxWidth = this.width - PADDING * 2 - preWidth - sufWidth;   // space left for the label
             int strWidth = font.getStringWidth(text);
             int textY = this.y + (this.height - 8) / 2;
 
@@ -104,30 +130,38 @@ public class GuiButtonExt extends GuiButton
 
             if (strWidth <= maxWidth)
             {
-                this.drawCenteredString(font, text, this.x + this.width / 2, textY, color);
+                this.drawCenteredString(font, pre + text + suf, this.x + this.width / 2, textY, color);
                 return;
             }
 
-            float offset = hoverStart < 0 ? 0F : getScrollOffset(System.currentTimeMillis() - hoverStart, strWidth - maxWidth);
+            float offset = hoverStart < 0 || maxWidth <= 0 ? 0F : getScrollOffset(System.currentTimeMillis() - hoverStart, strWidth - maxWidth);
 
             if (offset <= 0F)
             {
                 int ellipsisWidth = font.getStringWidth("...");
                 String trimmed = font.trimStringToWidth(text, maxWidth - ellipsisWidth).trim() + "...";
-                this.drawCenteredString(font, trimmed, this.x + this.width / 2, textY, color);
+                this.drawCenteredString(font, pre + trimmed + suf, this.x + this.width / 2, textY, color);
             }
             else
             {
                 int f = new ScaledResolution(mc).getScaleFactor();
 
-                int x = (this.x + PADDING) * f;
-                int y = mc.displayHeight - (this.y * f + this.height * f);
-                int w = Math.max(0, maxWidth * f);
-                int h = Math.max(0, this.height * f);
+                int labelX = this.x + PADDING + preWidth;
+
+                // Pinned prefix / suffix, drawn outside the label clip so they are never cut off.
+                if (!pre.isEmpty())
+                    font.drawStringWithShadow(pre, this.x + PADDING, textY, color);
+                if (!suf.isEmpty())
+                    font.drawStringWithShadow(suf, this.x + this.width - PADDING - sufWidth, textY, color);
 
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
-                GL11.glScissor(x, y, w, h);
-                font.drawStringWithShadow(text, this.x + PADDING - offset, textY, color);
+                GL11.glScissor(
+                    labelX * f,
+                    mc.displayHeight - (this.y * f + this.height * f),
+                    Math.max(0, maxWidth * f),
+                    Math.max(0, this.height * f)
+                );
+                font.drawStringWithShadow(text, labelX - offset, textY, color);
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
             }
         }

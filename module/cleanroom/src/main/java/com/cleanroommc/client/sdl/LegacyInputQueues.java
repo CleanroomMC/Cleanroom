@@ -102,7 +102,7 @@ final class LegacyInputQueues {
     }
 
     synchronized void key(
-        int scancode, int key, boolean pressed, boolean repeat, char character, long timestampNs, short mods) {
+        int scancode, int key, boolean pressed, boolean repeat, char character, long timestampNs, int mods) {
         this.pendingCharacter = null;
         PendingKey event = new PendingKey(scancode, key, pressed, repeat, timestampNs, mods);
         event.character = character;
@@ -197,11 +197,11 @@ final class LegacyInputQueues {
         private final boolean pressed;
         private final boolean repeat;
         private final long timestampNs;
-        private final short mods;
+        private final int mods;
 
         private char character;
 
-        private PendingKey(int scancode, int key, boolean pressed, boolean repeat, long timestampNs, short mods) {
+        private PendingKey(int scancode, int key, boolean pressed, boolean repeat, long timestampNs, int mods) {
             this.scancode = scancode;
             this.key = key;
             this.pressed = pressed;
