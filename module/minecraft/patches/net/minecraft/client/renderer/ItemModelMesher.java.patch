@@ -1,6 +1,26 @@
 --- original/net/minecraft/client/renderer/ItemModelMesher.java
 +++ modified/net/minecraft/client/renderer/ItemModelMesher.java
-@@ -29,7 +29,9 @@
+@@ -1,6 +1,8 @@
+ package net.minecraft.client.renderer;
+ 
+ import com.google.common.collect.Maps;
++import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
++import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+ import java.util.Map;
+ import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+@@ -15,8 +17,8 @@
+ 
+ @SideOnly(Side.CLIENT)
+ public class ItemModelMesher {
+-    private final Map<Integer, ModelResourceLocation> simpleShapes = Maps.newHashMap();
+-    private final Map<Integer, IBakedModel> simpleShapesCache = Maps.newHashMap();
++    private final Long2ObjectMap<ModelResourceLocation> simpleShapes = new Long2ObjectOpenHashMap<>(); // Cleanroom: item ids past 16 bits
++    private final Long2ObjectMap<IBakedModel> simpleShapesCache = new Long2ObjectOpenHashMap<>();
+     protected final Map<Item, ItemMeshDefinition> shapers = Maps.newHashMap();
+     private final ModelManager modelManager;
+ 
+@@ -29,7 +31,9 @@
      }
  
      public TextureAtlasSprite getParticleIcon(Item item, int meta) {
@@ -11,3 +31,50 @@
      }
  
      public IBakedModel getItemModel(ItemStack stack) {
+@@ -49,8 +53,13 @@
+         return ibakedmodel;
+     }
+ 
++    /**
++     * @deprecated Cleanroom: delegates to {@link Item#getModelKey(ItemStack)}; prefer {@link Item#getModelKey(ItemStack)}
++     * or {@link #register(Item, ItemMeshDefinition)}.
++     */
++    @Deprecated
+     protected int getMetadata(ItemStack stack) {
+-        return stack.getMaxDamage() > 0 ? 0 : stack.getMetadata();
++        return stack.getMaxDamage() > 0 ? 0 : stack.getItem().getModelKey(stack);
+     }
+ 
+     @Nullable
+@@ -58,10 +67,20 @@
+         return this.simpleShapesCache.get(this.getIndex(item, meta));
+     }
+ 
+-    private int getIndex(Item item, int meta) {
+-        return Item.getIdFromItem(item) << 16 | meta;
++    private long getIndex(Item item, int meta) {
++        return (long)Item.getIdFromItem(item) << 32 | meta & 0xFFFFFFFFL; // Cleanroom: id << 16 | meta collided past item id 65535
+     }
+ 
++    /** Cleanroom: registers the single model for a flattened (one-id) item. */
++    public void register(Item item, ModelResourceLocation location) {
++        this.register(item, 0, location);
++    }
++
++    /**
++     * @deprecated Cleanroom: use {@link #register(Item, ModelResourceLocation)} for one-id items or
++     * {@link #register(Item, ItemMeshDefinition)} for component-driven models.
++     */
++    @Deprecated
+     public void register(Item item, int meta, ModelResourceLocation location) {
+         this.simpleShapes.put(this.getIndex(item, meta), location);
+         this.simpleShapesCache.put(this.getIndex(item, meta), this.modelManager.getModel(location));
+@@ -78,7 +97,7 @@
+     public void rebuildCache() {
+         this.simpleShapesCache.clear();
+ 
+-        for (Entry<Integer, ModelResourceLocation> entry : this.simpleShapes.entrySet()) {
++        for (Entry<Long, ModelResourceLocation> entry : this.simpleShapes.entrySet()) {
+             this.simpleShapesCache.put(entry.getKey(), this.modelManager.getModel(entry.getValue()));
+         }
+     }

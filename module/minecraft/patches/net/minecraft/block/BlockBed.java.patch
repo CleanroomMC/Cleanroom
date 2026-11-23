@@ -11,3 +11,25 @@
              if (state.getValue(OCCUPIED)) {
                  EntityPlayer entityplayer = this.getPlayerInBed(worldIn, pos);
                  if (entityplayer != null) {
+@@ -254,7 +256,9 @@
+         if (state.getValue(PART) == BlockBed.EnumPartType.HEAD) {
+             TileEntity tileentity = worldIn.getTileEntity(pos);
+             EnumDyeColor enumdyecolor = tileentity instanceof TileEntityBed ? ((TileEntityBed)tileentity).getColor() : EnumDyeColor.RED;
+-            spawnAsEntity(worldIn, pos, new ItemStack(Items.BED, 1, enumdyecolor.getMetadata()));
++            ItemStack bedStack = new ItemStack(Items.BED, 1, enumdyecolor.getMetadata());
++            bedStack.setItemState(Items.BED.getDefaultItemState().withProperty(net.minecraft.item.ItemBed.COLOR, enumdyecolor));
++            spawnAsEntity(worldIn, pos, bedStack);
+         }
+     }
+ 
+@@ -289,7 +293,9 @@
+ 
+         TileEntity tileentity = worldIn.getTileEntity(blockpos);
+         EnumDyeColor enumdyecolor = tileentity instanceof TileEntityBed ? ((TileEntityBed)tileentity).getColor() : EnumDyeColor.RED;
+-        return new ItemStack(Items.BED, 1, enumdyecolor.getMetadata());
++        ItemStack bedStack = new ItemStack(Items.BED, 1, enumdyecolor.getMetadata());
++        bedStack.setItemState(Items.BED.getDefaultItemState().withProperty(net.minecraft.item.ItemBed.COLOR, enumdyecolor));
++        return bedStack;
+     }
+ 
+     /** Called before the Block is set to air in the world. Called regardless of if the player's tool can actually collect this block */

@@ -53,7 +53,16 @@
              TileEntity tileentity = worldIn.getTileEntity(blockpos);
              if (tileentity instanceof IInventory) {
                  iinventory = (IInventory)tileentity;
-@@ -521,4 +531,6 @@
+@@ -471,6 +481,8 @@
+             return false;
+         } else if (stack1.getMetadata() != stack2.getMetadata()) {
+             return false;
++        } else if (!stack1.isStackable() || !stack2.isStackable()) {
++            return false;
+         } else {
+             return stack1.getCount() > stack1.getMaxStackSize() ? false : ItemStack.areItemStackTagsEqual(stack1, stack2);
+         }
+@@ -521,4 +533,6 @@
      protected NonNullList<ItemStack> getItems() {
          return this.inventory;
      }

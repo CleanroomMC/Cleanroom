@@ -1,0 +1,34 @@
+--- original/net/minecraft/command/CommandReplaceItem.java
++++ modified/net/minecraft/command/CommandReplaceItem.java
+@@ -77,20 +77,27 @@
+         String s = args[i];
+         int j = this.getSlotForShortcut(args[i++]);
+ 
++        String itemArg = args[i];
+         Item item;
+         try {
+-            item = getItemByText(sender, args[i]);
++            item = getItemByText(sender, itemArg);
+         } catch (NumberInvalidException numberinvalidexception) {
+-            if (Block.getBlockFromName(args[i]) != Blocks.AIR) {
++            int bracket = itemArg.indexOf('[');
++            String blockName = bracket >= 0 ? itemArg.substring(0, bracket) : itemArg;
++            if (Block.getBlockFromName(blockName) != Blocks.AIR) {
+                 throw numberinvalidexception;
+             }
+ 
+             item = null;
+         }
++        com.cleanroommc.cleanroom.common.component.DataComponentPredicate components = item != null ? parseItemComponents(itemArg) : com.cleanroommc.cleanroom.common.component.DataComponentPredicate.EMPTY;
+ 
+-        int k = args.length > ++i ? parseInt(args[i++], 1, item.getItemStackLimit()) : 1;
++        String countArg = args.length > ++i ? args[i++] : null;
+         int l = args.length > i ? parseInt(args[i++]) : 0;
+-        ItemStack itemstack = new ItemStack(item, k, l);
++        ItemStack itemstack = new ItemStack(item, 1, l);
++        components.applyTo(itemstack);
++        int k = countArg != null && item != null ? parseInt(countArg, 1, itemstack.getMaxStackSize()) : 1;
++        itemstack.setCount(k);
+         if (args.length > i) {
+             String s1 = buildString(args, i);
+ 

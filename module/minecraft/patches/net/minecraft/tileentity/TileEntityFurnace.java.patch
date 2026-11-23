@@ -37,9 +37,12 @@
                              }
                          }
                      }
-@@ -257,10 +257,10 @@
+@@ -255,12 +255,12 @@
+                 ItemStack itemstack1 = this.furnaceItemStacks.get(2);
+                 if (itemstack1.isEmpty()) {
                      return true;
-                 } else if (!itemstack1.isItemEqual(itemstack)) {
+-                } else if (!itemstack1.isItemEqual(itemstack)) {
++                } else if (!itemstack1.isItemEqual(itemstack) || !ItemStack.areItemStackTagsEqual(itemstack1, itemstack)) {
                      return false;
 +                } else if (itemstack1.getCount() + itemstack.getCount() <= this.getInventoryStackLimit() && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize()) { // Forge fix: make furnace respect stack sizes in furnace recipes
 +                    return true;

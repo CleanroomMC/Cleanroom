@@ -9,6 +9,15 @@
              packetIn.getDifficulty(),
              this.client.profiler
          );
+@@ -442,7 +442,7 @@
+         } else if (packetIn.getType() == 2) {
+             entity = new EntityItem(this.world, d0, d1, d2);
+         } else if (packetIn.getType() == 70) {
+-            entity = new EntityFallingBlock(this.world, d0, d1, d2, Block.getStateById(packetIn.getData() & 65535));
++            entity = new EntityFallingBlock(this.world, d0, d1, d2, Block.getStateById(packetIn.getData()));
+             packetIn.setData(0);
+         } else if (packetIn.getType() == 3) {
+             entity = new EntityAreaEffectCloud(this.world, d0, d1, d2);
 @@ -735,15 +735,16 @@
          Chunk chunk = this.world.getChunk(packetIn.getChunkX(), packetIn.getChunkZ());
          chunk.read(packetIn.getReadBuffer(), packetIn.getExtractedSize(), packetIn.isFullChunk());
@@ -130,7 +139,7 @@
          Entity entity = this.world.getEntityByID(packetIn.getEntityId());
          if (entity instanceof EntityLivingBase) {
 -            Potion potion = Potion.getPotionById(packetIn.getEffectId());
-+            Potion potion = Potion.getPotionById(packetIn.getEffectId() & 0xFF);
++            Potion potion = Potion.getPotionById(packetIn.getFullEffectId()); // Cleanroom: potion ids past 255
 +
              if (potion != null) {
                  PotionEffect potioneffect = new PotionEffect(

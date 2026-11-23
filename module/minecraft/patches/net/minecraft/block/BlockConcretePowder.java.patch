@@ -1,0 +1,24 @@
+--- original/net/minecraft/block/BlockConcretePowder.java
++++ modified/net/minecraft/block/BlockConcretePowder.java
+@@ -79,9 +79,19 @@
+ 
+     /** returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks) */
+     @Override
++    public IBlockState getStateForDrop(IBlockState state) {
++        return state;
++    }
++
++    @Override
+     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+-        for (EnumDyeColor enumdyecolor : EnumDyeColor.values()) {
+-            items.add(new ItemStack(this, 1, enumdyecolor.getMetadata()));
++        net.minecraft.item.Item item = net.minecraft.item.Item.getItemFromBlock(this);
++        for (IBlockState state : this.getBlockState().getValidStates()) {
++            if (item instanceof net.minecraft.item.ItemBlock) {
++                items.add(((net.minecraft.item.ItemBlock) item).stackFor(state));
++            } else {
++                items.add(new ItemStack(this, 1, this.damageDropped(state)));
++            }
+         }
+     }
+ 

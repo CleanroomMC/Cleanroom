@@ -39,3 +39,21 @@
                  b2 = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
              }
          } else {
+@@ -288,7 +289,7 @@
+             if (this.isDirty) {
+                 this.isDirty = false;
+                 return new SPacketMaps(
+-                    stack.getMetadata(),
++                    net.minecraft.item.ItemMap.getMapId(stack),
+                     MapData.this.scale,
+                     MapData.this.trackingPosition,
+                     MapData.this.mapDecorations.values(),
+@@ -301,7 +302,7 @@
+             } else {
+                 return this.tick++ % 5 == 0
+                     ? new SPacketMaps(
+-                        stack.getMetadata(),
++                        net.minecraft.item.ItemMap.getMapId(stack),
+                         MapData.this.scale,
+                         MapData.this.trackingPosition,
+                         MapData.this.mapDecorations.values(),

@@ -1,6 +1,20 @@
 --- original/net/minecraft/entity/passive/EntityLlama.java
 +++ modified/net/minecraft/entity/passive/EntityLlama.java
-@@ -428,6 +428,9 @@
+@@ -363,7 +363,12 @@
+ 
+     private void setColorByItem(ItemStack stack) {
+         if (this.isArmor(stack)) {
+-            this.setColor(EnumDyeColor.byMetadata(stack.getMetadata()));
++            net.minecraft.block.state.IBlockState state = stack.get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE);
++            if (state != null && state.getProperties().containsKey(net.minecraft.block.BlockCarpet.COLOR)) {
++                this.setColor(state.getValue(net.minecraft.block.BlockCarpet.COLOR));
++            } else {
++                this.setColor(EnumDyeColor.byMetadata(stack.getMetadata()));
++            }
+         } else {
+             this.setColor(null);
+         }
+@@ -428,6 +433,9 @@
  
      @Override
      public void fall(float distance, float damageMultiplier) {

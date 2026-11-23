@@ -1,0 +1,15 @@
+--- original/net/minecraft/inventory/SlotMerchantResult.java
++++ modified/net/minecraft/inventory/SlotMerchantResult.java
+@@ -73,10 +73,10 @@
+     private boolean doTrade(MerchantRecipe trade, ItemStack firstItem, ItemStack secondItem) {
+         ItemStack itemstack = trade.getItemToBuy();
+         ItemStack itemstack1 = trade.getSecondItemToBuy();
+-        if (firstItem.getItem() == itemstack.getItem() && firstItem.getCount() >= itemstack.getCount()) {
++        if (com.cleanroommc.cleanroom.common.component.DataComponents.matchesMerchantBuyItem(firstItem, itemstack) && firstItem.getCount() >= itemstack.getCount()) {
+             if (!itemstack1.isEmpty()
+                 && !secondItem.isEmpty()
+-                && itemstack1.getItem() == secondItem.getItem()
++                && com.cleanroommc.cleanroom.common.component.DataComponents.matchesMerchantBuyItem(secondItem, itemstack1)
+                 && secondItem.getCount() >= itemstack1.getCount()) {
+                 firstItem.shrink(itemstack.getCount());
+                 secondItem.shrink(itemstack1.getCount());

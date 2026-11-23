@@ -1,5 +1,14 @@
 --- original/net/minecraft/item/ItemSlab.java
 +++ modified/net/minecraft/item/ItemSlab.java
+@@ -39,7 +39,7 @@
+     /** Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have different names based on their damage or NBT. */
+     @Override
+     public String getTranslationKey(ItemStack stack) {
+-        return this.singleSlab.getTranslationKey(stack.getMetadata());
++        IBlockState carried = stack.getComponents().get(com.cleanroommc.cleanroom.common.component.DataComponents.BLOCK_STATE); if (carried != null && carried.getBlock() == this.singleSlab) { return this.singleSlab.getTranslationKey(this.singleSlab.damageDropped(carried)); } return this.singleSlab.getTranslationKey(stack.getMetadata());
+     }
+ 
+     /** Called when a Block is right-clicked with this Item */
 @@ -70,9 +70,9 @@
                      IBlockState iblockstate1 = this.makeState(iproperty, comparable1);
                      AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
