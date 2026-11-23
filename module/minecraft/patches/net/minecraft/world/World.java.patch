@@ -141,10 +141,23 @@
          if (skipSide != EnumFacing.WEST) {
              this.neighborChanged(pos.west(), blockType, pos);
          }
-@@ -480,19 +520,16 @@
-                 crashreportcategory.addDetail(
-                     "Source block type",
-                     new ICrashReportDetail<String>() {
+@@ -471,29 +511,35 @@
+ 
+     public void neighborChanged(BlockPos pos, final Block blockIn, BlockPos fromPos) {
+         if (!this.isRemote) {
+-            IBlockState iblockstate = this.getBlockState(pos);
+-
++            if (!com.cleanroommc.common.NeighborUpdates.begin(this, pos, blockIn, fromPos)) {
++                return;
++            }
+             try {
+-                iblockstate.neighborChanged(this, pos, blockIn, fromPos);
+-            } catch (Throwable throwable) {
+-                CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception while updating neighbours");
+-                CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being updated");
+-                crashreportcategory.addDetail(
+-                    "Source block type",
+-                    new ICrashReportDetail<String>() {
 -                        public String call() throws Exception {
 -                            try {
 -                                return String.format(
@@ -156,19 +169,38 @@
 -                            } catch (Throwable throwable1) {
 -                                return "ID #" + Block.getIdFromBlock(blockIn);
 -                            }
-+                    public String call() throws Exception {
-+                        try {
-+                            return String.format(
-+                                       "ID #%d (%s // %s // %s)", Block.getIdFromBlock(blockIn), blockIn.getTranslationKey(), blockIn.getClass().getName(), blockIn.getRegistryName()
-+                                   );
-+                        } catch (Throwable throwable1) {
-+                            return "ID #" + Block.getIdFromBlock(blockIn);
++                IBlockState iblockstate = this.getBlockState(pos);
++
++                try {
++                    iblockstate.neighborChanged(this, pos, blockIn, fromPos);
++                } catch (Throwable throwable) {
++                    CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception while updating neighbours");
++                    CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being updated");
++                    crashreportcategory.addDetail(
++                        "Source block type",
++                        new ICrashReportDetail<String>() {
++                        public String call() throws Exception {
++                            try {
++                                return String.format(
++                                           "ID #%d (%s // %s // %s)", Block.getIdFromBlock(blockIn), blockIn.getTranslationKey(), blockIn.getClass().getName(), blockIn.getRegistryName()
++                                       );
++                            } catch (Throwable throwable1) {
++                                return "ID #" + Block.getIdFromBlock(blockIn);
++                            }
                          }
                      }
+-                );
+-                CrashReportCategory.addBlockInfo(crashreportcategory, pos, iblockstate);
+-                throw new ReportedException(crashreport);
++                    );
++                    CrashReportCategory.addBlockInfo(crashreportcategory, pos, iblockstate);
++                    throw new ReportedException(crashreport);
 +                }
-                 );
-                 CrashReportCategory.addBlockInfo(crashreportcategory, pos, iblockstate);
-                 throw new ReportedException(crashreport);
++            } finally {
++                com.cleanroommc.common.NeighborUpdates.end(this);
+             }
+         }
+     }
 @@ -503,28 +540,26 @@
      public void observedNeighborChanged(BlockPos pos, final Block changedBlock, BlockPos changedBlockPos) {
          if (!this.isRemote) {
