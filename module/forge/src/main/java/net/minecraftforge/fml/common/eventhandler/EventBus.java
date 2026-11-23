@@ -91,7 +91,7 @@ public class EventBus implements IEventExceptionHandler
         Collection<Method> methods;
         if (target instanceof Class<?> clazz) {
             // static listener: subscribed methods must be declared by the class
-            methods = Arrays.stream(clazz.getDeclaredMethods())
+            methods = Arrays.stream(declaredMethods(clazz))
                 .filter(m -> !m.isSynthetic()
                              && Modifier.isStatic(m.getModifiers())
                              // private not allowed to keep legacy behaviour
@@ -108,7 +108,7 @@ public class EventBus implements IEventExceptionHandler
                 .rawTypes()
                 // get self & superclass & interface
                 .stream()
-                .map(Class::getDeclaredMethods)
+                .map(EventBus::declaredMethods)
                 .flatMap(Arrays::stream)
                 .filter(m -> !m.isSynthetic()
                              && !Modifier.isStatic(m.getModifiers())
@@ -143,6 +143,22 @@ public class EventBus implements IEventExceptionHandler
             }
 
             register(eventType, target, method, activeModContainer);
+        }
+    }
+
+    /**
+     * Guards against types that may not exist while resolving {@link Class#getDeclaredMethods()}.
+     */
+    private static Method[] declaredMethods(Class<?> clazz)
+    {
+        try
+        {
+            return clazz.getDeclaredMethods();
+        }
+        catch (NoClassDefFoundError e)
+        {
+            FMLLog.log.debug("{} declares a method whose types cannot be resolved ({}), registering its public methods only", clazz.getName(), e.getMessage());
+            return Arrays.stream(clazz.getMethods()).filter(m -> m.getDeclaringClass() == clazz).toArray(Method[]::new);
         }
     }
 

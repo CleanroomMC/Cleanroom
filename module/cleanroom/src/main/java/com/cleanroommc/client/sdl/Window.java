@@ -66,6 +66,8 @@ public final class Window implements AutoCloseable {
     private final Text text = new Text(this);
     private final boolean[] keys = new boolean[MAX_SCANCODES];
     private final boolean[] buttons = new boolean[MAX_MOUSE_BUTTONS + 1];
+    private final WheelAxis wheelX = new WheelAxis();
+    private final WheelAxis wheelY = new WheelAxis();
 
     private String title;
     private int width;
@@ -753,17 +755,23 @@ public final class Window implements AutoCloseable {
         }
         boolean flipped = event.direction() == SDLMouse.SDL_MOUSEWHEEL_FLIPPED;
         int sign = flipped ? -1 : 1;
-        float amount = event.y() * sign;
-        // High-resolution wheels report one notch as several fractional events, but LWJGL 2 consumers treat every
-        // wheel event as a single step, so the legacy queue only receives whole notches
-        int notches = event.integer_y() * sign;
-        if (notches != 0) {
-            this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), notches, event.timestamp());
+        float horizontal = event.x() * sign;
+        float vertical = event.y() * sign;
+        long timestamp = event.timestamp();
+        int notchesX = this.wheelX.step(horizontal, timestamp);
+        int notchesY = this.wheelY.step(vertical, timestamp);
+
+        // LWJGL 2 kept the OS scroll direction, so multiplying by sign restores it and natural scrolling applies.
+        // LWJGL 2 mapped horizontal-only wheel events to vertical. Only MouseEvent.Wheel sees them here, as horizontal.
+        // macOS turns shift+wheel into horizontal scrolling, so it no longer scrolls the hotbar or GUIs there.
+        int legacyNotches = sign * notchesY;
+        if (legacyNotches != 0) {
+            this.legacy.wheel(this.pixelX(event.mouse_x()), this.pixelY(event.mouse_y()), legacyNotches, timestamp);
         }
         SDL.events()
             .post(new MouseEvent.Wheel(
-                event.which(), this.id, event.timestamp(), event.mouse_x(), event.mouse_y(), event.x() * sign, amount,
-                event.integer_x() * sign, event.integer_y() * sign, flipped
+                event.which(), this.id, timestamp, event.mouse_x(), event.mouse_y(), horizontal, vertical, notchesX,
+                notchesY, flipped
             ));
     }
 
@@ -972,6 +980,39 @@ public final class Window implements AutoCloseable {
 
         public int value() {
             return value;
+        }
+
+    }
+
+    /**
+     * Turns fractional wheel input into whole notches.
+     * <p>
+     * High-resolution wheels report one notch as several fractional events.
+     * LWJGL 2 consumers treat every wheel event as a single step.
+     * SDL truncates and carry remainders across direction changes and pauses which swallows the notches.
+     * This remainder starts fresh on reversal or a new gesture, and halves round away from zero.
+     */
+    private static final class WheelAxis {
+
+        private static final long GESTURE_GAP_NS = 250_000_000L;
+
+        private float residual;
+        private float direction;
+        private long timestamp;
+
+        int step(float amount, long timestamp) {
+            if (amount == 0.0F) {
+                return 0;
+            }
+            if (amount * this.direction < 0.0F || timestamp - this.timestamp > GESTURE_GAP_NS) {
+                this.residual = 0.0F;
+            }
+            this.direction = Math.signum(amount);
+            this.timestamp = timestamp;
+            this.residual += amount;
+            int notches = (int) Math.signum(this.residual) * Math.round(Math.abs(this.residual));
+            this.residual -= notches;
+            return notches;
         }
 
     }

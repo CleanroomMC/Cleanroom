@@ -20,7 +20,7 @@
 -                keybinding.setKeyCode(keybinding.getKeyCodeDefault());
 +                keybinding.setToDefault();
              }
- 
+
              KeyBinding.resetKeyBindingArrayAndHash();
          } else if (button.id < 100 && button instanceof GuiOptionButton) {
              this.options.setOptionValue(((GuiOptionButton)button).getOption(), 1);
@@ -29,7 +29,7 @@
 +            this.keyBindingList.cleanroom$updateList();
          }
      }
- 
+
 @@ -93,10 +96,11 @@
      @Override
      protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
@@ -56,7 +56,7 @@
 +                this.buttonId.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifierMask(), typedChar + 256);
                  this.options.setOptionKeyBinding(this.buttonId, typedChar + 256);
              }
- 
+
 +            if (!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(keyCode))
              this.buttonId = null;
              this.time = Minecraft.getSystemTime();
@@ -72,23 +72,24 @@
          this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 8, 16777215);
 +        this.search.drawTextBox();
          boolean flag = false;
- 
+
          for (KeyBinding keybinding : this.options.keyBindings) {
 -            if (keybinding.getKeyCode() != keybinding.getKeyCodeDefault()) {
 +            if (!keybinding.isSetToDefaultValue()) {
                  flag = true;
                  break;
              }
-@@ -147,4 +156,69 @@
+@@ -147,4 +156,78 @@
          this.buttonReset.enabled = flag;
          super.drawScreen(mouseX, mouseY, partialTicks);
      }
 +
 +    /* ======================================== CLEANROOM START =====================================*/
-+    private static final int BTT_SORT_BY = 300;
-+    private static final int BTT_FILTER_MODE = 301;
-+    private static final int BTT_SEARCH_BY = 302;
-+    private static final int BTT_LAYOUT = 303;
++    private static final int CLR_BTT_LAYOUT_AWARENESS = 300;
++    private static final int CLR_BTT_SORT_BY = 301;
++    private static final int CLR_BTT_FILTER_MODE = 302;
++    private static final int CLR_BTT_SEARCH_BY = 303;
++    private static final int CLR_BTT_LAYOUT = 304;
 +
 +    private static com.cleanroommc.client.controls.GuiControlsHooks.SortMode sortMode = com.cleanroommc.client.controls.GuiControlsHooks.SortMode.CATEGORY;
 +    private static com.cleanroommc.client.controls.GuiControlsHooks.SearchMode searchMode = com.cleanroommc.client.controls.GuiControlsHooks.SearchMode.NAME;
@@ -103,6 +104,8 @@
 +
 +        search = new GuiTextField(0, fontRenderer, this.width / 2 - 155 + 2, this.height - 29 - 40, 146, 16);
 +
++        this.buttonList.add(new GuiButton(CLR_BTT_LAYOUT_AWARENESS, this.width - 1 - 83, 2, 83, 13,
++            I18n.format("cleanroom.layout_awareness", org.lwjgl.input.Keyboard.isLayoutAwarenessEnabled() ? "OS" : "QWERTY")));
 +        buttonList.add(new GuiButton(BTT_SEARCH_BY, this.width / 2 - 155 + 160, this.height - 29 - 21 * 2, 150, 20, searchMode.translateText()));
 +        buttonList.add(new GuiButton(BTT_SORT_BY, this.width / 2 - 155 + 160, this.height - 29 - 21, 150, 20, sortMode.translateText()));
 +        buttonList.add(new GuiButton(BTT_FILTER_MODE, this.width / 2 - 155, this.height - 29 - 21, 150, 20, filterMode.translateText()));
@@ -137,6 +140,12 @@
 +    private boolean cleanroom$actionPerformed(GuiButton button) {
 +        boolean success = true;
 +        switch (button.id) {
++            case CLR_BTT_LAYOUT_AWARENESS -> {
++                boolean enabled = !org.lwjgl.input.Keyboard.isLayoutAwarenessEnabled();
++                org.lwjgl.input.Keyboard.enableLayoutAwareness(enabled);
++                button.displayString = I18n.format("cleanroom.layout_awareness", enabled ? "OS" : "QWERTY");
++                success = false;
++            }
 +            case BTT_SORT_BY -> sortMode = sortMode.next(button);
 +            case BTT_FILTER_MODE -> filterMode = filterMode.next(button);
 +            case BTT_SEARCH_BY -> searchMode = searchMode.next(button);

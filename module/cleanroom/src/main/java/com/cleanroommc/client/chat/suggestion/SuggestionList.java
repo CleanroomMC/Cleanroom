@@ -10,11 +10,14 @@
 
 package com.cleanroommc.client.chat.suggestion;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.command.CommandBase;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -22,11 +25,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @SideOnly(Side.CLIENT)
 public class SuggestionList {
@@ -43,6 +50,9 @@ public class SuggestionList {
         0xAA00FF, // Purple
         0xFF55FF, // Magenta
     };
+    private static final int INVALID_COLOR = 0xFF5555;
+    // Vanilla only completes "~" for coordinates and player names for selectors
+    private static final Pattern UNJUDGED_ARGUMENT = Pattern.compile("[~^]?[-+]?\\d*(\\.\\d*)?|@.*");
 
     // Tracks the connection the knownCommands were learned on. Different connection means a different server
     private static WeakReference<NetHandlerPlayClient> lastConnection = new WeakReference<>(null);
@@ -50,6 +60,8 @@ public class SuggestionList {
     private final GuiTextField field;
     // When true, commands are auto-suggested and colored with or without a leading "/" (command-block GUIs)
     private final boolean commandBlockMode;
+    // Text before an argument, mapped to every completion offered for that argument
+    private final Map<String, Set<String>> argumentCandidates = new HashMap<>();
 
     private List<String> suggestions = Collections.emptyList();
     private int selectedIndex = -1;
@@ -68,6 +80,27 @@ public class SuggestionList {
             lastConnection = new WeakReference<>(connection);
         }
         knownCommands.addAll(ClientCommandHandler.instance.getCommands().keySet());
+    }
+
+    /**
+     * An argument is invalid when completions were offered but none were matched.
+     * Arguments with no completions on record take free inputs or have yet to be asked for any.
+     */
+    static boolean isInvalidArgument(@Nullable Collection<String> candidates, String argument, boolean typing) {
+        if (candidates == null || UNJUDGED_ARGUMENT.matcher(argument).matches()) {
+            return false;
+        }
+        for (String candidate : candidates) {
+            // Mirrors CommandBase#getListOfStringsMatchingLastWord
+            String path = candidate.substring(candidate.indexOf(':') + 1);
+            if (typing
+                ? CommandBase.doesStringStartWith(argument, candidate) ||
+                    CommandBase.doesStringStartWith(argument, path)
+                : argument.equalsIgnoreCase(candidate) || argument.equalsIgnoreCase(path)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static int textOriginX(GuiTextField f) {
@@ -203,6 +236,12 @@ public class SuggestionList {
         return list;
     }
 
+    public void addArgumentCandidate(String precedingText, String candidate) {
+        if (!candidate.isEmpty()) {
+            this.argumentCandidates.computeIfAbsent(precedingText, k -> new HashSet<>()).add(candidate);
+        }
+    }
+
     public void applySuggestion(GuiTextField inputField, String suggestion) {
         this.replaceWord(inputField, suggestion);
         this.hide();
@@ -295,7 +334,12 @@ public class SuggestionList {
             int visibleStart = Math.max(pos, scrollOffset);
             if (visibleStart < end) {
                 int tokenX = x + fontRenderer.getStringWidth(text.substring(scrollOffset, visibleStart));
-                int color = ARGUMENT_COLORS[argIndex % ARGUMENT_COLORS.length];
+                int cursor = inputField.getCursorPosition();
+                boolean invalid = isInvalidArgument(
+                    this.argumentCandidates.get(text.substring(0, pos)), text.substring(pos, end),
+                    cursor >= pos && cursor <= end
+                );
+                int color = invalid ? INVALID_COLOR : ARGUMENT_COLORS[argIndex % ARGUMENT_COLORS.length];
                 fontRenderer.drawStringWithShadow(text.substring(visibleStart, end), tokenX, y, color);
             }
             argIndex++;
