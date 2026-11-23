@@ -47,6 +47,7 @@ import org.lwjgl.system.Platform;
 import org.lwjgl.system.linux.DynamicLinkLoader;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -56,6 +57,8 @@ import java.nio.file.Path;
 public final class SDL {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("SDL3");
+    private static final Path NVIDIA_VERSION_FILE = Path.of("/sys/module/nvidia/version");
+    private static final int FIRST_UNAFFECTED_NVIDIA_MAJOR = 590;
     /**
      * Every {@code com.cleanroommc.client.sdl.events} event is posted here, not on Forge's bus.
      * */
@@ -271,8 +274,8 @@ public final class SDL {
      * driver's application profile turns it on for anything that loads liblwjgl*.so before EGL is
      * initialized, which is why this is needed here at all.
      *
-     * <p>Only runs when PRIME offload was requested, so other Wayland and NVIDIA setups are left
-     * alone. Opt out with {@code -Dcleanroom.sdl.nvidiaWaylandWorkaround=false}.
+     * <p>Only runs on Linux/Wayland with PRIME offload and NVIDIA drivers below 590: the newer
+     * branches are not affected. Opt out with {@code -Dcleanroom.sdl.nvidiaWaylandWorkaround=false}.
      */
     private static synchronized void applyNvidiaWaylandWorkaround() {
         if (nvidiaWaylandWorkaroundChecked) {
@@ -288,10 +291,10 @@ public final class SDL {
         if (!"wayland".equals(SDLVideo.SDL_GetCurrentVideoDriver())) {
             return;
         }
-        if (!Files.isRegularFile(Path.of("/proc/driver/nvidia/version"))) {
+        if (!nvidiaOffloadRequested()) {
             return;
         }
-        if (!nvidiaOffloadRequested()) {
+        if (!needsNvidiaWorkaround()) {
             return;
         }
         String threaded = System.getenv("__GL_THREADED_OPTIMIZATIONS");
@@ -320,6 +323,17 @@ public final class SDL {
         }
         String vendor = System.getenv("__GLX_VENDOR_LIBRARY_NAME");
         return vendor != null && "nvidia".equalsIgnoreCase(vendor.trim());
+    }
+
+    private static boolean needsNvidiaWorkaround() {
+        try {
+            String version = Files.readString(NVIDIA_VERSION_FILE).trim();
+            int major = Integer.parseInt(version.substring(0, version.indexOf('.')));
+            return major < FIRST_UNAFFECTED_NVIDIA_MAJOR;
+        } catch (IOException | RuntimeException e) {
+            // Unknown version: keep the workaround rather than restore the swap failure.
+            return true;
+        }
     }
 
     /**
