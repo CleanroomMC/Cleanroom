@@ -47,8 +47,11 @@ import org.lwjgl.system.Platform;
 import org.lwjgl.system.linux.DynamicLinkLoader;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The way into SDL. Every device, subsystem and lifecycle call is exposed through here.
@@ -56,6 +59,10 @@ import java.nio.file.Path;
 public final class SDL {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("SDL3");
+    private static final Path NVIDIA_SYS_VERSION_FILE = Path.of("/sys/module/nvidia/version");
+    private static final Path NVIDIA_PROC_VERSION_FILE = Path.of("/proc/driver/nvidia/version");
+    private static final Pattern NVIDIA_MAJOR_PATTERN = Pattern.compile("(\\d+)\\.\\d+");
+    private static final int NVIDIA_WORKAROUND_MAX_MAJOR_EXCLUSIVE = 600;
     /**
      * Every {@code com.cleanroommc.client.sdl.events} event is posted here, not on Forge's bus.
      * */
@@ -271,8 +278,9 @@ public final class SDL {
      * driver's application profile turns it on for anything that loads liblwjgl*.so before EGL is
      * initialized, which is why this is needed here at all.
      *
-     * <p>Only runs when PRIME offload was requested, so other Wayland and NVIDIA setups are left
-     * alone. Opt out with {@code -Dcleanroom.sdl.nvidiaWaylandWorkaround=false}.
+     * <p>Only runs on Linux/Wayland with PRIME offload and NVIDIA drivers below 600. The cutoff is
+     * heuristic: 570.x/580.x are affected, 620.x was reported unaffected, and 590-599 have mixed/no
+     * confirmed fix data. Opt out with {@code -Dcleanroom.sdl.nvidiaWaylandWorkaround=false}.
      */
     private static synchronized void applyNvidiaWaylandWorkaround() {
         if (nvidiaWaylandWorkaroundChecked) {
@@ -288,10 +296,10 @@ public final class SDL {
         if (!"wayland".equals(SDLVideo.SDL_GetCurrentVideoDriver())) {
             return;
         }
-        if (!Files.isRegularFile(Path.of("/proc/driver/nvidia/version"))) {
+        if (!nvidiaOffloadRequested()) {
             return;
         }
-        if (!nvidiaOffloadRequested()) {
+        if (!needsNvidiaWorkaround()) {
             return;
         }
         String threaded = System.getenv("__GL_THREADED_OPTIMIZATIONS");
@@ -320,6 +328,31 @@ public final class SDL {
         }
         String vendor = System.getenv("__GLX_VENDOR_LIBRARY_NAME");
         return vendor != null && "nvidia".equalsIgnoreCase(vendor.trim());
+    }
+
+    private static boolean needsNvidiaWorkaround() {
+        Integer major = readNvidiaMajor(NVIDIA_SYS_VERSION_FILE);
+        if (major == null) {
+            major = readNvidiaMajor(NVIDIA_PROC_VERSION_FILE);
+        }
+        if (major == null) {
+            // Unknown version: keep the workaround rather than restore the EGL_BAD_DISPLAY swap failure.
+            return true;
+        }
+        return major < NVIDIA_WORKAROUND_MAX_MAJOR_EXCLUSIVE;
+    }
+
+    private static Integer readNvidiaMajor(Path file) {
+        try {
+            String content = Files.readString(file);
+            Matcher matcher = NVIDIA_MAJOR_PATTERN.matcher(content);
+            if (matcher.find()) {
+                return Integer.parseInt(matcher.group(1));
+            }
+        } catch (IOException | RuntimeException ignored) {
+            // Try next source / fail safe.
+        }
+        return null;
     }
 
     /**
