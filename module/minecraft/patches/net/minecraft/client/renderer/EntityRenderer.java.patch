@@ -8,11 +8,11 @@
 +            } else net.minecraftforge.client.ForgeHooksClient.loadEntityShader(entityIn, this);
          }
      }
- 
+
 @@ -303,7 +303,7 @@
              this.mc.setRenderViewEntity(this.mc.player);
          }
- 
+
 -        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity()));
 +        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1.0F))); // Forge: fix MC-51150
          float f4 = this.mc.gameSettings.renderDistanceChunks / 32.0F;
@@ -30,11 +30,11 @@
 @@ -476,7 +476,7 @@
              f = f * 60.0F / 70.0F;
          }
- 
+
 -        return f;
 +        return net.minecraftforge.client.ForgeHooksClient.getFOVModifier(this, entity, iblockstate, partialTicks, f);
      }
- 
+
      private void hurtCameraEffect(float partialTicks) {
 @@ -531,11 +531,7 @@
              if (!this.mc.gameSettings.debugCamEnable) {
@@ -46,12 +46,12 @@
 -                    GlStateManager.rotate(j * 90, 0.0F, 1.0F, 0.0F);
 -                }
 +                net.minecraftforge.client.ForgeHooksClient.orientBedCamera(this.mc.world, blockpos, iblockstate, entity);
- 
+
                  GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
                  GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
 @@ -588,15 +584,19 @@
          }
- 
+
          if (!this.mc.gameSettings.debugCamEnable) {
 -            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
 +            float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
@@ -73,11 +73,11 @@
 +            GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
 +            GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
          }
- 
+
          GlStateManager.translate(0.0F, -f, 0.0F);
 @@ -703,7 +703,9 @@
              }
- 
+
              boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase
 -                && ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping();
 +                           && ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping();
@@ -89,7 +89,7 @@
 @@ -797,6 +799,15 @@
                          f12 = 0.25F + f9 * 0.75F;
                      }
- 
+
 +                    float[] colors = {f10, f11, f12};
 +                    world.provider.getLightmapColors(partialTicks, f, f2, f3, colors);
 +                    f10 = colors[0]; f11 = colors[1]; f12 = colors[2];
@@ -102,6 +102,15 @@
                      if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION)) {
                          float f17 = this.getNightVisionBrightness(this.mc.player, partialTicks);
                          float f14 = 1.0F / f10;
+@@ -902,7 +913,7 @@
+             this.mc.mouseHelper.mouseXYChange();
+             this.mc.getTutorial().handleMouse(this.mc.mouseHelper);
+             float f = this.mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
+-            float f1 = f * f * f * 8.0F;
++            float f1 = com.cleanroommc.client.input.gamepad.GamepadHandler.hookMouseXYChange(this.mc.mouseHelper) ? 1.0F : f * f * f * 8.0F;
+             float f2 = this.mc.mouseHelper.deltaX * f1;
+             float f3 = this.mc.mouseHelper.deltaY * f1;
+             int i = 1;
 @@ -917,11 +928,11 @@
                  this.smoothCamPartialTicks = partialTicks;
                  f2 = this.smoothCamFilterX * f4;
@@ -115,7 +124,7 @@
 +                com.cleanroommc.client.input.InputHooks.onMouseTurn(this.mc.player, f2, f3 * i); // Cleanroom: MouseTurnEvent
              }
          }
- 
+
 @@ -940,7 +951,13 @@
                  j = Math.max(j, 60);
                  long k = System.nanoTime() - nanoTime;
@@ -140,10 +149,10 @@
 +                // Forge: also fix rendering text before entering world (not part of MC-112292, but the same reason)
 +                net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.instance.fontRenderer = this.mc.fontRenderer;
              }
- 
+
              if (this.mc.currentScreen != null) {
                  GlStateManager.clear(256);
- 
+
                  try {
 -                    this.mc.currentScreen.drawScreen(k1, l1, this.mc.getTickLength());
 +                    net.minecraftforge.client.ForgeHooksClient.drawScreen(this.mc.currentScreen, k1, l1, this.mc.getTickLength());
@@ -152,7 +161,7 @@
                      CrashReportCategory crashreportcategory = crashreport.makeCategory("Screen render details");
 @@ -1039,10 +1060,16 @@
              }
- 
+
              try {
 -                BufferedImage bufferedimage1 = new BufferedImage(64, 64, 1);
 -                Graphics graphics = bufferedimage1.createGraphics();
@@ -182,7 +191,7 @@
                  }
 @@ -1104,6 +1131,15 @@
      }
- 
+
      private void renderWorldPass(int pass, float partialTicks, long finishTimeNano) {
 +        if (com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enable
 +                && (!com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enableRenderDelegate
@@ -208,7 +217,7 @@
 @@ -1154,6 +1190,13 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
- 
+
 +        if (com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enable
 +                && (!com.cleanroommc.kirino.config.KirinoConfig.NEEDS_RESTART.enableRenderDelegate
 +                || com.cleanroommc.kirino.KirinoClientCore.isRenderUnsupported())) {
@@ -276,7 +285,7 @@
 @@ -1254,11 +1319,21 @@
              this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
- 
+
 +        this.mc.profiler.endStartSection("forge_render_last");
 +        net.minecraftforge.client.ForgeHooksClient.dispatchRenderLast(renderglobal, partialTicks);
 +
@@ -293,10 +302,10 @@
 +            com.cleanroommc.kirino.KirinoClientCore.runHeadlessly(com.cleanroommc.kirino.engine.FramePhase.RENDER_OVERLAY);
 +        }
      }
- 
+
      private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass, double x, double y, double z) {
 @@ -1376,6 +1451,12 @@
- 
+
      /** Render rain and snow */
      protected void renderRainSnow(float partialTicks) {
 +        net.minecraftforge.client.IRenderHandler renderer = this.mc.world.provider.getWeatherRenderer();
@@ -338,12 +347,12 @@
 +            this.fogColorGreen = (float)inMaterialColor.y;
 +            this.fogColorBlue = (float)inMaterialColor.z;
          }
- 
+
          float f13 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * partialTicks;
 @@ -1673,6 +1747,9 @@
                  f6 = 1.0F / this.fogColorBlue;
              }
- 
+
 +            // Forge: fix MC-4647 and MC-10480
 +            if (Float.isInfinite(f6)) f6 = Math.nextAfter(f6, 0.0);
 +
@@ -353,7 +362,7 @@
 @@ -1687,6 +1764,13 @@
              this.fogColorBlue = f7;
          }
- 
+
 +        net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(this, entity, iblockstate, partialTicks, this.fogColorRed, this.fogColorGreen, this.fogColorBlue);
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 +
@@ -363,7 +372,7 @@
 +
          GlStateManager.clearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
      }
- 
+
 @@ -1697,6 +1781,9 @@
          GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -380,5 +389,5 @@
              }
 +            net.minecraftforge.client.ForgeHooksClient.onFogRender(this, entity, iblockstate, partialTicks, startCoords, f);
          }
- 
+
          GlStateManager.enableColorMaterial();
