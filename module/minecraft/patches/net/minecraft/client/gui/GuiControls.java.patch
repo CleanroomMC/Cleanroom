@@ -20,7 +20,7 @@
 -                keybinding.setKeyCode(keybinding.getKeyCodeDefault());
 +                keybinding.setToDefault();
              }
-
+ 
              KeyBinding.resetKeyBindingArrayAndHash();
          } else if (button.id < 100 && button instanceof GuiOptionButton) {
              this.options.setOptionValue(((GuiOptionButton)button).getOption(), 1);
@@ -29,7 +29,7 @@
 +            this.keyBindingList.cleanroom$updateList();
          }
      }
-
+ 
 @@ -93,10 +96,11 @@
      @Override
      protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
@@ -56,7 +56,7 @@
 +                this.buttonId.setKeyModifiersMaskAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifierMask(), typedChar + 256);
                  this.options.setOptionKeyBinding(this.buttonId, typedChar + 256);
              }
-
+ 
 +            if (!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(keyCode))
              this.buttonId = null;
              this.time = Minecraft.getSystemTime();
@@ -72,7 +72,7 @@
          this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 8, 16777215);
 +        this.search.drawTextBox();
          boolean flag = false;
-
+ 
          for (KeyBinding keybinding : this.options.keyBindings) {
 -            if (keybinding.getKeyCode() != keybinding.getKeyCodeDefault()) {
 +            if (!keybinding.isSetToDefaultValue()) {
@@ -106,10 +106,10 @@
 +
 +        this.buttonList.add(new GuiButton(CLR_BTT_LAYOUT_AWARENESS, this.width - 1 - 83, 2, 83, 13,
 +            I18n.format("cleanroom.layout_awareness", org.lwjgl.input.Keyboard.isLayoutAwarenessEnabled() ? "OS" : "QWERTY")));
-+        buttonList.add(new GuiButton(BTT_SEARCH_BY, this.width / 2 - 155 + 160, this.height - 29 - 21 * 2, 150, 20, searchMode.translateText()));
-+        buttonList.add(new GuiButton(BTT_SORT_BY, this.width / 2 - 155 + 160, this.height - 29 - 21, 150, 20, sortMode.translateText()));
-+        buttonList.add(new GuiButton(BTT_FILTER_MODE, this.width / 2 - 155, this.height - 29 - 21, 150, 20, filterMode.translateText()));
-+        buttonList.add(new GuiButton(BTT_LAYOUT, this.width / 2 - 155 + 78, this.height - 29, 72, 20, I18n.format(com.cleanroommc.client.controls.GuiControlsHooks.TRANSLATE_LAYOUT)));
++        buttonList.add(new GuiButton(CLR_BTT_SEARCH_BY, this.width / 2 - 155 + 160, this.height - 29 - 21 * 2, 150, 20, searchMode.translateText()));
++        buttonList.add(new GuiButton(CLR_BTT_SORT_BY, this.width / 2 - 155 + 160, this.height - 29 - 21, 150, 20, sortMode.translateText()));
++        buttonList.add(new GuiButton(CLR_BTT_FILTER_MODE, this.width / 2 - 155, this.height - 29 - 21, 150, 20, filterMode.translateText()));
++        buttonList.add(new GuiButton(CLR_BTT_LAYOUT, this.width / 2 - 155 + 78, this.height - 29, 72, 20, I18n.format(com.cleanroommc.client.controls.GuiControlsHooks.TRANSLATE_LAYOUT)));
 +    }
 +
 +    private boolean cleanroom$keyTyped(char typedChar, int keyCode) {
@@ -146,10 +146,10 @@
 +                button.displayString = I18n.format("cleanroom.layout_awareness", enabled ? "OS" : "QWERTY");
 +                success = false;
 +            }
-+            case BTT_SORT_BY -> sortMode = sortMode.next(button);
-+            case BTT_FILTER_MODE -> filterMode = filterMode.next(button);
-+            case BTT_SEARCH_BY -> searchMode = searchMode.next(button);
-+            case BTT_LAYOUT -> {
++            case CLR_BTT_SORT_BY -> sortMode = sortMode.next(button);
++            case CLR_BTT_FILTER_MODE -> filterMode = filterMode.next(button);
++            case CLR_BTT_SEARCH_BY -> searchMode = searchMode.next(button);
++            case CLR_BTT_LAYOUT -> {
 +
 +            }
 +            default -> success = false;
