@@ -16,8 +16,11 @@ import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.TabCompleter;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -30,9 +33,9 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
     private final TabCompleter tabCompleter;
     private final GuiTextField field;
     private final boolean commandBlockMode;
+    private final Deque<String> pendingRequests = new ArrayDeque<>();
 
     private String lastRequest = "";
-    private int pendingReplies = 0;
     // Set while the field holds text the user did not type, such as a recalled history entry
     private boolean paused;
     private String pausedText;
@@ -46,7 +49,7 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.player != null && mc.player.connection != null) {
             mc.player.connection.sendPacket(new CPacketTabComplete("/", null, false));
-            this.pendingReplies++;
+            this.pendingRequests.add("/");
         }
     }
 
@@ -114,11 +117,19 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
         }
         // Client-side commands
         ClientCommandHandler.instance.autoComplete(prefix);
+        String[] clientCompletions = ClientCommandHandler.instance.latestAutoComplete;
+        if (prefix.endsWith(" ") && clientCompletions != null) {
+            for (String completion : clientCompletions) {
+                this.suggestionList.addArgumentCandidate(
+                    prefix, TextFormatting.getTextWithoutFormattingCodes(completion)
+                );
+            }
+        }
         // Server-side completions (command-block GUIs flag a target block, mirroring vanilla's TabCompleter)
         mc.player.connection.sendPacket(new CPacketTabComplete(
             prefix, this.tabCompleter.getTargetBlockPos(), this.commandBlockMode
         ));
-        this.pendingReplies++;
+        this.pendingRequests.add(prefix);
     }
 
     /**
@@ -129,12 +140,16 @@ public class SuggestionUpdater implements GuiPageButtonList.GuiResponder {
      */
     public void onServerCompletions(String... completions) {
         List<String> suggestions = this.suggestionList.buildSuggestions(completions);
-        if (this.pendingReplies > 0) {
-            this.pendingReplies--;
-            // A newer request is still awaiting its reply
-            if (this.pendingReplies > 0) {
-                return;
+        String requested = this.pendingRequests.poll();
+        // Empty under the cursor = list every candidate for that argument
+        if (requested != null && requested.endsWith(" ")) {
+            for (String completion : completions) {
+                this.suggestionList.addArgumentCandidate(requested, completion);
             }
+        }
+        // A newer request is still awaiting its reply
+        if (!this.pendingRequests.isEmpty()) {
+            return;
         }
         String currentPrefix = this.field.getText().substring(0, this.field.getCursorPosition());
         // An empty prefix means a hide-branch of refresh() ran
