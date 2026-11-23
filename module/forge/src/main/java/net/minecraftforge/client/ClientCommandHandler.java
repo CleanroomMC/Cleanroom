@@ -19,16 +19,24 @@
 
 package net.minecraftforge.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -157,6 +165,53 @@ public class ClientCommandHandler extends CommandHandler
                     latestAutoComplete = commands.toArray(new String[commands.size()]);
                 }
             }
+        }
+    }
+
+    /**
+     * Mirrors {@link CommandHandler#getTabCompletions}, skipping any command that throws instead of failing the whole completion.
+     * The server is null on a remote connection, which commands written for singleplayer often assume never happens.
+     */
+    @Override
+    public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos)
+    {
+        String[] args = input.split(" ", -1);
+        if (args.length == 1)
+        {
+            List<String> names = new ArrayList<>();
+            for (Map.Entry<String, ICommand> entry : getCommands().entrySet())
+            {
+                if (CommandBase.doesStringStartWith(args[0], entry.getKey()) && canComplete(entry.getValue(), sender))
+                {
+                    names.add(entry.getKey());
+                }
+            }
+            return names;
+        }
+        ICommand command = getCommands().get(args[0]);
+        if (command == null || !canComplete(command, sender))
+        {
+            return Collections.emptyList();
+        }
+        try
+        {
+            return command.getTabCompletions(getServer(), sender, Arrays.copyOfRange(args, 1, args.length), pos);
+        }
+        catch (RuntimeException e)
+        {
+            return Collections.emptyList();
+        }
+    }
+
+    private boolean canComplete(ICommand command, ICommandSender sender)
+    {
+        try
+        {
+            return command.checkPermission(getServer(), sender);
+        }
+        catch (RuntimeException e)
+        {
+            return false;
         }
     }
 
