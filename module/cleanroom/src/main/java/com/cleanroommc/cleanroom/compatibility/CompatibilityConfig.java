@@ -104,7 +104,7 @@ public final class CompatibilityConfig {
         @Config.Comment({ "Patch Lockdown", "https://www.curseforge.com/minecraft/mc-mods/lockdown" })
         public boolean lockdown = true;
 
-        @Config.Comment({ "Patch McJtyLib", "https://www.curseforge.com/minecraft/mc-mods/lockdown" })
+        @Config.Comment({ "Patch McJtyLib", "https://www.curseforge.com/minecraft/mc-mods/mcjtylib" })
         public boolean mcjtyLib = true;
 
         @Config.Comment({ "Patch Project Red - Core", "https://www.curseforge.com/minecraft/mc-mods/project-red-core" })
@@ -113,7 +113,7 @@ public final class CompatibilityConfig {
         @Config.Comment({ "Patch Water Power", "https://www.curseforge.com/minecraft/mc-mods/water-power" })
         public boolean waterPower = true;
 
-        @Config.Comment({ "Patch XaeroPlus", "https://www.curseforge.com/minecraft/mc-mods/water-power" })
+        @Config.Comment({ "Patch XaeroPlus", "https://www.curseforge.com/minecraft/mc-mods/xaeroplus" })
         public boolean xaeroPlus = true;
 
         private Mods() { }
