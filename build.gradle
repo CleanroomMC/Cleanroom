@@ -257,6 +257,8 @@ dependencies {
     lwjglNative "org.lwjgl:lwjgl-freetype:${lwjgl_version}"
 }
 
+apply from: 'build_modpatches.gradle'
+
 tasks.withType(Test).configureEach {
     maxParallelForks = 1
     jvmArgs open_arguments + export_arguments

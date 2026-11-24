@@ -11,10 +11,12 @@
 package com.cleanroommc.cleanroom.modpatch;
 
 import com.cleanroommc.cleanroom.modpatch.transformer.ModTransformers;
+import com.cleanroommc.discovery.CleanroomModDiscoverer;
 import top.outlands.foundation.boot.ActualClassLoader;
 import top.outlands.foundation.boot.TransformerHolder;
 import top.outlands.foundation.function.ExplicitTransformerFunction;
 
+import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.edit.MixinEdits;
 
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
@@ -41,6 +43,7 @@ public final class ModPatchTransformer {
         TransformerHolder holder = ActualClassLoader.getTransformerHolder();
         ExplicitTransformerFunction previous = holder.runExplicitTransformersFunction;
         holder.runExplicitTransformersFunction = (name, bytes) -> transform(name, previous.apply(name, bytes));
+        Mixins.addConfiguration("mixin.cleanroom.modpatch.json");
     }
 
     private static boolean isJava9OrHigher(byte[] bytes) {

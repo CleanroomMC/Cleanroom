@@ -13,7 +13,11 @@ package com.cleanroommc.cleanroom.modpatch.transformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 final class EnchantmentControl {
 
@@ -24,25 +28,16 @@ final class EnchantmentControl {
             ClassNode classNode = new ClassNode();
             ClassReader classReader = new ClassReader(bytes);
             classReader.accept(classNode, 0);
-            boolean firstPatched = false;
             if (classNode.methods != null) {
                 for (MethodNode methodNode : classNode.methods) {
                     if (methodNode.name.equals("pathcMCLocale")) {
                         InsnList instructions = methodNode.instructions;
                         if (instructions != null) {
                             for (AbstractInsnNode insnNode : instructions) {
-                                if (insnNode.getOpcode() == Opcodes.SIPUSH &&
-                                    insnNode instanceof IntInsnNode intInsnNode) {
-                                    if (intInsnNode.operand == Opcodes.INVOKESPECIAL) {
-                                        intInsnNode.operand = Opcodes.INVOKEVIRTUAL;
-                                        firstPatched = true;
-                                    }
-                                }
-                                if (firstPatched &&
-                                    insnNode.getOpcode() == Opcodes.ICONST_3 &&
-                                    insnNode instanceof InsnNode insnNode1) {
-                                    instructions.insert(insnNode1, new InsnNode(Opcodes.ICONST_2));
-                                    instructions.remove(insnNode1);
+                                if (insnNode.getOpcode() == Opcodes.ICONST_3) {
+                                    instructions.insert(insnNode, new InsnNode(Opcodes.ICONST_2));
+                                    instructions.remove(insnNode);
+                                    break;
                                 }
                             }
                         }

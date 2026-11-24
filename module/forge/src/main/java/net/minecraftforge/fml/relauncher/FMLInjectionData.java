@@ -57,7 +57,6 @@ public class FMLInjectionData
         ConfigManager.register(ModListConfig.class);
         ConfigManager.register(CompatibilityConfig.class);
         CompatibilityTransformer.install();
-        ModPatchTransformer.install();
     }
 
     static String debfuscationDataName()

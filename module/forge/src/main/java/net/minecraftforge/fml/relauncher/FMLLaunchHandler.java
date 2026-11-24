@@ -23,6 +23,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.cleanroommc.cleanroom.modpatch.ModPatchTransformer;
 import com.cleanroommc.common.CleanroomEnvironment;
 import com.cleanroommc.common.CleanroomVersion;
 import com.cleanroommc.util.CleanroomLog;
@@ -35,6 +36,7 @@ import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.Mixins;
 
 public class FMLLaunchHandler
 {
@@ -126,6 +128,7 @@ public class FMLLaunchHandler
             CleanroomLog.get().info("Initializing MixinExtras...");
             MixinExtrasBootstrap.init();
             CoreModManager.handleLaunch(minecraftHome, classLoader, tweaker);
+            ModPatchTransformer.install();
         }
         catch (Throwable t)
         {
