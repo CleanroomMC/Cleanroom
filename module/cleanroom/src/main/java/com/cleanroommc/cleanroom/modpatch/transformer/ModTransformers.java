@@ -20,9 +20,6 @@ public final class ModTransformers {
         if (CompatibilityConfig.mods.betterSprinting && name.startsWith("chylex.bettersprinting.")) {
             return BetterSprinting.transform(name, bytes);
         }
-        if (CompatibilityConfig.mods.colytra && name.startsWith("c4.colytra.")) {
-            return Colytra.transform(name, bytes);
-        }
         if (CompatibilityConfig.mods.crossbow && name.startsWith("git.jbredwards.crossbow.")) {
             return Crossbow.transform(name, bytes);
         }

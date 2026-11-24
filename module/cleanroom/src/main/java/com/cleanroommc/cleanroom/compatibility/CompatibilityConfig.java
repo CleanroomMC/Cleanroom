@@ -87,9 +87,6 @@ public final class CompatibilityConfig {
         @Config.Comment({ "Patch CodeChickenLib", "https://www.curseforge.com/minecraft/mc-mods/codechicken-lib-1-8" })
         public boolean codeChickenLib = true;
 
-        @Config.Comment({ "Patch Colytra", "https://www.curseforge.com/minecraft/mc-mods/colytra" })
-        public boolean colytra = true;
-
         @Config.Comment({ "Patch CreativeCore", "https://www.curseforge.com/minecraft/mc-mods/creativecore" })
         public boolean creativeCore = true;
 
@@ -97,9 +94,6 @@ public final class CompatibilityConfig {
 
         @Config.Comment({ "Patch Custom Main Menu", "https://www.curseforge.com/minecraft/mc-mods/custom-main-menu" })
         public boolean customMainMenu = true;
-
-        @Config.Comment({ "Patch Howling Moon", "https://www.curseforge.com/minecraft/mc-mods/howling-moon" })
-        public boolean howlingMoon = true;
 
         @Config.Comment({ "Patch Lockdown", "https://www.curseforge.com/minecraft/mc-mods/lockdown" })
         public boolean lockdown = true;

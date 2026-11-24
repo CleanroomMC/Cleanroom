@@ -11,7 +11,6 @@
     "codechickenlib.ReflectionManagerMixin",
     "creativecore.ConfigEventHandlerMixin",
     "custommainmenu.SlideshowMixin",
-    "howlingmoon.WerewolfCapabilityMixin",
     "lockdown.GuiMainMenuTweakedMixin",
     "mcjtylib.AbstractContainerWidgetMixin",
     "mcjtylib.SliderMixin",

@@ -23,7 +23,6 @@ public final class ModPatchMixinPlugin implements IMixinConfigPlugin {
             case "codechickenlib" -> CompatibilityConfig.mods.codeChickenLib;
             case "creativecore" -> CompatibilityConfig.mods.creativeCore;
             case "custommainmenu" -> CompatibilityConfig.mods.customMainMenu;
-            case "howlingmoon" -> CompatibilityConfig.mods.howlingMoon;
             case "lockdown" -> CompatibilityConfig.mods.lockdown;
             case "mcjtylib" -> CompatibilityConfig.mods.mcjtyLib;
             case "projectred_core" -> CompatibilityConfig.mods.projectRedCore;
