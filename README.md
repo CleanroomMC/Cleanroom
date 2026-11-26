@@ -162,7 +162,7 @@ As for Cleanroom mods, before Cleanroom 1.0.0, no binary compatibility is guaran
 
 - The official template is [CleanroomModTemplate](https://github.com/CleanroomMC/CleanroomModTemplate). A porting guide is in the [Cleanroom wiki](https://cleanroommc.com/wiki/cleanroom-mod-development/introduction) (WIP).
 
-- Scala 3 and Kotlin 2 are both usable for mod code, through Scalar and Forgelin-Continuous.
+- Scala 2.11 and Scala 3 mods run on runtimes Cleanroom provides, Kotlin 2 is usable through Forgelin-Continuous.
 
 ## Development & Build System
 
