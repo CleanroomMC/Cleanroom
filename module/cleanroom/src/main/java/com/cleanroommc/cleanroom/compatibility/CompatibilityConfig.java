@@ -52,6 +52,68 @@ public final class CompatibilityConfig {
     @Config.Comment("(X[]) collection.toArray() becomes collection.toArray(new X[0]).")
     public static boolean toArrayCast = true;
 
+    @Config.Comment("Compatibility patches for mods") public static final Mods mods = new Mods();
+
+    public static final class Mods {
+
+        @Config.Comment({ "Patch Better Sprinting", "https://www.curseforge.com/minecraft/mc-mods/better-sprinting" })
+        public boolean betterSprinting = true;
+
+        @Config.Comment({ "Patch Ears", "https://www.curseforge.com/minecraft/mc-mods/ears" })
+        public boolean ears = true;
+
+        @Config.Comment(
+            { "Patch Enchantments Control", "https://www.curseforge.com/minecraft/mc-mods/enchantments-control" }
+        ) public boolean enchantmentsControl = true;
+
+        @Config.Comment({ "Patch Ender Core", "https://www.curseforge.com/minecraft/mc-mods/endercore" })
+        public boolean enderCore = true;
+
+        @Config.Comment({ "Patch Future MC", "https://www.curseforge.com/minecraft/mc-mods/future-mc" })
+        public boolean futureMC = true;
+
+        @Config.Comment({ "Patch More Sound Config", "https://www.curseforge.com/minecraft/mc-mods/more-sound-config" })
+        public boolean moreSoundConfig = true;
+
+        @Config.Comment({ "Patch Serene Seasons", "https://www.curseforge.com/minecraft/mc-mods/serene-seasons" })
+        public boolean sereneSeasons = true;
+
+        @Config.Comment({ "Patch Subaquatic", "https://modrinth.com/project/GjqoNelE" })
+        public boolean subaquatic = true;
+
+        @Config.Comment({ "Patch Better Records", "https://www.curseforge.com/minecraft/mc-mods/better-records" })
+        public boolean betterRecords = true;
+
+        @Config.Comment({ "Patch CodeChickenLib", "https://www.curseforge.com/minecraft/mc-mods/codechicken-lib-1-8" })
+        public boolean codeChickenLib = true;
+
+        @Config.Comment({ "Patch CreativeCore", "https://www.curseforge.com/minecraft/mc-mods/creativecore" })
+        public boolean creativeCore = true;
+
+        @Config.Comment({ "Patch Crossbow", "https://modrinth.com/mod/crossbow" }) public boolean crossbow = true;
+
+        @Config.Comment({ "Patch Custom Main Menu", "https://www.curseforge.com/minecraft/mc-mods/custom-main-menu" })
+        public boolean customMainMenu = true;
+
+        @Config.Comment({ "Patch Lockdown", "https://www.curseforge.com/minecraft/mc-mods/lockdown" })
+        public boolean lockdown = true;
+
+        @Config.Comment({ "Patch McJtyLib", "https://www.curseforge.com/minecraft/mc-mods/mcjtylib" })
+        public boolean mcjtyLib = true;
+
+        @Config.Comment({ "Patch Project Red - Core", "https://www.curseforge.com/minecraft/mc-mods/project-red-core" })
+        public boolean projectRedCore = true;
+
+        @Config.Comment({ "Patch Water Power", "https://www.curseforge.com/minecraft/mc-mods/water-power" })
+        public boolean waterPower = true;
+
+        @Config.Comment({ "Patch XaeroPlus", "https://www.curseforge.com/minecraft/mc-mods/xaeroplus" })
+        public boolean xaeroPlus = true;
+
+        private Mods() { }
+
+    }
+
     private CompatibilityConfig() { }
 
 }

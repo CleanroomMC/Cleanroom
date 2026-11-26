@@ -1,0 +1,41 @@
+// Applied below dependencies block in build.gradle
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name 'CleanroomMC CurseMaven'
+                url 'https://curse.cleanroommc.com'
+            }
+        }
+        filter {
+            includeGroup 'curse.maven'
+        }
+    }
+}
+
+dependencies {
+    compileOnly 'curse.maven:armourers-workshop-229523:3101995'
+    compileOnly 'curse.maven:better-records-222722:2930159'
+    compileOnly 'curse.maven:carry-on-274259:4507139'
+    compileOnly 'curse.maven:charset-284523:3656492'
+    compileOnly 'curse.maven:codechicken-lib-242818:2779848'
+    compileOnly 'curse.maven:creativecore-257814:4722163'
+    compileOnly 'curse.maven:custom-main-menu-226406:2857869'
+    compileOnly 'curse.maven:custom-npcs-221826:2996912'
+    compileOnly 'curse.maven:dark-theme-323440:3146120'
+    compileOnly 'curse.maven:requiem-265729:2942107'
+    compileOnly 'curse.maven:ender-utilities-224320:2977010'
+    compileOnly 'curse.maven:howling-moon-236149:2567452'
+    compileOnly 'curse.maven:little-tiles-257818:5180387'
+    compileOnly 'curse.maven:lockdown-244019:2477270'
+    compileOnly 'curse.maven:mcjty-lib-233105:2745846'
+    compileOnly 'curse.maven:cb-multipart-258426:2755790'
+    compileOnly 'curse.maven:project-red-core-228702:2745545'
+    compileOnly 'curse.maven:recurrent-complex-223150:8562927'
+    compileOnly 'curse.maven:refined-storage-243076:2940914'
+    compileOnly 'curse.maven:water-power-224579:2464789'
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:2.3.10'
+    compileOnly 'curse.maven:xaero-plus-866084:9067807'
+    compileOnly 'curse.maven:mpm-221939:2837187'
+}

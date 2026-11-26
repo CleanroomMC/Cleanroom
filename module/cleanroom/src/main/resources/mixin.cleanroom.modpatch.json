@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "plugin": "com.cleanroommc.cleanroom.modpatch.ModPatchMixinPlugin",
+  "package": "com.cleanroommc.cleanroom.modpatch.mixin",
+  "refmap": "mixins.mixinbooter.refmap.json",
+  "target": "@env(PREINIT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "betterrecords.SoundManagerMixin",
+    "codechickenlib.ReflectionManagerMixin",
+    "creativecore.ConfigEventHandlerMixin",
+    "custommainmenu.SlideshowMixin",
+    "lockdown.GuiMainMenuTweakedMixin",
+    "mcjtylib.AbstractContainerWidgetMixin",
+    "mcjtylib.SliderMixin",
+    "projectred_core.WirePropagatorMixin",
+    "waterpower.ClassEngineMixin",
+    "xaeroplus.ChunkHighlightSavingCacheMixin"
+  ]
+}

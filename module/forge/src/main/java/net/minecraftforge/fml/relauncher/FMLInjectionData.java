@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cleanroommc.cleanroom.modpatch.ModPatchTransformer;
 import com.cleanroommc.client.modlist.ModListConfig;
 import com.cleanroommc.cleanroom.compatibility.CompatibilityConfig;
 import com.cleanroommc.cleanroom.compatibility.CompatibilityTransformer;
