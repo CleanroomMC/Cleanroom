@@ -22,7 +22,10 @@ package net.minecraftforge.fml.common.launcher;
 import java.io.File;
 import java.util.List;
 
+import com.cleanroommc.cleanroom.splash.pre.PreSplashManager;
+import com.cleanroommc.cleanroom.splash.pre.PreSplashPhase;
 import com.cleanroommc.cleanmix.service.CleanMixService;
+import com.cleanroommc.common.CleanroomEnvironment;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
@@ -42,6 +45,10 @@ public class FMLDeobfTweaker implements ITweaker {
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader)
     {
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Preparing class transformers");
+        }
+
         // Deobfuscation transformer, always last, and the access transformer tweaker as well
         TransformerDelegate.registerRenameTransformer(new DeobfuscationTransformer());
         // Add all the access transformers now as well
@@ -55,10 +62,18 @@ public class FMLDeobfTweaker implements ITweaker {
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockSpecialTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.PotionEffectTransformer");
 
+        if (CleanroomEnvironment.side().isClient()) {
+            PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Initializing mixins");
+        }
+
         ((CleanMixService) MixinService.getService()).transitionToInit();
 
         try
         {
+            if (CleanroomEnvironment.side().isClient()) {
+                PreSplashManager.INSTANCE.notifyDetails(PreSplashPhase.CORE_MOD_LAUNCH, "Preparing Minecraft classes");
+            }
+
             FMLLog.log.debug("Validating minecraft");
             Loader.injectData(FMLInjectionData.data());
             Loader.instance();
