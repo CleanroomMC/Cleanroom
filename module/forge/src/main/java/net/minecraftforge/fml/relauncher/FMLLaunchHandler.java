@@ -86,6 +86,7 @@ public class FMLLaunchHandler
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.repackage.");
         this.classLoader.addTransformerExclusion("LZMA.");
         this.classLoader.addTransformerExclusion("scala.");
+        this.classLoader.addTransformerExclusion("scala211.");
         this.classLoader.addTransformerExclusion("it.unimi.dsi.");
         this.classLoader.addTransformerExclusion("oshi.");
     }
